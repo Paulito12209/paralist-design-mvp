@@ -11,6 +11,7 @@
  * --title-size              -> Schriftgröße der großen Überschrift „Übersicht“
  * --content-side            -> Abstand der Karten und Listen zum linken und rechten Rand
  * --title-side              -> Extra-Abstand links/rechts für die große Überschrift und links für „Arbeitsbereiche“ (16 + 4 = 20 zum Rand)
+ * --overview-gap            -> gleicher Abstand zwischen Header und „Übersicht“, zwischen „Übersicht“ und den Karten, und zwischen den unteren Karten und „Arbeitsbereiche“
  * --workspace-head-gap      -> Abstand zwischen der Zeile „Arbeitsbereiche“ und dem ersten Eintrag darunter
  * --top-bar-icon-width      -> Breite der Icons oben (Filter, Suche, Profil)
  * --top-bar-icon-height     -> Höhe der Icons oben (Filter, Suche, Profil)
@@ -48,6 +49,7 @@
   --title-size: 32px;
   --content-side: 16px;
   --title-side: 4px;
+  --overview-gap: 28px;
   --workspace-head-gap: 0px;
   --top-bar-icon-width: 24px;
   --top-bar-icon-height: 24px;
@@ -209,7 +211,7 @@ button {
 .content {
   flex: 1;
   overflow: auto;
-  padding: 8px var(--content-side) var(--tab-space);
+  padding: var(--overview-gap) var(--content-side) var(--tab-space);
   position: relative; /* position: damit der Scrollbereich fest im Gerät bleibt */
   scrollbar-width: none;
 }
@@ -231,7 +233,7 @@ button {
   line-height: 1.1;
   letter-spacing: -0.04em;
   font-weight: 700;
-  margin: 10px 0 18px;
+  margin: 0 0 var(--overview-gap);
   padding: 0 var(--title-side);
 }
 
@@ -284,7 +286,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 28px 0 var(--workspace-head-gap);
+  margin: var(--overview-gap) 0 var(--workspace-head-gap);
   padding-left: var(--title-side);
 }
 
@@ -359,7 +361,7 @@ button {
   display: flex;
   align-items: center;
   gap: 2px;
-  margin: 4px 0 18px -8px;
+  margin: 0 0 18px -8px;
 }
 
 .back-btn {
