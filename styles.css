@@ -13,8 +13,14 @@
  * --title-side              -> Extra-Abstand links/rechts für die große Überschrift und links für „Arbeitsbereiche“ (16 + 4 = 20 zum Rand)
  * --overview-gap            -> gleicher Abstand zwischen Header und „Übersicht“, zwischen „Übersicht“ und den Karten, und zwischen den unteren Karten und „Arbeitsbereiche“
  * --workspace-head-gap      -> Abstand zwischen der Zeile „Arbeitsbereiche“ und dem ersten Eintrag darunter
- * --top-bar-icon-width      -> Breite der Icons oben (Filter, Suche, Profil)
- * --top-bar-icon-height     -> Höhe der Icons oben (Filter, Suche, Profil)
+ * --top-bar-icon-width         -> Breite der Icons oben (Filter, Suche, Profil)
+ * --top-bar-icon-height        -> Höhe der Icons oben (Filter, Suche, Profil)
+ * --top-bar-leading-btn-width  -> Breite des runden Buttons oben links
+ * --top-bar-leading-btn-height -> Höhe des runden Buttons oben links
+ * --top-bar-profile-btn-width  -> Breite des runden Profil-Buttons oben rechts
+ * --top-bar-profile-btn-height -> Höhe des runden Profil-Buttons oben rechts
+ * --search-bar-height          -> Höhe der Suchleiste
+ * --search-bar-radius          -> Rundung der Suchleiste (halbe Höhe = Pille)
  * --icon-folder-plus-width  -> Breite des Ordner-Plus-Icons (Ordner mit Plus an der unteren linken Ecke)
  * --icon-folder-plus-height -> Höhe des Ordner-Plus-Icons
  * --tab-space               -> Extra-Platz am Ende der Seite, damit nichts hinter der Navigation verschwindet
@@ -53,6 +59,12 @@
   --workspace-head-gap: 0px;
   --top-bar-icon-width: 24px;
   --top-bar-icon-height: 24px;
+  --top-bar-leading-btn-width: 48px;
+  --top-bar-leading-btn-height: 48px;
+  --top-bar-profile-btn-width: 48px;
+  --top-bar-profile-btn-height: 48px;
+  --search-bar-height: 56px;
+  --search-bar-radius: 28px;
   --icon-folder-plus-width: 22px;
   --icon-folder-plus-height: 22px;
   --tab-space: 96px;
@@ -155,18 +167,24 @@ button {
 
 .icon-btn,
 .avatar {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
+  border-radius: 50%; /* macht die Buttons rund; Breite/Höhe allein ergeben kein Kreis */
   background: var(--card);
   display: grid;
-  place-items: center;
+  place-items: center; /* Icon sitzt in der Mitte; mit flex allein wäre die Zentrierung umständlicher */
   color: #3a3a3c;
   box-shadow: var(--shadow);
   flex: 0 0 auto;
 }
 
+/* Android Material: Icon-Button mindestens 48×48 */
+.icon-btn {
+  width: var(--top-bar-leading-btn-width);
+  height: var(--top-bar-leading-btn-height);
+}
+
 .avatar {
+  width: var(--top-bar-profile-btn-width);
+  height: var(--top-bar-profile-btn-height);
   color: #3a3a3c;
   overflow: hidden;
 }
@@ -181,13 +199,13 @@ button {
 
 .search {
   flex: 1;
-  height: 36px;
+  height: var(--search-bar-height);
   background: var(--card);
-  border-radius: 18px;
+  border-radius: var(--search-bar-radius); /* Pillenform; Höhe allein macht die Ecken nicht rund */
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 0 12px;
+  padding: 0 16px;
   box-shadow: var(--shadow);
   color: var(--muted);
 }
