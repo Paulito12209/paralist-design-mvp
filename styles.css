@@ -9,7 +9,7 @@
  * --line                    -> Farbe der dünnen Trennlinie unter Arbeitsbereichen
  * --shadow                  -> weicher Schatten unter Karten und Suche
  * --title-size              -> Schriftgröße der großen Überschrift „Übersicht“
- * --icon-folder-plus-width  -> Breite des Ordner-Plus-Icons (Ordner und Plus nebeneinander)
+ * --icon-folder-plus-width  -> Breite des Ordner-Plus-Icons (Ordner mit Plus an der unteren linken Ecke)
  * --icon-folder-plus-height -> Höhe des Ordner-Plus-Icons
  */
 
@@ -23,8 +23,8 @@
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.05);
   --radius-xl: 22px;
   --radius-lg: 18px;
-  --title-size: 34px;
-  --icon-folder-plus-width: 30px;
+  --title-size: 32px;
+  --icon-folder-plus-width: 22px;
   --icon-folder-plus-height: 22px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
