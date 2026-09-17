@@ -1,12 +1,27 @@
 const homeView = document.getElementById("view-home");
 const pageView = document.getElementById("view-page");
+const searchView = document.getElementById("view-search");
+const calendarView = document.getElementById("view-calendar");
+const mediaView = document.getElementById("view-media");
+const settingsView = document.getElementById("view-settings");
 const pageTitle = document.getElementById("page-title");
 const pageBody = document.getElementById("page-body");
 const workspaceList = document.getElementById("workspace-list");
+const searchInput = document.getElementById("search-input");
+const tabButtons = document.querySelectorAll(".tab-btn");
+
+const views = {
+  home: homeView,
+  page: pageView,
+  search: searchView,
+  calendar: calendarView,
+  media: mediaView,
+  settings: settingsView,
+};
 
 const pages = {
   overview: {
-    1: { title: "Übersicht 1", items: 6 },
+    1: { title: "Inbox", items: 6, icon: "inbox" },
     2: { title: "Übersicht 2", items: 4 },
     3: { title: "Übersicht 3", items: 5 },
     4: { title: "Übersicht 4", items: 3 },
@@ -17,9 +32,33 @@ const pages = {
 };
 
 let workspaces = [{ id: 1, name: "Platzhalter 1", items: 4 }];
+let sourceView = "home";
 
 function icon(name, className = "") {
   return `<svg class="icon${className ? ` ${className}` : ""}"><use href="#icon-${name}"></use></svg>`;
+}
+
+function hideAllViews() {
+  Object.values(views).forEach((view) => {
+    view.hidden = true;
+    view.classList.remove("is-active");
+  });
+}
+
+function showView(name) {
+  hideAllViews();
+  const view = views[name];
+  view.hidden = false;
+  view.classList.add("is-active");
+}
+
+function setActiveTab(tab) {
+  tabButtons.forEach((btn) => {
+    const on = btn.dataset.tab === tab;
+    btn.classList.toggle("is-active", on);
+    if (on) btn.setAttribute("aria-current", "page");
+    else btn.removeAttribute("aria-current");
+  });
 }
 
 function renderOverview() {
@@ -28,7 +67,7 @@ function renderOverview() {
     .map(
       ([id, page]) => `
         <button class="overview-card" type="button" data-open="overview" data-id="${id}" onclick="openTarget('overview', '${id}')">
-          ${icon("placeholder", "card-icon")}
+          ${icon(page.icon || "placeholder", "card-icon")}
           <span class="card-label">
             ${page.title}
             <span class="card-count">${page.items}</span>
@@ -77,21 +116,56 @@ function renderEntryList(count) {
   return `<div class="workspace-list">${rows}</div>`;
 }
 
-function showHome() {
-  pageView.hidden = true;
-  homeView.hidden = false;
-  homeView.classList.add("is-active");
-  pageView.classList.remove("is-active");
-  history.replaceState({ view: "home" }, "", "#/");
+function showHome(replace = true) {
+  showView("home");
+  setActiveTab("home");
+  sourceView = "home";
+  const url = "#/";
+  if (replace) history.replaceState({ view: "home" }, "", url);
+  else history.pushState({ view: "home" }, "", url);
+}
+
+function showTab(tab, replace = false) {
+  searchInput.blur();
+  const url = tab === "home" ? "#/" : `#/${tab}`;
+  if (!replace && location.hash === url) {
+    if (tab === "home") {
+      showView("home");
+      setActiveTab("home");
+      sourceView = "home";
+    } else {
+      showView(tab);
+      setActiveTab(tab);
+      sourceView = tab;
+    }
+    return;
+  }
+
+  if (tab === "home") {
+    showHome(replace);
+    return;
+  }
+
+  showView(tab);
+  setActiveTab(tab);
+  sourceView = tab;
+  if (replace) history.replaceState({ view: tab }, "", url);
+  else history.pushState({ view: tab }, "", url);
+}
+
+function showSearch(replace = false) {
+  showView("search");
+  setActiveTab("");
+  sourceView = "search";
+  const url = "#/suchen";
+  if (replace || location.hash === url) history.replaceState({ view: "search" }, "", url);
+  else history.pushState({ view: "search" }, "", url);
 }
 
 function showPage(title, itemCount) {
   pageTitle.textContent = title;
   pageBody.innerHTML = renderEntryList(itemCount);
-  homeView.hidden = true;
-  pageView.hidden = false;
-  homeView.classList.remove("is-active");
-  pageView.classList.add("is-active");
+  showView("page");
 }
 
 function addWorkspace() {
@@ -112,81 +186,87 @@ function openTarget(open, id) {
     const page = pages.overview[id];
     if (!page) return;
     showPage(page.title, page.items);
-    history.pushState({ view: "overview", id }, "", `#/uebersicht/${id}`);
+    history.pushState({ view: "overview", id, from: sourceView }, "", `#/uebersicht/${id}`);
     return;
   }
 
   if (open === "workspace") {
     if (!openWorkspace(id)) return;
-    history.pushState({ view: "workspace", id }, "", `#/arbeitsbereich/${id}`);
+    history.pushState({ view: "workspace", id, from: sourceView }, "", `#/arbeitsbereich/${id}`);
     return;
   }
 
   const page = pages[open];
   if (!page) return;
   showPage(page.title, page.items);
-  history.pushState({ view: open }, "", `#/${open}`);
+  history.pushState({ view: open, from: sourceView }, "", `#/${open}`);
+}
+
+function restoreFrom(from) {
+  if (from === "search") {
+    showSearch(true);
+    return;
+  }
+  if (from && from !== "home" && views[from]) {
+    showTab(from, true);
+    return;
+  }
+  showHome(true);
 }
 
 document.getElementById("back-btn").addEventListener("click", (event) => {
   event.preventDefault();
-  showHome();
+  restoreFrom(sourceView);
+});
+
+tabButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    showTab(btn.dataset.tab);
+  });
+});
+
+document.getElementById("search-entry").addEventListener("click", () => {
+  showSearch();
+});
+
+searchInput.addEventListener("focus", () => {
+  showSearch();
 });
 
 window.addEventListener("popstate", (event) => {
   const state = event.state;
   if (!state || state.view === "home") {
-    showHome();
+    showHome(true);
+    return;
+  }
+  if (state.view === "search") {
+    showSearch(true);
+    return;
+  }
+  if (state.view === "calendar" || state.view === "media" || state.view === "settings") {
+    showTab(state.view, true);
     return;
   }
   if (state.view === "overview") {
     const page = pages.overview[state.id];
-    if (page) showPage(page.title, page.items);
+    if (page) {
+      sourceView = state.from || "home";
+      showPage(page.title, page.items);
+      setActiveTab(sourceView === "search" ? "" : sourceView === "home" ? "home" : sourceView);
+    }
     return;
   }
   if (state.view === "workspace") {
+    sourceView = state.from || "home";
     openWorkspace(state.id);
     return;
   }
   const page = pages[state.view];
-  if (page) showPage(page.title, page.items);
+  if (page) {
+    sourceView = state.from || "home";
+    showPage(page.title, page.items);
+  }
 });
-
-const composer = document.getElementById("composer");
-const composerInput = document.getElementById("composer-input");
-const typeScroll = document.getElementById("type-scroll");
-
-composer.addEventListener("click", (event) => {
-  if (event.target.closest("button")) return;
-  composerInput.focus();
-});
-
-typeScroll.addEventListener("click", (event) => {
-  const btn = event.target.closest(".type-btn");
-  if (!btn) return;
-
-  typeScroll.querySelectorAll(".type-btn").forEach((item) => {
-    item.classList.remove("is-active");
-    item.setAttribute("aria-pressed", "false");
-  });
-
-  btn.classList.add("is-active");
-  btn.setAttribute("aria-pressed", "true");
-  typeScroll.insertBefore(btn, typeScroll.firstChild);
-  typeScroll.scrollLeft = 0;
-});
-
-function pinComposerToKeyboard() {
-  const viewport = window.visualViewport;
-  if (!viewport) return;
-  const lift = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
-  document.documentElement.style.setProperty("--keyboard-lift", `${lift}px`);
-}
-
-if (window.visualViewport) {
-  window.visualViewport.addEventListener("resize", pinComposerToKeyboard);
-  window.visualViewport.addEventListener("scroll", pinComposerToKeyboard);
-}
 
 renderOverview();
 renderWorkspaces();

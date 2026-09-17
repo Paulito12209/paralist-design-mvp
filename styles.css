@@ -11,16 +11,10 @@
  * --title-size              -> Schriftgröße der großen Überschrift „Übersicht“
  * --icon-folder-plus-width  -> Breite des Ordner-Plus-Icons (Ordner mit Plus an der unteren linken Ecke)
  * --icon-folder-plus-height -> Höhe des Ordner-Plus-Icons
- * --composer-radius         -> Rundung der Eingabe-Karte unten
- * --composer-input-size     -> Schriftgröße im unteren Eingabefeld
- * --composer-side           -> Abstand der Eingabe-Karte zum linken und rechten Rand
- * --composer-bottom         -> Abstand der Eingabe-Karte zum unteren Rand
- * --composer-min-height     -> Mindesthöhe der Eingabe-Karte (Input oben, Buttons unten)
- * --composer-space          -> Extra-Platz am Ende der Liste, damit nichts hinter der Eingabe-Karte verschwindet
- * --composer-type-active    -> Farbe des gerade gewählten Typs (z.B. Aufgabe), aktuell blau
- * --composer-type-muted     -> hellere Farbe der nicht gewählten Typ-Icons
- * --composer-type-gap       -> Abstand zwischen den Typ-Icons in der unteren Leiste
- * --composer-fade           -> Breite des weichen Übergangs vor dem X-Button
+ * --tab-space               -> Extra-Platz am Ende der Seite, damit nichts hinter der Navigation verschwindet
+ * --tab-label-size          -> Schriftgröße der Wörter unter den Navigations-Icons
+ * --tab-add-size            -> Größe des runden Plus-Buttons in der Mitte der Navigation
+ * --search-meta-size        -> Schriftgröße der kleinen Infos unter Such-Einträgen (z.B. „Aufgabe · 78× geöffnet“)
  */
 
 :root {
@@ -36,17 +30,10 @@
   --title-size: 32px;
   --icon-folder-plus-width: 22px;
   --icon-folder-plus-height: 22px;
-  --composer-radius: 26px;
-  --composer-input-size: 16px;
-  --composer-side: 16px;
-  --composer-bottom: 12px;
-  --composer-min-height: 108px;
-  --composer-space: 148px;
-  --composer-type-active: #007aff;
-  --composer-type-muted: #8e8e93;
-  --composer-type-gap: 32px;
-  --composer-fade: 16px;
-  --keyboard-lift: 0px;
+  --tab-space: 96px;
+  --tab-label-size: 10px;
+  --tab-add-size: 42px;
+  --search-meta-size: 13px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -184,7 +171,7 @@ button {
 .content {
   flex: 1;
   overflow: auto;
-  padding: 8px 20px var(--composer-space);
+  padding: 8px 20px var(--tab-space);
   position: relative;
   scrollbar-width: none;
 }
@@ -360,125 +347,126 @@ button {
   padding: 8px 2px;
 }
 
+.search-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 58px;
+  padding: 10px 2px;
+  border-bottom: 0.5px solid var(--line); /* dünne Linie zwischen den Such-Einträgen */
+  text-align: left;
+}
+
+.search-row .icon:not(.chevron) {
+  width: 22px;
+  height: 22px;
+  color: #8e8e93;
+}
+
+.search-copy {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0; /* langer Titel soll in der Zeile bleiben und nicht die Icons wegdrücken */
+}
+
+.search-title {
+  font-size: 17px;
+  font-weight: 400;
+}
+
+.search-meta {
+  font-size: var(--search-meta-size);
+  color: var(--muted);
+}
+
+.search-row .chevron {
+  width: 16px;
+  height: 16px;
+  color: #c7c7cc;
+}
+
+.date-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  margin: 4px 2px 2px;
+}
+
 .bottom-bar {
-  /* bleibt unten im Gerät und liegt über der Seite, wie eine Navigationsleiste */
+  /* bleibt unten im Gerät und liegt über der Seite */
   position: absolute;
   left: 0;
   right: 0;
-  bottom: var(--keyboard-lift);
+  bottom: 0;
   z-index: 20;
-  padding-top: 20px;
-  padding-left: var(--composer-side);
-  padding-right: var(--composer-side);
-  padding-bottom: calc(var(--composer-bottom) + var(--safe-bottom));
-  background: linear-gradient(to top, var(--bg) 52%, transparent);
+  padding-top: 12px;
+  padding-left: 8px;
+  padding-right: 8px;
+  padding-bottom: calc(8px + var(--safe-bottom));
+  background: linear-gradient(to top, var(--bg) 72%, transparent);
 }
 
-.composer {
-  background: var(--card);
-  border-radius: var(--composer-radius);
-  min-height: var(--composer-min-height);
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  gap: 14px;
-  padding: 16px 16px 12px;
-  color: #aeaeb2;
-  box-shadow: var(--shadow);
-}
-
-.composer-input {
-  width: 100%;
-  border: 0;
-  outline: none; /* nimmt den blauen Fokus-Rahmen weg, damit das Feld wie im Screenshot aussieht */
-  background: transparent;
-  color: var(--text);
-  font-size: var(--composer-input-size);
-  min-height: 24px;
-}
-
-.composer-input::placeholder {
-  color: #aeaeb2;
-}
-
-.toolbar {
+.tab-bar {
   display: flex;
   align-items: center;
-  gap: 10px;
-  position: relative;
+  justify-content: space-between;
+  gap: 2px;
 }
 
-.media-btn,
-.close-btn,
-.type-btn {
-  width: 28px;
-  height: 28px;
+.tab-btn {
+  flex: 1;
+  min-width: 0; /* Labels wie „Einstellungen“ dürfen schmaler werden, statt die Leiste zu sprengen */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: var(--tab-label-size);
+  font-weight: 500;
+  padding: 4px 0;
+}
+
+.tab-btn span {
+  white-space: nowrap; /* sonst bricht „Einstellungen“ mitten im Wort um */
+}
+
+.tab-btn .icon {
+  width: 24px;
+  height: 24px;
+}
+
+.tab-btn.is-active {
+  color: var(--text);
+}
+
+.tab-btn:active {
+  opacity: 0.55;
+}
+
+.tab-add {
+  width: var(--tab-add-size);
+  height: var(--tab-add-size);
+  border-radius: 50%; /* macht den Plus-Button rund */
+  background: var(--card);
+  color: var(--add);
+  box-shadow: var(--shadow);
   display: grid;
   place-items: center;
   flex: 0 0 auto;
+  margin-left: 4px;
+  margin-right: 4px;
 }
 
-.media-btn,
-.close-btn {
-  color: var(--text);
-  background: var(--card);
-  z-index: 2; /* liegt über den scrollenden Typ-Icons am Rand */
-}
-
-.media-btn .icon,
-.close-btn .icon,
-.type-btn .icon {
+.tab-add .icon {
   width: 22px;
   height: 22px;
 }
 
-.type-scroll {
-  flex: 1;
-  display: flex;
-  align-items: center;
-  gap: var(--composer-type-gap);
-  min-width: 0; /* sonst kann die Leiste in Flex nicht seitlich scrollen */
-  overflow-x: auto; /* Typen seitlich weiterschieben, auch unter das X */
-  scrollbar-width: none;
-  padding-right: calc(var(--composer-fade) + 28px);
-}
-
-.type-scroll::-webkit-scrollbar {
-  display: none;
-}
-
-.type-btn {
-  color: var(--composer-type-muted);
-}
-
-.type-btn.is-active {
-  color: var(--composer-type-active);
-  position: sticky; /* das gewählte Icon bleibt links sichtbar, der Rest scrollt weg */
-  left: 0;
-  z-index: 1;
-  background: var(--card);
-  box-shadow: 8px 0 10px var(--card);
-}
-
-.toolbar-end {
-  position: absolute; /* liegt rechts über der Scroll-Leiste, Inhalt läuft darunter */
-  right: 0;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  align-items: center;
-  z-index: 3;
-  pointer-events: none; /* Klicks auf die Typ-Icons darunter bleiben möglich */
-}
-
-.toolbar-fade {
-  width: var(--composer-fade);
-  height: 28px;
-  background: linear-gradient(to right, transparent, var(--card));
-}
-
-.close-btn {
-  pointer-events: auto;
+.tab-add:active {
+  opacity: 0.55;
 }
 
 /* Echte Touch-Geräte (Handy/Tablet) erkennen statt nur Fensterbreite:
