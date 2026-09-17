@@ -40,6 +40,8 @@
  * --danger                  -> Rot für Löschen
  * --archive-color           -> Gelb für Archivieren
  * --link-color              -> Blau für Verknüpfen
+ * --tab-pill-size           -> Schriftgröße der Tab-Pillen über den Arbeitsbereichen
+ * --tab-pill-active-bg      -> Hintergrund der ausgewählten Tab-Pille
  */
 
 :root {
@@ -84,6 +86,8 @@
   --danger: #ff3b30;
   --archive-color: #ffc700;
   --link-color: #007aff;
+  --tab-pill-size: 15px;
+  --tab-pill-active-bg: rgba(60, 60, 67, 0.09);
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -714,6 +718,67 @@ button {
 
 .entry-body::placeholder {
   color: #c7c7cc;
+}
+
+/* Tab-Pillen über der Arbeitsbereich-Liste */
+.tab-pills {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0 2px 6px;
+  overflow-x: auto; /* overflow: viele Tabs sollen seitlich wegscrollen statt umzubrechen */
+  scrollbar-width: none;
+}
+
+.tab-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-pill {
+  padding: 6px 14px;
+  border-radius: 999px; /* border-radius: macht aus dem Knopf eine Pille */
+  font-size: var(--tab-pill-size);
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+
+/* Der ausgewählte Tab bekommt als einziger einen Hintergrund */
+.tab-pill.is-active {
+  background: var(--tab-pill-active-bg);
+  color: var(--text);
+}
+
+.tab-pill:active {
+  opacity: 0.55;
+}
+
+/* Beim Umbenennen steht an derselben Stelle ein Eingabefeld */
+.tab-pill-input {
+  border: 0;
+  outline: none;
+  background: var(--tab-pill-active-bg);
+  color: var(--text);
+  width: 96px;
+}
+
+.tab-pill-add {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+.tab-pill-add .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.tab-pill-add:active {
+  opacity: 0.55;
 }
 
 /* Wisch-Zeile: die Knöpfe liegen hinter der Zeile und kommen beim Ziehen zum Vorschein */
