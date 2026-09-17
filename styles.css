@@ -9,6 +9,8 @@
  * --line                    -> Farbe der dünnen Trennlinie unter Arbeitsbereichen
  * --shadow                  -> weicher Schatten unter Karten und Suche
  * --title-size              -> Schriftgröße der großen Überschrift „Übersicht“
+ * --top-bar-icon-width      -> Breite der Icons oben (Filter, Suche, Profil)
+ * --top-bar-icon-height     -> Höhe der Icons oben (Filter, Suche, Profil)
  * --icon-folder-plus-width  -> Breite des Ordner-Plus-Icons (Ordner mit Plus an der unteren linken Ecke)
  * --icon-folder-plus-height -> Höhe des Ordner-Plus-Icons
  * --tab-space               -> Extra-Platz am Ende der Seite, damit nichts hinter der Navigation verschwindet
@@ -28,6 +30,8 @@
   --radius-xl: 22px;
   --radius-lg: 18px;
   --title-size: 32px;
+  --top-bar-icon-width: 24px;
+  --top-bar-icon-height: 24px;
   --icon-folder-plus-width: 22px;
   --icon-folder-plus-height: 22px;
   --tab-space: 96px;
@@ -132,9 +136,12 @@ button {
   overflow: hidden;
 }
 
-.avatar .icon {
-  width: 22px;
-  height: 22px;
+/* Android Material: Standard-Icons 24×24 dp, hier Filter, Suche und Profil */
+.icon-btn .icon,
+.avatar .icon,
+.search-icon {
+  width: var(--top-bar-icon-width);
+  height: var(--top-bar-icon-height);
 }
 
 .search {
@@ -151,9 +158,7 @@ button {
 }
 
 .search-icon {
-  width: 16px;
-  height: 16px;
-  flex: 0 0 auto;
+  flex: 0 0 auto; /* Such-Icon soll nicht mit dem Textfeld mitwachsen */
 }
 
 .search input {
