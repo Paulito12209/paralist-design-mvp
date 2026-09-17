@@ -410,13 +410,21 @@ button {
   color: #1c1c1e;
 }
 
-@media (max-width: 460px) {
+/* Echte Touch-Geräte (Handy/Tablet) erkennen statt nur Fensterbreite:
+   so bleibt ein schmales Desktop-Fenster im Frame, und ein Handy im
+   "Desktop-Website"-Modus (meldet eine breite Viewport) verliert ihn trotzdem. */
+@media (hover: none) and (pointer: coarse) {
+  body {
+    background: var(--bg);
+  }
+
   .stage {
     padding: 0;
   }
 
   .device {
     width: 100%;
+    max-width: 100%;
     height: 100vh;
     height: 100dvh;
     border-radius: 0;
