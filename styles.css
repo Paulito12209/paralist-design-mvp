@@ -17,6 +17,10 @@
  * --composer-bottom         -> Abstand der Eingabe-Karte zum unteren Rand
  * --composer-min-height     -> Mindesthöhe der Eingabe-Karte (Input oben, Buttons unten)
  * --composer-space          -> Extra-Platz am Ende der Liste, damit nichts hinter der Eingabe-Karte verschwindet
+ * --composer-type-active    -> Farbe des gerade gewählten Typs (z.B. Aufgabe), aktuell blau
+ * --composer-type-muted     -> hellere Farbe der nicht gewählten Typ-Icons
+ * --composer-type-gap       -> Abstand zwischen den Typ-Icons in der unteren Leiste
+ * --composer-fade           -> Breite des weichen Übergangs vor dem X-Button
  */
 
 :root {
@@ -38,6 +42,10 @@
   --composer-bottom: 12px;
   --composer-min-height: 108px;
   --composer-space: 148px;
+  --composer-type-active: #007aff;
+  --composer-type-muted: #8e8e93;
+  --composer-type-gap: 32px;
+  --composer-fade: 16px;
   --keyboard-lift: 0px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -396,45 +404,81 @@ button {
 .toolbar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  gap: 10px;
+  position: relative;
 }
 
-.toolbar-cluster {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-}
-
-.plus-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  background: #1c1c1e;
-  color: #fff;
-  display: grid;
-  place-items: center;
-}
-
-.plus-btn .icon {
-  width: 18px;
-  height: 18px;
-}
-
-.tool-btn {
+.media-btn,
+.close-btn,
+.type-btn {
   width: 28px;
   height: 28px;
-  color: #3a3a3c;
   display: grid;
   place-items: center;
+  flex: 0 0 auto;
 }
 
-.tool-btn .icon {
+.media-btn,
+.close-btn {
+  color: var(--text);
+  background: var(--card);
+  z-index: 2; /* liegt über den scrollenden Typ-Icons am Rand */
+}
+
+.media-btn .icon,
+.close-btn .icon,
+.type-btn .icon {
   width: 22px;
   height: 22px;
 }
 
-.tool-btn-end {
-  color: #1c1c1e;
+.type-scroll {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--composer-type-gap);
+  min-width: 0; /* sonst kann die Leiste in Flex nicht seitlich scrollen */
+  overflow-x: auto; /* Typen seitlich weiterschieben, auch unter das X */
+  scrollbar-width: none;
+  padding-right: calc(var(--composer-fade) + 28px);
+}
+
+.type-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.type-btn {
+  color: var(--composer-type-muted);
+}
+
+.type-btn.is-active {
+  color: var(--composer-type-active);
+  position: sticky; /* das gewählte Icon bleibt links sichtbar, der Rest scrollt weg */
+  left: 0;
+  z-index: 1;
+  background: var(--card);
+  box-shadow: 8px 0 10px var(--card);
+}
+
+.toolbar-end {
+  position: absolute; /* liegt rechts über der Scroll-Leiste, Inhalt läuft darunter */
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  z-index: 3;
+  pointer-events: none; /* Klicks auf die Typ-Icons darunter bleiben möglich */
+}
+
+.toolbar-fade {
+  width: var(--composer-fade);
+  height: 28px;
+  background: linear-gradient(to right, transparent, var(--card));
+}
+
+.close-btn {
+  pointer-events: auto;
 }
 
 /* Echte Touch-Geräte (Handy/Tablet) erkennen statt nur Fensterbreite:

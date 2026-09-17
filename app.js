@@ -154,10 +154,26 @@ window.addEventListener("popstate", (event) => {
 
 const composer = document.getElementById("composer");
 const composerInput = document.getElementById("composer-input");
+const typeScroll = document.getElementById("type-scroll");
 
 composer.addEventListener("click", (event) => {
   if (event.target.closest("button")) return;
   composerInput.focus();
+});
+
+typeScroll.addEventListener("click", (event) => {
+  const btn = event.target.closest(".type-btn");
+  if (!btn) return;
+
+  typeScroll.querySelectorAll(".type-btn").forEach((item) => {
+    item.classList.remove("is-active");
+    item.setAttribute("aria-pressed", "false");
+  });
+
+  btn.classList.add("is-active");
+  btn.setAttribute("aria-pressed", "true");
+  typeScroll.insertBefore(btn, typeScroll.firstChild);
+  typeScroll.scrollLeft = 0;
 });
 
 function pinComposerToKeyboard() {
