@@ -9,6 +9,9 @@
  * --line                    -> Farbe der dünnen Trennlinie unter Arbeitsbereichen
  * --shadow                  -> weicher Schatten unter Karten und Suche
  * --title-size              -> Schriftgröße der großen Überschrift „Übersicht“
+ * --content-side            -> Abstand der Karten und Listen zum linken und rechten Rand
+ * --title-side              -> Extra-Abstand links/rechts für die große Überschrift und links für „Arbeitsbereiche“ (16 + 4 = 20 zum Rand)
+ * --workspace-head-gap      -> Abstand zwischen der Zeile „Arbeitsbereiche“ und dem ersten Eintrag darunter
  * --top-bar-icon-width      -> Breite der Icons oben (Filter, Suche, Profil)
  * --top-bar-icon-height     -> Höhe der Icons oben (Filter, Suche, Profil)
  * --icon-folder-plus-width  -> Breite des Ordner-Plus-Icons (Ordner mit Plus an der unteren linken Ecke)
@@ -17,6 +20,17 @@
  * --tab-label-size          -> Schriftgröße der Wörter unter den Navigations-Icons
  * --tab-add-size            -> Größe des runden Plus-Buttons in der Mitte der Navigation
  * --search-meta-size        -> Schriftgröße der kleinen Infos unter Such-Einträgen (z.B. „Aufgabe · 78× geöffnet“)
+ * --nav-side                -> Abstand der runden Navigationsleiste zum linken und rechten Rand
+ * --nav-bottom              -> Abstand der Navigationsleiste zum unteren Rand
+ * --nav-radius              -> Rundung der Navigationsleiste (hoher Wert = Pillenform)
+ * --composer-radius         -> Rundung des Eingabe-Containers beim Anlegen
+ * --composer-input-size     -> Schriftgröße im Eingabefeld
+ * --composer-chip-size      -> Schriftgröße des Verknüpfen-Knopfes oben links im Eingabefeld
+ * --entry-title-size        -> Schriftgröße des Titels auf der Editor-Seite
+ * --entry-body-size         -> Schriftgröße des Textes auf der Editor-Seite
+ * --swipe-action-width      -> Breite eines Wisch-Knopfes (Löschen, Archivieren, Verknüpfen)
+ * --danger                  -> Rot für Löschen
+ * --archive-color           -> Farbe für Archivieren
  */
 
 :root {
@@ -30,6 +44,9 @@
   --radius-xl: 22px;
   --radius-lg: 18px;
   --title-size: 32px;
+  --content-side: 16px;
+  --title-side: 4px;
+  --workspace-head-gap: 0px;
   --top-bar-icon-width: 24px;
   --top-bar-icon-height: 24px;
   --icon-folder-plus-width: 22px;
@@ -38,6 +55,17 @@
   --tab-label-size: 10px;
   --tab-add-size: 42px;
   --search-meta-size: 13px;
+  --nav-side: 12px;
+  --nav-bottom: 10px;
+  --nav-radius: 32px;
+  --composer-radius: 26px;
+  --composer-input-size: 16px;
+  --composer-chip-size: 13px;
+  --entry-title-size: 28px;
+  --entry-body-size: 16px;
+  --swipe-action-width: 64px;
+  --danger: #ff3b30;
+  --archive-color: #8e8e93;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -61,7 +89,8 @@ body {
 }
 
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 
@@ -176,8 +205,8 @@ button {
 .content {
   flex: 1;
   overflow: auto;
-  padding: 8px 20px var(--tab-space);
-  position: relative;
+  padding: 8px var(--content-side) var(--tab-space);
+  position: relative; /* position: damit der Scrollbereich fest im Gerät bleibt */
   scrollbar-width: none;
 }
 
@@ -199,6 +228,7 @@ button {
   letter-spacing: -0.04em;
   font-weight: 700;
   margin: 10px 0 18px;
+  padding: 0 var(--title-side);
 }
 
 .overview-grid {
@@ -250,7 +280,8 @@ button {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 28px 2px 10px;
+  margin: 28px 0 var(--workspace-head-gap);
+  padding-left: var(--title-side);
 }
 
 .section-head h2 {
@@ -343,6 +374,7 @@ button {
 
 .page-title {
   margin: 0;
+  padding: 0;
   flex: 1;
 }
 
@@ -401,17 +433,33 @@ button {
 }
 
 .bottom-bar {
-  /* bleibt unten im Gerät und liegt über der Seite */
+  /* position: liegt fest unten im Gerät über der Seite, statt mitzuscrollen */
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 20;
-  padding-top: 12px;
-  padding-left: 8px;
-  padding-right: 8px;
-  padding-bottom: calc(8px + var(--safe-bottom));
-  background: linear-gradient(to top, var(--bg) 72%, transparent);
+  z-index: 20; /* z-index: hält die Leiste über der Liste */
+  padding: 12px var(--nav-side) calc(var(--nav-bottom) + var(--safe-bottom));
+}
+
+/* Gemeinsamer Container: trägt sowohl die Navigation als auch das Eingabefeld */
+.nav-shell {
+  background: var(--card);
+  border-radius: var(--nav-radius); /* border-radius: macht die Leiste rund wie eine Pille */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(0, 0, 0, 0.12);
+  padding: 6px 8px;
+}
+
+/* Beim Anlegen wächst derselbe Container nach oben und wird eckiger */
+.nav-shell.is-composing {
+  border-radius: var(--composer-radius);
+  padding: 12px;
+}
+
+/* Beim Anlegen wird die Navigation ausgeblendet; ohne diese Zeile
+   würde das display:flex unten das hidden-Attribut überstimmen */
+.tab-bar[hidden] {
+  display: none;
 }
 
 .tab-bar {
@@ -454,10 +502,9 @@ button {
 .tab-add {
   width: var(--tab-add-size);
   height: var(--tab-add-size);
-  border-radius: 50%; /* macht den Plus-Button rund */
-  background: var(--card);
-  color: var(--add);
-  box-shadow: var(--shadow);
+  border-radius: 50%; /* border-radius: macht den Plus-Button rund */
+  background: var(--text);
+  color: var(--card);
   display: grid;
   place-items: center;
   flex: 0 0 auto;
@@ -472,6 +519,324 @@ button {
 
 .tab-add:active {
   opacity: 0.55;
+}
+
+/* Eingabefeld: sitzt im selben Container wie die Navigation */
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.composer[hidden] {
+  display: none;
+}
+
+/* Verknüpfen-Knopf oben links: wählt Arbeitsbereich oder Projekt */
+.composer-link {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px; /* border-radius: macht den Knopf zur kleinen Pille */
+  background: var(--bg);
+  color: var(--muted);
+  font-size: var(--composer-chip-size);
+  font-weight: 500;
+  max-width: 100%;
+}
+
+.composer-link span {
+  white-space: nowrap;
+}
+
+.composer-link .icon {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+}
+
+.composer-caret {
+  transform: rotate(90deg); /* transform: dreht den Pfeil nach unten, statt ein zweites Icon zu bauen */
+}
+
+.composer-input {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: var(--composer-input-size);
+  padding: 2px 4px 6px;
+}
+
+.composer-input::placeholder {
+  color: #aeaeb2;
+}
+
+.composer-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.composer-types {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+}
+
+.composer-type {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%; /* border-radius: macht die Typ-Knöpfe rund */
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+.composer-type .icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* Der gewählte Typ bleibt sichtbar hervorgehoben */
+.composer-type.is-active {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.composer-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%; /* border-radius: macht den Schließen-Knopf rund */
+  background: var(--bg);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.composer-close .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.composer-close:active,
+.composer-type:active {
+  opacity: 0.55;
+}
+
+/* Kopfzeile einer Seite: Zurück links, Drei-Punkte-Menü rechts */
+.head-btn {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  flex: 0 0 auto;
+  margin-left: auto; /* schiebt das Menü an den rechten Rand */
+}
+
+.head-btn .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.head-btn:active {
+  opacity: 0.55;
+}
+
+/* Editor-Seite: Titel und Text sind direkt bearbeitbar */
+.entry-crumb {
+  font-size: 15px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.entry-title {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: var(--entry-title-size);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  padding: 0 2px;
+  margin-bottom: 12px;
+}
+
+.entry-title::placeholder {
+  color: #c7c7cc;
+}
+
+.entry-body {
+  width: 100%;
+  min-height: 320px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: var(--entry-body-size);
+  line-height: 1.5;
+  padding: 0 2px;
+  resize: none; /* resize: verhindert den Ziehgriff, die Fläche ist ohnehin schon groß */
+}
+
+.entry-body::placeholder {
+  color: #c7c7cc;
+}
+
+/* Wisch-Zeile: die Knöpfe liegen hinter der Zeile und kommen beim Ziehen zum Vorschein */
+.swipe {
+  position: relative; /* position: nötig, damit die Knöpfe hinter der Zeile liegen können */
+  overflow: hidden; /* overflow: schneidet die Knöpfe ab, solange nicht gewischt wird */
+}
+
+.swipe-actions {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: stretch;
+}
+
+.swipe-actions-left {
+  left: 0;
+}
+
+.swipe-actions-right {
+  right: 0;
+}
+
+.swipe-action {
+  width: var(--swipe-action-width);
+  display: grid;
+  place-items: center;
+  color: var(--card);
+}
+
+.swipe-action .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.swipe-action-delete {
+  background: var(--danger);
+}
+
+.swipe-action-archive {
+  background: var(--archive-color);
+}
+
+.swipe-action-link {
+  background: var(--add);
+}
+
+.swipe-action:active {
+  opacity: 0.75;
+}
+
+/* Die Zeile selbst wird beim Ziehen zur Seite geschoben */
+.swipe-body {
+  position: relative; /* position: hält die Zeile über den Knöpfen */
+  background: var(--bg);
+  transform: translateX(0); /* transform: verschiebt die Zeile beim Wischen */
+  touch-action: pan-y; /* touch-action: senkrechtes Scrollen bleibt möglich, waagerechtes Wischen gehört uns */
+}
+
+.swipe-body.is-sliding {
+  transition: none; /* transition: beim Ziehen soll die Zeile direkt am Finger hängen */
+}
+
+.swipe-body:not(.is-sliding) {
+  transition: transform 0.22s ease; /* transition: sanftes Einrasten nach dem Loslassen */
+}
+
+.entry-row {
+  gap: 12px;
+}
+
+.entry-row .entry-type {
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+/* Auswahl-Blatt für Verknüpfen und Seitenmenü */
+.sheet-backdrop {
+  position: absolute; /* position: legt das Blatt über die ganze Gerätefläche */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 40; /* z-index: liegt über der Navigationsleiste */
+  background: rgba(0, 0, 0, 0.28);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 12px;
+}
+
+.sheet-backdrop[hidden] {
+  display: none;
+}
+
+.sheet {
+  background: var(--card);
+  border-radius: var(--composer-radius); /* border-radius: rundet das Blatt wie die übrigen Karten */
+  padding: 8px;
+  padding-bottom: calc(8px + var(--safe-bottom));
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.sheet-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 10px 12px 6px;
+}
+
+.sheet-options {
+  display: flex;
+  flex-direction: column;
+}
+
+.sheet-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border-radius: var(--radius-lg); /* border-radius: rundet die Zeile beim Antippen */
+  text-align: left;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.sheet-option .icon {
+  width: 20px;
+  height: 20px;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+.sheet-option.is-active {
+  background: var(--bg);
+}
+
+.sheet-option.is-danger,
+.sheet-option.is-danger .icon {
+  color: var(--danger);
+}
+
+.sheet-option:active {
+  background: var(--bg);
 }
 
 /* Echte Touch-Geräte (Handy/Tablet) erkennen statt nur Fensterbreite:
