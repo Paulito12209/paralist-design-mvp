@@ -152,6 +152,26 @@ window.addEventListener("popstate", (event) => {
   if (page) showPage(page.title, page.items);
 });
 
+const composer = document.getElementById("composer");
+const composerInput = document.getElementById("composer-input");
+
+composer.addEventListener("click", (event) => {
+  if (event.target.closest("button")) return;
+  composerInput.focus();
+});
+
+function pinComposerToKeyboard() {
+  const viewport = window.visualViewport;
+  if (!viewport) return;
+  const lift = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+  document.documentElement.style.setProperty("--keyboard-lift", `${lift}px`);
+}
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener("resize", pinComposerToKeyboard);
+  window.visualViewport.addEventListener("scroll", pinComposerToKeyboard);
+}
+
 renderOverview();
 renderWorkspaces();
 history.replaceState({ view: "home" }, "", "#/");

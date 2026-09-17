@@ -11,6 +11,12 @@
  * --title-size              -> Schriftgröße der großen Überschrift „Übersicht“
  * --icon-folder-plus-width  -> Breite des Ordner-Plus-Icons (Ordner mit Plus an der unteren linken Ecke)
  * --icon-folder-plus-height -> Höhe des Ordner-Plus-Icons
+ * --composer-radius         -> Rundung der Eingabe-Karte unten
+ * --composer-input-size     -> Schriftgröße im unteren Eingabefeld
+ * --composer-side           -> Abstand der Eingabe-Karte zum linken und rechten Rand
+ * --composer-bottom         -> Abstand der Eingabe-Karte zum unteren Rand
+ * --composer-min-height     -> Mindesthöhe der Eingabe-Karte (Input oben, Buttons unten)
+ * --composer-space          -> Extra-Platz am Ende der Liste, damit nichts hinter der Eingabe-Karte verschwindet
  */
 
 :root {
@@ -26,6 +32,13 @@
   --title-size: 32px;
   --icon-folder-plus-width: 22px;
   --icon-folder-plus-height: 22px;
+  --composer-radius: 26px;
+  --composer-input-size: 16px;
+  --composer-side: 16px;
+  --composer-bottom: 12px;
+  --composer-min-height: 108px;
+  --composer-space: 148px;
+  --keyboard-lift: 0px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -95,19 +108,15 @@ button {
   position: relative;
 }
 
-.top-bar,
-.bottom-bar {
-  flex: 0 0 auto;
-  padding-left: 16px;
-  padding-right: 16px;
-}
-
 .top-bar {
+  flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: 10px;
   padding-top: calc(18px + var(--safe-top));
   padding-bottom: 8px;
+  padding-left: 16px;
+  padding-right: 16px;
 }
 
 .icon-btn,
@@ -167,7 +176,7 @@ button {
 .content {
   flex: 1;
   overflow: auto;
-  padding: 8px 20px 16px;
+  padding: 8px 20px var(--composer-space);
   position: relative;
   scrollbar-width: none;
 }
@@ -344,32 +353,50 @@ button {
 }
 
 .bottom-bar {
-  padding-top: 10px;
-  padding-bottom: calc(16px + var(--safe-bottom));
-  background: rgba(255, 255, 255, 0.72);
-  backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
-  box-shadow: 0 -8px 30px rgba(0, 0, 0, 0.03);
+  /* bleibt unten im Gerät und liegt über der Seite, wie eine Navigationsleiste */
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--keyboard-lift);
+  z-index: 20;
+  padding-top: 20px;
+  padding-left: var(--composer-side);
+  padding-right: var(--composer-side);
+  padding-bottom: calc(var(--composer-bottom) + var(--safe-bottom));
+  background: linear-gradient(to top, var(--bg) 52%, transparent);
 }
 
 .composer {
   background: var(--card);
-  border-radius: 22px;
-  min-height: 52px;
+  border-radius: var(--composer-radius);
+  min-height: var(--composer-min-height);
   display: flex;
-  align-items: center;
-  padding: 0 18px;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 16px 16px 12px;
   color: #aeaeb2;
   box-shadow: var(--shadow);
-  font-size: 16px;
+}
+
+.composer-input {
+  width: 100%;
+  border: 0;
+  outline: none; /* nimmt den blauen Fokus-Rahmen weg, damit das Feld wie im Screenshot aussieht */
+  background: transparent;
+  color: var(--text);
+  font-size: var(--composer-input-size);
+  min-height: 24px;
+}
+
+.composer-input::placeholder {
+  color: #aeaeb2;
 }
 
 .toolbar {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 12px;
-  padding: 0 4px;
 }
 
 .toolbar-cluster {

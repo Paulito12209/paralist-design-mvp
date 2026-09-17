@@ -119,31 +119,41 @@
         </main>
 
         <footer class="bottom-bar">
-          <div class="composer">Platzhalter</div>
-          <div class="toolbar">
-            <div class="toolbar-cluster">
-              <button class="plus-btn" type="button" aria-label="Hinzufügen">
-                <svg class="icon"><use href="#icon-plus"></use></svg>
-              </button>
-              <button class="tool-btn" type="button" data-open="aufgaben" aria-label="Aufgaben" onclick="openTarget('aufgaben')">
-                <svg class="icon"><use href="#icon-task"></use></svg>
-              </button>
-              <button class="tool-btn" type="button" data-open="notizen" aria-label="Notizen" onclick="openTarget('notizen')">
-                <svg class="icon"><use href="#icon-note"></use></svg>
-              </button>
-              <button class="tool-btn" type="button" data-open="termine" aria-label="Termine" onclick="openTarget('termine')">
-                <svg class="icon"><use href="#icon-calendar"></use></svg>
-              </button>
-              <button class="tool-btn" type="button" aria-label="Menü 1">
-                <svg class="icon"><use href="#icon-placeholder"></use></svg>
-              </button>
-              <button class="tool-btn" type="button" aria-label="Menü 2">
-                <svg class="icon"><use href="#icon-person"></use></svg>
+          <div class="composer" id="composer">
+            <!-- input: nötig, damit man im unteren Feld wirklich schreiben kann -->
+            <input
+              class="composer-input"
+              id="composer-input"
+              type="text"
+              placeholder="Platzhalter"
+              aria-label="Eingabe"
+              autocomplete="off"
+            />
+            <div class="toolbar">
+              <div class="toolbar-cluster">
+                <button class="plus-btn" type="button" aria-label="Hinzufügen">
+                  <svg class="icon"><use href="#icon-plus"></use></svg>
+                </button>
+                <button class="tool-btn" type="button" data-open="aufgaben" aria-label="Aufgaben" onclick="openTarget('aufgaben')">
+                  <svg class="icon"><use href="#icon-task"></use></svg>
+                </button>
+                <button class="tool-btn" type="button" data-open="notizen" aria-label="Notizen" onclick="openTarget('notizen')">
+                  <svg class="icon"><use href="#icon-note"></use></svg>
+                </button>
+                <button class="tool-btn" type="button" data-open="termine" aria-label="Termine" onclick="openTarget('termine')">
+                  <svg class="icon"><use href="#icon-calendar"></use></svg>
+                </button>
+                <button class="tool-btn" type="button" aria-label="Menü 1">
+                  <svg class="icon"><use href="#icon-placeholder"></use></svg>
+                </button>
+                <button class="tool-btn" type="button" aria-label="Menü 2">
+                  <svg class="icon"><use href="#icon-person"></use></svg>
+                </button>
+              </div>
+              <button class="tool-btn tool-btn-end" type="button" aria-label="Menü 3">
+                <svg class="icon"><use href="#icon-wave"></use></svg>
               </button>
             </div>
-            <button class="tool-btn tool-btn-end" type="button" aria-label="Menü 3">
-              <svg class="icon"><use href="#icon-wave"></use></svg>
-            </button>
           </div>
         </footer>
       </div>
