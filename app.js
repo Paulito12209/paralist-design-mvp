@@ -446,9 +446,13 @@ function openParentPicker(title, current, onPick) {
 
 let drag = null;
 
-function actionWidth() {
-  const value = getComputedStyle(document.documentElement).getPropertyValue("--swipe-action-width");
-  return parseInt(value, 10) || 64;
+/* Wie weit die Zeile aufgehen darf: ein Knopf rechts, zwei links,
+   jeweils mit Abstand davor und dahinter */
+function swipeLimits() {
+  const styles = getComputedStyle(document.documentElement);
+  const size = parseInt(styles.getPropertyValue("--swipe-action-size"), 10) || 44;
+  const gap = parseInt(styles.getPropertyValue("--swipe-action-gap"), 10) || 10;
+  return { right: size + gap * 2, left: size * 2 + gap * 3 };
 }
 
 function setSwipe(body, x) {
@@ -490,8 +494,8 @@ content.addEventListener("pointermove", (event) => {
   }
   if (drag.axis !== "x") return;
 
-  const width = actionWidth();
-  const next = Math.max(-width, Math.min(width * 2, drag.start + dx));
+  const limits = swipeLimits();
+  const next = Math.max(-limits.right, Math.min(limits.left, drag.start + dx));
   setSwipe(drag.body, next);
 });
 
@@ -501,10 +505,10 @@ function endDrag() {
   drag = null;
   body.classList.remove("is-sliding");
 
-  const width = actionWidth();
+  const limits = swipeLimits();
   const x = Number(body.dataset.x || 0);
-  if (x <= -width / 2) setSwipe(body, -width);
-  else if (x >= width) setSwipe(body, width * 2);
+  if (x <= -limits.right / 2) setSwipe(body, -limits.right);
+  else if (x >= limits.left / 2) setSwipe(body, limits.left);
   else setSwipe(body, 0);
 }
 

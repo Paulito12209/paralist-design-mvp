@@ -28,9 +28,11 @@
  * --composer-chip-size      -> Schriftgröße des Verknüpfen-Knopfes oben links im Eingabefeld
  * --entry-title-size        -> Schriftgröße des Titels auf der Editor-Seite
  * --entry-body-size         -> Schriftgröße des Textes auf der Editor-Seite
- * --swipe-action-width      -> Breite eines Wisch-Knopfes (Löschen, Archivieren, Verknüpfen)
+ * --swipe-action-size       -> Größe der runden Wisch-Knöpfe (Löschen, Archivieren, Verknüpfen)
+ * --swipe-action-gap        -> Abstand zwischen den runden Wisch-Knöpfen und zum Rand
  * --danger                  -> Rot für Löschen
- * --archive-color           -> Farbe für Archivieren
+ * --archive-color           -> Gelb für Archivieren
+ * --link-color              -> Blau für Verknüpfen
  */
 
 :root {
@@ -63,9 +65,11 @@
   --composer-chip-size: 13px;
   --entry-title-size: 28px;
   --entry-body-size: 16px;
-  --swipe-action-width: 64px;
+  --swipe-action-size: 44px;
+  --swipe-action-gap: 10px;
   --danger: #ff3b30;
-  --archive-color: #8e8e93;
+  --archive-color: #ffc700;
+  --link-color: #007aff;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -703,7 +707,9 @@ button {
   top: 0;
   bottom: 0;
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  gap: var(--swipe-action-gap);
+  padding: 0 var(--swipe-action-gap);
 }
 
 .swipe-actions-left {
@@ -714,16 +720,20 @@ button {
   right: 0;
 }
 
+/* Runde, farbige Knöpfe, die beim Wischen hinter der Zeile auftauchen */
 .swipe-action {
-  width: var(--swipe-action-width);
+  width: var(--swipe-action-size);
+  height: var(--swipe-action-size);
+  border-radius: 50%; /* border-radius: macht die Knöpfe zu Kreisen */
   display: grid;
   place-items: center;
   color: var(--card);
+  flex: 0 0 auto;
 }
 
 .swipe-action .icon {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
 }
 
 .swipe-action-delete {
@@ -735,7 +745,7 @@ button {
 }
 
 .swipe-action-link {
-  background: var(--add);
+  background: var(--link-color);
 }
 
 .swipe-action:active {
