@@ -337,68 +337,6 @@ button {
   flex: 1;
 }
 
-.entry-list {
-  background: var(--card);
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  box-shadow: var(--shadow);
-}
-
-.entry-row {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 14px;
-  text-align: left;
-  border-bottom: 0.5px solid var(--line);
-}
-
-.entry-row:last-child {
-  border-bottom: 0;
-}
-
-.entry-icon {
-  width: 36px;
-  height: 36px;
-  border-radius: 10px;
-  background: #f2f2f7;
-  color: #c7c7cc;
-  display: grid;
-  place-items: center;
-  flex: 0 0 auto;
-}
-
-.entry-icon .icon {
-  width: 18px;
-  height: 18px;
-}
-
-.entry-copy {
-  flex: 1;
-  min-width: 0;
-}
-
-.entry-copy strong {
-  display: block;
-  font-size: 16px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-}
-
-.entry-copy small {
-  display: block;
-  margin-top: 2px;
-  color: var(--muted);
-  font-size: 13px;
-}
-
-.entry-row .chevron {
-  width: 14px;
-  height: 14px;
-  color: #c7c7cc;
-}
-
 .empty-note {
   color: var(--muted);
   font-size: 15px;

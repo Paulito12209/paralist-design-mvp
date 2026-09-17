@@ -66,18 +66,15 @@ function renderEntryList(count) {
   const rows = Array.from({ length: count }, (_, index) => {
     const n = index + 1;
     return `
-      <button class="entry-row" type="button">
-        <span class="entry-icon">${icon("placeholder")}</span>
-        <span class="entry-copy">
-          <strong>Eintrag ${n}</strong>
-          <small>Platzhalter</small>
-        </span>
+      <button class="workspace-row" type="button">
+        ${icon("placeholder")}
+        <span>Eintrag ${n}</span>
         ${icon("chevron", "chevron")}
       </button>
     `;
   }).join("");
 
-  return `<div class="entry-list">${rows}</div>`;
+  return `<div class="workspace-list">${rows}</div>`;
 }
 
 function showHome() {
