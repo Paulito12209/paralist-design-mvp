@@ -9,15 +9,16 @@
  */
 
 import { dom, el } from "../../core/dom.js";
-import { escapeHtml, icon } from "../../core/html.js";
+import { escapeHtml } from "../../core/html.js";
 import { entriesOf, findWorkspace } from "../../data/queries.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { groupedListMarkup } from "../../ui/groups.js";
 
-/* Die beiden Pillen; die zweite trägt die Anzahl der Einträge. */
+/* Die beiden Pillen; die zweite trägt die Anzahl der Einträge. Kein Icon:
+   es wird nie mehr als diese zwei geben, das Wort allein reicht. */
 const pills = [
-  { id: "notes", label: "Schreibblock", icon: "note" },
-  { id: "links", label: "Verknüpfte Inhalte", icon: "link" },
+  { id: "notes", label: "Schreibblock" },
+  { id: "links", label: "Verknüpfte Inhalte" },
 ];
 
 function pillsMarkup(active, count) {
@@ -25,7 +26,7 @@ function pillsMarkup(active, count) {
     .map(
       (pill) => `
         <button class="tab-pill${pill.id === active ? " is-active" : ""}" type="button" data-page-pill="${pill.id}">
-          ${icon(pill.icon, "tab-pill-icon")}${pill.label}${pill.id === "links" && count ? `<span class="media-count">${count}</span>` : ""}
+          ${pill.label}${pill.id === "links" && count ? `<span class="media-count">${count}</span>` : ""}
         </button>`
     )
     .join("")}</div>`;
