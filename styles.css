@@ -410,6 +410,7 @@ button {
 
 .search {
   flex: 1;
+  min-width: 0; /* min-width: die Suche darf schmaler als „Suchen“ werden, statt Level und Profil wegzudrücken */
   height: var(--search-bar-height);
   background: var(--card);
   border-radius: var(--search-bar-radius); /* Pillenform; Höhe allein macht die Ecken nicht rund */
@@ -427,10 +428,15 @@ button {
 
 .search input {
   width: 100%;
+  min-width: 0;
   border: 0;
   outline: none;
   background: transparent;
   color: var(--text);
+  /* text-overflow: bei ganz schmalen Geräten wird „Suchen“ zu „Suc…“ statt hart abgeschnitten */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .search input::placeholder {
@@ -472,11 +478,13 @@ button {
 
 .overview-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  /* minmax(0, 1fr): sonst darf eine Spalte mit langem Wort („Ressourcen“) breiter werden als die andere */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 12px;
 }
 
 .overview-card {
+  min-width: 0; /* min-width: die Kachel darf schmaler als ihr Text werden, damit beide Spalten gleich bleiben */
   background: var(--card);
   border-radius: var(--radius-lg);
   min-height: 118px;
@@ -528,6 +536,8 @@ button {
   flex-wrap: wrap;
   align-items: baseline;
   gap: 0.35em;
+  max-width: 100%;
+  overflow-wrap: anywhere; /* overflow-wrap: auf sehr schmalen Geräten bricht „Ressourcen“ um, statt aus der Kachel zu laufen */
 }
 
 .card-count {
@@ -748,6 +758,7 @@ button {
   bottom: var(--keyboard-inset); /* bottom: beim Tippen rueckt die Leiste ueber die Tastatur */
   z-index: 20; /* z-index: hält die Leiste über der Liste */
   padding: 12px var(--nav-side) calc(var(--nav-bottom) + var(--safe-bottom));
+  container-type: inline-size; /* container-type: die Navigation darf auf ihre eigene Breite reagieren, nicht nur aufs Fenster */
 }
 
 /* Gemeinsamer Container: trägt sowohl die Navigation als auch das Eingabefeld */
@@ -794,6 +805,16 @@ button {
 
 .tab-btn span {
   white-space: nowrap; /* sonst bricht „Einstellungen“ mitten im Wort um */
+}
+
+/* Unter dieser Breite passen die Untertitel nicht mehr nebeneinander:
+   dann bleiben nur die Icons, statt „Einstellungen“ zu quetschen oder mit … zu kürzen.
+   Gemessen wird die Innenbreite der Leiste (Gerät minus 2 × 12px), 344px entspricht
+   einem 368px breiten Gerät: 360er-Androids verlieren die Labels, iPhones ab 375px behalten sie */
+@container (max-width: 344px) {
+  .tab-btn span {
+    display: none;
+  }
 }
 
 .tab-btn .icon {
@@ -989,9 +1010,11 @@ button {
 
 .composer-chips .composer-link {
   min-width: 0; /* lange Namen kürzen sich, statt die Zeile zu sprengen */
+  flex: 0 1 auto;
 }
 
 .composer-chips .composer-link span {
+  min-width: 0; /* min-width: ohne das schrumpft der Text nicht und der Anlegen-Knopf rutscht in die nächste Zeile */
   overflow: hidden;
   text-overflow: ellipsis;
 }
@@ -1019,6 +1042,17 @@ button {
 .composer-send .icon {
   width: 20px;
   height: 20px;
+}
+
+/* Ohne Text und ohne Anhang gibt es nichts anzulegen: dann ist der Knopf grau statt schwarz */
+.composer-send:disabled {
+  background: var(--bg);
+  color: var(--placeholder);
+  cursor: default;
+}
+
+.composer-send:disabled:active {
+  opacity: 1;
 }
 
 /* Plus links neben den Typ-Knöpfen: hängt Medien an, darum eigener grauer Kreis
@@ -2781,6 +2815,13 @@ button {
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
   overflow-wrap: anywhere; /* overflow-wrap: lange Dateinamen ohne Leerzeichen dürfen umbrechen */
+}
+
+/* Audio-Kachel mit Dauer-Schild: Name rückt hoch und bekommt schmalere Ränder,
+   sonst läuft „Sprachmemo“ auf schmalen Geräten unter das Schild */
+.media-cell:has(.media-badge) .media-doc {
+  padding: 8px 6px 26px;
+  gap: 6px;
 }
 
 /* Kleines Schild unten rechts: Dauer eines Videos oder einer Aufnahme */

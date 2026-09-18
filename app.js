@@ -840,6 +840,7 @@ function attachmentThumbMarkup(item) {
 
 function renderComposerAttachments() {
   composerAttachments.hidden = !composerFiles.length;
+  updateComposerSend();
   composerAttachments.innerHTML = composerFiles
     .map(
       (item) => `
@@ -924,7 +925,13 @@ function openComposer() {
   renderComposerTypes();
   renderComposerLink();
   renderComposerAttachments();
+  updateComposerSend();
   composerInput.focus();
+}
+
+/* Anlegen-Knopf: erst aktiv, wenn Text da ist oder ein Anhang den Titel liefern kann */
+function updateComposerSend() {
+  composerSend.disabled = !composerInput.value.trim() && !composerFiles.length;
 }
 
 function closeComposer() {
@@ -3653,6 +3660,7 @@ composerMic.addEventListener("click", () => {
       .join("")
       .trim();
     composerInput.value = typed && spoken ? `${typed} ${spoken}` : typed || spoken;
+    updateComposerSend();
   };
   dictation.onend = () => {
     dictation = null;
@@ -3664,6 +3672,8 @@ composerMic.addEventListener("click", () => {
 });
 
 composerSend.addEventListener("click", createEntry);
+
+composerInput.addEventListener("input", updateComposerSend);
 
 composerInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
