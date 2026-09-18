@@ -461,6 +461,8 @@
             </div>
             <!-- input/textarea: noetig, damit Titel und Text wirklich bearbeitbar sind -->
             <input class="entry-title" id="entry-title" type="text" placeholder="Ohne Titel" aria-label="Titel" />
+            <!-- Anhänge des Eintrags: Kacheln wie auf der Medien-Seite -->
+            <div class="entry-attachments" id="entry-attachments" hidden></div>
             <textarea class="entry-body" id="entry-body" placeholder="Schreib etwas …" aria-label="Inhalt"></textarea>
             <!-- canvas: Zeichenfläche statt des Textes bei Einträgen vom Typ Zeichnung -->
             <div class="draw-pad" id="draw-pad" hidden>
@@ -581,6 +583,8 @@
 
           <!-- composer: ersetzt die Navigation im selben Container beim Anlegen -->
           <div class="composer" id="composer" hidden>
+            <!-- Anhänge: Vorschauen der gewählten Medien über den Pillen -->
+            <div class="composer-attachments" id="composer-attachments" hidden></div>
             <div class="composer-chips">
               <button class="composer-link" type="button" id="composer-link">
                 <svg class="icon"><use href="#icon-link"></use></svg>
@@ -603,6 +607,10 @@
               autocomplete="off"
             />
             <div class="composer-tools">
+              <!-- Plus vor den Typ-Knöpfen: hängt Foto, Video, Audio oder Datei an den Eintrag -->
+              <button class="composer-attach" type="button" id="composer-attach" aria-label="Medien hinzufügen">
+                <svg class="icon"><use href="#icon-plus"></use></svg>
+              </button>
               <div class="composer-types" id="composer-types"></div>
               <div class="composer-end">
                 <!-- Anlegen-Knopf: legt den Eintrag an, auch ohne Enter-Taste auf dem Handy -->
@@ -614,6 +622,11 @@
                 </button>
               </div>
             </div>
+            <!-- eigene Dateifelder für den Anhang, damit die Medien-Seite ihre eigenen behält -->
+            <input id="composer-file-photo" type="file" accept="image/*" capture="environment" hidden />
+            <input id="composer-file-video" type="file" accept="video/*" capture="environment" hidden />
+            <input id="composer-file-audio" type="file" accept="audio/*" multiple hidden />
+            <input id="composer-file-import" type="file" multiple hidden />
           </div>
           </div>
         </footer>

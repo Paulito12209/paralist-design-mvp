@@ -24,9 +24,12 @@ const composerTypePill = document.getElementById("composer-type-pill");
 const composerTypeIcon = document.getElementById("composer-type-icon");
 const composerTypeLabel = document.getElementById("composer-type-label");
 const composerSend = document.getElementById("composer-send");
+const composerAttach = document.getElementById("composer-attach");
+const composerAttachments = document.getElementById("composer-attachments");
 
 const entryTitle = document.getElementById("entry-title");
 const entryBody = document.getElementById("entry-body");
+const entryAttachments = document.getElementById("entry-attachments");
 const entryCrumb = document.getElementById("entry-crumb");
 
 const sheet = document.getElementById("sheet");
@@ -133,6 +136,8 @@ let currentEntryId = null;
 let composerType = types[0].id;
 let composerPick = types[0].id;
 let composerParent = null;
+let composerFiles = []; /* Anhänge des offenen Eingabefelds; erst beim Anlegen werden daraus Medien */
+let nextComposerFileId = 1;
 let sheetActions = [];
 let ctxActions = [];
 let skipClick = false;
@@ -739,6 +744,7 @@ function openEntry(id, push = true) {
   entryTitle.value = entry.title;
   entryBody.value = entry.body || "";
   entryCrumb.textContent = parentName(entry.parent);
+  renderEntryAttachments(entry);
   showView("entry");
   /* Zeichnungen zeigen statt des Textes die Zeichenfläche */
   const drawing = entry.type === "zeichnung";
@@ -806,6 +812,92 @@ function renderComposerLink() {
   composerLinkLabel.textContent = parentName(composerParent);
 }
 
+/* ---------- Anhänge ---------- */
+
+/* Kachel eines Anhangs: Bild oder Videovorschau, sonst Icon mit Name */
+function attachmentThumbMarkup(item) {
+  const title = escapeHtml(item.title);
+  if (item.thumb) return `<img class="attach-img" src="${item.thumb}" alt="${title}" />`;
+  const icons = { image: "image", video: "video", audio: "wave", doc: "doc" };
+  return `<span class="attach-file">${icon(icons[item.kind] || "doc", "attach-file-icon")}<span class="attach-file-name">${title}</span></span>`;
+}
+
+function renderComposerAttachments() {
+  composerAttachments.hidden = !composerFiles.length;
+  composerAttachments.innerHTML = composerFiles
+    .map(
+      (item) => `
+        <div class="composer-attachment">
+          ${attachmentThumbMarkup(item)}
+          <button class="composer-attachment-remove" type="button" data-drop-attachment="${item.id}" aria-label="${escapeHtml(item.title)} entfernen">
+            ${icon("close")}
+          </button>
+        </div>
+      `
+    )
+    .join("");
+}
+
+/* Dateien werden nur vorbereitet; der Eintrag entsteht erst beim Anlegen */
+async function addComposerFiles(fileList, source) {
+  const files = Array.from(fileList || []);
+  for (const file of files) {
+    const kind = fileKind(file);
+    const item = {
+      id: nextComposerFileId++,
+      kind,
+      title: fileTitle(file, kind, source),
+      name: file.name || "",
+      size: file.size || 0,
+      mime: file.type || "",
+      duration: 0,
+      thumb: null,
+    };
+    if (kind === "image") {
+      item.thumb = await imageThumb(file);
+    } else if (kind === "video") {
+      const result = await videoThumb(file);
+      item.thumb = result.thumb;
+      item.duration = result.duration;
+    } else if (kind === "audio") {
+      item.duration = await audioDuration(file);
+    }
+    composerFiles.push(item);
+    renderComposerAttachments();
+  }
+}
+
+/* Jeder Anhang wird ein Medien-Eintrag; der neue Eintrag merkt sich ihre Nummern */
+function attachFilesTo(entry) {
+  if (!composerFiles.length) return;
+  entry.attachments = composerFiles.map((item) => {
+    const media = {
+      id: nextEntryId++,
+      type: "medien",
+      title: item.title,
+      body: "",
+      parent: entry.parent,
+      archived: false,
+      favorite: false,
+      createdAt: Date.now(),
+      media: { kind: item.kind, name: item.name, size: item.size, mime: item.mime, duration: item.duration },
+    };
+    if (item.thumb) mediaThumbs[media.id] = item.thumb;
+    entries.push(media);
+    logXp("created", "medien", media.title);
+    return media.id;
+  });
+  saveThumbs();
+}
+
+function renderEntryAttachments(entry) {
+  const list = (entry.attachments || [])
+    .map((id) => entries.find((item) => String(item.id) === String(id)))
+    .filter((item) => item && !item.archived);
+  entryAttachments.hidden = !list.length;
+  entryAttachments.innerHTML = list.length ? `<div class="media-grid">${list.map(mediaCell).join("")}</div>` : "";
+}
+
 function openComposer() {
   closeCtxMenu();
   navShell.classList.add("is-composing");
@@ -815,6 +907,7 @@ function openComposer() {
   drawTools.hidden = true;
   renderComposerTypes();
   renderComposerLink();
+  renderComposerAttachments();
   composerInput.focus();
 }
 
@@ -826,11 +919,14 @@ function closeComposer() {
   mediaActions.hidden = false;
   drawTools.hidden = false;
   composerInput.value = "";
+  composerFiles = [];
+  renderComposerAttachments();
   calSlot = null;
 }
 
 function createEntry() {
-  const title = composerInput.value.trim();
+  /* Ohne Titel reicht ein Anhang: dann heißt der Eintrag wie die erste Datei */
+  const title = composerInput.value.trim() || (composerFiles[0] ? composerFiles[0].title : "");
   if (!title) return;
   const entry = {
     id: nextEntryId++,
@@ -849,12 +945,11 @@ function createEntry() {
     }
   }
   entries.push(entry);
+  attachFilesTo(entry);
   awardXp("created", composerType, title);
   composerInput.value = "";
   closeComposer();
-  renderOverview();
-  renderPageBody();
-  renderCalendar();
+  refreshLists();
   /* Eine neue Zeichnung öffnet sich gleich, damit man sofort loslegen kann */
   if (entry.type === "zeichnung") openEntry(entry.id);
 }
@@ -3491,6 +3586,31 @@ composerTypePill.addEventListener("click", () => {
       },
     }))
   );
+});
+
+/* Plus im Eingabefeld: dieselben Quellen wie auf der Medien-Seite */
+composerAttach.addEventListener("click", () => {
+  openSheet("Medien hinzufügen", [
+    { label: "Foto aufnehmen", icon: "camera", onSelect: () => document.getElementById("composer-file-photo").click() },
+    { label: "Video aufnehmen", icon: "video", onSelect: () => document.getElementById("composer-file-video").click() },
+    { label: "Audio hinzufügen", icon: "mic", onSelect: () => document.getElementById("composer-file-audio").click() },
+    { label: "Importieren", icon: "import", onSelect: () => document.getElementById("composer-file-import").click() },
+  ]);
+});
+
+["photo", "video", "audio", "import"].forEach((source) => {
+  const input = document.getElementById(`composer-file-${source}`);
+  input.addEventListener("change", () => {
+    addComposerFiles(input.files, source);
+    input.value = "";
+  });
+});
+
+composerAttachments.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-drop-attachment]");
+  if (!button) return;
+  composerFiles = composerFiles.filter((item) => String(item.id) !== button.dataset.dropAttachment);
+  renderComposerAttachments();
 });
 
 composerSend.addEventListener("click", createEntry);
