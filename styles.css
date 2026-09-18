@@ -55,7 +55,6 @@
  * --level-color             -> Silberblau der Level-Anzeige oben links (Striche, Zahl, „Lv.“)
  * --level-dim               -> Farbe der noch nicht erreichten Striche der Level-Anzeige
  * --level-glow              -> Leuchten um die Level-Anzeige (nur im Dunkelmodus sichtbar)
- * --xp-answered             -> Magenta für „Richtig beantwortet“ (Karteikarten, kommt später)
  * --xp-created              -> Blau für „Angelegt“
  * --xp-done                 -> Grün für „Erledigt“
  * --xp-line                 -> Orange der Verlaufskurve im Fortschritt-Blatt
@@ -121,7 +120,6 @@
   --level-color: #4d72ad;
   --level-dim: rgba(77, 114, 173, 0.22);
   --level-glow: transparent;
-  --xp-answered: #c23fe0;
   --xp-created: #007aff;
   --xp-done: #34c759;
   --xp-line: #ff9500;
@@ -148,7 +146,6 @@
   --level-color: #a9c9ff;
   --level-dim: rgba(169, 201, 255, 0.2);
   --level-glow: rgba(120, 170, 255, 0.75);
-  --xp-answered: #d94ff2;
   --xp-created: #0a84ff;
   --xp-done: #30d158;
   --xp-line: #ff9f0a;
@@ -173,7 +170,6 @@
   --level-color: #a9c9ff;
   --level-dim: rgba(169, 201, 255, 0.2);
   --level-glow: rgba(120, 170, 255, 0.75);
-  --xp-answered: #d94ff2;
   --xp-created: #0a84ff;
   --xp-done: #30d158;
   --xp-line: #ff9f0a;

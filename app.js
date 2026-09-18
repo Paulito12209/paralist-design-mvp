@@ -72,9 +72,8 @@ const presetIcons = [
 const storageKey = "paralist-mvp";
 const themeKey = "paralist-theme";
 
-/* XP-Arten: „answered“ ist für Karteikarten reserviert, die später dazukommen */
+/* XP-Arten: bestimmen Farbe, Icon und Punkte je Ereignis */
 const xpKinds = {
-  answered: { label: "Richtig beantwortet", icon: "brain", color: "var(--xp-answered)", amount: 2 },
   created: { label: "Angelegt", icon: "plus-circle", color: "var(--xp-created)", amount: 1 },
   done: { label: "Erledigt", icon: "check-circle", color: "var(--xp-done)", amount: 2 },
 };
@@ -927,9 +926,10 @@ function archiveEntry(entry) {
 }
 
 function xpTotals() {
-  const totals = { answered: 0, created: 0, done: 0 };
+  const totals = { created: 0, done: 0 };
   xpLog.forEach((row) => {
-    totals[row.kind] = (totals[row.kind] || 0) + row.amount;
+    if (!(row.kind in totals)) return; /* unbekannte Arten aus älteren Ständen überspringen */
+    totals[row.kind] += row.amount;
   });
   return totals;
 }
@@ -1015,7 +1015,7 @@ function xpItemStyle(item) {
 function renderDonutCard() {
   const totals = xpTotals();
   const total = totalXp();
-  const order = ["answered", "created", "done"];
+  const order = ["created", "done"];
   const r = 80;
   const circ = 2 * Math.PI * r;
   const gap = total ? 4 : 0;
