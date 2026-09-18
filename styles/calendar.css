@@ -11,6 +11,7 @@
  * --muted                   -> Farbe der Wochentage und fremden Monate
  * --line                    -> Trennlinie unter der Bedienzeile, zum Raster hin
  * --content-side            -> Seitenabstand, den die Trennlinie automatisch übernimmt
+ * --content-top             -> um so viel wird der einrastende Kopf nach oben verlängert
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -28,16 +29,24 @@
 }
 
 /*
- * Kopf der Kalenderseite (Titel, Monat, Wochenstreifen): bleibt beim Scrollen
- * des Rasters oben stehen, damit man nie „im Nichts“ landet.
- * position: sticky -> haengt am oberen Rand des Scrollbereichs fest
- * z-index: 3 -> hoeher als die Jetzt-Linie (2) und die Termine (1) im Raster,
- * sonst schoebe sich die Uhrzeit-Pille beim Scrollen ueber den Monatsnamen
+ * Einrastender Kopf um den Wochenstreifen. Titel und Monat scrollen darueber
+ * weg und verblassen unter der Suchleiste; der Streifen bleibt stehen.
+ *
+ * Der Scrollbereich hat oben --content-top Innenabstand, und dort wuerde beim
+ * Einrasten das Raster durchscheinen. Darum wird der Kopf um genau diese Hoehe
+ * nach oben verlaengert (padding-top) und rastet auch um so viel hoeher ein
+ * (top negativ): er liegt dann buendig am Scrollbereich und deckt alles ab.
+ * margin-top gleicht die Verlaengerung aus, damit der Streifen in Ruhe an
+ * derselben Stelle steht wie zuvor.
+ * position: sticky -> bleibt am oberen Rand des Scrollbereichs haengen
+ * z-index: 3 -> ueber Jetzt-Linie (2) und Terminen (1), unter dem Monat (4)
  */
 .cal-head {
   position: sticky;
-  top: 0;
+  top: calc(-1 * var(--content-top));
   z-index: 3;
+  margin-top: calc(-1 * var(--content-top));
+  padding-top: var(--content-top);
   background: var(--bg);
   /* Trennlinie zum Raster: keine runden Ecken, nur eine gerade Linie im
      normalen Seitenabstand (kein voller Rand wie bei der grauen Flaeche) */
@@ -56,6 +65,10 @@
   letter-spacing: -0.02em;
   color: var(--text);
   align-self: flex-start;
+  /* position/z-index: die Verlaengerung des Kopfes (.cal-head) reicht in Ruhe
+     14px in diese Zeile hinein; ohne eigene Ebene wuerde sie das „p“ verdecken */
+  position: relative;
+  z-index: 4;
 }
 
 .cal-month .icon {

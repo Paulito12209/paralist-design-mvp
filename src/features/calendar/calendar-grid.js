@@ -84,17 +84,18 @@ export function renderGrid() {
 }
 
 /*
- * Zur Jetzt-Linie scrollen; ohne sie zur 8-Uhr-Zeile. Der feste Kopf
- * (.cal-head) bleibt dabei stehen, nur das Raster darunter läuft mit —
- * scrollIntoView würde stattdessen die ganze Seite samt Kopf verschieben.
+ * Zur Jetzt-Linie scrollen; ohne sie zur 8-Uhr-Zeile. Titel und Monat
+ * scrollen dabei weg, der Kopf (.cal-head) rastet oben am Scrollbereich ein.
+ * Gemessen wird gegen diese Endlage, nicht gegen die Ruhelage des Kopfes —
+ * sonst stimmt der Abstand nach dem Einrasten nicht mehr.
  */
 export function scrollToNow() {
   const target = el("cal-now") || dom.calPanel.querySelector('[data-hour="8"]');
   if (!target) return;
   requestAnimationFrame(() => {
-    const headBottom = dom.calHead.getBoundingClientRect().bottom;
+    const stuckBottom = dom.content.getBoundingClientRect().top + dom.calHead.offsetHeight;
     const targetTop = target.getBoundingClientRect().top;
-    dom.content.scrollTop += targetTop - headBottom - nowTopGap;
+    dom.content.scrollTop += targetTop - stuckBottom - nowTopGap;
   });
 }
 

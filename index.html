@@ -160,13 +160,13 @@
 
           <!-- Kalender: Monat, Wochenstreifen, Bedienzeile und darunter die graue Fläche mit Stundenraster oder Liste -->
           <section class="view" id="view-calendar" data-view="calendar" hidden>
-            <!-- cal-head bleibt beim Scrollen des Rasters stehen, siehe styles/calendar.css -->
+            <h1 class="screen-title">Kalender</h1>
+            <button class="cal-month" id="cal-month" type="button" aria-label="Monat wechseln">
+              <span id="cal-month-label">Monat</span>
+              <svg class="icon"><use href="#icon-chevron"></use></svg>
+            </button>
+            <!-- cal-head rastet unter der Suchleiste ein; Titel und Monat scrollen weg (styles/calendar.css) -->
             <div class="cal-head" id="cal-head">
-              <h1 class="screen-title">Kalender</h1>
-              <button class="cal-month" id="cal-month" type="button" aria-label="Monat wechseln">
-                <span id="cal-month-label">Monat</span>
-                <svg class="icon"><use href="#icon-chevron"></use></svg>
-              </button>
               <div class="cal-strip" id="cal-strip">
                 <div class="cal-week-head">
                   <span>KW</span><span>Mo.</span><span>Di.</span><span>Mi.</span><span>Do.</span><span>Fr.</span><span>Sa.</span><span>So.</span>
