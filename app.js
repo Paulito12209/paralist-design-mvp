@@ -228,7 +228,8 @@ function loadState() {
   }
 
   tabs.forEach((tab) => {
-    if (!tab.icon && tab.name === "Privat") tab.icon = "smile";
+    /* Nur setzen, wenn noch nie gewählt — ein bewusst entferntes Icon bleibt weg */
+    if (tab.icon === undefined && tab.name === "Privat") tab.icon = "smile";
     if (typeof tab.awarded !== "boolean") tab.awarded = true;
   });
   workspaces.forEach((workspace) => {
@@ -630,19 +631,6 @@ function toggleFavorite(item) {
   refreshLists();
 }
 
-function copyText(text) {
-  if (navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(text).catch(() => {});
-    return;
-  }
-  const field = document.createElement("input");
-  field.value = text;
-  document.body.appendChild(field);
-  field.select();
-  document.execCommand("copy");
-  field.remove();
-}
-
 function beginRenameTab(id) {
   const tab = tabs.find((item) => item.id === id);
   editingTabId = id;
@@ -769,7 +757,7 @@ function openSheet(title, options) {
   sheetOptions.innerHTML = options
     .map(
       (option, index) => `
-        <button class="sheet-option${option.active ? " is-active" : ""}${option.danger ? " is-danger" : ""}" type="button" data-sheet="${index}">
+        <button class="sheet-option${option.active ? " is-active" : ""}${option.danger ? " is-danger" : ""}${option.split ? " is-split" : ""}" type="button" data-sheet="${index}">
           ${icon(option.icon)}
           <span>${escapeHtml(option.label)}</span>
         </button>
@@ -823,15 +811,29 @@ function openCtxMenu(anchor, options) {
 }
 
 function openIconPicker(current, onPick) {
-  openSheet(
-    "Icon wählen",
-    presetIcons.map((item) => ({
-      label: item.label,
-      icon: item.id,
-      active: current === item.id,
-      onSelect: () => onPick(item.id),
-    }))
-  );
+  const options = presetIcons.map((item) => ({
+    label: item.label,
+    icon: item.id,
+    active: current === item.id,
+    onSelect: () => onPick(item.id),
+  }));
+  if (current) {
+    options.push({
+      label: "Icon entfernen",
+      icon: "close",
+      split: true,
+      onSelect: () => onPick(""),
+    });
+  }
+  openSheet("Icon wählen", options);
+}
+
+function iconPickerAction(current, apply) {
+  return {
+    label: current ? "Icon bearbeiten" : "Icon hinzufügen",
+    icon: current || "smile",
+    onSelect: () => openIconPicker(current, apply),
+  };
 }
 
 function openTabMenu(pill) {
@@ -840,21 +842,11 @@ function openTabMenu(pill) {
   if (!tab) return;
   const options = [
     { label: "Umbenennen", icon: "pencil", onSelect: () => beginRenameTab(id) },
-    {
-      label: "Icon bearbeiten",
-      icon: "smile",
-      onSelect: () =>
-        openIconPicker(tab.icon, (name) => {
-          tab.icon = name;
-          saveState();
-          renderTabs();
-        }),
-    },
-    {
-      label: "Link kopieren",
-      icon: "chain",
-      onSelect: () => copyText(`${location.origin}${location.pathname}${location.search}#/tab/${id}`),
-    },
+    iconPickerAction(tab.icon, (name) => {
+      tab.icon = name;
+      saveState();
+      renderTabs();
+    }),
   ];
   if (tabs.length > 1) {
     options.push({
@@ -873,16 +865,11 @@ function openWorkspaceMenu(button) {
   if (!workspace) return;
   openCtxMenu(button, [
     { label: "Umbenennen", icon: "pencil", onSelect: () => beginRenameWorkspace(workspace.id) },
-    {
-      label: "Icon bearbeiten",
-      icon: "smile",
-      onSelect: () =>
-        openIconPicker(workspace.icon, (name) => {
-          workspace.icon = name;
-          saveState();
-          refreshLists();
-        }),
-    },
+    iconPickerAction(workspace.icon, (name) => {
+      workspace.icon = name;
+      saveState();
+      refreshLists();
+    }),
     {
       label: workspace.favorite ? "Aus Favoriten entfernen" : "Zu Favoriten",
       icon: workspace.favorite ? "star" : "star-outline",
@@ -2846,16 +2833,13 @@ pageMenuBtn.addEventListener("click", () => {
         icon: workspace.favorite ? "star" : "star-outline",
         onSelect: () => toggleFavorite(workspace),
       });
-      options.push({
-        label: "Icon bearbeiten",
-        icon: "smile",
-        onSelect: () =>
-          openIconPicker(workspace.icon, (name) => {
-            workspace.icon = name;
-            saveState();
-            refreshLists();
-          }),
-      });
+      options.push(
+        iconPickerAction(workspace.icon, (name) => {
+          workspace.icon = name;
+          saveState();
+          refreshLists();
+        })
+      );
     }
   }
 
