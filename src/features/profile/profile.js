@@ -33,7 +33,15 @@ import {
 } from "./avatar.js";
 import { noteFeedbackInput, onFeedbackClick } from "./feedback.js";
 import { identityCard, listsMarkup } from "./profile-cards.js";
-import { appearanceSection, detailHash, detailMarkup, enterDetail, insightsSection, isDetail } from "./settings-cards.js";
+import {
+  appearanceSection,
+  detailHash,
+  detailMarkup,
+  enterDetail,
+  insightsSection,
+  isDetail,
+  settleDetail,
+} from "./settings-cards.js";
 import { setTheme } from "./theme.js";
 
 /* Welche große Ansicht zuletzt gezeichnet wurde — null steht für die Liste. */
@@ -45,6 +53,7 @@ export function renderProfile() {
   dom.profileBody.innerHTML = shownDetail
     ? detailMarkup(shownDetail)
     : identityCard() + insightsSection() + appearanceSection() + listsMarkup();
+  if (shownDetail) settleDetail(shownDetail);
 }
 
 /* Neu zeichnen, ohne dass die Liste nach oben springt. */

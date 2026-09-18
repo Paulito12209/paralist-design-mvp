@@ -12,7 +12,8 @@
  * --card / --line            -> Fläche und Trennlinien der Felder
  * --add                      -> Blau des Absenden-Knopfs und des Hakens
  * --muted / --placeholder    -> Nebenzeilen und Platzhaltertexte
- * --radius-xl                -> Rundung des Absenden-Knopfs
+ * --radius-xl                -> Rundung des Absenden-Knopfs, der Namens-Plaketten
+ *                               und des Films auf der Danksagungs-Seite
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -225,15 +226,16 @@
   padding: 24px 4px 16px;
 }
 
-.credits-mark {
+.credits-clip {
   display: block;
-  margin-bottom: 16px;
-}
-
-.credits-mark .icon {
-  width: 40px;
-  height: 40px;
-  color: var(--add);
+  width: 100%;
+  margin-bottom: 20px;
+  border-radius: var(--radius-xl);
+  /* object-fit: der Film ist quadratisch und soll die Breite ganz ausfüllen */
+  object-fit: cover;
+  /* pointer-events: ohne Rechtsklick bietet der Browser keine Bedienelemente
+     an — nur so bleibt der Ton sicher aus. */
+  pointer-events: none;
 }
 
 .credits-lead {
@@ -253,16 +255,17 @@
 .credits-people {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: 6px;
   list-style: none; /* list-style: die Namen stehen als Plaketten da, nicht als Aufzählung */
   margin: 4px 0 20px;
 }
 
+/* Klein genug, dass die vier Namen nebeneinander in eine Zeile passen. */
 .credits-person {
-  padding: 8px 16px;
+  padding: 6px 12px;
   background: var(--credits-chip-bg);
   border-radius: var(--radius-xl);
-  font-size: 17px;
+  font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.01em;
 }

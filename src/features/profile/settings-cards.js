@@ -21,7 +21,7 @@
 import { dayShift, startOfDay } from "../../core/dates.js";
 import { icon } from "../../core/html.js";
 import { usageOfDay, usageStreaks } from "../../data/usage.js";
-import { creditsCard } from "./credits.js";
+import { creditsCard, startCreditsVideo } from "./credits.js";
 import { enterFeedback, feedbackCard } from "./feedback.js";
 import { streakCard, usageCard } from "./profile-cards.js";
 import { themeListMarkup } from "./theme.js";
@@ -124,7 +124,7 @@ const details = {
   usage: { hash: "nutzungszeit", card: usageCard },
   streak: { hash: "serie", card: streakCard },
   feedback: { hash: "feedback", card: feedbackCard, enter: enterFeedback },
-  credits: { hash: "danksagungen", card: creditsCard },
+  credits: { hash: "danksagungen", card: creditsCard, settle: startCreditsVideo },
 };
 
 /** Gibt es zu diesem Schlüssel eine große Ansicht? */
@@ -135,6 +135,11 @@ export function isDetail(key) {
 /** Beim Öffnen einer Seite: ihr Bereich darf sich vorher frisch machen. */
 export function enterDetail(key) {
   details[key]?.enter?.();
+}
+
+/** Nach dem Zeichnen: was erst mit fertigen Elementen geht (der Film im Dank). */
+export function settleDetail(key) {
+  details[key]?.settle?.();
 }
 
 /** Das Stück Adresse hinter „#/einstellungen/“. */
