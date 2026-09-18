@@ -13,7 +13,7 @@ python3 -m http.server 4173
 Dann `http://localhost:4173` öffnen. Am besten in der Handy-Ansicht bei 375 px
 Breite — dafür ist das Layout gemacht.
 
-Zum Zurücksetzen auf die Beispieldaten in der Browser-Konsole:
+Zum Zurücksetzen auf den leeren Anfangszustand in der Browser-Konsole:
 
 ```js
 localStorage.clear()
@@ -111,7 +111,11 @@ Tab
   ihre Einträge unter **Verknüpfte Inhalte**, nach Typ gruppiert in der
   Reihenfolge aus `typeOrder`. Jede Unterseite — Arbeitsbereich, Übersichts-
   karte oder einzelner Eintrag (Aufgabe, Notiz, Termin, Zeichnung, Projekt …)
-  — zeigt dafür dieselben zwei Pillen **Inhalt** und **Verknüpfte Inhalte**.
+  — zeigt dafür zwei Pillen **Inhalt** und **Verknüpfte Inhalte**; auf der
+  Seite eines einzelnen Eintrags heißt die zweite Pille **Verknüpfte Seiten**.
+- In den Einstellungen unter **Daten** löscht „Alle Einträge löschen“ jeden
+  Eintrag auf einmal (mit derselben Bestätigung wie andere Löschen-Knöpfe).
+  Arbeitsbereiche, Tabs und das Profil bleiben stehen.
 
 ## Performance
 
@@ -172,7 +176,7 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   und nachsehen).
 - Menü: Favorit, Verknüpfen, Archivieren, Löschen. Eine archivierte Aufgabe
   gibt Punkte.
-- Zwischen den Pillen „Inhalt“ und „Verknüpfte Inhalte“ wechseln — bei jedem
+- Zwischen den Pillen „Inhalt“ und „Verknüpfte Seiten“ wechseln — bei jedem
   Eintragstyp (Aufgabe, Notiz, Termin, Zeichnung, Projekt). Bei einer
   Zeichnung steht unter „Inhalt“ die Zeichenfläche.
 
@@ -186,6 +190,12 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 **Medien und Ressourcen**
 - Alle Filter-Pillen durchgehen, auch die leeren.
 - Dauer-Schild auf Video und Aufnahme zeigt `m:ss`.
+
+**Einstellungen**
+- Darstellung umschalten (Hell/Dunkel/System).
+- „Alle Einträge löschen“ antippen, im Blatt bestätigen: Inbox, Favoriten,
+  Projekte, Ressourcen und alle Arbeitsbereiche sind leer; Arbeitsbereiche,
+  Tabs und Profil bleiben stehen.
 
 **Suchen, Fortschritt, Profil**
 - Tippen, Treffer, „keine Treffer“, Escape, die beiden Unterlisten und zurück.

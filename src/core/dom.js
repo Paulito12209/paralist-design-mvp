@@ -134,4 +134,5 @@ export const dom = {
 
   /* Einstellungen */
   get themeOptions() { return el("theme-options"); },
+  get dataOptions() { return el("data-options"); },
 };

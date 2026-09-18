@@ -27,6 +27,7 @@ import { initPage } from "./features/overview/page.js";
 import { beginRenameTab, initTabs, openTabMenu, renderTabs } from "./features/overview/tabs.js";
 import { initWorkspacePage } from "./features/overview/workspace-page.js";
 import { commitWorkspaceName, initWorkspaces, openWorkspaceMenu, renderWorkspaces } from "./features/overview/workspaces.js";
+import { initDataSettings } from "./features/settings/data.js";
 import { initTheme } from "./features/settings/theme.js";
 import { initKeyboardInset } from "./shell/keyboard-inset.js";
 import { initLevelGauge } from "./shell/level-gauge.js";
@@ -96,6 +97,7 @@ function initFeatures() {
   initComposer();
   initDictation(updateComposerSend);
   initTheme();
+  initDataSettings();
 }
 
 /* Eine nachzuladende Seite wurde geöffnet: ihr Modul holen. Es zeichnet sich selbst. */

@@ -1,8 +1,8 @@
 /*
  * Die Seite eines Eintrags: Titel, zwei Pillen „Inhalt“ und „Verknüpfte
- * Inhalte“ (wie auf der Seite eines Arbeitsbereichs), und das Menü oben
- * rechts. Bei einer Zeichnung steht im Inhalt die Zeichenfläche statt des
- * Textes.
+ * Seiten“ (auf der Seite eines Arbeitsbereichs heißt die zweite Pille weiter
+ * „Verknüpfte Inhalte“), und das Menü oben rechts. Bei einer Zeichnung steht
+ * im Inhalt die Zeichenfläche statt des Textes.
  * Pfad: src/features/entry/entry.js
  *
  * Keine anpassbaren visuellen Werte: Schriftgrößen stehen in styles/entry.css
@@ -29,7 +29,7 @@ import { isViewActive } from "../../ui/views.js";
    diese zwei geben, das Wort allein reicht. */
 const entryPills = [
   { id: "notes", label: "Inhalt" },
-  { id: "links", label: "Verknüpfte Inhalte" },
+  { id: "links", label: "Verknüpfte Seiten" },
 ];
 
 /** Anhänge und Verknüpftes zusammen, für die Zahl auf der zweiten Pille. */

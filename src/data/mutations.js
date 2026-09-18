@@ -155,6 +155,12 @@ export function deleteEntriesOf(ref) {
   commit({ prunedEntries: true });
 }
 
+/** Alle Einträge überall löschen. Arbeitsbereiche, Tabs und das Profil bleiben erhalten. */
+export function deleteAllEntries() {
+  state.entries = [];
+  commit({ prunedEntries: true });
+}
+
 /** Darf der Eintrag an diesem Ort liegen? Kein Projekt in einem Projekt, nichts in sich selbst. */
 function allowedPlace(entry, ref) {
   if (!isEntryRef(ref)) return true;
