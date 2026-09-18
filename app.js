@@ -1314,7 +1314,7 @@ function saveUsage() {
 /* Beispielwerte fuer den ersten Start, damit Verlauf und Raster nicht leer sind.
    Fester Startwert, damit bei jedem Geraet dieselbe Beispielkurve entsteht. */
 function seedUsage() {
-  let seed = 20250618;
+  let seed = 20250619;
   const random = () => {
     seed = (seed * 1103515245 + 12345) % 2147483648;
     return seed / 2147483648;
@@ -1323,7 +1323,7 @@ function seedUsage() {
   for (let back = 250; back >= 0; back -= 1) {
     const ts = dayShift(today, -back);
     const weekday = new Date(ts).getDay();
-    const chance = weekday === 0 || weekday === 6 ? 0.4 : 0.78;
+    const chance = weekday === 0 || weekday === 6 ? 0.32 : 0.7;
     if (random() > chance) continue;
     usage[usageKeyOf(ts)] = Math.round((10 + random() * 75) * 60);
   }
