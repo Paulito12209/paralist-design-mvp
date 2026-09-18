@@ -9,7 +9,8 @@
  * --nav-side / --nav-bottom -> Abstand zum Rand und nach unten
  * --nav-radius              -> Rundung der Leiste
  * --tab-add-size            -> Größe des runden Plus-Knopfes in der Mitte
- * --tab-icon-grow          -> um wie viel die Icons wachsen, solange die Namen aus sind
+ * --tab-icon-grow           -> um wie viel die Icons wachsen, solange die Namen aus sind
+ * --tab-hit-grow            -> wie weit die Tippfläche über das Icon hinausgeht (Material 3: 48dp)
  * --tab-label-size          -> Schriftgröße der Wörter unter den Icons
  * --composer-radius         -> Rundung, sobald das Eingabefeld offen ist
  * --composer-side           -> seitlicher Abstand, solange das Eingabefeld offen ist
@@ -71,12 +72,14 @@ body.is-search-typing .bottom-bar {
 
 .tab-bar {
   min-height: var(--nav-height); /* Material 3: 80dp Containerhöhe */
-  display: grid;
-  /* grid-template-columns: fünf gleich breite Spalten (vier Reiter + der Plus-Knopf)
-     statt flex — sonst nimmt sich der grosse runde Plus-Knopf nur seinen eigenen
-     schmalen Rand und die Icons daneben rücken ihm näher als den anderen Reitern */
-  grid-template-columns: repeat(5, 1fr);
+  display: flex;
   align-items: center;
+  /* justify-content: der freie Platz wird gleichmäßig auf die vier Lücken verteilt.
+     Weil jeder Knopf nur so breit ist wie das, was man von ihm sieht, sind dadurch
+     alle sichtbaren Abstände gleich groß — auch neben dem breiteren Plus-Kreis.
+     Gleich breite Felder brächten das nicht: der 50px-Kreis würde die Lücken
+     neben sich auffressen, die Icons daneben rückten ihm näher. */
+  justify-content: space-between;
 }
 
 .tab-btn {
@@ -89,6 +92,17 @@ body.is-search-typing .bottom-bar {
   font-size: var(--tab-label-size);
   font-weight: 500;
   padding: 4px 0;
+  position: relative; /* position: Anker für die größere Tippfläche darunter */
+}
+
+/* Der Knopf ist nur so breit wie sein Icon, damit die Abstände stimmen — zum
+   Tippen wäre das zu wenig. Diese unsichtbare Fläche liegt über dem Icon und
+   greift nach allen Seiten darüber hinaus, sodass das Tippziel die von
+   Material 3 verlangten 48dp erreicht, ohne dass sich das Layout ändert. */
+.tab-btn::after {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--tab-hit-grow));
 }
 
 .tab-btn span {
@@ -100,6 +114,13 @@ body.is-search-typing .bottom-bar {
   display: block;
 }
 
+/* Mit sichtbaren Namen zählt etwas anderes als der gleiche Abstand: die Wörter
+   sind verschieden lang, deshalb bekommt jeder Reiter dasselbe Feld — sonst
+   stünden die Icons über „Übersicht“ und „Medien“ nicht in einer Reihe. */
+.tab-bar.show-labels .tab-btn {
+  flex: 1;
+}
+
 /* Unter dieser Breite passen die Untertitel nicht mehr nebeneinander, selbst mit
    eingeschalteten Namen: dann bleiben nur die Icons, statt „Einstellungen“ zu
    quetschen oder mit … zu kürzen. Gemessen wird die Innenbreite der Leiste
@@ -108,6 +129,11 @@ body.is-search-typing .bottom-bar {
 @container (max-width: 312px) {
   .tab-bar.show-labels .tab-btn span {
     display: none;
+  }
+
+  /* Ohne sichtbare Namen zählt wieder der gleiche Abstand, nicht das gleiche Feld */
+  .tab-bar.show-labels .tab-btn {
+    flex: 0 1 auto;
   }
 }
 
@@ -138,10 +164,10 @@ body.is-search-typing .bottom-bar {
   color: var(--card);
   display: grid;
   place-items: center;
-  /* align-self/justify-self: der Knopf bleibt in der Mitte seiner Spalte stehen,
-     statt sie wie die Reiter auszufüllen — die Spalte ist trotzdem genauso breit */
+  flex: 0 0 auto; /* flex: der Kreis behält seine Größe, er wächst und schrumpft nicht mit */
+  /* align-self: der Knopf sitzt senkrecht in der Mitte der Leiste — mit und ohne
+     Namen unter den Icons, deren Höhe sich sonst auf ihn auswirken würde */
   align-self: center;
-  justify-self: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18); /* box-shadow: hebt den Knopf leicht von der Leiste ab */
 }
 

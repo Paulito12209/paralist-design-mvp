@@ -101,6 +101,7 @@
  * --nav-side / --nav-bottom / --nav-radius -> Lage und Rundung der Navigationsleiste
  * --tab-add-size            -> Größe des runden Plus-Knopfes in der Navigation
  * --tab-icon-grow           -> um wie viel die Icons wachsen, solange ihre Namen aus sind
+ * --tab-hit-grow            -> wie weit die Tippfläche eines Reiters über sein Icon hinausgeht
  * --tab-pill-active-bg      -> Hintergrund der ausgewählten Tab-Pille
  * --tab-pills-btn-gap       -> Abstand zwischen Trennlinie und Plus-Knopf
  * --tab-pills-fade          -> Breite des Ausblendens links von der Trennlinie
@@ -201,6 +202,7 @@
   --tab-label-size: 10px;
   --tab-add-size: 50px;
   --tab-icon-grow: 8px;
+  --tab-hit-grow: 8px;
   --search-meta-size: 13px;
   --nav-side: 28px;
   --nav-bottom: 10px;
