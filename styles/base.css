@@ -106,6 +106,14 @@ button {
   display: none;
 }
 
+/* Ohne die allgemeine Kopfzeile (Unterseiten, styles/top-bar.css) beginnt der
+   Inhalt ganz oben: den Platz für Notch und Statusleiste übernimmt dann die
+   Kopfzeile der Seite selbst, die dort oben stehen bleibt. Ohne diese Zeile
+   liefe die Liste beim Scrollen in einer Lücke über ihr vorbei. */
+body.is-subpage .content {
+  padding-top: 0;
+}
+
 .view {
   min-height: 100%;
 }

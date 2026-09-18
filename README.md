@@ -107,9 +107,11 @@ Tab
 - **Die Karten Projekte, Favoriten und Ressourcen sind Sammlungen**, keine
   Orte: sie zeigen alle Projekte, alles Markierte, alle Dokumente, Zeichnungen
   und Medien — egal, wo sie liegen. Nur die Inbox ist ein Ort.
-- Arbeitsbereiche und Projekte haben einen **Schreibblock** (`body`) und
-  zeigen ihre Einträge unter **Verknüpfte Inhalte**, nach Typ gruppiert in der
-  Reihenfolge aus `typeOrder`.
+- Arbeitsbereiche und Projekte haben einen freien Text (`body`) und zeigen
+  ihre Einträge unter **Verknüpfte Inhalte**, nach Typ gruppiert in der
+  Reihenfolge aus `typeOrder`. Jede Unterseite — Arbeitsbereich, Übersichts-
+  karte oder einzelner Eintrag (Aufgabe, Notiz, Termin, Zeichnung, Projekt …)
+  — zeigt dafür dieselben zwei Pillen **Inhalt** und **Verknüpfte Inhalte**.
 
 ## Performance
 
@@ -140,6 +142,13 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 **Übersicht**
 - Die vier Karten öffnen (Inbox, Favoriten, Projekte, Ressourcen) und zurück —
   die Zahl auf der Karte passt zur Zahl der Zeilen.
+- Auf einer Unterseite (Karte, Arbeitsbereich, Eintrag) ist die allgemeine
+  Kopfzeile mit Level, Suche und Profil weg: ganz oben links steht nur der
+  Zurück-Pfeil. Suche und Optionen erscheinen erst beim Herunterscrollen in
+  der oben feststehenden Kopfzeile; darunter darf keine Zeile durchscheinen.
+  Zurück zur Übersicht und erneut öffnen zeigt wieder ganz oben, mit
+  verborgener Suche. Über die Suche geht es auf die Suchseite, dort ist die
+  allgemeine Kopfzeile wieder da und der Cursor steht im Feld.
 - Tab anlegen, benennen (Enter **und** Klick daneben), wechseln, umbenennen,
   Icon geben, löschen. Beim Löschen verschwinden seine Arbeitsbereiche, deren
   Einträge wandern in die Inbox.
@@ -163,6 +172,9 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   und nachsehen).
 - Menü: Favorit, Verknüpfen, Archivieren, Löschen. Eine archivierte Aufgabe
   gibt Punkte.
+- Zwischen den Pillen „Inhalt“ und „Verknüpfte Inhalte“ wechseln — bei jedem
+  Eintragstyp (Aufgabe, Notiz, Termin, Zeichnung, Projekt). Bei einer
+  Zeichnung steht unter „Inhalt“ die Zeichenfläche.
 
 **Kalender**
 - Raster und Liste umschalten, Zeitraum 1 W / 2 W / 1 M, „Heute“, Monatsmenü.

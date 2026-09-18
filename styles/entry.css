@@ -1,5 +1,7 @@
 /*
- * Seite eines Eintrags: Titel, Text, Anhänge und der Knopf oben rechts.
+ * Seite eines Eintrags: Titel, die Pillen „Inhalt“/„Verknüpfte Inhalte“
+ * (Klasse .page-pills aus styles/rows.css) mit ihren beiden Flächen, und der
+ * Knopf oben rechts.
  * Pfad: styles/entry.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens.css)
@@ -8,10 +10,16 @@
  * --entry-body-size         -> Schriftgröße des Textes
  * --placeholder             -> Farbe der Platzhaltertexte
  * --content-side            -> Abstand zum linken und rechten Rand
- 
+
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
+
+/* Fläche unter einer der beiden Pillen; welche zu sehen ist, steuert
+   src/features/entry/entry.js über das hidden-Attribut. */
+.entry-panel[hidden] {
+  display: none;
+}
 
 .entry-attachments {
   margin: 0 0 16px;
@@ -87,7 +95,9 @@
   color: var(--chevron);
 }
 
-/* Ein Projekt zeigt unter seinem Text, was in ihm liegt */
+/* Was im Eintrag liegt, z.B. bei einem Projekt. Der Abstand zu den Anhängen
+   darüber kommt von deren eigenem unteren Rand (.entry-attachments), damit
+   ohne Anhänge keine Lücke vor der Liste entsteht. */
 .entry-links {
-  margin-top: 24px;
+  margin-top: 0;
 }

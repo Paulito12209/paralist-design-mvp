@@ -43,6 +43,14 @@
   margin-bottom: calc(-1 * var(--top-bar-fade));
 }
 
+/* Auf Unterseiten (Sammlung, Arbeitsbereich, Eintrag) gibt es Level, Suche und
+   Profil nicht: dort steht der Zurück-Pfeil ganz oben in der eigenen Kopfzeile
+   der Seite (.page-head in styles/rows.css). Den freien Platz nimmt der Inhalt
+   ein — dazu gehört die Regel für .content in styles/base.css. */
+body.is-subpage .top-bar {
+  display: none;
+}
+
 .icon-btn,
 .avatar {
   border-radius: 50%; /* macht die Buttons rund; Breite/Höhe allein ergeben kein Kreis */

@@ -1,10 +1,15 @@
 /*
  * Die Unterseite hinter einer Übersichtskarte oder einem Arbeitsbereich:
- * Kopfzeile mit Titel, darunter der Inhalt, oben rechts das Seitenmenü.
- * Was genau darunter steht, hängt von der Art der Seite ab.
+ * Kopfzeile mit Zurück-Pfeil, darunter der große Titel und der Inhalt. Suche
+ * und Optionen-Menü bleiben verborgen, bis man die Liste nach unten
+ * scrollt — wie bei einer Playlist in Spotify.
  * Pfad: src/features/overview/page.js
  *
- * Keine anpassbaren visuellen Werte: Kopfzeile und Liste stehen in
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * HEADER_REVEAL_PX -> ab wie viel Scrollweg Suche und Optionen erscheinen
+ *
+ * Sonst keine anpassbaren visuellen Werte: Kopfzeile und Liste stehen in
  * styles/rows.css (Klassen .page-head, .page-body).
  */
 
@@ -20,7 +25,7 @@ import {
 import { entriesOf, findWorkspace, projectEntries } from "../../data/queries.js";
 import { saveState, state, ui } from "../../data/state.js";
 import { iconPickerAction } from "../../ui/pickers.js";
-import { restoreFrom } from "../../ui/router.js";
+import { restoreFrom, showSearch } from "../../ui/router.js";
 import { entryRow, workspaceRow } from "../../ui/rows.js";
 import { openSheet } from "../../ui/sheet.js";
 import { isViewActive } from "../../ui/views.js";
@@ -29,6 +34,9 @@ import { commitStaleWorkspaceName, focusWorkspaceName } from "./workspaces.js";
 
 /* Sammlungen: dort gibt es nichts zu löschen oder zu markieren, also kein Menü. */
 const collectionsWithoutMenu = ["resources", "projects"];
+
+/* Ab wie viel Scrollweg Suche und Optionen in der Kopfzeile erscheinen. */
+const HEADER_REVEAL_PX = 4;
 
 function listMarkup(entries, empty) {
   return entries.length
@@ -63,6 +71,12 @@ export function renderPageBody() {
   else if (page.kind === "resources") load("resources").then((module) => module.renderResources());
   else if (page.isWorkspace) renderWorkspacePage(page);
   else dom.pageBody.innerHTML = listMarkup(entriesOf(page.parent), "Noch keine Einträge.");
+}
+
+/* Suche und Optionen ein-/ausblenden, je nachdem wie weit die Liste gescrollt ist. */
+function updatePageHeadScroll() {
+  if (!isViewActive("page")) return;
+  dom.pageHead.classList.toggle("is-scrolled", dom.content.scrollTop > HEADER_REVEAL_PX);
 }
 
 /** Kopfzeile und Inhalt der Unterseite aufbauen. */
@@ -126,9 +140,16 @@ function openPageMenu() {
   openSheet(page.title, options);
 }
 
-/** Seitenmenü, Zurück-Pfeil und Auffrischen anmelden. */
+/** Seitenmenü, Suche, Zurück-Pfeil und Auffrischen anmelden. */
 export function initPage() {
   dom.pageMenuBtn.addEventListener("click", openPageMenu);
+  /* Erst die Suchseite zeigen: dort ist die allgemeine Kopfzeile mit dem
+     echten Suchfeld wieder da, und ein verstecktes Feld nimmt keinen Fokus an. */
+  dom.pageSearchBtn.addEventListener("click", () => {
+    showSearch();
+    dom.searchInput.focus();
+  });
+  dom.content.addEventListener("scroll", updatePageHeadScroll, { passive: true });
 
   dom.backBtn.addEventListener("click", (event) => {
     event.preventDefault();
@@ -136,7 +157,11 @@ export function initPage() {
   });
 
   on(events.viewOpened, (name) => {
-    if (name === "page") renderPage();
+    if (name !== "page") return;
+    /* Jede neu geöffnete Unterseite startet oben, mit verborgener Suche und Optionen. */
+    dom.content.scrollTop = 0;
+    dom.pageHead.classList.remove("is-scrolled");
+    renderPage();
   });
   on(events.dataChanged, () => {
     /* Nicht mitten ins Tippen hinein neu zeichnen: der Text ist schon gemerkt. */
