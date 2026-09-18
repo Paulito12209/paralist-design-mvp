@@ -71,14 +71,15 @@ body.is-search-typing .bottom-bar {
 
 .tab-bar {
   min-height: var(--nav-height); /* Material 3: 80dp Containerhöhe */
-  display: flex;
+  display: grid;
+  /* grid-template-columns: fünf gleich breite Spalten (vier Reiter + der Plus-Knopf)
+     statt flex — sonst nimmt sich der grosse runde Plus-Knopf nur seinen eigenen
+     schmalen Rand und die Icons daneben rücken ihm näher als den anderen Reitern */
+  grid-template-columns: repeat(5, 1fr);
   align-items: center;
-  justify-content: space-between;
-  gap: 2px;
 }
 
 .tab-btn {
-  flex: 1;
   min-width: 0; /* Labels wie „Einstellungen“ dürfen schmaler werden, statt die Leiste zu sprengen */
   display: flex;
   flex-direction: column;
@@ -137,12 +138,10 @@ body.is-search-typing .bottom-bar {
   color: var(--card);
   display: grid;
   place-items: center;
-  flex: 0 0 auto;
-  margin-left: 4px;
-  margin-right: 4px;
-  /* align-self: der Knopf sitzt senkrecht in der Mitte der Leiste — mit und ohne
-     Namen unter den Icons, deren Höhe sich sonst auf ihn auswirken würde */
+  /* align-self/justify-self: der Knopf bleibt in der Mitte seiner Spalte stehen,
+     statt sie wie die Reiter auszufüllen — die Spalte ist trotzdem genauso breit */
   align-self: center;
+  justify-self: center;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18); /* box-shadow: hebt den Knopf leicht von der Leiste ab */
 }
 
