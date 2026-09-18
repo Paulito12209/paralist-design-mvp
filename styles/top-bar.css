@@ -7,9 +7,11 @@
  * --top-bar-icon-width / --top-bar-icon-height          -> Größe der Icons oben
  * --top-bar-leading-btn-width / -height                 -> runder Knopf oben links
  * --top-bar-profile-btn-width / -height                 -> Profil-Knopf oben rechts
+ * --top-bar-fade                                        -> Höhe des Ausblendens unter der Suche
  * --search-bar-height / --search-bar-radius             -> Suchleiste
  * --level-color / --level-dim / --level-glow            -> Striche und Zahl der Level-Anzeige
  * --icon-strong / --placeholder                         -> Icon- und Platzhalterfarbe
+ * --bg                                                  -> Farbe, die im Verlauf ausblendet
  
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
@@ -21,14 +23,24 @@
      damit beim Scrollen nichts durch sie hindurchlaeuft */
   position: relative;
   z-index: 20;
-  background: var(--bg);
+  /* linear-gradient: untere --top-bar-fade Pixel laufen von deckendem --bg zu transparent,
+     damit Inhalt weich unter der Kopfzeile verschwindet */
+  background: linear-gradient(
+    to bottom,
+    var(--bg) 0%,
+    var(--bg) calc(100% - var(--top-bar-fade)),
+    transparent 100%
+  );
   display: flex;
   align-items: center;
   gap: 10px;
   padding-top: calc(18px + var(--safe-top));
-  padding-bottom: 8px;
+  padding-bottom: var(--top-bar-fade);
   padding-left: 16px;
   padding-right: 16px;
+  /* negativer Abstand: der Inhaltsbereich schiebt sich unter den Verlauf,
+     sonst waere der Fade unsichtbar (gleiche Farbe wie der Geraete-Hintergrund) */
+  margin-bottom: calc(-1 * var(--top-bar-fade));
 }
 
 .icon-btn,

@@ -73,9 +73,12 @@
  * --device-radius           -> Rundung des Gerätefensters am Desktop
  * --modal-radius            -> Rundung der oberen Kante der Blätter von unten
  * --content-side            -> Abstand der Karten und Listen zum linken und rechten Rand
+ * --content-top             -> Abstand vom unteren Suchleisten-Rand bis zum Inhalt (unter dem Verlauf)
  * --title-side              -> Extra-Abstand für die große Überschrift
- * --overview-gap            -> Abstand zwischen Kopfzeile, Überschrift und Karten
+ * --overview-gap            -> Abstand zwischen Überschrift und Karten
+ * --workspace-section-gap   -> Abstand zwischen den vier Karten und „Arbeitsbereiche“
  * --workspace-head-gap      -> Abstand zwischen „Arbeitsbereiche“ und den Tab-Pillen
+ * --top-bar-fade            -> Höhe des Ausblend-Verlaufs unter der Suchleiste
  * --top-bar-icon-width/-height          -> Größe der Icons oben
  * --top-bar-leading-btn-width/-height   -> Größe des runden Knopfes oben links
  * --top-bar-profile-btn-width/-height   -> Größe des Profil-Knopfes oben rechts
@@ -97,6 +100,8 @@
  * --media-gap               -> Fuge zwischen den Medien-Kacheln
  * --media-btn-size          -> Größe der runden Knöpfe über der Navigation
  * --media-actions-space     -> Extra-Platz am Ende der Medien-Seite
+ * --search-pill-height / --search-pill-side -> Größe der Suchen-Pille über der Navigation
+ * --search-actions-space    -> Extra-Platz am Ende der Suche, solange die Pille zu sehen ist
  * --draw-tool-size / --draw-color-size -> Größe der Werkzeug-Knöpfe und Farbpunkte
  * --draw-tools-space        -> Extra-Platz unter der Zeichenfläche
  *
@@ -135,9 +140,12 @@
   --radius-lg: 18px;
   --title-size: 32px;
   --content-side: 16px;
+  --content-top: 16px;
   --title-side: 4px;
   --overview-gap: 28px;
+  --workspace-section-gap: 40px;
   --workspace-head-gap: 12px;
+  --top-bar-fade: 16px;
   --top-bar-icon-width: 24px;
   --top-bar-icon-height: 24px;
   --top-bar-leading-btn-width: 48px;
@@ -202,6 +210,9 @@
   --media-badge-bg: rgba(0, 0, 0, 0.55);
   --media-btn-size: 48px;
   --media-actions-space: 60px;
+  --search-pill-height: 48px;
+  --search-pill-side: 20px;
+  --search-actions-space: 60px;
   --draw-tool-size: 38px;
   --draw-color-size: 22px;
   --draw-tools-space: 62px;

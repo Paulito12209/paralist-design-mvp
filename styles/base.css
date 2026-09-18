@@ -8,8 +8,9 @@
  * --stage-bg                -> Fläche rund um das Gerätefenster am Desktop
  * --title-size              -> Schriftgröße der großen Überschrift
  * --content-side            -> Abstand des Inhalts zum linken und rechten Rand
+ * --content-top             -> Abstand unter der Suchleiste bis zum ersten Inhalt
  * --title-side              -> Extra-Abstand der großen Überschrift
- * --overview-gap            -> Abstand zwischen Kopfzeile, Überschrift und Inhalt
+ * --overview-gap            -> Abstand zwischen Überschrift und Karten/Inhalt
  * --tab-space               -> Platz am Seitenende hinter der Navigation
  * --device-radius           -> Rundung des Gerätefensters am Desktop
  
@@ -96,7 +97,7 @@ button {
   overflow-x: hidden;
   overscroll-behavior: contain; /* am Listenende wird nicht die Seite darunter mitgezogen */
   -webkit-overflow-scrolling: touch;
-  padding: var(--overview-gap) var(--content-side) var(--tab-space);
+  padding: var(--content-top) var(--content-side) var(--tab-space);
   position: relative; /* position: damit der Scrollbereich fest im Gerät bleibt */
   scrollbar-width: none;
 }

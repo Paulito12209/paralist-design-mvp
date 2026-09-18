@@ -22,6 +22,9 @@ export const events = {
   composerRequested: "composer:requested",
   /* Ein Blatt von unten (Fortschritt, Profil) geht auf: das Eingabefeld schließt. */
   overlayOpened: "overlay:opened",
+  /* Die Bildschirmtastatur ist zu — auch wenn sie weggewischt statt mit
+     einem Tipp geschlossen wurde und das Feld deshalb noch fokussiert ist. */
+  keyboardClosed: "keyboard:closed",
 };
 
 const listeners = new Map();

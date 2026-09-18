@@ -1,6 +1,6 @@
 /*
- * Suchseite: Ergebniszeilen, Abschnittsüberschriften, Tagesmarken und die
- * Hervorhebung des Treffers im Titel.
+ * Suchseite: Ergebniszeilen, Abschnittsüberschriften, Tagesmarken, die
+ * Hervorhebung des Treffers im Titel und die Suchen-Pille über der Navigation.
  * Pfad: styles/search.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens.css)
@@ -9,7 +9,10 @@
  * --chevron                 -> Pfeil rechts
  * --line                    -> Trennlinien
  * --muted                   -> Farbe der Abschnittsüberschriften
- 
+ * --search-pill-height      -> Höhe der Suchen-Pille über der Navigation
+ * --search-pill-side        -> Platz links und rechts vom Wort in der Pille
+ * --search-actions-space    -> Zusätzlicher Platz am Seitenende, solange die Pille zu sehen ist
+
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -104,4 +107,40 @@
   background: transparent;
   color: var(--text);
   font-weight: 600;
+}
+
+/* Extra Platz am Ende der Suche, solange die Pille über der Navigation
+   steht, sonst verdeckt sie die letzten Zeilen der Liste. */
+body.is-search:not(.is-search-typing) .content {
+  padding-bottom: calc(var(--tab-space) + var(--search-actions-space));
+}
+
+/* Suchen-Pille: liegt wie die Medien-Knöpfe über der Navigation, aber rechts
+   und als Wort statt als Icon-Kreis. Erscheint erst, wenn die Tastatur
+   zugeklappt ist — offen liegt der Cursor ja schon im Suchfeld oben. */
+.search-actions {
+  display: none;
+  justify-content: flex-end;
+  margin: 0 0 12px;
+}
+
+body.is-search:not(.is-search-typing) .search-actions:not([hidden]) {
+  display: flex;
+}
+
+.search-pill {
+  height: var(--search-pill-height);
+  padding: 0 var(--search-pill-side);
+  border-radius: 999px; /* border-radius: macht aus dem Knopf eine Pille wie den Verknüpfen-Knopf im Eingabefeld */
+  background: var(--card);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font-size: 15px;
+  font-weight: 500;
+  display: grid;
+  place-items: center;
+}
+
+.search-pill:active {
+  opacity: 0.55;
 }
