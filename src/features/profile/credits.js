@@ -25,7 +25,7 @@ const credits = {
     "An meine Mutter und an meine Freunde — dafür, dass ihr da wart, als das hier noch nichts als eine Idee war.",
     "Und vor allem an meine folgenden Familienangehörigen:",
   ],
-  people: ["Katja", "David", "Marina", "Tavara"],
+  people: ["Katja", "David", "Marina", "Antawara"],
   close:
     "Ihr seid für mich die größte Motivation, am Ball zu bleiben und meine Energie dafür einzusetzen, eure Zukunft eines Tages ein Stück besser zu machen.",
 };
@@ -75,5 +75,5 @@ export function startCreditsVideo() {
   video.addEventListener("ended", () => video.load(), { once: true });
   /* play() wird abgewiesen, wenn der Browser noch keine Geste gesehen hat —
      dann bleibt eben das Standbild stehen, das ist kein Fehler. */
-  video.play().catch(() => {});
+  video.play().catch(() => { });
 }
