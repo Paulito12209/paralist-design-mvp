@@ -143,7 +143,12 @@ function openPageMenu() {
 /** Seitenmenü, Suche, Zurück-Pfeil und Auffrischen anmelden. */
 export function initPage() {
   dom.pageMenuBtn.addEventListener("click", openPageMenu);
-  dom.pageSearchBtn.addEventListener("click", () => showSearch());
+  /* Erst die Suchseite zeigen: dort ist die allgemeine Kopfzeile mit dem
+     echten Suchfeld wieder da, und ein verstecktes Feld nimmt keinen Fokus an. */
+  dom.pageSearchBtn.addEventListener("click", () => {
+    showSearch();
+    dom.searchInput.focus();
+  });
   dom.content.addEventListener("scroll", updatePageHeadScroll, { passive: true });
 
   dom.backBtn.addEventListener("click", (event) => {

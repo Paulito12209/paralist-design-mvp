@@ -12,6 +12,8 @@
  * --swipe-action-gap        -> Abstand zwischen den Knöpfen und zum Rand
  * --danger / --archive-color / --link-color / --star-color -> Farben der Knöpfe
  * --content-side            -> Abstand der Zeilen zum Rand
+ * --page-head-top           -> Abstand über dem Zurück-Pfeil auf Unterseiten
+ * --safe-top                -> Platz für Notch und Statusleiste über dem Zurück-Pfeil
  * --placeholder             -> grauer Vorgabename beim Benennen eines Arbeitsbereichs
  * --muted                   -> Überschriften der Gruppen unter „Verknüpfte Inhalte“
  
@@ -65,14 +67,18 @@
   color: var(--chevron);
 }
 
-/* Kopfzeile einer Unterseite: bleibt beim Scrollen oben stehen (wie bei einer
-   Playlist in Spotify). Suche und Optionen stehen in .page-head-reveal und
+/* Kopfzeile einer Unterseite: der Zurück-Pfeil steht ganz oben, dort wo sonst
+   Level, Suche und Profil stehen (die sind hier ausgeblendet, siehe
+   styles/top-bar.css). Sie bleibt beim Scrollen oben stehen — wie bei einer
+   Playlist in Spotify. Suche und Optionen stehen in .page-head-reveal und
    zeigen sich erst, sobald .page-head die Klasse „is-scrolled“ bekommt. */
 .page-head {
   display: flex;
   align-items: center;
   gap: 2px;
   margin: 0 0 6px -8px;
+  /* oben genug Platz für Notch und Statusleiste, weil darüber nichts mehr steht */
+  padding-top: calc(var(--safe-top) + var(--page-head-top));
   position: sticky; /* position: bleibt oben stehen, während die Liste darunter scrollt */
   top: 0;
   z-index: 2; /* z-index: hält die Kopfzeile über der scrollenden Liste */

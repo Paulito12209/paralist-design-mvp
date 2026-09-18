@@ -142,10 +142,13 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 **Übersicht**
 - Die vier Karten öffnen (Inbox, Favoriten, Projekte, Ressourcen) und zurück —
   die Zahl auf der Karte passt zur Zahl der Zeilen.
-- Auf einer Unterseite (Karte oder Arbeitsbereich): oben steht nur der
-  Zurück-Pfeil, Suche und Optionen sind verborgen. Erst beim Herunterscrollen
-  erscheinen sie in der oben feststehenden Kopfzeile. Zurück zur Übersicht und
-  erneut öffnen zeigt wieder ganz oben, mit verborgener Suche.
+- Auf einer Unterseite (Karte, Arbeitsbereich, Eintrag) ist die allgemeine
+  Kopfzeile mit Level, Suche und Profil weg: ganz oben links steht nur der
+  Zurück-Pfeil. Suche und Optionen erscheinen erst beim Herunterscrollen in
+  der oben feststehenden Kopfzeile; darunter darf keine Zeile durchscheinen.
+  Zurück zur Übersicht und erneut öffnen zeigt wieder ganz oben, mit
+  verborgener Suche. Über die Suche geht es auf die Suchseite, dort ist die
+  allgemeine Kopfzeile wieder da und der Cursor steht im Feld.
 - Tab anlegen, benennen (Enter **und** Klick daneben), wechseln, umbenennen,
   Icon geben, löschen. Beim Löschen verschwinden seine Arbeitsbereiche, deren
   Einträge wandern in die Inbox.

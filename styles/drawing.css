@@ -47,6 +47,16 @@ body.is-drawing #view-entry {
   flex-direction: column;
 }
 
+/* Die Fläche hinter der Pille „Inhalt“ muss selbst mitwachsen, sonst bliebe die
+   Zeichenfläche darin auf ihrer Vorgabehöhe stehen statt bis zur Werkzeugleiste
+   zu reichen. */
+body.is-drawing #entry-panel-notes {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Werkzeugleiste über der Navigation wie Apples Stiftpalette; nur auf einer Zeichnung zu sehen */
 .draw-tools {
   display: none;

@@ -74,6 +74,7 @@
  * --modal-radius            -> Rundung der oberen Kante der Blätter von unten
  * --content-side            -> Abstand der Karten und Listen zum linken und rechten Rand
  * --content-top             -> Abstand vom unteren Suchleisten-Rand bis zum Inhalt (unter dem Verlauf)
+ * --page-head-top           -> Abstand über dem Zurück-Pfeil auf Unterseiten (zusätzlich zur Statusleiste)
  * --title-side              -> Extra-Abstand für die große Überschrift
  * --overview-gap            -> Abstand zwischen Überschrift und Karten
  * --workspace-section-gap   -> Abstand zwischen den vier Karten und „Arbeitsbereiche“
@@ -141,6 +142,7 @@
   --title-size: 32px;
   --content-side: 16px;
   --content-top: 16px;
+  --page-head-top: 18px;
   --title-side: 4px;
   --overview-gap: 28px;
   --workspace-section-gap: 40px;
