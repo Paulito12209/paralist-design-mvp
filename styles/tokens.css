@@ -141,13 +141,13 @@
   --radius-lg: 18px;
   --title-size: 28px;
   --content-side: 16px;
-  --content-top: 16px;
+  --content-top: 24px;
   --page-head-top: 18px;
   --title-side: 4px;
   --overview-gap: 24px;
   --workspace-section-gap: 40px;
   --workspace-head-gap: 16px;
-  --top-bar-fade: 16px;
+  --top-bar-fade: 24px;
   --top-bar-icon-width: 24px;
   --top-bar-icon-height: 24px;
   --top-bar-leading-btn-width: 48px;

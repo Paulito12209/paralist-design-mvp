@@ -49,7 +49,7 @@
   padding-right: 16px;
   /* negativer Abstand: der Inhaltsbereich schiebt sich unter den Verlauf,
      sonst waere der Fade unsichtbar (gleiche Farbe wie der Geraete-Hintergrund) */
-  /* margin-bottom: calc(-1 * var(--top-bar-fade)); */
+  margin-bottom: calc(-1 * var(--top-bar-fade));
 }
 
 /* Auf Unterseiten (Sammlung, Arbeitsbereich, Eintrag) gibt es Level, Suche und
