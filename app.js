@@ -1693,6 +1693,8 @@ let calSelected = dayKey(new Date());
 let calSlot = null;
 let calDrag = null;
 let calSwiped = false;
+let calSnapping = false;
+let calWheel = 0;
 
 const calSpans = [
   { id: 1, label: "1 Woche", short: "1 W" },
@@ -1989,7 +1991,8 @@ calSpanBtn.addEventListener("click", () => {
   );
 });
 
-/* Tag antippen wählt ihn aus; waagerecht wischen blättert eine Woche, zwei Wochen oder einen Monat */
+/* Tag antippen wählt ihn aus. Senkrecht ziehen oder scrollen blättert eine Woche (im Monatslayout
+   einen Monat), waagerecht wischen blättert den ganzen sichtbaren Zeitraum. */
 calStrip.addEventListener("click", (event) => {
   if (calSwiped) return;
   const day = event.target.closest("[data-day]");
@@ -1998,16 +2001,78 @@ calStrip.addEventListener("click", (event) => {
   renderCalendar();
 });
 
+function calRowHeight() {
+  return parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--cal-row-h")) || 52;
+}
+
+/* Blättert um eine Zeile: der Block gleitet weg, danach wird neu gezeichnet */
+function calSnapRows(direction) {
+  if (calSnapping) return;
+  calSnapping = true;
+  calSwiped = true;
+  const finish = () => {
+    calWeeks.removeEventListener("transitionend", finish);
+    calWeeks.style.transition = "none";
+    calWeeks.style.transform = "";
+    if (calPrefs.span === 0) calShiftMonth(direction);
+    else {
+      calSelected = dayKey(addDays(parseDay(calSelected), direction * 7));
+      renderCalendar();
+    }
+    calSnapping = false;
+    setTimeout(() => {
+      calSwiped = false;
+    }, 0);
+  };
+  calWeeks.addEventListener("transitionend", finish);
+  calWeeks.style.transition = "transform 0.18s ease-out";
+  calWeeks.style.transform = `translateY(${-direction * calRowHeight()}px)`;
+  setTimeout(finish, 260); /* Fallback, falls kein transitionend kommt */
+}
+
+function calResetDrag() {
+  calWeeks.style.transition = "transform 0.18s ease-out";
+  calWeeks.style.transform = "";
+}
+
 calStrip.addEventListener("pointerdown", (event) => {
-  calDrag = { x: event.clientX, y: event.clientY };
+  if (calSnapping) return;
+  calDrag = { x: event.clientX, y: event.clientY, axis: null, id: event.pointerId };
+});
+
+calStrip.addEventListener("pointermove", (event) => {
+  if (!calDrag || calDrag.id !== event.pointerId) return;
+  const dx = event.clientX - calDrag.x;
+  const dy = event.clientY - calDrag.y;
+  if (!calDrag.axis) {
+    if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+    calDrag.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
+    if (calDrag.axis === "y") calStrip.setPointerCapture(event.pointerId);
+  }
+  if (calDrag.axis !== "y") return;
+  const limit = calRowHeight();
+  calWeeks.style.transition = "none";
+  calWeeks.style.transform = `translateY(${Math.max(-limit, Math.min(limit, dy))}px)`;
 });
 
 calStrip.addEventListener("pointerup", (event) => {
   if (!calDrag) return;
   const dx = event.clientX - calDrag.x;
   const dy = event.clientY - calDrag.y;
+  const axis = calDrag.axis;
   calDrag = null;
-  if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
+
+  if (axis === "y") {
+    if (Math.abs(dy) > calRowHeight() / 3) calSnapRows(dy < 0 ? 1 : -1);
+    else calResetDrag();
+    calSwiped = true;
+    setTimeout(() => {
+      calSwiped = false;
+    }, 0);
+    return;
+  }
+
+  if (axis !== "x" || Math.abs(dx) < 40) return;
   calSwiped = true;
   setTimeout(() => {
     calSwiped = false;
@@ -2015,8 +2080,24 @@ calStrip.addEventListener("pointerup", (event) => {
   calShift(dx < 0 ? 1 : -1);
 });
 
+/* Mausrad und Trackpad über dem Streifen blättern die Wochen statt die Seite */
+calStrip.addEventListener(
+  "wheel",
+  (event) => {
+    if (Math.abs(event.deltaY) <= Math.abs(event.deltaX)) return;
+    event.preventDefault();
+    calWheel += event.deltaY;
+    if (Math.abs(calWheel) < 40 || calSnapping) return;
+    const direction = calWheel > 0 ? 1 : -1;
+    calWheel = 0;
+    calSnapRows(direction);
+  },
+  { passive: false }
+);
+
 calStrip.addEventListener("pointercancel", () => {
   calDrag = null;
+  calResetDrag();
 });
 
 /* In der Fläche: Spalte wechseln oder eine leere Stunde antippen, um dort einen Termin anzulegen */
