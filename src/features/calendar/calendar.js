@@ -18,7 +18,7 @@ import { openCtxMenu } from "../../ui/ctx-menu.js";
 import { openSheet } from "../../ui/sheet.js";
 import { isViewActive } from "../../ui/views.js";
 import { initCalendarGestures, setRedraw as setGestureRedraw } from "./calendar-gestures.js";
-import { moveNowLine, renderGrid, scrollToNow } from "./calendar-grid.js";
+import { moveNowLine, nowLineVisible, renderGrid, scrollToNow } from "./calendar-grid.js";
 import { renderList } from "./calendar-list.js";
 import {
   goToday,
@@ -30,7 +30,7 @@ import {
 } from "./calendar-nav.js";
 import { cal } from "./calendar-state.js";
 import { renderStrip } from "./calendar-strip.js";
-import { pad2 } from "../../core/dates.js";
+import { dayKey, pad2 } from "../../core/dates.js";
 
 const tickSeconds = 30;
 
@@ -45,6 +45,27 @@ export function renderCalendar(jumpToNow = false) {
   const grid = state.prefs.calendar.mode === "grid";
   dom.calPanel.innerHTML = grid ? renderGrid() : renderList();
   if (jumpToNow && grid) scrollToNow();
+  /* rAF: erst nachdem ein moegliches scrollToNow() oben seinen eigenen
+     rAF-Sprung ausgefuehrt hat, sonst wird die Sichtbarkeit noch an der
+     alten Scroll-Position gemessen. */
+  requestAnimationFrame(updateTodayPill);
+}
+
+/*
+ * Der „Heute“-Knopf: nur sichtbar am heutigen Tag, und selbst dann nur blau,
+ * solange die Jetzt-Linie im sichtbaren Ausschnitt des Rasters steht.
+ */
+function updateTodayPill() {
+  const isToday = ui.calendarDay === dayKey(new Date());
+  dom.calTodayBtn.hidden = !isToday;
+  if (isToday) dom.calTodayBtn.classList.toggle("is-on", nowLineVisible());
+}
+
+/* Beim Scrollen im Raster kann die Jetzt-Linie in den sichtbaren Ausschnitt
+   hinein- oder herauslaufen — die Farbe des Knopfes zieht dann sofort nach. */
+function onContentScroll() {
+  if (!isViewActive("calendar") || dom.calTodayBtn.hidden) return;
+  dom.calTodayBtn.classList.toggle("is-on", nowLineVisible());
 }
 
 /* Die Jetzt-Linie läuft nur, solange die Kalenderseite offen ist. */
@@ -106,6 +127,7 @@ function init() {
   dom.calTodayBtn.addEventListener("click", goToday);
   dom.calSpanBtn.addEventListener("click", openSpanSheet);
   dom.calPanel.addEventListener("click", onPanelClick);
+  dom.content.addEventListener("scroll", onContentScroll, { passive: true });
 
   on(events.viewOpened, (name) => {
     if (name !== "calendar") {

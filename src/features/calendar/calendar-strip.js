@@ -70,7 +70,8 @@ export function renderStrip() {
     weeks.map((monday) => weekMarkup(monday)).join("") +
     weekMarkup(addDays(weeks[weeks.length - 1], 7), "is-peek is-after");
 
-  dom.calTodayBtn.classList.toggle("is-on", ui.calendarDay === dayKey(new Date()));
+  /* Ob der „Heute“-Knopf sichtbar und blau ist, entscheidet updateTodayPill()
+     in calendar.js — das haengt auch von der Jetzt-Linie im Raster ab. */
   const span = calendarSpans.find((item) => item.id === calendar.span) || calendarSpans[0];
   dom.calSpanBtn.textContent = span.short;
   /* Der runde Knopf zeigt immer die Ansicht, zu der er wechselt. */

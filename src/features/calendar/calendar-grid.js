@@ -107,3 +107,18 @@ export function moveNowLine() {
   const label = el("cal-now-label");
   if (label) label.textContent = timeKey(Date.now());
 }
+
+/*
+ * Ob die Jetzt-Linie gerade im sichtbaren Ausschnitt des Rasters steht —
+ * darauf entscheidet calendar.js, ob der „Heute“-Knopf blau ist. Sichtbar
+ * heißt: unterhalb des feststehenden Kopfes (.cal-head) und oberhalb des
+ * unteren Rands des Scrollbereichs.
+ */
+export function nowLineVisible() {
+  const now = el("cal-now");
+  if (!now) return false;
+  const nowRect = now.getBoundingClientRect();
+  const visibleTop = dom.calHead.getBoundingClientRect().bottom;
+  const visibleBottom = dom.content.getBoundingClientRect().bottom;
+  return nowRect.bottom > visibleTop && nowRect.top < visibleBottom;
+}
