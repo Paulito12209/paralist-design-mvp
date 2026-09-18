@@ -58,6 +58,13 @@
  * --xp-created              -> Blau für „Angelegt“
  * --xp-done                 -> Grün für „Erledigt“
  * --xp-line                 -> Orange der Verlaufskurve im Fortschritt-Blatt
+ * --dot-empty / --dot-1..4  -> Punkte-Raster der Nutzungszeit im Profil-Blatt
+ * --cal-accent              -> Blau des gewählten Tages und des „Heute“-Knopfes im Kalender
+ * --cal-now                 -> Farbe der Jetzt-Linie im Stundenraster
+ * --cal-day-ring            -> Kreis hinter Tagen, an denen etwas eingetragen ist
+ * --cal-row-h               -> Höhe einer Wochenzeile im Kalenderstreifen
+ * --cal-hour-h              -> Höhe einer Stunde im Stundenraster
+ * --cal-panel-radius        -> Rundung der grauen Fläche unter dem Kalenderstreifen
  *
  * Dunkelmodus: dieselben Variablen werden weiter unten unter
  * „[data-theme="dark"]“ bzw. „prefers-color-scheme: dark“ überschrieben.
@@ -123,6 +130,17 @@
   --xp-created: #007aff;
   --xp-done: #34c759;
   --xp-line: #ff9500;
+  --dot-empty: rgba(60, 60, 67, 0.09);
+  --dot-1: rgba(255, 149, 0, 0.3);
+  --dot-2: rgba(255, 149, 0, 0.5);
+  --dot-3: rgba(255, 149, 0, 0.75);
+  --dot-4: #ff9500;
+  --cal-accent: #007aff;
+  --cal-now: #32ade6;
+  --cal-day-ring: rgba(60, 60, 67, 0.08);
+  --cal-row-h: 52px;
+  --cal-hour-h: 56px;
+  --cal-panel-radius: 28px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -149,6 +167,14 @@
   --xp-created: #0a84ff;
   --xp-done: #30d158;
   --xp-line: #ff9f0a;
+  --dot-empty: rgba(255, 255, 255, 0.1);
+  --dot-1: rgba(255, 159, 10, 0.3);
+  --dot-2: rgba(255, 159, 10, 0.52);
+  --dot-3: rgba(255, 159, 10, 0.76);
+  --dot-4: #ff9f0a;
+  --cal-accent: #4aa3ff;
+  --cal-now: #6fcbe8;
+  --cal-day-ring: rgba(255, 255, 255, 0.07);
   }
 }
 
@@ -173,6 +199,14 @@
   --xp-created: #0a84ff;
   --xp-done: #30d158;
   --xp-line: #ff9f0a;
+  --dot-empty: rgba(255, 255, 255, 0.1);
+  --dot-1: rgba(255, 159, 10, 0.3);
+  --dot-2: rgba(255, 159, 10, 0.52);
+  --dot-3: rgba(255, 159, 10, 0.76);
+  --dot-4: #ff9f0a;
+  --cal-accent: #4aa3ff;
+  --cal-now: #6fcbe8;
+  --cal-day-ring: rgba(255, 255, 255, 0.07);
 }
 
 * {
@@ -1619,4 +1653,600 @@ button {
 
 .hist-more:active {
   opacity: 0.55;
+}
+
+/* ---------- Profil-Blatt ---------- */
+
+/* Schließen-Knopf links im Kopf, wie im Profil-Entwurf */
+.modal-close.is-leading {
+  left: 12px;
+  right: auto;
+}
+
+.profile-id {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 2px;
+  padding: 10px 0 18px;
+  border-bottom: 0.5px solid var(--line);
+  margin-bottom: 4px;
+}
+
+/* Kreis mit den Initialen, solange kein Bild hinterlegt ist */
+.profile-avatar {
+  width: 128px;
+  height: 128px;
+  border-radius: 50%; /* border-radius: macht das Feld zum Kreis */
+  display: grid;
+  place-items: center;
+  margin-bottom: 16px;
+  background: linear-gradient(150deg, #7aa7d9, #4d72ad);
+  color: #ffffff;
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.profile-name {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.profile-mail {
+  font-size: 17px;
+  color: var(--muted);
+}
+
+.profile-meta {
+  font-size: 15px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+/* Große Kennzahl über dem Balkenverlauf */
+.stat-big {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-top: -4px;
+}
+
+.stat-sub {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 4px 0 14px;
+}
+
+.usage-bar {
+  fill: var(--xp-line);
+}
+
+/* Serie: zwei Kennzahlen nebeneinander */
+.streak-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.streak-label {
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.streak-value {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+/* Punkte-Raster: Wochentag-Spalte links, danach zwölf Monatsspalten */
+.dotgrid {
+  display: grid;
+  grid-template-columns: 14px repeat(12, 1fr);
+  align-items: center;
+  justify-items: center;
+  row-gap: 9px;
+  column-gap: 4px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%; /* border-radius: macht die Felder zu Punkten */
+  background: var(--dot-empty);
+}
+
+.dot.is-l1 {
+  background: var(--dot-1);
+}
+
+.dot.is-l2 {
+  background: var(--dot-2);
+}
+
+.dot.is-l3 {
+  background: var(--dot-3);
+}
+
+.dot.is-l4 {
+  background: var(--dot-4);
+}
+
+.dot-label,
+.dot-month {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.dot-month {
+  padding-top: 4px;
+}
+
+/* Abschnittstitel über den Zeilenkarten */
+.psection {
+  font-size: 15px;
+  color: var(--muted);
+  padding: 10px 4px 0;
+}
+
+.plist {
+  background: var(--card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow);
+  overflow: hidden; /* overflow: schneidet die Zeilen an den runden Ecken ab */
+}
+
+.plist-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 56px;
+  padding: 10px 16px;
+  border-bottom: 0.5px solid var(--line);
+  text-align: left;
+  font-size: 17px;
+  color: var(--text);
+}
+
+.plist-row:last-child {
+  border-bottom: 0;
+}
+
+.plist-row .icon {
+  width: 22px;
+  height: 22px;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+.plist-row span {
+  flex: 1;
+}
+
+.plist-row .plist-trail {
+  width: 18px;
+  height: 18px;
+  color: var(--chevron);
+}
+
+.plist-row.is-danger,
+.plist-row.is-danger .icon {
+  color: var(--danger);
+}
+
+.plist-row:active {
+  background: var(--bg);
+}
+
+.profile-version {
+  text-align: center;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase; /* text-transform: Versionszeile in Großbuchstaben */
+  color: var(--muted);
+  padding: 18px 0 4px;
+}
+
+/* ---------- Kalender ---------- */
+
+/* Die Kalenderseite füllt das Gerät, damit die graue Fläche bis unten reicht */
+#view-calendar.is-active {
+  display: flex;
+  flex-direction: column;
+}
+
+#view-calendar .screen-title {
+  margin-bottom: 18px;
+}
+
+/* Monat und Jahr mit kleinem Pfeil, öffnet das Monatsmenü */
+.cal-month {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 0 var(--title-side);
+  margin-bottom: 14px;
+  font-size: 24px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  align-self: flex-start;
+}
+
+.cal-month .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.cal-month:active {
+  opacity: 0.55;
+}
+
+.cal-strip {
+  position: relative; /* position: die halb sichtbaren Nachbarwochen richten sich hieran aus */
+  touch-action: pan-y; /* touch-action: waagerecht wischen wechselt die Woche, senkrecht scrollt weiter */
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.cal-week-head,
+.cal-week {
+  display: grid;
+  grid-template-columns: 34px repeat(7, 1fr);
+  align-items: center;
+}
+
+.cal-week-head {
+  position: relative;
+  z-index: 1; /* z-index: die Wochentage liegen über der ausgeblendeten Vorwoche */
+  height: 28px;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: center;
+}
+
+.cal-week-head span:first-child {
+  font-size: 12px;
+  opacity: 0.7;
+}
+
+.cal-weeks {
+  position: relative;
+}
+
+.cal-week {
+  height: var(--cal-row-h);
+}
+
+/* Vor- und Nachwoche scheinen nur schwach durch */
+.cal-week.is-peek {
+  position: absolute; /* position: hängt ober- bzw. unterhalb der sichtbaren Wochen */
+  left: 0;
+  right: 0;
+  opacity: 0.22;
+  pointer-events: none; /* pointer-events: die blassen Tage sollen nicht antippbar sein */
+}
+
+.cal-week.is-before {
+  top: calc(-1 * var(--cal-row-h));
+}
+
+.cal-week.is-after {
+  bottom: calc(-1 * var(--cal-row-h));
+}
+
+.cal-kw {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--muted);
+  text-align: center;
+  opacity: 0.7;
+}
+
+.cal-day {
+  position: relative;
+  height: var(--cal-row-h);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text);
+  -webkit-touch-callout: none;
+}
+
+.cal-day-num {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* Tage mit Einträgen bekommen einen zarten Kreis, gewählte Tage Blau, fremde Monate Grau */
+.cal-day.has-items .cal-day-num {
+  background: var(--cal-day-ring);
+  box-shadow: inset 0 0 0 1px var(--line);
+}
+
+.cal-day.is-today .cal-day-num {
+  font-weight: 700;
+}
+
+.cal-day.is-selected .cal-day-num {
+  color: var(--cal-accent);
+  font-weight: 700;
+}
+
+.cal-day.is-other .cal-day-num {
+  color: var(--muted);
+  opacity: 0.6;
+}
+
+.cal-day:active .cal-day-num {
+  opacity: 0.55;
+}
+
+/* Kleiner Punkt unter Tagen mit Einträgen, in der Farbe des ersten Eintrags */
+.cal-day-dot {
+  position: absolute;
+  bottom: 1px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--cal-accent);
+}
+
+/* Zeile mit Ansicht-Knopf, „Heute“ und Zeitraum */
+.cal-controls {
+  position: relative;
+  z-index: 1; /* z-index: liegt über der ausgeblendeten Nachwoche */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.cal-round,
+.cal-pill {
+  height: 44px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.cal-round {
+  width: 44px;
+  border-radius: 50%;
+}
+
+.cal-round .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.cal-pill {
+  padding: 0 22px;
+  border-radius: 999px;
+}
+
+.cal-today.is-on {
+  color: var(--cal-accent);
+}
+
+.cal-round:active,
+.cal-pill:active {
+  opacity: 0.55;
+}
+
+/* Graue Fläche: läuft bis zum unteren Rand, hinter die Navigation */
+.cal-panel {
+  flex: 1;
+  margin: 14px calc(-1 * var(--content-side)) calc(-1 * var(--tab-space));
+  padding: 14px 16px var(--tab-space);
+  background: var(--card);
+  border-radius: var(--cal-panel-radius) var(--cal-panel-radius) 0 0;
+}
+
+/* Drei Spalten in der Liste: Aufgaben, Termine, Projekte */
+.cal-seg {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.cal-seg-btn {
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.cal-seg-btn.is-active {
+  background: var(--tab-pill-active-bg);
+  color: var(--text);
+}
+
+.cal-seg-btn:active {
+  opacity: 0.55;
+}
+
+/* Leerer Tag */
+.cal-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 44px 12px 24px;
+  color: var(--muted);
+}
+
+.cal-empty .icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 22px;
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+.cal-empty b {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.cal-empty span {
+  font-size: 19px;
+}
+
+/* Einträge in der Liste: Uhrzeit vor dem Titel */
+.cal-time {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  min-width: 44px;
+  flex: 0 0 auto;
+}
+
+/* Stundenraster */
+.cal-hours {
+  position: relative;
+  padding: 10px 0 8px;
+  --cal-label-w: 68px;
+}
+
+.cal-hour {
+  position: relative;
+  height: var(--cal-hour-h);
+  cursor: pointer;
+}
+
+.cal-hour-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.cal-hour-line {
+  position: absolute;
+  left: var(--cal-label-w);
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: var(--line);
+}
+
+.cal-hour:active .cal-hour-line {
+  background: var(--muted);
+}
+
+/* Jetzt-Linie mit Uhrzeit-Pille */
+.cal-now {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.cal-now-time {
+  min-width: var(--cal-label-w);
+  display: flex;
+}
+
+.cal-now-time span {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--cal-now);
+  color: #0b1a2a;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.cal-now-line {
+  flex: 1;
+  height: 2px;
+  background: var(--cal-now);
+  border-radius: 2px;
+}
+
+/* Termine liegen als farbige Blöcke auf dem Raster */
+.cal-event {
+  position: absolute;
+  left: calc(var(--cal-label-w) + 2px);
+  right: 6px;
+  min-height: 22px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--event-color, var(--cal-accent)) 22%, transparent);
+  border-left: 3px solid var(--event-color, var(--cal-accent));
+  color: var(--text);
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.cal-event small {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.cal-event:active {
+  opacity: 0.55;
+}
+
+/* Ganztägige Einträge stehen über dem Raster */
+.cal-allday {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 0 10px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 4px;
+}
+
+.cal-allday-chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--event-color, var(--cal-accent)) 22%, transparent);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cal-allday-chip .icon {
+  width: 14px;
+  height: 14px;
+  color: var(--event-color, var(--cal-accent));
 }

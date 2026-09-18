@@ -33,6 +33,8 @@ const ctxCard = document.getElementById("ctx-card");
 const levelGauge = document.getElementById("level-gauge");
 const progressModal = document.getElementById("progress");
 const progressBody = document.getElementById("progress-body");
+const profileModal = document.getElementById("profile");
+const profileBody = document.getElementById("profile-body");
 const themeOptions = document.getElementById("theme-options");
 
 const views = {
@@ -71,6 +73,7 @@ const presetIcons = [
 
 const storageKey = "paralist-mvp";
 const themeKey = "paralist-theme";
+const usageKey = "paralist-usage";
 
 /* XP-Arten: bestimmen Farbe, Icon und Punkte je Ereignis */
 const xpKinds = {
@@ -114,6 +117,9 @@ let xpLog = [];
 let nextXpId = 1;
 let progressRange = 30;
 let historyLimit = 20;
+let usage = {}; /* Nutzungszeit je Tag in Sekunden: { "2026-09-18": 2400 } */
+let usageRange = 30;
+let usageTickAt = Date.now();
 
 function escapeHtml(value) {
   return String(value).replace(
@@ -141,7 +147,7 @@ function saveState() {
   try {
     localStorage.setItem(
       storageKey,
-      JSON.stringify({ tabs, activeTabId, workspaces, entries, nextEntryId, xpLog, nextXpId })
+      JSON.stringify({ tabs, activeTabId, workspaces, entries, nextEntryId, xpLog, nextXpId, calendar: calPrefs })
     );
   } catch (error) {
     /* ohne Speicher läuft die App weiter, nur ohne Merken */
@@ -204,6 +210,7 @@ function loadState() {
   if (Number(saved.nextEntryId)) nextEntryId = Number(saved.nextEntryId);
   if (Number(saved.nextXpId)) nextXpId = Number(saved.nextXpId);
   if (!tabs.some((tab) => tab.id === activeTabId)) activeTabId = tabs[0].id;
+  if (saved.calendar && typeof saved.calendar === "object") calPrefs = { ...calPrefs, ...saved.calendar };
   if (Array.isArray(saved.xpLog)) xpLog = saved.xpLog;
   else {
     seedXpFromExisting();
@@ -272,6 +279,7 @@ function showView(name) {
   const view = views[name];
   view.hidden = false;
   view.classList.add("is-active");
+  if (name === "calendar") renderCalendar(true);
 }
 
 function setActiveTab(tab) {
@@ -370,7 +378,7 @@ function swipeAction(action, label, iconName, tone = action) {
   `;
 }
 
-function entryRow(entry) {
+function entryRow(entry, prefix = "") {
   return swipeRow(
     `data-entry="${entry.id}"`,
     [
@@ -382,6 +390,7 @@ function entryRow(entry) {
     `
       <button class="workspace-row entry-row" type="button" data-open-entry="${entry.id}">
         ${icon(typeIcon(entry.type), "entry-type")}
+        ${prefix}
         <span>${escapeHtml(entry.title)}</span>
         ${icon("chevron", "chevron")}
       </button>
@@ -685,12 +694,13 @@ function closeComposer() {
   composer.hidden = true;
   tabBar.hidden = false;
   composerInput.value = "";
+  calSlot = null;
 }
 
 function createEntry() {
   const title = composerInput.value.trim();
   if (!title) return;
-  entries.push({
+  const entry = {
     id: nextEntryId++,
     type: composerType,
     title,
@@ -699,12 +709,20 @@ function createEntry() {
     archived: false,
     favorite: false,
     createdAt: Date.now(),
-  });
+  };
+  if (calendarView.classList.contains("is-active")) {
+    entry.date = calSelected;
+    if (composerType === "termin") {
+      entry.time = calSlot ? calSlot.time : calSelected === dayKey(new Date()) ? timeKey(Date.now()) : "09:00";
+    }
+  }
+  entries.push(entry);
   awardXp("created", composerType, title);
   composerInput.value = "";
   closeComposer();
   renderOverview();
   renderPageBody();
+  renderCalendar();
 }
 
 /* ---------- Auswahl-Blatt ---------- */
@@ -1231,6 +1249,7 @@ function openProgress(push = true) {
   closeSheet();
   closeCtxMenu();
   closeComposer();
+  profileModal.hidden = true;
   historyLimit = 20;
   renderProgress();
   progressModal.hidden = false;
@@ -1269,6 +1288,344 @@ progressBody.addEventListener("click", (event) => {
     progressBody.scrollTop = scroll;
   }
 });
+
+/* ---------- Profil: Nutzungszeit und Serien ---------- */
+
+/* Tagesschluessel in Ortszeit, damit Sommerzeit die Zaehlung nicht verschiebt */
+function dayKey(ts) {
+  const date = new Date(ts);
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+}
+
+function dayShift(ts, days) {
+  const date = new Date(ts);
+  date.setDate(date.getDate() + days);
+  date.setHours(0, 0, 0, 0);
+  return date.getTime();
+}
+
+function saveUsage() {
+  try {
+    localStorage.setItem(usageKey, JSON.stringify(usage));
+  } catch (error) {
+    /* ohne Speicher zaehlt die Zeit nur bis zum Neuladen */
+  }
+}
+
+/* Beispielwerte fuer den ersten Start, damit Verlauf und Raster nicht leer sind.
+   Fester Startwert, damit bei jedem Geraet dieselbe Beispielkurve entsteht. */
+function seedUsage() {
+  let seed = 20250618;
+  const random = () => {
+    seed = (seed * 1103515245 + 12345) % 2147483648;
+    return seed / 2147483648;
+  };
+  const today = startOfDay(Date.now());
+  for (let back = 250; back >= 0; back -= 1) {
+    const ts = dayShift(today, -back);
+    const weekday = new Date(ts).getDay();
+    const chance = weekday === 0 || weekday === 6 ? 0.4 : 0.78;
+    if (random() > chance) continue;
+    usage[dayKey(ts)] = Math.round((10 + random() * 75) * 60);
+  }
+  usage[dayKey(Date.now())] = Math.max(usage[dayKey(Date.now())] || 0, 14 * 60);
+}
+
+function loadUsage() {
+  let saved = null;
+  try {
+    saved = JSON.parse(localStorage.getItem(usageKey));
+  } catch (error) {
+    /* kaputte Daten werden ignoriert */
+  }
+  if (saved && typeof saved === "object" && !Array.isArray(saved)) {
+    usage = saved;
+    return;
+  }
+  seedUsage();
+  saveUsage();
+}
+
+/* Zaehlt nur die Zeit, in der die App sichtbar ist; lange Pausen zaehlen nicht mit */
+function trackUsage() {
+  const now = Date.now();
+  const spent = Math.min(60, Math.round((now - usageTickAt) / 1000));
+  usageTickAt = now;
+  if (document.hidden || spent <= 0) return;
+  const key = dayKey(now);
+  usage[key] = (usage[key] || 0) + spent;
+  saveUsage();
+}
+
+function formatDuration(seconds) {
+  const minutes = Math.round(seconds / 60);
+  if (minutes < 60) return `${minutes} Min`;
+  const hours = Math.floor(minutes / 60);
+  const rest = minutes % 60;
+  return rest ? `${hours} Std ${rest} Min` : `${hours} Std`;
+}
+
+/* Kurze Schrift fuer die Achse: volle Stunden als Stunden, sonst Minuten */
+function shortDuration(minutes) {
+  if (!minutes) return "0";
+  if (minutes % 60 === 0) return `${minutes / 60} Std`;
+  return `${minutes} Min`;
+}
+
+/* Serie: jeder Tag mit Nutzungszeit zaehlt. Laeuft heute noch nichts,
+   beginnt die laufende Serie bei gestern, damit sie nicht vorzeitig reisst. */
+function usageStreaks() {
+  const active = new Set(Object.keys(usage).filter((key) => usage[key] > 0));
+  const today = startOfDay(Date.now());
+  let current = 0;
+  let cursor = active.has(dayKey(today)) ? today : dayShift(today, -1);
+  while (active.has(dayKey(cursor))) {
+    current += 1;
+    cursor = dayShift(cursor, -1);
+  }
+
+  const sorted = [...active].sort();
+  let longest = 0;
+  let run = 0;
+  let previous = null;
+  sorted.forEach((key) => {
+    const ts = new Date(`${key}T00:00:00`).getTime();
+    run = previous !== null && Math.round((ts - previous) / 86400000) === 1 ? run + 1 : 1;
+    longest = Math.max(longest, run);
+    previous = ts;
+  });
+  return { current, longest };
+}
+
+function renderProfileId() {
+  return `
+    <section class="profile-id">
+      <div class="profile-avatar" aria-hidden="true">PA</div>
+      <p class="profile-name">Paul Angeles</p>
+      <p class="profile-mail">paul@paralist.app</p>
+      <p class="profile-meta">Pro · Dabei seit Juni 2025</p>
+    </section>
+  `;
+}
+
+/* Balken je Tag: wie lange die App an diesem Tag offen war */
+function renderUsageCard() {
+  const days = usageRange;
+  const today = startOfDay(Date.now());
+  const rows = [];
+  for (let back = days - 1; back >= 0; back -= 1) {
+    const ts = dayShift(today, -back);
+    rows.push({ ts, seconds: usage[dayKey(ts)] || 0 });
+  }
+  const total = rows.reduce((sum, row) => sum + row.seconds, 0);
+  const activeDays = rows.filter((row) => row.seconds > 0).length;
+
+  const width = 326;
+  const height = 200;
+  const plotLeft = 0;
+  const plotRight = 282;
+  const plotTop = 10;
+  const plotBottom = 160;
+  const maxMinutes = Math.max(...rows.map((row) => row.seconds / 60), 1);
+  const steps = [5, 10, 15, 30, 60, 90, 120, 180, 240, 360, 480];
+  const step = steps.find((value) => maxMinutes / value <= 4) || 720;
+  const yMax = Math.max(step, Math.ceil(maxMinutes / step) * step);
+  const x = (index) => plotLeft + ((index + 0.5) / days) * (plotRight - plotLeft);
+  const y = (minutes) => plotBottom - (minutes / yMax) * (plotBottom - plotTop);
+
+  let grid = "";
+  for (let value = 0; value <= yMax; value += step) {
+    grid += `<line class="chart-axis" x1="${plotLeft}" x2="${plotRight}" y1="${y(value).toFixed(1)}" y2="${y(value).toFixed(1)}" />
+      <text class="chart-label" x="${width}" y="${(y(value) + 4).toFixed(1)}" text-anchor="end">${shortDuration(value)}</text>`;
+  }
+
+  const labelStep = days <= 7 ? 1 : days <= 30 ? 7 : 21;
+  const labelFormat =
+    days <= 7
+      ? new Intl.DateTimeFormat("de-DE", { weekday: "short" })
+      : new Intl.DateTimeFormat("de-DE", { day: "numeric", month: "short" });
+  let labels = "";
+  for (let index = days <= 7 ? 0 : labelStep; index < days; index += labelStep) {
+    const xi = x(index).toFixed(1);
+    labels += `<line class="chart-grid" x1="${xi}" x2="${xi}" y1="${plotTop}" y2="${plotBottom}" />
+      <text class="chart-label" x="${xi}" y="${plotBottom + 22}" text-anchor="middle">${labelFormat.format(new Date(rows[index].ts))}</text>`;
+  }
+
+  const barWidth = Math.max(2, ((plotRight - plotLeft) / days) * 0.55);
+  const bars = rows
+    .map((row, index) => {
+      const minutes = row.seconds / 60;
+      if (!minutes) return "";
+      const top = y(minutes);
+      return `<rect class="usage-bar" x="${(x(index) - barWidth / 2).toFixed(1)}" y="${top.toFixed(1)}" width="${barWidth.toFixed(1)}" height="${Math.max(1.5, plotBottom - top).toFixed(1)}" rx="${Math.min(2.5, barWidth / 2).toFixed(1)}" />`;
+    })
+    .join("");
+
+  return `
+    <section class="pcard">
+      <div class="pcard-head">${icon("clock")}<span>Nutzungszeit</span></div>
+      <p class="stat-big">${formatDuration(total)}</p>
+      <p class="stat-sub">an ${activeDays} von ${days} Tagen · ⌀ ${formatDuration(activeDays ? total / activeDays : 0)} je aktivem Tag</p>
+      <div class="seg" id="usage-range">
+        ${[7, 30, 90]
+          .map(
+            (value) =>
+              `<button type="button" data-usage-range="${value}" class="${value === days ? "is-active" : ""}">${value} Tage</button>`
+          )
+          .join("")}
+      </div>
+      <svg class="chart" viewBox="0 0 ${width} ${height}" aria-hidden="true">
+        ${grid}
+        ${labels}
+        ${bars}
+      </svg>
+    </section>
+  `;
+}
+
+/* Punkte-Raster: eine Spalte je Monat, eine Zeile je Wochentag.
+   Je dunkler der Punkt, desto mehr Zeit lief an diesem Wochentag im Monat. */
+function renderStreakCard() {
+  const streak = usageStreaks();
+  const year = new Date().getFullYear();
+  const cells = Array.from({ length: 12 }, () => new Array(7).fill(0));
+  Object.keys(usage).forEach((key) => {
+    const date = new Date(`${key}T00:00:00`);
+    if (Number.isNaN(date.getTime()) || date.getFullYear() !== year) return;
+    cells[date.getMonth()][(date.getDay() + 6) % 7] += usage[key];
+  });
+  const max = Math.max(...cells.flat(), 1);
+
+  const weekdays = ["M", "D", "M", "D", "F", "S", "S"];
+  const weekdayNames = ["Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"];
+  const monthLetters = ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"];
+  const monthNames = [
+    "Januar", "Februar", "März", "April", "Mai", "Juni",
+    "Juli", "August", "September", "Oktober", "November", "Dezember",
+  ];
+
+  let grid = "";
+  for (let row = 0; row < 7; row += 1) {
+    grid += `<span class="dot-label">${weekdays[row]}</span>`;
+    for (let month = 0; month < 12; month += 1) {
+      const value = cells[month][row];
+      const level = value ? Math.min(4, Math.ceil((value / max) * 4)) : 0;
+      const title = value
+        ? `${weekdayNames[row]} im ${monthNames[month]}: ${formatDuration(value)}`
+        : `${weekdayNames[row]} im ${monthNames[month]}: keine Zeit`;
+      grid += `<span class="dot is-l${level}" title="${title}"></span>`;
+    }
+  }
+  grid += `<span class="dot-label"></span>`;
+  grid += monthLetters.map((letter) => `<span class="dot-month">${letter}</span>`).join("");
+
+  return `
+    <section class="pcard">
+      <div class="pcard-head">${icon("flame")}<span>Serie</span></div>
+      <div class="streak-row">
+        <div class="streak-box">
+          <p class="streak-label">Aktuelle Serie</p>
+          <p class="streak-value">${streak.current} T</p>
+        </div>
+        <div class="streak-box">
+          <p class="streak-label">Längste</p>
+          <p class="streak-value">${streak.longest} T</p>
+        </div>
+      </div>
+      <div class="dotgrid">${grid}</div>
+      <p class="chart-note">Wochentage von Montag oben bis Sonntag unten · ${year}</p>
+    </section>
+  `;
+}
+
+function profileRows(rows) {
+  return rows
+    .map(
+      (row) => `
+        <button class="plist-row${row.danger ? " is-danger" : ""}" type="button">
+          ${icon(row.icon)}
+          <span>${row.label}</span>
+          ${row.trail ? icon(row.trail, "plist-trail") : ""}
+        </button>
+      `
+    )
+    .join("");
+}
+
+function renderProfileLists() {
+  return `
+    <p class="psection">Plan</p>
+    <section class="plist">
+      ${profileRows([{ icon: "arrow-up-circle", label: "Plan verwalten", trail: "chevron" }])}
+    </section>
+    <p class="psection">Support</p>
+    <section class="plist">
+      ${profileRows([
+        { icon: "help", label: "Hilfe", trail: "external" },
+        { icon: "roadmap", label: "Roadmap", trail: "external" },
+        { icon: "globe", label: "Produkt-Weltkarte", trail: "external" },
+        { icon: "cube", label: "Danksagungen", trail: "chevron" },
+      ])}
+    </section>
+    <p class="psection">Mehr</p>
+    <section class="plist">
+      ${profileRows([{ icon: "signout", label: "Abmelden" }])}
+    </section>
+    <p class="psection">Gefahrenzone</p>
+    <section class="plist">
+      ${profileRows([{ icon: "trash", label: "Konto löschen", danger: true }])}
+    </section>
+    <p class="profile-version">PARALIST 0.1.0 (MVP)</p>
+  `;
+}
+
+function renderProfile() {
+  profileBody.innerHTML =
+    renderProfileId() + renderUsageCard() + renderStreakCard() + renderProfileLists();
+}
+
+function openProfile(push = true) {
+  closeSheet();
+  closeCtxMenu();
+  closeComposer();
+  progressModal.hidden = true;
+  trackUsage();
+  renderProfile();
+  profileModal.hidden = false;
+  profileBody.scrollTop = 0;
+  if (push) history.pushState({ view: "profile", from: sourceView }, "", "#/profil");
+}
+
+function closeProfile() {
+  if (profileModal.hidden) return;
+  if (history.state && history.state.view === "profile") {
+    history.back();
+    return;
+  }
+  profileModal.hidden = true;
+}
+
+document.getElementById("profile-btn").addEventListener("click", () => openProfile());
+document.getElementById("profile-close").addEventListener("click", closeProfile);
+profileModal.addEventListener("click", (event) => {
+  if (event.target === profileModal) closeProfile();
+});
+
+profileBody.addEventListener("click", (event) => {
+  const range = event.target.closest("[data-usage-range]");
+  if (!range) return;
+  usageRange = Number(range.dataset.usageRange);
+  const scroll = profileBody.scrollTop;
+  renderProfile();
+  profileBody.scrollTop = scroll;
+});
+
+setInterval(trackUsage, 15000);
+document.addEventListener("visibilitychange", () => {
+  trackUsage();
+  usageTickAt = Date.now();
+});
+window.addEventListener("pagehide", trackUsage);
 
 /* ---------- Darstellung (Hell / Dunkel / System) ---------- */
 
@@ -1317,6 +1674,370 @@ themeOptions.addEventListener("click", (event) => {
   const button = event.target.closest("[data-theme-option]");
   if (button) setTheme(button.dataset.themeOption);
 });
+
+/* ---------- Kalender ---------- */
+
+const calMonthBtn = document.getElementById("cal-month");
+const calMonthLabel = document.getElementById("cal-month-label");
+const calStrip = document.getElementById("cal-strip");
+const calWeeks = document.getElementById("cal-weeks");
+const calModeBtn = document.getElementById("cal-mode");
+const calModeIcon = document.getElementById("cal-mode-icon");
+const calTodayBtn = document.getElementById("cal-today");
+const calSpanBtn = document.getElementById("cal-span");
+const calPanel = document.getElementById("cal-panel");
+
+/* Zeitraum des Streifens (Wochen, 0 = ganzer Monat), Ansicht der Fläche (Raster oder Liste)
+   und die gewählte Spalte der Liste. Wird mit dem übrigen Zustand gespeichert. */
+let calPrefs = { span: 1, mode: "grid", seg: "termine" };
+let calSelected = dayKey(new Date());
+let calSlot = null;
+let calDrag = null;
+let calSwiped = false;
+
+const calSpans = [
+  { id: 1, label: "1 Woche", short: "1 W" },
+  { id: 2, label: "2 Wochen", short: "2 W" },
+  { id: 0, label: "1 Monat", short: "1 M" },
+];
+
+const calSegs = [
+  { id: "aufgaben", label: "Aufgaben", empty: "Keine Aufgaben" },
+  { id: "termine", label: "Termine", empty: "Nichts geplant" },
+  { id: "projekte", label: "Projekte", empty: "Keine Projekte" },
+];
+
+function pad2(value) {
+  return String(value).padStart(2, "0");
+}
+
+/* Tage werden als „JJJJ-MM-TT“ gemerkt, damit Vergleiche ohne Zeitzonen-Ärger klappen */
+function dayKey(date) {
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+}
+
+function parseDay(key) {
+  const [year, month, day] = key.split("-").map(Number);
+  return new Date(year, month - 1, day);
+}
+
+function addDays(date, amount) {
+  const next = new Date(date);
+  next.setDate(next.getDate() + amount);
+  return next;
+}
+
+function startOfWeek(date) {
+  const start = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  start.setDate(start.getDate() - ((start.getDay() + 6) % 7));
+  return start;
+}
+
+function isoWeek(date) {
+  const utc = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const day = utc.getUTCDay() || 7;
+  utc.setUTCDate(utc.getUTCDate() + 4 - day);
+  const yearStart = new Date(Date.UTC(utc.getUTCFullYear(), 0, 1));
+  return Math.ceil(((utc - yearStart) / 86400000 + 1) / 7);
+}
+
+function timeKey(ts) {
+  const date = new Date(ts);
+  return `${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
+}
+
+/* Einträge ohne eigenes Datum zählen zu dem Tag, an dem sie angelegt wurden;
+   Termine ohne Uhrzeit bekommen die Uhrzeit des Anlegens. */
+function entryDay(entry) {
+  return entry.date || dayKey(new Date(entry.createdAt || Date.now()));
+}
+
+function entryTime(entry) {
+  if (entry.time) return entry.time;
+  if (entry.type === "termin" && entry.createdAt) return timeKey(entry.createdAt);
+  return null;
+}
+
+function entryColor(entry) {
+  return (xpItems[entry.type] || xpItems.notiz).color;
+}
+
+function calDayEntries(key) {
+  return entries.filter((entry) => !entry.archived && entryDay(entry) === key);
+}
+
+function calLongDate(key) {
+  return parseDay(key).toLocaleDateString("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+}
+
+/* Montage der sichtbaren Wochen: eine, zwei oder alle Wochen des Monats */
+function calVisibleWeeks() {
+  const selected = parseDay(calSelected);
+  if (calPrefs.span === 0) {
+    const first = new Date(selected.getFullYear(), selected.getMonth(), 1);
+    const last = new Date(selected.getFullYear(), selected.getMonth() + 1, 0);
+    const weeks = [];
+    for (let monday = startOfWeek(first); monday <= last; monday = addDays(monday, 7)) weeks.push(monday);
+    return weeks;
+  }
+  const start = startOfWeek(selected);
+  return Array.from({ length: calPrefs.span }, (_, index) => addDays(start, index * 7));
+}
+
+function calWeekHtml(monday, extra = "") {
+  const todayKey = dayKey(new Date());
+  const month = parseDay(calSelected).getMonth();
+  let html = `<div class="cal-week${extra ? ` ${extra}` : ""}"><span class="cal-kw">${isoWeek(monday)}</span>`;
+  for (let offset = 0; offset < 7; offset += 1) {
+    const day = addDays(monday, offset);
+    const key = dayKey(day);
+    const items = calDayEntries(key);
+    const classes = ["cal-day"];
+    if (key === calSelected) classes.push("is-selected");
+    if (key === todayKey) classes.push("is-today");
+    if (items.length) classes.push("has-items");
+    if (calPrefs.span === 0 && day.getMonth() !== month) classes.push("is-other");
+    html += `
+      <button class="${classes.join(" ")}" type="button" data-day="${key}" aria-label="${calLongDate(key)}">
+        <span class="cal-day-num">${day.getDate()}</span>
+        ${items.length ? `<span class="cal-day-dot" style="background:${entryColor(items.find((item) => item.type === "termin") || items[0])}"></span>` : ""}
+      </button>`;
+  }
+  return `${html}</div>`;
+}
+
+function renderCalStrip() {
+  const weeks = calVisibleWeeks();
+  calMonthLabel.textContent = parseDay(calSelected).toLocaleDateString("de-DE", { month: "long", year: "numeric" });
+  calWeeks.innerHTML =
+    calWeekHtml(addDays(weeks[0], -7), "is-peek is-before") +
+    weeks.map((monday) => calWeekHtml(monday)).join("") +
+    calWeekHtml(addDays(weeks[weeks.length - 1], 7), "is-peek is-after");
+  calTodayBtn.classList.toggle("is-on", calSelected === dayKey(new Date()));
+  calSpanBtn.textContent = calSpans.find((span) => span.id === calPrefs.span).short;
+  /* Der runde Knopf zeigt immer die Ansicht, zu der er wechselt */
+  calModeIcon.setAttribute("href", calPrefs.mode === "grid" ? "#icon-list" : "#icon-timeline");
+}
+
+function calListEntries() {
+  const seg = calPrefs.seg;
+  return calDayEntries(calSelected)
+    .filter((entry) => {
+      if (seg === "aufgaben") return entry.type === "aufgabe";
+      if (seg === "termine") return entry.type === "termin";
+      return sameParent(entry.parent, overviewPages[3].parent);
+    })
+    .sort((a, b) => String(entryTime(a) || "").localeCompare(String(entryTime(b) || "")));
+}
+
+function renderCalList() {
+  const list = calListEntries();
+  const seg = calSegs.find((item) => item.id === calPrefs.seg);
+  const tabsHtml = calSegs
+    .map(
+      (item) => `
+        <button class="cal-seg-btn${item.id === calPrefs.seg ? " is-active" : ""}" type="button" data-seg="${item.id}">${item.label}</button>
+      `
+    )
+    .join("");
+  const bodyHtml = list.length
+    ? `<div class="workspace-list">${list
+        .map((entry) => entryRow(entry, entryTime(entry) ? `<span class="cal-time">${entryTime(entry)}</span>` : ""))
+        .join("")}</div>`
+    : `
+      <div class="cal-empty">
+        ${icon("calendar")}
+        <b>${seg.empty}</b>
+        <span>${calLongDate(calSelected)}</span>
+      </div>`;
+  return `<div class="cal-seg">${tabsHtml}</div>${bodyHtml}`;
+}
+
+function calHourHeight() {
+  return parseFloat(getComputedStyle(document.documentElement).getPropertyValue("--cal-hour-h")) || 56;
+}
+
+const calGridTop = 10; /* Abstand über der 00:00-Linie, gleich dem Innenabstand von .cal-hours */
+
+function calNowY(hourHeight) {
+  const now = new Date();
+  return calGridTop + (now.getHours() + now.getMinutes() / 60) * hourHeight;
+}
+
+/* Im Raster liegen nur Termine; Aufgaben, Notizen und Medien gehören in die Liste */
+function renderCalGrid() {
+  const items = calDayEntries(calSelected).filter((entry) => entry.type === "termin");
+  const timed = items.filter((entry) => entryTime(entry));
+  const allDay = items.filter((entry) => !entryTime(entry));
+  const hourHeight = calHourHeight();
+  let html = "";
+
+  if (allDay.length) {
+    html += `<div class="cal-allday">${allDay
+      .map(
+        (entry) => `
+          <button class="cal-allday-chip" type="button" data-open-entry="${entry.id}" style="--event-color:${entryColor(entry)}">
+            ${icon(typeIcon(entry.type))}${escapeHtml(entry.title)}
+          </button>`
+      )
+      .join("")}</div>`;
+  }
+
+  html += `<div class="cal-hours">`;
+  for (let hour = 0; hour < 24; hour += 1) {
+    html += `<div class="cal-hour" data-hour="${hour}"><span class="cal-hour-label">${pad2(hour)}:00</span><span class="cal-hour-line"></span></div>`;
+  }
+
+  /* Termine zur selben Uhrzeit werden leicht versetzt, damit keiner ganz verschwindet */
+  const seen = {};
+  timed.forEach((entry) => {
+    const time = entryTime(entry);
+    const [hour, minute] = time.split(":").map(Number);
+    const shift = seen[time] || 0;
+    seen[time] = shift + 1;
+    const top = calGridTop + (hour + minute / 60) * hourHeight;
+    html += `
+      <button class="cal-event" type="button" data-open-entry="${entry.id}" style="top:${top}px;height:${hourHeight - 4}px;margin-left:${shift * 12}px;--event-color:${entryColor(entry)}">
+        ${escapeHtml(entry.title)}<small>${time}</small>
+      </button>`;
+  });
+
+  if (calSelected === dayKey(new Date())) {
+    html += `
+      <div class="cal-now" id="cal-now" style="top:${calNowY(hourHeight)}px">
+        <span class="cal-now-time"><span id="cal-now-label">${timeKey(Date.now())}</span></span>
+        <span class="cal-now-line"></span>
+      </div>`;
+  }
+  return `${html}</div>`;
+}
+
+function calScrollToNow() {
+  const target = document.getElementById("cal-now") || calPanel.querySelector('[data-hour="8"]');
+  if (target) requestAnimationFrame(() => target.scrollIntoView({ block: "center" }));
+}
+
+function renderCalendar(opened = false) {
+  renderCalStrip();
+  calPanel.innerHTML = calPrefs.mode === "grid" ? renderCalGrid() : renderCalList();
+  if (opened && calPrefs.mode === "grid") calScrollToNow();
+}
+
+/* Die Jetzt-Linie wandert mit der Uhr weiter */
+function calTick() {
+  const now = document.getElementById("cal-now");
+  if (!now) return;
+  now.style.top = `${calNowY(calHourHeight())}px`;
+  document.getElementById("cal-now-label").textContent = timeKey(Date.now());
+}
+
+function calShift(direction) {
+  const selected = parseDay(calSelected);
+  if (calPrefs.span === 0) {
+    calShiftMonth(direction);
+    return;
+  }
+  calSelected = dayKey(addDays(selected, direction * 7 * calPrefs.span));
+  renderCalendar();
+}
+
+function calShiftMonth(direction) {
+  const selected = parseDay(calSelected);
+  const next = new Date(selected.getFullYear(), selected.getMonth() + direction, 1);
+  const lastDay = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate();
+  next.setDate(Math.min(selected.getDate(), lastDay));
+  calSelected = dayKey(next);
+  renderCalendar();
+}
+
+function calGoToday() {
+  calSelected = dayKey(new Date());
+  renderCalendar(true);
+}
+
+function calSetSpan(span) {
+  calPrefs.span = span;
+  saveState();
+  renderCalendar();
+}
+
+function calSetMode(mode) {
+  calPrefs.mode = mode;
+  saveState();
+  renderCalendar(mode === "grid");
+}
+
+calMonthBtn.addEventListener("click", () => {
+  openCtxMenu(calMonthBtn, [
+    { icon: "back", label: "Vorheriger Monat", onSelect: () => calShiftMonth(-1) },
+    { icon: "chevron", label: "Nächster Monat", onSelect: () => calShiftMonth(1) },
+    { icon: "calendar", label: "Zu heute", onSelect: calGoToday },
+  ]);
+});
+
+calModeBtn.addEventListener("click", () => calSetMode(calPrefs.mode === "grid" ? "list" : "grid"));
+calTodayBtn.addEventListener("click", calGoToday);
+
+calSpanBtn.addEventListener("click", () => {
+  openSheet(
+    "Zeitraum",
+    calSpans.map((span) => ({
+      icon: "calendar",
+      label: span.label,
+      active: span.id === calPrefs.span,
+      onSelect: () => calSetSpan(span.id),
+    }))
+  );
+});
+
+/* Tag antippen wählt ihn aus; waagerecht wischen blättert eine Woche, zwei Wochen oder einen Monat */
+calStrip.addEventListener("click", (event) => {
+  if (calSwiped) return;
+  const day = event.target.closest("[data-day]");
+  if (!day) return;
+  calSelected = day.dataset.day;
+  renderCalendar();
+});
+
+calStrip.addEventListener("pointerdown", (event) => {
+  calDrag = { x: event.clientX, y: event.clientY };
+});
+
+calStrip.addEventListener("pointerup", (event) => {
+  if (!calDrag) return;
+  const dx = event.clientX - calDrag.x;
+  const dy = event.clientY - calDrag.y;
+  calDrag = null;
+  if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy) * 1.2) return;
+  calSwiped = true;
+  setTimeout(() => {
+    calSwiped = false;
+  }, 0);
+  calShift(dx < 0 ? 1 : -1);
+});
+
+calStrip.addEventListener("pointercancel", () => {
+  calDrag = null;
+});
+
+/* In der Fläche: Spalte wechseln oder eine leere Stunde antippen, um dort einen Termin anzulegen */
+calPanel.addEventListener("click", (event) => {
+  const seg = event.target.closest("[data-seg]");
+  if (seg) {
+    calPrefs.seg = seg.dataset.seg;
+    saveState();
+    renderCalendar();
+    return;
+  }
+  if (event.target.closest("[data-open-entry]")) return;
+  const hour = event.target.closest("[data-hour]");
+  if (!hour) return;
+  calSlot = { date: calSelected, time: `${pad2(Number(hour.dataset.hour))}:00` };
+  composerType = "termin";
+  openComposer();
+});
+
+setInterval(calTick, 30000);
 
 /* ---------- Wischen ---------- */
 
@@ -1427,6 +2148,7 @@ function refreshLists() {
   renderOverview();
   renderWorkspaces();
   renderPageBody();
+  renderCalendar();
 }
 
 content.addEventListener(
@@ -1784,9 +2506,14 @@ window.addEventListener("popstate", (event) => {
   closeSheet();
   closeCtxMenu();
   progressModal.hidden = true;
+  profileModal.hidden = true;
 
   if (state && state.view === "progress") {
     openProgress(false);
+    return;
+  }
+  if (state && state.view === "profile") {
+    openProfile(false);
     return;
   }
   if (!state || state.view === "home") {
@@ -1822,6 +2549,7 @@ window.addEventListener("popstate", (event) => {
 });
 
 loadState();
+loadUsage();
 const tabMatch = location.hash.match(/^#\/tab\/(\d+)/);
 if (tabMatch) {
   const id = Number(tabMatch[1]);
