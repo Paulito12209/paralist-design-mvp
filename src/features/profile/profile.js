@@ -53,9 +53,11 @@ export function renderProfile() {
   dom.profileBody.innerHTML = shownDetail
     ? detailMarkup(shownDetail)
     : identityCard() + insightsSection() + appearanceSection() + listsMarkup();
-  /* Der Pfeil steht nur auf einer Unterseite im Kopf — auf der Liste führt das
-     Kreuz allein aus dem Blatt heraus. */
+  /* Nur auf einer Unterseite: der Pfeil erscheint und „Einstellungen“ rückt
+     neben ihn — zusammen sind sie der Weg zurück zur Liste. Auf der Liste
+     selbst führt das Kreuz allein aus dem Blatt heraus. */
   el("profile-back").hidden = !shownDetail;
+  el("profile-head").classList.toggle("is-back", Boolean(shownDetail));
   if (shownDetail) settleDetail(shownDetail);
 }
 
