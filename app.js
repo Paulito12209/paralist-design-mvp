@@ -340,7 +340,7 @@ function renderTabs() {
         return `
           <div class="tab-pill is-active">
             ${glyph}
-            <input class="tab-pill-input" id="tab-name-input" type="text" value="${escapeHtml(tab.name)}" placeholder="${escapeHtml(tab.placeholder || "")}" aria-label="Tab benennen" />
+            <input class="tab-pill-input" id="tab-name-input" type="text" size="1" value="${escapeHtml(tab.name)}" placeholder="${escapeHtml(tab.placeholder || "")}" aria-label="Tab benennen" />
           </div>
         `;
       }
@@ -360,9 +360,31 @@ function renderTabs() {
 
   const input = document.getElementById("tab-name-input");
   if (input) {
+    fitTabNameInput(input);
     input.focus();
     input.select();
   }
+}
+
+/* Tab-Eingabe so schmal wie der Text, damit ein neuer Tab nicht extra groß wird */
+function fitTabNameInput(input) {
+  if (!input) return;
+  const sample = input.value || input.placeholder || "";
+  const style = getComputedStyle(input);
+  const probe = document.createElement("span");
+  probe.textContent = sample || " ";
+  probe.style.position = "absolute";
+  probe.style.visibility = "hidden";
+  probe.style.whiteSpace = "pre";
+  probe.style.font = style.font;
+  probe.style.fontSize = style.fontSize;
+  probe.style.fontWeight = style.fontWeight;
+  probe.style.fontFamily = style.fontFamily;
+  probe.style.letterSpacing = style.letterSpacing;
+  document.body.appendChild(probe);
+  const width = Math.ceil(probe.getBoundingClientRect().width);
+  probe.remove();
+  input.style.width = `${Math.max(width, 1)}px`;
 }
 
 /* Eine Zeile mit Wisch-Knöpfen; die Knöpfe liegen hinter der Zeile */
@@ -2683,6 +2705,10 @@ content.addEventListener("click", (event) => {
   }
   if (row.dataset.openEntry) openEntry(row.dataset.openEntry);
   else openTarget("workspace", row.dataset.openWorkspace);
+});
+
+workspaceTabs.addEventListener("input", (event) => {
+  if (event.target.id === "tab-name-input") fitTabNameInput(event.target);
 });
 
 workspaceTabs.addEventListener("keydown", (event) => {
