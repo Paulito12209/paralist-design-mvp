@@ -6,7 +6,7 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * profile        -> Name, Mailadresse, Plan und Version im Kopf
- * roadmapUrl     -> Adresse hinter „Support → Roadmap“ (das Canny-Board)
+ * roadmapUrl     -> Adresse hinter „Support → Feedback & Roadmap“ (Canny-Board)
  * stepSizes      -> die runden Schritte der senkrechten Achse (Minuten)
  * barWidthShare  -> wie breit ein Balken im Verhältnis zu seiner Spalte ist
  * dotLevels      -> wie viele Helligkeitsstufen das Punkte-Raster hat
@@ -32,7 +32,11 @@ const profile = {
   initials: "PA",
 };
 
-/* Das öffentliche Board, auf dem Nutzer Wünsche einreichen und dafür stimmen. */
+/*
+ * Das öffentliche Board: dort wird beides erledigt — Wünsche und Fehler
+ * einreichen und über die Roadmap abstimmen. Deshalb führt unter „Support“
+ * nur noch eine Zeile dorthin.
+ */
 const roadmapUrl = "https://xool.canny.io";
 
 const stepSizes = [5, 10, 15, 30, 60, 90, 120, 180, 240, 360, 480];
@@ -182,8 +186,7 @@ const listSections = [
   {
     title: "Support",
     rows: [
-      { icon: "note", label: "Feedback", trail: "chevron", detail: "feedback" },
-      { icon: "roadmap", label: "Roadmap", trail: "external", link: roadmapUrl },
+      { icon: "roadmap", label: "Feedback & Roadmap", trail: "external", link: roadmapUrl },
       { icon: "cube", label: "Danksagungen", trail: "chevron", detail: "credits" },
     ],
   },

@@ -53,10 +53,9 @@ export function renderProfile() {
   dom.profileBody.innerHTML = shownDetail
     ? detailMarkup(shownDetail)
     : identityCard() + insightsSection() + appearanceSection() + listsMarkup();
-  /* Auf einer Seite rückt „Einstellungen“ neben den Pfeil nach links und wird
-     damit zum Weg zurück; auf der Liste steht der Titel wieder mittig. */
+  /* Der Pfeil steht nur auf einer Unterseite im Kopf — auf der Liste führt das
+     Kreuz allein aus dem Blatt heraus. */
   el("profile-back").hidden = !shownDetail;
-  el("profile-head").classList.toggle("is-back", Boolean(shownDetail));
   if (shownDetail) settleDetail(shownDetail);
 }
 

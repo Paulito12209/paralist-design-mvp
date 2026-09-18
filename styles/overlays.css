@@ -214,22 +214,19 @@
   transform: translateX(-50%); /* transform: zentriert den Griff */
 }
 
-/* Mit Pfeil rückt der Titel aus der Mitte nach links direkt neben ihn. */
-.modal-head.is-back {
-  justify-content: flex-start;
-  gap: 2px;
-}
-
 .modal-head h2 {
   font-size: 20px;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
 
+/* Spiegelbild des Schließen-Knopfs: links im Kopf, nur auf den Unterseiten. */
 .modal-back {
-  width: 34px;
-  height: 34px;
-  margin-left: -8px; /* margin-left: der Pfeil steht optisch bündig mit dem Blattrand */
+  position: absolute;
+  left: 12px;
+  top: 16px;
+  width: 42px;
+  height: 42px;
   border-radius: 50%; /* border-radius: rundet die Tippfläche des Pfeils */
   display: grid;
   place-items: center;
