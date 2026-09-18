@@ -1,23 +1,155 @@
 /*
- * Einstellungsseite: die Liste für Hell, Dunkel und System.
+ * Einstellungs-Blatt: die beiden kleinen Karten unter „Analyse“, die Liste für
+ * Hell, Dunkel und System und die Kopfzeile der aufgeklappten Karte.
  * Pfad: styles/settings.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
- * --card / --line           -> Fläche und Trennlinien der Liste
- * --link-color              -> Haken neben der gewählten Darstellung
- * --radius-lg               -> Rundung der Liste
- 
+ * --mini-gap                -> Fuge zwischen den beiden Kacheln
+ * --mini-card-height        -> Mindesthöhe einer Kachel
+ * --mini-chart-height       -> Höhe der kleinen Grafik unter der Zahl
+ * --card / --line           -> Fläche und Trennlinien von Kacheln und Liste
+ * --radius-lg               -> Rundung von Kacheln und Liste
+ * --chevron                 -> Pfeil oben rechts auf der Kachel
+ * --muted                   -> Beschriftungen auf der Kachel
+ * --xp-line                 -> Farbe der kleinen Balken
+ * --dot-empty / --dot-4     -> Punkte der Serie: blass und voll
+ * --add                     -> Haken neben der gewählten Darstellung
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
+
+/* ---------- Analyse: zwei Kacheln nebeneinander ---------- */
+
+.mini-grid {
+  display: grid;
+  /* minmax(0, 1fr): sonst darf die Kachel mit dem längeren Wort breiter werden als die andere */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--mini-gap);
+  margin-bottom: 8px;
+}
+
+.mini-card {
+  min-width: 0;
+  /* min-width: die Kachel darf schmaler als ihr Text werden, damit beide Spalten gleich bleiben */
+  min-height: var(--mini-card-height);
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  padding: 12px 14px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  text-align: left;
+  color: var(--text);
+}
+
+.mini-card:active {
+  transform: scale(0.98); /* transform: die Kachel gibt beim Tippen leicht nach */
+}
+
+.mini-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.mini-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  overflow: hidden;
+  text-overflow: ellipsis; /* text-overflow: „Nutzungszeit“ wird gekürzt statt umgebrochen */
+  white-space: nowrap;
+}
+
+/* Runder grauer Knopf mit dem Pfeil, wie auf den Kacheln in Apple Fitness */
+.mini-go {
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%; /* border-radius: macht die Fläche hinter dem Pfeil rund */
+  background: var(--tab-pill-active-bg);
+  display: grid;
+  place-items: center;
+}
+
+.mini-go .icon {
+  width: 14px;
+  height: 14px;
+  color: var(--muted);
+}
+
+.mini-label {
+  font-size: 14px;
+  color: var(--muted);
+  margin-top: 10px;
+}
+
+.mini-value {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.mini-unit {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.mini-chart {
+  display: block;
+  margin-top: auto; /* margin-top: schiebt die Grafik an den unteren Rand der Kachel */
+  padding-top: 10px;
+  height: var(--mini-chart-height);
+}
+
+/* Balken je Tag: die Höhe setzt src/features/profile/settings-cards.js */
+.mini-bars {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 3px;
+  height: 100%;
+}
+
+.mini-bar {
+  flex: 1;
+  min-height: 2px;
+  border-radius: 2px; /* border-radius: rundet die Balkenenden */
+  background: var(--xp-line);
+}
+
+/* Tag ohne Nutzung: nur ein blasser Stummel */
+.mini-bar.is-empty {
+  background: var(--dot-empty);
+}
+
+/* Punkte je Tag: voll, wenn an dem Tag etwas lief */
+.mini-dots {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 3px;
+  height: 100%;
+  padding-bottom: 4px;
+}
+
+/* ---------- Darstellung ---------- */
 
 .settings-group {
   background: var(--card);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
   overflow: hidden; /* overflow: schneidet die Zeilen an den runden Ecken ab */
-  margin-bottom: 20px;
+  margin-bottom: 4px;
+  flex: 0 0 auto; /* flex: im Blatt sonst auf null zusammengedrückt */
 }
 
 .settings-row {
@@ -62,4 +194,32 @@
 
 .settings-row:active {
   background: var(--bg);
+}
+
+/* ---------- Aufgeklappte Kachel ---------- */
+
+.settings-detail-head {
+  display: flex;
+  align-items: center;
+  padding: 2px 0 10px;
+  flex: 0 0 auto;
+}
+
+.settings-back {
+  width: 40px;
+  height: 40px;
+  margin-left: -8px; /* margin-left: der Pfeil steht optisch bündig mit den Karten */
+  border-radius: 50%; /* border-radius: rundet die Tippfläche des Pfeils */
+  display: grid;
+  place-items: center;
+  color: var(--text);
+}
+
+.settings-back .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.settings-back:active {
+  background: var(--tab-pill-active-bg);
 }

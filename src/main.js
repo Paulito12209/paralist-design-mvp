@@ -27,7 +27,6 @@ import { initPage } from "./features/overview/page.js";
 import { beginRenameTab, initTabs, openTabMenu, renderTabs } from "./features/overview/tabs.js";
 import { initWorkspacePage } from "./features/overview/workspace-page.js";
 import { commitWorkspaceName, initWorkspaces, openWorkspaceMenu, renderWorkspaces } from "./features/overview/workspaces.js";
-import { initTheme } from "./features/settings/theme.js";
 import { initKeyboardInset } from "./shell/keyboard-inset.js";
 import { initLevelGauge } from "./shell/level-gauge.js";
 import { initLifecycle } from "./shell/lifecycle.js";
@@ -44,6 +43,7 @@ import { initSwipe } from "./ui/swipe.js";
 /* Was erst beim ersten Öffnen geholt wird. Nur diese Datei kennt die Pfade. */
 const lazyModules = {
   calendar: () => import("./features/calendar/calendar.js"),
+  tasks: () => import("./features/tasks/tasks.js"),
   media: () => import("./features/media/media.js"),
   search: () => import("./features/search/search.js"),
   resources: () => import("./features/resources/resources.js"),
@@ -54,10 +54,10 @@ const lazyModules = {
 };
 
 /* Von den nachladbaren Bereichen sind das die, die eine eigene Ansicht haben. */
-const lazyViews = ["calendar", "media", "search"];
+const lazyViews = ["calendar", "tasks", "media", "search"];
 
 /* Reihenfolge des Vorladens: was man am ehesten als Nächstes braucht, zuerst. */
-const prefetchOrder = ["search", "calendar", "media", "progress", "profile", "resources", "files", "drawing"];
+const prefetchOrder = ["search", "tasks", "calendar", "media", "progress", "profile", "resources", "files", "drawing"];
 
 /* Gespeicherten Zustand einlesen, bevor irgendetwas gezeichnet wird. */
 function loadEverything() {
@@ -95,7 +95,6 @@ function initFeatures() {
   initEntry();
   initComposer();
   initDictation(updateComposerSend);
-  initTheme();
 }
 
 /* Eine nachzuladende Seite wurde geöffnet: ihr Modul holen. Es zeichnet sich selbst. */

@@ -123,6 +123,10 @@ export const dom = {
   get calSpanBtn() { return el("cal-span"); },
   get calPanel() { return el("cal-panel"); },
 
+  /* Aufgaben */
+  get tasksTools() { return el("tasks-tools"); },
+  get tasksBody() { return el("tasks-body"); },
+
   /* Medien */
   get mediaFilters() { return el("media-filters"); },
   get mediaBody() { return el("media-body"); },
@@ -131,7 +135,4 @@ export const dom = {
   get drawPad() { return el("draw-pad"); },
   get drawCanvas() { return el("draw-canvas"); },
   get drawColors() { return el("draw-colors"); },
-
-  /* Einstellungen */
-  get themeOptions() { return el("theme-options"); },
 };

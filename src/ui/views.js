@@ -14,7 +14,7 @@ import { findEntry } from "../data/queries.js";
 import { ui } from "../data/state.js";
 
 /** Die Namen der Ansichten und ihre Abschnitte in index.html. */
-export const viewNames = ["home", "page", "entry", "search", "calendar", "media", "settings"];
+export const viewNames = ["home", "page", "entry", "search", "calendar", "tasks", "media"];
 
 let activeView = "home";
 

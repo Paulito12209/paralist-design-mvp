@@ -43,7 +43,7 @@ CLAUDE.md                   Kurzregeln für die Arbeit am Projekt
 | `src/core/` | Werkzeuge ohne App-Wissen: DOM-Zugriff, Datum, Formate, Speicher, Nachrichten, Nachladen | nichts über die App wissen |
 | `src/data/` | Zustand, Abfragen, Änderungen, Punkte, Nutzungszeit, Beispieldaten | das DOM anfassen |
 | `src/ui/` | wiederverwendete Bausteine: Zeilen, Blätter, Menüs, Wischen, Diagramm-Gerüst, Router | einzelne Seiten kennen |
-| `src/features/` | je Seite ein Ordner: `overview`, `calendar`, `media`, `resources`, `composer`, `entry`, `drawing`, `progress`, `profile`, `search`, `settings` | sich gegenseitig importieren (stattdessen `core/bus.js`) |
+| `src/features/` | je Seite ein Ordner: `overview`, `calendar`, `tasks`, `media`, `resources`, `composer`, `entry`, `drawing`, `progress`, `profile`, `search` | sich gegenseitig importieren (stattdessen `core/bus.js`) |
 | `src/shell/` | Kopfzeile, Navigationsleiste, Suchfeld, Tastatur-Höhe, Icon-Sammlung | — |
 
 Importe zeigen immer nur in eine Richtung:
@@ -115,7 +115,7 @@ Tab
 
 ## Performance
 
-- **Nachladen:** Kalender, Medien, Suche, Ressourcen, Fortschritt, Profil,
+- **Nachladen:** Kalender, Aufgaben, Medien, Suche, Ressourcen, Fortschritt, Profil,
   Zeichnung und die Dateiverarbeitung kommen erst beim ersten Öffnen dazu
   (`src/core/lazy.js`) und werden danach in Ruhephasen vorgeladen — das erste
   Öffnen fühlt sich dann sofort an.
@@ -187,14 +187,17 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 - Alle Filter-Pillen durchgehen, auch die leeren.
 - Dauer-Schild auf Video und Aufnahme zeigt `m:ss`.
 
-**Suchen, Fortschritt, Profil**
+**Suchen, Fortschritt, Einstellungen**
 - Tippen, Treffer, „keine Treffer“, Escape, die beiden Unterlisten und zurück.
 - Tastatur bleibt über der Navigation stehen (die Leiste rückt nicht mit
   hoch), daneben tippen schließt nur die Tastatur statt einen Eintrag zu
   öffnen, zugeklappt zeigt sich die Suchen-Pille rechts über der Navigation.
 - Fortschritt: Zeitraum 7/30/90, „Mehr anzeigen“, Blatt nach unten ziehen.
-- Profil: Nutzungszeit steht als „1 Std 20 Min“ (nicht als `m:ss`), Zeitraum
-  umschalten, Bild groß ansehen und mit Browser-Zurück schließen.
+- Einstellungen (Knopf oben rechts): die beiden Kacheln unter „Analyse“
+  öffnen die volle Karte — Zurück-Pfeil, Browser-Zurück und das Kreuz müssen
+  sich unterscheiden (Kreuz schließt alles). Nutzungszeit steht als
+  „1 Std 20 Min“ (nicht als `m:ss`), Zeitraum umschalten, Darstellung wechseln,
+  Bild groß ansehen und mit Browser-Zurück schließen.
 
 **Immer**
 - `python3 tools/check.py` meldet „alles in Ordnung“.

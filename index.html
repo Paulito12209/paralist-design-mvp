@@ -51,6 +51,7 @@
     <link rel="stylesheet" href="styles/settings.css" />
     <link rel="stylesheet" href="styles/calendar.css" />
     <link rel="stylesheet" href="styles/calendar-panel.css" />
+    <link rel="stylesheet" href="styles/tasks.css" />
     <link rel="stylesheet" href="styles/media.css" />
     <link rel="stylesheet" href="styles/drawing.css" />
   </head>
@@ -66,7 +67,7 @@
             <svg class="icon search-icon"><use href="#icon-search"></use></svg>
             <input id="search-input" type="search" placeholder="Suchen" />
           </label>
-          <button class="avatar" id="profile-btn" type="button" aria-label="Profil öffnen">
+          <button class="avatar" id="profile-btn" type="button" aria-label="Einstellungen öffnen">
             <svg class="icon"><use href="#icon-profile"></use></svg>
           </button>
         </header>
@@ -181,19 +182,18 @@
             <div class="cal-panel" id="cal-panel"></div>
           </section>
 
+          <!-- Aufgaben: Liste oder Kanban-Board; Bedienzeile und Inhalt kommen aus src/features/tasks/ -->
+          <section class="view" id="view-tasks" data-view="tasks" hidden>
+            <h1 class="screen-title">Aufgaben</h1>
+            <div class="tasks-tools" id="tasks-tools"></div>
+            <div class="tasks-body" id="tasks-body"></div>
+          </section>
+
           <!-- Medien: Filter-Pillen wie über den Arbeitsbereichen, darunter das Raster nach Monaten -->
           <section class="view" id="view-media" data-view="media" hidden>
             <h1 class="screen-title">Medien</h1>
             <div class="tab-pills media-filters" id="media-filters"></div>
             <div class="media-body" id="media-body"></div>
-          </section>
-
-          <section class="view" id="view-settings" data-view="settings" hidden>
-            <h1 class="screen-title">Einstellungen</h1>
-            <div class="section-head">
-              <h2>Darstellung</h2>
-            </div>
-            <div class="settings-group" id="theme-options"></div>
           </section>
         </main>
 
@@ -255,13 +255,13 @@
             <button class="tab-add" type="button" aria-label="Hinzufügen">
               <svg class="icon"><use href="#icon-plus"></use></svg>
             </button>
+            <button class="tab-btn" type="button" data-tab="tasks">
+              <svg class="icon"><use href="#icon-checklist"></use></svg>
+              <span>Aufgaben</span>
+            </button>
             <button class="tab-btn" type="button" data-tab="media">
               <svg class="icon"><use href="#icon-photos"></use></svg>
               <span>Medien</span>
-            </button>
-            <button class="tab-btn" type="button" data-tab="settings">
-              <svg class="icon"><use href="#icon-settings"></use></svg>
-              <span>Einstellungen</span>
             </button>
           </nav>
 
@@ -337,12 +337,12 @@
           </div>
         </div>
 
-        <!-- Profil: Nutzungszeit, Serien und Konto-Optionen -->
+        <!-- Einstellungen: Profilkopf, die beiden Auswertungs-Karten, Darstellung und Konto-Optionen -->
         <div class="modal-backdrop" id="profile" hidden>
           <div class="modal" role="dialog" aria-modal="true" aria-labelledby="profile-title">
             <header class="modal-head">
               <div class="modal-grip"></div>
-              <h2 id="profile-title">Profil</h2>
+              <h2 id="profile-title">Einstellungen</h2>
               <button class="modal-close" id="profile-close" type="button" aria-label="Schließen">
                 <svg class="icon"><use href="#icon-close"></use></svg>
               </button>

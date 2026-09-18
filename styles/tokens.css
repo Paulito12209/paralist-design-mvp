@@ -26,7 +26,8 @@
  * styles/search.css          -> Suchseite
  * styles/progress.css        -> Fortschritt-Blatt: Ring, Verlauf, Historie
  * styles/profile.css         -> Profil-Blatt: Bild, Nutzungszeit, Serie, Listen
- * styles/settings.css        -> Einstellungsseite
+ * styles/settings.css        -> Einstellungs-Blatt: Analyse-Kacheln und Darstellung
+ * styles/tasks.css           -> Aufgaben-Seite: Liste und Kanban-Board
  * styles/calendar.css        -> Kalender: Monat, Wochenstreifen, Bedienzeile
  * styles/calendar-panel.css  -> Kalender: graue Fläche mit Stundenraster und Liste
  * styles/media.css           -> Medien- und Ressourcen-Seite
@@ -98,6 +99,9 @@
  * --modal-dismiss-pull      -> Wie weit man ein Blatt ziehen muss, damit es schließt
  * --profile-avatar-size     -> Größe des runden Profilbilds
  * --profile-avatar-edit-size -> Größe des kleinen Stift-Knopfs am Profilbild
+ * --mini-gap                -> Fuge zwischen den beiden Analyse-Kacheln
+ * --mini-card-height        -> Mindesthöhe einer Analyse-Kachel
+ * --mini-chart-height       -> Höhe der kleinen Grafik auf der Kachel
  * --media-gap               -> Fuge zwischen den Medien-Kacheln
  * --media-btn-size          -> Größe der runden Knöpfe über der Navigation
  * --media-actions-space     -> Extra-Platz am Ende der Medien-Seite
@@ -222,6 +226,9 @@
   --modal-dismiss-pull: 100px;
   --profile-avatar-size: 128px;
   --profile-avatar-edit-size: 36px;
+  --mini-gap: 12px;
+  --mini-card-height: 132px;
+  --mini-chart-height: 34px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   /* Hoehe der eingeblendeten Bildschirmtastatur; src/shell/keyboard-inset.js setzt den Wert am Handy */

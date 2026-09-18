@@ -44,7 +44,7 @@ export const state = {
 
 /** Flüchtiger Zustand der Oberfläche. Wird bewusst nicht gespeichert. */
 export const ui = {
-  /* Ansicht, zu der der Zurück-Pfeil führt: "home", "search", "calendar", "media" oder "settings" */
+  /* Ansicht, zu der der Zurück-Pfeil führt: "home", "search", "calendar", "tasks" oder "media" */
   sourceView: "home",
   /* offene Unterseite: { title, parent, kind, isWorkspace } — parent ist ein Verweis aus refs.js */
   currentPage: null,
@@ -74,6 +74,8 @@ export const ui = {
   historyLimit: 20,
   /* Profil-Blatt: Zeitraum der Balken */
   usageRange: 30,
+  /* Einstellungs-Blatt: welche Kachel aufgeklappt ist — null, "usage" oder "streak" */
+  settingsDetail: null,
 };
 
 /* Auf `true` gesetzt, sobald die Beispielmedien einmal angelegt wurden. */

@@ -18,7 +18,7 @@ import { ui } from "../data/state.js";
 import { currentView, isViewActive, setActiveTab, showView } from "./views.js";
 
 /* Die Ansichten, die unten in der Navigationsleiste einen Knopf haben. */
-const navViews = ["home", "calendar", "media", "settings"];
+const navViews = ["home", "calendar", "tasks", "media"];
 
 function hashOfTab(tab) {
   return tab === "home" ? "#/" : `#/${tab}`;
@@ -124,7 +124,7 @@ function writeHistory(state, url, replace) {
    damit der Zurück-Pfeil des Browsers sie schließen kann. */
 const overlays = new Map();
 
-/** Ein Blatt anmelden: `open(push)` öffnet es, `hide()` schließt es ohne Verlauf. */
+/** Ein Blatt anmelden: `open(push, eintrag)` öffnet es, `hide()` schließt es ohne Verlauf. */
 export function registerOverlay(name, handlers) {
   overlays.set(name, handlers);
 }
@@ -133,11 +133,15 @@ function hideAllOverlays() {
   overlays.forEach((handlers) => handlers.hide());
 }
 
-/* Ein Blatt aus dem Verlauf wiederherstellen; bei Bedarf wird sein Bereich nachgeladen. */
-function restoreOverlay(name, extra) {
+/*
+ * Ein Blatt aus dem Verlauf wiederherstellen; bei Bedarf wird sein Bereich
+ * nachgeladen. `entry` ist der gespeicherte Verlaufseintrag — das
+ * Einstellungs-Blatt liest daraus, ob eine Kachel aufgeklappt war.
+ */
+function restoreOverlay(name, entry = null, extra = "") {
   const openIt = () => {
     const handlers = overlays.get(name);
-    if (handlers) handlers.open(false);
+    if (handlers) handlers.open(false, entry);
     if (extra) restoreOverlay(extra);
   };
   const module = loadedModule(name === "avatar" ? "profile" : name);
@@ -157,15 +161,15 @@ window.addEventListener("popstate", (event) => {
 
   if (entry && entry.view === "progress") {
     overlays.get("profile")?.hide();
-    restoreOverlay("progress");
+    restoreOverlay("progress", entry);
     return;
   }
   if (entry && entry.view === "avatar") {
-    restoreOverlay("profile", "avatar");
+    restoreOverlay("profile", null, "avatar");
     return;
   }
   if (entry && entry.view === "profile") {
-    restoreOverlay("profile");
+    restoreOverlay("profile", entry);
     return;
   }
 

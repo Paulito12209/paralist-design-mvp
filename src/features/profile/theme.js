@@ -1,14 +1,16 @@
 /*
- * Darstellung: Hell, Dunkel oder wie das System. Die Wahl wird gespeichert und
- * in index.html noch vor dem ersten Bild angewendet, damit nichts aufblitzt.
- * Pfad: src/features/settings/theme.js
+ * Darstellung: Hell, Dunkel oder wie das System. Die Liste steht im
+ * Einstellungs-Blatt hinter dem Knopf oben rechts — geklickt wird sie dort
+ * (src/features/profile/profile.js), hier entsteht nur ihr Markup. Die Wahl
+ * wird gespeichert und in index.html schon vor dem ersten Bild angewendet,
+ * damit beim Laden nichts aufblitzt.
+ * Pfad: src/features/profile/theme.js
  *
  * Keine anpassbaren visuellen Werte: die beiden Farbsätze stehen in
- * styles/tokens.css.
+ * styles/tokens.css, das Aussehen der Liste in styles/settings.css.
  */
 
 import { clearCssCache } from "../../core/css-vars.js";
-import { dom } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
 import { readText, storageKeys, writeText } from "../../core/storage.js";
 import { themes } from "../../data/config.js";
@@ -26,10 +28,10 @@ export function applyTheme(theme) {
   clearCssCache();
 }
 
-/** Die Liste in den Einstellungen zeichnen. */
-export function renderThemeOptions() {
+/** Die drei Zeilen als HTML; der Haken steht bei der gewählten Darstellung. */
+export function themeListMarkup() {
   const active = currentTheme();
-  dom.themeOptions.innerHTML = themes
+  const rows = themes
     .map(
       (theme) => `
         <button class="settings-row${theme.id === active ? " is-active" : ""}" type="button" data-theme-option="${theme.id}">
@@ -40,21 +42,12 @@ export function renderThemeOptions() {
       `
     )
     .join("");
+  return `<div class="settings-group">${rows}</div>`;
 }
 
-/** Eine Darstellung wählen und merken. */
+/** Eine Darstellung wählen und merken. Das Blatt zeichnet sich danach selbst neu. */
 export function setTheme(theme) {
   /* "system" heißt: keine eigene Wahl gespeichert. */
   writeText(storageKeys.theme, theme === "system" ? "" : theme);
   applyTheme(theme);
-  renderThemeOptions();
-}
-
-/** Die Einstellungsseite anmelden. */
-export function initTheme() {
-  dom.themeOptions.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-theme-option]");
-    if (button) setTheme(button.dataset.themeOption);
-  });
-  renderThemeOptions();
 }
