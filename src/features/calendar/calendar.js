@@ -51,20 +51,26 @@ export function renderCalendar(jumpToNow = false) {
   requestAnimationFrame(updateTodayPill);
 }
 
+/* Ob der gewählte Tag der heutige ist. */
+function isOnToday() {
+  return ui.calendarDay === dayKey(new Date());
+}
+
 /*
- * Der „Heute“-Knopf: nur sichtbar am heutigen Tag, und selbst dann nur blau,
- * solange die Jetzt-Linie im sichtbaren Ausschnitt des Rasters steht.
+ * Der „Heute“-Knopf bleibt immer sichtbar. Volle Pillen-Optik mit blauer
+ * Schrift bekommt er nur am heutigen Tag und nur, solange die Jetzt-Linie im
+ * sichtbaren Ausschnitt steht; sonst bleibt er zurückhaltend im Hintergrund
+ * (styles/calendar.css, Klasse .cal-today).
  */
 function updateTodayPill() {
-  const isToday = ui.calendarDay === dayKey(new Date());
-  dom.calTodayBtn.hidden = !isToday;
-  if (isToday) dom.calTodayBtn.classList.toggle("is-on", nowLineVisible());
+  dom.calTodayBtn.classList.toggle("is-on", isOnToday() && nowLineVisible());
 }
 
 /* Beim Scrollen im Raster kann die Jetzt-Linie in den sichtbaren Ausschnitt
-   hinein- oder herauslaufen — die Farbe des Knopfes zieht dann sofort nach. */
+   hinein- oder herauslaufen — die Optik des Knopfes zieht dann sofort nach.
+   An anderen Tagen gibt es keine Jetzt-Linie: dann gar nicht erst messen. */
 function onContentScroll() {
-  if (!isViewActive("calendar") || dom.calTodayBtn.hidden) return;
+  if (!isViewActive("calendar") || !isOnToday()) return;
   dom.calTodayBtn.classList.toggle("is-on", nowLineVisible());
 }
 

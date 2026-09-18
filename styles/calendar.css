@@ -223,9 +223,9 @@
   background: linear-gradient(to top, var(--bg) 45%, color-mix(in srgb, var(--bg) 70%, transparent));
 }
 
-/* grid-column fest vergeben statt der automatischen Reihenfolge zu
-   vertrauen: sonst würde „1 W“ in die mittlere Spalte rutschen, sobald der
-   „Heute“-Knopf ausgeblendet ist (display: none nimmt ihn aus dem Raster). */
+/* grid-column fest vergeben: die beiden Aussenknoepfe haengen so an ihrer
+   Kante, auch wenn in der Mitte einmal nichts steht — sonst wuerde „1 W“ in
+   die mittlere Spalte rutschen und die Zeile saehe verschoben aus. */
 .cal-controls .cal-round {
   grid-column: 1;
   justify-self: start;
@@ -263,14 +263,24 @@
   border-radius: 999px;
 }
 
-.cal-today.is-on {
-  color: var(--cal-accent);
+/*
+ * „Heute“ ist immer da, tritt aber nur hervor, wenn er gerade etwas bedeutet.
+ * Ruhezustand (anderer Tag oder Jetzt-Linie ausser Sicht): durchsichtiges
+ * Gehaeuse ohne Schatten, Schrift in der zweiten Ebene — der Knopf steht dann
+ * nur als Angebot da, statt wie die beiden Nachbarn als volle Pille.
+ */
+.cal-today {
+  background: transparent;
+  box-shadow: none;
+  color: var(--muted);
 }
 
-/* display: „.cal-pill“ setzt ebenfalls display, gleiche Spezifitaet wie die
-   Browser-Regel fuer [hidden] — ohne diese Zeile bliebe der Knopf sichtbar */
-.cal-today[hidden] {
-  display: none;
+/* Am heutigen Tag mit sichtbarer Jetzt-Linie: volle Pille wie die Nachbarn,
+   Schrift im Blau der Jetzt-Linie. */
+.cal-today.is-on {
+  background: var(--card);
+  box-shadow: var(--shadow);
+  color: var(--cal-accent);
 }
 
 .cal-round:active,
