@@ -15,6 +15,7 @@
  * --tab-pills-btn-gap               -> Abstand zwischen Trennlinie und Plus-Knopf
  * --tab-pills-fade                  -> Breite des Ausblendens links der Trennlinie
  * --icon-folder-plus-width / -height -> Größe des Ordner-Plus-Icons
+ * --workspace-section-gap           -> Abstand zwischen Karten und „Arbeitsbereiche“
  * --workspace-head-gap              -> Abstand über den Pillen
  
  *
@@ -78,16 +79,30 @@
 
 .card-label {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap; /* nowrap: Titel und Zähler bleiben in einer Zeile */
   align-items: baseline;
   gap: 0.35em;
   max-width: 100%;
-  overflow-wrap: anywhere; /* overflow-wrap: auf sehr schmalen Geräten bricht „Ressourcen“ um, statt aus der Kachel zu laufen */
+  min-width: 0; /* min-width: Flex-Kind darf schmaler werden, sonst kein Ellipsis */
+}
+
+/* Titel schrumpft und bekommt „…“, der Zähler daneben bleibt vollständig */
+.card-title {
+  min-width: 0;
+  overflow: hidden; /* overflow: noetig fuer text-overflow */
+  text-overflow: ellipsis; /* text-overflow: langer Titel wird zu „Ressour…“ */
+  white-space: nowrap; /* white-space: kein Umbruch in eine zweite Zeile */
 }
 
 .card-count {
+  flex: 0 0 auto; /* Zähler darf nie schrumpfen oder umbrechen */
   color: var(--muted);
   font-weight: 500;
+}
+
+/* Abstand zwischen den vier Karten und der Zeile „Arbeitsbereiche“ */
+.overview-grid + .section-head {
+  margin-top: var(--workspace-section-gap);
 }
 
 .add-btn {
