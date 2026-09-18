@@ -1,0 +1,163 @@
+/*
+ * Grundgerüst: Seite, Gerätefenster, Inhaltsbereich, Überschriften und Icons.
+ * Pfad: styles/base.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --bg / --card / --text    -> Grundfarben der Seite
+ * --title-size              -> Schriftgröße der großen Überschrift
+ * --content-side            -> Abstand des Inhalts zum linken und rechten Rand
+ * --title-side              -> Extra-Abstand der großen Überschrift
+ * --overview-gap            -> Abstand zwischen Kopfzeile, Überschrift und Inhalt
+ * --tab-space               -> Platz am Seitenende hinter der Navigation
+ * --radius-xl               -> Rundung des Gerätefensters
+ */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  height: 100%;
+  /* overflow/overscroll: nur die Inhaltsflaeche scrollt, die Seite selbst nie.
+     Ohne das schiebt am Handy jeder Wisch die ganze App samt Kopf- und
+     Navigationsleiste nach oben, sobald die Browserleisten ein- oder ausfahren. */
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+  color: var(--text);
+  background: #111;
+  -webkit-font-smoothing: antialiased;
+}
+
+button,
+input,
+textarea {
+  font: inherit;
+}
+
+button {
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.sprites {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.icon {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+.stage {
+  height: 100vh; /* Rueckfall fuer Browser ohne dvh */
+  height: 100dvh; /* dvh: die wirklich sichtbare Hoehe, auch mit eingeblendeter Browserleiste */
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.device {
+  width: 390px;
+  max-width: calc(100vw - 32px);
+  height: min(844px, calc(100dvh - 32px));
+  background: var(--bg);
+  border-radius: 44px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.content {
+  flex: 1;
+  min-height: 0; /* min-height: sonst waechst der Flex-Bereich ueber das Geraet hinaus statt zu scrollen */
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior: contain; /* am Listenende wird nicht die Seite darunter mitgezogen */
+  -webkit-overflow-scrolling: touch;
+  padding: var(--overview-gap) var(--content-side) var(--tab-space);
+  position: relative; /* position: damit der Scrollbereich fest im Gerät bleibt */
+  scrollbar-width: none;
+}
+
+.content::-webkit-scrollbar {
+  display: none;
+}
+
+.view {
+  min-height: 100%;
+}
+
+.view[hidden] {
+  display: none !important;
+}
+
+.screen-title {
+  font-size: var(--title-size);
+  line-height: 1.1;
+  letter-spacing: -0.04em;
+  font-weight: 700;
+  margin: 0 0 var(--overview-gap);
+  padding: 0 var(--title-side);
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  margin: var(--overview-gap) 0 var(--workspace-head-gap);
+  padding-left: var(--title-side);
+}
+
+.screen-title + .section-head {
+  margin-top: 0;
+}
+
+.section-head h2 {
+  font-size: 15px;
+  font-weight: 400; /* 400 = normal, 500 = mittel, 700 = fett */
+  color: var(--muted);
+}
+
+.empty-note {
+  color: var(--muted);
+  font-size: 15px;
+  padding: 8px 2px;
+}
+
+/* Echte Touch-Geräte (Handy/Tablet) erkennen statt nur Fensterbreite:
+   so bleibt ein schmales Desktop-Fenster im Frame, und ein Handy im
+   "Desktop-Website"-Modus (meldet eine breite Viewport) verliert ihn trotzdem. */
+@media (hover: none) and (pointer: coarse) {
+  body {
+    background: var(--bg);
+  }
+
+  .stage {
+    padding: 0;
+  }
+
+  .device {
+    width: 100%;
+    max-width: 100%;
+    height: 100%; /* die Buehne gibt die sichtbare Hoehe bereits vor */
+    border-radius: 0;
+    box-shadow: none;
+  }
+}

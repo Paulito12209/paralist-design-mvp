@@ -1,0 +1,330 @@
+/*
+ * Eingabefeld zum Anlegen: Pillen oben, Textfeld, Typ-Knöpfe unten und die
+ * Kachelreihe der Anhänge.
+ * Pfad: styles/composer.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --composer-input-size     -> Schriftgröße im Textfeld
+ * --composer-chip-size      -> Schriftgröße der beiden Pillen oben
+ * --composer-radius         -> Rundung des Containers
+ * --danger                  -> Rot des Diktat-Knopfes beim Aufnehmen
+ * --placeholder             -> Farbe des Platzhaltertexts
+ * --line                    -> Trennlinien und Ränder der Anhang-Kacheln
+ */
+
+.composer {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.composer[hidden] {
+  display: none;
+}
+
+/* Verknüpfen-Knopf oben links: wählt Arbeitsbereich oder Projekt */
+.composer-link {
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 10px;
+  border-radius: 999px; /* border-radius: macht den Knopf zur kleinen Pille */
+  background: var(--bg);
+  color: var(--muted);
+  font-size: var(--composer-chip-size);
+  font-weight: 500;
+  max-width: 100%;
+}
+
+.composer-link span {
+  white-space: nowrap;
+}
+
+.composer-link .icon {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+}
+
+.composer-caret {
+  transform: rotate(90deg); /* transform: dreht den Pfeil nach unten, statt ein zweites Icon zu bauen */
+}
+
+.composer-input {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: var(--composer-input-size);
+  padding: 2px 4px 6px;
+}
+
+.composer-input::placeholder {
+  color: var(--placeholder);
+}
+
+.composer-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.composer-types {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  overflow-x: auto; /* overflow: bei vielen Typ-Knöpfen seitlich schieben statt umbrechen */
+  scrollbar-width: none; /* scrollbar-width: unsichtbare Leiste, der Inhalt bleibt schiebbar */
+}
+
+.composer-types::-webkit-scrollbar {
+  display: none; /* display: gleiche unsichtbare Leiste in Chrome und Safari */
+}
+
+.composer-type {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%; /* border-radius: macht die Typ-Knöpfe rund */
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+.composer-type .icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* Der gewählte Typ bleibt ohne eigenen Hintergrund sichtbar: nur das Icon
+   nimmt seine Farbe an (inline über --type-color je Typ gesetzt) */
+.composer-type.is-active .icon {
+  color: var(--type-color, var(--text));
+}
+
+.composer-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%; /* border-radius: macht den Schließen-Knopf rund */
+  background: var(--bg);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.composer-close .icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Diktat-Knopf neben dem Schließen: gleicher grauer Kreis, beim Aufnehmen rot */
+.composer-mic {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%; /* border-radius: rund wie der Schließen-Knopf daneben */
+  background: var(--bg);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.composer-mic .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.composer-mic.is-recording {
+  background: var(--danger);
+  color: #ffffff;
+}
+
+.composer-close:active,
+.composer-mic:active,
+.composer-type:active,
+.composer-send:active {
+  opacity: 0.55;
+}
+
+/* Oberste Zeile: Pillen links, Anlegen-Knopf rechts außen */
+.composer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* Beide Pillen oben: links der Ablageort, rechts der Typ */
+.composer-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.composer-chips .composer-link {
+  min-width: 0; /* lange Namen kürzen sich, statt die Zeile zu sprengen */
+  flex: 0 1 auto;
+}
+
+.composer-chips .composer-link span {
+  min-width: 0; /* min-width: ohne das schrumpft der Text nicht und der Anlegen-Knopf rutscht in die nächste Zeile */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Anlegen und Schließen sitzen zusammen rechts */
+.composer-end {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+/* Anlegen-Knopf: gefüllter Kreis wie der Plus-Knopf in der Navigation */
+.composer-send {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%; /* border-radius: macht den Anlegen-Knopf rund */
+  background: var(--text);
+  color: var(--card);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.composer-send .icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Ohne Text und ohne Anhang gibt es nichts anzulegen: dann ist der Knopf grau statt schwarz */
+.composer-send:disabled {
+  background: var(--bg);
+  color: var(--placeholder);
+  cursor: default;
+}
+
+.composer-send:disabled:active {
+  opacity: 1;
+}
+
+/* Plus links neben den Typ-Knöpfen: hängt Medien an, darum eigener grauer Kreis
+   statt der Typ-Färbung, wie zuvor beim gewählten Typ-Knopf */
+.composer-attach {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%; /* border-radius: gleiche runde Form wie die Typ-Knöpfe */
+  background: var(--bg);
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  flex: 0 0 auto;
+}
+
+.composer-attach .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.composer-attach:active {
+  opacity: 0.55;
+}
+
+/* Reihe der Anhänge ganz oben im Eingabefeld, über den Pillen */
+.composer-attachments {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto; /* overflow: viele Anhänge schieben sich seitlich, statt umzubrechen */
+  scrollbar-width: none;
+}
+
+.composer-attachments[hidden] {
+  display: none;
+}
+
+.composer-attachments::-webkit-scrollbar {
+  display: none;
+}
+
+.composer-attachment {
+  position: relative; /* position: das Kreuz sitzt in der oberen rechten Ecke */
+  width: 60px;
+  height: 60px;
+  flex: 0 0 auto;
+}
+
+.attach-img,
+.attach-file {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px; /* border-radius: weiche Ecken wie bei Anhängen in Chat-Apps */
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.attach-img {
+  display: block;
+  object-fit: cover; /* object-fit: das Bild füllt die Kachel und wird dafür beschnitten */
+}
+
+.attach-file {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 4px;
+  color: var(--text);
+}
+
+.attach-file-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--media-doc-color);
+}
+
+.attach-file-name {
+  font-size: 10px;
+  line-height: 1.2;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  display: -webkit-box; /* -webkit-box + line-clamp: lange Namen enden nach zwei Zeilen */
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow-wrap: anywhere;
+}
+
+/* Kleines Kreuz in der Kachel oben rechts: nimmt den Anhang wieder weg */
+.composer-attachment-remove {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%; /* border-radius: rundes Kreuz wie in Chat-Apps */
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); /* hebt den hellen Kreis auch auf hellen Fotos ab */
+  display: grid;
+  place-items: center;
+}
+
+.composer-attachment-remove .icon {
+  width: 13px;
+  height: 13px;
+}
+
+.composer-attachment-remove:active {
+  opacity: 0.55;
+}
+
+/* Anhänge auf der Eintragsseite: Kachelraster zwischen Titel und Text */

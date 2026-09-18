@@ -1,0 +1,62 @@
+/*
+ * Einstellungsseite: die Liste für Hell, Dunkel und System.
+ * Pfad: styles/settings.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --card / --line           -> Fläche und Trennlinien der Liste
+ * --link-color              -> Haken neben der gewählten Darstellung
+ * --radius-lg               -> Rundung der Liste
+ */
+
+.settings-group {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden; /* overflow: schneidet die Zeilen an den runden Ecken ab */
+  margin-bottom: 20px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 16px;
+  border-bottom: 0.5px solid var(--line);
+  text-align: left;
+  font-size: 17px;
+  color: var(--text);
+}
+
+.settings-row:last-child {
+  border-bottom: 0;
+}
+
+.settings-row .icon {
+  width: 22px;
+  height: 22px;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+.settings-row span {
+  flex: 1;
+}
+
+/* Haken rechts: nur bei der gewählten Option sichtbar */
+.settings-row .settings-check {
+  width: 20px;
+  height: 20px;
+  color: var(--add);
+  opacity: 0;
+}
+
+.settings-row.is-active .settings-check {
+  opacity: 1;
+}
+
+.settings-row:active {
+  background: var(--bg);
+}

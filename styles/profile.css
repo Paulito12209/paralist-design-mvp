@@ -1,0 +1,330 @@
+/*
+ * Profil-Blatt: Bild und Name oben, Balkenverlauf der Nutzungszeit, Punkte-
+ * Raster der Serie und die Zeilenkarten darunter.
+ * Pfad: styles/profile.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --profile-avatar-size     -> Größe des runden Bildes
+ * --profile-avatar-edit-size -> Größe des kleinen Stift-Knopfes
+ * --dot-empty / --dot-1..4  -> Helligkeitsstufen im Punkte-Raster
+ * --xp-line                 -> Farbe der Balken
+ * --danger                  -> Rot in der Gefahrenzone
+ */
+
+/* ---------- Profil-Blatt ---------- */
+
+.profile-id {
+  display: grid;
+  justify-items: center;
+  text-align: center;
+  gap: 2px;
+  padding: 10px 0 18px;
+  border-bottom: 0.5px solid var(--line);
+  margin-bottom: 4px;
+}
+
+.profile-avatar-wrap {
+  position: relative; /* position: der Stift sitzt auf dem Kreis unten rechts */
+  width: var(--profile-avatar-size);
+  height: var(--profile-avatar-size);
+  margin-bottom: 16px;
+}
+
+/* Kreis mit den Initialen, solange kein Bild hinterlegt ist */
+.profile-avatar {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%; /* border-radius: macht das Feld zum Kreis */
+  display: grid;
+  place-items: center;
+  background: linear-gradient(150deg, #7aa7d9, #4d72ad);
+  color: #ffffff;
+  font-size: 40px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  overflow: hidden; /* overflow: schneidet das Foto an der Kreiskante ab */
+}
+
+.profile-avatar img,
+.avatar-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* object-fit: füllt den Kreis, ohne das Bild zu verzerren */
+  display: block;
+}
+
+.profile-avatar-edit {
+  position: absolute; /* position: liegt unten rechts auf dem Kreis */
+  right: 2px;
+  bottom: 2px;
+  width: var(--profile-avatar-edit-size);
+  height: var(--profile-avatar-edit-size);
+  border-radius: 50%; /* border-radius: macht den Stift-Knopf rund */
+  background: var(--card);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  display: grid;
+  place-items: center;
+}
+
+.profile-avatar-edit .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.profile-avatar-edit:active {
+  opacity: 0.6;
+}
+
+.profile-save {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px calc(12px + var(--safe-bottom));
+  background: var(--bg);
+}
+
+.profile-save[hidden] {
+  display: none;
+}
+
+.profile-save-cancel,
+.profile-save-ok {
+  flex: 1;
+  height: 48px;
+  border-radius: 14px; /* border-radius: rundet die Speichern-Knöpfe */
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.profile-save-cancel {
+  background: var(--tab-pill-active-bg);
+  color: var(--text);
+}
+
+.profile-save-ok {
+  background: var(--add);
+  color: #ffffff;
+}
+
+.profile-save-cancel:active,
+.profile-save-ok:active {
+  opacity: 0.7;
+}
+
+.avatar-view {
+  z-index: 46; /* z-index: die große Bildansicht liegt über dem Profil-Blatt */
+  background: rgba(0, 0, 0, calc(0.72 * var(--modal-dim, 1)));
+}
+
+.avatar-view .modal {
+  background: #111111;
+  color: #ffffff;
+}
+
+.avatar-view .modal-close {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+.avatar-view .modal-grip {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.avatar-view-body {
+  align-items: center;
+  justify-content: center;
+  padding-bottom: calc(24px + var(--safe-bottom));
+}
+
+.avatar-view-stage {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-view-stage img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* object-fit: zeigt das ganze Foto, ohne es zu beschneiden */
+}
+
+.avatar-view-fallback {
+  width: min(280px, 100%); /* min: der Kreis bleibt groß, wird auf schmalen Schirmen aber nicht breiter als das Blatt */
+  height: min(280px, 100%);
+  border-radius: 50%; /* border-radius: große Initialen bleiben ein Kreis */
+  display: grid;
+  place-items: center;
+  background: linear-gradient(150deg, #7aa7d9, #4d72ad);
+  color: #ffffff;
+  font-size: 72px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+.profile-name {
+  font-size: 26px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.profile-mail {
+  font-size: 17px;
+  color: var(--muted);
+}
+
+.profile-meta {
+  font-size: 15px;
+  color: var(--muted);
+  margin-top: 8px;
+}
+
+/* Große Kennzahl über dem Balkenverlauf */
+.stat-big {
+  font-size: 34px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  margin-top: -4px;
+}
+
+.stat-sub {
+  font-size: 14px;
+  color: var(--muted);
+  margin: 4px 0 14px;
+}
+
+.usage-bar {
+  fill: var(--xp-line);
+}
+
+/* Serie: zwei Kennzahlen nebeneinander */
+.streak-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.streak-label {
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.streak-value {
+  font-size: 30px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+/* Punkte-Raster: Wochentag-Spalte links, danach zwölf Monatsspalten */
+.dotgrid {
+  display: grid;
+  grid-template-columns: 14px repeat(12, 1fr);
+  align-items: center;
+  justify-items: center;
+  row-gap: 9px;
+  column-gap: 4px;
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%; /* border-radius: macht die Felder zu Punkten */
+  background: var(--dot-empty);
+}
+
+.dot.is-l1 {
+  background: var(--dot-1);
+}
+
+.dot.is-l2 {
+  background: var(--dot-2);
+}
+
+.dot.is-l3 {
+  background: var(--dot-3);
+}
+
+.dot.is-l4 {
+  background: var(--dot-4);
+}
+
+.dot-label,
+.dot-month {
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.dot-month {
+  padding-top: 4px;
+}
+
+/* Abschnittstitel über den Zeilenkarten */
+.psection {
+  font-size: 15px;
+  color: var(--muted);
+  padding: 10px 4px 0;
+}
+
+.plist {
+  background: var(--card);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow);
+  overflow: hidden; /* overflow: schneidet die Zeilen an den runden Ecken ab */
+  flex: 0 0 auto; /* flex: im Blatt sonst auf null zusammengedrückt */
+}
+
+.plist-row {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  min-height: 56px;
+  padding: 10px 16px;
+  border-bottom: 0.5px solid var(--line);
+  text-align: left;
+  font-size: 17px;
+  color: var(--text);
+}
+
+.plist-row:last-child {
+  border-bottom: 0;
+}
+
+.plist-row .icon {
+  width: 22px;
+  height: 22px;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+.plist-row span {
+  flex: 1;
+}
+
+.plist-row .plist-trail {
+  width: 18px;
+  height: 18px;
+  color: var(--chevron);
+}
+
+.plist-row.is-danger,
+.plist-row.is-danger .icon {
+  color: var(--danger);
+}
+
+.plist-row:active {
+  background: var(--bg);
+}
+
+.profile-version {
+  text-align: center;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase; /* text-transform: Versionszeile in Großbuchstaben */
+  color: var(--muted);
+  padding: 18px 0 4px;
+}

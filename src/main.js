@@ -1,0 +1,112 @@
+/*
+ * Startpunkt der App. Hier wird der gespeicherte Zustand geladen, jeder
+ * Bereich angemeldet und die Startseite gezeichnet.
+ * Pfad: src/main.js
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * prefetchOrder -> in welcher Reihenfolge die Seiten in Ruhephasen
+ *                  vorgeladen werden (das erste Öffnen geht dann ohne Warten)
+ */
+
+import { events, on } from "./core/bus.js";
+import { load, prefetchWhenIdle } from "./core/lazy.js";
+import { loadState } from "./data/state.js";
+import { loadThumbs } from "./data/thumbs.js";
+import { loadUsage, startUsageTracking } from "./data/usage.js";
+import { initComposer, updateComposerSend } from "./features/composer/composer.js";
+import { initDictation } from "./features/composer/dictation.js";
+import { initEntry } from "./features/entry/entry.js";
+import { loadPhoto, renderProfileButton } from "./features/profile/avatar.js";
+import { initOverview, renderOverview } from "./features/overview/overview.js";
+import { initPage } from "./features/overview/page.js";
+import { initTabs, openTabMenu, renderTabs } from "./features/overview/tabs.js";
+import { initWorkspaces, openWorkspaceMenu, renderWorkspaces } from "./features/overview/workspaces.js";
+import { initTheme } from "./features/settings/theme.js";
+import { initKeyboardInset } from "./shell/keyboard-inset.js";
+import { initLevelGauge } from "./shell/level-gauge.js";
+import { initNavBar } from "./shell/nav-bar.js";
+import { initSearchBar } from "./shell/search-bar.js";
+import { mountSprite } from "./shell/sprite.js";
+import { initCtxMenu, closeCtxMenu } from "./ui/ctx-menu.js";
+import { initListClicks } from "./ui/list-clicks.js";
+import { setLongPressMenus } from "./ui/long-press.js";
+import { initModalPull } from "./ui/modal-pull.js";
+import { initSheet } from "./ui/sheet.js";
+import { initSwipe } from "./ui/swipe.js";
+
+/* Die Seiten, die erst beim Öffnen geladen werden. */
+const lazyViews = ["calendar", "media", "search"];
+
+/* Reihenfolge des Vorladens: was man am ehesten als Nächstes braucht, zuerst. */
+const prefetchOrder = ["search", "calendar", "media", "progress", "profile", "resources", "files", "drawing"];
+
+/* Gespeicherten Zustand einlesen, bevor irgendetwas gezeichnet wird. */
+function loadEverything() {
+  loadThumbs();
+  loadState();
+  loadUsage();
+  /* Das Profilbild gehört in die Kopfzeile und wird deshalb nicht erst mit dem
+     Profil-Blatt nachgeladen — sonst zeigte der Knopf oben rechts das
+     Standard-Icon, obwohl ein Bild hinterlegt ist. */
+  loadPhoto();
+}
+
+/* Alle gemeinsamen Bedienelemente anmelden. */
+function initShell() {
+  initSheet();
+  initCtxMenu();
+  initModalPull();
+  setLongPressMenus({ tab: openTabMenu, workspace: openWorkspaceMenu });
+  initSwipe();
+  initListClicks();
+
+  initLevelGauge();
+  initSearchBar();
+  initNavBar();
+  initKeyboardInset();
+}
+
+/* Alle Bereiche anmelden, die von Anfang an da sein müssen. */
+function initFeatures() {
+  initOverview();
+  initTabs();
+  initWorkspaces();
+  initPage();
+  initEntry();
+  initComposer();
+  initDictation(updateComposerSend);
+  initTheme();
+}
+
+/* Eine nachzuladende Seite wurde geöffnet: ihr Modul holen. Es zeichnet sich selbst. */
+function initLazyViews() {
+  on(events.viewOpened, (name) => {
+    if (lazyViews.includes(name)) load(name);
+  });
+  /* Beim Wechsel der Ansicht schließt sich das Kontextmenü. */
+  on(events.viewWillChange, closeCtxMenu);
+}
+
+/* Die Startseite aufbauen und die Adresse setzen. */
+function showStartPage() {
+  renderOverview();
+  renderTabs();
+  renderWorkspaces();
+  renderProfileButton();
+  history.replaceState({ view: "home" }, "", "#/");
+}
+
+function start() {
+  loadEverything();
+  initShell();
+  initFeatures();
+  initLazyViews();
+  showStartPage();
+  startUsageTracking();
+  /* Die Icons kommen nach, das Gerüst steht schon. */
+  mountSprite();
+  prefetchWhenIdle(prefetchOrder);
+}
+
+start();

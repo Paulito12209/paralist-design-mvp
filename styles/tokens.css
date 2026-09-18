@@ -1,0 +1,262 @@
+/*
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * Pfad: styles/tokens.css
+ * -----------------------------------
+ * Hier stehen ALLE Farben, Schriftgrößen und Abstände der App an einer Stelle.
+ * Ändert man einen Wert hier, ändert sich die ganze App. Die übrigen Dateien
+ * verweisen nur darauf.
+ *
+ * WELCHE DATEI MACHT WAS
+ * -----------------------------------
+ * styles/tokens.css          -> alle Werte (diese Datei)
+ * styles/base.css            -> Grundgerüst: Seite, Gerätefenster, Inhaltsbereich, Icons
+ * styles/top-bar.css         -> Kopfzeile: Level-Anzeige, Suchleiste, Profil-Knopf
+ * styles/overview.css        -> Startseite: die vier Karten und die Tab-Pillen
+ * styles/rows.css            -> Listenzeilen, Wisch-Knöpfe, Kopfzeile einer Unterseite
+ * styles/entry.css           -> Seite eines Eintrags: Titel, Text, Anhänge
+ * styles/navigation.css      -> untere Navigationsleiste
+ * styles/composer.css        -> Eingabefeld zum Anlegen
+ * styles/overlays.css        -> Auswahl-Blatt, kleines Menü, Blätter von unten
+ * styles/search.css          -> Suchseite
+ * styles/progress.css        -> Fortschritt-Blatt: Ring, Verlauf, Historie
+ * styles/profile.css         -> Profil-Blatt: Bild, Nutzungszeit, Serie, Listen
+ * styles/settings.css        -> Einstellungsseite
+ * styles/calendar.css        -> Kalender: Monat, Wochenstreifen, Bedienzeile
+ * styles/calendar-panel.css  -> Kalender: graue Fläche mit Stundenraster und Liste
+ * styles/media.css           -> Medien- und Ressourcen-Seite
+ * styles/drawing.css         -> Zeichenfläche und Werkzeugleiste
+ *
+ * WERTE IN DIESER DATEI
+ * -----------------------------------
+ * FARBEN
+ * --bg                      -> Hintergrundfarbe hinter den Karten
+ * --card                    -> Hintergrundfarbe der weißen Karten
+ * --text                    -> Textfarbe für Überschriften und normale Schrift
+ * --muted                   -> hellere Textfarbe für Hinweise und das Add-Icon
+ * --line                    -> Farbe der dünnen Trennlinie unter Arbeitsbereichen
+ * --shadow                  -> weicher Schatten unter Karten und Suche
+ * --icon-strong             -> dunkle Icon-Farbe oben (Profil)
+ * --placeholder             -> Farbe von Platzhaltertexten in Eingabefeldern
+ * --chevron                 -> Farbe der kleinen Pfeile rechts in Listen
+ * --danger                  -> Rot für Löschen
+ * --archive-color           -> Gelb für Archivieren
+ * --link-color              -> Blau für Verknüpfen
+ * --star-color              -> Goldfarbe für den Favoriten-Stern auf der Karte
+ * --inbox-icon-color        -> Farbe des Inbox-Icons auf der Übersichtskarte
+ * --project-icon-color      -> Farbe des Raketen-Icons auf der Projekte-Karte
+ * --resource-icon-color     -> Farbe des Würfel-Icons auf der Ressourcen-Karte
+ *
+ * SCHRIFTGRÖSSEN
+ * --title-size              -> Schriftgröße der großen Überschrift „Übersicht“
+ * --tab-label-size          -> Schriftgröße der Wörter unter den Navigations-Icons
+ * --tab-pill-size           -> Schriftgröße der Tab-Pillen über den Arbeitsbereichen
+ * --search-meta-size        -> Schriftgröße der kleinen Infos unter Such-Einträgen
+ * --composer-input-size     -> Schriftgröße im Eingabefeld
+ * --composer-chip-size      -> Schriftgröße des Verknüpfen-Knopfes im Eingabefeld
+ * --entry-title-size        -> Schriftgröße des Titels auf der Editor-Seite
+ * --entry-body-size         -> Schriftgröße des Textes auf der Editor-Seite
+ * --media-month-size        -> Schriftgröße der Monatsüberschrift auf der Medien-Seite
+ * --media-name-size         -> Schriftgröße des Dateinamens auf Dokument-Kacheln
+ *
+ * ABSTÄNDE UND GRÖSSEN
+ * --radius-xl / --radius-lg -> Rundung großer und mittlerer Flächen
+ * --content-side            -> Abstand der Karten und Listen zum linken und rechten Rand
+ * --title-side              -> Extra-Abstand für die große Überschrift
+ * --overview-gap            -> Abstand zwischen Kopfzeile, Überschrift und Karten
+ * --workspace-head-gap      -> Abstand zwischen „Arbeitsbereiche“ und den Tab-Pillen
+ * --top-bar-icon-width/-height          -> Größe der Icons oben
+ * --top-bar-leading-btn-width/-height   -> Größe des runden Knopfes oben links
+ * --top-bar-profile-btn-width/-height   -> Größe des Profil-Knopfes oben rechts
+ * --search-bar-height / --search-bar-radius -> Höhe und Rundung der Suchleiste
+ * --icon-folder-plus-width/-height      -> Größe des Ordner-Plus-Icons
+ * --tab-space               -> Platz am Seitenende, damit nichts hinter der Navigation liegt
+ * --nav-height              -> Höhe der Navigationsleiste (Material 3: 80dp)
+ * --nav-side / --nav-bottom / --nav-radius -> Lage und Rundung der Navigationsleiste
+ * --tab-add-size            -> Größe des runden Plus-Knopfes in der Navigation
+ * --tab-pill-active-bg      -> Hintergrund der ausgewählten Tab-Pille
+ * --tab-pills-btn-gap       -> Abstand zwischen Trennlinie und Plus-Knopf
+ * --tab-pills-fade          -> Breite des Ausblendens links von der Trennlinie
+ * --composer-radius         -> Rundung des Eingabe-Containers
+ * --swipe-action-size / --swipe-action-gap -> Größe und Abstand der Wisch-Knöpfe
+ * --ctx-radius              -> Rundung des kleinen Menüs beim gedrückt Halten
+ * --modal-dismiss-pull      -> Wie weit man ein Blatt ziehen muss, damit es schließt
+ * --profile-avatar-size     -> Größe des runden Profilbilds
+ * --profile-avatar-edit-size -> Größe des kleinen Stift-Knopfs am Profilbild
+ * --media-gap               -> Fuge zwischen den Medien-Kacheln
+ * --media-btn-size          -> Größe der runden Knöpfe über der Navigation
+ * --media-actions-space     -> Extra-Platz am Ende der Medien-Seite
+ * --draw-tool-size / --draw-color-size -> Größe der Werkzeug-Knöpfe und Farbpunkte
+ * --draw-tools-space        -> Extra-Platz unter der Zeichenfläche
+ *
+ * LEVEL-ANZEIGE, DIAGRAMME UND KALENDER
+ * --level-color / --level-dim / --level-glow -> Level-Anzeige oben links
+ * --xp-created / --xp-done  -> Blau für „Angelegt“, Grün für „Erledigt“
+ * --xp-line                 -> Orange der Verlaufskurve im Fortschritt-Blatt
+ * --dot-empty / --dot-1..4  -> Punkte-Raster der Nutzungszeit im Profil-Blatt
+ * --cal-accent              -> Blau des gewählten Tages und des „Heute“-Knopfes
+ * --cal-now                 -> Farbe der Jetzt-Linie im Stundenraster
+ * --cal-day-ring            -> Kreis hinter Tagen, an denen etwas eingetragen ist
+ * --cal-row-h / --cal-hour-h -> Höhe einer Wochenzeile und einer Stunde
+ * --cal-panel-radius        -> Rundung der grauen Fläche unter dem Streifen
+ * --media-doc-color / --media-badge-bg -> Dokument-Icon und Dauer-Schild
+ *
+ * Dunkelmodus: dieselben Werte werden weiter unten noch einmal gesetzt —
+ * einmal für „folgt dem System“ und einmal für „in den Einstellungen gewählt“.
+ */
+
+:root {
+  --bg: #f3f3f5;
+  --card: #ffffff;
+  --text: #1c1c1e;
+  --muted: #8e8e93;
+  --line: rgba(60, 60, 67, 0.12);
+  --add: #007aff;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.05);
+  --radius-xl: 22px;
+  --radius-lg: 18px;
+  --title-size: 32px;
+  --content-side: 16px;
+  --title-side: 4px;
+  --overview-gap: 28px;
+  --workspace-head-gap: 12px;
+  --top-bar-icon-width: 24px;
+  --top-bar-icon-height: 24px;
+  --top-bar-leading-btn-width: 48px;
+  --top-bar-leading-btn-height: 48px;
+  --top-bar-profile-btn-width: 48px;
+  --top-bar-profile-btn-height: 48px;
+  --search-bar-height: 56px;
+  --search-bar-radius: 28px;
+  --icon-folder-plus-width: 22px;
+  --icon-folder-plus-height: 22px;
+  --tab-space: 116px;
+  --nav-height: 80px; /* Material 3: Navigationsleiste ist 80dp hoch */
+  --tab-label-size: 10px;
+  --tab-add-size: 50px;
+  --search-meta-size: 13px;
+  --nav-side: 12px;
+  --nav-bottom: 10px;
+  --nav-radius: 32px;
+  --composer-radius: 26px;
+  --composer-input-size: 16px;
+  --composer-chip-size: 13px;
+  --entry-title-size: 28px;
+  --entry-body-size: 16px;
+  --swipe-action-size: 44px;
+  --swipe-action-gap: 10px;
+  --danger: #ff3b30;
+  --archive-color: #ffc700;
+  --link-color: #007aff;
+  --tab-pill-size: 15px;
+  --tab-pill-active-bg: rgba(60, 60, 67, 0.09);
+  --tab-pills-btn-gap: 8px;
+  --tab-pills-fade: 16px;
+  --star-color: #f5c518;
+  --inbox-icon-color: #233d4c;
+  --project-icon-color: #5B0E14;
+  --resource-icon-color: #1A2517;
+  --ctx-radius: 16px;
+  --icon-strong: #3a3a3c;
+  --placeholder: #aeaeb2;
+  --chevron: #c7c7cc;
+  --level-color: #4d72ad;
+  --level-dim: rgba(77, 114, 173, 0.22);
+  --level-glow: transparent;
+  --xp-created: #007aff;
+  --xp-done: #34c759;
+  --xp-line: #ff9500;
+  --dot-empty: rgba(60, 60, 67, 0.09);
+  --dot-1: rgba(255, 149, 0, 0.3);
+  --dot-2: rgba(255, 149, 0, 0.5);
+  --dot-3: rgba(255, 149, 0, 0.75);
+  --dot-4: #ff9500;
+  --cal-accent: #007aff;
+  --cal-now: #32ade6;
+  --cal-day-ring: rgba(60, 60, 67, 0.08);
+  --cal-row-h: 52px;
+  --cal-hour-h: 56px;
+  --cal-panel-radius: 28px;
+  --media-gap: 3px;
+  --media-month-size: 19px;
+  --media-name-size: 13px;
+  --media-doc-color: #007aff;
+  --media-badge-bg: rgba(0, 0, 0, 0.55);
+  --media-btn-size: 48px;
+  --media-actions-space: 60px;
+  --draw-tool-size: 38px;
+  --draw-color-size: 22px;
+  --draw-tools-space: 62px;
+  --modal-dismiss-pull: 100px;
+  --profile-avatar-size: 128px;
+  --profile-avatar-edit-size: 36px;
+  --safe-top: env(safe-area-inset-top, 0px);
+  --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* Hoehe der eingeblendeten Bildschirmtastatur; app.js setzt den Wert am Handy */
+  --keyboard-inset: 0px;
+}
+
+/* Dunkelmodus: folgt dem System, solange in den Einstellungen nichts anderes gewählt ist */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+  --bg: #000000;
+  --card: #1c1c1e;
+  --text: #f2f2f7;
+  --muted: #8e8e93;
+  --line: rgba(84, 84, 88, 0.55);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --tab-pill-active-bg: rgba(255, 255, 255, 0.12);
+  --inbox-icon-color: #9fc4dc;
+  --project-icon-color: #e8848d;
+  --resource-icon-color: #a3d39b;
+  --icon-strong: #e5e5ea;
+  --placeholder: #636366;
+  --chevron: #48484a;
+  --level-color: #a9c9ff;
+  --level-dim: rgba(169, 201, 255, 0.2);
+  --level-glow: rgba(120, 170, 255, 0.75);
+  --xp-created: #0a84ff;
+  --xp-done: #30d158;
+  --xp-line: #ff9f0a;
+  --dot-empty: rgba(255, 255, 255, 0.1);
+  --dot-1: rgba(255, 159, 10, 0.3);
+  --dot-2: rgba(255, 159, 10, 0.52);
+  --dot-3: rgba(255, 159, 10, 0.76);
+  --dot-4: #ff9f0a;
+  --cal-accent: #4aa3ff;
+  --cal-now: #6fcbe8;
+  --cal-day-ring: rgba(255, 255, 255, 0.07);
+  --media-doc-color: #0a84ff;
+  }
+}
+
+/* Dunkelmodus: in den Einstellungen fest gewählt */
+:root[data-theme="dark"] {
+  --bg: #000000;
+  --card: #1c1c1e;
+  --text: #f2f2f7;
+  --muted: #8e8e93;
+  --line: rgba(84, 84, 88, 0.55);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --tab-pill-active-bg: rgba(255, 255, 255, 0.12);
+  --inbox-icon-color: #9fc4dc;
+  --project-icon-color: #e8848d;
+  --resource-icon-color: #a3d39b;
+  --icon-strong: #e5e5ea;
+  --placeholder: #636366;
+  --chevron: #48484a;
+  --level-color: #a9c9ff;
+  --level-dim: rgba(169, 201, 255, 0.2);
+  --level-glow: rgba(120, 170, 255, 0.75);
+  --xp-created: #0a84ff;
+  --xp-done: #30d158;
+  --xp-line: #ff9f0a;
+  --dot-empty: rgba(255, 255, 255, 0.1);
+  --dot-1: rgba(255, 159, 10, 0.3);
+  --dot-2: rgba(255, 159, 10, 0.52);
+  --dot-3: rgba(255, 159, 10, 0.76);
+  --dot-4: #ff9f0a;
+  --cal-accent: #4aa3ff;
+  --cal-now: #6fcbe8;
+  --cal-day-ring: rgba(255, 255, 255, 0.07);
+  --media-doc-color: #0a84ff;
+}

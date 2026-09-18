@@ -1,0 +1,85 @@
+/*
+ * Seite eines Eintrags: Titel, Text, Anhänge und der Knopf oben rechts.
+ * Pfad: styles/entry.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --entry-title-size        -> Schriftgröße des Titels
+ * --entry-body-size         -> Schriftgröße des Textes
+ * --placeholder             -> Farbe der Platzhaltertexte
+ * --content-side            -> Abstand zum linken und rechten Rand
+ */
+
+.entry-attachments {
+  margin: 0 0 16px;
+}
+
+.entry-attachments[hidden] {
+  display: none;
+}
+
+/* Kopfzeile einer Seite: Zurück links, Drei-Punkte-Menü rechts */
+.head-btn {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  flex: 0 0 auto;
+  margin-left: auto; /* schiebt das Menü an den rechten Rand */
+}
+
+.head-btn .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.head-btn:active {
+  opacity: 0.55;
+}
+
+/* Ohne diese Zeile würde display: grid oben das hidden-Attribut überstimmen */
+.head-btn[hidden] {
+  display: none;
+}
+
+/* Editor-Seite: Titel und Text sind direkt bearbeitbar */
+.entry-crumb {
+  font-size: 15px;
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.entry-title {
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: var(--entry-title-size);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  padding: 0 2px;
+  margin-bottom: 12px;
+}
+
+.entry-title::placeholder {
+  color: var(--chevron);
+}
+
+.entry-body {
+  width: 100%;
+  min-height: 320px;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: var(--entry-body-size);
+  line-height: 1.5;
+  padding: 0 2px;
+  resize: none; /* resize: verhindert den Ziehgriff, die Fläche ist ohnehin schon groß */
+}
+
+.entry-body::placeholder {
+  color: var(--chevron);
+}

@@ -1,0 +1,212 @@
+/*
+ * Kalender, untere Fläche: Stundenraster mit Terminen und Jetzt-Linie oder die
+ * Liste mit den drei Spalten.
+ * Pfad: styles/calendar-panel.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --cal-hour-h              -> Höhe einer Stunde im Raster
+ * --cal-panel-radius        -> Rundung der grauen Fläche
+ * --cal-now                 -> Farbe der Jetzt-Linie
+ * --cal-accent              -> gewählte Spalte in der Liste
+ * --event-color             -> wird je Termin aus src/data/config.js gesetzt
+ */
+
+.cal-panel {
+  flex: 1;
+  margin: 2px calc(-1 * var(--content-side)) calc(-1 * var(--tab-space));
+  padding: 14px 16px var(--tab-space);
+  background: var(--card);
+  border-radius: var(--cal-panel-radius) var(--cal-panel-radius) 0 0;
+}
+
+/* Drei Spalten in der Liste: Aufgaben, Termine, Projekte */
+.cal-seg {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.cal-seg-btn {
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.cal-seg-btn.is-active {
+  background: var(--tab-pill-active-bg);
+  color: var(--text);
+}
+
+.cal-seg-btn:active {
+  opacity: 0.55;
+}
+
+/* Leerer Tag */
+.cal-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 44px 12px 24px;
+  color: var(--muted);
+}
+
+.cal-empty .icon {
+  width: 64px;
+  height: 64px;
+  margin-bottom: 22px;
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+.cal-empty b {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.cal-empty span {
+  font-size: 19px;
+}
+
+/* Einträge in der Liste: Uhrzeit vor dem Titel */
+.cal-time {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  min-width: 44px;
+  flex: 0 0 auto;
+}
+
+/* Stundenraster */
+.cal-hours {
+  position: relative;
+  padding: 10px 0 8px;
+  --cal-label-w: 68px;
+}
+
+.cal-hour {
+  position: relative;
+  height: var(--cal-hour-h);
+  cursor: pointer;
+}
+
+.cal-hour-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translateY(-50%);
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.cal-hour-line {
+  position: absolute;
+  left: var(--cal-label-w);
+  right: 0;
+  top: 0;
+  height: 1px;
+  background: var(--line);
+}
+
+.cal-hour:active .cal-hour-line {
+  background: var(--muted);
+}
+
+/* Jetzt-Linie mit Uhrzeit-Pille */
+.cal-now {
+  position: absolute;
+  left: 0;
+  right: 0;
+  display: flex;
+  align-items: center;
+  transform: translateY(-50%);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.cal-now-time {
+  min-width: var(--cal-label-w);
+  display: flex;
+}
+
+.cal-now-time span {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--cal-now);
+  color: #0b1a2a;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.cal-now-line {
+  flex: 1;
+  height: 2px;
+  background: var(--cal-now);
+  border-radius: 2px;
+}
+
+/* Termine liegen als farbige Blöcke auf dem Raster */
+.cal-event {
+  position: absolute;
+  left: calc(var(--cal-label-w) + 2px);
+  right: 6px;
+  min-height: 22px;
+  padding: 4px 10px;
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--event-color, var(--cal-accent)) 22%, transparent);
+  border-left: 3px solid var(--event-color, var(--cal-accent));
+  color: var(--text);
+  text-align: left;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.cal-event small {
+  display: block;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+  margin-top: 1px;
+}
+
+.cal-event:active {
+  opacity: 0.55;
+}
+
+/* Ganztägige Einträge stehen über dem Raster */
+.cal-allday {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 0 0 10px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 4px;
+}
+
+.cal-allday-chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--event-color, var(--cal-accent)) 22%, transparent);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.cal-allday-chip .icon {
+  width: 14px;
+  height: 14px;
+  color: var(--event-color, var(--cal-accent));
+}

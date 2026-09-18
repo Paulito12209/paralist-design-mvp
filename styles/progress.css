@@ -1,0 +1,241 @@
+/*
+ * Fortschritt-Blatt: Karten mit Ring, Verlaufskurve, nächsten Stufen und
+ * Historie. Die Diagramm-Klassen benutzt auch das Profil-Blatt.
+ * Pfad: styles/progress.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --xp-created / --xp-done  -> Farben im Ring und in der Historie
+ * --xp-line                 -> Farbe der Verlaufskurve
+ * --card / --line / --muted -> Flächen, Hilfslinien und kleine Schrift
+ */
+
+/* Karten im Fortschritt-Blatt */
+.pcard {
+  background: var(--card);
+  border-radius: var(--radius-xl);
+  padding: 18px 16px;
+  box-shadow: var(--shadow);
+}
+
+.pcard-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+}
+
+.pcard-head .icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* Ring: Anteil je XP-Art */
+.donut-wrap {
+  display: grid;
+  place-items: center;
+  margin: 4px 0 18px;
+}
+
+.donut {
+  width: 210px;
+  height: 210px;
+  display: block;
+}
+
+.donut-seg {
+  fill: none;
+  stroke-width: 26;
+}
+
+.donut-total {
+  fill: var(--text);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.donut-sub {
+  fill: var(--muted);
+  font-size: 14px;
+}
+
+.xp-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 42px;
+  font-size: 17px;
+}
+
+.xp-row .icon {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+}
+
+.xp-row-label {
+  flex: 1;
+}
+
+.xp-row-pct {
+  color: var(--muted);
+  min-width: 52px;
+  text-align: right;
+}
+
+.xp-row-xp {
+  font-weight: 600;
+  min-width: 62px;
+  text-align: right;
+}
+
+/* Zeitraum-Schalter im Verlauf */
+.seg {
+  display: flex;
+  background: var(--bg);
+  border-radius: 999px; /* border-radius: macht den Schalter zur Pille */
+  padding: 3px;
+  margin-bottom: 14px;
+}
+
+.seg button {
+  flex: 1;
+  padding: 9px 0;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.seg button.is-active {
+  background: var(--tab-pill-active-bg);
+  font-weight: 600;
+}
+
+.chart {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.chart-grid {
+  stroke: var(--line);
+  stroke-dasharray: 3 4; /* stroke-dasharray: gestrichelte Hilfslinien */
+}
+
+.chart-axis {
+  stroke: var(--line);
+}
+
+.chart-label {
+  fill: var(--muted);
+  font-size: 12px;
+}
+
+.chart-line {
+  fill: none;
+  stroke: var(--xp-line);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.chart-area {
+  fill: var(--xp-line);
+  opacity: 0.28;
+}
+
+.chart-note {
+  color: var(--muted);
+  font-size: 15px;
+  margin-top: 10px;
+}
+
+.level-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 0.5px solid var(--line);
+  font-size: 17px;
+}
+
+.level-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 4px;
+}
+
+.level-row b {
+  font-weight: 600;
+}
+
+.level-row span {
+  color: var(--muted);
+}
+
+/* Historie: Tagesgruppen mit Zeilen */
+.hist-group {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase; /* text-transform: Tagesnamen in Großbuchstaben wie in der App */
+  letter-spacing: 0.02em;
+  padding: 16px 0 6px;
+}
+
+.hist-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.hist-row .icon {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+}
+
+.hist-copy {
+  flex: 1;
+  min-width: 0; /* min-width: lange Titel werden abgeschnitten statt die Zeile zu sprengen */
+}
+
+.hist-title {
+  font-size: 17px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hist-meta {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.hist-xp {
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.hist-bulk {
+  border-bottom: 0.5px solid var(--line);
+  padding-bottom: 12px;
+}
+
+.hist-more {
+  width: 100%;
+  padding: 14px 0 4px;
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--text);
+}
+
+.hist-more:active {
+  opacity: 0.55;
+}

@@ -1,0 +1,119 @@
+/*
+ * Untere Navigationsleiste. Sie liegt im selben runden Container wie das
+ * Eingabefeld; beim Anlegen weicht sie und der Container wächst nach oben.
+ * Pfad: styles/navigation.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --nav-height              -> Höhe der Leiste (Material 3: 80dp)
+ * --nav-side / --nav-bottom -> Abstand zum Rand und nach unten
+ * --nav-radius              -> Rundung der Leiste
+ * --tab-add-size            -> Größe des runden Plus-Knopfes in der Mitte
+ * --tab-label-size          -> Schriftgröße der Wörter unter den Icons
+ * --composer-radius         -> Rundung, sobald das Eingabefeld offen ist
+ * --keyboard-inset          -> wird von src/shell/keyboard-inset.js gesetzt
+ */
+
+.bottom-bar {
+  /* position: liegt fest unten im Gerät über der Seite, statt mitzuscrollen */
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--keyboard-inset); /* bottom: beim Tippen rueckt die Leiste ueber die Tastatur */
+  z-index: 20; /* z-index: hält die Leiste über der Liste */
+  padding: 12px var(--nav-side) calc(var(--nav-bottom) + var(--safe-bottom));
+  container-type: inline-size; /* container-type: die Navigation darf auf ihre eigene Breite reagieren, nicht nur aufs Fenster */
+}
+
+/* Gemeinsamer Container: trägt sowohl die Navigation als auch das Eingabefeld */
+.nav-shell {
+  background: var(--card);
+  border-radius: var(--nav-radius); /* border-radius: macht die Leiste rund wie eine Pille */
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(0, 0, 0, 0.12);
+  /* padding: nur seitlich, die Höhe gibt --nav-height in .tab-bar vor */
+  padding: 0 8px;
+}
+
+/* Beim Anlegen wächst derselbe Container nach oben und wird eckiger */
+.nav-shell.is-composing {
+  border-radius: var(--composer-radius);
+  padding: 12px;
+}
+
+/* Beim Anlegen wird die Navigation ausgeblendet; ohne diese Zeile
+   würde das display:flex unten das hidden-Attribut überstimmen */
+.tab-bar[hidden] {
+  display: none;
+}
+
+.tab-bar {
+  min-height: var(--nav-height); /* Material 3: 80dp Containerhöhe */
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2px;
+}
+
+.tab-btn {
+  flex: 1;
+  min-width: 0; /* Labels wie „Einstellungen“ dürfen schmaler werden, statt die Leiste zu sprengen */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  color: var(--muted);
+  font-size: var(--tab-label-size);
+  font-weight: 500;
+  padding: 4px 0;
+}
+
+.tab-btn span {
+  white-space: nowrap; /* sonst bricht „Einstellungen“ mitten im Wort um */
+}
+
+/* Unter dieser Breite passen die Untertitel nicht mehr nebeneinander:
+   dann bleiben nur die Icons, statt „Einstellungen“ zu quetschen oder mit … zu kürzen.
+   Gemessen wird die Innenbreite der Leiste (Gerät minus 2 × 12px), 344px entspricht
+   einem 368px breiten Gerät: 360er-Androids verlieren die Labels, iPhones ab 375px behalten sie */
+@container (max-width: 344px) {
+  .tab-btn span {
+    display: none;
+  }
+}
+
+.tab-btn .icon {
+  width: 24px;
+  height: 24px;
+}
+
+.tab-btn.is-active {
+  color: var(--text);
+}
+
+.tab-btn:active {
+  opacity: 0.55;
+}
+
+.tab-add {
+  width: var(--tab-add-size);
+  height: var(--tab-add-size);
+  border-radius: 50%; /* border-radius: macht den Plus-Button rund */
+  background: var(--text);
+  color: var(--card);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+.tab-add .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.tab-add:active {
+  opacity: 0.55;
+}
+
+/* Eingabefeld: sitzt im selben Container wie die Navigation */

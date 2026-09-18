@@ -1,0 +1,254 @@
+/*
+ * Alles, was sich über die Seite legt: das Auswahl-Blatt von unten, das kleine
+ * Menü beim gedrückt Halten und die Blätter für Fortschritt, Profil und
+ * Profilbild.
+ * Pfad: styles/overlays.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --ctx-radius              -> Rundung des kleinen Menüs
+ * --radius-xl               -> Rundung der Blätter
+ * --card / --line / --danger -> Flächen, Trennlinien und rote Einträge
+ * --modal-dismiss-pull      -> wie weit man ziehen muss, damit ein Blatt schließt
+ * --modal-dim               -> wird beim Ziehen von src/ui/modal-pull.js gesetzt
+ */
+
+/* Auswahl-Blatt für Verknüpfen und Seitenmenü */
+.sheet-backdrop {
+  position: absolute; /* position: legt das Blatt über die ganze Gerätefläche */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50; /* z-index: liegt über Navigation und großen Blättern, damit die Auswahl sichtbar bleibt */
+  background: rgba(0, 0, 0, calc(0.28 * var(--modal-dim, 1)));
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 12px;
+}
+
+.sheet-backdrop[hidden] {
+  display: none;
+}
+
+.sheet {
+  background: var(--card);
+  border-radius: var(--composer-radius); /* border-radius: rundet das Blatt wie die übrigen Karten */
+  padding: 8px;
+  padding-bottom: calc(8px + var(--safe-bottom));
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+.sheet-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 10px 12px 6px;
+}
+
+.sheet-options {
+  display: flex;
+  flex-direction: column;
+}
+
+.sheet-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 48px;
+  padding: 8px 12px;
+  border-radius: var(--radius-lg); /* border-radius: rundet die Zeile beim Antippen */
+  text-align: left;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.sheet-option .icon {
+  width: 20px;
+  height: 20px;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+.sheet-option.is-active {
+  background: var(--bg);
+}
+
+.sheet-option.is-danger,
+.sheet-option.is-danger .icon {
+  color: var(--danger);
+}
+
+.sheet-option.is-split {
+  margin-top: 8px;
+  /* border-top: Trennlinie vor Dokument/Zeichnung bzw. „Icon entfernen“ */
+  border-top: 1px solid var(--line);
+}
+
+.sheet-option.is-gap {
+  margin-top: 8px; /* Abstand zwischen Aufgabe/Notiz, Termin und Projekte */
+}
+
+.sheet-option:active {
+  background: var(--bg);
+}
+
+/* Unsichtbare Fläche über dem Gerät, damit ein Tipp neben dem Menü es schließt */
+.ctx-backdrop {
+  position: absolute; /* position: liegt über der ganzen Gerätefläche */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 36; /* z-index: über der Navigation, unter dem Auswahl-Blatt */
+  background: transparent;
+}
+
+.ctx-backdrop[hidden] {
+  display: none;
+}
+
+/* Kleines weißes Menü wie beim gedrückt Halten eines Tabs */
+.ctx-card {
+  position: absolute; /* position: klebt am gedrückten Tab oder der Zeile */
+  min-width: 220px;
+  background: var(--card);
+  border-radius: var(--ctx-radius); /* border-radius: rundet das Menü */
+  padding: 6px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+}
+
+.ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 12px; /* border-radius: rundet die Zeile beim Antippen */
+  text-align: left;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.ctx-item .icon {
+  width: 20px;
+  height: 20px;
+  color: var(--text);
+  flex: 0 0 auto;
+}
+
+.ctx-item.is-danger,
+.ctx-item.is-danger .icon {
+  color: var(--danger);
+}
+
+.ctx-item:active {
+  background: var(--bg);
+}
+
+/* ---------- Fortschritt-Blatt ---------- */
+
+.modal-backdrop {
+  position: absolute; /* position: liegt über der ganzen Gerätefläche */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 44; /* z-index: über Navigation, unter dem Auswahl-Blatt */
+  /* --modal-dim: wird beim Nach-unten-Ziehen kleiner, damit der Hintergrund mit ausblendet */
+  background: rgba(0, 0, 0, calc(0.4 * var(--modal-dim, 1)));
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.modal-backdrop[hidden] {
+  display: none;
+}
+
+.modal {
+  height: calc(100% - 24px - var(--safe-top));
+  background: var(--bg);
+  border-radius: 28px 28px 0 0; /* border-radius: rundet nur die obere Kante wie ein iOS-Blatt */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.3);
+  animation: modal-up 0.28s ease; /* animation: Blatt fährt von unten herein */
+}
+
+@keyframes modal-up {
+  from {
+    transform: translateY(48px);
+    opacity: 0.4;
+  }
+}
+
+.modal-head {
+  position: relative; /* position: der Schließen-Knopf hängt rechts im Kopf */
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26px 16px 14px;
+  /* touch-action: der Kopf scrollt nicht mit, sondern zieht das Blatt nach unten */
+  touch-action: none;
+}
+
+.modal-grip {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 36px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--chevron);
+  transform: translateX(-50%); /* transform: zentriert den Griff */
+}
+
+.modal-head h2 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.modal-close {
+  position: absolute;
+  right: 12px;
+  top: 16px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%; /* border-radius: macht den Schließen-Knopf rund */
+  background: var(--tab-pill-active-bg);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+}
+
+.modal-close .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.modal-close:active {
+  opacity: 0.6;
+}
+
+.modal-body {
+  flex: 1;
+  overflow: auto;
+  padding: 4px var(--content-side) calc(24px + var(--safe-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  scrollbar-width: none;
+  /* overscroll-behavior: verhindert das Mitziehen der Seite, damit das Blatt selbst schließt */
+  overscroll-behavior: none;
+}
+
+.modal-body::-webkit-scrollbar {
+  display: none;
+}

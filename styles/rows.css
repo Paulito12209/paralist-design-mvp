@@ -1,0 +1,195 @@
+/*
+ * Listenzeilen und alles, was an ihnen hängt: Trennlinien, Pfeil rechts,
+ * kleine Vorschau vor dem Titel, die runden Wisch-Knöpfe dahinter und die
+ * Kopfzeile einer Unterseite.
+ * Pfad: styles/rows.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --line                    -> Trennlinie zwischen den Zeilen
+ * --chevron                 -> Pfeil rechts in der Zeile
+ * --swipe-action-size       -> Größe der runden Wisch-Knöpfe
+ * --swipe-action-gap        -> Abstand zwischen den Knöpfen und zum Rand
+ * --danger / --archive-color / --link-color / --star-color -> Farben der Knöpfe
+ * --content-side            -> Abstand der Zeilen zum Rand
+ */
+
+.workspace-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.workspace-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 6px 2px;
+  border-bottom: 0.5px solid var(--line);
+  text-align: left;
+  font-size: 17px;
+  user-select: none; /* user-select: Text soll beim gedrückt Halten nicht markiert werden */
+  -webkit-touch-callout: none; /* -webkit-touch-callout: verhindert das iPhone-Menü über unserem eigenen */
+}
+
+.workspace-row .icon:not(.chevron) {
+  width: 22px;
+  height: 22px;
+  color: var(--muted);
+}
+
+.workspace-row span {
+  flex: 1;
+}
+
+.workspace-row .chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--chevron);
+}
+
+.workspace-add {
+  color: var(--placeholder);
+  border-bottom: 0;
+}
+
+.workspace-row.workspace-add .icon:not(.chevron) {
+  width: var(--icon-folder-plus-width);
+  height: var(--icon-folder-plus-height);
+  color: var(--chevron);
+}
+
+.page-head {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0 0 18px -8px;
+}
+
+.back-btn {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  flex: 0 0 auto;
+}
+
+.back-btn .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.page-title {
+  margin: 0;
+  padding: 0;
+  flex: 1;
+}
+
+.workspace-name-input {
+  flex: 1;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 17px;
+  min-width: 0; /* langer Name soll in der Zeile bleiben */
+  user-select: text; /* user-select: im Eingabefeld soll man den Namen markieren können */
+}
+
+/* Wisch-Zeile: die Knöpfe liegen hinter der Zeile und kommen beim Ziehen zum Vorschein */
+.swipe {
+  position: relative; /* position: nötig, damit die Knöpfe hinter der Zeile liegen können */
+  overflow: hidden; /* overflow: schneidet die Knöpfe ab, solange nicht gewischt wird */
+}
+
+.swipe-actions {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--swipe-action-gap);
+  padding: 0 var(--swipe-action-gap);
+}
+
+.swipe-actions-left {
+  left: 0;
+}
+
+.swipe-actions-right {
+  right: 0;
+}
+
+/* Runde, farbige Knöpfe, die beim Wischen hinter der Zeile auftauchen */
+.swipe-action {
+  width: var(--swipe-action-size);
+  height: var(--swipe-action-size);
+  border-radius: 50%; /* border-radius: macht die Knöpfe zu Kreisen */
+  display: grid;
+  place-items: center;
+  color: var(--card);
+  flex: 0 0 auto;
+}
+
+.swipe-action .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.swipe-action-delete {
+  background: var(--danger);
+}
+
+.swipe-action-archive {
+  background: var(--archive-color);
+}
+
+.swipe-action-link {
+  background: var(--link-color);
+}
+
+.swipe-action-favorite {
+  background: var(--star-color);
+}
+
+.swipe-action:active {
+  opacity: 0.75;
+}
+
+/* Die Zeile selbst wird beim Ziehen zur Seite geschoben */
+.swipe-body {
+  position: relative; /* position: hält die Zeile über den Knöpfen */
+  background: var(--bg);
+  transform: translateX(0); /* transform: verschiebt die Zeile beim Wischen */
+  touch-action: pan-y; /* touch-action: senkrechtes Scrollen bleibt möglich, waagerechtes Wischen gehört uns */
+}
+
+.swipe-body.is-sliding {
+  transition: none; /* transition: beim Ziehen soll die Zeile direkt am Finger hängen */
+}
+
+.swipe-body:not(.is-sliding) {
+  transition: transform 0.22s ease; /* transition: sanftes Einrasten nach dem Loslassen */
+}
+
+.entry-row {
+  gap: 12px;
+}
+
+.entry-row .entry-type {
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+/* Kleine Vorschau vor dem Titel: Foto, Video oder Zeichnung statt des Typ-Icons */
+.entry-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  object-fit: cover; /* object-fit: füllt das Quadrat und beschneidet statt zu verzerren */
+  flex: 0 0 auto;
+  background: #ffffff; /* Zeichnungen sind durchsichtig gespeichert und brauchen Papier dahinter */
+  box-shadow: inset 0 0 0 0.5px var(--line);
+}

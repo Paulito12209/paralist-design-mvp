@@ -1,0 +1,227 @@
+/*
+ * Startseite: die vier Übersichtskarten, die Zeile „Arbeitsbereiche“ und die
+ * Tab-Pillen darunter.
+ * Pfad: styles/overview.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --card / --shadow / --radius-lg   -> Aussehen der Karten
+ * --inbox-icon-color                -> Inbox-Icon
+ * --star-color                      -> Favoriten-Stern
+ * --project-icon-color              -> Raketen-Icon
+ * --resource-icon-color             -> Würfel-Icon
+ * --tab-pill-size                   -> Schriftgröße der Tab-Pillen
+ * --tab-pill-active-bg              -> Hintergrund der gewählten Pille
+ * --tab-pills-btn-gap               -> Abstand zwischen Trennlinie und Plus-Knopf
+ * --tab-pills-fade                  -> Breite des Ausblendens links der Trennlinie
+ * --icon-folder-plus-width / -height -> Größe des Ordner-Plus-Icons
+ * --workspace-head-gap              -> Abstand über den Pillen
+ */
+
+.overview-grid {
+  display: grid;
+  /* minmax(0, 1fr): sonst darf eine Spalte mit langem Wort („Ressourcen“) breiter werden als die andere */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
+}
+
+.overview-card {
+  min-width: 0; /* min-width: die Kachel darf schmaler als ihr Text werden, damit beide Spalten gleich bleiben */
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  min-height: 118px;
+  padding: 16px;
+  text-align: left;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 10px;
+  box-shadow: var(--shadow);
+  font-size: 17px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+.overview-card:active {
+  transform: scale(0.98);
+}
+
+.card-icon {
+  width: 26px;
+  height: 26px;
+  color: var(--chevron);
+}
+
+/* Inbox-Icon auf der Übersichtskarte */
+.card-icon-inbox {
+  color: var(--inbox-icon-color);
+}
+
+/* Goldene Stern-Kontur auf der Favoriten-Karte */
+.card-icon-star {
+  color: var(--star-color);
+}
+
+/* Raketen-Icon auf der Projekte-Karte */
+.card-icon-rocket {
+  color: var(--project-icon-color);
+}
+
+/* Würfel-Icon auf der Ressourcen-Karte */
+.card-icon-cube {
+  color: var(--resource-icon-color);
+}
+
+.card-label {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.35em;
+  max-width: 100%;
+  overflow-wrap: anywhere; /* overflow-wrap: auf sehr schmalen Geräten bricht „Ressourcen“ um, statt aus der Kachel zu laufen */
+}
+
+.card-count {
+  color: var(--muted);
+  font-weight: 500;
+}
+
+.add-btn {
+  width: 32px;
+  height: 32px;
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+}
+
+.add-btn .icon {
+  width: var(--icon-folder-plus-width);
+  height: var(--icon-folder-plus-height);
+}
+
+.add-btn:active {
+  opacity: 0.55;
+}
+
+/* Tab-Zeile: Pillen scrollen, Plus-Button bleibt rechts */
+.tab-pills-row {
+  display: flex;
+  align-items: center;
+  position: relative; /* position: damit Linie und Button über den Tabs liegen können */
+  margin: 0 0 6px;
+  min-height: 32px; /* min-height: Zeile bleibt so hoch wie der Plus-Button */
+}
+
+.tab-pills {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  width: 100%;
+  padding-left: 2px;
+  /* Platz rechts, damit der letzte Tab vor Linie und Button sichtbar bleiben kann */
+  padding-right: calc(var(--tab-pills-fade) + 1px + var(--tab-pills-btn-gap) + 32px);
+  overflow-x: auto; /* overflow: viele Tabs sollen unter Linie und Button durchlaufen */
+  scrollbar-width: none;
+}
+
+/* Rechts fest: erst Fade, dann Linie, dann Plus */
+.tab-pills-tools {
+  position: absolute; /* position: bleibt rechts kleben, Tabs laufen darunter durch */
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  z-index: 1; /* z-index: hält Linie und Button über den scrollenden Tabs */
+}
+
+.tab-pills-fade {
+  width: var(--tab-pills-fade);
+  height: 100%;
+  background: linear-gradient(to right, transparent, var(--bg));
+  pointer-events: none; /* pointer-events: Klicks sollen die Tabs im Fade noch treffen */
+}
+
+.tab-pills-end {
+  display: flex;
+  align-items: center;
+  gap: var(--tab-pills-btn-gap);
+  height: 100%;
+  background: var(--bg);
+}
+
+.tab-pills-split {
+  width: 1px;
+  height: 16px;
+  background: var(--line);
+}
+
+.tab-pills::-webkit-scrollbar {
+  display: none;
+}
+
+.tab-pill {
+  padding: 8px 18px;
+  border-radius: 999px; /* border-radius: macht aus dem Knopf eine Pille */
+  font-size: var(--tab-pill-size);
+  font-weight: 600;
+  color: var(--muted);
+  white-space: nowrap;
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none; /* user-select: Text soll beim gedrückt Halten nicht markiert werden */
+  -webkit-touch-callout: none; /* -webkit-touch-callout: verhindert das iPhone-Menü über unserem eigenen */
+}
+
+.tab-pill-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto; /* Icon soll neben dem Namen nicht schrumpfen */
+}
+
+/* Der ausgewählte Tab bekommt als einziger einen Hintergrund */
+.tab-pill.is-active {
+  background: var(--tab-pill-active-bg);
+  color: var(--text);
+}
+
+.tab-pill:active {
+  opacity: 0.55;
+}
+
+/* Beim Umbenennen steht an derselben Stelle ein Eingabefeld */
+.tab-pill-input {
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  /* width: startet schmal; app.js setzt die Breite nach dem Text */
+  width: 1px;
+  min-width: 1px;
+  /* field-sizing: folgt dem Text, falls JS die Breite noch nicht gesetzt hat */
+  field-sizing: content;
+  font-size: var(--tab-pill-size);
+  font-weight: 600;
+  user-select: text; /* user-select: im Eingabefeld soll man den Namen markieren können */
+}
+
+.tab-pill-add {
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+.tab-pill-add .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.tab-pill-add:active {
+  opacity: 0.55;
+}

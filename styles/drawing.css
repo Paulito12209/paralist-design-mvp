@@ -1,0 +1,120 @@
+/*
+ * Zeichenfläche eines Eintrags vom Typ Zeichnung und die Werkzeugleiste
+ * darunter.
+ * Pfad: styles/drawing.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --draw-tool-size          -> Größe der Werkzeug-Knöpfe
+ * --draw-color-size         -> Größe der Farbpunkte
+ * --draw-tools-space        -> Platz unter der Fläche für die Leiste
+ * --draw-color              -> wird je Punkt aus src/features/drawing/drawing-tools.js gesetzt
+ */
+
+/* ---------- Zeichnung ---------- */
+
+/* Zeichenfläche: weißes Papier, füllt den Platz zwischen Titel und Werkzeugleiste */
+.draw-pad {
+  flex: 1;
+  min-height: 0;
+  background: #ffffff; /* bleibt auch im Dunkelmodus weiß, damit die Striche lesbar bleiben */
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden; /* overflow: schneidet die Fläche ab, wenn die Tastatur den Platz verkleinert */
+  touch-action: none; /* touch-action: der Finger zeichnet, statt die Seite zu scrollen */
+}
+
+.draw-pad[hidden] {
+  display: none;
+}
+
+.draw-pad canvas {
+  display: block;
+}
+
+/* Auf einer Zeichnung scrollt nichts: die Seite füllt den Platz bis zur Werkzeugleiste */
+body.is-drawing .content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: calc(var(--tab-space) + var(--draw-tools-space));
+}
+
+body.is-drawing #view-entry {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Werkzeugleiste über der Navigation wie Apples Stiftpalette; nur auf einer Zeichnung zu sehen */
+.draw-tools {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto 12px;
+  padding: 6px 8px;
+  border-radius: 999px; /* border-radius: Pillenform wie die Navigation */
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+body.is-drawing .draw-tools:not([hidden]) {
+  display: flex;
+}
+
+.draw-tool {
+  width: var(--draw-tool-size);
+  height: var(--draw-tool-size);
+  border-radius: 50%; /* border-radius: macht die Werkzeug-Knöpfe rund */
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+.draw-tool .icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* Das gewählte Werkzeug bleibt hervorgehoben */
+.draw-tool.is-active {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.draw-tool:active,
+.draw-color:active {
+  opacity: 0.55;
+}
+
+.draw-split {
+  width: 1px;
+  height: 20px;
+  margin: 0 4px;
+  background: var(--line);
+  flex: 0 0 auto;
+}
+
+.draw-colors {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.draw-color {
+  width: var(--draw-color-size);
+  height: var(--draw-color-size);
+  border-radius: 50%; /* border-radius: Farbpunkt */
+  background: var(--draw-color);
+  box-shadow: 0 0 0 1px var(--line); /* dünner Rand, damit Schwarz auch auf dunkler Leiste zu sehen ist */
+  flex: 0 0 auto;
+}
+
+/* Ring um die gewählte Farbe */
+.draw-color.is-active {
+  box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--draw-color);
+}
