@@ -25,6 +25,7 @@
  * --icon-folder-plus-height -> Höhe des Ordner-Plus-Icons
  * --tab-space               -> Extra-Platz am Ende der Seite, damit nichts hinter der Navigation verschwindet
  * --tab-label-size          -> Schriftgröße der Wörter unter den Navigations-Icons
+ * --nav-height               -> Höhe der Navigationsleiste (Material 3: 80dp)
  * --tab-add-size            -> Größe des runden Plus-Buttons in der Mitte der Navigation
  * --search-meta-size        -> Schriftgröße der kleinen Infos unter Such-Einträgen (z.B. „Aufgabe · 78× geöffnet“)
  * --nav-side                -> Abstand der runden Navigationsleiste zum linken und rechten Rand
@@ -102,7 +103,8 @@
   --search-bar-radius: 28px;
   --icon-folder-plus-width: 22px;
   --icon-folder-plus-height: 22px;
-  --tab-space: 96px;
+  --tab-space: 116px;
+  --nav-height: 80px; /* Material 3: Navigationsleiste ist 80dp hoch */
   --tab-label-size: 10px;
   --tab-add-size: 42px;
   --search-meta-size: 13px;
@@ -697,7 +699,8 @@ button {
   background: var(--card);
   border-radius: var(--nav-radius); /* border-radius: macht die Leiste rund wie eine Pille */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(0, 0, 0, 0.12);
-  padding: 6px 8px;
+  /* padding: nur seitlich, die Höhe gibt --nav-height in .tab-bar vor */
+  padding: 0 8px;
 }
 
 /* Beim Anlegen wächst derselbe Container nach oben und wird eckiger */
@@ -713,6 +716,7 @@ button {
 }
 
 .tab-bar {
+  min-height: var(--nav-height); /* Material 3: 80dp Containerhöhe */
   display: flex;
   align-items: center;
   justify-content: space-between;
