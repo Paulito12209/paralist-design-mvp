@@ -113,6 +113,7 @@ export const dom = {
   get avatarViewStage() { return el("avatar-view-stage"); },
 
   /* Kalender */
+  get calHead() { return el("cal-head"); },
   get calMonthBtn() { return el("cal-month"); },
   get calMonthLabel() { return el("cal-month-label"); },
   get calStrip() { return el("cal-strip"); },

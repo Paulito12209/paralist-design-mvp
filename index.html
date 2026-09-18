@@ -160,27 +160,27 @@
 
           <!-- Kalender: Monat, Wochenstreifen, Bedienzeile und darunter die graue Fläche mit Stundenraster oder Liste -->
           <section class="view" id="view-calendar" data-view="calendar" hidden>
-            <h1 class="screen-title">Kalender</h1>
-
-            <button class="cal-month" id="cal-month" type="button" aria-label="Monat wechseln">
-              <span id="cal-month-label">Monat</span>
-              <svg class="icon"><use href="#icon-chevron"></use></svg>
-            </button>
-
-            <div class="cal-strip" id="cal-strip">
-              <div class="cal-week-head">
-                <span>KW</span><span>Mo.</span><span>Di.</span><span>Mi.</span><span>Do.</span><span>Fr.</span><span>Sa.</span><span>So.</span>
-              </div>
-              <div class="cal-weeks" id="cal-weeks"></div>
-              <div class="cal-controls">
-                <button class="cal-round" id="cal-mode" type="button" aria-label="Ansicht wechseln">
-                  <svg class="icon"><use id="cal-mode-icon" href="#icon-list"></use></svg>
-                </button>
-                <button class="cal-pill cal-today" id="cal-today" type="button">Heute</button>
-                <button class="cal-pill cal-span" id="cal-span" type="button" aria-label="Zeitraum wählen">1 W</button>
+            <!-- cal-head bleibt beim Scrollen des Rasters stehen, siehe styles/calendar.css -->
+            <div class="cal-head" id="cal-head">
+              <h1 class="screen-title">Kalender</h1>
+              <button class="cal-month" id="cal-month" type="button" aria-label="Monat wechseln">
+                <span id="cal-month-label">Monat</span>
+                <svg class="icon"><use href="#icon-chevron"></use></svg>
+              </button>
+              <div class="cal-strip" id="cal-strip">
+                <div class="cal-week-head">
+                  <span>KW</span><span>Mo.</span><span>Di.</span><span>Mi.</span><span>Do.</span><span>Fr.</span><span>Sa.</span><span>So.</span>
+                </div>
+                <div class="cal-weeks" id="cal-weeks"></div>
+                <div class="cal-controls">
+                  <button class="cal-round" id="cal-mode" type="button" aria-label="Ansicht wechseln">
+                    <svg class="icon"><use id="cal-mode-icon" href="#icon-list"></use></svg>
+                  </button>
+                  <button class="cal-pill cal-today" id="cal-today" type="button">Heute</button>
+                  <button class="cal-pill cal-span" id="cal-span" type="button" aria-label="Zeitraum wählen">1 W</button>
+                </div>
               </div>
             </div>
-
             <div class="cal-panel" id="cal-panel"></div>
           </section>
 

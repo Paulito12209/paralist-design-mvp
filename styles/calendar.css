@@ -9,7 +9,8 @@
  * --cal-day-ring            -> Kreis hinter Tagen mit Einträgen
  * --cal-row-h               -> Höhe einer Wochenzeile
  * --muted                   -> Farbe der Wochentage und fremden Monate
- 
+ * --line                    -> Trennlinie unter der Bedienzeile, zum Raster hin
+ * --content-side            -> Seitenabstand, den die Trennlinie automatisch übernimmt
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -24,6 +25,22 @@
 
 #view-calendar .screen-title {
   margin-bottom: 18px;
+}
+
+/*
+ * Kopf der Kalenderseite (Titel, Monat, Wochenstreifen): bleibt beim Scrollen
+ * des Rasters oben stehen, damit man nie „im Nichts“ landet.
+ * position: sticky -> haengt am oberen Rand des Scrollbereichs fest
+ * z-index: liegt ueber dem Raster, das dahinter hochlaeuft
+ */
+.cal-head {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: var(--bg);
+  /* Trennlinie zum Raster: keine runden Ecken, nur eine gerade Linie im
+     normalen Seitenabstand (kein voller Rand wie bei der grauen Flaeche) */
+  border-bottom: 1px solid var(--line);
 }
 
 /* Monat und Jahr mit kleinem Pfeil, öffnet das Monatsmenü */

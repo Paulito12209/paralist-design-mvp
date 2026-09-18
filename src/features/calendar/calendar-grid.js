@@ -7,6 +7,7 @@
  * -----------------------------------
  * --cal-hour-h (styles/tokens.css) -> Höhe einer Stunde
  * overlapShift -> um wie viele Pixel gleichzeitige Termine versetzt werden
+ * nowTopGap    -> Abstand der Jetzt-Linie zum feststehenden Kopf beim Öffnen
  */
 
 import { dayKey, pad2, timeKey } from "../../core/dates.js";
@@ -18,6 +19,7 @@ import { entriesOfDay, entryColor, entryTime } from "../../data/queries.js";
 import { cal, gridTopOffset, hourHeight, nowOffset } from "./calendar-state.js";
 
 const overlapShift = 12;
+const nowTopGap = 40;
 
 /* Ganztägige Termine stehen als Chips über dem Raster. */
 function allDayMarkup(entries) {
@@ -81,10 +83,19 @@ export function renderGrid() {
   return `${allDayMarkup(allDay)}<div class="cal-hours">${hoursMarkup()}${eventsMarkup(timed, height)}${nowMarkup(height)}</div>`;
 }
 
-/** Zur Jetzt-Linie scrollen; ohne sie zur 8-Uhr-Zeile. */
+/*
+ * Zur Jetzt-Linie scrollen; ohne sie zur 8-Uhr-Zeile. Der feste Kopf
+ * (.cal-head) bleibt dabei stehen, nur das Raster darunter läuft mit —
+ * scrollIntoView würde stattdessen die ganze Seite samt Kopf verschieben.
+ */
 export function scrollToNow() {
   const target = el("cal-now") || dom.calPanel.querySelector('[data-hour="8"]');
-  if (target) requestAnimationFrame(() => target.scrollIntoView({ block: "center" }));
+  if (!target) return;
+  requestAnimationFrame(() => {
+    const headBottom = dom.calHead.getBoundingClientRect().bottom;
+    const targetTop = target.getBoundingClientRect().top;
+    dom.content.scrollTop += targetTop - headBottom - nowTopGap;
+  });
 }
 
 /** Die Jetzt-Linie mit der Uhr weiterwandern lassen. */
