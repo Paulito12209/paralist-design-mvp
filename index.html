@@ -693,13 +693,36 @@
             <header class="modal-head">
               <div class="modal-grip"></div>
               <h2 id="profile-title">Profil</h2>
-              <button class="modal-close is-leading" id="profile-close" type="button" aria-label="Schließen">
+              <button class="modal-close" id="profile-close" type="button" aria-label="Schließen">
                 <svg class="icon"><use href="#icon-close"></use></svg>
               </button>
             </header>
             <div class="modal-body" id="profile-body"></div>
+            <!-- Speichern erscheint nur, solange ein neues Profilbild noch nicht übernommen ist -->
+            <div class="profile-save" id="profile-save" hidden>
+              <button class="profile-save-cancel" id="profile-photo-cancel" type="button">Abbrechen</button>
+              <button class="profile-save-ok" id="profile-photo-save" type="button">Speichern</button>
+            </div>
           </div>
         </div>
+
+        <!-- Große Ansicht des Profilbilds; input type=file: nur so öffnet das Handy Kamera oder Mediathek -->
+        <div class="modal-backdrop avatar-view" id="avatar-view" hidden>
+          <div class="modal" role="dialog" aria-modal="true" aria-labelledby="avatar-view-title">
+            <header class="modal-head">
+              <div class="modal-grip"></div>
+              <h2 id="avatar-view-title">Profilbild</h2>
+              <button class="modal-close" id="avatar-view-close" type="button" aria-label="Schließen">
+                <svg class="icon"><use href="#icon-close"></use></svg>
+              </button>
+            </header>
+            <div class="modal-body avatar-view-body" id="avatar-view-body">
+              <div class="avatar-view-stage" id="avatar-view-stage"></div>
+            </div>
+          </div>
+        </div>
+        <input id="profile-file-photo" type="file" accept="image/*" capture="user" hidden />
+        <input id="profile-file-library" type="file" accept="image/*" hidden />
 
         <!-- Kleines Menü beim gedrückt Halten von Tabs und Arbeitsbereichen -->
         <div class="ctx-backdrop" id="ctx-menu" hidden>

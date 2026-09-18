@@ -39,6 +39,10 @@ const progressModal = document.getElementById("progress");
 const progressBody = document.getElementById("progress-body");
 const profileModal = document.getElementById("profile");
 const profileBody = document.getElementById("profile-body");
+const avatarView = document.getElementById("avatar-view");
+const avatarViewStage = document.getElementById("avatar-view-stage");
+const profileSave = document.getElementById("profile-save");
+const profileBtn = document.getElementById("profile-btn");
 const themeOptions = document.getElementById("theme-options");
 
 const views = {
@@ -89,6 +93,7 @@ const presetIcons = [
 const storageKey = "paralist-mvp";
 const themeKey = "paralist-theme";
 const usageKey = "paralist-usage";
+const avatarKey = "paralist-avatar";
 
 /* XP-Arten: bestimmen Farbe, Icon und Punkte je Ereignis */
 const xpKinds = {
@@ -139,6 +144,10 @@ let historyLimit = 20;
 let usage = {}; /* Nutzungszeit je Tag in Sekunden: { "2026-09-18": 2400 } */
 let usageRange = 30;
 let usageTickAt = Date.now();
+let profilePhoto = ""; /* gespeichertes Profilbild als kleine JPEG-Datei im Text */
+let profilePhotoDraft = null; /* null = nichts zu speichern, sonst Vorschau oder "" zum Entfernen */
+let modalPull = null; /* laufende Ziehbewegung an einem Blatt */
+let ignoreClicksUntil = 0;
 
 function escapeHtml(value) {
   return String(value).replace(
@@ -1355,13 +1364,145 @@ function renderProgress() {
     renderDonutCard() + renderHistoryCard() + renderLevelsCard() + renderLogCard();
 }
 
+/* ---------- Blatt nach unten ziehen, um es zu schließen ---------- */
+
+function dismissPullDistance() {
+  const raw = getComputedStyle(document.documentElement).getPropertyValue("--modal-dismiss-pull");
+  const n = parseFloat(raw);
+  return Number.isFinite(n) && n > 0 ? n : 100;
+}
+
+function modalPanelOf(backdrop) {
+  return backdrop.querySelector(".modal") || backdrop.querySelector(".sheet");
+}
+
+function clearModalPullStyles(backdrop) {
+  if (!backdrop) return;
+  const panel = modalPanelOf(backdrop);
+  if (panel) {
+    panel.style.transform = "";
+    panel.style.transition = "";
+  }
+  backdrop.style.removeProperty("--modal-dim");
+  const body = backdrop.querySelector(".modal-body");
+  if (body) body.style.overflow = "";
+}
+
+function bindModalPull(backdrop, closeFn) {
+  backdrop.addEventListener("pointerdown", (event) => {
+    if (backdrop.hidden || event.button) return;
+    if (backdrop.dataset.dismissing === "1") return;
+    if (!sheet.hidden && backdrop !== sheet) return;
+    if (event.target.closest(".modal-close, .profile-save, .profile-avatar-edit")) return;
+    if (event.target === backdrop) return;
+    const body = backdrop.querySelector(".modal-body");
+    const head = backdrop.querySelector(".modal-head");
+    const inHead = Boolean(head && head.contains(event.target));
+    const atTop = !body || body.scrollTop <= 0;
+    if (!inHead && !atTop) return;
+    modalPull = {
+      backdrop,
+      closeFn,
+      pointerId: event.pointerId,
+      startY: event.clientY,
+      startX: event.clientX,
+      fromHead: inHead,
+      active: false,
+      y: 0,
+    };
+  });
+}
+
+function onModalPullMove(event) {
+  if (!modalPull || event.pointerId !== modalPull.pointerId) return;
+  const { backdrop } = modalPull;
+  if (backdrop.hidden) {
+    modalPull = null;
+    return;
+  }
+  const panel = modalPanelOf(backdrop);
+  const body = backdrop.querySelector(".modal-body");
+  const dy = event.clientY - modalPull.startY;
+  const dx = event.clientX - modalPull.startX;
+  if (!modalPull.active) {
+    if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+    if (dy <= 0 || Math.abs(dy) <= Math.abs(dx)) {
+      modalPull = null;
+      return;
+    }
+    if (!modalPull.fromHead && body && body.scrollTop > 0) {
+      modalPull = null;
+      return;
+    }
+    modalPull.active = true;
+    ignoreClicksUntil = Date.now() + 500;
+    if (panel) panel.style.transition = "none";
+    if (body) body.style.overflow = "hidden";
+    try {
+      backdrop.setPointerCapture(event.pointerId);
+    } catch (error) {
+      /* ohne Capture folgt die Bewegung nur, solange der Finger auf dem Blatt bleibt */
+    }
+  }
+  modalPull.y = Math.max(0, dy);
+  if (panel) panel.style.transform = `translateY(${modalPull.y}px)`;
+  backdrop.style.setProperty("--modal-dim", String(Math.max(0.15, 1 - modalPull.y / 420)));
+  if (event.cancelable) event.preventDefault();
+}
+
+function onModalPullEnd(event) {
+  if (!modalPull || (event && event.pointerId !== modalPull.pointerId)) return;
+  const { backdrop, closeFn, active, y } = modalPull;
+  const panel = modalPanelOf(backdrop);
+  const body = backdrop.querySelector(".modal-body");
+  if (body) body.style.overflow = "";
+  modalPull = null;
+  if (!active || backdrop.dataset.dismissing === "1") return;
+  ignoreClicksUntil = Date.now() + 400;
+  if (y >= dismissPullDistance()) {
+    backdrop.dataset.dismissing = "1";
+    if (panel) {
+      panel.style.transition = "transform 0.2s ease";
+      panel.style.transform = `translateY(${Math.max(panel.offsetHeight, y + 80)}px)`;
+    }
+    window.setTimeout(() => {
+      closeFn();
+      clearModalPullStyles(backdrop);
+      delete backdrop.dataset.dismissing;
+    }, 180);
+  } else if (panel) {
+    panel.style.transition = "transform 0.2s ease";
+    panel.style.transform = "";
+    backdrop.style.setProperty("--modal-dim", "1");
+    window.setTimeout(() => {
+      panel.style.transition = "";
+      backdrop.style.removeProperty("--modal-dim");
+    }, 200);
+  }
+}
+
+window.addEventListener("pointermove", onModalPullMove, { passive: false });
+window.addEventListener("pointerup", onModalPullEnd);
+window.addEventListener("pointercancel", onModalPullEnd);
+document.addEventListener(
+  "click",
+  (event) => {
+    if (Date.now() < ignoreClicksUntil) {
+      event.preventDefault();
+      event.stopPropagation();
+    }
+  },
+  true
+);
+
 function openProgress(push = true) {
   closeSheet();
   closeCtxMenu();
   closeComposer();
-  profileModal.hidden = true;
+  hideProfile();
   historyLimit = 20;
   renderProgress();
+  clearModalPullStyles(progressModal);
   progressModal.hidden = false;
   progressBody.scrollTop = 0;
   if (push) history.pushState({ view: "progress", from: sourceView }, "", "#/fortschritt");
@@ -1381,6 +1522,7 @@ document.getElementById("progress-close").addEventListener("click", closeProgres
 progressModal.addEventListener("click", (event) => {
   if (event.target === progressModal) closeProgress();
 });
+bindModalPull(progressModal, closeProgress);
 
 progressBody.addEventListener("click", (event) => {
   const range = event.target.closest("[data-range]");
@@ -1506,10 +1648,22 @@ function usageStreaks() {
   return { current, longest };
 }
 
+function currentProfilePhoto() {
+  return profilePhotoDraft === null ? profilePhoto : profilePhotoDraft;
+}
+
+function profileAvatarMarkup() {
+  const photo = currentProfilePhoto();
+  return photo ? `<img src="${photo}" alt="">` : "PA";
+}
+
 function renderProfileId() {
   return `
     <section class="profile-id">
-      <div class="profile-avatar" aria-hidden="true">PA</div>
+      <div class="profile-avatar-wrap">
+        <button class="profile-avatar" type="button" data-avatar-view="1" aria-label="Profilbild anzeigen">${profileAvatarMarkup()}</button>
+        <button class="profile-avatar-edit" type="button" data-avatar-edit="1" aria-label="Profilbild ändern">${icon("pencil")}</button>
+      </div>
       <p class="profile-name">Paul Angeles</p>
       <p class="profile-mail">paul@paralist.app</p>
       <p class="profile-meta">Pro · Dabei seit Juni 2025</p>
@@ -1693,16 +1847,145 @@ function renderProfile() {
     renderProfileId() + renderUsageCard() + renderStreakCard() + renderProfileLists();
 }
 
+function showProfileSave(on) {
+  profileSave.hidden = !on;
+}
+
+function discardProfileDraft() {
+  profilePhotoDraft = null;
+  showProfileSave(false);
+}
+
+function hideProfile() {
+  profileModal.hidden = true;
+  avatarView.hidden = true;
+  discardProfileDraft();
+  clearModalPullStyles(profileModal);
+  clearModalPullStyles(avatarView);
+}
+
+function renderProfileButton() {
+  profileBtn.innerHTML = profilePhoto
+    ? `<img class="avatar-photo" src="${profilePhoto}" alt="">`
+    : `<svg class="icon"><use href="#icon-profile"></use></svg>`;
+}
+
+function persistProfilePhoto() {
+  try {
+    if (profilePhoto) localStorage.setItem(avatarKey, profilePhoto);
+    else localStorage.removeItem(avatarKey);
+  } catch (error) {
+    /* ohne Speicher bleibt das Bild nur bis zum Neuladen */
+  }
+}
+
+function loadProfilePhoto() {
+  try {
+    const saved = localStorage.getItem(avatarKey);
+    if (saved && saved.startsWith("data:image/")) profilePhoto = saved;
+  } catch (error) {
+    /* ohne Speicher bleibt das Standard-Icon */
+  }
+}
+
+/* canvas: nötig, um das Profilbild klein genug für den Gerätespeicher zu machen */
+function fileToProfilePhoto(file) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      let photo = null;
+      try {
+        const maxEdge = 512;
+        const scale = Math.min(1, maxEdge / Math.max(img.naturalWidth || 1, img.naturalHeight || 1));
+        const canvas = document.createElement("canvas");
+        canvas.width = Math.max(1, Math.round((img.naturalWidth || 1) * scale));
+        canvas.height = Math.max(1, Math.round((img.naturalHeight || 1) * scale));
+        canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+        photo = canvas.toDataURL("image/jpeg", 0.86);
+      } catch (error) {
+        /* z.B. HEIC ohne Browser-Unterstützung */
+      }
+      URL.revokeObjectURL(url);
+      resolve(photo);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(null);
+    };
+    img.src = url;
+  });
+}
+
+function setProfileDraft(photo) {
+  profilePhotoDraft = photo;
+  const scroll = profileBody.scrollTop;
+  renderProfile();
+  profileBody.scrollTop = scroll;
+  showProfileSave(true);
+}
+
+function openAvatarPicker() {
+  const options = [
+    {
+      icon: "camera",
+      label: "Foto aufnehmen",
+      onSelect: () => document.getElementById("profile-file-photo").click(),
+    },
+    {
+      icon: "photos",
+      label: "Aus der Bibliothek",
+      onSelect: () => document.getElementById("profile-file-library").click(),
+    },
+  ];
+  if (currentProfilePhoto()) {
+    options.push({
+      icon: "trash",
+      label: "Bild entfernen",
+      danger: true,
+      split: true,
+      onSelect: () => setProfileDraft(""),
+    });
+  }
+  openSheet("Profilbild", options);
+}
+
+function openAvatarView(push = true) {
+  const photo = currentProfilePhoto();
+  avatarViewStage.innerHTML = photo
+    ? `<img src="${photo}" alt="Profilbild">`
+    : `<div class="avatar-view-fallback">PA</div>`;
+  clearModalPullStyles(avatarView);
+  avatarView.hidden = false;
+  if (push) history.pushState({ view: "avatar", from: "profile" }, "", "#/profil/bild");
+}
+
+function closeAvatarView() {
+  if (avatarView.hidden) return;
+  if (history.state && history.state.view === "avatar") {
+    history.back();
+    return;
+  }
+  avatarView.hidden = true;
+  clearModalPullStyles(avatarView);
+}
+
 function openProfile(push = true) {
   closeSheet();
   closeCtxMenu();
   closeComposer();
   progressModal.hidden = true;
   trackUsage();
-  renderProfile();
+  if (profileModal.hidden) {
+    renderProfile();
+    profileBody.scrollTop = 0;
+  }
+  clearModalPullStyles(profileModal);
   profileModal.hidden = false;
-  profileBody.scrollTop = 0;
-  if (push) history.pushState({ view: "profile", from: sourceView }, "", "#/profil");
+  if (push) {
+    avatarView.hidden = true;
+    history.pushState({ view: "profile", from: sourceView }, "", "#/profil");
+  }
 }
 
 function closeProfile() {
@@ -1711,16 +1994,59 @@ function closeProfile() {
     history.back();
     return;
   }
-  profileModal.hidden = true;
+  hideProfile();
 }
 
-document.getElementById("profile-btn").addEventListener("click", () => openProfile());
+profileBtn.addEventListener("click", () => openProfile());
 document.getElementById("profile-close").addEventListener("click", closeProfile);
 profileModal.addEventListener("click", (event) => {
   if (event.target === profileModal) closeProfile();
 });
+document.getElementById("avatar-view-close").addEventListener("click", closeAvatarView);
+avatarView.addEventListener("click", (event) => {
+  if (event.target === avatarView) closeAvatarView();
+});
+bindModalPull(profileModal, closeProfile);
+bindModalPull(avatarView, closeAvatarView);
+bindModalPull(sheet, closeSheet);
+
+document.getElementById("profile-photo-cancel").addEventListener("click", () => {
+  discardProfileDraft();
+  const scroll = profileBody.scrollTop;
+  renderProfile();
+  profileBody.scrollTop = scroll;
+});
+
+document.getElementById("profile-photo-save").addEventListener("click", () => {
+  profilePhoto = profilePhotoDraft || "";
+  discardProfileDraft();
+  persistProfilePhoto();
+  renderProfileButton();
+  const scroll = profileBody.scrollTop;
+  renderProfile();
+  profileBody.scrollTop = scroll;
+});
+
+["photo", "library"].forEach((source) => {
+  const input = document.getElementById(`profile-file-${source}`);
+  input.addEventListener("change", async () => {
+    const file = input.files && input.files[0];
+    input.value = "";
+    if (!file) return;
+    const photo = await fileToProfilePhoto(file);
+    if (photo) setProfileDraft(photo);
+  });
+});
 
 profileBody.addEventListener("click", (event) => {
+  if (event.target.closest("[data-avatar-edit]")) {
+    openAvatarPicker();
+    return;
+  }
+  if (event.target.closest("[data-avatar-view]")) {
+    openAvatarView();
+    return;
+  }
   const range = event.target.closest("[data-usage-range]");
   if (!range) return;
   usageRange = Number(range.dataset.usageRange);
@@ -3341,16 +3667,25 @@ window.addEventListener("popstate", (event) => {
   closeSheet();
   closeCtxMenu();
   progressModal.hidden = true;
-  profileModal.hidden = true;
+  avatarView.hidden = true;
 
   if (state && state.view === "progress") {
+    hideProfile();
     openProgress(false);
+    return;
+  }
+  if (state && state.view === "avatar") {
+    openProfile(false);
+    openAvatarView(false);
     return;
   }
   if (state && state.view === "profile") {
     openProfile(false);
     return;
   }
+
+  hideProfile();
+
   if (!state || state.view === "home") {
     showHome(true);
     return;
@@ -3400,6 +3735,7 @@ if (window.visualViewport) {
 loadThumbs();
 loadState();
 loadUsage();
+loadProfilePhoto();
 const tabMatch = location.hash.match(/^#\/tab\/(\d+)/);
 if (tabMatch) {
   const id = Number(tabMatch[1]);
@@ -3411,4 +3747,5 @@ renderWorkspaces();
 renderComposerTypes();
 renderLevel();
 renderThemeOptions();
+renderProfileButton();
 history.replaceState({ view: "home" }, "", "#/");

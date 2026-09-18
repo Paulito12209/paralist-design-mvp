@@ -76,6 +76,9 @@
  * --draw-tool-size          -> Größe der Werkzeug-Knöpfe (Stift, Marker, Radierer, Rückgängig) unter einer Zeichnung
  * --draw-color-size         -> Größe der Farbpunkte in der Werkzeugleiste
  * --draw-tools-space        -> Extra-Platz unter der Zeichenfläche, damit die Werkzeugleiste nichts verdeckt
+ * --modal-dismiss-pull      -> Wie weit man ein Blatt nach unten ziehen muss, damit es schließt
+ * --profile-avatar-size     -> Größe des runden Profilbilds im Profil-Blatt
+ * --profile-avatar-edit-size -> Größe des kleinen Stift-Knopfs unten rechts am Profilbild
  *
  * Dunkelmodus: dieselben Variablen werden weiter unten unter
  * „[data-theme="dark"]“ bzw. „prefers-color-scheme: dark“ überschrieben.
@@ -163,6 +166,9 @@
   --draw-tool-size: 38px;
   --draw-color-size: 22px;
   --draw-tools-space: 62px;
+  --modal-dismiss-pull: 100px;
+  --profile-avatar-size: 128px;
+  --profile-avatar-edit-size: 36px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   /* Hoehe der eingeblendeten Bildschirmtastatur; app.js setzt den Wert am Handy */
@@ -1230,8 +1236,8 @@ button {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 40; /* z-index: liegt über der Navigationsleiste */
-  background: rgba(0, 0, 0, 0.28);
+  z-index: 50; /* z-index: liegt über Navigation und großen Blättern, damit die Auswahl sichtbar bleibt */
+  background: rgba(0, 0, 0, calc(0.28 * var(--modal-dim, 1)));
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -1443,8 +1449,9 @@ button {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 44; /* z-index: über Navigation und Auswahl-Blatt */
-  background: rgba(0, 0, 0, 0.4);
+  z-index: 44; /* z-index: über Navigation, unter dem Auswahl-Blatt */
+  /* --modal-dim: wird beim Nach-unten-Ziehen kleiner, damit der Hintergrund mit ausblendet */
+  background: rgba(0, 0, 0, calc(0.4 * var(--modal-dim, 1)));
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
@@ -1479,6 +1486,8 @@ button {
   align-items: center;
   justify-content: center;
   padding: 26px 16px 14px;
+  /* touch-action: der Kopf scrollt nicht mit, sondern zieht das Blatt nach unten */
+  touch-action: none;
 }
 
 .modal-grip {
@@ -1528,6 +1537,8 @@ button {
   flex-direction: column;
   gap: 14px;
   scrollbar-width: none;
+  /* overscroll-behavior: verhindert das Mitziehen der Seite, damit das Blatt selbst schließt */
+  overscroll-behavior: none;
 }
 
 .modal-body::-webkit-scrollbar {
@@ -1766,12 +1777,6 @@ button {
 
 /* ---------- Profil-Blatt ---------- */
 
-/* Schließen-Knopf links im Kopf, wie im Profil-Entwurf */
-.modal-close.is-leading {
-  left: 12px;
-  right: auto;
-}
-
 .profile-id {
   display: grid;
   justify-items: center;
@@ -1782,17 +1787,143 @@ button {
   margin-bottom: 4px;
 }
 
+.profile-avatar-wrap {
+  position: relative; /* position: der Stift sitzt auf dem Kreis unten rechts */
+  width: var(--profile-avatar-size);
+  height: var(--profile-avatar-size);
+  margin-bottom: 16px;
+}
+
 /* Kreis mit den Initialen, solange kein Bild hinterlegt ist */
 .profile-avatar {
-  width: 128px;
-  height: 128px;
+  width: 100%;
+  height: 100%;
   border-radius: 50%; /* border-radius: macht das Feld zum Kreis */
   display: grid;
   place-items: center;
-  margin-bottom: 16px;
   background: linear-gradient(150deg, #7aa7d9, #4d72ad);
   color: #ffffff;
   font-size: 40px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  overflow: hidden; /* overflow: schneidet das Foto an der Kreiskante ab */
+}
+
+.profile-avatar img,
+.avatar-photo {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* object-fit: füllt den Kreis, ohne das Bild zu verzerren */
+  display: block;
+}
+
+.profile-avatar-edit {
+  position: absolute; /* position: liegt unten rechts auf dem Kreis */
+  right: 2px;
+  bottom: 2px;
+  width: var(--profile-avatar-edit-size);
+  height: var(--profile-avatar-edit-size);
+  border-radius: 50%; /* border-radius: macht den Stift-Knopf rund */
+  background: var(--card);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  display: grid;
+  place-items: center;
+}
+
+.profile-avatar-edit .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.profile-avatar-edit:active {
+  opacity: 0.6;
+}
+
+.profile-save {
+  flex: 0 0 auto;
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px calc(12px + var(--safe-bottom));
+  background: var(--bg);
+}
+
+.profile-save[hidden] {
+  display: none;
+}
+
+.profile-save-cancel,
+.profile-save-ok {
+  flex: 1;
+  height: 48px;
+  border-radius: 14px; /* border-radius: rundet die Speichern-Knöpfe */
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.profile-save-cancel {
+  background: var(--tab-pill-active-bg);
+  color: var(--text);
+}
+
+.profile-save-ok {
+  background: var(--add);
+  color: #ffffff;
+}
+
+.profile-save-cancel:active,
+.profile-save-ok:active {
+  opacity: 0.7;
+}
+
+.avatar-view {
+  z-index: 46; /* z-index: die große Bildansicht liegt über dem Profil-Blatt */
+  background: rgba(0, 0, 0, calc(0.72 * var(--modal-dim, 1)));
+}
+
+.avatar-view .modal {
+  background: #111111;
+  color: #ffffff;
+}
+
+.avatar-view .modal-close {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+.avatar-view .modal-grip {
+  background: rgba(255, 255, 255, 0.35);
+}
+
+.avatar-view-body {
+  align-items: center;
+  justify-content: center;
+  padding-bottom: calc(24px + var(--safe-bottom));
+}
+
+.avatar-view-stage {
+  width: 100%;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.avatar-view-stage img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* object-fit: zeigt das ganze Foto, ohne es zu beschneiden */
+}
+
+.avatar-view-fallback {
+  width: min(280px, 100%); /* min: der Kreis bleibt groß, wird auf schmalen Schirmen aber nicht breiter als das Blatt */
+  height: min(280px, 100%);
+  border-radius: 50%; /* border-radius: große Initialen bleiben ein Kreis */
+  display: grid;
+  place-items: center;
+  background: linear-gradient(150deg, #7aa7d9, #4d72ad);
+  color: #ffffff;
+  font-size: 72px;
   font-weight: 600;
   letter-spacing: 0.04em;
 }
