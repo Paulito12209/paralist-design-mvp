@@ -7,6 +7,7 @@
  * styles/overlays.css (Klassen .sheet, .sheet-option).
  */
 
+import { events, on } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { escapeHtml, icon } from "../core/html.js";
 import { closeCtxMenu } from "./ctx-menu.js";
@@ -47,6 +48,11 @@ export function closeSheet() {
 /** Klicks im Blatt: Option ausführen, Klick daneben schließt. Ziehen schließt es auch. */
 export function initSheet() {
   bindModalPull(dom.sheet, closeSheet);
+
+  /* Beim Wechsel der Ansicht — auch durch Browser-Zurück — schließt sich das
+     Blatt. Sonst bliebe es über der neuen Seite liegen und seine Aktionen
+     bezögen sich noch auf die verlassene. */
+  on(events.viewWillChange, closeSheet);
 
   dom.sheet.addEventListener("click", (event) => {
     const option = event.target.closest("[data-sheet]");

@@ -8,7 +8,10 @@
  * --entry-body-size         -> Schriftgröße des Textes
  * --placeholder             -> Farbe der Platzhaltertexte
  * --content-side            -> Abstand zum linken und rechten Rand
- */
+ 
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+*/
 
 .entry-attachments {
   margin: 0 0 16px;

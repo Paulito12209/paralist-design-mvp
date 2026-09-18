@@ -13,7 +13,7 @@ import { dayKey, timeKey } from "../../core/dates.js";
 import { icon } from "../../core/html.js";
 import { composerPlaceholders, defaultType, types, xpItemStyle } from "../../data/config.js";
 import { parentName } from "../../data/queries.js";
-import { state } from "../../data/state.js";
+import { state, ui } from "../../data/state.js";
 import { awardXp } from "../../data/xp.js";
 import { closeCtxMenu } from "../../ui/ctx-menu.js";
 import { openParentPicker } from "../../ui/pickers.js";
@@ -120,14 +120,18 @@ export function openComposerForSlot(slot) {
   openComposer();
 }
 
-/* Ein Termin, der im Kalender entsteht, bekommt Tag und Uhrzeit des angetippten Feldes. */
+/*
+ * Was im Kalender entsteht, gehört an den Tag, den man ansieht — nicht an heute.
+ * Ein Termin bekommt zusätzlich eine Uhrzeit: die der angetippten Stunde, sonst
+ * die aktuelle Uhrzeit am heutigen Tag und 09:00 an jedem anderen Tag.
+ */
 function applyCalendarDate(entry) {
   if (!isViewActive("calendar")) return;
-  const today = dayKey(new Date());
-  const day = composer.slot ? composer.slot.date : today;
+  const day = composer.slot ? composer.slot.date : ui.calendarDay;
   entry.date = day;
   if (entry.type !== "termin") return;
-  entry.time = composer.slot ? composer.slot.time : day === today ? timeKey(Date.now()) : "09:00";
+  if (composer.slot) entry.time = composer.slot.time;
+  else entry.time = day === dayKey(new Date()) ? timeKey(Date.now()) : "09:00";
 }
 
 /** Aus dem Entwurf einen Eintrag machen. */
@@ -252,6 +256,12 @@ export function initComposer() {
 
   /* Beim Wechsel der Ansicht schließt sich das Eingabefeld von selbst. */
   on(events.viewWillChange, closeComposer);
+  /* Der Kalender bittet über diese Nachricht um das Eingabefeld, damit er es
+     nicht importieren muss. */
+  on(events.composerRequested, openComposerForSlot);
+  /* Geht ein Blatt von unten auf, gibt das Eingabefeld auf: es lag sonst
+     unsichtbar dahinter weiter offen — samt laufendem Diktat. */
+  on(events.overlayOpened, closeComposer);
 
   renderComposerTypes();
 }

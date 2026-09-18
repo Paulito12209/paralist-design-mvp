@@ -5,13 +5,17 @@
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
  * --bg / --card / --text    -> Grundfarben der Seite
+ * --stage-bg                -> Fläche rund um das Gerätefenster am Desktop
  * --title-size              -> Schriftgröße der großen Überschrift
  * --content-side            -> Abstand des Inhalts zum linken und rechten Rand
  * --title-side              -> Extra-Abstand der großen Überschrift
  * --overview-gap            -> Abstand zwischen Kopfzeile, Überschrift und Inhalt
  * --tab-space               -> Platz am Seitenende hinter der Navigation
- * --radius-xl               -> Rundung des Gerätefensters
- */
+ * --device-radius           -> Rundung des Gerätefensters am Desktop
+ 
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+*/
 
 * {
   box-sizing: border-box;
@@ -32,7 +36,7 @@ body {
 body {
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
   color: var(--text);
-  background: #111;
+  background: var(--stage-bg);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -77,7 +81,7 @@ button {
   max-width: calc(100vw - 32px);
   height: min(844px, calc(100dvh - 32px));
   background: var(--bg);
-  border-radius: 44px;
+  border-radius: var(--device-radius);
   overflow: hidden;
   box-shadow: 0 30px 80px rgba(0, 0, 0, 0.45);
   display: flex;

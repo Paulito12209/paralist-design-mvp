@@ -17,10 +17,10 @@ Die harten Punkte in einem Satz:
    auf Deutsch, in Alltagssprache.
 4. **Performance:** große Bereiche über `src/core/lazy.js` nachladen, nur die
    sichtbare Ansicht neu zeichnen, Tippen über `scheduleSave()` speichern.
-5. **Keine Bugs:** Importe und Syntax prüfen, im Browser auf
-   `http://localhost:4173` öffnen, Konsole muss leer sein, betroffene Flows
-   anklicken — leerer und voller Speicher, hell und dunkel, 375 px Breite,
-   Zurück-Pfeil und Browser-Zurück.
+5. **Keine Bugs:** `python3 tools/check.py` muss „alles in Ordnung“ melden,
+   dann im Browser auf `http://localhost:4173` öffnen, Konsole muss leer sein,
+   betroffene Flows anklicken — leerer und voller Speicher, hell und dunkel,
+   375 px Breite, Zurück-Pfeil und Browser-Zurück.
 6. **Nach jeder abgeschlossenen Änderung committen**, dabei nur die eigenen
    Blöcke stagen (an diesem Projekt arbeiten mitunter mehrere Sitzungen
    gleichzeitig).

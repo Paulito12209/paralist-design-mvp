@@ -7,6 +7,7 @@
  * Keine anpassbaren visuellen Werte.
  */
 
+import { dayKey } from "../core/dates.js";
 import { readJson, storageKeys, writeJson } from "../core/storage.js";
 import {
   calendarModes,
@@ -48,6 +49,10 @@ export const ui = {
   currentEntryId: null,
   editingTabId: null,
   editingWorkspaceId: null,
+  /* Im Kalender gewählter Tag als „JJJJ-MM-TT“. Steht hier und nicht im
+     Kalender, weil das Eingabefeld ihn braucht: ein neuer Eintrag gehört an
+     den Tag, den man ansieht. */
+  calendarDay: dayKey(new Date()),
   /* Suchseite: getippter Begriff und welche Unterliste offen ist (null = Übersicht) */
   searchQuery: "",
   searchList: null,
@@ -97,7 +102,10 @@ export function scheduleSave() {
   saveTimer = setTimeout(saveState, 400);
 }
 
-/** Wartende Änderung sofort schreiben — beim Verlassen oder Verstecken der Seite. */
+/**
+ * Wartende Änderung sofort schreiben. Wird von src/shell/lifecycle.js gerufen,
+ * bevor die Seite in den Hintergrund geht oder schließt.
+ */
 export function flushSave() {
   if (saveTimer) saveState();
 }
@@ -192,9 +200,3 @@ export function loadState() {
   pruneThumbs(state.entries);
   if (needsSave) saveState();
 }
-
-/* Wartende Änderungen sichern, bevor die Seite in den Hintergrund geht oder schließt. */
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) flushSave();
-});
-window.addEventListener("pagehide", flushSave);

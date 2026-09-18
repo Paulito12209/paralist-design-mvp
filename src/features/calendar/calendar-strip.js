@@ -12,12 +12,12 @@ import { dom } from "../../core/dom.js";
 import { longDate, monthHeading } from "../../core/format.js";
 import { calendarSpans } from "../../data/config.js";
 import { entriesOfDay, entryColor } from "../../data/queries.js";
-import { state } from "../../data/state.js";
+import { state, ui } from "../../data/state.js";
 import { cal } from "./calendar-state.js";
 
 /** Die Montage der sichtbaren Wochen: eine, zwei oder alle Wochen des Monats. */
 export function visibleWeeks() {
-  const selected = parseDay(cal.selected);
+  const selected = parseDay(ui.calendarDay);
 
   if (state.prefs.calendar.span === 0) {
     const first = new Date(selected.getFullYear(), selected.getMonth(), 1);
@@ -34,7 +34,7 @@ export function visibleWeeks() {
 /* Eine Woche als Zeile. `extra` markiert die durchscheinenden Nachbarwochen. */
 function weekMarkup(monday, extra = "") {
   const todayKey = dayKey(new Date());
-  const month = parseDay(cal.selected).getMonth();
+  const month = parseDay(ui.calendarDay).getMonth();
   let html = `<div class="cal-week${extra ? ` ${extra}` : ""}"><span class="cal-kw">${isoWeek(monday)}</span>`;
 
   for (let offset = 0; offset < 7; offset += 1) {
@@ -42,7 +42,7 @@ function weekMarkup(monday, extra = "") {
     const key = dayKey(day);
     const items = entriesOfDay(key);
     const classes = ["cal-day"];
-    if (key === cal.selected) classes.push("is-selected");
+    if (key === ui.calendarDay) classes.push("is-selected");
     if (key === todayKey) classes.push("is-today");
     if (items.length) classes.push("has-items");
     if (state.prefs.calendar.span === 0 && day.getMonth() !== month) classes.push("is-other");
@@ -64,13 +64,13 @@ export function renderStrip() {
   const weeks = visibleWeeks();
   const { calendar } = state.prefs;
 
-  dom.calMonthLabel.textContent = monthHeading(parseDay(cal.selected).getTime());
+  dom.calMonthLabel.textContent = monthHeading(parseDay(ui.calendarDay).getTime());
   dom.calWeeks.innerHTML =
     weekMarkup(addDays(weeks[0], -7), "is-peek is-before") +
     weeks.map((monday) => weekMarkup(monday)).join("") +
     weekMarkup(addDays(weeks[weeks.length - 1], 7), "is-peek is-after");
 
-  dom.calTodayBtn.classList.toggle("is-on", cal.selected === dayKey(new Date()));
+  dom.calTodayBtn.classList.toggle("is-on", ui.calendarDay === dayKey(new Date()));
   const span = calendarSpans.find((item) => item.id === calendar.span) || calendarSpans[0];
   dom.calSpanBtn.textContent = span.short;
   /* Der runde Knopf zeigt immer die Ansicht, zu der er wechselt. */

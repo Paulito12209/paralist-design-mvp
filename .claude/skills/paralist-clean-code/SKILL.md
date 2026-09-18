@@ -25,10 +25,10 @@ Keine Datei im Projekt überschreitet 400 Zeilen — auch nicht CSS, HTML oder
 Assets. Wird eine Datei größer, wird sie **vor** dem Weiterarbeiten geteilt,
 und zwar nach Zuständigkeit, nicht willkürlich in der Mitte.
 
-Prüfen:
+Prüfen (meldet jede zu große Datei):
 
 ```bash
-find . -path ./node_modules -prune -o -type f \( -name '*.js' -o -name '*.css' -o -name '*.html' -o -name '*.svg' -o -name '*.md' \) -print | xargs wc -l | sort -rn | head
+python3 tools/check.py
 ```
 
 Richtwert: eine Datei hat eine Aufgabe. 60–250 Zeilen sind normal, 400 ist die
@@ -48,19 +48,35 @@ src/features/<bereich>/    je Seite ein Ordner (overview, calendar, media, …)
 src/shell/                 Kopf- und Fußzeile, Tastatur, Icon-Sammlung
 styles/tokens.css          ALLE Farben, Größen, Abstände + Übersicht aller Stil-Dateien
 styles/<bereich>.css       je Bereich eine Datei
+tools/check.py             prüft alle Regeln dieser Datei; muss „alles in Ordnung“ melden
 ```
 
-Richtungsregel, damit keine Kreise entstehen:
+Richtungsregel, damit keine Kreise entstehen. Importe zeigen **nur** nach rechts:
 
 ```
-shell/features  ->  ui  ->  data  ->  core
+main.js  ->  shell/features  ->  ui  ->  data  ->  core
 ```
 
-- `core/` kennt nichts über die App.
-- `data/` fasst **nie** das DOM an.
-- `ui/` und `features/` sprechen sich über `src/core/bus.js` ab, nicht durch
-  gegenseitige Importe.
-- Neue Seite? Neuer Ordner unter `src/features/` und eine Datei unter `styles/`.
+- `core/` kennt keinen Bereich der App. Es darf den Browser anfassen — das ist
+  seine Aufgabe —, aber keine Seite und keine Datei aus `features/`.
+- `data/` liest und verändert die **Seite** nicht: kein `getElementById`, kein
+  `innerHTML`, keine Zuhörer auf `document` oder `window`. Losgelöste Elemente
+  nur zum Rechnen sind erlaubt und werden kommentiert — z.B. das `canvas` in
+  `src/data/files.js`, um ein Foto zu verkleinern.
+- Ereignisse der Seite selbst (in den Hintergrund gehen, schließen) gehören in
+  `src/shell/lifecycle.js`, nicht in die Datenschicht.
+- Zwei Bereiche unter `features/` importieren sich **nie** gegenseitig. Braucht
+  einer etwas vom anderen, läuft es über `src/core/bus.js` — so bittet der
+  Kalender mit `emit(events.composerRequested, …)` um das Eingabefeld.
+- Muss eine untere Schicht etwas aus einer oberen aufrufen, bekommt sie es
+  **hereingegeben**, statt es zu importieren:
+  `initListClicks({ openTabMenu, … })`, `setLongPressMenus({ … })`,
+  `registerLoader(name, importFn)`, `registerOverlay(name, { open, hide })`.
+  Angemeldet wird das alles in `src/main.js` — der einzigen Datei, die alle
+  Bereiche kennen darf.
+- Neue Seite? Neuer Ordner unter `src/features/`, eine Datei unter `styles/`,
+  ein Eintrag in `lazyModules` in `src/main.js` und eine Zeile in der Übersicht
+  oben in `styles/tokens.css`.
 
 ## 3. Kommentar-Header mit allen anpassbaren Werten
 
@@ -100,11 +116,20 @@ Satz dazu. Neue Datei anlegen heißt: diese Liste ergänzen.
 
 ## 4. Werte zentral halten
 
-Farben, Schriftgrößen und Abstände stehen als CSS-Variablen in
-`styles/tokens.css`; die übrigen Stil-Dateien verweisen nur darauf. Feste Zahlen
-in JavaScript (Verzögerungen, Grenzwerte, Größen) bekommen oben in ihrer Datei
-einen benannten `const` und stehen im Header — niemals mitten im Code als
-nackte Zahl.
+Alles, was **mehr als eine Stelle** betrifft, wird eine CSS-Variable in
+`styles/tokens.css`: jede Farbe, die Maße der Bedienelemente, die
+wiederkehrenden Abstände und Rundungen. Die übrigen Stil-Dateien verweisen nur
+darauf. Eine Zahl, die schon zweimal im Stylesheet steht, gehört nach
+`tokens.css` — und wer eine bestehende Variable in einem Kopfkommentar nennt,
+prüft vorher, dass die Datei sie wirklich liest.
+
+Die Schriftgröße eines **einzelnen** Elements darf direkt bei ihrer Regel
+stehen; sie muss dann aber im Kopfkommentar der Datei auftauchen, damit man sie
+findet. Behaupte in keinem Kommentar, `tokens.css` enthalte „alle“ Werte.
+
+Feste Zahlen in JavaScript (Verzögerungen, Grenzwerte, Größen) bekommen oben in
+ihrer Datei einen benannten `const` und stehen im Header — niemals mitten im
+Code als nackte Zahl.
 
 ## 5. Kommentare müssen eindeutig sein
 
@@ -144,23 +169,28 @@ nackte Zahl.
 
 Eine Änderung ist erst fertig, wenn diese Kette durchlaufen ist:
 
-1. **Importe und Syntax** — jeder Import zeigt auf eine Datei, die den Namen
-   wirklich exportiert; jede Datei lässt sich als ES-Modul lesen:
+1. **Regeln prüfen** — Zeilengrenze, Kopfkommentare, Importrichtung, auflösbare
+   Importe, CSS-Variablen und die IDs in index.html:
+   ```bash
+   python3 tools/check.py
+   ```
+   Die Ausgabe muss genau „alles in Ordnung“ sein.
+2. **Syntax prüfen** — jede Datei lässt sich als ES-Modul lesen:
    ```bash
    for f in $(find src -name '*.js'); do cp "$f" "/tmp/$(basename $f).mjs"; node --check "/tmp/$(basename $f).mjs" || echo "FEHLER $f"; done
    ```
-2. **Im Browser öffnen** — der Entwicklungsserver läuft auf
+3. **Im Browser öffnen** — der Entwicklungsserver läuft auf
    `http://localhost:4173` (`python3 -m http.server 4173`, Konfiguration in
    `.claude/launch.json`). Läuft der Port schon, einfach dorthin navigieren,
    nicht den Port ändern.
-3. **Konsole muss leer sein** — keine Fehler, keine Warnungen.
-4. **Betroffene Flows anklicken**, nicht nur die geänderte Zeile lesen. Die
+4. **Konsole muss leer sein** — keine Fehler, keine Warnungen.
+5. **Betroffene Flows anklicken**, nicht nur die geänderte Zeile lesen. Die
    Liste steht in `README.md` unter „Flows zum Durchprüfen“; die Startseite ist
    die wichtigste.
-5. **Leerer Speicher und voller Speicher** — einmal mit `localStorage.clear()`
+6. **Leerer Speicher und voller Speicher** — einmal mit `localStorage.clear()`
    neu laden (Beispieldaten) und einmal mit vorhandenen Daten (Migration).
-6. **Hell und Dunkel** ansehen und **375 px Breite** prüfen.
-7. **Zurück-Pfeil und Browser-Zurück** auf jeder berührten Seite.
+7. **Hell und Dunkel** ansehen und **375 px Breite** prüfen.
+8. **Zurück-Pfeil und Browser-Zurück** auf jeder berührten Seite.
 
 Achtung, zwei Stolperstellen, die schon Fehler verursacht haben:
 

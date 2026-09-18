@@ -12,7 +12,10 @@
  * --swipe-action-gap        -> Abstand zwischen den Knöpfen und zum Rand
  * --danger / --archive-color / --link-color / --star-color -> Farben der Knöpfe
  * --content-side            -> Abstand der Zeilen zum Rand
- */
+ 
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+*/
 
 .workspace-list {
   display: flex;

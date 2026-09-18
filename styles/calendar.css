@@ -9,7 +9,10 @@
  * --cal-day-ring            -> Kreis hinter Tagen mit Einträgen
  * --cal-row-h               -> Höhe einer Wochenzeile
  * --muted                   -> Farbe der Wochentage und fremden Monate
- */
+ 
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+*/
 
 /* ---------- Kalender ---------- */
 

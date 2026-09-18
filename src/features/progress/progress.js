@@ -7,6 +7,7 @@
  * styles/overlays.css.
  */
 
+import { emit, events } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { ui } from "../../data/state.js";
 import { bindModalPull, clearModalPull } from "../../ui/modal-pull.js";
@@ -32,6 +33,7 @@ function rerenderKeepingScroll() {
 export function open(push = true) {
   closeSheet();
   closeCtxMenu();
+  emit(events.overlayOpened);
   /* Das Profil-Blatt liegt an derselben Stelle: es weicht. */
   dom.profileModal.hidden = true;
   dom.avatarView.hidden = true;

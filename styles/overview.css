@@ -16,7 +16,10 @@
  * --tab-pills-fade                  -> Breite des Ausblendens links der Trennlinie
  * --icon-folder-plus-width / -height -> Größe des Ordner-Plus-Icons
  * --workspace-head-gap              -> Abstand über den Pillen
- */
+ 
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+*/
 
 .overview-grid {
   display: grid;
@@ -198,7 +201,7 @@
   outline: none;
   background: transparent;
   color: var(--text);
-  /* width: startet schmal; app.js setzt die Breite nach dem Text */
+  /* width: startet schmal; src/features/overview/tabs.js setzt die Breite nach dem Text */
   width: 1px;
   min-width: 1px;
   /* field-sizing: folgt dem Text, falls JS die Breite noch nicht gesetzt hat */

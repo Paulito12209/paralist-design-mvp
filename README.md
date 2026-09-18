@@ -19,6 +19,10 @@ Zum Zurücksetzen auf die Beispieldaten in der Browser-Konsole:
 localStorage.clear()
 ```
 
+`python3 -m http.server` sendet kein `Cache-Control`. Chrome hält Dateien darum
+eine Weile für frisch und zeigt nach einer Änderung womöglich noch den alten
+Stand — dann einmal hart neu laden (Shift + Reload).
+
 ## Aufbau
 
 ```
@@ -27,6 +31,7 @@ manifest.webmanifest        Angaben für „Zum Startbildschirm hinzufügen“
 assets/icons/               sprite.svg (alle Icons) und die App-Icons
 styles/                     Stile, je Bereich eine Datei
 src/                        die App, in kleine Module geteilt
+tools/check.py              prüft die Projektregeln (Zeilengrenze, Struktur, Kommentare)
 CLAUDE.md                   Kurzregeln für die Arbeit am Projekt
 .claude/skills/…/SKILL.md   die vollständigen Regeln
 ```
@@ -41,16 +46,34 @@ CLAUDE.md                   Kurzregeln für die Arbeit am Projekt
 | `src/features/` | je Seite ein Ordner: `overview`, `calendar`, `media`, `resources`, `composer`, `entry`, `drawing`, `progress`, `profile`, `search`, `settings` | sich gegenseitig importieren (stattdessen `core/bus.js`) |
 | `src/shell/` | Kopfzeile, Navigationsleiste, Suchfeld, Tastatur-Höhe, Icon-Sammlung | — |
 
-Die Bereiche sprechen sich über `src/core/bus.js` ab: wer Daten ändert, ruft
-`emit(events.dataChanged)`, und jeder Bereich zeichnet sich selbst neu —
-**aber nur, wenn seine Seite gerade sichtbar ist**.
+Importe zeigen immer nur in eine Richtung:
+`main.js → shell|features → ui → data → core`. Zwei Seiten importieren sich
+nie gegenseitig. Stattdessen:
+
+- **Nachrichten:** wer Daten ändert, ruft `emit(events.dataChanged)`, und jeder
+  Bereich zeichnet sich selbst neu — **aber nur, wenn seine Seite gerade
+  sichtbar ist**. So bittet auch der Kalender mit `events.composerRequested` um
+  das Eingabefeld, ohne es zu kennen.
+- **Hereingeben:** braucht eine untere Schicht etwas von einer oberen, bekommt
+  sie es beim Start übergeben — `initListClicks({ openTabMenu, … })`,
+  `registerLoader(name, importFn)`, `registerOverlay(name, { open, hide })`.
+  `src/main.js` ist die einzige Datei, die alle Bereiche kennt.
+
+Dass all das stimmt, prüft `python3 tools/check.py`.
 
 ### Wo ändere ich das Aussehen?
 
-Alle Farben, Schriftgrößen und Abstände stehen in **`styles/tokens.css`**. Dort
-oben steht auch, welche Stil-Datei welchen Bereich abdeckt. Jede Datei — auch
-jede JavaScript-Datei — beginnt mit einem Kommentarblock, der ihre anpassbaren
-Werte in Alltagssprache auflistet.
+Die Werte, die mehr als eine Stelle betreffen — alle Farben, die Maße der
+Bedienelemente, die wiederkehrenden Abstände —, stehen in
+**`styles/tokens.css`**. Dort oben steht auch, welche Stil-Datei welchen Bereich
+abdeckt.
+
+Die Schriftgröße eines einzelnen Elements (die Stundenbeschriftung im Kalender,
+eine Überschrift im Profil-Blatt) steht dagegen direkt bei ihrer Regel in der
+Datei des Bereichs. Jede Datei — auch jede JavaScript-Datei — beginnt darum mit
+einem Kommentarblock, der ihre anpassbaren Werte in Alltagssprache auflistet.
+Der richtige Weg ist also: in `styles/tokens.css` nachsehen, welche Datei den
+Bereich abdeckt, und dann deren Kopfkommentar lesen.
 
 ## Performance
 
@@ -123,6 +146,7 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   umschalten, Bild groß ansehen und mit Browser-Zurück schließen.
 
 **Immer**
+- `python3 tools/check.py` meldet „alles in Ordnung“.
 - Konsole muss leer sein.
 - Einmal mit `localStorage.clear()` neu laden, einmal mit vorhandenen Daten.
 - Hell und Dunkel, 375 px Breite.

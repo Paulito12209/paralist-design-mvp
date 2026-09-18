@@ -17,6 +17,11 @@ export const events = {
   viewOpened: "view:opened",
   /* Punkte haben sich geändert: Level-Anzeige oben links auffrischen. */
   xpChanged: "xp:changed",
+  /* Eine Seite möchte das Eingabefeld öffnen — mit Tag und Uhrzeit, wenn im
+     Kalender eine Stunde angetippt wurde. */
+  composerRequested: "composer:requested",
+  /* Ein Blatt von unten (Fortschritt, Profil) geht auf: das Eingabefeld schließt. */
+  overlayOpened: "overlay:opened",
 };
 
 const listeners = new Map();

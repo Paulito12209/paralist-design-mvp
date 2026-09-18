@@ -20,10 +20,15 @@
         if (savedTheme === "light" || savedTheme === "dark") document.documentElement.dataset.theme = savedTheme;
       } catch (error) {}
 
-      /* Icons schon jetzt holen, parallel zu den Stilen; src/shell/sprite.js hängt sie später ein. */
-      window.__paralistSprite = fetch("assets/icons/sprite.svg").then(function (response) {
-        return response.text();
-      });
+      /* Icons schon jetzt holen, parallel zu den Stilen; src/shell/sprite.js hängt sie später ein.
+         Schlägt es fehl, kommt hier null heraus und sprite.js versucht es noch einmal. */
+      window.__paralistSprite = fetch("assets/icons/sprite.svg")
+        .then(function (response) {
+          return response.ok ? response.text() : null;
+        })
+        .catch(function () {
+          return null;
+        });
     </script>
 
     <!--
@@ -128,7 +133,7 @@
             </div>
           </section>
 
-          <!-- Suchen: Inhalt kommt aus app.js (renderSearch), damit die Listen echte Einträge zeigen -->
+          <!-- Suchen: Inhalt kommt aus src/features/search/search.js, damit die Listen echte Einträge zeigen -->
           <section class="view" id="view-search" data-view="search" hidden>
             <div id="search-results"></div>
           </section>
@@ -263,7 +268,7 @@
                 <svg class="icon"><use href="#icon-arrow-up"></use></svg>
               </button>
             </div>
-            <!-- placeholder: wird je nach gewähltem Typ aus app.js gesetzt -->
+            <!-- placeholder: wird je nach gewähltem Typ aus src/features/composer/composer.js gesetzt -->
             <input
               class="composer-input"
               id="composer-input"

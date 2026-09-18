@@ -1,41 +1,58 @@
 /*
- * Startpunkt der App. Hier wird der gespeicherte Zustand geladen, jeder
- * Bereich angemeldet und die Startseite gezeichnet.
+ * Startpunkt der App. Hier — und nur hier — ist bekannt, welche Bereiche es
+ * gibt: der gespeicherte Zustand wird geladen, jeder Bereich angemeldet und
+ * die Startseite gezeichnet. Die unteren Schichten bekommen alles, was sie von
+ * den Seiten brauchen, von hier hereingegeben.
  * Pfad: src/main.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * prefetchOrder -> in welcher Reihenfolge die Seiten in Ruhephasen
- *                  vorgeladen werden (das erste Öffnen geht dann ohne Warten)
+ * lazyModules   -> welche Bereiche erst beim Öffnen geladen werden
+ * lazyViews     -> welche Ansichten dabei eine eigene Seite sind
+ * prefetchOrder -> in welcher Reihenfolge sie in Ruhephasen vorgeladen werden
+ *                  (das erste Öffnen geht dann ohne Warten)
  */
 
 import { events, on } from "./core/bus.js";
-import { load, prefetchWhenIdle } from "./core/lazy.js";
+import { load, prefetchWhenIdle, registerLoader } from "./core/lazy.js";
 import { loadState } from "./data/state.js";
 import { loadThumbs } from "./data/thumbs.js";
-import { loadUsage, startUsageTracking } from "./data/usage.js";
+import { loadUsage } from "./data/usage.js";
 import { initComposer, updateComposerSend } from "./features/composer/composer.js";
 import { initDictation } from "./features/composer/dictation.js";
 import { initEntry } from "./features/entry/entry.js";
 import { loadPhoto, renderProfileButton } from "./features/profile/avatar.js";
 import { initOverview, renderOverview } from "./features/overview/overview.js";
 import { initPage } from "./features/overview/page.js";
-import { initTabs, openTabMenu, renderTabs } from "./features/overview/tabs.js";
+import { beginRenameTab, initTabs, openTabMenu, renderTabs } from "./features/overview/tabs.js";
 import { initWorkspaces, openWorkspaceMenu, renderWorkspaces } from "./features/overview/workspaces.js";
 import { initTheme } from "./features/settings/theme.js";
 import { initKeyboardInset } from "./shell/keyboard-inset.js";
 import { initLevelGauge } from "./shell/level-gauge.js";
+import { initLifecycle } from "./shell/lifecycle.js";
 import { initNavBar } from "./shell/nav-bar.js";
 import { initSearchBar } from "./shell/search-bar.js";
 import { mountSprite } from "./shell/sprite.js";
-import { initCtxMenu, closeCtxMenu } from "./ui/ctx-menu.js";
+import { closeCtxMenu, initCtxMenu } from "./ui/ctx-menu.js";
 import { initListClicks } from "./ui/list-clicks.js";
 import { setLongPressMenus } from "./ui/long-press.js";
 import { initModalPull } from "./ui/modal-pull.js";
 import { initSheet } from "./ui/sheet.js";
 import { initSwipe } from "./ui/swipe.js";
 
-/* Die Seiten, die erst beim Öffnen geladen werden. */
+/* Was erst beim ersten Öffnen geholt wird. Nur diese Datei kennt die Pfade. */
+const lazyModules = {
+  calendar: () => import("./features/calendar/calendar.js"),
+  media: () => import("./features/media/media.js"),
+  search: () => import("./features/search/search.js"),
+  resources: () => import("./features/resources/resources.js"),
+  progress: () => import("./features/progress/progress.js"),
+  profile: () => import("./features/profile/profile.js"),
+  drawing: () => import("./features/drawing/drawing.js"),
+  files: () => import("./data/files.js"),
+};
+
+/* Von den nachladbaren Bereichen sind das die, die eine eigene Ansicht haben. */
 const lazyViews = ["calendar", "media", "search"];
 
 /* Reihenfolge des Vorladens: was man am ehesten als Nächstes braucht, zuerst. */
@@ -59,7 +76,7 @@ function initShell() {
   initModalPull();
   setLongPressMenus({ tab: openTabMenu, workspace: openWorkspaceMenu });
   initSwipe();
-  initListClicks();
+  initListClicks({ openTabMenu, openWorkspaceMenu, beginRenameTab });
 
   initLevelGauge();
   initSearchBar();
@@ -81,6 +98,8 @@ function initFeatures() {
 
 /* Eine nachzuladende Seite wurde geöffnet: ihr Modul holen. Es zeichnet sich selbst. */
 function initLazyViews() {
+  Object.entries(lazyModules).forEach(([name, importFn]) => registerLoader(name, importFn));
+
   on(events.viewOpened, (name) => {
     if (lazyViews.includes(name)) load(name);
   });
@@ -98,12 +117,12 @@ function showStartPage() {
 }
 
 function start() {
+  initLazyViews();
   loadEverything();
   initShell();
   initFeatures();
-  initLazyViews();
   showStartPage();
-  startUsageTracking();
+  initLifecycle();
   /* Die Icons kommen nach, das Gerüst steht schon. */
   mountSprite();
   prefetchWhenIdle(prefetchOrder);

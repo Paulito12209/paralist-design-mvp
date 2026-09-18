@@ -10,7 +10,10 @@
  * --search-bar-height / --search-bar-radius             -> Suchleiste
  * --level-color / --level-dim / --level-glow            -> Striche und Zahl der Level-Anzeige
  * --icon-strong / --placeholder                         -> Icon- und Platzhalterfarbe
- */
+ 
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+*/
 
 .top-bar {
   flex: 0 0 auto;

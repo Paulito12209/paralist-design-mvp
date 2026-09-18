@@ -12,7 +12,7 @@
  */
 
 import { dom } from "../../core/dom.js";
-import { state } from "../../data/state.js";
+import { state, ui } from "../../data/state.js";
 import { shiftMonth, shiftSpan, shiftWeeks } from "./calendar-nav.js";
 import { cal, markSwiped, rowHeight } from "./calendar-state.js";
 
@@ -29,13 +29,24 @@ export function setRedraw(fn) {
   redraw = fn;
 }
 
-/* Blättert um eine Zeile: der Block gleitet weg, danach wird neu gezeichnet. */
+/*
+ * Blättert um eine Zeile: der Block gleitet weg, danach wird neu gezeichnet.
+ * Das Ende wird doppelt abgesichert — über `transitionend` und über einen
+ * Timer, falls kein `transitionend` kommt. `done` sorgt dafür, dass davon nur
+ * das erste greift; ohne diese Sperre blätterte ein Wisch zwei Wochen weit.
+ */
 function snapRows(direction) {
   if (cal.snapping) return;
   cal.snapping = true;
   cal.swiped = true;
 
+  let done = false;
+  let safety = null;
+
   const finish = () => {
+    if (done) return;
+    done = true;
+    clearTimeout(safety);
     dom.calWeeks.removeEventListener("transitionend", finish);
     dom.calWeeks.style.transition = "none";
     dom.calWeeks.style.transform = "";
@@ -50,7 +61,7 @@ function snapRows(direction) {
   dom.calWeeks.style.transition = `transform ${snapDuration}ms ease-out`;
   dom.calWeeks.style.transform = `translateY(${-direction * rowHeight()}px)`;
   /* Sicherheitsnetz, falls kein transitionend kommt */
-  setTimeout(finish, snapDuration + 80);
+  safety = setTimeout(finish, snapDuration + 80);
 }
 
 function resetDrag() {
@@ -124,7 +135,7 @@ export function initCalendarGestures() {
     if (cal.swiped) return;
     const day = event.target.closest("[data-day]");
     if (!day) return;
-    cal.selected = day.dataset.day;
+    ui.calendarDay = day.dataset.day;
     redraw();
   });
 

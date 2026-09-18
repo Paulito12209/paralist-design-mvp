@@ -13,6 +13,7 @@ import { dayKey, pad2, timeKey } from "../../core/dates.js";
 import { dom, el } from "../../core/dom.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { typeIcon } from "../../data/config.js";
+import { ui } from "../../data/state.js";
 import { entriesOfDay, entryColor, entryTime } from "../../data/queries.js";
 import { cal, gridTopOffset, hourHeight, nowOffset } from "./calendar-state.js";
 
@@ -62,7 +63,7 @@ function eventsMarkup(entries, height) {
 
 /* Die Jetzt-Linie, nur am heutigen Tag. */
 function nowMarkup(height) {
-  if (cal.selected !== dayKey(new Date())) return "";
+  if (ui.calendarDay !== dayKey(new Date())) return "";
   return `
     <div class="cal-now" id="cal-now" style="top:${nowOffset(height)}px">
       <span class="cal-now-time"><span id="cal-now-label">${timeKey(Date.now())}</span></span>
@@ -72,7 +73,7 @@ function nowMarkup(height) {
 
 /** Das Raster des gewählten Tages als HTML. */
 export function renderGrid() {
-  const items = entriesOfDay(cal.selected).filter((entry) => entry.type === "termin");
+  const items = entriesOfDay(ui.calendarDay).filter((entry) => entry.type === "termin");
   const timed = items.filter((entry) => entryTime(entry));
   const allDay = items.filter((entry) => !entryTime(entry));
   const height = hourHeight();

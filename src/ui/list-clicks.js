@@ -25,11 +25,16 @@ import { findEntry } from "../data/queries.js";
 import { saveState, state } from "../data/state.js";
 import { archiveEntry } from "../data/xp.js";
 import { cancelHold, consumeClickBlock } from "./long-press.js";
-import { beginRenameTab, openTabMenu } from "../features/overview/tabs.js";
-import { openWorkspaceMenu } from "../features/overview/workspaces.js";
 import { openParentPicker } from "./pickers.js";
 import { openEntry, openTarget } from "./router.js";
 import { closeSwipes, isSwipedOpen } from "./swipe.js";
+
+/*
+ * Umbenennen und die beiden Kontextmenüs gehören zu den Seiten, nicht hierher.
+ * src/main.js gibt sie beim Start herein — so muss diese Datei keinen Bereich
+ * kennen und die Importe zeigen weiter nur nach unten.
+ */
+let menus = { openTabMenu: () => {}, openWorkspaceMenu: () => {}, beginRenameTab: () => {} };
 
 /* Der Wisch-Knopf einer Zeile: Favorit, Archivieren, Verknüpfen, Löschen. */
 function handleSwipeAction(action) {
@@ -63,7 +68,7 @@ function handleSwipeAction(action) {
 /* Eine Tab-Pille: der aktive Tab öffnet das Umbenennen, ein anderer wird gewählt. */
 function handleTabPill(pill) {
   const id = Number(pill.dataset.tabId);
-  if (sameId(id, state.activeTabId)) beginRenameTab(id);
+  if (sameId(id, state.activeTabId)) menus.beginRenameTab(id);
   else selectTab(id);
 }
 
@@ -115,8 +120,13 @@ function onClick(event) {
   else openTarget("workspace", row.dataset.openWorkspace);
 }
 
-/** Klicks und Rechtsklicks in den Listen aktivieren. Wird einmal beim Start aufgerufen. */
-export function initListClicks() {
+/**
+ * Klicks und Rechtsklicks in den Listen aktivieren. Wird einmal beim Start aufgerufen.
+ * @param handlers { openTabMenu, openWorkspaceMenu, beginRenameTab } aus den Seiten.
+ */
+export function initListClicks(handlers) {
+  menus = { ...menus, ...handlers };
+
   const { content } = dom;
 
   /* Nach einem gedrückt Halten kommt noch ein Klick: der darf nichts öffnen. */
@@ -138,14 +148,14 @@ export function initListClicks() {
     if (tabPill) {
       event.preventDefault();
       cancelHold();
-      openTabMenu(tabPill);
+      menus.openTabMenu(tabPill);
       return;
     }
     const workspaceBtn = event.target.closest("[data-open-workspace]");
     if (workspaceBtn) {
       event.preventDefault();
       cancelHold();
-      openWorkspaceMenu(workspaceBtn);
+      menus.openWorkspaceMenu(workspaceBtn);
     }
   });
 }

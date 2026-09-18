@@ -8,9 +8,13 @@
  * --cal-hour-h              -> Höhe einer Stunde im Raster
  * --cal-panel-radius        -> Rundung der grauen Fläche
  * --cal-now                 -> Farbe der Jetzt-Linie
+ * --cal-now-label           -> Schriftfarbe in ihrer Uhrzeit-Pille
  * --cal-accent              -> gewählte Spalte in der Liste
  * --event-color             -> wird je Termin aus src/data/config.js gesetzt
- */
+ 
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+*/
 
 .cal-panel {
   flex: 1;
@@ -139,7 +143,7 @@
   padding: 3px 8px;
   border-radius: 999px;
   background: var(--cal-now);
-  color: #0b1a2a;
+  color: var(--cal-now-label);
   font-size: 15px;
   font-weight: 600;
   letter-spacing: -0.01em;

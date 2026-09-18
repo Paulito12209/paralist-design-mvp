@@ -11,13 +11,14 @@
  */
 
 import { cssNumber } from "../../core/css-vars.js";
-import { dayKey } from "../../core/dates.js";
 
 export const gridTopOffset = 10;
 
+/*
+ * Der gewählte Tag steht in `ui.calendarDay` (src/data/state.js), weil auch das
+ * Eingabefeld ihn braucht. Hier liegt nur, was allein den Streifen betrifft.
+ */
 export const cal = {
-  /* Gewählter Tag als „JJJJ-MM-TT“ */
-  selected: dayKey(new Date()),
   /* Laufende Ziehbewegung auf dem Wochenstreifen */
   drag: null,
   /* true kurz nach einem Wisch: der folgende Klick soll keinen Tag wählen */

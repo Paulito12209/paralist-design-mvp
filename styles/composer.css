@@ -11,7 +11,10 @@
  * --danger                  -> Rot des Diktat-Knopfes beim Aufnehmen
  * --placeholder             -> Farbe des Platzhaltertexts
  * --line                    -> Trennlinien und Ränder der Anhang-Kacheln
- */
+ 
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+*/
 
 .composer {
   display: flex;

@@ -7,11 +7,15 @@
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
  * --ctx-radius              -> Rundung des kleinen Menüs
- * --radius-xl               -> Rundung der Blätter
+ * --modal-radius            -> Rundung der oberen Kante der Blätter
+ * --composer-radius         -> Rundung des Auswahl-Blatts
  * --card / --line / --danger -> Flächen, Trennlinien und rote Einträge
  * --modal-dismiss-pull      -> wie weit man ziehen muss, damit ein Blatt schließt
  * --modal-dim               -> wird beim Ziehen von src/ui/modal-pull.js gesetzt
- */
+ 
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+*/
 
 /* Auswahl-Blatt für Verknüpfen und Seitenmenü */
 .sheet-backdrop {
@@ -172,7 +176,8 @@
 .modal {
   height: calc(100% - 24px - var(--safe-top));
   background: var(--bg);
-  border-radius: 28px 28px 0 0; /* border-radius: rundet nur die obere Kante wie ein iOS-Blatt */
+  /* border-radius: rundet nur die obere Kante wie ein iOS-Blatt */
+  border-radius: var(--modal-radius) var(--modal-radius) 0 0;
   display: flex;
   flex-direction: column;
   overflow: hidden;

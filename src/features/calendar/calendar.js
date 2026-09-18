@@ -10,14 +10,13 @@
  * Alle Größen und Farben stehen in styles/calendar.css.
  */
 
-import { events, on } from "../../core/bus.js";
+import { emit, events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
 import { calendarSpans } from "../../data/config.js";
-import { state } from "../../data/state.js";
+import { state, ui } from "../../data/state.js";
 import { openCtxMenu } from "../../ui/ctx-menu.js";
 import { openSheet } from "../../ui/sheet.js";
 import { isViewActive } from "../../ui/views.js";
-import { openComposerForSlot } from "../composer/composer.js";
 import { initCalendarGestures, setRedraw as setGestureRedraw } from "./calendar-gestures.js";
 import { moveNowLine, renderGrid, scrollToNow } from "./calendar-grid.js";
 import { renderList } from "./calendar-list.js";
@@ -91,7 +90,7 @@ function onPanelClick(event) {
   if (event.target.closest("[data-open-entry]")) return;
   const hour = event.target.closest("[data-hour]");
   if (!hour) return;
-  openComposerForSlot({ date: cal.selected, time: `${pad2(Number(hour.dataset.hour))}:00` });
+  emit(events.composerRequested, { date: ui.calendarDay, time: `${pad2(Number(hour.dataset.hour))}:00` });
 }
 
 /* Beim Laden des Moduls einmal alles anmelden. */

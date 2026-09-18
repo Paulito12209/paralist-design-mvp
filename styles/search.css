@@ -9,7 +9,10 @@
  * --chevron                 -> Pfeil rechts
  * --line                    -> Trennlinien
  * --muted                   -> Farbe der Abschnittsüberschriften
- */
+ 
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+*/
 
 .search-row {
   display: flex;

@@ -8,7 +8,11 @@
  * --xp-created / --xp-done  -> Farben im Ring und in der Historie
  * --xp-line                 -> Farbe der Verlaufskurve
  * --card / --line / --muted -> Flächen, Hilfslinien und kleine Schrift
- */
+ * --radius-xl               -> Rundung der Karten
+ 
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+*/
 
 /* Karten im Fortschritt-Blatt */
 .pcard {

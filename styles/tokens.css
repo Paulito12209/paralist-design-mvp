@@ -2,9 +2,15 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * Pfad: styles/tokens.css
  * -----------------------------------
- * Hier stehen ALLE Farben, Schriftgrößen und Abstände der App an einer Stelle.
- * Ändert man einen Wert hier, ändert sich die ganze App. Die übrigen Dateien
- * verweisen nur darauf.
+ * Hier stehen die Werte, die mehr als eine Stelle betreffen: die Farben, die
+ * Maße der Bedienelemente und die wiederkehrenden Abstände. Ändert man einen
+ * davon, ändert sich die ganze App.
+ *
+ * Nicht alles steht hier: die Schriftgröße eines einzelnen Elements — etwa die
+ * Stundenbeschriftung im Kalender oder eine Überschrift im Profil-Blatt — steht
+ * direkt bei ihrer Regel in der Datei des jeweiligen Bereichs. Welche Datei das
+ * ist, sagt die Liste unten; oben in jeder Datei steht dann, was sich darin
+ * einstellen lässt.
  *
  * WELCHE DATEI MACHT WAS
  * -----------------------------------
@@ -42,6 +48,10 @@
  * --archive-color           -> Gelb für Archivieren
  * --link-color              -> Blau für Verknüpfen
  * --star-color              -> Goldfarbe für den Favoriten-Stern auf der Karte
+ * --stage-bg                -> Fläche rund um das Gerätefenster am Desktop
+ * --avatar-view-bg          -> Hintergrund der großen Profilbild-Ansicht (immer dunkel)
+ * --avatar-gradient-from/-to -> Farbverlauf hinter den Initialen im Profil
+ * --cal-now-label           -> Schriftfarbe in der Uhrzeit-Pille der Jetzt-Linie
  * --inbox-icon-color        -> Farbe des Inbox-Icons auf der Übersichtskarte
  * --project-icon-color      -> Farbe des Raketen-Icons auf der Projekte-Karte
  * --resource-icon-color     -> Farbe des Würfel-Icons auf der Ressourcen-Karte
@@ -59,7 +69,9 @@
  * --media-name-size         -> Schriftgröße des Dateinamens auf Dokument-Kacheln
  *
  * ABSTÄNDE UND GRÖSSEN
- * --radius-xl / --radius-lg -> Rundung großer und mittlerer Flächen
+ * --radius-xl / --radius-lg -> Rundung der Karten im Fortschritt- und Profil-Blatt
+ * --device-radius           -> Rundung des Gerätefensters am Desktop
+ * --modal-radius            -> Rundung der oberen Kante der Blätter von unten
  * --content-side            -> Abstand der Karten und Listen zum linken und rechten Rand
  * --title-side              -> Extra-Abstand für die große Überschrift
  * --overview-gap            -> Abstand zwischen Kopfzeile, Überschrift und Karten
@@ -113,6 +125,13 @@
   --add: #007aff;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.05);
   --radius-xl: 22px;
+  --device-radius: 44px;
+  --stage-bg: #111111;
+  --avatar-view-bg: #111111;
+  --avatar-gradient-from: #7aa7d9;
+  --avatar-gradient-to: #4d72ad;
+  --cal-now-label: #0b1a2a;
+  --modal-radius: 28px;
   --radius-lg: 18px;
   --title-size: 32px;
   --content-side: 16px;
@@ -191,7 +210,7 @@
   --profile-avatar-edit-size: 36px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
-  /* Hoehe der eingeblendeten Bildschirmtastatur; app.js setzt den Wert am Handy */
+  /* Hoehe der eingeblendeten Bildschirmtastatur; src/shell/keyboard-inset.js setzt den Wert am Handy */
   --keyboard-inset: 0px;
 }
 

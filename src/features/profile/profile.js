@@ -7,6 +7,7 @@
  * styles/overlays.css.
  */
 
+import { emit, events } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { ui } from "../../data/state.js";
 import { flushUsage, trackUsage } from "../../data/usage.js";
@@ -67,6 +68,7 @@ export function hide() {
 export function open(push = true) {
   closeSheet();
   closeCtxMenu();
+  emit(events.overlayOpened);
   /* Das Fortschritt-Blatt liegt an derselben Stelle: es weicht. */
   dom.progressModal.hidden = true;
   trackUsage();

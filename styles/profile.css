@@ -6,11 +6,17 @@
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
  * --profile-avatar-size     -> Größe des runden Bildes
+ * --avatar-gradient-from/-to -> Farbverlauf hinter den Initialen
+ * --avatar-view-bg          -> Hintergrund der großen Bildansicht
  * --profile-avatar-edit-size -> Größe des kleinen Stift-Knopfes
  * --dot-empty / --dot-1..4  -> Helligkeitsstufen im Punkte-Raster
  * --xp-line                 -> Farbe der Balken
  * --danger                  -> Rot in der Gefahrenzone
- */
+ * --radius-xl               -> Rundung der Zeilenkarten
+ 
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+*/
 
 /* ---------- Profil-Blatt ---------- */
 
@@ -38,7 +44,7 @@
   border-radius: 50%; /* border-radius: macht das Feld zum Kreis */
   display: grid;
   place-items: center;
-  background: linear-gradient(150deg, #7aa7d9, #4d72ad);
+  background: linear-gradient(150deg, var(--avatar-gradient-from), var(--avatar-gradient-to));
   color: #ffffff;
   font-size: 40px;
   font-weight: 600;
@@ -119,7 +125,8 @@
 }
 
 .avatar-view .modal {
-  background: #111111;
+  /* absichtlich immer dunkel, damit das Bild in beiden Darstellungen wirkt */
+  background: var(--avatar-view-bg);
   color: #ffffff;
 }
 
@@ -158,7 +165,7 @@
   border-radius: 50%; /* border-radius: große Initialen bleiben ein Kreis */
   display: grid;
   place-items: center;
-  background: linear-gradient(150deg, #7aa7d9, #4d72ad);
+  background: linear-gradient(150deg, var(--avatar-gradient-from), var(--avatar-gradient-to));
   color: #ffffff;
   font-size: 72px;
   font-weight: 600;

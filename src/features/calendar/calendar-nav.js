@@ -7,7 +7,7 @@
  */
 
 import { addDays, dayKey, parseDay } from "../../core/dates.js";
-import { saveState, state } from "../../data/state.js";
+import { saveState, state, ui } from "../../data/state.js";
 import { cal } from "./calendar-state.js";
 
 /* Wird von calendar.js gesetzt, damit hier niemand das Zeichnen importieren muss. */
@@ -20,17 +20,17 @@ export function setRedraw(fn) {
 
 /** Einen Monat vor oder zurück; der Tag im Monat bleibt so gut wie möglich erhalten. */
 export function shiftMonth(direction) {
-  const selected = parseDay(cal.selected);
+  const selected = parseDay(ui.calendarDay);
   const next = new Date(selected.getFullYear(), selected.getMonth() + direction, 1);
   const lastDay = new Date(next.getFullYear(), next.getMonth() + 1, 0).getDate();
   next.setDate(Math.min(selected.getDate(), lastDay));
-  cal.selected = dayKey(next);
+  ui.calendarDay = dayKey(next);
   redraw();
 }
 
 /** Einen Tag weiterschalten, gemessen in Wochen des sichtbaren Zeitraums. */
 export function shiftWeeks(weeks) {
-  cal.selected = dayKey(addDays(parseDay(cal.selected), weeks * 7));
+  ui.calendarDay = dayKey(addDays(parseDay(ui.calendarDay), weeks * 7));
   redraw();
 }
 
@@ -45,7 +45,7 @@ export function shiftSpan(direction) {
 
 /** Zurück zum heutigen Tag. */
 export function goToday() {
-  cal.selected = dayKey(new Date());
+  ui.calendarDay = dayKey(new Date());
   redraw(true);
 }
 

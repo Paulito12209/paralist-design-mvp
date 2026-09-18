@@ -7,7 +7,10 @@
  * --card / --line           -> Fläche und Trennlinien der Liste
  * --link-color              -> Haken neben der gewählten Darstellung
  * --radius-lg               -> Rundung der Liste
- */
+ 
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+*/
 
 .settings-group {
   background: var(--card);

@@ -1,11 +1,11 @@
 /*
  * Nutzungszeit je Tag in Sekunden: { "2026-09-18": 2400 }.
  * Gezählt wird nur, solange die App sichtbar ist; lange Pausen zählen nicht mit.
+ * Wann gezählt und geschrieben wird, entscheidet src/shell/lifecycle.js.
  * Pfad: src/data/usage.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * tickSeconds   -> wie oft die Zeit fortgeschrieben wird (Sekunden)
  * maxTickGap    -> längste Pause, die noch als Nutzung zählt (Sekunden)
  * seedDays      -> wie viele Tage Beispieldaten der erste Start anlegt
  */
@@ -13,7 +13,6 @@
 import { dayKey, dayShift, parseDay, startOfDay } from "../core/dates.js";
 import { readJson, storageKeys, writeJson } from "../core/storage.js";
 
-const tickSeconds = 15;
 const maxTickGap = 60;
 const seedDays = 250;
 
@@ -116,19 +115,7 @@ export function usageStreaks() {
   return { current, longest };
 }
 
-/**
- * Zählung starten. Geschrieben wird nur beim Wechsel in den Hintergrund
- * und beim Schließen — nicht bei jedem Zählschritt.
- */
-export function startUsageTracking() {
-  setInterval(trackUsage, tickSeconds * 1000);
-  document.addEventListener("visibilitychange", () => {
-    trackUsage();
-    flushUsage();
-    lastTickAt = Date.now();
-  });
-  window.addEventListener("pagehide", () => {
-    trackUsage();
-    flushUsage();
-  });
+/** Den Zählpunkt auf jetzt setzen — nach einer Pause im Hintergrund. */
+export function resetUsageTick() {
+  lastTickAt = Date.now();
 }

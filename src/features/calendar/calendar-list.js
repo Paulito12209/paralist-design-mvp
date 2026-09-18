@@ -12,14 +12,14 @@ import { sameParent } from "../../core/ids.js";
 import { longDate } from "../../core/format.js";
 import { calendarSegments, projectParent } from "../../data/config.js";
 import { entriesOfDay, entryTime } from "../../data/queries.js";
-import { state } from "../../data/state.js";
+import { state, ui } from "../../data/state.js";
 import { entryRow } from "../../ui/rows.js";
 import { cal } from "./calendar-state.js";
 
 /** Die Einträge, die in der gewählten Spalte stehen — nach Uhrzeit sortiert. */
 export function listEntries() {
   const seg = state.prefs.calendar.seg;
-  return entriesOfDay(cal.selected)
+  return entriesOfDay(ui.calendarDay)
     .filter((entry) => {
       if (seg === "aufgaben") return entry.type === "aufgabe";
       if (seg === "termine") return entry.type === "termin";
@@ -50,7 +50,7 @@ export function renderList() {
       <div class="cal-empty">
         ${icon("calendar")}
         <b>${seg.empty}</b>
-        <span>${longDate(cal.selected)}</span>
+        <span>${longDate(ui.calendarDay)}</span>
       </div>`;
 
   return `<div class="cal-seg">${tabs}</div>${body}`;
