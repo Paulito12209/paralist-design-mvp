@@ -9,8 +9,7 @@
  * --nav-side / --nav-bottom -> Abstand zum Rand und nach unten
  * --nav-radius              -> Rundung der Leiste
  * --tab-add-size            -> Größe des runden Plus-Knopfes in der Mitte
- * --tab-add-lift            -> wie weit der Plus-Knopf über die Leiste hinausragt
- * --tab-icon-grow           -> um wie viel die Icons wachsen, solange die Namen aus sind
+ * --tab-icon-grow          -> um wie viel die Icons wachsen, solange die Namen aus sind
  * --tab-label-size          -> Schriftgröße der Wörter unter den Icons
  * --composer-radius         -> Rundung, sobald das Eingabefeld offen ist
  * --keyboard-inset          -> wird von src/shell/keyboard-inset.js gesetzt
@@ -132,8 +131,10 @@ body.is-search-typing .bottom-bar {
   flex: 0 0 auto;
   margin-left: 4px;
   margin-right: 4px;
-  margin-top: calc(-1 * var(--tab-add-lift)); /* margin-top: negativ, damit der Knopf über die Leiste hinausragt, wie im Vorbild */
-  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22), 0 2px 5px rgba(0, 0, 0, 0.14); /* box-shadow: Tiefe unter dem schwebenden Knopf */
+  /* align-self: der Knopf sitzt senkrecht in der Mitte der Leiste — mit und ohne
+     Namen unter den Icons, deren Höhe sich sonst auf ihn auswirken würde */
+  align-self: center;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18); /* box-shadow: hebt den Knopf leicht von der Leiste ab */
 }
 
 .tab-add .icon {
