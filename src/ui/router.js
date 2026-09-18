@@ -25,6 +25,9 @@ function hashOfTab(tab) {
 
 /** Startseite zeigen. */
 export function showHome(replace = true) {
+  /* auch über Browser-Zurück verlassen: sonst bliebe die Tastatur offen,
+     obwohl die Suche gar nicht mehr zu sehen ist */
+  dom.searchInput.blur();
   showView("home");
   setActiveTab("home");
   ui.sourceView = "home";

@@ -141,6 +141,9 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 
 **Suchen, Fortschritt, Profil**
 - Tippen, Treffer, „keine Treffer“, Escape, die beiden Unterlisten und zurück.
+- Tastatur bleibt über der Navigation stehen (die Leiste rückt nicht mit
+  hoch), daneben tippen schließt nur die Tastatur statt einen Eintrag zu
+  öffnen, zugeklappt zeigt sich die Suchen-Pille rechts über der Navigation.
 - Fortschritt: Zeitraum 7/30/90, „Mehr anzeigen“, Blatt nach unten ziehen.
 - Profil: Nutzungszeit steht als „1 Std 20 Min“ (nicht als `m:ss`), Zeitraum
   umschalten, Bild groß ansehen und mit Browser-Zurück schließen.

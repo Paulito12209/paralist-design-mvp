@@ -175,8 +175,32 @@ export function renderSearch() {
   renderOverviewLists();
 }
 
+/* Wird verbraucht, sobald der folgende Klick nur die Tastatur zugemacht hat. */
+let suppressNextClick = false;
+
+/*
+ * Solange die Tastatur offen ist, schließt ein Tippen in der Liste sie nur —
+ * ohne den angetippten Eintrag zu öffnen. Das muss schon bei `mousedown`
+ * passieren: sonst holt sich der angetippte Knopf zuerst selbst den Fokus,
+ * das Suchfeld verliert ihn dadurch von allein, und der Klick käme mit
+ * bereits zugeklappter Tastatur an — die Zeile würde also doch aufgehen.
+ */
+function onViewPointerDown(event) {
+  if (!ui.searchTyping) return;
+  event.preventDefault();
+  suppressNextClick = true;
+  dom.searchInput.blur();
+}
+
 /* Klicks auf der Suchseite, die nicht schon list-clicks.js erledigt. */
 function onViewClick(event) {
+  if (suppressNextClick) {
+    suppressNextClick = false;
+    event.preventDefault();
+    event.stopPropagation();
+    return;
+  }
+
   const more = event.target.closest("[data-search-list]");
   if (more) {
     showSearch(false, more.dataset.searchList);
@@ -205,6 +229,7 @@ function onViewClick(event) {
 
 /* Beim Laden des Moduls einmal alles anmelden. */
 function init() {
+  el("view-search").addEventListener("mousedown", onViewPointerDown);
   el("view-search").addEventListener("click", onViewClick);
 
   on(events.viewOpened, (name) => {

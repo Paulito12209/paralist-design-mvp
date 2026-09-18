@@ -56,6 +56,9 @@ export const ui = {
   /* Suchseite: getippter Begriff und welche Unterliste offen ist (null = Übersicht) */
   searchQuery: "",
   searchList: null,
+  /* true, solange die Bildschirmtastatur im Suchfeld offen ist: dann bleibt die
+     Navigation stehen und ein Tippen in der Liste schließt nur die Tastatur */
+  searchTyping: false,
   /* Fortschritt-Blatt: Zeitraum der Kurve und wie viele Historien-Zeilen sichtbar sind */
   progressRange: 30,
   historyLimit: 20,

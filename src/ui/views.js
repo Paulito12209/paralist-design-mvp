@@ -59,10 +59,12 @@ export function showView(name) {
   activeView = name;
 
   /* Medien- und Zeichenansicht brauchen eigene Knopfleisten unten:
-     die beiden Klassen schalten sie in styles/media.css und styles/drawing.css frei. */
+     die beiden Klassen schalten sie in styles/media.css und styles/drawing.css frei.
+     is-search schaltet die Suchen-Pille frei (styles/search.css). */
   const entry = name === "entry" ? findEntry(ui.currentEntryId) : null;
   document.body.classList.toggle("is-media", name === "media");
   document.body.classList.toggle("is-drawing", Boolean(entry && entry.type === "zeichnung"));
+  document.body.classList.toggle("is-search", name === "search");
 
   emit(events.viewOpened, name);
 }

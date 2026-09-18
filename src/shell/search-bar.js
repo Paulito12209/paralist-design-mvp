@@ -2,12 +2,19 @@
  * Das Suchfeld in der Kopfzeile. Es liegt außerhalb der Suchseite, damit man
  * von jeder Seite aus tippen kann; die Suchseite selbst wird beim ersten
  * Antippen nachgeladen.
+ *
+ * Solange die Tastatur offen ist (ui.searchTyping), bleibt die Navigation
+ * unten stehen (styles/navigation.css) und ein Tippen in der Liste schließt
+ * nur die Tastatur (src/features/search/search.js). Klappt man sie zu, zeigt
+ * die Suchen-Pille über der Navigation und öffnet die Tastatur wieder.
  * Pfad: src/shell/search-bar.js
  *
  * Keine anpassbaren visuellen Werte: Höhe und Rundung stehen in
- * styles/top-bar.css (--search-bar-height, --search-bar-radius).
+ * styles/top-bar.css (--search-bar-height, --search-bar-radius); die Pille
+ * steht in styles/search.css (--search-pill-height, --search-pill-side).
  */
 
+import { events, on } from "../core/bus.js";
 import { dom, el } from "../core/dom.js";
 import { load } from "../core/lazy.js";
 import { noteSearch } from "../data/opens.js";
@@ -20,10 +27,34 @@ function redrawSearch() {
   load("search").then((module) => module.renderSearch());
 }
 
+/* Tastatur öffnet sich: Navigation bleibt unten, Suchen-Pille verschwindet. */
+function onFocus() {
+  ui.searchTyping = true;
+  document.body.classList.add("is-search-typing");
+  showSearch();
+}
+
+/* Tastatur schließt sich (zugeklappt, Enter, Wechsel der Seite): Pille zeigt sich wieder. */
+function onBlur() {
+  ui.searchTyping = false;
+  document.body.classList.remove("is-search-typing");
+}
+
 /** Suchfeld und Lupe anmelden. */
 export function initSearchBar() {
   el("search-entry").addEventListener("click", () => showSearch());
-  dom.searchInput.addEventListener("focus", () => showSearch());
+  dom.searchInput.addEventListener("focus", onFocus);
+  dom.searchInput.addEventListener("blur", onBlur);
+
+  /* Suchen-Pille über der Navigation: erscheint erst, wenn die Tastatur
+     zugeklappt wurde, und holt sie mit dem Cursor im Suchfeld zurück. */
+  dom.searchPill.addEventListener("click", () => dom.searchInput.focus());
+
+  /* Wurde die Tastatur weggewischt statt mit einem Tipp geschlossen, blinkt
+     der Cursor sonst weiter im Suchfeld, ohne dass die Tastatur noch da ist. */
+  on(events.keyboardClosed, () => {
+    if (ui.searchTyping) dom.searchInput.blur();
+  });
 
   dom.searchInput.addEventListener("input", () => {
     ui.searchQuery = dom.searchInput.value.trim();

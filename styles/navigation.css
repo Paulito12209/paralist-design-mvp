@@ -12,7 +12,7 @@
  * --tab-label-size          -> Schriftgröße der Wörter unter den Icons
  * --composer-radius         -> Rundung, sobald das Eingabefeld offen ist
  * --keyboard-inset          -> wird von src/shell/keyboard-inset.js gesetzt
- 
+
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -22,10 +22,17 @@
   position: absolute;
   left: 0;
   right: 0;
-  bottom: var(--keyboard-inset); /* bottom: beim Tippen rueckt die Leiste ueber die Tastatur */
+  bottom: var(--keyboard-inset); /* bottom: beim Anlegen rueckt die Leiste mit dem Eingabefeld ueber die Tastatur */
   z-index: 20; /* z-index: hält die Leiste über der Liste */
   padding: 12px var(--nav-side) calc(var(--nav-bottom) + var(--safe-bottom));
   container-type: inline-size; /* container-type: die Navigation darf auf ihre eigene Breite reagieren, nicht nur aufs Fenster */
+}
+
+/* Beim Suchen liegt das Eingabefeld oben, nicht in dieser Leiste: sie bleibt
+   unten stehen, die Tastatur legt sich einfach darüber (src/shell/search-bar.js
+   setzt is-search-typing, solange der Cursor im Suchfeld blinkt). */
+body.is-search-typing .bottom-bar {
+  bottom: 0;
 }
 
 /* Gemeinsamer Container: trägt sowohl die Navigation als auch das Eingabefeld */
