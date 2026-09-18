@@ -7,12 +7,17 @@
  * --top-bar-icon-width / --top-bar-icon-height          -> Größe der Icons oben
  * --top-bar-leading-btn-width / -height                 -> runder Knopf oben links
  * --top-bar-profile-btn-width / -height                 -> Profil-Knopf oben rechts
- * --top-bar-fade                                        -> Höhe des Ausblendens unter der Suche
+ * --top-bar-fade                                        -> FADE-EFFEKT: Höhe der Ausblendung unter der Suche.
+ *                                                          Wie es funktioniert: die oberen (100% - --top-bar-fade)
+ *                                                          der Kopfzeile sind deckend, die unteren --top-bar-fade Pixel
+ *                                                          verlaufen zu transparent (mit mask-image in .top-bar).
+ *                                                          Anpassen: Wert in tokens.css erhöhen (z.B. 20px = intensiver)
+ *                                                          oder senken (z.B. 10px = subtiler).
  * --search-bar-height / --search-bar-radius             -> Suchleiste
  * --level-color / --level-dim / --level-glow            -> Striche und Zahl der Level-Anzeige
  * --icon-strong / --placeholder                         -> Icon- und Platzhalterfarbe
- * --bg                                                  -> Farbe, die im Verlauf ausblendet
- 
+ * --bg                                                  -> Hintergrundfarbe (wird am unteren Rand ausgeblendet)
+
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -23,12 +28,16 @@
      damit beim Scrollen nichts durch sie hindurchlaeuft */
   position: relative;
   z-index: 20;
-  /* linear-gradient: untere --top-bar-fade Pixel laufen von deckendem --bg zu transparent,
-     damit Inhalt weich unter der Kopfzeile verschwindet */
-  background: linear-gradient(
+  /* background: feste Hintergrundfarbe; mask-image schafft dann die Ausblendung */
+  background: var(--bg);
+  /* mask-image: erstellt eine unsichtbare Ebene, die nach unten hin transparent wird.
+     Die unteren --top-bar-fade Pixel verlaufen von 100% Deckkraft zu 0% (transparent).
+     Damit Inhalt weich unter der Kopfzeile verschwindet — ANPASSBAR: --top-bar-fade
+     in styles/tokens.css aendern (z.B. auf 20px für intensiveres Fade). */
+  mask-image: linear-gradient(
     to bottom,
-    var(--bg) 0%,
-    var(--bg) calc(100% - var(--top-bar-fade)),
+    black 0%,
+    black calc(100% - var(--top-bar-fade)),
     transparent 100%
   );
   display: flex;
@@ -40,7 +49,7 @@
   padding-right: 16px;
   /* negativer Abstand: der Inhaltsbereich schiebt sich unter den Verlauf,
      sonst waere der Fade unsichtbar (gleiche Farbe wie der Geraete-Hintergrund) */
-  margin-bottom: calc(-1 * var(--top-bar-fade));
+  /* margin-bottom: calc(-1 * var(--top-bar-fade)); */
 }
 
 /* Auf Unterseiten (Sammlung, Arbeitsbereich, Eintrag) gibt es Level, Suche und
@@ -53,10 +62,12 @@ body.is-subpage .top-bar {
 
 .icon-btn,
 .avatar {
-  border-radius: 50%; /* macht die Buttons rund; Breite/Höhe allein ergeben kein Kreis */
+  border-radius: 50%;
+  /* macht die Buttons rund; Breite/Höhe allein ergeben kein Kreis */
   background: var(--card);
   display: grid;
-  place-items: center; /* Icon sitzt in der Mitte; mit flex allein wäre die Zentrierung umständlicher */
+  place-items: center;
+  /* Icon sitzt in der Mitte; mit flex allein wäre die Zentrierung umständlicher */
   color: var(--icon-strong);
   box-shadow: var(--shadow);
   flex: 0 0 auto;
@@ -72,7 +83,8 @@ body.is-subpage .top-bar {
 .level-btn {
   width: var(--top-bar-leading-btn-width);
   height: var(--top-bar-leading-btn-height);
-  border-radius: 50%; /* border-radius: macht den Knopf rund */
+  border-radius: 50%;
+  /* border-radius: macht den Knopf rund */
   background: var(--card);
   box-shadow: var(--shadow);
   display: grid;
@@ -88,7 +100,8 @@ body.is-subpage .top-bar {
   width: 46px;
   height: 46px;
   display: block;
-  filter: drop-shadow(0 0 3px var(--level-glow)); /* filter: sanftes Leuchten, im Hellmodus unsichtbar */
+  filter: drop-shadow(0 0 3px var(--level-glow));
+  /* filter: sanftes Leuchten, im Hellmodus unsichtbar */
 }
 
 .level-tick {
@@ -132,10 +145,12 @@ body.is-subpage .top-bar {
 
 .search {
   flex: 1;
-  min-width: 0; /* min-width: die Suche darf schmaler als „Suchen“ werden, statt Level und Profil wegzudrücken */
+  min-width: 0;
+  /* min-width: die Suche darf schmaler als „Suchen“ werden, statt Level und Profil wegzudrücken */
   height: var(--search-bar-height);
   background: var(--card);
-  border-radius: var(--search-bar-radius); /* Pillenform; Höhe allein macht die Ecken nicht rund */
+  border-radius: var(--search-bar-radius);
+  /* Pillenform; Höhe allein macht die Ecken nicht rund */
   display: flex;
   align-items: center;
   gap: 6px;
@@ -145,7 +160,8 @@ body.is-subpage .top-bar {
 }
 
 .search-icon {
-  flex: 0 0 auto; /* Such-Icon soll nicht mit dem Textfeld mitwachsen */
+  flex: 0 0 auto;
+  /* Such-Icon soll nicht mit dem Textfeld mitwachsen */
 }
 
 .search input {
