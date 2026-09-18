@@ -107,9 +107,12 @@
   font-weight: 500;
 }
 
-/* Abstand zwischen den vier Karten und der Zeile „Arbeitsbereiche“ */
+/* Abstand zwischen den vier Karten und der Zeile „Arbeitsbereiche“;
+   -8px fest abgezogen, damit der Abstand hier enger wirkt als der
+   Standardabstand aus --workspace-section-gap (der Wert selbst bleibt
+   unangetastet, da er auch anderswo als neutraler Grundabstand dient) */
 .overview-grid+.section-head {
-  margin-top: var(--workspace-section-gap);
+  margin-top: calc(var(--workspace-section-gap) - 8px);
 }
 
 .add-btn {

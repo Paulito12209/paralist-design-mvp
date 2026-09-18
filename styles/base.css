@@ -134,7 +134,7 @@ body.is-subpage .content {
 .section-head {
   display: flex;
   align-items: center;
-  margin: calc(var(--overview-gap) - 8px) 0 var(--workspace-head-gap);
+  margin: var(--overview-gap) 0 var(--workspace-head-gap);
   padding-left: var(--title-side);
 }
 
