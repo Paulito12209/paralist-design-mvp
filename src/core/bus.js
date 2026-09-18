@@ -20,6 +20,9 @@ export const events = {
   /* Eine Seite möchte das Eingabefeld öffnen — mit Tag und Uhrzeit, wenn im
      Kalender eine Stunde angetippt wurde. */
   composerRequested: "composer:requested",
+  /* Die Aufgaben-Seite bittet um das Eingabefeld mit schon gewähltem Typ
+     „Aufgabe“ — der Knopf am Ende einer Board-Spalte. */
+  taskRequested: "task:requested",
   /* Ein Blatt von unten (Fortschritt, Profil) geht auf: das Eingabefeld schließt. */
   overlayOpened: "overlay:opened",
   /* Die Bildschirmtastatur ist zu — auch wenn sie weggewischt statt mit

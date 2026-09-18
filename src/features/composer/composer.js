@@ -12,6 +12,7 @@ import { dom, el } from "../../core/dom.js";
 import { dayKey, timeKey } from "../../core/dates.js";
 import { icon } from "../../core/html.js";
 import { composerPlaceholders, defaultType, resourcePick, types, xpItemStyle } from "../../data/config.js";
+import { applyEntryDefaults } from "../../data/mutations.js";
 import { findEntry, isContainer, parentName } from "../../data/queries.js";
 import { entryRef } from "../../data/refs.js";
 import { state, ui } from "../../data/state.js";
@@ -181,6 +182,8 @@ export function createEntry() {
     createdAt: Date.now(),
   };
   applyCalendarDate(entry);
+  /* Status, Priorität und Sortiernummer einer Aufgabe kommen aus der Datenschicht. */
+  applyEntryDefaults(entry);
 
   state.entries.push(entry);
   attachFilesTo(entry);
@@ -293,6 +296,8 @@ export function initComposer() {
   /* Der Kalender bittet über diese Nachricht um das Eingabefeld, damit er es
      nicht importieren muss. */
   on(events.composerRequested, openComposerForSlot);
+  /* Dasselbe für die Aufgaben-Seite: ihr Knopf am Spaltenende will eine Aufgabe. */
+  on(events.taskRequested, () => openComposer({ type: "aufgabe", pick: "aufgabe" }));
   /* Geht ein Blatt von unten auf, gibt das Eingabefeld auf: es lag sonst
      unsichtbar dahinter weiter offen — samt laufendem Diktat. */
   on(events.overlayOpened, closeComposer);

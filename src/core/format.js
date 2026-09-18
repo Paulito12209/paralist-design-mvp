@@ -83,6 +83,16 @@ export function monthHeading(ts) {
   return monthYear.format(new Date(ts));
 }
 
+/** Knappes Datum eines Tagesschlüssels für die Chips der Aufgaben: „Heute“, „Morgen“, sonst „18.09.“. */
+export function shortDay(key) {
+  const day = parseDay(key).getTime();
+  const today = startOfDay(Date.now());
+  if (day === today) return "Heute";
+  if (day === today + MS_PER_DAY) return "Morgen";
+  if (day === today - MS_PER_DAY) return "Gestern";
+  return shortDate.format(new Date(day));
+}
+
 /** Ausgeschriebenes Datum für Vorlesehilfen und den leeren Kalendertag. */
 export function longDate(key) {
   return fullDate.format(parseDay(key));

@@ -28,7 +28,8 @@
  * styles/profile.css         -> Profil-Blatt: Bild, Nutzungszeit, Serie, Listen
  * styles/settings.css        -> Einstellungs-Blatt: Analyse-Kacheln und Darstellung
  * styles/support.css         -> Einstellungs-Blatt: Feedback-Formular und Danksagungen
- * styles/tasks.css           -> Aufgaben-Seite: Liste und Kanban-Board
+ * styles/tasks.css           -> Aufgaben-Seite: Bedienzeile und Liste
+ * styles/tasks-board.css     -> Aufgaben-Seite: die Spalten des Kanban-Boards
  * styles/calendar.css        -> Kalender: Monat, Wochenstreifen, Bedienzeile
  * styles/calendar-panel.css  -> Kalender: graue Fläche mit Stundenraster und Liste
  * styles/media.css           -> Medien- und Ressourcen-Seite
@@ -57,6 +58,10 @@
  * --inbox-icon-color        -> Farbe des Inbox-Icons auf der Übersichtskarte
  * --project-icon-color      -> Farbe des Raketen-Icons auf der Projekte-Karte
  * --resource-icon-color     -> Farbe des Würfel-Icons auf der Ressourcen-Karte
+ * --prio-jetzt              -> Farbe der Board-Spalte „Jetzt“
+ * --prio-next               -> Farbe der Board-Spalte „Als Nächstes“
+ * --prio-spaeter            -> Farbe der Board-Spalte „Später“
+ * --prio-irgendwann         -> Farbe der Board-Spalte „Irgendwann“
  *
  * SCHRIFTGRÖSSEN
  * --title-size              -> Schriftgröße der großen Überschrift „Übersicht“
@@ -67,6 +72,8 @@
  * --composer-chip-size      -> Schriftgröße des Verknüpfen-Knopfes im Eingabefeld
  * --entry-title-size        -> Schriftgröße des Titels auf der Editor-Seite
  * --entry-body-size         -> Schriftgröße des Textes auf der Editor-Seite
+ * --task-meta-size          -> Schriftgröße des Ortes unter einer Aufgabe
+ * --task-chip-size          -> Schriftgröße der Status- und Datums-Chips
  * --media-month-size        -> Schriftgröße der Monatsüberschrift auf der Medien-Seite
  * --media-name-size         -> Schriftgröße des Dateinamens auf Dokument-Kacheln
  *
@@ -103,6 +110,15 @@
  * --mini-gap                -> Fuge zwischen den beiden Analyse-Kacheln
  * --mini-card-height        -> Mindesthöhe einer Analyse-Kachel
  * --mini-chart-height       -> Höhe der kleinen Grafik auf der Kachel
+ * --task-check-size         -> Größe des runden Haken-Knopfes an einer Aufgabe
+ * --task-tools-gap          -> Abstand zwischen Bedienzeile und Inhalt der Aufgaben-Seite
+ * --board-col-width         -> Breite einer Board-Spalte
+ * --board-gap               -> Fuge zwischen zwei Spalten
+ * --board-card-gap          -> Fuge zwischen zwei Karten in einer Spalte
+ * --board-card-radius       -> Rundung einer Karte
+ * --board-head-radius       -> Rundung der farbigen Spalten-Kopfzeile
+ * --board-drop-min          -> Mindesthöhe einer leeren Spalte, damit man dort ablegen kann
+ * --board-edge              -> ab wie vielen Pixeln am Rand beim Ziehen mitgescrollt wird
  * --media-gap               -> Fuge zwischen den Medien-Kacheln
  * --media-btn-size          -> Größe der runden Knöpfe über der Navigation
  * --media-actions-space     -> Extra-Platz am Ende der Medien-Seite
@@ -215,6 +231,21 @@
   --cal-row-h: 52px;
   --cal-hour-h: 56px;
   --cal-panel-radius: 28px;
+  --prio-jetzt: #ff453a;
+  --prio-next: #ff9500;
+  --prio-spaeter: #007aff;
+  --prio-irgendwann: #af52de;
+  --task-meta-size: 13px;
+  --task-chip-size: 12px;
+  --task-check-size: 24px;
+  --task-tools-gap: 18px;
+  --board-col-width: 264px;
+  --board-gap: 12px;
+  --board-card-gap: 8px;
+  --board-card-radius: 16px;
+  --board-head-radius: 14px;
+  --board-drop-min: 72px;
+  --board-edge: 44px;
   --media-gap: 3px;
   --media-month-size: 19px;
   --media-name-size: 13px;
@@ -274,6 +305,10 @@
     --cal-accent: #4aa3ff;
     --cal-now: #6fcbe8;
     --cal-day-ring: rgba(255, 255, 255, 0.07);
+    --prio-jetzt: #ff6961;
+    --prio-next: #ff9f0a;
+    --prio-spaeter: #4aa3ff;
+    --prio-irgendwann: #c77dff;
     --media-doc-color: #0a84ff;
     --support-choice-active-bg: rgba(10, 132, 255, 0.18);
     --credits-chip-bg: rgba(255, 255, 255, 0.1);
@@ -309,6 +344,10 @@
   --cal-accent: #4aa3ff;
   --cal-now: #6fcbe8;
   --cal-day-ring: rgba(255, 255, 255, 0.07);
+  --prio-jetzt: #ff6961;
+  --prio-next: #ff9f0a;
+  --prio-spaeter: #4aa3ff;
+  --prio-irgendwann: #c77dff;
   --media-doc-color: #0a84ff;
   --support-choice-active-bg: rgba(10, 132, 255, 0.18);
   --credits-chip-bg: rgba(255, 255, 255, 0.1);

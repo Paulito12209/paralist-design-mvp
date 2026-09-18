@@ -1,49 +1,169 @@
 /*
- * Aufgaben-Seite: Bedienzeile oben, darunter die Liste (später auch das
- * Kanban-Board).
+ * Aufgaben-Seite: die Bedienzeile oben und die Listenansicht. Die Zeilen sind
+ * dieselben wie in allen übrigen Listen (styles/rows.css) — hier stehen nur
+ * die Zutaten, die eine Aufgabe zusätzlich hat: der runde Haken-Knopf, das
+ * Label mit dem Ablageort und die kleinen Chips. Das Board hat eine eigene
+ * Datei, styles/tasks-board.css.
  * Pfad: styles/tasks.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
- * --card / --line   -> Fläche und Trennlinie der Zeilen
- * --radius-lg       -> Rundung der Liste
- * --muted           -> Farbe des Icons vor dem Titel
+ * --task-tools-gap   -> Abstand zwischen Bedienzeile und Liste
+ * --task-check-size  -> Größe des runden Haken-Knopfes
+ * --task-meta-size   -> Schriftgröße des Ortes unter dem Titel
+ * --task-chip-size   -> Schriftgröße der Status- und Datums-Chips
+ * --muted            -> Farbe der Nebenangaben unter dem Titel
+ * --chevron          -> Ring des noch leeren Hakens
+ * --xp-done / --card -> Farbe des gesetzten Hakens und seines Hakens darin
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
 
-.task-list {
-  background: var(--card);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
-  overflow: hidden; /* overflow: schneidet die Zeilen an den runden Ecken ab */
-}
+/* ---------- Bedienzeile ---------- */
 
-.task-row {
+.tasks-tools {
   display: flex;
   align-items: center;
-  gap: 12px;
-  min-height: 52px;
-  padding: 8px 16px;
-  border-bottom: 0.5px solid var(--line);
-  font-size: 17px;
+  gap: 8px;
+  margin-bottom: var(--task-tools-gap);
 }
 
-.task-row:last-child {
-  border-bottom: 0;
+/* Die Pillen laufen waagerecht weiter, wenn sie nicht nebeneinanderpassen.
+   Anders als über den Arbeitsbereichen steht rechts kein Plus-Knopf, der
+   Platz freihalten müsste. */
+.task-pills {
+  flex: 1;
+  min-width: 0;
+  padding-right: 2px;
 }
 
-.task-row-icon {
-  width: 22px;
-  height: 22px;
-  color: var(--muted);
+.task-view-btn {
+  flex: 0 0 auto;
+  padding: 8px;
+}
+
+.task-pill {
   flex: 0 0 auto;
 }
 
-.task-row-title {
-  flex: 1;
+/* ---------- Runder Haken-Knopf ---------- */
+
+.task-check {
+  width: var(--task-check-size);
+  height: var(--task-check-size);
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 50%; /* border-radius: macht aus dem Knopf einen Kreis */
+  box-shadow: inset 0 0 0 1.5px var(--chevron); /* box-shadow statt border: der Ring bleibt innen, die Größe stimmt */
+  color: transparent; /* der Haken ist erst zu sehen, wenn die Aufgabe erledigt ist */
+  transition: color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.task-check.is-done {
+  background: var(--xp-done);
+  box-shadow: inset 0 0 0 1.5px var(--xp-done);
+  color: var(--card);
+}
+
+.task-check-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.task-check:active {
+  opacity: 0.6;
+}
+
+/* ---------- Zeile in der Liste ---------- */
+
+/* Der Haken steht als eigener Knopf neben der Zeile, damit ein Tipp darauf
+   abhakt statt den Editor zu öffnen. Die Trennlinie wandert dafür an die
+   ganze Zeile, damit sie wie überall sonst über die volle Breite läuft. */
+.task-rows .swipe-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 0.5px solid var(--line);
+}
+
+.task-row {
+  align-items: center;
+  border-bottom: 0;
+}
+
+/* .workspace-row span macht jedes span breit — in einer Aufgabe soll das nur
+   der mittlere Block sein, nicht jede Beschriftung darin. */
+.task-row span {
+  flex: 0 1 auto;
+}
+
+.task-main {
+  flex: 1 1 auto;
   min-width: 0;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.task-title {
+  overflow: hidden; /* overflow: nötig für text-overflow */
   text-overflow: ellipsis; /* text-overflow: lange Titel werden gekürzt statt umgebrochen */
   white-space: nowrap;
+}
+
+/* Erledigt: durchgestrichen und blasser — in der Liste wie auf der Karte */
+.task-title.is-done {
+  text-decoration: line-through;
+  color: var(--muted);
+}
+
+/* ---------- Ort und Chips ---------- */
+
+.task-meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  color: var(--muted);
+}
+
+.task-place {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  font-size: var(--task-meta-size);
+}
+
+.task-place-name {
+  overflow: hidden; /* overflow: nötig für text-overflow */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.task-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  font-size: var(--task-chip-size);
+  color: var(--chip-color, var(--muted));
+}
+
+/* Das Datum steht als letzte Angabe und verschwindet zuerst, wenn es eng wird */
+.task-chip-date {
+  color: var(--muted);
+}
+
+/* Die Icons in Ort und Chips sind kleiner als die Icons der übrigen Zeilen.
+   Die Klasse .icon steht mit davor, damit die Regel die allgemeine aus
+   styles/rows.css wirklich überstimmt. */
+.task-place-icon,
+.task-chip-icon,
+.workspace-row .icon.task-place-icon,
+.workspace-row .icon.task-chip-icon {
+  width: 14px;
+  height: 14px;
+  color: inherit;
 }

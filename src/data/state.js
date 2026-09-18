@@ -13,10 +13,17 @@ import {
   calendarModes,
   calendarSegments,
   calendarSpans,
+  defaultTaskPriority,
+  defaultTaskStatus,
   mediaFilters,
   resourceFilters,
+  taskDefaults,
+  taskGroupings,
+  taskSorts,
+  taskStatuses,
+  taskViews,
 } from "./config.js";
-import { normalizeRef, workspaceRef } from "./refs.js";
+import { entryRef, normalizeRef, workspaceRef } from "./refs.js";
 import { seedMedia, seedXpFromExisting } from "./seed.js";
 import { pruneThumbs } from "./thumbs.js";
 
@@ -39,6 +46,8 @@ export const state = {
     calendar: { span: 1, mode: "grid", seg: "termine" },
     media: { filter: "recent" },
     resources: { filter: "all" },
+    /* Aufgaben-Seite: Ansicht, Gruppierung der Spalten, Sortierung und die Filter */
+    tasks: { ...taskDefaults },
   },
 };
 
@@ -63,6 +72,10 @@ export const ui = {
      Kalender, weil das Eingabefeld ihn braucht: ein neuer Eintrag gehört an
      den Tag, den man ansieht. */
   calendarDay: dayKey(new Date()),
+  /* Spalte, in der eine neue Aufgabe landen soll: { field, value }. Setzt der
+     Knopf „Aufgabe hinzufügen“ am Ende einer Board-Spalte; das Eingabefeld
+     liest es beim Anlegen einmal aus und vergisst es wieder. */
+  taskDraftColumn: null,
   /* Suchseite: getippter Begriff und welche Unterliste offen ist (null = Übersicht) */
   searchQuery: "",
   searchList: null,
@@ -96,6 +109,7 @@ function snapshot() {
     calendar: state.prefs.calendar,
     media: state.prefs.media,
     resources: state.prefs.resources,
+    tasks: state.prefs.tasks,
     mediaSeeded,
   };
 }
@@ -160,6 +174,15 @@ function migrate() {
     delete entry.parent;
     entry.places = [...new Set(entry.places.map(normalizeRef).filter(Boolean))];
   });
+  /* Aufgaben hatten früher weder Status noch Priorität noch eine eigene
+     Reihenfolge. Die Sortiernummer zählt aufwärts von oben nach unten; der
+     negative Zeitpunkt des Anlegens stellt die neueste Aufgabe nach oben. */
+  state.entries.forEach((entry) => {
+    if (entry.type !== "aufgabe") return;
+    if (typeof entry.status !== "string") entry.status = defaultTaskStatus;
+    if (typeof entry.priority !== "string") entry.priority = defaultTaskPriority;
+    if (!Number.isFinite(entry.order)) entry.order = -(entry.createdAt || Date.now());
+  });
   /* Ein Verweis auf etwas, das es nicht mehr gibt, fällt weg; ohne Ort heißt Inbox. */
   const workspaceRefs = new Set(state.workspaces.map((workspace) => workspaceRef(workspace.id)));
   const projectRefs = new Set(state.entries.filter((entry) => entry.type === "projekt").map((entry) => `e:${entry.id}`));
@@ -185,12 +208,29 @@ function adoptPrefs(saved) {
   if (saved.resources && typeof saved.resources === "object") {
     state.prefs.resources = { ...state.prefs.resources, ...saved.resources };
   }
+  if (saved.tasks && typeof saved.tasks === "object") {
+    state.prefs.tasks = { ...state.prefs.tasks, ...saved.tasks };
+  }
   const calendar = state.prefs.calendar;
   calendar.span = pickValid(Number(calendar.span), calendarSpans.map((span) => span.id), 1);
   calendar.mode = pickValid(calendar.mode, calendarModes, "grid");
   calendar.seg = pickValid(calendar.seg, calendarSegments.map((seg) => seg.id), "termine");
   state.prefs.media.filter = pickValid(state.prefs.media.filter, mediaFilters.map((item) => item.id), "recent");
   state.prefs.resources.filter = pickValid(state.prefs.resources.filter, resourceFilters.map((item) => item.id), "all");
+
+  const tasks = state.prefs.tasks;
+  tasks.view = pickValid(tasks.view, taskViews, taskDefaults.view);
+  tasks.group = pickValid(tasks.group, taskGroupings.map((item) => item.id), taskDefaults.group);
+  tasks.sort = pickValid(tasks.sort, taskSorts.map((item) => item.id), taskDefaults.sort);
+  tasks.status = pickValid(tasks.status, ["alle", ...taskStatuses.map((item) => item.id)], taskDefaults.status);
+  /* Der Ort ist „alle“, „inbox“ oder ein Verweis wie „w:3“. Gibt es den Ort
+     nicht mehr, fällt der Filter auf „alle“ zurück — sonst bliebe die Seite
+     leer, ohne dass man sähe, warum. */
+  const places = ["alle", "inbox"]
+    .concat(state.workspaces.map((workspace) => workspaceRef(workspace.id)))
+    .concat(state.entries.map((entry) => entryRef(entry.id)));
+  tasks.place = pickValid(tasks.place, places, taskDefaults.place);
+  tasks.hideDone = Boolean(tasks.hideDone);
 }
 
 /** Liest den gespeicherten Stand; beim allerersten Start entstehen die Beispieldaten. */

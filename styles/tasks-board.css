@@ -1,0 +1,195 @@
+/*
+ * Aufgaben-Seite: das Kanban-Board. Waagerecht scrollende Spalten, je Spalte
+ * eine farbige Kopfzeile und darunter die Karten. Die Farbe einer Spalte kommt
+ * als --col-color aus src/features/tasks/tasks-board.js und stammt aus der
+ * Liste der Prioritäten bzw. Status in src/data/config.js.
+ * Pfad: styles/tasks-board.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --board-col-width    -> Breite einer Spalte
+ * --board-gap          -> Fuge zwischen zwei Spalten
+ * --board-card-gap     -> Fuge zwischen zwei Karten
+ * --board-card-radius  -> Rundung einer Karte
+ * --board-head-radius  -> Rundung der farbigen Kopfzeile
+ * --board-drop-min     -> Mindesthöhe einer leeren Spalte
+ * --content-side       -> Abstand des Boards zum Rand
+ * --card / --line      -> Fläche und Rand einer Karte
+ * --muted / --chevron  -> Nebentexte, Griff und gestrichelter Knopf
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+*/
+
+/* Das Board läuft bis an beide Ränder des Geräts, damit die nächste Spalte
+   schon angeschnitten zu sehen ist. */
+.board {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--board-gap);
+  margin: 0 calc(-1 * var(--content-side));
+  padding: 0 var(--content-side) 4px;
+  overflow-x: auto; /* overflow: die Spalten laufen seitlich weiter */
+  overscroll-behavior-x: contain; /* am Ende wird nicht die Seite darunter mitgezogen */
+  scrollbar-width: none;
+}
+
+.board::-webkit-scrollbar {
+  display: none;
+}
+
+.board-col {
+  width: var(--board-col-width);
+  flex: 0 0 auto;
+}
+
+/* Kopfzeile: ein blasser Streifen in der Farbe der Spalte */
+.board-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  margin-bottom: var(--board-card-gap);
+  border-radius: var(--board-head-radius);
+  /* color-mix: dieselbe Farbe, nur weit heruntergemischt — so passt der
+     Streifen in Hell und Dunkel, ohne zweite Farbe im Token-Satz */
+  background: color-mix(in srgb, var(--col-color) 16%, var(--card));
+  color: var(--col-color);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.board-head-icon {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+
+.board-head-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden; /* overflow: nötig für text-overflow */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Anzahl-Blase am Ende der Kopfzeile */
+.board-count {
+  min-width: 22px;
+  padding: 1px 7px;
+  border-radius: 999px; /* border-radius: macht aus der Zahl eine Blase */
+  background: color-mix(in srgb, var(--col-color) 22%, var(--card));
+  text-align: center;
+  font-size: 13px;
+}
+
+.board-cards {
+  min-height: var(--board-drop-min);
+}
+
+/* ---------- Karte ---------- */
+
+/* Die Fuge steckt als durchsichtiger Rand in der Karte selbst: so gibt es
+   zwischen zwei Karten keine tote Stelle, an der eine gezogene Karte nicht
+   weiß, wohin sie gehört. */
+.board-card {
+  position: relative; /* position: hält Haken und Griff an ihren Ecken */
+  padding: 12px 40px 10px 12px;
+  border-bottom: var(--board-card-gap) solid transparent;
+  background: var(--card);
+  background-clip: padding-box; /* background-clip: die Fläche endet vor dem durchsichtigen Rand */
+  border-radius: var(--board-card-radius);
+  box-shadow: 0 0 0 0.5px var(--line);
+  touch-action: pan-y; /* touch-action: senkrecht scrollen bleibt möglich */
+}
+
+.board-card-title {
+  font-size: 15px;
+  line-height: 1.3;
+}
+
+.board-card-meta {
+  margin-top: 8px;
+}
+
+/* Der Haken sitzt oben rechts auf der Karte */
+.board-card .task-check {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+/* Griff unten rechts: ein Punktraster, gezeichnet statt als eigenes Icon */
+.board-grip {
+  position: absolute;
+  right: 6px;
+  bottom: calc(var(--board-card-gap) + 4px);
+  width: 22px;
+  height: 18px;
+  background-image: radial-gradient(circle, var(--chevron) 1.1px, transparent 1.2px);
+  background-size: 7px 6px; /* der Abstand der Punkte zueinander */
+  background-position: 3px 3px;
+  cursor: grab;
+  touch-action: none; /* touch-action: am Griff gehört die Bewegung uns, nicht dem Scrollen */
+}
+
+.board-grip:active {
+  cursor: grabbing;
+}
+
+.board-empty {
+  padding: 10px 12px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* Solange eine Karte in der Spalte liegt, ist der Hinweis überflüssig */
+.board-cards:has(.board-gap) .board-empty {
+  display: none;
+}
+
+/* Knopf am Spaltenende */
+.board-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px;
+  border: 1px dashed var(--chevron); /* gestrichelt: hier ist noch nichts, hier kommt etwas hin */
+  border-radius: var(--board-card-radius);
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.board-add-icon {
+  width: 16px;
+  height: 16px;
+}
+
+.board-add:active {
+  opacity: 0.6;
+}
+
+/* ---------- Ziehen ---------- */
+
+/* Die gezogene Karte hängt am Zeiger und liegt über allem anderen */
+.board-card.is-dragging {
+  position: absolute;
+  z-index: 40; /* z-index: über den übrigen Spalten, unter Blättern und Menüs */
+  pointer-events: none; /* pointer-events: sonst misst der Zeiger immer nur sich selbst */
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+  opacity: 0.95;
+  transform: translate(0, 0); /* transform: die Bewegung läuft nur hierüber */
+}
+
+/* Die Lücke zeigt, wo die Karte landet. Ihre Höhe kommt von der Karte selbst
+   und enthält deren Fuge schon — deshalb hier kein eigener Abstand. */
+.board-gap {
+  border-radius: var(--board-card-radius);
+  border: 1px dashed var(--chevron);
+}
+
+/* Während des Ziehens soll nichts markiert werden */
+body.is-dragging-task {
+  user-select: none;
+}

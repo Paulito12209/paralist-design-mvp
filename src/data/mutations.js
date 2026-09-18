@@ -4,13 +4,24 @@
  * alle sichtbaren Listen neu.
  * Pfad: src/data/mutations.js
  *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * orderGap -> Abstand der Sortiernummern, wenn eine Aufgabe im Board an den
+ *             Anfang oder das Ende einer Spalte gezogen wird
+ *
  * Keine anpassbaren visuellen Werte.
  */
 
 import { emit, events } from "../core/bus.js";
 import { nextId, sameId } from "../core/ids.js";
-import { workspaceDefaultName } from "./config.js";
-import { hasPlace, isContainer, tabWorkspaces } from "./queries.js";
+import {
+  defaultTaskPriority,
+  defaultTaskStatus,
+  doneTaskStatus,
+  isTaskDone,
+  workspaceDefaultName,
+} from "./config.js";
+import { hasPlace, isContainer, tabWorkspaces, taskOrder } from "./queries.js";
 import { entryRef, isEntryRef, refId, workspaceRef } from "./refs.js";
 import { awardXp } from "./xp.js";
 import { saveState, state, ui } from "./state.js";
@@ -180,4 +191,80 @@ export function selectTab(id) {
   state.activeTabId = Number(id);
   saveState();
   emit(events.dataChanged);
+}
+
+/* ---------- Aufgaben ---------- */
+
+/*
+ * Abstand zwischen zwei Sortiernummern, wenn eine Aufgabe an den Anfang oder
+ * das Ende einer Spalte gezogen wird. Groß genug, dass sich danach noch oft
+ * etwas dazwischenschieben lässt.
+ */
+const orderGap = 1000;
+
+/**
+ * Einem frisch angelegten Eintrag seine Aufgaben-Felder geben. Ruft das
+ * Eingabefeld auf, sobald der Eintrag in der Liste steht. Eine neue Aufgabe
+ * startet auf `defaultTaskStatus` und `defaultTaskPriority` (siehe config.js)
+ * und stellt sich mit ihrer Sortiernummer nach oben.
+ */
+export function applyEntryDefaults(entry) {
+  if (entry.type !== "aufgabe") return;
+  entry.status = defaultTaskStatus;
+  entry.priority = defaultTaskPriority;
+  entry.order = -(entry.createdAt || Date.now());
+  /* Kam die Aufgabe über den Knopf am Ende einer Board-Spalte, gehört sie dorthin. */
+  const target = ui.taskDraftColumn;
+  ui.taskDraftColumn = null;
+  if (target && (target.field === "status" || target.field === "priority")) entry[target.field] = target.value;
+}
+
+/*
+ * Wechselt eine Aufgabe auf „erledigt“, wird das wie beim Archivieren im
+ * XP-Protokoll vermerkt (xpKinds.done). `doneAwarded` merkt sich, dass es die
+ * Punkte schon gab — sonst brächte Ab- und wieder Anhaken beliebig viele.
+ */
+function noteDone(entry, wasDone) {
+  if (wasDone || !isTaskDone(entry) || entry.doneAwarded) return;
+  entry.doneAwarded = true;
+  awardXp("done", "aufgabe", entry.title);
+}
+
+/** Status einer Aufgabe setzen. */
+export function setTaskStatus(entry, status) {
+  if (entry.status === status) return;
+  const wasDone = isTaskDone(entry);
+  entry.status = status;
+  noteDone(entry, wasDone);
+  commit();
+}
+
+/** Runder Haken-Knopf: erledigt setzen oder wieder auf den Vorgabe-Status zurück. */
+export function toggleTaskDone(entry) {
+  setTaskStatus(entry, isTaskDone(entry) ? defaultTaskStatus : doneTaskStatus);
+}
+
+/** Priorität einer Aufgabe setzen. */
+export function setTaskPriority(entry, priority) {
+  if (entry.priority === priority) return;
+  entry.priority = priority;
+  commit();
+}
+
+/**
+ * Eine gezogene Aufgabe ablegen: sie bekommt den Wert der Zielspalte und eine
+ * Sortiernummer zwischen ihren neuen Nachbarn. `before` und `after` sind die
+ * Aufgaben darüber und darunter — fehlt eine, wird der Abstand angehängt.
+ */
+export function moveTask(entry, field, value, before, after) {
+  const wasDone = isTaskDone(entry);
+  entry[field] = value;
+  noteDone(entry, wasDone);
+  const top = before ? taskOrder(before) : null;
+  const bottom = after ? taskOrder(after) : null;
+  if (top !== null && bottom !== null) entry.order = (top + bottom) / 2;
+  else if (top !== null) entry.order = top + orderGap;
+  else if (bottom !== null) entry.order = bottom - orderGap;
+  else entry.order = -(entry.createdAt || Date.now());
+  saveState();
 }

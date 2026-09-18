@@ -12,6 +12,12 @@
  * typeOrder               -> Reihenfolge der Gruppen unter „Verknüpfte Inhalte“
  * workspaceDefaultName    -> Vorgabename eines neuen Arbeitsbereichs
  * levelSteps / levelStep  -> ab wie vielen XP die nächste Stufe beginnt
+ * taskPriorities          -> Name, Icon und Farbe der vier Board-Spalten
+ * defaultTaskPriority     -> Priorität, mit der eine NEUE Aufgabe startet („Später“)
+ * defaultTaskStatus       -> Status, mit dem eine neue Aufgabe startet („Offen“)
+ * taskStatuses            -> Name, Icon und Farbe der Status-Chips
+ * taskSorts / taskGroupings -> was die Pillen „Sortieren“ und „Gruppieren“ anbieten
+ * taskDefaults            -> womit die Aufgaben-Seite beim allerersten Mal startet
  */
 
 /*
@@ -183,3 +189,87 @@ export const resourceFilters = [
   { id: "audio", label: "Audio", icon: "mic", empty: "Noch keine Aufnahmen." },
   { id: "doc", label: "Dokumente", icon: "doc", empty: "Noch keine Dokumente." },
 ];
+
+/* ---------- Aufgaben-Seite: Status, Prioritäten und die drei Bedien-Listen ---------- */
+
+/**
+ * Status einer Aufgabe. `done: true` heißt „zählt als erledigt“ — davon hängt
+ * ab, ob der Titel durchgestrichen wird und die Zeile ganz nach unten rutscht.
+ */
+export const taskStatuses = [
+  { id: "offen", label: "Offen", icon: "circle", color: "var(--muted)" },
+  { id: "inArbeit", label: "In Arbeit", icon: "history", color: "var(--cal-accent)" },
+  { id: "erledigt", label: "Erledigt", icon: "check-circle", color: "var(--xp-done)", done: true },
+];
+
+/** Status einer neu angelegten Aufgabe. */
+export const defaultTaskStatus = "offen";
+
+/** Status, den der runde Haken-Knopf setzt. */
+export const doneTaskStatus = "erledigt";
+
+/**
+ * Prioritäten in der Reihenfolge, in der sie im Board als Spalten stehen:
+ * die dringendste links. Ein weiterer Eintrag hier ist eine weitere Spalte.
+ */
+export const taskPriorities = [
+  { id: "jetzt", label: "Jetzt", icon: "flame", color: "var(--prio-jetzt)" },
+  { id: "next", label: "Als Nächstes", icon: "arrow-right", color: "var(--prio-next)" },
+  { id: "spaeter", label: "Später", icon: "clock", color: "var(--prio-spaeter)" },
+  { id: "irgendwann", label: "Irgendwann", icon: "moon", color: "var(--prio-irgendwann)" },
+];
+
+/** Priorität einer neu angelegten Aufgabe. */
+export const defaultTaskPriority = "spaeter";
+
+/** Die beiden Ansichten der Aufgaben-Seite. */
+export const taskViews = ["list", "board"];
+
+/**
+ * Wonach die Board-Spalten gruppieren. `columns` sagt, welche Liste die Spalten
+ * liefert — ein weiteres Kriterium ist nur ein weiteres Objekt hier plus seine
+ * Liste oben.
+ */
+export const taskGroupings = [
+  { id: "priority", label: "Priorität", icon: "flame", field: "priority", columns: taskPriorities },
+  { id: "status", label: "Status", icon: "check-circle", field: "status", columns: taskStatuses },
+];
+
+/**
+ * Sortierarten. Welche Regel dahintersteckt, steht in `sortTasks` in
+ * src/data/queries.js; „neu“ berücksichtigt dabei die von Hand gezogene Reihenfolge.
+ */
+export const taskSorts = [
+  { id: "neu", label: "Neueste zuerst", icon: "history" },
+  { id: "alt", label: "Älteste zuerst", icon: "clock" },
+  { id: "prio", label: "Priorität", icon: "flame" },
+  { id: "titel", label: "Titel A–Z", icon: "list" },
+];
+
+/** Vorgabe der Bedienzeile, solange nichts anderes gewählt wurde. */
+export const taskDefaults = {
+  view: "list",
+  group: "priority",
+  sort: "neu",
+  status: "alle",
+  place: "alle",
+  hideDone: false,
+};
+
+/** Beschreibung eines Status; unbekannte Werte aus alten Ständen gelten als offen. */
+export function taskStatusOf(id) {
+  return taskStatuses.find((item) => item.id === id) || taskStatuses[0];
+}
+
+/** Beschreibung einer Priorität; unbekannte Werte gelten als die Vorgabe. */
+export function taskPriorityOf(id) {
+  return (
+    taskPriorities.find((item) => item.id === id) ||
+    taskPriorities.find((item) => item.id === defaultTaskPriority)
+  );
+}
+
+/** Gilt diese Aufgabe als erledigt? */
+export function isTaskDone(entry) {
+  return Boolean(taskStatusOf(entry && entry.status).done);
+}

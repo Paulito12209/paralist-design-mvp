@@ -14,7 +14,18 @@
 
 import { dayKey, timeKey } from "../core/dates.js";
 import { sameId } from "../core/ids.js";
-import { containerTypes, overviewPages, resourceTypes, typeIcon, typeOrder, typePlurals, xpItems } from "./config.js";
+import {
+  containerTypes,
+  isTaskDone,
+  overviewPages,
+  resourceTypes,
+  taskGroupings,
+  taskPriorities,
+  typeIcon,
+  typeOrder,
+  typePlurals,
+  xpItems,
+} from "./config.js";
 import { entryRef, isEntryRef, isWorkspaceRef, refId, workspaceRef } from "./refs.js";
 import { state } from "./state.js";
 
@@ -180,4 +191,75 @@ export function entryColor(entry) {
 /** Sichtbare Einträge eines Kalendertags. */
 export function entriesOfDay(key) {
   return state.entries.filter((entry) => !entry.archived && entryDay(entry) === key);
+}
+
+/* ---------- Aufgaben-Seite ---------- */
+
+/** Alle sichtbaren Aufgaben, ungefiltert und unsortiert. */
+export function taskEntries() {
+  return state.entries.filter((entry) => entry.type === "aufgabe" && !entry.archived);
+}
+
+/** Die Sortiernummer einer Aufgabe; ohne eigene zählt der Zeitpunkt des Anlegens. */
+export function taskOrder(entry) {
+  return Number.isFinite(entry.order) ? entry.order : -(entry.createdAt || 0);
+}
+
+/* Platz einer Priorität in der Spalten-Reihenfolge; Unbekanntes kommt hinten. */
+function priorityRank(entry) {
+  const index = taskPriorities.findIndex((item) => item.id === entry.priority);
+  return index < 0 ? taskPriorities.length : index;
+}
+
+/**
+ * Aufgaben sortieren. Zwei Regeln gelten immer: Erledigtes steht ganz unten,
+ * und bei „Neueste zuerst“ schlägt eine von Hand gezogene Reihenfolge die
+ * automatische. Eine neue Sortierart braucht hier nur einen weiteren Fall.
+ */
+export function sortTasks(list, sortId) {
+  const rest = (a, b) => {
+    if (sortId === "alt") return (a.createdAt || 0) - (b.createdAt || 0);
+    if (sortId === "titel") return String(a.title).localeCompare(String(b.title), "de");
+    if (sortId === "prio") return priorityRank(a) - priorityRank(b) || taskOrder(a) - taskOrder(b);
+    return taskOrder(a) - taskOrder(b);
+  };
+  return [...list].sort((a, b) => Number(isTaskDone(a)) - Number(isTaskDone(b)) || rest(a, b));
+}
+
+/** Liegt die Aufgabe an dem Ort, den der Filter verlangt? „alle“ lässt alles durch. */
+function matchesPlace(entry, place) {
+  if (place === "alle") return true;
+  if (place === "inbox") return hasPlace(entry, null);
+  return hasPlace(entry, place);
+}
+
+/** Aufgaben nach den Filtern der Bedienzeile sieben und sortieren. */
+export function visibleTasks(prefs) {
+  const list = taskEntries().filter((entry) => {
+    if (prefs.hideDone && isTaskDone(entry)) return false;
+    if (prefs.status !== "alle" && entry.status !== prefs.status) return false;
+    return matchesPlace(entry, prefs.place);
+  });
+  return sortTasks(list, prefs.sort);
+}
+
+/**
+ * Die Spalten des Boards: [{ id, label, icon, color, items }] in der Reihenfolge
+ * aus config.js. `field` sagt, welches Feld einer Aufgabe die Spalte bestimmt.
+ */
+export function taskColumns(prefs) {
+  const grouping = taskGroupings.find((item) => item.id === prefs.group) || taskGroupings[0];
+  const list = visibleTasks(prefs);
+  const columns = grouping.columns.map((column) => ({ ...column, items: [] }));
+  list.forEach((entry) => {
+    const target = columns.find((column) => column.id === entry[grouping.field]) || columns[0];
+    target.items.push(entry);
+  });
+  return { field: grouping.field, columns };
+}
+
+/** Der erste Ablageort einer Aufgabe — dafür steht das kleine Label in der Zeile. */
+export function mainPlace(entry) {
+  const places = entry.places || [];
+  return places.length ? places[0] : null;
 }
