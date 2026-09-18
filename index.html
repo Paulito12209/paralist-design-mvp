@@ -99,15 +99,23 @@
           </section>
 
           <section class="view" id="view-page" data-view="page" hidden>
-            <div class="page-head">
+            <!-- Kopfzeile bleibt beim Scrollen oben stehen; Suche und Optionen
+                 zeigen sich erst, wenn man in der Liste nach unten scrollt -->
+            <div class="page-head" id="page-head">
               <button class="back-btn" id="back-btn" type="button" aria-label="Zurück">
                 <svg class="icon"><use href="#icon-back"></use></svg>
               </button>
-              <h1 class="screen-title page-title" id="page-title">Platzhalter</h1>
-              <button class="head-btn" id="page-menu" type="button" aria-label="Seitenmenü">
-                <svg class="icon"><use href="#icon-dots"></use></svg>
-              </button>
+              <div class="page-head-reveal" id="page-head-reveal">
+                <button class="search page-search" id="page-search" type="button" aria-label="Suchen">
+                  <svg class="icon search-icon"><use href="#icon-search"></use></svg>
+                  <span class="page-search-label">Suchen</span>
+                </button>
+                <button class="head-btn" id="page-menu" type="button" aria-label="Optionen">
+                  <svg class="icon"><use href="#icon-dots"></use></svg>
+                </button>
+              </div>
             </div>
+            <h1 class="screen-title page-title" id="page-title">Platzhalter</h1>
             <div class="page-body" id="page-body"></div>
           </section>
 
@@ -122,16 +130,23 @@
                 <svg class="icon"><use href="#icon-dots"></use></svg>
               </button>
             </div>
-            <!-- input/textarea: noetig, damit Titel und Text wirklich bearbeitbar sind -->
+            <!-- input: noetig, damit der Titel wirklich bearbeitbar ist -->
             <input class="entry-title" id="entry-title" type="text" placeholder="Ohne Titel" aria-label="Titel" />
-            <!-- Anhänge des Eintrags: Kacheln wie auf der Medien-Seite -->
-            <div class="entry-attachments" id="entry-attachments" hidden></div>
-            <textarea class="entry-body" id="entry-body" placeholder="Schreib etwas …" aria-label="Inhalt"></textarea>
-            <!-- Ein Projekt zeigt hier, was in ihm liegt: Aufgaben, Notizen, Termine … -->
-            <div class="entry-links" id="entry-links" hidden></div>
-            <!-- canvas: Zeichenfläche statt des Textes bei Einträgen vom Typ Zeichnung -->
-            <div class="draw-pad" id="draw-pad" hidden>
-              <canvas id="draw-canvas"></canvas>
+            <!-- Pillen wie auf der Seite eines Arbeitsbereichs: Inhalt und Verknüpfte Inhalte -->
+            <div class="tab-pills page-pills" id="entry-pills"></div>
+            <div class="entry-panel" id="entry-panel-notes">
+              <!-- textarea: noetig, damit der Text wirklich bearbeitbar ist -->
+              <textarea class="entry-body" id="entry-body" placeholder="Schreib etwas …" aria-label="Inhalt"></textarea>
+              <!-- canvas: Zeichenfläche statt des Textes bei Einträgen vom Typ Zeichnung -->
+              <div class="draw-pad" id="draw-pad" hidden>
+                <canvas id="draw-canvas"></canvas>
+              </div>
+            </div>
+            <div class="entry-panel" id="entry-panel-links" hidden>
+              <!-- Anhänge des Eintrags: Kacheln wie auf der Medien-Seite -->
+              <div class="entry-attachments" id="entry-attachments" hidden></div>
+              <!-- Was im Eintrag liegt, z.B. bei einem Projekt: Aufgaben, Notizen, Termine … -->
+              <div class="entry-links" id="entry-links"></div>
             </div>
           </section>
 

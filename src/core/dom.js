@@ -53,13 +53,18 @@ export const dom = {
   get workspaceList() { return el("workspace-list"); },
 
   /* Unterseite (Übersichtskarte oder Arbeitsbereich) */
+  get pageHead() { return el("page-head"); },
   get pageTitle() { return el("page-title"); },
   get pageBody() { return el("page-body"); },
   get pageMenuBtn() { return el("page-menu"); },
+  get pageSearchBtn() { return el("page-search"); },
   get backBtn() { return el("back-btn"); },
 
   /* Eintrag bearbeiten */
   get entryTitle() { return el("entry-title"); },
+  get entryPills() { return el("entry-pills"); },
+  get entryPanelNotes() { return el("entry-panel-notes"); },
+  get entryPanelLinks() { return el("entry-panel-links"); },
   get entryBody() { return el("entry-body"); },
   get entryAttachments() { return el("entry-attachments"); },
   get entryLinks() { return el("entry-links"); },

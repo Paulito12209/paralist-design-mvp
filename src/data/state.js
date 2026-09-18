@@ -25,7 +25,7 @@ export const state = {
   tabs: [{ id: 1, name: "Meine", awarded: true }],
   activeTabId: 1,
   /* Ein Arbeitsbereich: { id, name, tab, favorite, icon, body, awarded }.
-     `body` ist sein Schreibblock. Bleibt `name` leer, gilt `placeholder`. */
+     `body` ist sein Inhalt (freier Text). Bleibt `name` leer, gilt `placeholder`. */
   workspaces: [{ id: 1, name: "Arbeitsbereich", tab: 1, favorite: false, body: "", awarded: true }],
   entries: [],
   nextEntryId: 1,
@@ -48,11 +48,13 @@ export const ui = {
   sourceView: "home",
   /* offene Unterseite: { title, parent, kind, isWorkspace } — parent ist ein Verweis aus refs.js */
   currentPage: null,
-  /* Auf der Seite eines Arbeitsbereichs oder Projekts: "notes" (Schreibblock) oder "links" */
+  /* Auf der Seite eines Arbeitsbereichs: "notes" (Inhalt) oder "links" (Verknüpfte Inhalte) */
   pagePill: "notes",
   /* Eingeklappte Gruppen unter „Verknüpfte Inhalte“, als „<Verweis>|<Typ>“ */
   collapsedGroups: new Set(),
   currentEntryId: null,
+  /* Auf der Seite eines Eintrags: "notes" (Inhalt) oder "links" (Verknüpfte Inhalte) */
+  entryPill: "notes",
   editingTabId: null,
   editingWorkspaceId: null,
   /* Was gerade ins Namensfeld eines Arbeitsbereichs getippt wurde: { id, value } */

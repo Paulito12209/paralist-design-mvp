@@ -1,10 +1,11 @@
 /*
- * Die Seite eines Arbeitsbereichs: zwei Pillen oben — „Schreibblock“ mit dem
+ * Die Seite eines Arbeitsbereichs: zwei Pillen oben — „Inhalt“ mit dem
  * freien Text zum Arbeitsbereich und „Verknüpfte Inhalte“ mit allem, was darin
- * liegt, nach Typ gruppiert und auf-/zuklappbar.
+ * liegt, nach Typ gruppiert und auf-/zuklappbar. Dieselben zwei Pillen zeigt
+ * auch die Seite eines einzelnen Eintrags (src/features/entry/entry.js).
  * Pfad: src/features/overview/workspace-page.js
  *
- * Keine anpassbaren visuellen Werte: Pillen, Schreibblock und Gruppen stehen in
+ * Keine anpassbaren visuellen Werte: Pillen, Text und Gruppen stehen in
  * styles/rows.css (Klassen .page-pills, .workspace-body, .group-head).
  */
 
@@ -17,7 +18,7 @@ import { groupedListMarkup } from "../../ui/groups.js";
 /* Die beiden Pillen; die zweite trägt die Anzahl der Einträge. Kein Icon:
    es wird nie mehr als diese zwei geben, das Wort allein reicht. */
 const pills = [
-  { id: "notes", label: "Schreibblock" },
+  { id: "notes", label: "Inhalt" },
   { id: "links", label: "Verknüpfte Inhalte" },
 ];
 
@@ -32,9 +33,9 @@ function pillsMarkup(active, count) {
     .join("")}</div>`;
 }
 
-/* Der Schreibblock: freier Text, wird kurz nach dem Tippen gespeichert. */
+/* Der Inhalt: freier Text, wird kurz nach dem Tippen gespeichert. */
 function notesMarkup(workspace) {
-  return `<textarea class="entry-body workspace-body" id="workspace-body" placeholder="Schreib etwas zu diesem Arbeitsbereich …" aria-label="Schreibblock">${escapeHtml(workspace.body || "")}</textarea>`;
+  return `<textarea class="entry-body workspace-body" id="workspace-body" placeholder="Schreib etwas zu diesem Arbeitsbereich …" aria-label="Inhalt">${escapeHtml(workspace.body || "")}</textarea>`;
 }
 
 /** Die Seite des offenen Arbeitsbereichs zeichnen. */
@@ -46,12 +47,12 @@ export function renderWorkspacePage(page) {
   dom.pageBody.innerHTML = pillsMarkup(ui.pagePill, count) + body;
 }
 
-/** Tippt jemand gerade im Schreibblock? Dann darf die Seite nicht neu gezeichnet werden. */
+/** Tippt jemand gerade im Inhalt? Dann darf die Seite nicht neu gezeichnet werden. */
 export function isWritingNotes() {
   return document.activeElement === el("workspace-body");
 }
 
-/** Pillen und Schreibblock anmelden. */
+/** Pillen und Inhalt anmelden. */
 export function initWorkspacePage() {
   dom.pageBody.addEventListener("click", (event) => {
     const pill = event.target.closest("[data-page-pill]");

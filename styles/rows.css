@@ -65,11 +65,18 @@
   color: var(--chevron);
 }
 
+/* Kopfzeile einer Unterseite: bleibt beim Scrollen oben stehen (wie bei einer
+   Playlist in Spotify). Suche und Optionen stehen in .page-head-reveal und
+   zeigen sich erst, sobald .page-head die Klasse „is-scrolled“ bekommt. */
 .page-head {
   display: flex;
   align-items: center;
   gap: 2px;
-  margin: 0 0 18px -8px;
+  margin: 0 0 6px -8px;
+  position: sticky; /* position: bleibt oben stehen, während die Liste darunter scrollt */
+  top: 0;
+  z-index: 2; /* z-index: hält die Kopfzeile über der scrollenden Liste */
+  background: var(--bg); /* deckt die durchscrollende Liste ab */
 }
 
 .back-btn {
@@ -86,10 +93,40 @@
   height: 22px;
 }
 
-.page-title {
-  margin: 0;
-  padding: 0;
+.page-head-reveal {
+  display: flex;
+  align-items: center;
+  gap: 8px;
   flex: 1;
+  min-width: 0;
+  opacity: 0;
+  transform: translateY(-4px); /* transform: leichtes Einschweben statt hartem Erscheinen */
+  pointer-events: none; /* pointer-events: unsichtbar heißt auch nicht antippbar */
+  transition: opacity 0.15s ease, transform 0.15s ease; /* transition: sanftes Ein-/Ausblenden statt Springen */
+}
+
+.page-head.is-scrolled .page-head-reveal {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
+.page-search {
+  flex: 1;
+  min-width: 0;
+}
+
+.page-search-label {
+  color: var(--muted);
+  font-size: 15px;
+  overflow: hidden; /* overflow: noetig fuer text-overflow */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.page-title {
+  margin: 0 0 18px;
+  padding: 0;
 }
 
 .workspace-name-input {
@@ -199,15 +236,16 @@
   box-shadow: inset 0 0 0 0.5px var(--line);
 }
 
-/* ---------- Seite eines Arbeitsbereichs ---------- */
+/* ---------- Seite eines Arbeitsbereichs oder Eintrags ---------- */
 
-/* Die beiden Pillen „Schreibblock“ und „Verknüpfte Inhalte“ oben auf der Seite */
+/* Die beiden Pillen „Inhalt“ und „Verknüpfte Inhalte“ oben auf der Seite;
+   dieselbe Klasse trägt auch die Pillenzeile auf der Seite eines Eintrags. */
 .page-pills {
   padding-right: 2px;
   margin: 0 0 18px;
 }
 
-/* Schreibblock: wie der Text eines Eintrags, nur nicht ganz so hoch */
+/* Inhalt eines Arbeitsbereichs: wie der Text eines Eintrags, nur nicht ganz so hoch */
 .workspace-body {
   min-height: 240px;
 }
