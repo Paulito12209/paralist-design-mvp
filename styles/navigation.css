@@ -12,6 +12,7 @@
  * --tab-icon-grow          -> um wie viel die Icons wachsen, solange die Namen aus sind
  * --tab-label-size          -> Schriftgröße der Wörter unter den Icons
  * --composer-radius         -> Rundung, sobald das Eingabefeld offen ist
+ * --composer-side           -> seitlicher Abstand, solange das Eingabefeld offen ist
  * --keyboard-inset          -> wird von src/shell/keyboard-inset.js gesetzt
 
  *
@@ -30,6 +31,14 @@
   z-index: 20; /* z-index: hält die Leiste über der Liste */
   padding: 12px var(--nav-side) calc(var(--nav-bottom) + var(--safe-bottom));
   container-type: inline-size; /* container-type: die Navigation darf auf ihre eigene Breite reagieren, nicht nur aufs Fenster */
+}
+
+/* Solange das Eingabefeld offen ist, rückt der Container näher an den Rand:
+   Text, Pillen und Anhänge brauchen die Breite mehr als der luftige Rand, den
+   die Navigationsleiste allein hat (:has fragt, ob das Kind gerade tippt). */
+.bottom-bar:has(.nav-shell.is-composing) {
+  padding-left: var(--composer-side);
+  padding-right: var(--composer-side);
 }
 
 /* Beim Suchen liegt das Eingabefeld oben, nicht in dieser Leiste: sie bleibt

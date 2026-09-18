@@ -103,6 +103,8 @@
  * --tab-pills-btn-gap       -> Abstand zwischen Trennlinie und Plus-Knopf
  * --tab-pills-fade          -> Breite des Ausblendens links von der Trennlinie
  * --composer-radius         -> Rundung des Eingabe-Containers
+ * --composer-side           -> seitlicher Abstand, solange das Eingabefeld offen ist
+ * --composer-btn-size       -> Größe der runden Knöpfe und Höhe der Pillen im Eingabefeld
  * --swipe-action-size / --swipe-action-gap -> Größe und Abstand der Wisch-Knöpfe
  * --ctx-radius              -> Rundung des kleinen Menüs beim gedrückt Halten
  * --modal-dismiss-pull      -> Wie weit man ein Blatt ziehen muss, damit es schließt
@@ -147,6 +149,7 @@
  * --support-text-min-height  -> Mindesthöhe des Beschreibungsfelds im Feedback
  * --support-choice-active-bg -> Fläche der gewählten Art im Feedback
  * --credits-chip-bg          -> Fläche hinter einem Namen bei den Danksagungen
+ * --composer-mic-bg          -> Fläche des Diktat-Knopfes: Ton zwischen Container und Schließen-Knopf
  *
  * Dunkelmodus: dieselben Werte werden weiter unten noch einmal gesetzt —
  * einmal für „folgt dem System“ und einmal für „in den Einstellungen gewählt“.
@@ -199,6 +202,9 @@
   --nav-bottom: 10px;
   --nav-radius: 32px;
   --composer-radius: 26px;
+  --composer-side: 16px;
+  --composer-btn-size: 36px;
+  --composer-mic-bg: #f9f9fa;
   --composer-input-size: 16px;
   --composer-chip-size: 13px;
   --entry-title-size: 28px;
@@ -291,6 +297,7 @@
   :root:not([data-theme="light"]) {
     --bg: #000000;
     --card: #121214;
+    --composer-mic-bg: #09090a;
     --text: #f2f2f7;
     --muted: #8e8e93;
     --line: rgba(84, 84, 88, 0.55);
@@ -330,6 +337,7 @@
 :root[data-theme="dark"] {
   --bg: #000000;
   --card: #1c1c1e;
+  --composer-mic-bg: #0e0e0f;
   --text: #f2f2f7;
   --muted: #8e8e93;
   --line: rgba(84, 84, 88, 0.55);
