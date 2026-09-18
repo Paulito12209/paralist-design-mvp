@@ -17,7 +17,7 @@ import {
   resourceFilters,
 } from "./config.js";
 import { normalizeRef, workspaceRef } from "./refs.js";
-import { seedFirstStart, seedMedia, seedXpFromExisting } from "./seed.js";
+import { seedMedia, seedXpFromExisting } from "./seed.js";
 import { pruneThumbs } from "./thumbs.js";
 
 /** Gespeicherte Daten. Alles hier überlebt ein Neuladen der Seite. */
@@ -26,7 +26,7 @@ export const state = {
   activeTabId: 1,
   /* Ein Arbeitsbereich: { id, name, tab, favorite, icon, body, awarded }.
      `body` ist sein Inhalt (freier Text). Bleibt `name` leer, gilt `placeholder`. */
-  workspaces: [{ id: 1, name: "Arbeitsbereich", tab: 1, favorite: false, body: "", awarded: true }],
+  workspaces: [],
   entries: [],
   nextEntryId: 1,
   xpLog: [],
@@ -196,7 +196,7 @@ export function loadState() {
   const saved = readJson(storageKeys.state);
 
   if (!saved) {
-    seedFirstStart();
+    /* Allererster Start: keine Beispieldaten mehr, App beginnt leer. */
     mediaSeeded = true;
     saveState();
     return;
