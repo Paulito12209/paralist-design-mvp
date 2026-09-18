@@ -148,17 +148,14 @@ export function detailHash(key) {
 }
 
 /**
- * Die große Ansicht einer Kachel: Zurück-Pfeil mit dem Namen der Seite daneben
- * — der Blattkopf sagt nur „Einstellungen“, erst diese Zeile sagt, wo man ist.
+ * Die große Ansicht einer Kachel: mittig der Name der Seite, darunter die
+ * volle Karte. Zurück geht es über den Pfeil oben im Blattkopf.
  */
 export function detailMarkup(key) {
   const detail = details[key];
   if (!detail) return "";
   return `
-    <div class="settings-detail-head">
-      <button class="settings-back" type="button" data-settings-back="1" aria-label="Zurück">${icon("back")}</button>
-      <h3 class="settings-detail-title">${detail.title}</h3>
-    </div>
+    <h3 class="settings-detail-title">${detail.title}</h3>
     ${detail.card()}
   `;
 }

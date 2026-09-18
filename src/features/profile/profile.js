@@ -53,6 +53,10 @@ export function renderProfile() {
   dom.profileBody.innerHTML = shownDetail
     ? detailMarkup(shownDetail)
     : identityCard() + insightsSection() + appearanceSection() + listsMarkup();
+  /* Auf einer Seite rückt „Einstellungen“ neben den Pfeil nach links und wird
+     damit zum Weg zurück; auf der Liste steht der Titel wieder mittig. */
+  el("profile-back").hidden = !shownDetail;
+  el("profile-head").classList.toggle("is-back", Boolean(shownDetail));
   if (shownDetail) settleDetail(shownDetail);
 }
 
@@ -212,10 +216,6 @@ function onBodyClick(event) {
     openDetail(card.dataset.settingsDetail);
     return;
   }
-  if (event.target.closest("[data-settings-back]")) {
-    closeDetail();
-    return;
-  }
   const theme = event.target.closest("[data-theme-option]");
   if (theme) {
     setTheme(theme.dataset.themeOption);
@@ -231,6 +231,7 @@ function onBodyClick(event) {
 /* Beim Laden des Moduls einmal alles anmelden. */
 function init() {
   el("profile-close").addEventListener("click", close);
+  el("profile-back").addEventListener("click", closeDetail);
   dom.profileModal.addEventListener("click", (event) => {
     if (event.target === dom.profileModal) close();
   });

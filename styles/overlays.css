@@ -214,10 +214,35 @@
   transform: translateX(-50%); /* transform: zentriert den Griff */
 }
 
+/* Mit Pfeil rückt der Titel aus der Mitte nach links direkt neben ihn. */
+.modal-head.is-back {
+  justify-content: flex-start;
+  gap: 2px;
+}
+
 .modal-head h2 {
   font-size: 20px;
   font-weight: 600;
   letter-spacing: -0.02em;
+}
+
+.modal-back {
+  width: 34px;
+  height: 34px;
+  margin-left: -8px; /* margin-left: der Pfeil steht optisch bündig mit dem Blattrand */
+  border-radius: 50%; /* border-radius: rundet die Tippfläche des Pfeils */
+  display: grid;
+  place-items: center;
+  color: var(--text);
+}
+
+.modal-back .icon {
+  width: 24px;
+  height: 24px;
+}
+
+.modal-back:active {
+  background: var(--tab-pill-active-bg);
 }
 
 .modal-close {
