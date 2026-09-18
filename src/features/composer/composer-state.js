@@ -15,8 +15,8 @@ export const composer = {
   type: types[0].id,
   /* Welcher Knopf unten hervorgehoben ist; `null` heißt: keiner, es entsteht ein Dokument */
   pick: types[0].id,
-  /* Ablageort; `null` ist die Inbox */
-  parent: null,
+  /* Ablageort des neuen Eintrags; `null` ist die Inbox */
+  place: null,
   /* Anhänge des offenen Eingabefelds; erst beim Anlegen werden daraus Medien */
   files: [],
   nextFileId: 1,

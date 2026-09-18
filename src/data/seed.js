@@ -24,7 +24,7 @@ function addEntry(fields) {
     type: "notiz",
     title: "",
     body: "",
-    parent: null,
+    places: [],
     archived: false,
     favorite: false,
     createdAt: Date.now(),
@@ -83,7 +83,7 @@ function seedDevelopment() {
   const project = addEntry({
     type: "projekt",
     title: "Paralist (Android App)",
-    parent: inWorkspace,
+    places: [inWorkspace],
     favorite: true,
     body: "Erst die Übersichtsseite, dann der Rest. Jede Aufgabe hier liegt im Projekt.",
   });
@@ -94,7 +94,7 @@ function seedDevelopment() {
     const entry = addEntry({
       type: task.type,
       title: task.title,
-      parent: task.type === "notiz" ? inWorkspace : inProject,
+      places: [task.type === "notiz" ? inWorkspace : inProject],
       createdAt: Date.now() - index * 60000,
       ...(task.time ? { time: task.time } : {}),
     });

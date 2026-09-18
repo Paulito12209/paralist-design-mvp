@@ -8,9 +8,9 @@
  */
 
 import { emit, events } from "../core/bus.js";
-import { nextId, sameId, sameParent } from "../core/ids.js";
+import { nextId, sameId } from "../core/ids.js";
 import { workspaceDefaultName } from "./config.js";
-import { isContainer, tabWorkspaces } from "./queries.js";
+import { hasPlace, isContainer, tabWorkspaces } from "./queries.js";
 import { entryRef, isEntryRef, refId, workspaceRef } from "./refs.js";
 import { awardXp } from "./xp.js";
 import { saveState, state, ui } from "./state.js";
@@ -23,10 +23,16 @@ function commit({ prunedEntries = false } = {}) {
   emit(events.dataChanged);
 }
 
-/* Was in einem gelöschten Ablageort lag, rückt eine Ebene hoch. */
-function liftChildren(ref, target) {
+/*
+ * Ein Ablageort verschwindet: er wird aus allen Einträgen gestrichen, und wer
+ * dadurch heimatlos würde, bekommt die Orte in `targets` (leer = Inbox).
+ * Was noch woanders liegt, bleibt einfach dort.
+ */
+function liftChildren(ref, targets = []) {
   state.entries.forEach((entry) => {
-    if (sameParent(entry.parent, ref)) entry.parent = target;
+    if (!hasPlace(entry, ref)) return;
+    entry.places = entry.places.filter((place) => place !== ref);
+    if (!entry.places.length) entry.places = [...targets];
   });
 }
 
@@ -75,10 +81,10 @@ export function nameWorkspace(workspace, typed) {
   commit();
 }
 
-/** Arbeitsbereich löschen; seine Einträge wandern in die Inbox. */
+/** Arbeitsbereich löschen; was nur hier lag, wandert in die Inbox. */
 export function deleteWorkspace(id) {
   state.workspaces = state.workspaces.filter((workspace) => !sameId(workspace.id, id));
-  liftChildren(workspaceRef(id), null);
+  liftChildren(workspaceRef(id));
   commit();
 }
 
@@ -97,7 +103,7 @@ export function deleteTab(id) {
   if (state.tabs.length < 2) return;
   state.workspaces
     .filter((workspace) => sameId(workspace.tab, id))
-    .forEach((workspace) => liftChildren(workspaceRef(workspace.id), null));
+    .forEach((workspace) => liftChildren(workspaceRef(workspace.id)));
   state.workspaces = state.workspaces.filter((workspace) => !sameId(workspace.tab, id));
   state.tabs = state.tabs.filter((tab) => !sameId(tab.id, id));
   if (sameId(state.activeTabId, id)) state.activeTabId = state.tabs[0].id;
@@ -121,33 +127,51 @@ export function clearFavorites() {
   commit();
 }
 
-/** Einen Eintrag endgültig löschen. Was in einem Projekt lag, rückt in dessen Ablageort. */
+/** Einen Eintrag endgültig löschen. Was in einem Projekt lag, übernimmt dessen Orte. */
 export function deleteEntry(id) {
   const entry = state.entries.find((item) => sameId(item.id, id));
   if (!entry) return;
-  if (isContainer(entry)) liftChildren(entryRef(entry.id), entry.parent);
+  if (isContainer(entry)) liftChildren(entryRef(entry.id), entry.places);
   state.entries = state.entries.filter((item) => !sameId(item.id, id));
   commit({ prunedEntries: true });
 }
 
-/** Alle Einträge eines Ablageorts löschen; Inhalte gelöschter Projekte rücken hoch. */
+/**
+ * Einen Ablageort leeren. Was NUR hier liegt, wird gelöscht; was auch woanders
+ * liegt, wird hier nur ausgehängt und bleibt dort erhalten. Inhalte eines
+ * gelöschten Projekts rücken in diesen Ort und bleiben.
+ */
 export function deleteEntriesOf(ref) {
-  const doomed = state.entries.filter((entry) => sameParent(entry.parent, ref));
+  const here = state.entries.filter((entry) => hasPlace(entry, ref));
+  const doomed = here.filter((entry) => (entry.places || []).length <= 1);
+  here.forEach((entry) => {
+    if (!doomed.includes(entry)) entry.places = entry.places.filter((place) => place !== ref);
+  });
   doomed.forEach((entry) => {
-    if (isContainer(entry)) liftChildren(entryRef(entry.id), ref);
+    if (isContainer(entry)) liftChildren(entryRef(entry.id), ref ? [ref] : []);
   });
   const doomedIds = new Set(doomed.map((entry) => entry.id));
   state.entries = state.entries.filter((entry) => !doomedIds.has(entry.id));
   commit({ prunedEntries: true });
 }
 
-/**
- * Einen Eintrag in einen anderen Ablageort verschieben.
- * Ein Projekt darf nicht in ein Projekt, und nichts in sich selbst.
- */
-export function moveEntry(entry, ref) {
-  if (isEntryRef(ref) && (isContainer(entry) || sameId(refId(ref), entry.id))) return;
-  entry.parent = ref;
+/** Darf der Eintrag an diesem Ort liegen? Kein Projekt in einem Projekt, nichts in sich selbst. */
+function allowedPlace(entry, ref) {
+  if (!isEntryRef(ref)) return true;
+  return !isContainer(entry) && !sameId(refId(ref), entry.id);
+}
+
+/** Einen Ort hinzufügen oder wieder wegnehmen. */
+export function togglePlace(entry, ref) {
+  if (!allowedPlace(entry, ref)) return;
+  const places = entry.places || [];
+  entry.places = places.includes(ref) ? places.filter((place) => place !== ref) : [...places, ref];
+  commit();
+}
+
+/** Alle Orte wegnehmen: der Eintrag liegt dann in der Inbox. */
+export function clearPlaces(entry) {
+  entry.places = [];
   commit();
 }
 

@@ -1,6 +1,7 @@
 /*
  * Das Auswahl-Blatt von unten: „Verknüpfen mit“, „Typ wählen“, Seitenmenüs.
- * Jede Option ist { label, icon, onSelect } plus optional active/danger/split/gap.
+ * Jede Option ist { label, icon, onSelect } plus optional active/danger/split/gap
+ * und `stay` (das Blatt bleibt nach dem Antippen offen, z.B. zum An-/Abwählen).
  * Pfad: src/ui/sheet.js
  *
  * Keine anpassbaren visuellen Werte: Aussehen und Abstände stehen in
@@ -14,6 +15,8 @@ import { closeCtxMenu } from "./ctx-menu.js";
 import { bindModalPull } from "./modal-pull.js";
 
 let actions = [];
+/* Je Option: bleibt das Blatt nach dem Antippen offen? (für An-/Abwählen) */
+let stays = [];
 
 function optionMarkup(option, index) {
   const classes = ["sheet-option"];
@@ -36,6 +39,7 @@ export function openSheet(title, options) {
   dom.sheetTitle.textContent = title;
   dom.sheetOptions.innerHTML = options.map(optionMarkup).join("");
   actions = options.map((option) => option.onSelect);
+  stays = options.map((option) => Boolean(option.stay));
   dom.sheet.hidden = false;
 }
 
@@ -43,6 +47,7 @@ export function openSheet(title, options) {
 export function closeSheet() {
   dom.sheet.hidden = true;
   actions = [];
+  stays = [];
 }
 
 /** Klicks im Blatt: Option ausführen, Klick daneben schließt. Ziehen schließt es auch. */
@@ -60,8 +65,9 @@ export function initSheet() {
       if (event.target === dom.sheet) closeSheet();
       return;
     }
-    const run = actions[Number(option.dataset.sheet)];
-    closeSheet();
+    const index = Number(option.dataset.sheet);
+    const run = actions[index];
+    if (!stays[index]) closeSheet();
     if (run) run();
   });
 }

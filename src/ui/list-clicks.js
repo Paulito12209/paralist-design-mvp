@@ -17,7 +17,6 @@ import {
   addWorkspace,
   deleteEntry,
   deleteWorkspace,
-  moveEntry,
   selectTab,
   toggleFavorite,
 } from "../data/mutations.js";
@@ -25,7 +24,7 @@ import { findEntry } from "../data/queries.js";
 import { saveState, state } from "../data/state.js";
 import { archiveEntry } from "../data/xp.js";
 import { cancelHold, consumeClickBlock } from "./long-press.js";
-import { openParentPicker } from "./pickers.js";
+import { openPlacesPicker } from "./pickers.js";
 import { openEntry, openTarget } from "./router.js";
 import { closeSwipes, isSwipedOpen } from "./swipe.js";
 import { toggleGroup } from "./groups.js";
@@ -69,7 +68,7 @@ function handleSwipeAction(action) {
     toggleFavorite(entry);
     return;
   }
-  openParentPicker("Verknüpfen mit", entry.parent, (ref) => moveEntry(entry, ref), entry);
+  openPlacesPicker(entry);
 }
 
 /* Eine Tab-Pille: der aktive Tab öffnet das Umbenennen, ein anderer wird gewählt. */

@@ -3,15 +3,17 @@
  * wie heißt ein Ablageort. Diese Datei ändert nie etwas — sie liest nur.
  *
  * Das Modell in einem Satz: Arbeitsbereiche stehen ganz oben, darin liegen
- * Projekte, in Projekten alles andere; jeder Eintrag hat genau einen Ablageort
- * (`parent`, ein Verweis aus refs.js, null = Inbox).
+ * Projekte, in Projekten alles andere. Jeder Eintrag hat eine Liste von
+ * Ablageorten (`places`, Verweise aus refs.js) und erscheint an jedem davon —
+ * so kann ein Projekt zugleich bei Marketing und bei Design liegen. Eine leere
+ * Liste heißt Inbox.
  * Pfad: src/data/queries.js
  *
  * Keine anpassbaren visuellen Werte.
  */
 
 import { dayKey, timeKey } from "../core/dates.js";
-import { sameId, sameParent } from "../core/ids.js";
+import { sameId } from "../core/ids.js";
 import { containerTypes, overviewPages, resourceTypes, typeIcon, typeOrder, typePlurals, xpItems } from "./config.js";
 import { entryRef, isEntryRef, isWorkspaceRef, refId, workspaceRef } from "./refs.js";
 import { state } from "./state.js";
@@ -34,6 +36,18 @@ export function workspaceLabel(workspace) {
 /** Kann dieser Eintrag selbst Einträge aufnehmen? */
 export function isContainer(entry) {
   return Boolean(entry && containerTypes.includes(entry.type));
+}
+
+/** Liegt der Eintrag an diesem Ort? `null` fragt nach der Inbox (nirgends abgelegt). */
+export function hasPlace(entry, ref) {
+  const places = entry.places || [];
+  return ref ? places.includes(ref) : places.length === 0;
+}
+
+/** Alle Orte eines Eintrags als Text, z.B. „Marketing · Design“; ohne Ort „Inbox“. */
+export function placesLabel(entry) {
+  const places = entry.places || [];
+  return places.length ? places.map(parentName).join(" · ") : overviewPages[1].title;
 }
 
 /** Anzeigename eines Ablageorts — Inbox, Arbeitsbereich oder Projekt. */
@@ -59,7 +73,7 @@ export function parentIcon(ref) {
 
 /** Sichtbare Einträge eines Ablageorts (Archiviertes bleibt draußen). */
 export function entriesOf(ref) {
-  return state.entries.filter((entry) => !entry.archived && sameParent(entry.parent, ref));
+  return state.entries.filter((entry) => !entry.archived && hasPlace(entry, ref));
 }
 
 /**
@@ -88,7 +102,7 @@ export function projectEntries() {
  * jedes Projekt. Ein Projekt darf nicht in ein Projekt, und nichts in sich selbst.
  * @returns [{ ref, label, icon }]
  */
-export function parentOptionsFor(entry = null) {
+export function placeOptionsFor(entry = null) {
   const options = [{ ref: null, label: overviewPages[1].title, icon: overviewPages[1].icon }];
   state.workspaces.forEach((workspace) => {
     options.push({ ref: workspaceRef(workspace.id), label: workspaceLabel(workspace), icon: workspaceIcon(workspace) });

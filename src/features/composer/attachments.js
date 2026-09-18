@@ -69,7 +69,7 @@ export function attachFilesTo(entry) {
       type: "medien",
       title: item.title,
       body: "",
-      parent: entry.parent,
+      places: [...(entry.places || [])],
       archived: false,
       favorite: false,
       createdAt: Date.now(),

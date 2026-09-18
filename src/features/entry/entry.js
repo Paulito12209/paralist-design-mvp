@@ -10,14 +10,14 @@
 import { emit, events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
 import { load } from "../../core/lazy.js";
-import { deleteEntry, moveEntry, toggleFavorite } from "../../data/mutations.js";
-import { findEntry, isContainer, parentName } from "../../data/queries.js";
+import { deleteEntry, toggleFavorite } from "../../data/mutations.js";
+import { findEntry, isContainer, placesLabel } from "../../data/queries.js";
 import { entryRef } from "../../data/refs.js";
 import { groupedListMarkup } from "../../ui/groups.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { archiveEntry } from "../../data/xp.js";
 import { mediaCell } from "../../ui/media-cell.js";
-import { openParentPicker } from "../../ui/pickers.js";
+import { openPlacesPicker } from "../../ui/pickers.js";
 import { restoreFrom } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
 import { isViewActive } from "../../ui/views.js";
@@ -40,7 +40,7 @@ function renderEntry() {
 
   dom.entryTitle.value = entry.title;
   dom.entryBody.value = entry.body || "";
-  dom.entryCrumb.textContent = parentName(entry.parent);
+  dom.entryCrumb.textContent = placesLabel(entry);
   renderAttachments(entry);
 
   /* Zeichnungen zeigen statt des Textes die Zeichenfläche. */
@@ -80,16 +80,7 @@ function openEntryMenu() {
     {
       label: "Verknüpfen",
       icon: "link",
-      onSelect: () =>
-        openParentPicker(
-          "Verknüpfen mit",
-          entry.parent,
-          (ref) => {
-            moveEntry(entry, ref);
-            dom.entryCrumb.textContent = parentName(ref);
-          },
-          entry
-        ),
+      onSelect: () => openPlacesPicker(entry),
     },
   ];
 
@@ -159,6 +150,8 @@ export function initEntry() {
       dom.entryLinks.hidden = true;
       return;
     }
+    /* Die Orte können sich im offenen Blatt „Verknüpfen mit“ gerade ändern */
+    dom.entryCrumb.textContent = placesLabel(entry);
     renderAttachments(entry);
     renderLinks(entry);
   });

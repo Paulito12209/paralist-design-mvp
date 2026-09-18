@@ -11,7 +11,7 @@
 
 import { overviewPages, typeIcon, typeLabel } from "../../data/config.js";
 import { openCounts } from "../../data/opens.js";
-import { findEntry, findWorkspace, parentName, workspaceIcon } from "../../data/queries.js";
+import { findEntry, findWorkspace, placesLabel, workspaceIcon } from "../../data/queries.js";
 import { state } from "../../data/state.js";
 
 const maxHits = 30;
@@ -24,7 +24,7 @@ export function itemOfEntry(entry) {
     title: entry.title || "Ohne Titel",
     icon: typeIcon(entry.type),
     label: typeLabel(entry.type),
-    note: parentName(entry.parent),
+    note: placesLabel(entry),
   };
 }
 

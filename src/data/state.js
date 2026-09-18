@@ -143,15 +143,21 @@ function migrate() {
   });
   state.entries.forEach((entry) => {
     if (typeof entry.favorite !== "boolean") entry.favorite = false;
-    /* Ablageorte waren früher nackte Nummern oder „o3“/„o4“ für zwei Karten,
-       die heute Sammlungen sind: alles auf die Verweise aus refs.js bringen. */
-    entry.parent = normalizeRef(entry.parent);
+    /* Früher hatte ein Eintrag EINEN Ablageort `parent` — als nackte Nummer,
+       als „o3“/„o4“ für zwei Karten oder als Verweis. Heute ist es die Liste
+       `places`; alles wird darauf gebracht und auf Verweise aus refs.js normiert. */
+    if (!Array.isArray(entry.places)) {
+      const home = normalizeRef(entry.parent);
+      entry.places = home ? [home] : [];
+    }
+    delete entry.parent;
+    entry.places = [...new Set(entry.places.map(normalizeRef).filter(Boolean))];
   });
-  /* Ein Verweis auf etwas, das es nicht mehr gibt, zeigt in die Inbox. */
+  /* Ein Verweis auf etwas, das es nicht mehr gibt, fällt weg; ohne Ort heißt Inbox. */
   const workspaceRefs = new Set(state.workspaces.map((workspace) => workspaceRef(workspace.id)));
   const projectRefs = new Set(state.entries.filter((entry) => entry.type === "projekt").map((entry) => `e:${entry.id}`));
   state.entries.forEach((entry) => {
-    if (entry.parent && !workspaceRefs.has(entry.parent) && !projectRefs.has(entry.parent)) entry.parent = null;
+    entry.places = entry.places.filter((ref) => workspaceRefs.has(ref) || projectRefs.has(ref));
   });
   /* Ein Arbeitsbereich ohne gültigen Tab wäre unerreichbar: zurück in den ersten Tab. */
   const tabIds = state.tabs.map((tab) => String(tab.id));

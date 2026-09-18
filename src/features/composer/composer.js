@@ -11,14 +11,13 @@ import { emit, events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { dayKey, timeKey } from "../../core/dates.js";
 import { icon } from "../../core/html.js";
-import { sameParent } from "../../core/ids.js";
 import { composerPlaceholders, defaultType, resourcePick, types, xpItemStyle } from "../../data/config.js";
 import { findEntry, isContainer, parentName } from "../../data/queries.js";
 import { entryRef } from "../../data/refs.js";
 import { state, ui } from "../../data/state.js";
 import { awardXp } from "../../data/xp.js";
 import { closeCtxMenu } from "../../ui/ctx-menu.js";
-import { openParentPicker } from "../../ui/pickers.js";
+import { openPlacePicker } from "../../ui/pickers.js";
 import { openEntry } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
 import { currentView, isViewActive } from "../../ui/views.js";
@@ -78,7 +77,7 @@ function renderComposerTypePill() {
 
 /** Die Pille mit dem Ablageort auffrischen. */
 function renderComposerLink() {
-  dom.composerLinkLabel.textContent = parentName(composer.parent);
+  dom.composerLinkLabel.textContent = parentName(composer.place);
 }
 
 /*
@@ -88,19 +87,19 @@ function renderComposerLink() {
  * überall sonst eine Aufgabe für die Inbox.
  */
 function contextDefaults() {
-  const aufgabe = { type: "aufgabe", pick: "aufgabe", parent: null };
+  const aufgabe = { type: "aufgabe", pick: "aufgabe", place: null };
   const view = currentView();
 
   if (view === "page" && ui.currentPage) {
     const page = ui.currentPage;
-    if (page.kind === "projects") return { type: "projekt", pick: "projekt", parent: null };
-    if (page.kind === "resources") return { type: defaultType, pick: resourcePick.id, parent: null };
-    if (page.isWorkspace) return { ...aufgabe, parent: page.parent };
+    if (page.kind === "projects") return { type: "projekt", pick: "projekt", place: null };
+    if (page.kind === "resources") return { type: defaultType, pick: resourcePick.id, place: null };
+    if (page.isWorkspace) return { ...aufgabe, place: page.parent };
     return aufgabe;
   }
   if (view === "entry") {
     const entry = findEntry(ui.currentEntryId);
-    if (isContainer(entry)) return { ...aufgabe, parent: entryRef(entry.id) };
+    if (isContainer(entry)) return { ...aufgabe, place: entryRef(entry.id) };
   }
   return aufgabe;
 }
@@ -113,7 +112,7 @@ export function openComposer(overrides = {}) {
   closeCtxMenu();
   const start = { ...contextDefaults(), ...overrides };
   chooseComposerType(start.type, start.pick);
-  composer.parent = start.parent;
+  composer.place = start.place;
   dom.navShell.classList.add("is-composing");
   dom.tabBar.hidden = true;
   dom.composer.hidden = false;
@@ -176,7 +175,7 @@ export function createEntry() {
     type: composer.type,
     title,
     body: "",
-    parent: composer.parent,
+    places: composer.place ? [composer.place] : [],
     archived: false,
     favorite: false,
     createdAt: Date.now(),
@@ -190,7 +189,7 @@ export function createEntry() {
   dom.composerInput.value = "";
   closeComposer();
   /* Auf der Seite eines Arbeitsbereichs soll man den neuen Eintrag gleich sehen. */
-  if (isViewActive("page") && ui.currentPage?.isWorkspace && sameParent(entry.parent, ui.currentPage.parent)) {
+  if (isViewActive("page") && ui.currentPage?.isWorkspace && entry.places.includes(ui.currentPage.parent)) {
     ui.pagePill = "links";
   }
   emit(events.dataChanged);
@@ -251,8 +250,8 @@ export function initComposer() {
   dom.composerTypePill.addEventListener("click", openTypeSheet);
 
   el("composer-link").addEventListener("click", () => {
-    openParentPicker("Ablegen in", composer.parent, (parent) => {
-      composer.parent = parent;
+    openPlacePicker("Ablegen in", composer.place, (place) => {
+      composer.place = place;
       renderComposerLink();
       dom.composerInput.focus();
     });
