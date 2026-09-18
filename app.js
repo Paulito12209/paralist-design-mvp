@@ -54,9 +54,9 @@ const types = [
    Favoriten sammelt nur markierte Einträge und Arbeitsbereiche. */
 const overviewPages = {
   1: { title: "Inbox", icon: "inbox", parent: null },
-  2: { title: "Favoriten", icon: "star", kind: "favorites" },
-  3: { title: "Übersicht 3", parent: "o3", seed: 5 },
-  4: { title: "Übersicht 4", parent: "o4", seed: 3 },
+  2: { title: "Favoriten", icon: "star-outline", kind: "favorites" },
+  3: { title: "Projekte", icon: "rocket", parent: "o3", seed: 5 },
+  4: { title: "Ressourcen", icon: "cube", parent: "o4", seed: 3 },
 };
 
 const presetIcons = [
@@ -231,7 +231,12 @@ function renderOverview() {
   const grid = document.getElementById("overview-grid");
   grid.innerHTML = Object.entries(overviewPages)
     .map(([id, page]) => {
-      const iconClass = page.icon === "star" ? "card-icon card-icon-star" : "card-icon";
+      const iconClass =
+        page.icon === "star-outline" || page.icon === "star"
+          ? "card-icon card-icon-star"
+          : page.icon === "inbox"
+            ? "card-icon card-icon-inbox"
+            : "card-icon";
       return `
         <button class="overview-card" type="button" data-open="overview" data-id="${id}" onclick="openTarget('overview', '${id}')">
           ${icon(page.icon || "placeholder", iconClass)}

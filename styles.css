@@ -45,6 +45,7 @@
  * --tab-pills-btn-gap       -> Abstand zwischen der senkrechten Trennlinie und dem Plus-Button
  * --tab-pills-fade          -> Breite des Ausblendens links von der Trennlinie, wenn Tabs darunter durchlaufen
  * --star-color              -> Goldfarbe für den Favoriten-Stern auf der Karte
+ * --inbox-icon-color        -> Farbe des Inbox-Icons auf der Übersichtskarte
  * --ctx-radius              -> Rundung des kleinen Menüs beim gedrückt Halten
  */
 
@@ -95,6 +96,7 @@
   --tab-pills-btn-gap: 8px;
   --tab-pills-fade: 16px;
   --star-color: #f5c518;
+  --inbox-icon-color: #233d4c;
   --ctx-radius: 16px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -300,7 +302,12 @@ button {
   color: #c7c7cc;
 }
 
-/* Goldener Stern auf der Favoriten-Karte */
+/* Inbox-Icon auf der Übersichtskarte */
+.card-icon-inbox {
+  color: var(--inbox-icon-color);
+}
+
+/* Goldene Stern-Kontur auf der Favoriten-Karte */
 .card-icon-star {
   color: var(--star-color);
 }
