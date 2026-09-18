@@ -1291,15 +1291,14 @@ progressBody.addEventListener("click", (event) => {
 
 /* ---------- Profil: Nutzungszeit und Serien ---------- */
 
-/* Tagesschluessel in Ortszeit, damit Sommerzeit die Zaehlung nicht verschiebt */
-function dayKey(ts) {
-  const date = new Date(ts);
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+/* Tagesschluessel „JJJJ-MM-TT“ wie im Kalender; dayKey und parseDay stehen dort */
+function usageKeyOf(ts) {
+  return dayKey(new Date(ts));
 }
 
+/* Verschiebt einen Tagesbeginn um ganze Tage; Sommerzeit bleibt dabei richtig */
 function dayShift(ts, days) {
-  const date = new Date(ts);
-  date.setDate(date.getDate() + days);
+  const date = addDays(new Date(ts), days);
   date.setHours(0, 0, 0, 0);
   return date.getTime();
 }
@@ -1326,9 +1325,9 @@ function seedUsage() {
     const weekday = new Date(ts).getDay();
     const chance = weekday === 0 || weekday === 6 ? 0.4 : 0.78;
     if (random() > chance) continue;
-    usage[dayKey(ts)] = Math.round((10 + random() * 75) * 60);
+    usage[usageKeyOf(ts)] = Math.round((10 + random() * 75) * 60);
   }
-  usage[dayKey(Date.now())] = Math.max(usage[dayKey(Date.now())] || 0, 14 * 60);
+  usage[usageKeyOf(Date.now())] = Math.max(usage[usageKeyOf(Date.now())] || 0, 14 * 60);
 }
 
 function loadUsage() {
@@ -1352,7 +1351,7 @@ function trackUsage() {
   const spent = Math.min(60, Math.round((now - usageTickAt) / 1000));
   usageTickAt = now;
   if (document.hidden || spent <= 0) return;
-  const key = dayKey(now);
+  const key = usageKeyOf(now);
   usage[key] = (usage[key] || 0) + spent;
   saveUsage();
 }
@@ -1378,8 +1377,8 @@ function usageStreaks() {
   const active = new Set(Object.keys(usage).filter((key) => usage[key] > 0));
   const today = startOfDay(Date.now());
   let current = 0;
-  let cursor = active.has(dayKey(today)) ? today : dayShift(today, -1);
-  while (active.has(dayKey(cursor))) {
+  let cursor = active.has(usageKeyOf(today)) ? today : dayShift(today, -1);
+  while (active.has(usageKeyOf(cursor))) {
     current += 1;
     cursor = dayShift(cursor, -1);
   }
@@ -1389,7 +1388,7 @@ function usageStreaks() {
   let run = 0;
   let previous = null;
   sorted.forEach((key) => {
-    const ts = new Date(`${key}T00:00:00`).getTime();
+    const ts = parseDay(key).getTime();
     run = previous !== null && Math.round((ts - previous) / 86400000) === 1 ? run + 1 : 1;
     longest = Math.max(longest, run);
     previous = ts;
@@ -1415,7 +1414,7 @@ function renderUsageCard() {
   const rows = [];
   for (let back = days - 1; back >= 0; back -= 1) {
     const ts = dayShift(today, -back);
-    rows.push({ ts, seconds: usage[dayKey(ts)] || 0 });
+    rows.push({ ts, seconds: usage[usageKeyOf(ts)] || 0 });
   }
   const total = rows.reduce((sum, row) => sum + row.seconds, 0);
   const activeDays = rows.filter((row) => row.seconds > 0).length;
@@ -1490,7 +1489,7 @@ function renderStreakCard() {
   const year = new Date().getFullYear();
   const cells = Array.from({ length: 12 }, () => new Array(7).fill(0));
   Object.keys(usage).forEach((key) => {
-    const date = new Date(`${key}T00:00:00`);
+    const date = parseDay(key);
     if (Number.isNaN(date.getTime()) || date.getFullYear() !== year) return;
     cells[date.getMonth()][(date.getDay() + 6) % 7] += usage[key];
   });
