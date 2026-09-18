@@ -790,13 +790,16 @@ function chooseComposerType(typeId, pickId) {
 
 function renderComposerTypes() {
   composerTypes.innerHTML = composerPickButtons()
-    .map(
-      (pick) => `
-        <button class="composer-type${pick.id === composerPick ? " is-active" : ""}" type="button" data-type="${pick.id}" aria-label="${pick.label}">
+    .map((pick) => {
+      const active = pick.id === composerPick;
+      /* Der gewählte Typ hebt sich nur über die Icon-Farbe ab, je Typ wie in Kalender und Verlauf */
+      const style = active ? ` style="--type-color:${xpItemStyle(pick.typeId).color}"` : "";
+      return `
+        <button class="composer-type${active ? " is-active" : ""}" type="button" data-type="${pick.id}" aria-label="${pick.label}"${style}>
           ${icon(pick.icon)}
         </button>
-      `
-    )
+      `;
+    })
     .join("");
   renderComposerTypePill();
 }

@@ -548,7 +548,7 @@ button {
 
 .section-head h2 {
   font-size: 15px;
-  font-weight: 600;
+  font-weight: 300; /* 300 = dünn, 700 = fett */
   color: var(--muted);
 }
 
@@ -920,10 +920,10 @@ button {
   height: 22px;
 }
 
-/* Der gewählte Typ bleibt sichtbar hervorgehoben */
-.composer-type.is-active {
-  background: var(--bg);
-  color: var(--text);
+/* Der gewählte Typ bleibt ohne eigenen Hintergrund sichtbar: nur das Icon
+   nimmt seine Farbe an (inline über --type-color je Typ gesetzt) */
+.composer-type.is-active .icon {
+  color: var(--type-color, var(--text));
 }
 
 .composer-close {
@@ -989,14 +989,16 @@ button {
   height: 20px;
 }
 
-/* Plus links neben den Typ-Knöpfen: hängt Medien an, darum nie als Typ hervorgehoben */
+/* Plus links neben den Typ-Knöpfen: hängt Medien an, darum eigener grauer Kreis
+   statt der Typ-Färbung, wie zuvor beim gewählten Typ-Knopf */
 .composer-attach {
   width: 36px;
   height: 36px;
   border-radius: 50%; /* border-radius: gleiche runde Form wie die Typ-Knöpfe */
+  background: var(--bg);
   display: grid;
   place-items: center;
-  color: var(--muted);
+  color: var(--text);
   flex: 0 0 auto;
 }
 
