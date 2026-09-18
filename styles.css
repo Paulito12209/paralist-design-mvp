@@ -548,7 +548,7 @@ button {
 
 .section-head h2 {
   font-size: 15px;
-  font-weight: 300; /* 300 = dünn, 700 = fett */
+  font-weight: 400; /* 400 = normal, 500 = mittel, 700 = fett */
   color: var(--muted);
 }
 
