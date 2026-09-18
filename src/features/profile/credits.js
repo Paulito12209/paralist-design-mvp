@@ -20,7 +20,7 @@ const credits = {
   lead: "Danke.",
   body: [
     "An meine Mutter und an meine Freunde — dafür, dass ihr da wart, als das hier noch nichts als eine Idee war.",
-    "Und vor allem an meine Familie:",
+    "Und vor allem an meine folgenden Familienangehörigen:",
   ],
   people: ["Katja", "David", "Marina", "Tavara"],
   close:
