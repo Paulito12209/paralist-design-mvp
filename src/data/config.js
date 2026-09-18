@@ -231,7 +231,7 @@ export const taskViews = ["list", "board"];
  * Liste oben.
  */
 export const taskGroupings = [
-  { id: "priority", label: "Priorität", icon: "flame", field: "priority", columns: taskPriorities },
+  { id: "priority", label: "Dringlichkeit", icon: "flame", field: "priority", columns: taskPriorities },
   { id: "status", label: "Status", icon: "check-circle", field: "status", columns: taskStatuses },
 ];
 
@@ -242,7 +242,7 @@ export const taskGroupings = [
 export const taskSorts = [
   { id: "neu", label: "Neueste zuerst", icon: "history" },
   { id: "alt", label: "Älteste zuerst", icon: "clock" },
-  { id: "prio", label: "Priorität", icon: "flame" },
+  { id: "prio", label: "Dringlichkeit", icon: "flame" },
   { id: "titel", label: "Titel A–Z", icon: "list" },
 ];
 

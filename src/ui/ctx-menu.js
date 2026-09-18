@@ -46,13 +46,19 @@ function placeCard(anchor) {
   dom.ctxCard.style.left = `${left}px`;
 }
 
-/** Menü neben `anchor` öffnen. Optionen sind { label, icon, onSelect, danger }. */
+/**
+ * Menü neben `anchor` öffnen. Optionen sind { label, icon, onSelect, danger, active }.
+ * Steht bei einer Option `active`, ist das Menü eine Auswahl: vor jeder Zeile
+ * bleibt Platz für einen Haken, den nur die gewählte Zeile zeigt.
+ */
 export function openCtxMenu(anchor, options) {
   dom.sheet.hidden = true;
+  const choice = options.some((option) => "active" in option);
   dom.ctxCard.innerHTML = options
     .map(
       (option, index) => `
         <button class="ctx-item${option.danger ? " is-danger" : ""}" type="button" data-ctx="${index}">
+          ${choice ? `<span class="ctx-check">${option.active ? icon("check") : ""}</span>` : ""}
           ${icon(option.icon)}
           <span>${escapeHtml(option.label)}</span>
         </button>

@@ -112,10 +112,14 @@
  * --mini-chart-height       -> Höhe der kleinen Grafik auf der Kachel
  * --task-check-size         -> Größe des runden Haken-Knopfes an einer Aufgabe
  * --task-tools-gap          -> Abstand zwischen Bedienzeile und Inhalt der Aufgaben-Seite
+ * --task-view-btn-size      -> Durchmesser des runden Umschalters Liste ↔ Board
+ * --task-pill-anim          -> wie lange die Pille „Gruppieren“ aus dem Umschalter herausfährt
+ * --task-pill-slide         -> aus welcher Entfernung die Pille dabei herangleitet
  * --board-col-width         -> Breite einer Board-Spalte
  * --board-gap               -> Fuge zwischen zwei Spalten
- * --board-card-gap          -> Fuge zwischen zwei Karten in einer Spalte
- * --board-card-radius       -> Rundung einer Karte
+ * --board-head-gap          -> Abstand zwischen Kopfzeile und erster Zeile einer Spalte
+ * --board-grip-width        -> Breite des Griffstreifens am rechten Rand einer Zeile
+ * --board-card-radius       -> Rundung einer angehobenen Zeile und der Lücke beim Ziehen
  * --board-head-radius       -> Rundung der farbigen Spalten-Kopfzeile
  * --board-drop-min          -> Mindesthöhe einer leeren Spalte, damit man dort ablegen kann
  * --board-edge              -> ab wie vielen Pixeln am Rand beim Ziehen mitgescrollt wird
@@ -237,9 +241,13 @@
   --task-chip-size: 12px;
   --task-check-size: 24px;
   --task-tools-gap: 18px;
+  --task-view-btn-size: 36px;
+  --task-pill-anim: 0.24s;
+  --task-pill-slide: 28px;
   --board-col-width: 264px;
   --board-gap: 12px;
-  --board-card-gap: 8px;
+  --board-head-gap: 6px;
+  --board-grip-width: 32px;
   --board-card-radius: 16px;
   --board-head-radius: 14px;
   --board-drop-min: 72px;

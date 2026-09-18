@@ -1,8 +1,9 @@
 /*
- * Die Aufgaben-Seite hinter dem dritten Reiter. Oben die Bedienzeile, darunter
- * je nach Wahl die Liste oder das Kanban-Board. Diese Datei hält nur alles
- * zusammen: gezeichnet wird in tasks-list.js und tasks-board.js, die Pillen
- * stehen in tasks-tools.js, das Ziehen in tasks-drag.js.
+ * Die Aufgaben-Seite hinter dem dritten Reiter. Neben dem Titel der Umschalter,
+ * darunter die Pillen und je nach Wahl die Liste oder das Kanban-Board. Diese
+ * Datei hält nur alles zusammen: gezeichnet wird in tasks-list.js und
+ * tasks-board.js, die Bedienelemente stehen in tasks-tools.js, das Ziehen in
+ * tasks-drag.js.
  * Wird erst beim ersten Öffnen nachgeladen.
  * Pfad: src/features/tasks/tasks.js
  *
@@ -20,7 +21,7 @@ import { isViewActive } from "../../ui/views.js";
 import { taskBoardMarkup } from "./tasks-board.js";
 import { consumeDragClick, initTaskDrag } from "./tasks-drag.js";
 import { taskListMarkup } from "./tasks-list.js";
-import { handleToolClick, taskToolsMarkup } from "./tasks-tools.js";
+import { handleToolClick, taskPillsMarkup, taskToolsMarkup } from "./tasks-tools.js";
 
 /** Die ganze Seite neu zeichnen. */
 export function renderTasks() {
@@ -31,6 +32,7 @@ export function renderTasks() {
   const left = scrolled ? scrolled.scrollLeft : 0;
 
   dom.tasksTools.innerHTML = taskToolsMarkup();
+  dom.tasksPills.innerHTML = taskPillsMarkup();
   dom.tasksBody.innerHTML = board ? taskBoardMarkup(prefs) : taskListMarkup(prefs);
   dom.tasksBody.classList.toggle("is-board", board);
 
@@ -38,9 +40,9 @@ export function renderTasks() {
   if (next) next.scrollLeft = left;
 }
 
-/* Klicks im Inhalt: Haken-Knopf, Knopf am Spaltenende, Karte öffnen. */
+/* Klicks im Inhalt: Haken-Knopf, Knopf am Spaltenende, Zeile im Board öffnen. */
 function onBodyClick(event) {
-  /* Nach dem Ablegen einer Karte kommt noch ein Klick — der öffnet nichts. */
+  /* Nach dem Ablegen einer Zeile kommt noch ein Klick — der öffnet nichts. */
   if (consumeDragClick()) {
     event.preventDefault();
     event.stopPropagation();
@@ -65,13 +67,15 @@ function onBodyClick(event) {
   }
 
   /* In der Liste öffnet src/ui/list-clicks.js den Eintrag; im Board hier. */
-  const card = event.target.closest("[data-card]");
-  if (card) openEntry(card.dataset.card);
+  const row = event.target.closest("[data-board-row]");
+  if (row) openEntry(row.dataset.boardRow);
 }
 
 /* Beim Laden des Moduls anmelden: die Seite frischt sich auf, solange sie offen ist. */
 function init() {
-  dom.tasksTools.addEventListener("click", (event) => handleToolClick(event, renderTasks));
+  const onToolClick = (event) => handleToolClick(event, renderTasks);
+  dom.tasksTools.addEventListener("click", onToolClick);
+  dom.tasksPills.addEventListener("click", onToolClick);
   dom.tasksBody.addEventListener("click", onBodyClick);
   initTaskDrag(renderTasks);
 

@@ -149,6 +149,20 @@
   color: var(--danger);
 }
 
+/* Platz für den Haken in einem Auswahl-Menü — bleibt auch bei den nicht
+   gewählten Zeilen frei, damit die Texte untereinander stehen */
+.ctx-check {
+  width: 18px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+}
+
+.ctx-check .icon {
+  width: 16px;
+  height: 16px;
+}
+
 .ctx-item:active {
   background: var(--bg);
 }

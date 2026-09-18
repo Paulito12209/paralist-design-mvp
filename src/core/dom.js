@@ -126,6 +126,7 @@ export const dom = {
 
   /* Aufgaben */
   get tasksTools() { return el("tasks-tools"); },
+  get tasksPills() { return el("tasks-pills"); },
   get tasksBody() { return el("tasks-body"); },
 
   /* Medien */

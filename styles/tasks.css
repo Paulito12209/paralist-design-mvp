@@ -1,45 +1,120 @@
 /*
- * Aufgaben-Seite: die Bedienzeile oben und die Listenansicht. Die Zeilen sind
- * dieselben wie in allen übrigen Listen (styles/rows.css) — hier stehen nur
- * die Zutaten, die eine Aufgabe zusätzlich hat: der runde Haken-Knopf, das
- * Label mit dem Ablageort und die kleinen Chips. Das Board hat eine eigene
- * Datei, styles/tasks-board.css.
+ * Aufgaben-Seite: die Titelzeile mit dem runden Umschalter Liste ↔ Board und
+ * der Pille „Gruppieren“, die Pillen Filtern und Sortieren darunter, und die
+ * Listenansicht. Die Zeilen sind dieselben wie in allen übrigen Listen
+ * (styles/rows.css) — hier stehen nur die Zutaten, die eine Aufgabe zusätzlich
+ * hat: der runde Haken-Knopf, das Label mit dem Ablageort und die kleinen
+ * Chips. Das Board hat eine eigene Datei, styles/tasks-board.css.
  * Pfad: styles/tasks.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
- * --task-tools-gap   -> Abstand zwischen Bedienzeile und Liste
- * --task-check-size  -> Größe des runden Haken-Knopfes
- * --task-meta-size   -> Schriftgröße des Ortes unter dem Titel
- * --task-chip-size   -> Schriftgröße der Status- und Datums-Chips
- * --muted            -> Farbe der Nebenangaben unter dem Titel
- * --chevron          -> Ring des noch leeren Hakens
- * --xp-done / --card -> Farbe des gesetzten Hakens und seines Hakens darin
+ * --task-tools-gap      -> Abstand zwischen den Pillen und der Liste
+ * --task-view-btn-size  -> Durchmesser des runden Umschalters
+ * --task-pill-anim      -> wie lange die Pille „Gruppieren“ heraus- bzw. hineinfährt
+ * --task-pill-slide     -> aus welcher Entfernung sie dabei herangleitet
+ * --tab-pill-active-bg  -> Fläche von Umschalter und Pille „Gruppieren“
+ * --overview-gap        -> Abstand der Titelzeile zu den Pillen
+ * --task-check-size     -> Größe des runden Haken-Knopfes
+ * --task-meta-size      -> Schriftgröße des Ortes unter dem Titel
+ * --task-chip-size      -> Schriftgröße der Status- und Datums-Chips
+ * --muted               -> Farbe der Nebenangaben unter dem Titel
+ * --chevron             -> Ring des noch leeren Hakens
+ * --xp-done / --card    -> Farbe des gesetzten Hakens und seines Hakens darin
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
 
-/* ---------- Bedienzeile ---------- */
+/* ---------- Titelzeile mit Umschalter ---------- */
+
+/* Titel links, Bedienelemente rechts — auf einer Höhe */
+.tasks-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: var(--overview-gap);
+}
+
+.tasks-head .screen-title {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
 
 .tasks-tools {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: var(--task-tools-gap);
+  flex: 0 0 auto;
 }
+
+/* Runder Umschalter: Board-Icon in der Liste, Listen-Icon im Board */
+.task-view-btn {
+  width: var(--task-view-btn-size);
+  height: var(--task-view-btn-size);
+  display: grid;
+  place-items: center;
+  border-radius: 50%; /* border-radius: macht aus dem Knopf einen Kreis */
+  background: var(--tab-pill-active-bg);
+  color: var(--text);
+  flex: 0 0 auto;
+}
+
+.task-view-btn:active {
+  opacity: 0.55;
+}
+
+.task-view-icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Die Pille „Gruppieren“ liegt links vom Umschalter und wächst aus ihm heraus.
+   Sie ist ein Menü-Knopf, deshalb steht am Ende ein kleiner Pfeil nach unten. */
+.task-group-pill {
+  padding: 8px 10px 8px 14px;
+  background: var(--tab-pill-active-bg);
+  color: var(--text);
+  transform-origin: right center; /* transform-origin: die Pille wächst vom Umschalter her */
+}
+
+.task-group-chevron {
+  width: 14px;
+  height: 14px;
+  color: var(--muted);
+  transform: rotate(90deg); /* transform: der Pfeil der Zeilen zeigt nach rechts, hier soll er nach unten zeigen */
+}
+
+/* Zum Board hin fährt die Pille aus dem Umschalter heraus … */
+.task-group-pill.is-entering {
+  animation: task-pill-in var(--task-pill-anim) cubic-bezier(0.2, 0.8, 0.3, 1) both; /* animation: einmaliges Herausfahren */
+}
+
+/* … zurück zur Liste fährt sie wieder hinein, dann wird neu gezeichnet */
+.task-group-pill.is-leaving {
+  animation: task-pill-in var(--task-pill-anim) ease-in reverse both; /* animation: dieselbe Bewegung rückwärts */
+  pointer-events: none; /* pointer-events: während des Hineinfahrens nicht mehr antippbar */
+}
+
+@keyframes task-pill-in {
+  from {
+    opacity: 0;
+    transform: translateX(var(--task-pill-slide)) scaleX(0.4);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0) scaleX(1);
+  }
+}
+
+/* ---------- Pillen Filtern und Sortieren ---------- */
 
 /* Die Pillen laufen waagerecht weiter, wenn sie nicht nebeneinanderpassen.
    Anders als über den Arbeitsbereichen steht rechts kein Plus-Knopf, der
    Platz freihalten müsste. */
 .task-pills {
-  flex: 1;
-  min-width: 0;
+  margin-bottom: var(--task-tools-gap);
   padding-right: 2px;
-}
-
-.task-view-btn {
-  flex: 0 0 auto;
-  padding: 8px;
 }
 
 .task-pill {

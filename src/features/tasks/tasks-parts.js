@@ -1,7 +1,7 @@
 /*
  * Die kleinen Bausteine einer Aufgabe, die Liste und Board gemeinsam nutzen:
- * der runde Haken-Knopf, das Label mit dem Ablageort und die Chips für Status
- * und Datum.
+ * der runde Haken-Knopf, das Label mit dem Ablageort und die Chips für Status,
+ * Dringlichkeit und Datum.
  * Pfad: src/features/tasks/tasks-parts.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -14,7 +14,7 @@
 
 import { escapeHtml, icon } from "../../core/html.js";
 import { shortDay } from "../../core/format.js";
-import { isTaskDone, taskStatusOf } from "../../data/config.js";
+import { isTaskDone, taskPriorityOf, taskStatusOf } from "../../data/config.js";
 import { entryDay, mainPlace, parentIcon, placesLabel } from "../../data/queries.js";
 
 const untitledTask = "Ohne Titel";
@@ -61,6 +61,12 @@ function chip(iconName, label, color, extra = "") {
 export function taskStatusChip(entry) {
   const status = taskStatusOf(entry.status);
   return chip(status.icon, status.label, status.color);
+}
+
+/** Dringlichkeits-Chip mit der Farbe der Dringlichkeit. */
+export function taskPriorityChip(entry) {
+  const priority = taskPriorityOf(entry.priority);
+  return chip(priority.icon, priority.label, priority.color);
 }
 
 /** Datums-Chip: „Heute“, „Morgen“, sonst der kurze Tag. */
