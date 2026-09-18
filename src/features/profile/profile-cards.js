@@ -196,15 +196,21 @@ export function listsMarkup() {
   const sections = listSections
     .map((section) => {
       const rows = section.rows
-        .map(
-          (row) => `
-        <button class="plist-row${row.danger ? " is-danger" : ""}" type="button"${row.detail ? ` data-settings-detail="${row.detail}"` : ""}${row.link ? ` data-external-link="${escapeHtml(row.link)}"` : ""}>
+        .map((row) => {
+          const shell = `class="plist-row${row.danger ? " is-danger" : ""}"`;
+          const inner = `
           ${icon(row.icon)}
           <span>${escapeHtml(row.label)}</span>
-          ${row.trail ? icon(row.trail, "plist-trail") : ""}
-        </button>
-      `
-        )
+          ${row.trail ? icon(row.trail, "plist-trail") : ""}`;
+          /* a statt button: nur ein echter Link öffnet verlässlich einen neuen
+             Tab. target: die App bleibt dahinter stehen, sonst müsste man sich
+             von der fremden Seite mehrfach zurücktippen. rel: der neue Tab darf
+             sonst über window.opener auf die App zugreifen. */
+          if (row.link) {
+            return `<a ${shell} href="${escapeHtml(row.link)}" target="_blank" rel="noopener noreferrer">${inner}</a>`;
+          }
+          return `<button ${shell} type="button"${row.detail ? ` data-settings-detail="${row.detail}"` : ""}>${inner}</button>`;
+        })
         .join("");
       return `<p class="psection">${section.title}</p><section class="plist">${rows}</section>`;
     })

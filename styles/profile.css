@@ -295,6 +295,8 @@
   text-align: left;
   font-size: 17px;
   color: var(--text);
+  cursor: pointer;
+  text-decoration: none; /* text-decoration: die Roadmap-Zeile ist ein Link und käme sonst unterstrichen */
 }
 
 .plist-row:last-child {
