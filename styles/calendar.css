@@ -49,9 +49,9 @@
   align-items: center;
   gap: 6px;
   padding: 0 var(--title-side);
-  margin-bottom: 14px;
-  font-size: 24px;
-  font-weight: 600;
+  margin-bottom: 18px;
+  font-size: 22px;
+  font-weight: 500;
   letter-spacing: -0.02em;
   color: var(--text);
   align-self: flex-start;
