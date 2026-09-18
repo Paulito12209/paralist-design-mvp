@@ -43,6 +43,13 @@ export function shiftSpan(direction) {
   shiftWeeks(direction * state.prefs.calendar.span);
 }
 
+/** Zu einem bestimmten Tag springen (Tagesschlüssel wie „2026-09-17“). */
+export function goToDay(key) {
+  if (key === ui.calendarDay) return;
+  ui.calendarDay = key;
+  redraw();
+}
+
 /** Zurück zum heutigen Tag. */
 export function goToday() {
   ui.calendarDay = dayKey(new Date());

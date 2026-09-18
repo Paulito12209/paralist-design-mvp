@@ -45,7 +45,8 @@ export function bindModalPull(backdrop, closeFn) {
     if (backdrop.dataset.dismissing === "1") return;
     /* Liegt das Auswahl-Blatt darüber, gehört die Geste ihm */
     if (!dom.sheet.hidden && backdrop !== dom.sheet) return;
-    if (event.target.closest(".modal-close, .profile-save, .profile-avatar-edit")) return;
+    /* Die Rollen des Datum-Blatts rollen selbst; nur daneben zieht man das Blatt zu */
+    if (event.target.closest(".modal-close, .profile-save, .profile-avatar-edit, .date-wheels")) return;
     if (event.target === backdrop) return;
 
     const body = backdrop.querySelector(".modal-body");

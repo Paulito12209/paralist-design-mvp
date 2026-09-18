@@ -8,12 +8,16 @@
  * --cal-accent              -> Blau des gewählten Tages und des „Heute“-Knopfes
  * --cal-day-ring            -> Kreis hinter Tagen mit Einträgen
  * --cal-row-h               -> Höhe einer Wochenzeile
+ * --date-wheel-h            -> Höhe der drei Rollen im Blatt „Monat und Jahr“
+ * --date-wheel-item-h       -> Höhe einer Zeile in diesen Rollen
+ * --tab-pill-active-bg      -> graues Band hinter der gewählten Zeile der Rollen
  * --muted                   -> Farbe der Wochentage und fremden Monate
  * --line                    -> Trennlinie unter der Bedienzeile, zum Raster hin
  * --content-side            -> Seitenabstand, den die Trennlinie automatisch übernimmt
  * --content-top             -> um so viel wird der einrastende Kopf nach oben verlängert
  *
- * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei
+ * (Rollen-Zeilen 20px, „Fertig“ 17px).
 */
 
 /* ---------- Kalender ---------- */
@@ -289,3 +293,96 @@
 }
 
 /* Graue Fläche: läuft bis zum unteren Rand, hinter die Navigation */
+
+/* ---------- Blatt „Monat und Jahr“ hinter dem Monatsnamen ---------- */
+
+/* Das Blatt ist nur so hoch wie seine Rollen, nicht wie die großen Blätter */
+.date-modal {
+  height: auto;
+}
+
+.date-body {
+  gap: 18px;
+  padding-top: 8px;
+}
+
+/* Drei Rollen nebeneinander; das Band in der Mitte zeigt die gewählte Zeile */
+.date-wheels {
+  position: relative; /* position: das Band hängt sich hinter die Rollen */
+  display: grid;
+  grid-template-columns: 1fr 2fr 1.4fr;
+  height: var(--date-wheel-h);
+  /* Oben und unten verblasst die Rolle, wie bei einem echten Rad */
+  -webkit-mask-image: linear-gradient(transparent, #000 25%, #000 75%, transparent);
+  mask-image: linear-gradient(transparent, #000 25%, #000 75%, transparent);
+}
+
+.date-wheels::before {
+  content: "";
+  position: absolute; /* position: das Band liegt hinter allen drei Rollen */
+  left: 0;
+  right: 0;
+  top: calc((var(--date-wheel-h) - var(--date-wheel-item-h)) / 2);
+  height: var(--date-wheel-item-h);
+  border-radius: var(--radius-lg); /* border-radius: rundet das Band wie eine Pille */
+  background: var(--tab-pill-active-bg);
+}
+
+/* Eine Rolle: rollt senkrecht und rastet zeilenweise ein */
+.date-wheel {
+  position: relative; /* position: hebt die Zeilen über das Band */
+  height: 100%;
+  overflow-y: auto;
+  /* scroll-snap: nach dem Loslassen bleibt immer genau eine Zeile in der Mitte stehen */
+  scroll-snap-type: y mandatory;
+  /* Luft oben und unten, damit auch die erste und letzte Zeile in die Mitte rollen kann */
+  padding-block: calc((var(--date-wheel-h) - var(--date-wheel-item-h)) / 2);
+  scrollbar-width: none;
+  /* overscroll-behavior: am Ende der Rolle zieht man nicht das Blatt mit */
+  overscroll-behavior: contain;
+  touch-action: pan-y; /* touch-action: nur senkrecht rollen, kein Ziehen des Blatts */
+}
+
+.date-wheel::-webkit-scrollbar {
+  display: none;
+}
+
+.date-item {
+  display: block;
+  width: 100%;
+  height: var(--date-wheel-item-h);
+  scroll-snap-align: center; /* scroll-snap-align: die Zeile rastet mittig ein */
+  font-size: 20px;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* Tag rechtsbündig, Monat links davon: so lesen sich die Spalten wie ein Datum */
+.date-wheel[data-unit="day"] .date-item {
+  text-align: right;
+  padding-right: 14px;
+}
+
+.date-wheel[data-unit="month"] .date-item {
+  text-align: left;
+  padding-left: 14px;
+}
+
+.date-item.is-on {
+  color: var(--text);
+  font-weight: 500;
+}
+
+/* „Fertig“: eine volle Pille im Kalenderblau */
+.date-done {
+  height: 50px;
+  border-radius: 999px;
+  background: var(--cal-accent);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.date-done:active {
+  opacity: 0.7;
+}

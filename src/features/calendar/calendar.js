@@ -14,9 +14,9 @@ import { emit, events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
 import { calendarSpans } from "../../data/config.js";
 import { state, ui } from "../../data/state.js";
-import { openCtxMenu } from "../../ui/ctx-menu.js";
 import { openSheet } from "../../ui/sheet.js";
 import { isViewActive } from "../../ui/views.js";
+import { openDatePicker } from "./calendar-date-picker.js";
 import { initCalendarGestures, setRedraw as setGestureRedraw } from "./calendar-gestures.js";
 import { moveNowLine, nowLineVisible, renderGrid, scrollToNow } from "./calendar-grid.js";
 import { renderList } from "./calendar-list.js";
@@ -26,7 +26,6 @@ import {
   setRedraw as setNavRedraw,
   setSegment,
   setSpan,
-  shiftMonth,
 } from "./calendar-nav.js";
 import { cal } from "./calendar-state.js";
 import { renderStrip } from "./calendar-strip.js";
@@ -85,15 +84,6 @@ function stopTick() {
   tickTimer = null;
 }
 
-/* Das Monatsmenü hinter dem Monatsnamen. */
-function openMonthMenu() {
-  openCtxMenu(dom.calMonthBtn, [
-    { icon: "back", label: "Vorheriger Monat", onSelect: () => shiftMonth(-1) },
-    { icon: "chevron", label: "Nächster Monat", onSelect: () => shiftMonth(1) },
-    { icon: "calendar", label: "Zu heute", onSelect: goToday },
-  ]);
-}
-
 /* Das Blatt hinter dem Zeitraum-Knopf. */
 function openSpanSheet() {
   openSheet(
@@ -126,7 +116,8 @@ function init() {
   setGestureRedraw(renderCalendar);
   initCalendarGestures();
 
-  dom.calMonthBtn.addEventListener("click", openMonthMenu);
+  /* Der Monatsname öffnet das Blatt „Monat und Jahr“ mit den drei Rollen. */
+  dom.calMonthBtn.addEventListener("click", openDatePicker);
   dom.calModeBtn.addEventListener("click", () =>
     setMode(state.prefs.calendar.mode === "grid" ? "list" : "grid")
   );

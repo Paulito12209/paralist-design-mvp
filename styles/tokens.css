@@ -141,6 +141,7 @@
  * --cal-now                 -> Farbe der Jetzt-Linie im Stundenraster
  * --cal-day-ring            -> Kreis hinter Tagen, an denen etwas eingetragen ist
  * --cal-row-h / --cal-hour-h -> Höhe einer Wochenzeile und einer Stunde
+ * --date-wheel-h / --date-wheel-item-h -> Höhe einer Rolle und einer Zeile im Blatt „Monat und Jahr“
  * --media-doc-color / --media-badge-bg -> Dokument-Icon und Dauer-Schild
  * --support-field-radius     -> Rundung der Felder und Art-Knöpfe im Feedback
  * --support-text-min-height  -> Mindesthöhe des Beschreibungsfelds im Feedback
@@ -235,6 +236,8 @@
   --cal-day-ring: rgba(60, 60, 67, 0.08);
   --cal-row-h: 52px;
   --cal-hour-h: 56px;
+  --date-wheel-h: 220px;
+  --date-wheel-item-h: 44px;
   --prio-jetzt: #ff453a;
   --prio-next: #ff9500;
   --prio-spaeter: #007aff;

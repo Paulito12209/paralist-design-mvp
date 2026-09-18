@@ -17,6 +17,7 @@ const weekdayShort = new Intl.DateTimeFormat("de-DE", { weekday: "short" });
 const dayMonthShort = new Intl.DateTimeFormat("de-DE", { day: "numeric", month: "short" });
 const weekdayDayMonth = new Intl.DateTimeFormat("de-DE", { weekday: "short", day: "numeric", month: "long" });
 const monthYear = new Intl.DateTimeFormat("de-DE", { month: "long", year: "numeric" });
+const monthOnly = new Intl.DateTimeFormat("de-DE", { month: "long" });
 const clockTime = new Intl.DateTimeFormat("de-DE", { hour: "2-digit", minute: "2-digit" });
 const shortDate = new Intl.DateTimeFormat("de-DE", { day: "2-digit", month: "2-digit" });
 const longWeekdayDate = new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "2-digit", month: "2-digit" });
@@ -81,6 +82,11 @@ export function shortOpenTime(ts) {
 export function monthHeading(ts) {
   if (!ts) return "Älter";
   return monthYear.format(new Date(ts));
+}
+
+/** Name eines Monats nach seiner Nummer (0 = Januar), z.B. für die Monatsrolle. */
+export function monthName(index) {
+  return monthOnly.format(new Date(2000, index, 1));
 }
 
 /** Knappes Datum eines Tagesschlüssels für die Chips der Aufgaben: „Heute“, „Morgen“, sonst „18.09.“. */
