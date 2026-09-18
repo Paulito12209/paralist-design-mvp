@@ -157,6 +157,8 @@
   --media-actions-space: 60px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+  /* Hoehe der eingeblendeten Bildschirmtastatur; app.js setzt den Wert am Handy */
+  --keyboard-inset: 0px;
 }
 
 /* Dunkelmodus: folgt dem System, solange in den Einstellungen nichts anderes gewählt ist */
@@ -685,7 +687,7 @@ button {
   position: absolute;
   left: 0;
   right: 0;
-  bottom: 0;
+  bottom: var(--keyboard-inset); /* bottom: beim Tippen rueckt die Leiste ueber die Tastatur */
   z-index: 20; /* z-index: hält die Leiste über der Liste */
   padding: 12px var(--nav-side) calc(var(--nav-bottom) + var(--safe-bottom));
 }

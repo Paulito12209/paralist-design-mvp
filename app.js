@@ -2988,6 +2988,20 @@ window.addEventListener("popstate", (event) => {
   }
 });
 
+/* Bildschirmtastatur: Handy-Browser schieben die Seite nicht hoch, sondern
+   verkleinern nur den sichtbaren Bereich. Ohne diese Zeilen laege die untere
+   Leiste beim Tippen hinter der Tastatur. */
+if (window.visualViewport) {
+  const viewport = window.visualViewport;
+  const applyKeyboardInset = () => {
+    const inset = Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop);
+    document.documentElement.style.setProperty("--keyboard-inset", `${Math.round(inset)}px`);
+  };
+  viewport.addEventListener("resize", applyKeyboardInset);
+  viewport.addEventListener("scroll", applyKeyboardInset);
+  applyKeyboardInset();
+}
+
 loadThumbs();
 loadState();
 loadUsage();
