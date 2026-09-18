@@ -97,7 +97,7 @@ const themes = [
   { id: "dark", label: "Dunkel", icon: "moon" },
 ];
 
-let tabs = [{ id: 1, name: "Privat", icon: "smile" }];
+let tabs = [{ id: 1, name: "Meine" }];
 let activeTabId = 1;
 let editingTabId = null;
 let editingWorkspaceId = null;
@@ -227,11 +227,15 @@ function loadState() {
     saveState();
   }
 
+  let renamedDefaultTab = false;
   tabs.forEach((tab) => {
-    /* Nur setzen, wenn noch nie gewählt — ein bewusst entferntes Icon bleibt weg */
-    if (tab.icon === undefined && tab.name === "Privat") tab.icon = "smile";
+    if (tab.name === "Privat") {
+      tab.name = "Meine";
+      renamedDefaultTab = true;
+    }
     if (typeof tab.awarded !== "boolean") tab.awarded = true;
   });
+  if (renamedDefaultTab) saveState();
   workspaces.forEach((workspace) => {
     if (typeof workspace.favorite !== "boolean") workspace.favorite = false;
   });
