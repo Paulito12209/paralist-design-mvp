@@ -28,6 +28,8 @@ const entryCrumb = document.getElementById("entry-crumb");
 const sheet = document.getElementById("sheet");
 const sheetTitle = document.getElementById("sheet-title");
 const sheetOptions = document.getElementById("sheet-options");
+const ctxMenu = document.getElementById("ctx-menu");
+const ctxCard = document.getElementById("ctx-card");
 
 const views = {
   home: homeView,
@@ -48,20 +50,28 @@ const types = [
 ];
 
 /* Jede Übersichtskarte ist ein Ablageort: „parent“ verbindet sie mit den
-   Einträgen, „seed“ legt beim allerersten Start Beispieleinträge an. */
+   Einträgen, „seed“ legt beim allerersten Start Beispieleinträge an.
+   Favoriten sammelt nur markierte Einträge und Arbeitsbereiche. */
 const overviewPages = {
   1: { title: "Inbox", icon: "inbox", parent: null },
-  2: { title: "Übersicht 2", parent: "o2", seed: 4 },
+  2: { title: "Favoriten", icon: "star", kind: "favorites" },
   3: { title: "Übersicht 3", parent: "o3", seed: 5 },
   4: { title: "Übersicht 4", parent: "o4", seed: 3 },
 };
 
+const presetIcons = [
+  { id: "smile", label: "Privat" },
+  { id: "briefcase", label: "Arbeit" },
+  { id: "academic", label: "Schule / Uni" },
+];
+
 const storageKey = "paralist-mvp";
 
-let tabs = [{ id: 1, name: "Privat" }];
+let tabs = [{ id: 1, name: "Privat", icon: "smile" }];
 let activeTabId = 1;
 let editingTabId = null;
-let workspaces = [{ id: 1, name: "Platzhalter 1", tab: 1 }];
+let editingWorkspaceId = null;
+let workspaces = [{ id: 1, name: "Platzhalter 1", tab: 1, favorite: false }];
 let entries = [];
 let nextEntryId = 1;
 let sourceView = "home";
@@ -70,6 +80,9 @@ let currentEntryId = null;
 let composerType = types[0].id;
 let composerParent = null;
 let sheetActions = [];
+let ctxActions = [];
+let skipClick = false;
+let hold = null;
 
 function escapeHtml(value) {
   return String(value).replace(
@@ -115,6 +128,7 @@ function seedEntries() {
         body: "",
         parent: page.parent,
         archived: false,
+        favorite: false,
       });
     }
   });
@@ -140,6 +154,16 @@ function loadState() {
   if (Array.isArray(saved.entries)) entries = saved.entries;
   if (Number(saved.nextEntryId)) nextEntryId = Number(saved.nextEntryId);
   if (!tabs.some((tab) => tab.id === activeTabId)) activeTabId = tabs[0].id;
+
+  tabs.forEach((tab) => {
+    if (!tab.icon && tab.name === "Privat") tab.icon = "smile";
+  });
+  workspaces.forEach((workspace) => {
+    if (typeof workspace.favorite !== "boolean") workspace.favorite = false;
+  });
+  entries.forEach((entry) => {
+    if (typeof entry.favorite !== "boolean") entry.favorite = false;
+  });
 }
 
 function workspaceName(id) {
@@ -162,6 +186,22 @@ function tabWorkspaces() {
   return workspaces.filter((workspace) => String(workspace.tab) === String(activeTabId));
 }
 
+function favoriteCount() {
+  return (
+    workspaces.filter((workspace) => workspace.favorite).length +
+    entries.filter((entry) => entry.favorite && !entry.archived).length
+  );
+}
+
+function pageCount(page) {
+  if (page.kind === "favorites") return favoriteCount();
+  return entriesOf(page.parent).length;
+}
+
+function workspaceIcon(workspace) {
+  return workspace.icon || "folder";
+}
+
 function hideAllViews() {
   Object.values(views).forEach((view) => {
     view.hidden = true;
@@ -171,6 +211,7 @@ function hideAllViews() {
 
 function showView(name) {
   closeComposer();
+  closeCtxMenu();
   hideAllViews();
   const view = views[name];
   view.hidden = false;
@@ -189,17 +230,18 @@ function setActiveTab(tab) {
 function renderOverview() {
   const grid = document.getElementById("overview-grid");
   grid.innerHTML = Object.entries(overviewPages)
-    .map(
-      ([id, page]) => `
+    .map(([id, page]) => {
+      const iconClass = page.icon === "star" ? "card-icon card-icon-star" : "card-icon";
+      return `
         <button class="overview-card" type="button" data-open="overview" data-id="${id}" onclick="openTarget('overview', '${id}')">
-          ${icon(page.icon || "placeholder", "card-icon")}
+          ${icon(page.icon || "placeholder", iconClass)}
           <span class="card-label">
             ${page.title}
-            <span class="card-count">${entriesOf(page.parent).length}</span>
+            <span class="card-count">${pageCount(page)}</span>
           </span>
         </button>
-      `
-    )
+      `;
+    })
     .join("");
 }
 
@@ -207,13 +249,20 @@ function renderOverview() {
 function renderTabs() {
   const pills = tabs
     .map((tab) => {
+      const mark = tab.id === activeTabId ? " is-active" : "";
+      const glyph = tab.icon ? icon(tab.icon, "tab-pill-icon") : "";
       if (tab.id === editingTabId) {
-        return `<input class="tab-pill tab-pill-input" id="tab-name-input" type="text" value="${escapeHtml(tab.name)}" placeholder="${escapeHtml(tab.placeholder || "")}" aria-label="Tab benennen" />`;
+        return `
+          <div class="tab-pill is-active">
+            ${glyph}
+            <input class="tab-pill-input" id="tab-name-input" type="text" value="${escapeHtml(tab.name)}" placeholder="${escapeHtml(tab.placeholder || "")}" aria-label="Tab benennen" />
+          </div>
+        `;
       }
       const label = tab.name || tab.placeholder || "Tab";
       return `
-        <button class="tab-pill${tab.id === activeTabId ? " is-active" : ""}" type="button" data-tab-id="${tab.id}">
-          ${escapeHtml(label)}
+        <button class="tab-pill${mark}" type="button" data-tab-id="${tab.id}">
+          ${glyph}${escapeHtml(label)}
         </button>
       `;
     })
@@ -259,7 +308,11 @@ function swipeAction(action, label, iconName, tone = action) {
 function entryRow(entry) {
   return swipeRow(
     `data-entry="${entry.id}"`,
-    [swipeAction("archive", "Archivieren", "archive"), swipeAction("link", "Verknüpfen", "link")],
+    [
+      swipeAction("favorite", "Favorit", entry.favorite ? "star" : "star-outline", "favorite"),
+      swipeAction("archive", "Archivieren", "archive"),
+      swipeAction("link", "Verknüpfen", "link"),
+    ],
     [swipeAction("delete", "Löschen", "trash")],
     `
       <button class="workspace-row entry-row" type="button" data-open-entry="${entry.id}">
@@ -271,22 +324,42 @@ function entryRow(entry) {
   );
 }
 
+function workspaceRow(workspace, canEdit = false) {
+  if (canEdit && workspace.id === editingWorkspaceId) {
+    return `
+      <div class="workspace-row">
+        ${icon(workspaceIcon(workspace))}
+        <input class="workspace-name-input" id="workspace-name-input" type="text" value="${escapeHtml(workspace.name)}" aria-label="Arbeitsbereich benennen" />
+      </div>
+    `;
+  }
+
+  return swipeRow(
+    `data-workspace="${workspace.id}"`,
+    [],
+    [swipeAction("delete-workspace", "Löschen", "trash", "delete")],
+    `
+      <button class="workspace-row" type="button" data-open-workspace="${workspace.id}">
+        ${icon(workspaceIcon(workspace))}
+        <span>${escapeHtml(workspace.name)}</span>
+        ${icon("chevron", "chevron")}
+      </button>
+    `
+  );
+}
+
+function focusWorkspaceName() {
+  const input = document.getElementById("workspace-name-input");
+  if (input) {
+    input.focus();
+    input.select();
+  }
+}
+
 function renderWorkspaces() {
+  const canEdit = homeView.classList.contains("is-active");
   const rows = tabWorkspaces()
-    .map((workspace) =>
-      swipeRow(
-        `data-workspace="${workspace.id}"`,
-        [],
-        [swipeAction("delete-workspace", "Löschen", "trash", "delete")],
-        `
-          <button class="workspace-row" type="button" data-open-workspace="${workspace.id}">
-            ${icon("folder")}
-            <span>${escapeHtml(workspace.name)}</span>
-            ${icon("chevron", "chevron")}
-          </button>
-        `
-      )
-    )
+    .map((workspace) => workspaceRow(workspace, canEdit))
     .join("");
 
   workspaceList.innerHTML =
@@ -297,10 +370,24 @@ function renderWorkspaces() {
         <span>Add Workspace</span>
       </button>
     `;
+
+  if (canEdit) focusWorkspaceName();
 }
 
 function renderPageBody() {
   if (!currentPage) return;
+
+  if (currentPage.kind === "favorites") {
+    const favSpaces = workspaces.filter((workspace) => workspace.favorite);
+    const favEntries = entries.filter((entry) => entry.favorite && !entry.archived);
+    pageBody.innerHTML =
+      favSpaces.length || favEntries.length
+        ? `<div class="workspace-list">${favSpaces.map((workspace) => workspaceRow(workspace, pageView.classList.contains("is-active"))).join("")}${favEntries.map(entryRow).join("")}</div>`
+        : `<p class="empty-note">Noch keine Favoriten.</p>`;
+    if (pageView.classList.contains("is-active")) focusWorkspaceName();
+    return;
+  }
+
   const list = entriesOf(currentPage.parent);
   pageBody.innerHTML = list.length
     ? `<div class="workspace-list">${list.map(entryRow).join("")}</div>`
@@ -363,7 +450,7 @@ function showSearch(replace = false) {
 
 function addWorkspace() {
   const id = workspaces.reduce((max, workspace) => Math.max(max, workspace.id), 0) + 1;
-  workspaces.push({ id, name: `Platzhalter ${id}`, tab: activeTabId });
+  workspaces.push({ id, name: `Platzhalter ${id}`, tab: activeTabId, favorite: false });
   saveState();
   renderWorkspaces();
 }
@@ -387,11 +474,81 @@ function commitTabName() {
   renderTabs();
 }
 
+function commitWorkspaceName() {
+  const input = document.getElementById("workspace-name-input");
+  if (!input) return;
+  const workspace = workspaces.find((item) => item.id === editingWorkspaceId);
+  editingWorkspaceId = null;
+  if (workspace) workspace.name = input.value.trim() || workspace.name || "Arbeitsbereich";
+  saveState();
+  renderWorkspaces();
+  renderPageBody();
+}
+
+function deleteWorkspace(id) {
+  workspaces = workspaces.filter((workspace) => String(workspace.id) !== String(id));
+  entries.forEach((entry) => {
+    if (sameParent(entry.parent, id)) entry.parent = null;
+  });
+  saveState();
+  refreshLists();
+}
+
+function deleteTab(id) {
+  if (tabs.length < 2) return;
+  workspaces
+    .filter((workspace) => String(workspace.tab) === String(id))
+    .forEach((workspace) => {
+      entries.forEach((entry) => {
+        if (sameParent(entry.parent, workspace.id)) entry.parent = null;
+      });
+    });
+  workspaces = workspaces.filter((workspace) => String(workspace.tab) !== String(id));
+  tabs = tabs.filter((tab) => tab.id !== id);
+  if (activeTabId === id) activeTabId = tabs[0].id;
+  saveState();
+  renderTabs();
+  renderWorkspaces();
+  renderOverview();
+}
+
+function toggleFavorite(item) {
+  item.favorite = !item.favorite;
+  saveState();
+  refreshLists();
+}
+
+function copyText(text) {
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).catch(() => {});
+    return;
+  }
+  const field = document.createElement("input");
+  field.value = text;
+  document.body.appendChild(field);
+  field.select();
+  document.execCommand("copy");
+  field.remove();
+}
+
+function beginRenameTab(id) {
+  const tab = tabs.find((item) => item.id === id);
+  editingTabId = id;
+  if (tab && !tab.placeholder) tab.placeholder = tab.name;
+  renderTabs();
+}
+
+function beginRenameWorkspace(id) {
+  editingWorkspaceId = id;
+  renderWorkspaces();
+  renderPageBody();
+}
+
 function openTarget(open, id) {
   if (open === "overview") {
     const page = overviewPages[id];
     if (!page) return;
-    showPage({ title: page.title, parent: page.parent });
+    showPage({ title: page.title, parent: page.parent, kind: page.kind });
     history.pushState({ view: "overview", id, from: sourceView }, "", `#/uebersicht/${id}`);
     return;
   }
@@ -444,6 +601,7 @@ function renderComposerLink() {
 }
 
 function openComposer() {
+  closeCtxMenu();
   navShell.classList.add("is-composing");
   tabBar.hidden = true;
   composer.hidden = false;
@@ -470,6 +628,7 @@ function createEntry() {
     body: "",
     parent: composerParent,
     archived: false,
+    favorite: false,
   });
   saveState();
   composerInput.value = "";
@@ -481,6 +640,7 @@ function createEntry() {
 /* ---------- Auswahl-Blatt ---------- */
 
 function openSheet(title, options) {
+  closeCtxMenu();
   sheetTitle.textContent = title;
   sheetOptions.innerHTML = options
     .map(
@@ -501,9 +661,160 @@ function closeSheet() {
   sheetActions = [];
 }
 
+function closeCtxMenu() {
+  ctxMenu.hidden = true;
+  ctxActions = [];
+}
+
+function openCtxMenu(anchor, options) {
+  closeSheet();
+  ctxCard.innerHTML = options
+    .map(
+      (option, index) => `
+        <button class="ctx-item${option.danger ? " is-danger" : ""}" type="button" data-ctx="${index}">
+          ${icon(option.icon)}
+          <span>${escapeHtml(option.label)}</span>
+        </button>
+      `
+    )
+    .join("");
+  ctxActions = options.map((option) => option.onSelect);
+  ctxMenu.hidden = false;
+
+  const device = document.querySelector(".device");
+  const deviceRect = device.getBoundingClientRect();
+  const anchorRect = anchor.getBoundingClientRect();
+  const cardRect = ctxCard.getBoundingClientRect();
+  let top = anchorRect.bottom - deviceRect.top + 6;
+  let left = anchorRect.left - deviceRect.left;
+  if (left + cardRect.width > deviceRect.width - 12) {
+    left = Math.max(12, deviceRect.width - cardRect.width - 12);
+  }
+  if (left < 12) left = 12;
+  if (top + cardRect.height > deviceRect.height - 12) {
+    top = Math.max(12, anchorRect.top - deviceRect.top - cardRect.height - 6);
+  }
+  ctxCard.style.top = `${top}px`;
+  ctxCard.style.left = `${left}px`;
+}
+
+function openIconPicker(current, onPick) {
+  openSheet(
+    "Icon wählen",
+    presetIcons.map((item) => ({
+      label: item.label,
+      icon: item.id,
+      active: current === item.id,
+      onSelect: () => onPick(item.id),
+    }))
+  );
+}
+
+function openTabMenu(pill) {
+  const id = Number(pill.dataset.tabId);
+  const tab = tabs.find((item) => item.id === id);
+  if (!tab) return;
+  const options = [
+    { label: "Umbenennen", icon: "pencil", onSelect: () => beginRenameTab(id) },
+    {
+      label: "Icon bearbeiten",
+      icon: "smile",
+      onSelect: () =>
+        openIconPicker(tab.icon, (name) => {
+          tab.icon = name;
+          saveState();
+          renderTabs();
+        }),
+    },
+    {
+      label: "Link kopieren",
+      icon: "chain",
+      onSelect: () => copyText(`${location.origin}${location.pathname}${location.search}#/tab/${id}`),
+    },
+  ];
+  if (tabs.length > 1) {
+    options.push({
+      label: "Löschen",
+      icon: "trash",
+      danger: true,
+      onSelect: () => deleteTab(id),
+    });
+  }
+  openCtxMenu(pill, options);
+}
+
+function openWorkspaceMenu(button) {
+  const id = button.dataset.openWorkspace;
+  const workspace = workspaces.find((item) => String(item.id) === String(id));
+  if (!workspace) return;
+  openCtxMenu(button, [
+    { label: "Umbenennen", icon: "pencil", onSelect: () => beginRenameWorkspace(workspace.id) },
+    {
+      label: "Icon bearbeiten",
+      icon: "smile",
+      onSelect: () =>
+        openIconPicker(workspace.icon, (name) => {
+          workspace.icon = name;
+          saveState();
+          refreshLists();
+        }),
+    },
+    {
+      label: workspace.favorite ? "Aus Favoriten entfernen" : "Zu Favoriten",
+      icon: workspace.favorite ? "star" : "star-outline",
+      onSelect: () => toggleFavorite(workspace),
+    },
+    {
+      label: "Löschen",
+      icon: "trash",
+      danger: true,
+      onSelect: () => deleteWorkspace(id),
+    },
+  ]);
+}
+
+function cancelHold() {
+  if (!hold) return;
+  clearTimeout(hold.timer);
+  hold = null;
+}
+
+function startHold(event, target, kind) {
+  cancelHold();
+  hold = {
+    pointerId: event.pointerId,
+    startX: event.clientX,
+    startY: event.clientY,
+    target,
+    kind,
+    fired: false,
+    timer: setTimeout(() => {
+      if (hold) hold.fired = true;
+    }, 480),
+  };
+}
+
+function finishHold() {
+  if (!hold) return false;
+  const fired = hold.fired;
+  const target = hold.target;
+  const kind = hold.kind;
+  cancelHold();
+  if (!fired) return false;
+  skipClick = true;
+  setTimeout(() => {
+    skipClick = false;
+  }, 400);
+  if (kind === "tab") openTabMenu(target);
+  else openWorkspaceMenu(target);
+  return true;
+}
+
 function openParentPicker(title, current, onPick) {
   openSheet(title, [
-    ...Object.values(overviewPages).map((page) => ({
+    ...Object.values(overviewPages)
+      .filter((page) => page.kind !== "favorites")
+      .map((page) => ({
       label: page.title,
       icon: page.icon || "placeholder",
       active: sameParent(current, page.parent),
@@ -511,7 +822,7 @@ function openParentPicker(title, current, onPick) {
     })),
     ...workspaces.map((workspace) => ({
       label: workspace.name,
-      icon: "folder",
+      icon: workspaceIcon(workspace),
       active: sameParent(current, workspace.id),
       onSelect: () => onPick(workspace.id),
     })),
@@ -547,6 +858,11 @@ function closeSwipes(except) {
 }
 
 content.addEventListener("pointerdown", (event) => {
+  const tabPill = event.target.closest("[data-tab-id]");
+  const workspaceBtn = event.target.closest("[data-open-workspace]");
+  if (tabPill) startHold(event, tabPill, "tab");
+  else if (workspaceBtn) startHold(event, workspaceBtn, "workspace");
+
   const body = event.target.closest(".swipe-body");
   if (!body || event.target.closest(".swipe-action")) return;
   drag = {
@@ -560,6 +876,11 @@ content.addEventListener("pointerdown", (event) => {
 });
 
 content.addEventListener("pointermove", (event) => {
+  if (hold && event.pointerId === hold.pointerId) {
+    const moved = Math.hypot(event.clientX - hold.startX, event.clientY - hold.startY);
+    if (moved > 8) cancelHold();
+  }
+
   if (!drag || event.pointerId !== drag.pointerId) return;
   const dx = event.clientX - drag.startX;
   const dy = event.clientY - drag.startY;
@@ -568,6 +889,7 @@ content.addEventListener("pointermove", (event) => {
     if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
     drag.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
     if (drag.axis === "x") {
+      cancelHold();
       drag.body.classList.add("is-sliding");
       closeSwipes(drag.body);
     }
@@ -579,6 +901,16 @@ content.addEventListener("pointermove", (event) => {
 });
 
 function endDrag() {
+  if (finishHold()) {
+    if (drag) {
+      const body = drag.body;
+      drag = null;
+      body.classList.remove("is-sliding");
+      setSwipe(body, 0);
+    }
+    return;
+  }
+
   if (!drag) return;
   const body = drag.body;
   drag = null;
@@ -593,6 +925,12 @@ function endDrag() {
 
 content.addEventListener("pointerup", endDrag);
 content.addEventListener("pointercancel", endDrag);
+window.addEventListener("pointerup", () => {
+  if (hold || drag) endDrag();
+});
+window.addEventListener("pointercancel", () => {
+  if (hold || drag) endDrag();
+});
 
 /* ---------- Klicks in Listen ---------- */
 
@@ -602,19 +940,40 @@ function refreshLists() {
   renderPageBody();
 }
 
+content.addEventListener(
+  "click",
+  (event) => {
+    if (!skipClick) return;
+    event.preventDefault();
+    event.stopPropagation();
+    skipClick = false;
+  },
+  true
+);
+
+content.addEventListener("contextmenu", (event) => {
+  const tabPill = event.target.closest("[data-tab-id]");
+  if (tabPill) {
+    event.preventDefault();
+    cancelHold();
+    openTabMenu(tabPill);
+    return;
+  }
+  const workspaceBtn = event.target.closest("[data-open-workspace]");
+  if (workspaceBtn) {
+    event.preventDefault();
+    cancelHold();
+    openWorkspaceMenu(workspaceBtn);
+  }
+});
+
 content.addEventListener("click", (event) => {
   const action = event.target.closest(".swipe-action");
   if (action) {
     const kind = action.dataset.swipe;
 
     if (kind === "delete-workspace") {
-      const id = action.closest(".swipe").dataset.workspace;
-      workspaces = workspaces.filter((workspace) => String(workspace.id) !== String(id));
-      entries.forEach((entry) => {
-        if (sameParent(entry.parent, id)) entry.parent = null;
-      });
-      saveState();
-      refreshLists();
+      deleteWorkspace(action.closest(".swipe").dataset.workspace);
       return;
     }
 
@@ -634,6 +993,10 @@ content.addEventListener("click", (event) => {
       refreshLists();
       return;
     }
+    if (kind === "favorite") {
+      toggleFavorite(entry);
+      return;
+    }
     openParentPicker("Verknüpfen mit", entry.parent, (parent) => {
       entry.parent = parent;
       saveState();
@@ -646,10 +1009,7 @@ content.addEventListener("click", (event) => {
   if (tabPill) {
     const id = Number(tabPill.dataset.tabId);
     if (id === activeTabId) {
-      const tab = tabs.find((item) => item.id === id);
-      editingTabId = id;
-      if (tab && !tab.placeholder) tab.placeholder = tab.name;
-      renderTabs();
+      beginRenameTab(id);
       return;
     }
     activeTabId = id;
@@ -688,7 +1048,39 @@ workspaceTabs.addEventListener(
   (event) => {
     if (event.target.id === "tab-name-input") commitTabName();
   },
-  true /* blur steigt nicht auf, darum in der Erfassungsphase lauschen */
+  true
+);
+
+workspaceList.addEventListener("keydown", (event) => {
+  if (event.target.id !== "workspace-name-input") return;
+  if (event.key === "Enter") {
+    event.preventDefault();
+    commitWorkspaceName();
+  }
+});
+
+workspaceList.addEventListener(
+  "blur",
+  (event) => {
+    if (event.target.id === "workspace-name-input") commitWorkspaceName();
+  },
+  true
+);
+
+pageBody.addEventListener("keydown", (event) => {
+  if (event.target.id !== "workspace-name-input") return;
+  if (event.key === "Enter") {
+    event.preventDefault();
+    commitWorkspaceName();
+  }
+});
+
+pageBody.addEventListener(
+  "blur",
+  (event) => {
+    if (event.target.id === "workspace-name-input") commitWorkspaceName();
+  },
+  true
 );
 
 /* ---------- Bedienelemente ---------- */
@@ -734,20 +1126,73 @@ sheet.addEventListener("click", (event) => {
   if (run) run();
 });
 
+ctxMenu.addEventListener("click", (event) => {
+  const option = event.target.closest("[data-ctx]");
+  if (!option) {
+    closeCtxMenu();
+    return;
+  }
+  const run = ctxActions[Number(option.dataset.ctx)];
+  closeCtxMenu();
+  if (run) run();
+});
+
 pageMenuBtn.addEventListener("click", () => {
   if (!currentPage) return;
-  const options = [
-    {
-      label: "Alle Einträge löschen",
-      icon: "trash",
-      danger: true,
-      onSelect: () => {
-        entries = entries.filter((entry) => !sameParent(entry.parent, currentPage.parent));
-        saveState();
-        refreshLists();
+
+  if (currentPage.kind === "favorites") {
+    openSheet(currentPage.title, [
+      {
+        label: "Alle Favoriten entfernen",
+        icon: "star-outline",
+        onSelect: () => {
+          workspaces.forEach((workspace) => {
+            workspace.favorite = false;
+          });
+          entries.forEach((entry) => {
+            entry.favorite = false;
+          });
+          saveState();
+          refreshLists();
+        },
       },
+    ]);
+    return;
+  }
+
+  const options = [];
+
+  if (currentPage.isWorkspace) {
+    const workspace = workspaces.find((item) => sameParent(item.id, currentPage.parent));
+    if (workspace) {
+      options.push({
+        label: workspace.favorite ? "Aus Favoriten entfernen" : "Zu Favoriten",
+        icon: workspace.favorite ? "star" : "star-outline",
+        onSelect: () => toggleFavorite(workspace),
+      });
+      options.push({
+        label: "Icon bearbeiten",
+        icon: "smile",
+        onSelect: () =>
+          openIconPicker(workspace.icon, (name) => {
+            workspace.icon = name;
+            saveState();
+            refreshLists();
+          }),
+      });
+    }
+  }
+
+  options.push({
+    label: "Alle Einträge löschen",
+    icon: "trash",
+    danger: true,
+    onSelect: () => {
+      entries = entries.filter((entry) => !sameParent(entry.parent, currentPage.parent));
+      saveState();
+      refreshLists();
     },
-  ];
+  });
 
   if (currentPage.isWorkspace) {
     options.push({
@@ -755,12 +1200,7 @@ pageMenuBtn.addEventListener("click", () => {
       icon: "trash",
       danger: true,
       onSelect: () => {
-        const id = currentPage.parent;
-        workspaces = workspaces.filter((workspace) => String(workspace.id) !== String(id));
-        entries.forEach((entry) => {
-          if (sameParent(entry.parent, id)) entry.parent = null;
-        });
-        saveState();
+        deleteWorkspace(currentPage.parent);
         restoreFrom(sourceView);
       },
     });
@@ -774,6 +1214,13 @@ document.getElementById("entry-menu").addEventListener("click", () => {
   if (!entry) return;
 
   openSheet(entry.title || "Eintrag", [
+    {
+      label: entry.favorite ? "Aus Favoriten entfernen" : "Zu Favoriten",
+      icon: entry.favorite ? "star" : "star-outline",
+      onSelect: () => {
+        toggleFavorite(entry);
+      },
+    },
     {
       label: "Verknüpfen",
       icon: "link",
@@ -848,6 +1295,7 @@ searchInput.addEventListener("focus", () => {
 window.addEventListener("popstate", (event) => {
   const state = event.state;
   closeSheet();
+  closeCtxMenu();
 
   if (!state || state.view === "home") {
     showHome(true);
@@ -870,7 +1318,7 @@ window.addEventListener("popstate", (event) => {
     const page = overviewPages[state.id];
     if (page) {
       sourceView = state.from || "home";
-      showPage({ title: page.title, parent: page.parent });
+      showPage({ title: page.title, parent: page.parent, kind: page.kind });
     }
     return;
   }
@@ -882,6 +1330,11 @@ window.addEventListener("popstate", (event) => {
 });
 
 loadState();
+const tabMatch = location.hash.match(/^#\/tab\/(\d+)/);
+if (tabMatch) {
+  const id = Number(tabMatch[1]);
+  if (tabs.some((tab) => tab.id === id)) activeTabId = id;
+}
 renderOverview();
 renderTabs();
 renderWorkspaces();

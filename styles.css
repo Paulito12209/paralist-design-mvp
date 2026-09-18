@@ -44,6 +44,8 @@
  * --tab-pill-active-bg      -> Hintergrund der ausgewählten Tab-Pille
  * --tab-pills-btn-gap       -> Abstand zwischen der senkrechten Trennlinie und dem Plus-Button
  * --tab-pills-fade          -> Breite des Ausblendens links von der Trennlinie, wenn Tabs darunter durchlaufen
+ * --star-color              -> Goldfarbe für den Favoriten-Stern auf der Karte
+ * --ctx-radius              -> Rundung des kleinen Menüs beim gedrückt Halten
  */
 
 :root {
@@ -92,6 +94,8 @@
   --tab-pill-active-bg: rgba(60, 60, 67, 0.09);
   --tab-pills-btn-gap: 8px;
   --tab-pills-fade: 16px;
+  --star-color: #f5c518;
+  --ctx-radius: 16px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -296,6 +300,11 @@ button {
   color: #c7c7cc;
 }
 
+/* Goldener Stern auf der Favoriten-Karte */
+.card-icon-star {
+  color: var(--star-color);
+}
+
 .card-label {
   display: flex;
   flex-wrap: wrap;
@@ -353,6 +362,8 @@ button {
   border-bottom: 0.5px solid var(--line);
   text-align: left;
   font-size: 17px;
+  user-select: none; /* user-select: Text soll beim gedrückt Halten nicht markiert werden */
+  -webkit-touch-callout: none; /* -webkit-touch-callout: verhindert das iPhone-Menü über unserem eigenen */
 }
 
 .workspace-row .icon:not(.chevron) {
@@ -781,13 +792,24 @@ button {
 }
 
 .tab-pill {
-  padding: 6px 14px;
+  padding: 8px 18px;
   border-radius: 999px; /* border-radius: macht aus dem Knopf eine Pille */
   font-size: var(--tab-pill-size);
   font-weight: 600;
   color: var(--muted);
   white-space: nowrap;
   flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none; /* user-select: Text soll beim gedrückt Halten nicht markiert werden */
+  -webkit-touch-callout: none; /* -webkit-touch-callout: verhindert das iPhone-Menü über unserem eigenen */
+}
+
+.tab-pill-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto; /* Icon soll neben dem Namen nicht schrumpfen */
 }
 
 /* Der ausgewählte Tab bekommt als einziger einen Hintergrund */
@@ -804,9 +826,23 @@ button {
 .tab-pill-input {
   border: 0;
   outline: none;
-  background: var(--tab-pill-active-bg);
+  background: transparent;
   color: var(--text);
   width: 96px;
+  font-size: var(--tab-pill-size);
+  font-weight: 600;
+  user-select: text; /* user-select: im Eingabefeld soll man den Namen markieren können */
+}
+
+.workspace-name-input {
+  flex: 1;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font-size: 17px;
+  min-width: 0; /* langer Name soll in der Zeile bleiben */
+  user-select: text; /* user-select: im Eingabefeld soll man den Namen markieren können */
 }
 
 .tab-pill-add {
@@ -877,6 +913,10 @@ button {
 
 .swipe-action-link {
   background: var(--link-color);
+}
+
+.swipe-action-favorite {
+  background: var(--star-color);
 }
 
 .swipe-action:active {
@@ -977,6 +1017,60 @@ button {
 }
 
 .sheet-option:active {
+  background: var(--bg);
+}
+
+/* Unsichtbare Fläche über dem Gerät, damit ein Tipp neben dem Menü es schließt */
+.ctx-backdrop {
+  position: absolute; /* position: liegt über der ganzen Gerätefläche */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 36; /* z-index: über der Navigation, unter dem Auswahl-Blatt */
+  background: transparent;
+}
+
+.ctx-backdrop[hidden] {
+  display: none;
+}
+
+/* Kleines weißes Menü wie beim gedrückt Halten eines Tabs */
+.ctx-card {
+  position: absolute; /* position: klebt am gedrückten Tab oder der Zeile */
+  min-width: 220px;
+  background: var(--card);
+  border-radius: var(--ctx-radius); /* border-radius: rundet das Menü */
+  padding: 6px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+}
+
+.ctx-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 44px;
+  padding: 8px 12px;
+  border-radius: 12px; /* border-radius: rundet die Zeile beim Antippen */
+  text-align: left;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.ctx-item .icon {
+  width: 20px;
+  height: 20px;
+  color: var(--text);
+  flex: 0 0 auto;
+}
+
+.ctx-item.is-danger,
+.ctx-item.is-danger .icon {
+  color: var(--danger);
+}
+
+.ctx-item:active {
   background: var(--bg);
 }
 
