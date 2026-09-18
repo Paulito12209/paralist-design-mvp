@@ -1797,6 +1797,7 @@ button {
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow);
   overflow: hidden; /* overflow: schneidet die Zeilen an den runden Ecken ab */
+  flex: 0 0 auto; /* flex: im Blatt sonst auf null zusammengedrückt */
 }
 
 .plist-row {
