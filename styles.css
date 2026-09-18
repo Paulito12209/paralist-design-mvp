@@ -73,6 +73,9 @@
  * --media-badge-bg          -> dunkler Hintergrund des kleinen Dauer-Schilds unten rechts in der Kachel
  * --media-btn-size          -> Größe der runden Knöpfe Foto, Video, Audio, Import über der Navigation
  * --media-actions-space     -> Extra-Platz am Ende der Medien-Seite, damit die Knöpfe nichts verdecken
+ * --draw-tool-size          -> Größe der Werkzeug-Knöpfe (Stift, Marker, Radierer, Rückgängig) unter einer Zeichnung
+ * --draw-color-size         -> Größe der Farbpunkte in der Werkzeugleiste
+ * --draw-tools-space        -> Extra-Platz unter der Zeichenfläche, damit die Werkzeugleiste nichts verdeckt
  *
  * Dunkelmodus: dieselben Variablen werden weiter unten unter
  * „[data-theme="dark"]“ bzw. „prefers-color-scheme: dark“ überschrieben.
@@ -157,6 +160,9 @@
   --media-badge-bg: rgba(0, 0, 0, 0.55);
   --media-btn-size: 48px;
   --media-actions-space: 60px;
+  --draw-tool-size: 38px;
+  --draw-color-size: 22px;
+  --draw-tools-space: 62px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   /* Hoehe der eingeblendeten Bildschirmtastatur; app.js setzt den Wert am Handy */
@@ -881,8 +887,50 @@ button {
 }
 
 .composer-close:active,
-.composer-type:active {
+.composer-type:active,
+.composer-send:active {
   opacity: 0.55;
+}
+
+/* Beide Pillen oben: links der Ablageort, rechts der Typ */
+.composer-chips {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+}
+
+.composer-chips .composer-link {
+  min-width: 0; /* lange Namen kürzen sich, statt die Zeile zu sprengen */
+}
+
+.composer-chips .composer-link span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Anlegen und Schließen sitzen zusammen rechts */
+.composer-end {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+/* Anlegen-Knopf: gefüllter Kreis wie der Plus-Knopf in der Navigation */
+.composer-send {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%; /* border-radius: macht den Anlegen-Knopf rund */
+  background: var(--text);
+  color: var(--card);
+  display: grid;
+  place-items: center;
+}
+
+.composer-send .icon {
+  width: 20px;
+  height: 20px;
 }
 
 /* Kopfzeile einer Seite: Zurück links, Drei-Punkte-Menü rechts */
@@ -903,6 +951,11 @@ button {
 
 .head-btn:active {
   opacity: 0.55;
+}
+
+/* Ohne diese Zeile würde display: grid oben das hidden-Attribut überstimmen */
+.head-btn[hidden] {
+  display: none;
 }
 
 /* Editor-Seite: Titel und Text sind direkt bearbeitbar */
@@ -2486,4 +2539,135 @@ body.is-media .media-actions:not([hidden]) {
 /* Auf der Medien-Seite braucht die Liste unten mehr Platz, damit die Knöpfe nichts verdecken */
 body.is-media .content {
   padding-bottom: calc(var(--tab-space) + var(--media-actions-space));
+}
+
+/* ---------- Ressourcen ---------- */
+
+/* Filter-Pillen wie auf der Medien-Seite; darunter Listen je Monat statt Kacheln */
+.resource-filters {
+  padding-right: 2px;
+  margin: 0 0 22px;
+}
+
+.workspace-list + .media-month {
+  margin-top: 24px;
+}
+
+/* Kleine Vorschau vor dem Titel: Foto, Video oder Zeichnung statt des Typ-Icons */
+.entry-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 6px;
+  object-fit: cover; /* object-fit: füllt das Quadrat und beschneidet statt zu verzerren */
+  flex: 0 0 auto;
+  background: #ffffff; /* Zeichnungen sind durchsichtig gespeichert und brauchen Papier dahinter */
+  box-shadow: inset 0 0 0 0.5px var(--line);
+}
+
+/* ---------- Zeichnung ---------- */
+
+/* Zeichenfläche: weißes Papier, füllt den Platz zwischen Titel und Werkzeugleiste */
+.draw-pad {
+  flex: 1;
+  min-height: 0;
+  background: #ffffff; /* bleibt auch im Dunkelmodus weiß, damit die Striche lesbar bleiben */
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden; /* overflow: schneidet die Fläche ab, wenn die Tastatur den Platz verkleinert */
+  touch-action: none; /* touch-action: der Finger zeichnet, statt die Seite zu scrollen */
+}
+
+.draw-pad[hidden] {
+  display: none;
+}
+
+.draw-pad canvas {
+  display: block;
+}
+
+/* Auf einer Zeichnung scrollt nichts: die Seite füllt den Platz bis zur Werkzeugleiste */
+body.is-drawing .content {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  padding-bottom: calc(var(--tab-space) + var(--draw-tools-space));
+}
+
+body.is-drawing #view-entry {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Werkzeugleiste über der Navigation wie Apples Stiftpalette; nur auf einer Zeichnung zu sehen */
+.draw-tools {
+  display: none;
+  align-items: center;
+  gap: 4px;
+  width: fit-content;
+  max-width: 100%;
+  margin: 0 auto 12px;
+  padding: 6px 8px;
+  border-radius: 999px; /* border-radius: Pillenform wie die Navigation */
+  background: var(--card);
+  box-shadow: var(--shadow);
+}
+
+body.is-drawing .draw-tools:not([hidden]) {
+  display: flex;
+}
+
+.draw-tool {
+  width: var(--draw-tool-size);
+  height: var(--draw-tool-size);
+  border-radius: 50%; /* border-radius: macht die Werkzeug-Knöpfe rund */
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+.draw-tool .icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* Das gewählte Werkzeug bleibt hervorgehoben */
+.draw-tool.is-active {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.draw-tool:active,
+.draw-color:active {
+  opacity: 0.55;
+}
+
+.draw-split {
+  width: 1px;
+  height: 20px;
+  margin: 0 4px;
+  background: var(--line);
+  flex: 0 0 auto;
+}
+
+.draw-colors {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.draw-color {
+  width: var(--draw-color-size);
+  height: var(--draw-color-size);
+  border-radius: 50%; /* border-radius: Farbpunkt */
+  background: var(--draw-color);
+  box-shadow: 0 0 0 1px var(--line); /* dünner Rand, damit Schwarz auch auf dunkler Leiste zu sehen ist */
+  flex: 0 0 auto;
+}
+
+/* Ring um die gewählte Farbe */
+.draw-color.is-active {
+  box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--draw-color);
 }

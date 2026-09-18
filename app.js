@@ -20,6 +20,10 @@ const composer = document.getElementById("composer");
 const composerInput = document.getElementById("composer-input");
 const composerTypes = document.getElementById("composer-types");
 const composerLinkLabel = document.getElementById("composer-link-label");
+const composerTypePill = document.getElementById("composer-type-pill");
+const composerTypeIcon = document.getElementById("composer-type-icon");
+const composerTypeLabel = document.getElementById("composer-type-label");
+const composerSend = document.getElementById("composer-send");
 
 const entryTitle = document.getElementById("entry-title");
 const entryBody = document.getElementById("entry-body");
@@ -47,22 +51,29 @@ const views = {
   settings: settingsView,
 };
 
-// Eintragstypen: bestimmen das Icon vor dem Titel in den Listen
+// Eintragstypen: bestimmen das Icon vor dem Titel in den Listen.
+// „pick“ markiert die Knöpfe im Eingabefeld; ohne gewählten Knopf entsteht ein Dokument.
+// Dokumente, Zeichnungen und Medien sind Ressourcen, egal wo sie abgelegt sind.
 const types = [
-  { id: "aufgabe", label: "Aufgabe", icon: "task" },
-  { id: "notiz", label: "Notiz", icon: "note" },
-  { id: "termin", label: "Termin", icon: "calendar" },
+  { id: "aufgabe", label: "Aufgabe", icon: "task", pick: true },
+  { id: "notiz", label: "Notiz", icon: "note", pick: true },
+  { id: "termin", label: "Termin", icon: "calendar", pick: true },
+  { id: "zeichnung", label: "Zeichnung", icon: "scribble", pick: true },
+  { id: "dokument", label: "Dokument", icon: "doc" },
   { id: "medien", label: "Medien", icon: "photos" },
 ];
+const defaultType = "dokument";
+const resourceTypes = ["dokument", "zeichnung", "medien"];
 
 /* Jede Übersichtskarte ist ein Ablageort: „parent“ verbindet sie mit den
    Einträgen, „seed“ legt beim allerersten Start Beispieleinträge an.
-   Favoriten sammelt nur markierte Einträge und Arbeitsbereiche. */
+   Favoriten sammelt nur markierte Einträge und Arbeitsbereiche,
+   Ressourcen alle Dokumente, Zeichnungen und Medien. */
 const overviewPages = {
   1: { title: "Inbox", icon: "inbox", parent: null },
   2: { title: "Favoriten", icon: "star-outline", kind: "favorites" },
   3: { title: "Projekte", icon: "rocket", parent: "o3", seed: 5 },
-  4: { title: "Ressourcen", icon: "cube", parent: "o4", seed: 3 },
+  4: { title: "Ressourcen", icon: "cube", kind: "resources" },
 };
 
 const presetIcons = [
@@ -87,6 +98,8 @@ const xpItems = {
   notiz: { label: "Notiz", icon: "note", color: "#ffd60a" },
   termin: { label: "Termin", icon: "calendar", color: "#5ac8fa" },
   medien: { label: "Medien", icon: "photos", color: "#30d158" },
+  dokument: { label: "Dokument", icon: "doc", color: "#64d2ff" },
+  zeichnung: { label: "Zeichnung", icon: "scribble", color: "#ff375f" },
   arbeitsbereich: { label: "Arbeitsbereich", icon: "layers", color: "#ff9f0a" },
   tab: { label: "Tab", icon: "tag", color: "#bf5af2" },
 };
@@ -147,7 +160,7 @@ function saveState() {
   try {
     localStorage.setItem(
       storageKey,
-      JSON.stringify({ tabs, activeTabId, workspaces, entries, nextEntryId, xpLog, nextXpId, calendar: calPrefs, media: mediaPrefs, mediaSeeded: true })
+      JSON.stringify({ tabs, activeTabId, workspaces, entries, nextEntryId, xpLog, nextXpId, calendar: calPrefs, media: mediaPrefs, resources: resourcePrefs, mediaSeeded: true })
     );
   } catch (error) {
     /* ohne Speicher läuft die App weiter, nur ohne Merken */
@@ -242,6 +255,14 @@ function loadState() {
   entries.forEach((entry) => {
     if (typeof entry.favorite !== "boolean") entry.favorite = false;
   });
+
+  if (saved.resources && typeof saved.resources === "object") resourcePrefs = { ...resourcePrefs, ...saved.resources };
+  if (!resourceFilterList.some((filter) => filter.id === resourcePrefs.filter)) resourcePrefs.filter = "all";
+  /* Ressourcen ist kein Ablageort mehr, sondern sammelt Dokumente und Medien:
+     was dort abgelegt war, wandert in die Inbox */
+  entries.forEach((entry) => {
+    if (sameParent(entry.parent, "o4")) entry.parent = null;
+  });
 }
 
 function workspaceName(id) {
@@ -273,6 +294,7 @@ function favoriteCount() {
 
 function pageCount(page) {
   if (page.kind === "favorites") return favoriteCount();
+  if (page.kind === "resources") return resourceEntries().length;
   return entriesOf(page.parent).length;
 }
 
@@ -296,6 +318,7 @@ function showView(name) {
   view.classList.add("is-active");
   if (name === "calendar") renderCalendar(true);
   document.body.classList.toggle("is-media", name === "media");
+  document.body.classList.toggle("is-drawing", name === "entry" && isDrawingEntry(currentEntryId));
   if (name === "media") renderMedia();
 }
 
@@ -417,6 +440,17 @@ function swipeAction(action, label, iconName, tone = action) {
   `;
 }
 
+/* Vor dem Titel: kleine Vorschau bei Fotos, Videos und Zeichnungen, sonst das Typ-Icon;
+   Medien zeigen ihre Art (Bild, Video, Aufnahme, Dokument) statt des allgemeinen Icons */
+function entryGlyph(entry) {
+  const thumb = mediaThumbs[entry.id];
+  const kind = mediaKindOf(entry);
+  const preview = entry.type === "zeichnung" || (entry.type === "medien" && (kind === "image" || kind === "video"));
+  if (thumb && preview) return `<img class="entry-thumb" src="${thumb}" alt="" />`;
+  if (entry.type === "medien") return icon({ image: "image", video: "video", audio: "wave", doc: "doc" }[kind] || "doc", "entry-type");
+  return icon(typeIcon(entry.type), "entry-type");
+}
+
 function entryRow(entry, prefix = "") {
   return swipeRow(
     `data-entry="${entry.id}"`,
@@ -428,7 +462,7 @@ function entryRow(entry, prefix = "") {
     [swipeAction("delete", "Löschen", "trash")],
     `
       <button class="workspace-row entry-row" type="button" data-open-entry="${entry.id}">
-        ${icon(typeIcon(entry.type), "entry-type")}
+        ${entryGlyph(entry)}
         ${prefix}
         <span>${escapeHtml(entry.title)}</span>
         ${icon("chevron", "chevron")}
@@ -501,6 +535,11 @@ function renderPageBody() {
     return;
   }
 
+  if (currentPage.kind === "resources") {
+    renderResources();
+    return;
+  }
+
   const list = entriesOf(currentPage.parent);
   pageBody.innerHTML = list.length
     ? `<div class="workspace-list">${list.map(entryRow).join("")}</div>`
@@ -510,6 +549,7 @@ function renderPageBody() {
 function showPage(page) {
   currentPage = page;
   pageTitle.textContent = page.title;
+  pageMenuBtn.hidden = page.kind === "resources"; /* Ressourcen sind nur eine Sammlung: nichts zu löschen oder zu markieren */
   showView("page");
   renderPageBody();
 }
@@ -671,6 +711,11 @@ function openEntry(id, push = true) {
   entryBody.value = entry.body || "";
   entryCrumb.textContent = parentName(entry.parent);
   showView("entry");
+  /* Zeichnungen zeigen statt des Textes die Zeichenfläche */
+  const drawing = entry.type === "zeichnung";
+  entryBody.hidden = drawing;
+  drawPad.hidden = !drawing;
+  if (drawing) openDrawing(entry);
   if (push) history.pushState({ view: "entry", id: entry.id, from: sourceView }, "", `#/eintrag/${entry.id}`);
 }
 
@@ -690,6 +735,7 @@ function restoreFrom(from) {
 
 function renderComposerTypes() {
   composerTypes.innerHTML = types
+    .filter((type) => type.pick)
     .map(
       (type) => `
         <button class="composer-type${type.id === composerType ? " is-active" : ""}" type="button" data-type="${type.id}" aria-label="${type.label}">
@@ -698,6 +744,14 @@ function renderComposerTypes() {
       `
     )
     .join("");
+  renderComposerTypePill();
+}
+
+/* Typ-Pille neben „Inbox“: zeigt den gewählten Knopf, ohne Auswahl „Dokument“ */
+function renderComposerTypePill() {
+  const type = types.find((item) => item.id === composerType) || types.find((item) => item.id === defaultType);
+  composerTypeIcon.setAttribute("href", `#icon-${type.icon}`);
+  composerTypeLabel.textContent = type.label;
 }
 
 function renderComposerLink() {
@@ -710,6 +764,7 @@ function openComposer() {
   tabBar.hidden = true;
   composer.hidden = false;
   mediaActions.hidden = true;
+  drawTools.hidden = true;
   renderComposerTypes();
   renderComposerLink();
   composerInput.focus();
@@ -721,6 +776,7 @@ function closeComposer() {
   composer.hidden = true;
   tabBar.hidden = false;
   mediaActions.hidden = false;
+  drawTools.hidden = false;
   composerInput.value = "";
   calSlot = null;
 }
@@ -751,6 +807,8 @@ function createEntry() {
   renderOverview();
   renderPageBody();
   renderCalendar();
+  /* Eine neue Zeichnung öffnet sich gleich, damit man sofort loslegen kann */
+  if (entry.type === "zeichnung") openEntry(entry.id);
 }
 
 /* ---------- Auswahl-Blatt ---------- */
@@ -928,7 +986,7 @@ function finishHold() {
 function openParentPicker(title, current, onPick) {
   openSheet(title, [
     ...Object.values(overviewPages)
-      .filter((page) => page.kind !== "favorites")
+      .filter((page) => !page.kind) /* Sammlungen wie Favoriten und Ressourcen sind kein Ablageort */
       .map((page) => ({
       label: page.title,
       icon: page.icon || "placeholder",
@@ -2358,6 +2416,18 @@ function monthHeading(ts) {
   return new Date(ts).toLocaleDateString("de-DE", { month: "long", year: "numeric" });
 }
 
+/* Blöcke je Monat, in der Reihenfolge der Liste: [{ heading, items }] */
+function groupByMonth(list) {
+  const groups = [];
+  list.forEach((entry) => {
+    const heading = monthHeading(entry.createdAt);
+    const last = groups[groups.length - 1];
+    if (last && last.heading === heading) last.items.push(entry);
+    else groups.push({ heading, items: [entry] });
+  });
+  return groups;
+}
+
 function formatDuration(seconds) {
   const total = Math.max(0, Math.round(seconds));
   return `${Math.floor(total / 60)}:${pad2(total % 60)}`;
@@ -2410,14 +2480,7 @@ function renderMediaGrid() {
     mediaBody.innerHTML = `<p class="empty-note">${filter.empty}</p>`;
     return;
   }
-  const groups = [];
-  list.forEach((entry) => {
-    const heading = monthHeading(entry.createdAt);
-    const last = groups[groups.length - 1];
-    if (last && last.heading === heading) last.items.push(entry);
-    else groups.push({ heading, items: [entry] });
-  });
-  mediaBody.innerHTML = groups
+  mediaBody.innerHTML = groupByMonth(list)
     .map(
       (group) =>
         `<h2 class="media-month">${group.heading}</h2><div class="media-grid">${group.items.map(mediaCell).join("")}</div>`
@@ -2594,6 +2657,258 @@ mediaActions.addEventListener("click", (event) => {
   });
 });
 
+/* ---------- Ressourcen ---------- */
+
+/* Welche Pille auf der Ressourcen-Seite gewählt ist; wird mit dem übrigen Zustand gespeichert */
+let resourcePrefs = { filter: "all" };
+
+/* Die Pillen oben: „Alle“ zeigt alles, „Eigene“ nur Geschriebenes und Gezeichnetes,
+   die übrigen je eine Medienart */
+const resourceFilterList = [
+  { id: "all", label: "Alle", icon: "cube", empty: "Noch keine Ressourcen." },
+  { id: "own", label: "Eigene", icon: "pencil", empty: "Noch nichts Eigenes. Ein Eintrag ohne gewählten Typ wird zum Dokument." },
+  { id: "image", label: "Bilder", icon: "image", empty: "Noch keine Bilder." },
+  { id: "video", label: "Videos", icon: "video", empty: "Noch keine Videos." },
+  { id: "audio", label: "Audio", icon: "mic", empty: "Noch keine Aufnahmen." },
+  { id: "doc", label: "Dokumente", icon: "doc", empty: "Noch keine Dokumente." },
+];
+
+/* Ressourcen sind alles Eigene (Dokumente, Zeichnungen) und alle Medien, egal wo sie abgelegt sind */
+function resourceEntries() {
+  return entries
+    .filter((entry) => resourceTypes.includes(entry.type) && !entry.archived)
+    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+}
+
+function resourceFiltered(filter) {
+  const all = resourceEntries();
+  if (filter === "all") return all;
+  if (filter === "own") return all.filter((entry) => entry.type !== "medien");
+  return all.filter((entry) => entry.type === "medien" && mediaKindOf(entry) === filter);
+}
+
+/* Aufbau wie die Medien-Seite: Pillen oben, darunter Listen je Monat statt Kacheln */
+function renderResources() {
+  const pills = resourceFilterList
+    .map((filter) => {
+      const count = resourceFiltered(filter.id).length;
+      const mark = filter.id === resourcePrefs.filter ? " is-active" : "";
+      return `
+        <button class="tab-pill${mark}" type="button" data-resource-filter="${filter.id}">
+          ${icon(filter.icon, "tab-pill-icon")}${filter.label}${count ? `<span class="media-count">${count}</span>` : ""}
+        </button>`;
+    })
+    .join("");
+  const list = resourceFiltered(resourcePrefs.filter);
+  const filter = resourceFilterList.find((item) => item.id === resourcePrefs.filter) || resourceFilterList[0];
+  const body = list.length
+    ? groupByMonth(list)
+        .map(
+          (group) =>
+            `<h2 class="media-month">${group.heading}</h2><div class="workspace-list">${group.items.map((entry) => entryRow(entry)).join("")}</div>`
+        )
+        .join("")
+    : `<p class="empty-note">${filter.empty}</p>`;
+  pageBody.innerHTML = `<div class="tab-pills resource-filters">${pills}</div>${body}`;
+}
+
+/* ---------- Zeichnung ---------- */
+
+const drawPad = document.getElementById("draw-pad");
+const drawCanvas = document.getElementById("draw-canvas");
+const drawCtx = drawCanvas.getContext("2d");
+const drawTools = document.getElementById("draw-tools");
+const drawColors = document.getElementById("draw-colors");
+const drawScale = Math.min(window.devicePixelRatio || 1, 2); /* Pixel je CSS-Pixel; mehr als 2 kostet nur Speicher */
+const drawUndoLimit = 8; /* Schnappschüsse für Rückgängig; jeder braucht so viel Speicher wie die ganze Fläche */
+
+/* Werkzeuge wie in Apples Stiftpalette: Stift dünn und deckend, Marker breit und durchscheinend,
+   Radierer nimmt Farbe weg, statt Weiß aufzutragen */
+const drawToolList = {
+  pen: { width: 3, alpha: 1, erase: false },
+  marker: { width: 16, alpha: 0.35, erase: false },
+  eraser: { width: 22, alpha: 1, erase: true },
+};
+const drawColorList = ["#1c1c1e", "#007aff", "#ff3b30", "#ffcc00", "#34c759"];
+
+let drawTool = "pen";
+let drawColor = drawColorList[0];
+let drawEntryId = null;
+let drawStroke = null; /* laufender Strich: Punkte, Werkzeug und das Bild davor */
+let drawUndo = []; /* Bilder vor den letzten Strichen */
+let drawDirty = false; /* seit dem letzten Speichern gezeichnet */
+let drawSaveTimer = null;
+
+function isDrawingEntry(id) {
+  const entry = entries.find((item) => item.id === id);
+  return Boolean(entry && entry.type === "zeichnung");
+}
+
+/* Zeichnungen liegen wie die Vorschaubilder unter der Eintrags-ID, nur als PNG in voller Größe */
+function saveDrawing() {
+  clearTimeout(drawSaveTimer);
+  drawSaveTimer = null;
+  if (!drawEntryId || !drawDirty) return;
+  drawDirty = false;
+  mediaThumbs[drawEntryId] = drawCanvas.toDataURL("image/png");
+  saveThumbs();
+}
+
+/* Speichern kurz nach dem letzten Strich, nicht bei jeder Bewegung */
+function scheduleDrawSave() {
+  drawDirty = true;
+  clearTimeout(drawSaveTimer);
+  drawSaveTimer = setTimeout(saveDrawing, 400);
+}
+
+function loadDrawing(id) {
+  drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+  const data = mediaThumbs[id];
+  if (!data) return;
+  const img = new Image();
+  img.onload = () => {
+    if (drawEntryId !== id) return;
+    /* Gespeichert wurde in Gerätepixeln: auf die heutige Breite skalieren, damit nichts verzerrt */
+    const scale = drawCanvas.width / img.width;
+    drawCtx.save();
+    drawCtx.setTransform(1, 0, 0, 1, 0, 0);
+    drawCtx.drawImage(img, 0, 0, img.width * scale, img.height * scale);
+    drawCtx.restore();
+  };
+  img.src = data;
+}
+
+/* Fläche auf den sichtbaren Platz bringen; das Bild wird vorher gesichert und danach neu geladen */
+function fitDrawCanvas() {
+  const width = Math.round(drawPad.clientWidth);
+  const height = Math.round(drawPad.clientHeight);
+  if (!width || !height) return;
+  if (drawCanvas.style.width === `${width}px` && drawCanvas.style.height === `${height}px`) return;
+  saveDrawing();
+  drawCanvas.width = Math.round(width * drawScale);
+  drawCanvas.height = Math.round(height * drawScale);
+  drawCanvas.style.width = `${width}px`;
+  drawCanvas.style.height = `${height}px`;
+  /* Größe ändern leert den Kontext: Maßstab und runde Linienenden neu setzen */
+  drawCtx.setTransform(drawScale, 0, 0, drawScale, 0, 0);
+  drawCtx.lineCap = "round";
+  drawCtx.lineJoin = "round";
+  drawUndo = []; /* alte Schnappschüsse passen nicht mehr zur neuen Größe */
+  if (drawEntryId) loadDrawing(drawEntryId);
+}
+
+function openDrawing(entry) {
+  saveDrawing(); /* eine noch offene Zeichnung zuerst sichern */
+  drawEntryId = entry.id;
+  drawStroke = null;
+  drawUndo = [];
+  renderDrawTools();
+  drawCanvas.style.width = "";
+  drawCanvas.style.height = "";
+  fitDrawCanvas();
+}
+
+function renderDrawTools() {
+  drawTools.querySelectorAll("[data-draw-tool]").forEach((button) => {
+    button.classList.toggle("is-active", button.dataset.drawTool === drawTool);
+  });
+  drawColors.innerHTML = drawColorList
+    .map(
+      (color) =>
+        `<button class="draw-color${color === drawColor ? " is-active" : ""}" type="button" data-draw-color="${color}" style="--draw-color: ${color}" aria-label="Farbe ${color}"></button>`
+    )
+    .join("");
+}
+
+function drawPoint(event) {
+  const rect = drawCanvas.getBoundingClientRect();
+  return { x: event.clientX - rect.left, y: event.clientY - rect.top };
+}
+
+function pushDrawUndo() {
+  drawUndo.push(drawCtx.getImageData(0, 0, drawCanvas.width, drawCanvas.height));
+  if (drawUndo.length > drawUndoLimit) drawUndo.shift();
+}
+
+/* Der ganze Strich wird bei jeder Bewegung neu auf das Bild davor gemalt: so bleibt der
+   durchscheinende Marker gleichmäßig, statt an jedem Zwischenpunkt dunkler zu werden */
+function paintStroke(stroke) {
+  const tool = drawToolList[stroke.tool];
+  drawCtx.putImageData(stroke.before, 0, 0);
+  drawCtx.save();
+  drawCtx.globalCompositeOperation = tool.erase ? "destination-out" : "source-over";
+  drawCtx.globalAlpha = tool.alpha;
+  drawCtx.strokeStyle = stroke.color;
+  drawCtx.lineWidth = tool.width;
+  drawCtx.beginPath();
+  stroke.points.forEach((point, index) => (index ? drawCtx.lineTo(point.x, point.y) : drawCtx.moveTo(point.x, point.y)));
+  if (stroke.points.length === 1) drawCtx.lineTo(stroke.points[0].x + 0.01, stroke.points[0].y); /* Tipp ohne Bewegung: ein Punkt */
+  drawCtx.stroke();
+  drawCtx.restore();
+}
+
+function undoDraw() {
+  const before = drawUndo.pop();
+  if (!before) return;
+  drawCtx.putImageData(before, 0, 0);
+  scheduleDrawSave();
+}
+
+function clearDrawing() {
+  pushDrawUndo();
+  drawCtx.clearRect(0, 0, drawCanvas.width, drawCanvas.height);
+  scheduleDrawSave();
+}
+
+drawCanvas.addEventListener("pointerdown", (event) => {
+  if (event.pointerType === "mouse" && event.button !== 0) return;
+  event.preventDefault();
+  drawCanvas.setPointerCapture(event.pointerId);
+  pushDrawUndo();
+  drawStroke = { tool: drawTool, color: drawColor, points: [drawPoint(event)], before: drawUndo[drawUndo.length - 1] };
+  paintStroke(drawStroke);
+});
+
+drawCanvas.addEventListener("pointermove", (event) => {
+  if (!drawStroke) return;
+  /* getCoalescedEvents: liefert auch die Zwischenpunkte, die der Browser sonst zusammenfasst */
+  const moves = event.getCoalescedEvents ? event.getCoalescedEvents() : [event];
+  (moves.length ? moves : [event]).forEach((move) => drawStroke.points.push(drawPoint(move)));
+  paintStroke(drawStroke);
+});
+
+["pointerup", "pointercancel"].forEach((name) => {
+  drawCanvas.addEventListener(name, () => {
+    if (!drawStroke) return;
+    drawStroke = null;
+    scheduleDrawSave();
+  });
+});
+
+drawTools.addEventListener("click", (event) => {
+  const tool = event.target.closest("[data-draw-tool]");
+  if (tool) {
+    drawTool = tool.dataset.drawTool;
+    renderDrawTools();
+    return;
+  }
+  const color = event.target.closest("[data-draw-color]");
+  if (color) {
+    drawColor = color.dataset.drawColor;
+    if (drawTool === "eraser") drawTool = "pen"; /* eine Farbe wählen heißt wieder malen */
+    renderDrawTools();
+    return;
+  }
+  if (event.target.closest("[data-draw-undo]")) undoDraw();
+});
+
+/* Tastatur oder Drehung ändern den Platz: die Fläche folgt, das Bild bleibt */
+if (window.ResizeObserver) {
+  new ResizeObserver(() => {
+    if (!drawPad.hidden && drawEntryId) fitDrawCanvas();
+  }).observe(drawPad);
+}
+
 /* ---------- Klicks in Listen ---------- */
 
 function refreshLists() {
@@ -2665,6 +2980,14 @@ content.addEventListener("click", (event) => {
       saveState();
       refreshLists();
     });
+    return;
+  }
+
+  const resourcePill = event.target.closest("[data-resource-filter]");
+  if (resourcePill) {
+    resourcePrefs.filter = resourcePill.dataset.resourceFilter;
+    saveState();
+    renderResources();
     return;
   }
 
@@ -2770,10 +3093,31 @@ document.getElementById("composer-link").addEventListener("click", () => {
 composerTypes.addEventListener("click", (event) => {
   const button = event.target.closest("[data-type]");
   if (!button) return;
-  composerType = button.dataset.type;
+  /* Der aktive Knopf lässt sich abwählen: ohne Typ entsteht ein Dokument */
+  composerType = button.dataset.type === composerType ? defaultType : button.dataset.type;
   renderComposerTypes();
   composerInput.focus();
 });
+
+composerTypePill.addEventListener("click", () => {
+  openSheet(
+    "Typ wählen",
+    types
+      .filter((type) => type.pick || type.id === defaultType)
+      .map((type) => ({
+        label: type.label,
+        icon: type.icon,
+        active: type.id === composerType,
+        onSelect: () => {
+          composerType = type.id;
+          renderComposerTypes();
+          composerInput.focus();
+        },
+      }))
+  );
+});
+
+composerSend.addEventListener("click", createEntry);
 
 composerInput.addEventListener("keydown", (event) => {
   if (event.key === "Enter") {
@@ -2896,6 +3240,7 @@ document.getElementById("entry-menu").addEventListener("click", () => {
           renderOverview();
         }),
     },
+    ...(entry.type === "zeichnung" ? [{ label: "Zeichnung leeren", icon: "eraser", onSelect: clearDrawing }] : []),
     {
       label: "Archivieren",
       icon: "archive",

@@ -371,6 +371,25 @@
         <path d="M12 3.5v10M8.6 10.2 12 13.6l3.4-3.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
         <path d="M4.5 12.5v5.3a2.2 2.2 0 0 0 2.2 2.2h10.6a2.2 2.2 0 0 0 2.2-2.2v-5.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
       </symbol>
+      <!-- Zeichnung: Kringel für den Typ, Marker, Radierer und Rückgängig für die Werkzeugleiste; Pfeil für „Anlegen“ -->
+      <symbol id="icon-scribble" viewBox="0 0 24 24" fill="none">
+        <path d="M4 16.5c2.4-4.6 4.4-6.9 6-6.9 1.9 0 .3 6 2.1 6 1.7 0 3-6 4.6-6 1.4 0 .3 5.4 3.3 5.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="icon-marker" viewBox="0 0 24 24" fill="none">
+        <path d="M6 12.4 14.4 4l5.6 5.6L11.6 18H7.4L6 16.6v-4.2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+        <path d="M4 20.5h16" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+      </symbol>
+      <symbol id="icon-eraser" viewBox="0 0 24 24" fill="none">
+        <path d="m10.2 19 9-9a1.8 1.8 0 0 0 0-2.5l-2.7-2.7a1.8 1.8 0 0 0-2.5 0l-9.7 9.7a1.8 1.8 0 0 0 0 2.5l2 2h3.9Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+        <path d="m7.4 11.4 5.2 5.2M10.2 19H20" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+      </symbol>
+      <symbol id="icon-undo" viewBox="0 0 24 24" fill="none">
+        <path d="M4.5 9.5h10.5a5 5 0 0 1 0 10H9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+        <path d="m8 5.5-3.5 4 3.5 4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="icon-arrow-up" viewBox="0 0 24 24" fill="none">
+        <path d="M12 18.5v-13m0 0-4.6 4.6M12 5.5l4.6 4.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
     </svg>
 
     <div class="stage">
@@ -443,6 +462,10 @@
             <!-- input/textarea: noetig, damit Titel und Text wirklich bearbeitbar sind -->
             <input class="entry-title" id="entry-title" type="text" placeholder="Ohne Titel" aria-label="Titel" />
             <textarea class="entry-body" id="entry-body" placeholder="Schreib etwas …" aria-label="Inhalt"></textarea>
+            <!-- canvas: Zeichenfläche statt des Textes bei Einträgen vom Typ Zeichnung -->
+            <div class="draw-pad" id="draw-pad" hidden>
+              <canvas id="draw-canvas"></canvas>
+            </div>
           </section>
 
           <section class="view" id="view-search" data-view="search" hidden>
@@ -568,6 +591,24 @@
           <input id="media-file-video" type="file" accept="video/*" capture="environment" hidden />
           <input id="media-file-audio" type="file" accept="audio/*" multiple hidden />
           <input id="media-file-import" type="file" multiple hidden />
+          <!-- Zeichenwerkzeuge wie Apples Stiftpalette: Stift, Marker, Radierer, Farben, Rückgängig; nur auf einer Zeichnung zu sehen -->
+          <div class="draw-tools" id="draw-tools">
+            <button class="draw-tool is-active" type="button" data-draw-tool="pen" aria-label="Stift">
+              <svg class="icon"><use href="#icon-pencil"></use></svg>
+            </button>
+            <button class="draw-tool" type="button" data-draw-tool="marker" aria-label="Marker">
+              <svg class="icon"><use href="#icon-marker"></use></svg>
+            </button>
+            <button class="draw-tool" type="button" data-draw-tool="eraser" aria-label="Radierer">
+              <svg class="icon"><use href="#icon-eraser"></use></svg>
+            </button>
+            <span class="draw-split"></span>
+            <div class="draw-colors" id="draw-colors"></div>
+            <span class="draw-split"></span>
+            <button class="draw-tool" type="button" data-draw-undo="1" aria-label="Rückgängig">
+              <svg class="icon"><use href="#icon-undo"></use></svg>
+            </button>
+          </div>
           <!-- nav-shell: derselbe runde Container fuer Navigation und Composer -->
           <div class="nav-shell" id="nav-shell">
           <!-- nav: untere App-Leiste mit den Hauptseiten -->
@@ -595,11 +636,19 @@
 
           <!-- composer: ersetzt die Navigation im selben Container beim Anlegen -->
           <div class="composer" id="composer" hidden>
-            <button class="composer-link" type="button" id="composer-link">
-              <svg class="icon"><use href="#icon-link"></use></svg>
-              <span id="composer-link-label">Inbox</span>
-              <svg class="icon composer-caret"><use href="#icon-chevron"></use></svg>
-            </button>
+            <div class="composer-chips">
+              <button class="composer-link" type="button" id="composer-link">
+                <svg class="icon"><use href="#icon-link"></use></svg>
+                <span id="composer-link-label">Inbox</span>
+                <svg class="icon composer-caret"><use href="#icon-chevron"></use></svg>
+              </button>
+              <!-- Typ-Pille: zeigt den gewählten Typ; ohne gewählten Knopf unten wird der Eintrag ein Dokument -->
+              <button class="composer-link" type="button" id="composer-type-pill">
+                <svg class="icon"><use id="composer-type-icon" href="#icon-doc"></use></svg>
+                <span id="composer-type-label">Dokument</span>
+                <svg class="icon composer-caret"><use href="#icon-chevron"></use></svg>
+              </button>
+            </div>
             <input
               class="composer-input"
               id="composer-input"
@@ -610,9 +659,15 @@
             />
             <div class="composer-tools">
               <div class="composer-types" id="composer-types"></div>
-              <button class="composer-close" type="button" id="composer-close" aria-label="Schließen">
-                <svg class="icon"><use href="#icon-close"></use></svg>
-              </button>
+              <div class="composer-end">
+                <!-- Anlegen-Knopf: legt den Eintrag an, auch ohne Enter-Taste auf dem Handy -->
+                <button class="composer-send" type="button" id="composer-send" aria-label="Anlegen">
+                  <svg class="icon"><use href="#icon-arrow-up"></use></svg>
+                </button>
+                <button class="composer-close" type="button" id="composer-close" aria-label="Schließen">
+                  <svg class="icon"><use href="#icon-close"></use></svg>
+                </button>
+              </div>
             </div>
           </div>
           </div>
