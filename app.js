@@ -53,15 +53,15 @@ const views = {
 
 // Eintragstypen: bestimmen das Icon vor dem Titel in den Listen.
 // „pick“ markiert die Knöpfe im Eingabefeld; ohne gewählten Knopf entsteht ein Dokument.
-// Ressourcen-Knopf unten legt ein Dokument an; Projekte-Knopf ein Projekt.
+// Ressourcen-Knopf unten legt ein Dokument an; zur Zeichnung wechselt man oben über die Typ-Pille.
 // Dokumente, Zeichnungen und Medien sind Ressourcen, egal wo sie abgelegt sind.
 const types = [
   { id: "aufgabe", label: "Aufgabe", icon: "task", pick: true },
   { id: "notiz", label: "Notiz", icon: "note", pick: true },
   { id: "termin", label: "Termin", icon: "calendar", pick: true },
-  { id: "zeichnung", label: "Zeichnung", icon: "scribble", pick: true },
   { id: "projekt", label: "Projekte", icon: "rocket", pick: true },
   { id: "dokument", label: "Dokument", icon: "doc" },
+  { id: "zeichnung", label: "Zeichnung", icon: "scribble" },
   { id: "medien", label: "Medien", icon: "photos" },
 ];
 const defaultType = "dokument";
@@ -754,7 +754,7 @@ function composerPickButtons() {
 function chooseComposerType(typeId, pickId) {
   composerType = typeId;
   if (pickId !== undefined) composerPick = pickId;
-  else if (typeId === defaultType) composerPick = resourcePick.id;
+  else if (typeId === defaultType || typeId === "zeichnung") composerPick = resourcePick.id;
   else composerPick = types.some((type) => type.pick && type.id === typeId) ? typeId : null;
   if (typeId === "projekt") composerParent = overviewPages[3].parent;
 }
@@ -844,7 +844,7 @@ function openSheet(title, options) {
   sheetOptions.innerHTML = options
     .map(
       (option, index) => `
-        <button class="sheet-option${option.active ? " is-active" : ""}${option.danger ? " is-danger" : ""}${option.split ? " is-split" : ""}" type="button" data-sheet="${index}">
+        <button class="sheet-option${option.active ? " is-active" : ""}${option.danger ? " is-danger" : ""}${option.split ? " is-split" : ""}${option.gap ? " is-gap" : ""}" type="button" data-sheet="${index}">
           ${icon(option.icon)}
           <span>${escapeHtml(option.label)}</span>
         </button>
@@ -3134,21 +3134,22 @@ composerTypes.addEventListener("click", (event) => {
 });
 
 composerTypePill.addEventListener("click", () => {
+  const sheetTypes = types.filter((type) => type.pick || type.id === "dokument" || type.id === "zeichnung");
   openSheet(
     "Typ wählen",
-    types
-      .filter((type) => type.pick || type.id === defaultType)
-      .map((type) => ({
-        label: type.label,
-        icon: type.icon,
-        active: type.id === composerType,
-        onSelect: () => {
-          chooseComposerType(type.id);
-          renderComposerTypes();
-          renderComposerLink();
-          composerInput.focus();
-        },
-      }))
+    sheetTypes.map((type) => ({
+      label: type.label,
+      icon: type.icon,
+      active: type.id === composerType,
+      gap: type.id === "termin" || type.id === "projekt",
+      split: type.id === "dokument",
+      onSelect: () => {
+        chooseComposerType(type.id);
+        renderComposerTypes();
+        renderComposerLink();
+        composerInput.focus();
+      },
+    }))
   );
 });
 

@@ -1292,10 +1292,13 @@ button {
 }
 
 .sheet-option.is-split {
-  margin-top: 4px;
-  /* border-top: trennt „Icon entfernen“ von den Icon-Vorschlägen */
+  margin-top: 8px;
+  /* border-top: Trennlinie vor Dokument/Zeichnung bzw. „Icon entfernen“ */
   border-top: 1px solid var(--line);
-  border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+}
+
+.sheet-option.is-gap {
+  margin-top: 8px; /* Abstand zwischen Aufgabe/Notiz, Termin und Projekte */
 }
 
 .sheet-option:active {
