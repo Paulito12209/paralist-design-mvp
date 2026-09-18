@@ -28,13 +28,20 @@ import { cancelHold, consumeClickBlock } from "./long-press.js";
 import { openParentPicker } from "./pickers.js";
 import { openEntry, openTarget } from "./router.js";
 import { closeSwipes, isSwipedOpen } from "./swipe.js";
+import { toggleGroup } from "./groups.js";
 
 /*
  * Umbenennen und die beiden Kontextmenüs gehören zu den Seiten, nicht hierher.
  * src/main.js gibt sie beim Start herein — so muss diese Datei keinen Bereich
  * kennen und die Importe zeigen weiter nur nach unten.
  */
-let menus = { openTabMenu: () => {}, openWorkspaceMenu: () => {}, beginRenameTab: () => {} };
+let menus = {
+  openTabMenu: () => {},
+  openWorkspaceMenu: () => {},
+  beginRenameTab: () => {},
+  /* übernimmt ein noch offenes Namensfeld eines Arbeitsbereichs */
+  finishWorkspaceName: () => {},
+};
 
 /* Der Wisch-Knopf einer Zeile: Favorit, Archivieren, Verknüpfen, Löschen. */
 function handleSwipeAction(action) {
@@ -62,7 +69,7 @@ function handleSwipeAction(action) {
     toggleFavorite(entry);
     return;
   }
-  openParentPicker("Verknüpfen mit", entry.parent, (parent) => moveEntry(entry, parent));
+  openParentPicker("Verknüpfen mit", entry.parent, (ref) => moveEntry(entry, ref), entry);
 }
 
 /* Eine Tab-Pille: der aktive Tab öffnet das Umbenennen, ein anderer wird gewählt. */
@@ -73,9 +80,19 @@ function handleTabPill(pill) {
 }
 
 function onClick(event) {
+  /* Ein Tipp irgendwohin außer ins Namensfeld selbst übernimmt den Namen —
+     so bekommt ein neuer Arbeitsbereich seinen Vorgabenamen, sobald man weitermacht. */
+  if (!event.target.closest("#workspace-name-input")) menus.finishWorkspaceName();
+
   const action = event.target.closest(".swipe-action");
   if (action) {
     handleSwipeAction(action);
+    return;
+  }
+
+  const groupHead = event.target.closest("[data-toggle-group]");
+  if (groupHead) {
+    toggleGroup(groupHead);
     return;
   }
 
@@ -122,7 +139,7 @@ function onClick(event) {
 
 /**
  * Klicks und Rechtsklicks in den Listen aktivieren. Wird einmal beim Start aufgerufen.
- * @param handlers { openTabMenu, openWorkspaceMenu, beginRenameTab } aus den Seiten.
+ * @param handlers { openTabMenu, openWorkspaceMenu, beginRenameTab, finishWorkspaceName } aus den Seiten.
  */
 export function initListClicks(handlers) {
   menus = { ...menus, ...handlers };

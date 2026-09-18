@@ -8,8 +8,9 @@
  */
 
 import { escapeHtml, icon } from "../core/html.js";
+import { sameId } from "../core/ids.js";
 import { typeIcon } from "../data/config.js";
-import { mediaKindOf, workspaceIcon } from "../data/queries.js";
+import { mediaKindOf, workspaceIcon, workspaceLabel } from "../data/queries.js";
 import { ui } from "../data/state.js";
 import { thumbOf } from "../data/thumbs.js";
 
@@ -85,10 +86,13 @@ export function entryRow(entry, prefix = "") {
  */
 export function workspaceRow(workspace, canEdit = false) {
   if (canEdit && workspace.id === ui.editingWorkspaceId) {
+    /* Der Vorgabename steht grau als Platzhalter; wer nichts tippt, bekommt ihn.
+       Schon Getipptes bleibt stehen, auch wenn die Liste zwischendurch neu gezeichnet wird. */
+    const draft = ui.nameDraft && sameId(ui.nameDraft.id, workspace.id) ? ui.nameDraft.value : workspace.name;
     return `
       <div class="workspace-row">
         ${icon(workspaceIcon(workspace))}
-        <input class="workspace-name-input" id="workspace-name-input" type="text" value="${escapeHtml(workspace.name)}" aria-label="Arbeitsbereich benennen" />
+        <input class="workspace-name-input" id="workspace-name-input" type="text" data-editing="${workspace.id}" value="${escapeHtml(draft)}" placeholder="${escapeHtml(workspace.placeholder || workspaceLabel(workspace))}" aria-label="Arbeitsbereich benennen" />
       </div>
     `;
   }
@@ -100,7 +104,7 @@ export function workspaceRow(workspace, canEdit = false) {
     `
       <button class="workspace-row" type="button" data-open-workspace="${workspace.id}">
         ${icon(workspaceIcon(workspace))}
-        <span>${escapeHtml(workspace.name)}</span>
+        <span>${escapeHtml(workspaceLabel(workspace))}</span>
         ${icon("chevron", "chevron")}
       </button>
     `

@@ -25,7 +25,8 @@ import { loadPhoto, renderProfileButton } from "./features/profile/avatar.js";
 import { initOverview, renderOverview } from "./features/overview/overview.js";
 import { initPage } from "./features/overview/page.js";
 import { beginRenameTab, initTabs, openTabMenu, renderTabs } from "./features/overview/tabs.js";
-import { initWorkspaces, openWorkspaceMenu, renderWorkspaces } from "./features/overview/workspaces.js";
+import { initWorkspacePage } from "./features/overview/workspace-page.js";
+import { commitWorkspaceName, initWorkspaces, openWorkspaceMenu, renderWorkspaces } from "./features/overview/workspaces.js";
 import { initTheme } from "./features/settings/theme.js";
 import { initKeyboardInset } from "./shell/keyboard-inset.js";
 import { initLevelGauge } from "./shell/level-gauge.js";
@@ -76,7 +77,7 @@ function initShell() {
   initModalPull();
   setLongPressMenus({ tab: openTabMenu, workspace: openWorkspaceMenu });
   initSwipe();
-  initListClicks({ openTabMenu, openWorkspaceMenu, beginRenameTab });
+  initListClicks({ openTabMenu, openWorkspaceMenu, beginRenameTab, finishWorkspaceName: commitWorkspaceName });
 
   initLevelGauge();
   initSearchBar();
@@ -90,6 +91,7 @@ function initFeatures() {
   initTabs();
   initWorkspaces();
   initPage();
+  initWorkspacePage();
   initEntry();
   initComposer();
   initDictation(updateComposerSend);

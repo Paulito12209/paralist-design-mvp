@@ -12,7 +12,8 @@ import { dom } from "../core/dom.js";
 import { load, loadedModule } from "../core/lazy.js";
 import { overviewPages } from "../data/config.js";
 import { noteOpen } from "../data/opens.js";
-import { findEntry, findWorkspace } from "../data/queries.js";
+import { findEntry, findWorkspace, workspaceLabel } from "../data/queries.js";
+import { workspaceRef } from "../data/refs.js";
 import { ui } from "../data/state.js";
 import { currentView, setActiveTab, showView } from "./views.js";
 
@@ -78,7 +79,7 @@ export function openTarget(kind, id) {
   const workspace = findWorkspace(id);
   if (!workspace) return;
   noteOpen("workspace", workspace.id);
-  showPage({ title: workspace.name, parent: workspace.id, isWorkspace: true });
+  showPage({ title: workspaceLabel(workspace), parent: workspaceRef(workspace.id), isWorkspace: true, workspaceId: workspace.id });
   writeHistory({ view: "workspace", id, from: ui.sourceView }, `#/arbeitsbereich/${id}`, false);
 }
 
@@ -189,6 +190,6 @@ window.addEventListener("popstate", (event) => {
     const workspace = findWorkspace(entry.id);
     if (!workspace) return;
     ui.sourceView = entry.from || "home";
-    showPage({ title: workspace.name, parent: workspace.id, isWorkspace: true });
+    showPage({ title: workspaceLabel(workspace), parent: workspaceRef(workspace.id), isWorkspace: true, workspaceId: workspace.id });
   }
 });

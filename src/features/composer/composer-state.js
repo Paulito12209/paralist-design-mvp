@@ -8,7 +8,7 @@
  * Keine anpassbaren visuellen Werte.
  */
 
-import { defaultType, overviewPages, resourcePick, types } from "../../data/config.js";
+import { defaultType, resourcePick, types } from "../../data/config.js";
 
 export const composer = {
   /* Typ des Eintrags, der entstehen würde */
@@ -45,9 +45,6 @@ export function chooseComposerType(typeId, pickId) {
   if (pickId !== undefined) composer.pick = pickId;
   else if (typeId === defaultType || typeId === "zeichnung") composer.pick = resourcePick.id;
   else composer.pick = types.some((type) => type.pick && type.id === typeId) ? typeId : null;
-
-  /* Ein Projekt gehört auf die Projekte-Karte, nicht in die Inbox. */
-  if (typeId === "projekt") composer.parent = overviewPages[3].parent;
 }
 
 /** Den Knopf abwählen: ohne Typ entsteht ein Dokument. */

@@ -16,7 +16,7 @@ import {
   mediaFilters,
   resourceFilters,
 } from "./config.js";
-import { sameParent } from "../core/ids.js";
+import { normalizeRef, workspaceRef } from "./refs.js";
 import { seedFirstStart, seedMedia, seedXpFromExisting } from "./seed.js";
 import { pruneThumbs } from "./thumbs.js";
 
@@ -24,7 +24,9 @@ import { pruneThumbs } from "./thumbs.js";
 export const state = {
   tabs: [{ id: 1, name: "Meine", awarded: true }],
   activeTabId: 1,
-  workspaces: [{ id: 1, name: "Platzhalter 1", tab: 1, favorite: false }],
+  /* Ein Arbeitsbereich: { id, name, tab, favorite, icon, body, awarded }.
+     `body` ist sein Schreibblock. Bleibt `name` leer, gilt `placeholder`. */
+  workspaces: [{ id: 1, name: "Arbeitsbereich", tab: 1, favorite: false, body: "", awarded: true }],
   entries: [],
   nextEntryId: 1,
   xpLog: [],
@@ -44,11 +46,17 @@ export const state = {
 export const ui = {
   /* Ansicht, zu der der Zurück-Pfeil führt: "home", "search", "calendar", "media" oder "settings" */
   sourceView: "home",
-  /* offene Unterseite: { title, parent, kind, isWorkspace } */
+  /* offene Unterseite: { title, parent, kind, isWorkspace } — parent ist ein Verweis aus refs.js */
   currentPage: null,
+  /* Auf der Seite eines Arbeitsbereichs oder Projekts: "notes" (Schreibblock) oder "links" */
+  pagePill: "notes",
+  /* Eingeklappte Gruppen unter „Verknüpfte Inhalte“, als „<Verweis>|<Typ>“ */
+  collapsedGroups: new Set(),
   currentEntryId: null,
   editingTabId: null,
   editingWorkspaceId: null,
+  /* Was gerade ins Namensfeld eines Arbeitsbereichs getippt wurde: { id, value } */
+  nameDraft: null,
   /* Im Kalender gewählter Tag als „JJJJ-MM-TT“. Steht hier und nicht im
      Kalender, weil das Eingabefeld ihn braucht: ein neuer Eintrag gehört an
      den Tag, den man ansieht. */
@@ -115,8 +123,9 @@ function pickValid(value, allowed, fallback) {
   return allowed.includes(value) ? value : fallback;
 }
 
-/* Ältere Speicherstände auf die heutige Form bringen. */
+/* Ältere Speicherstände auf die heutige Form bringen. Gibt zurück, ob sich etwas geändert hat. */
 function migrate() {
+  const before = JSON.stringify({ workspaces: state.workspaces, entries: state.entries, tabs: state.tabs });
   /* Der erste Tab hieß früher „Privat“. */
   state.tabs.forEach((tab) => {
     if (tab.name === "Privat") tab.name = "Meine";
@@ -125,17 +134,31 @@ function migrate() {
   state.workspaces.forEach((workspace) => {
     if (typeof workspace.favorite !== "boolean") workspace.favorite = false;
   });
+  state.workspaces.forEach((workspace) => {
+    if (typeof workspace.body !== "string") workspace.body = "";
+    if (typeof workspace.awarded !== "boolean") workspace.awarded = true;
+    /* Der frühere Vorgabename „Platzhalter N“ heißt jetzt „Arbeitsbereich“ bzw. „Arbeitsbereich N“. */
+    const old = /^Platzhalter (\d+)$/.exec(workspace.name || "");
+    if (old) workspace.name = old[1] === "1" ? "Arbeitsbereich" : `Arbeitsbereich ${old[1]}`;
+  });
   state.entries.forEach((entry) => {
     if (typeof entry.favorite !== "boolean") entry.favorite = false;
-    /* Ressourcen ist kein Ablageort mehr, sondern sammelt Dokumente und Medien:
-       was dort abgelegt war, wandert in die Inbox. */
-    if (sameParent(entry.parent, "o4")) entry.parent = null;
+    /* Ablageorte waren früher nackte Nummern oder „o3“/„o4“ für zwei Karten,
+       die heute Sammlungen sind: alles auf die Verweise aus refs.js bringen. */
+    entry.parent = normalizeRef(entry.parent);
+  });
+  /* Ein Verweis auf etwas, das es nicht mehr gibt, zeigt in die Inbox. */
+  const workspaceRefs = new Set(state.workspaces.map((workspace) => workspaceRef(workspace.id)));
+  const projectRefs = new Set(state.entries.filter((entry) => entry.type === "projekt").map((entry) => `e:${entry.id}`));
+  state.entries.forEach((entry) => {
+    if (entry.parent && !workspaceRefs.has(entry.parent) && !projectRefs.has(entry.parent)) entry.parent = null;
   });
   /* Ein Arbeitsbereich ohne gültigen Tab wäre unerreichbar: zurück in den ersten Tab. */
   const tabIds = state.tabs.map((tab) => String(tab.id));
   state.workspaces.forEach((workspace) => {
     if (!tabIds.includes(String(workspace.tab))) workspace.tab = state.tabs[0].id;
   });
+  return JSON.stringify({ workspaces: state.workspaces, entries: state.entries, tabs: state.tabs }) !== before;
 }
 
 /* Gespeicherte Auswahl der drei Seiten prüfen, damit kein alter Wert die Seite lahmlegt. */
@@ -179,10 +202,12 @@ export function loadState() {
   if (!state.tabs.some((tab) => tab.id === state.activeTabId)) state.activeTabId = state.tabs[0].id;
 
   adoptPrefs(saved);
-  migrate();
+  /* Was die Migration geändert hat, wird sofort zurückgeschrieben — sonst
+     bliebe der Speicher in der alten Form und müsste bei jedem Start erneut
+     übersetzt werden. */
+  let needsSave = migrate();
 
   /* Ältere Stände kennen noch kein XP-Protokoll: alles Vorhandene als Sammelposten nachtragen. */
-  let needsSave = false;
   if (Array.isArray(saved.xpLog)) state.xpLog = saved.xpLog;
   else {
     seedXpFromExisting();

@@ -7,34 +7,24 @@
  */
 
 import { sameParent } from "../core/ids.js";
-import { overviewPages, presetIcons } from "../data/config.js";
-import { state } from "../data/state.js";
-import { workspaceIcon } from "../data/queries.js";
+import { presetIcons } from "../data/config.js";
+import { parentOptionsFor } from "../data/queries.js";
 import { openSheet } from "./sheet.js";
 
 /**
- * „Ablegen in“ / „Verknüpfen mit“: alle Übersichtskarten, die ein echter
- * Ablageort sind, und alle Arbeitsbereiche.
+ * „Ablegen in“ / „Verknüpfen mit“: Inbox, jeder Arbeitsbereich, jedes Projekt.
+ * @param entry der Eintrag, um den es geht — ein Projekt bekommt keine Projekte angeboten.
  */
-export function openParentPicker(title, current, onPick) {
-  const pages = Object.values(overviewPages)
-    /* Sammlungen wie Favoriten und Ressourcen sind kein Ablageort */
-    .filter((page) => !page.kind)
-    .map((page) => ({
-      label: page.title,
-      icon: page.icon || "placeholder",
-      active: sameParent(current, page.parent),
-      onSelect: () => onPick(page.parent),
-    }));
-
-  const workspaces = state.workspaces.map((workspace) => ({
-    label: workspace.name,
-    icon: workspaceIcon(workspace),
-    active: sameParent(current, workspace.id),
-    onSelect: () => onPick(workspace.id),
-  }));
-
-  openSheet(title, [...pages, ...workspaces]);
+export function openParentPicker(title, current, onPick, entry = null) {
+  openSheet(
+    title,
+    parentOptionsFor(entry).map((option) => ({
+      label: option.label,
+      icon: option.icon,
+      active: sameParent(current, option.ref),
+      onSelect: () => onPick(option.ref),
+    }))
+  );
 }
 
 /** „Icon wählen“ für Tabs und Arbeitsbereiche. Ein leerer Name entfernt das Icon. */

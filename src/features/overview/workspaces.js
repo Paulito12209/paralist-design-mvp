@@ -10,7 +10,8 @@
 import { emit, events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
-import { deleteWorkspace, toggleFavorite } from "../../data/mutations.js";
+import { sameId } from "../../core/ids.js";
+import { deleteWorkspace, nameWorkspace, toggleFavorite } from "../../data/mutations.js";
 import { findWorkspace, tabWorkspaces } from "../../data/queries.js";
 import { saveState, ui } from "../../data/state.js";
 import { openCtxMenu } from "../../ui/ctx-menu.js";
@@ -28,6 +29,7 @@ export function focusWorkspaceName() {
 
 /** Die Liste neu zeichnen. Umbenennen ist nur möglich, wenn die Startseite offen ist. */
 export function renderWorkspaces() {
+  commitStaleWorkspaceName();
   const canEdit = isViewActive("home");
   const rows = tabWorkspaces()
     .map((workspace) => workspaceRow(workspace, canEdit))
@@ -36,25 +38,53 @@ export function renderWorkspaces() {
   dom.workspaceList.innerHTML = `${rows}
     <button class="workspace-row workspace-add" type="button" data-add-workspace="1">
       ${icon("folder-plus")}
-      <span>Add Workspace</span>
+      <span>Arbeitsbereich hinzufügen</span>
     </button>`;
 
   if (canEdit) focusWorkspaceName();
 }
 
-/** Den eingegebenen Namen übernehmen. */
+/**
+ * Den eingegebenen Namen übernehmen; ein leeres Feld behält den Vorgabenamen.
+ * Das Feld sagt selbst, wen es benennt (`data-editing`), damit der Name auch
+ * dann ankommt, wenn inzwischen schon ein anderer Arbeitsbereich im Feld steht.
+ */
 export function commitWorkspaceName() {
   const input = el("workspace-name-input");
-  if (!input) return;
-  const workspace = findWorkspace(ui.editingWorkspaceId);
-  ui.editingWorkspaceId = null;
-  if (workspace) workspace.name = input.value.trim() || workspace.name || "Arbeitsbereich";
-  saveState();
-  emit(events.dataChanged);
+  /* `done` verhindert, dass dasselbe Feld zweimal übernommen wird (blur + Neuzeichnen) */
+  if (!input || input.dataset.done) return;
+  input.dataset.done = "1";
+  const id = input.dataset.editing;
+  const workspace = findWorkspace(id);
+  ui.nameDraft = null;
+  if (sameId(ui.editingWorkspaceId, id)) ui.editingWorkspaceId = null;
+  if (!workspace) {
+    emit(events.dataChanged);
+    return;
+  }
+  nameWorkspace(workspace, input.value || workspace.name);
 }
 
-/** Umbenennen starten. */
+/**
+ * Vor dem Neuzeichnen: steht noch ein Namensfeld in der Seite, wird es
+ * entweder übernommen (es gehört zu einem ANDEREN Arbeitsbereich als dem, der
+ * gleich im Feld stehen soll) oder sein Text gemerkt (derselbe Arbeitsbereich —
+ * das neue Feld zeigt ihn dann wieder). So geht Getipptes nie verloren.
+ */
+export function commitStaleWorkspaceName() {
+  const input = el("workspace-name-input");
+  if (!input || input.dataset.done) return;
+  if (sameId(input.dataset.editing, ui.editingWorkspaceId)) {
+    ui.nameDraft = { id: input.dataset.editing, value: input.value };
+    return;
+  }
+  commitWorkspaceName();
+}
+
+/** Umbenennen starten. Der bisherige Name steht als Platzhalter, falls man alles löscht. */
 export function beginRenameWorkspace(id) {
+  const workspace = findWorkspace(id);
+  if (workspace && !workspace.placeholder) workspace.placeholder = workspace.name;
   ui.editingWorkspaceId = id;
   emit(events.dataChanged);
 }

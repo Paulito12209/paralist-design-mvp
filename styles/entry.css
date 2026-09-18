@@ -86,3 +86,8 @@
 .entry-body::placeholder {
   color: var(--chevron);
 }
+
+/* Ein Projekt zeigt unter seinem Text, was in ihm liegt */
+.entry-links {
+  margin-top: 24px;
+}

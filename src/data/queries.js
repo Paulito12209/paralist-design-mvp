@@ -1,6 +1,10 @@
 /*
  * Fragen an die Daten: Welche Einträge liegen wo, wie viele sind es,
  * wie heißt ein Ablageort. Diese Datei ändert nie etwas — sie liest nur.
+ *
+ * Das Modell in einem Satz: Arbeitsbereiche stehen ganz oben, darin liegen
+ * Projekte, in Projekten alles andere; jeder Eintrag hat genau einen Ablageort
+ * (`parent`, ein Verweis aus refs.js, null = Inbox).
  * Pfad: src/data/queries.js
  *
  * Keine anpassbaren visuellen Werte.
@@ -8,26 +12,9 @@
 
 import { dayKey, timeKey } from "../core/dates.js";
 import { sameId, sameParent } from "../core/ids.js";
-import { overviewPages, resourceTypes, xpItems } from "./config.js";
+import { containerTypes, overviewPages, resourceTypes, typeIcon, typeOrder, typePlurals, xpItems } from "./config.js";
+import { entryRef, isEntryRef, isWorkspaceRef, refId, workspaceRef } from "./refs.js";
 import { state } from "./state.js";
-
-/** Name eines Arbeitsbereichs; ein unbekannter Ablageort ist die Inbox. */
-export function workspaceName(id) {
-  const workspace = state.workspaces.find((item) => sameId(item.id, id));
-  return workspace ? workspace.name : "Inbox";
-}
-
-/** Anzeigename eines Ablageorts — Übersichtskarte oder Arbeitsbereich. */
-export function parentName(parent) {
-  if (!parent) return "Inbox";
-  const page = Object.values(overviewPages).find((item) => sameParent(item.parent, parent));
-  return page ? page.title : workspaceName(parent);
-}
-
-/** Sichtbare Einträge eines Ablageorts (Archiviertes bleibt draußen). */
-export function entriesOf(parent) {
-  return state.entries.filter((entry) => !entry.archived && sameParent(entry.parent, parent));
-}
 
 /** Einen Eintrag nach ID finden, egal ob die ID als Zahl oder Text kommt. */
 export function findEntry(id) {
@@ -37,6 +24,81 @@ export function findEntry(id) {
 /** Einen Arbeitsbereich nach ID finden. */
 export function findWorkspace(id) {
   return state.workspaces.find((workspace) => sameId(workspace.id, id)) || null;
+}
+
+/** Anzeigename eines Arbeitsbereichs; leer heißt: der Vorgabename gilt. */
+export function workspaceLabel(workspace) {
+  return workspace.name || workspace.placeholder || "Arbeitsbereich";
+}
+
+/** Kann dieser Eintrag selbst Einträge aufnehmen? */
+export function isContainer(entry) {
+  return Boolean(entry && containerTypes.includes(entry.type));
+}
+
+/** Anzeigename eines Ablageorts — Inbox, Arbeitsbereich oder Projekt. */
+export function parentName(ref) {
+  if (!ref) return overviewPages[1].title;
+  if (isWorkspaceRef(ref)) {
+    const workspace = findWorkspace(refId(ref));
+    return workspace ? workspaceLabel(workspace) : overviewPages[1].title;
+  }
+  const project = isEntryRef(ref) ? findEntry(refId(ref)) : null;
+  return project ? project.title || "Projekt" : overviewPages[1].title;
+}
+
+/** Icon eines Ablageorts, passend zu parentName. */
+export function parentIcon(ref) {
+  if (!ref) return overviewPages[1].icon;
+  if (isWorkspaceRef(ref)) {
+    const workspace = findWorkspace(refId(ref));
+    return workspace ? workspaceIcon(workspace) : overviewPages[1].icon;
+  }
+  return typeIcon("projekt");
+}
+
+/** Sichtbare Einträge eines Ablageorts (Archiviertes bleibt draußen). */
+export function entriesOf(ref) {
+  return state.entries.filter((entry) => !entry.archived && sameParent(entry.parent, ref));
+}
+
+/**
+ * Die Einträge eines Ablageorts nach Typ gruppiert, in der Ordnung aus
+ * config.js: [{ type, label, icon, items }] — nur Gruppen mit Inhalt.
+ */
+export function groupedEntriesOf(ref) {
+  const list = entriesOf(ref);
+  return typeOrder
+    .map((type) => ({
+      type,
+      label: typePlurals[type] || type,
+      icon: typeIcon(type),
+      items: list.filter((entry) => entry.type === type),
+    }))
+    .filter((group) => group.items.length);
+}
+
+/** Alle Projekte, egal wo sie liegen — die Projekte-Karte. */
+export function projectEntries() {
+  return state.entries.filter((entry) => entry.type === "projekt" && !entry.archived);
+}
+
+/**
+ * Alle Ablageorte, die ein Eintrag bekommen kann: Inbox, jeder Arbeitsbereich,
+ * jedes Projekt. Ein Projekt darf nicht in ein Projekt, und nichts in sich selbst.
+ * @returns [{ ref, label, icon }]
+ */
+export function parentOptionsFor(entry = null) {
+  const options = [{ ref: null, label: overviewPages[1].title, icon: overviewPages[1].icon }];
+  state.workspaces.forEach((workspace) => {
+    options.push({ ref: workspaceRef(workspace.id), label: workspaceLabel(workspace), icon: workspaceIcon(workspace) });
+  });
+  if (entry && isContainer(entry)) return options;
+  projectEntries().forEach((project) => {
+    if (entry && sameId(project.id, entry.id)) return;
+    options.push({ ref: entryRef(project.id), label: project.title || "Projekt", icon: typeIcon("projekt") });
+  });
+  return options;
 }
 
 /** Arbeitsbereiche des gerade gewählten Tabs. */
@@ -74,6 +136,7 @@ export function resourceEntries() {
 /** Zahl auf einer Übersichtskarte. */
 export function pageCount(page) {
   if (page.kind === "favorites") return favoriteCount();
+  if (page.kind === "projects") return projectEntries().length;
   if (page.kind === "resources") return resourceEntries().length;
   return entriesOf(page.parent).length;
 }

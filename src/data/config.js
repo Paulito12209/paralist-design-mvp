@@ -9,6 +9,8 @@
  * xpKinds[*].color        -> Farbe im Ring des Fortschritt-Blatts (verweist auf styles/tokens.css)
  * xpKinds[*].amount       -> wie viele XP ein Ereignis bringt
  * composerPlaceholders    -> Platzhaltertext im Eingabefeld je gewähltem Typ
+ * typeOrder               -> Reihenfolge der Gruppen unter „Verknüpfte Inhalte“
+ * workspaceDefaultName    -> Vorgabename eines neuen Arbeitsbereichs
  * levelSteps / levelStep  -> ab wie vielen XP die nächste Stufe beginnt
  */
 
@@ -48,20 +50,41 @@ export const composerPlaceholders = {
 };
 
 /*
- * Jede Übersichtskarte ist ein Ablageort: „parent“ verbindet sie mit den Einträgen,
- * „seed“ legt beim allerersten Start Beispieleinträge an.
- * „kind“ markiert Sammlungen, die selbst kein Ablageort sind:
- * Favoriten zeigt nur Markiertes, Ressourcen alle Dokumente, Zeichnungen und Medien.
+ * Die vier Übersichtskarten. Nur die Inbox ist ein Ablageort (parent null =
+ * „nirgends abgelegt“). Die anderen drei sind Sammlungen („kind“): Favoriten
+ * zeigt Markiertes, Projekte alle Projekte, Ressourcen alle Dokumente,
+ * Zeichnungen und Medien — egal, wo sie liegen.
  */
 export const overviewPages = {
   1: { title: "Inbox", icon: "inbox", parent: null },
   2: { title: "Favoriten", icon: "star-outline", kind: "favorites" },
-  3: { title: "Projekte", icon: "rocket", parent: "o3" },
+  3: { title: "Projekte", icon: "rocket", kind: "projects" },
   4: { title: "Ressourcen", icon: "cube", kind: "resources" },
 };
 
-/** Ablageort der Projekte-Karte — als Name, damit niemand „o3“ abschreiben muss. */
-export const projectParent = overviewPages[3].parent;
+/*
+ * Die Ordnung der Dinge: Arbeitsbereiche ganz oben, darin Projekte, darin alles
+ * andere. Nur diese Typen dürfen selbst Einträge aufnehmen. Ein Projekt kann
+ * nicht in einem Projekt liegen — so kann nie ein Kreis entstehen.
+ */
+export const containerTypes = ["projekt"];
+
+/** Reihenfolge der Gruppen unter „Verknüpfte Inhalte“: Projekte zuerst. */
+export const typeOrder = ["projekt", "aufgabe", "notiz", "termin", "dokument", "zeichnung", "medien"];
+
+/** Mehrzahl je Typ für die Gruppenüberschriften. */
+export const typePlurals = {
+  projekt: "Projekte",
+  aufgabe: "Aufgaben",
+  notiz: "Notizen",
+  termin: "Termine",
+  dokument: "Dokumente",
+  zeichnung: "Zeichnungen",
+  medien: "Medien",
+};
+
+/** Vorgabename eines neuen Arbeitsbereichs; ab dem zweiten mit Nummer. */
+export const workspaceDefaultName = "Arbeitsbereich";
 
 /** Icons, die man einem Tab oder Arbeitsbereich geben kann. */
 export const presetIcons = [

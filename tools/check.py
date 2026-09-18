@@ -182,7 +182,7 @@ def check_html_ids():
     js = "\n".join(path.read_text(encoding="utf-8") for path in js_files())
 
     # Felder, die erst beim Zeichnen entstehen, stehen nicht in index.html
-    created_later = {"tab-name-input", "workspace-name-input", "cal-now", "cal-now-label", "history-more", "icon-sprite"}
+    created_later = {"tab-name-input", "workspace-name-input", "workspace-body", "cal-now", "cal-now-label", "history-more", "icon-sprite"}
     used = set(re.findall(r'\bel\("([^"]+)"\)', js)) | set(re.findall(r'getElementById\("([^"]+)"\)', js))
     for name in sorted(used - ids - created_later):
         note("index.html", f"src/ spricht #{name} an, das Element fehlt")

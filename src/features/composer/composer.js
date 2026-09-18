@@ -11,15 +11,17 @@ import { emit, events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { dayKey, timeKey } from "../../core/dates.js";
 import { icon } from "../../core/html.js";
-import { composerPlaceholders, defaultType, types, xpItemStyle } from "../../data/config.js";
-import { parentName } from "../../data/queries.js";
+import { sameParent } from "../../core/ids.js";
+import { composerPlaceholders, defaultType, resourcePick, types, xpItemStyle } from "../../data/config.js";
+import { findEntry, isContainer, parentName } from "../../data/queries.js";
+import { entryRef } from "../../data/refs.js";
 import { state, ui } from "../../data/state.js";
 import { awardXp } from "../../data/xp.js";
 import { closeCtxMenu } from "../../ui/ctx-menu.js";
 import { openParentPicker } from "../../ui/pickers.js";
 import { openEntry } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
-import { isViewActive } from "../../ui/views.js";
+import { currentView, isViewActive } from "../../ui/views.js";
 import {
   addComposerFiles,
   attachFilesTo,
@@ -79,9 +81,39 @@ function renderComposerLink() {
   dom.composerLinkLabel.textContent = parentName(composer.parent);
 }
 
-/** Eingabefeld öffnen; die Navigation und die Knopfleisten weichen dafür. */
-export function openComposer() {
+/*
+ * Was das Eingabefeld beim Öffnen vorschlägt, hängt davon ab, wo man ist:
+ * in einem Arbeitsbereich oder Projekt landet der Eintrag dort, auf der
+ * Projekte-Karte ist „Projekt“ gewählt, auf der Ressourcen-Karte „Ressourcen“,
+ * überall sonst eine Aufgabe für die Inbox.
+ */
+function contextDefaults() {
+  const aufgabe = { type: "aufgabe", pick: "aufgabe", parent: null };
+  const view = currentView();
+
+  if (view === "page" && ui.currentPage) {
+    const page = ui.currentPage;
+    if (page.kind === "projects") return { type: "projekt", pick: "projekt", parent: null };
+    if (page.kind === "resources") return { type: defaultType, pick: resourcePick.id, parent: null };
+    if (page.isWorkspace) return { ...aufgabe, parent: page.parent };
+    return aufgabe;
+  }
+  if (view === "entry") {
+    const entry = findEntry(ui.currentEntryId);
+    if (isContainer(entry)) return { ...aufgabe, parent: entryRef(entry.id) };
+  }
+  return aufgabe;
+}
+
+/**
+ * Eingabefeld öffnen; die Navigation und die Knopfleisten weichen dafür.
+ * @param overrides Typ, Knopf oder Ablageort, die die Vorgaben der Seite überstimmen.
+ */
+export function openComposer(overrides = {}) {
   closeCtxMenu();
+  const start = { ...contextDefaults(), ...overrides };
+  chooseComposerType(start.type, start.pick);
+  composer.parent = start.parent;
   dom.navShell.classList.add("is-composing");
   dom.tabBar.hidden = true;
   dom.composer.hidden = false;
@@ -116,8 +148,7 @@ export function isComposerOpen() {
 /** Eingabefeld auf der Kalenderseite an einer angetippten Stunde öffnen. */
 export function openComposerForSlot(slot) {
   composer.slot = slot;
-  chooseComposerType("termin", "termin");
-  openComposer();
+  openComposer({ type: "termin", pick: "termin" });
 }
 
 /*
@@ -158,6 +189,10 @@ export function createEntry() {
 
   dom.composerInput.value = "";
   closeComposer();
+  /* Auf der Seite eines Arbeitsbereichs soll man den neuen Eintrag gleich sehen. */
+  if (isViewActive("page") && ui.currentPage?.isWorkspace && sameParent(entry.parent, ui.currentPage.parent)) {
+    ui.pagePill = "links";
+  }
   emit(events.dataChanged);
 
   /* Eine neue Zeichnung öffnet sich gleich, damit man sofort loslegen kann. */

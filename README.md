@@ -75,6 +75,41 @@ einem Kommentarblock, der ihre anpassbaren Werte in Alltagssprache auflistet.
 Der richtige Weg ist also: in `styles/tokens.css` nachsehen, welche Datei den
 Bereich abdeckt, und dann deren Kopfkommentar lesen.
 
+## Datenmodell
+
+Drei Ebenen, ein Verweis:
+
+```
+Tab
+ └─ Arbeitsbereich          { id, name, tab, icon, favorite, body }
+     └─ Projekt (Eintrag)   { id, type: "projekt", title, body, parent: "w:3" }
+         └─ alles andere    { id, type, title, body, parent: "e:17" }
+```
+
+- **Arbeitsbereiche** stehen ganz oben, direkt auf der Übersichtsseite. Sie
+  liegen nie in etwas anderem und sind keine Einträge.
+- **Jeder Eintrag hat genau einen Ablageort** (`parent`): `null` für die
+  Inbox, `"w:<id>"` für einen Arbeitsbereich, `"e:<id>"` für ein Projekt. Die
+  Kürzel stehen in `src/data/refs.js` und machen eindeutig, welche Nummer
+  gemeint ist.
+- **Nur Projekte nehmen Einträge auf** (`containerTypes` in
+  `src/data/config.js`). Ein Projekt kann nicht in einem Projekt liegen — so
+  kann nie ein Kreis entstehen, und der Baum ist immer höchstens drei Ebenen
+  tief.
+- **Verknüpfen heißt verschieben:** „Verknüpfen mit“ setzt den Ablageort neu,
+  nachträglich und von überall. Was in einem gelöschten Ort lag, rückt eine
+  Ebene hoch.
+- **Die Karten Projekte, Favoriten und Ressourcen sind Sammlungen**, keine
+  Orte: sie zeigen alle Projekte, alles Markierte, alle Dokumente, Zeichnungen
+  und Medien — egal, wo sie liegen. Nur die Inbox ist ein Ort.
+- Arbeitsbereiche und Projekte haben einen **Schreibblock** (`body`) und
+  zeigen ihre Einträge unter **Verknüpfte Inhalte**, nach Typ gruppiert in der
+  Reihenfolge aus `typeOrder`.
+
+Sollte ein Eintrag später an mehreren Orten zugleich erscheinen müssen,
+kommt ein zweites Feld `links: ["w:2", "e:9"]` dazu; `parent` bleibt der eine
+Heimatort. Nichts am heutigen Modell müsste dafür geändert werden.
+
 ## Performance
 
 - **Nachladen:** Kalender, Medien, Suche, Ressourcen, Fortschritt, Profil,

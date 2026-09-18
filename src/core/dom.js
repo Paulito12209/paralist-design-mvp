@@ -62,6 +62,7 @@ export const dom = {
   get entryTitle() { return el("entry-title"); },
   get entryBody() { return el("entry-body"); },
   get entryAttachments() { return el("entry-attachments"); },
+  get entryLinks() { return el("entry-links"); },
   get entryCrumb() { return el("entry-crumb"); },
   get entryBack() { return el("entry-back"); },
   get entryMenu() { return el("entry-menu"); },

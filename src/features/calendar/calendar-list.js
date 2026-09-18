@@ -8,9 +8,8 @@
  */
 
 import { icon } from "../../core/html.js";
-import { sameParent } from "../../core/ids.js";
 import { longDate } from "../../core/format.js";
-import { calendarSegments, projectParent } from "../../data/config.js";
+import { calendarSegments } from "../../data/config.js";
 import { entriesOfDay, entryTime } from "../../data/queries.js";
 import { state, ui } from "../../data/state.js";
 import { entryRow } from "../../ui/rows.js";
@@ -23,7 +22,7 @@ export function listEntries() {
     .filter((entry) => {
       if (seg === "aufgaben") return entry.type === "aufgabe";
       if (seg === "termine") return entry.type === "termin";
-      return sameParent(entry.parent, projectParent);
+      return entry.type === "projekt";
     })
     .sort((a, b) => String(entryTime(a) || "").localeCompare(String(entryTime(b) || "")));
 }
