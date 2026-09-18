@@ -30,6 +30,10 @@ const sheetTitle = document.getElementById("sheet-title");
 const sheetOptions = document.getElementById("sheet-options");
 const ctxMenu = document.getElementById("ctx-menu");
 const ctxCard = document.getElementById("ctx-card");
+const levelGauge = document.getElementById("level-gauge");
+const progressModal = document.getElementById("progress");
+const progressBody = document.getElementById("progress-body");
+const themeOptions = document.getElementById("theme-options");
 
 const views = {
   home: homeView,
@@ -66,6 +70,30 @@ const presetIcons = [
 ];
 
 const storageKey = "paralist-mvp";
+const themeKey = "paralist-theme";
+
+/* XP-Arten: „answered“ ist für Karteikarten reserviert, die später dazukommen */
+const xpKinds = {
+  answered: { label: "Richtig beantwortet", icon: "brain", color: "var(--xp-answered)", amount: 2 },
+  created: { label: "Angelegt", icon: "plus-circle", color: "var(--xp-created)", amount: 1 },
+  done: { label: "Erledigt", icon: "check-circle", color: "var(--xp-done)", amount: 2 },
+};
+
+/* Was angelegt wurde: Icon und Farbe für die Historie */
+const xpItems = {
+  aufgabe: { label: "Aufgabe", icon: "task", color: "#0a84ff" },
+  notiz: { label: "Notiz", icon: "note", color: "#ffd60a" },
+  termin: { label: "Termin", icon: "calendar", color: "#5ac8fa" },
+  medien: { label: "Medien", icon: "photos", color: "#30d158" },
+  arbeitsbereich: { label: "Arbeitsbereich", icon: "layers", color: "#ff9f0a" },
+  tab: { label: "Tab", icon: "tag", color: "#bf5af2" },
+};
+
+const themes = [
+  { id: "system", label: "System", icon: "display" },
+  { id: "light", label: "Hell", icon: "sun" },
+  { id: "dark", label: "Dunkel", icon: "moon" },
+];
 
 let tabs = [{ id: 1, name: "Privat", icon: "smile" }];
 let activeTabId = 1;
@@ -83,6 +111,10 @@ let sheetActions = [];
 let ctxActions = [];
 let skipClick = false;
 let hold = null;
+let xpLog = [];
+let nextXpId = 1;
+let progressRange = 30;
+let historyLimit = 20;
 
 function escapeHtml(value) {
   return String(value).replace(
@@ -110,7 +142,7 @@ function saveState() {
   try {
     localStorage.setItem(
       storageKey,
-      JSON.stringify({ tabs, activeTabId, workspaces, entries, nextEntryId })
+      JSON.stringify({ tabs, activeTabId, workspaces, entries, nextEntryId, xpLog, nextXpId })
     );
   } catch (error) {
     /* ohne Speicher läuft die App weiter, nur ohne Merken */
@@ -129,8 +161,26 @@ function seedEntries() {
         parent: page.parent,
         archived: false,
         favorite: false,
+        createdAt: Date.now(),
       });
+      logXp("created", types[(n - 1) % types.length].id, `Eintrag ${n}`);
     }
+  });
+}
+
+/* Ältere Speicherstände kennen noch kein XP-Protokoll: alles Vorhandene
+   wird als ein Sammelposten ohne Zeitpunkte nachgetragen. */
+function seedXpFromExisting() {
+  const count = entries.length + workspaces.length + tabs.length;
+  if (!count) return;
+  xpLog.push({
+    id: nextXpId++,
+    ts: null,
+    kind: "created",
+    item: "sammel",
+    title: "",
+    amount: count * xpKinds.created.amount,
+    count,
   });
 }
 
@@ -153,10 +203,17 @@ function loadState() {
   if (Array.isArray(saved.workspaces)) workspaces = saved.workspaces;
   if (Array.isArray(saved.entries)) entries = saved.entries;
   if (Number(saved.nextEntryId)) nextEntryId = Number(saved.nextEntryId);
+  if (Number(saved.nextXpId)) nextXpId = Number(saved.nextXpId);
   if (!tabs.some((tab) => tab.id === activeTabId)) activeTabId = tabs[0].id;
+  if (Array.isArray(saved.xpLog)) xpLog = saved.xpLog;
+  else {
+    seedXpFromExisting();
+    saveState();
+  }
 
   tabs.forEach((tab) => {
     if (!tab.icon && tab.name === "Privat") tab.icon = "smile";
+    if (typeof tab.awarded !== "boolean") tab.awarded = true;
   });
   workspaces.forEach((workspace) => {
     if (typeof workspace.favorite !== "boolean") workspace.favorite = false;
@@ -460,7 +517,7 @@ function showSearch(replace = false) {
 function addWorkspace() {
   const id = workspaces.reduce((max, workspace) => Math.max(max, workspace.id), 0) + 1;
   workspaces.push({ id, name: `Platzhalter ${id}`, tab: activeTabId, favorite: false });
-  saveState();
+  awardXp("created", "arbeitsbereich", `Platzhalter ${id}`);
   renderWorkspaces();
 }
 
@@ -479,6 +536,10 @@ function commitTabName() {
   const tab = tabs.find((item) => item.id === editingTabId);
   editingTabId = null;
   if (tab) tab.name = input.value.trim() || tab.placeholder || "Tab";
+  if (tab && !tab.awarded) {
+    tab.awarded = true;
+    awardXp("created", "tab", tab.name);
+  }
   saveState();
   renderTabs();
 }
@@ -638,8 +699,9 @@ function createEntry() {
     parent: composerParent,
     archived: false,
     favorite: false,
+    createdAt: Date.now(),
   });
-  saveState();
+  awardXp("created", composerType, title);
   composerInput.value = "";
   closeComposer();
   renderOverview();
@@ -838,6 +900,424 @@ function openParentPicker(title, current, onPick) {
   ]);
 }
 
+/* ---------- Fortschritt: XP, Stufen, Level-Anzeige ---------- */
+
+function logXp(kind, item, title, count = 1) {
+  xpLog.push({
+    id: nextXpId++,
+    ts: Date.now(),
+    kind,
+    item,
+    title: title || "",
+    amount: xpKinds[kind].amount * count,
+  });
+}
+
+function awardXp(kind, item, title, count = 1) {
+  logXp(kind, item, title, count);
+  saveState();
+  renderLevel();
+}
+
+/* Archivierte Aufgaben zählen als erledigt; andere Typen nur als weggeräumt */
+function archiveEntry(entry) {
+  entry.archived = true;
+  if (entry.type === "aufgabe") awardXp("done", "aufgabe", entry.title);
+  else saveState();
+}
+
+function xpTotals() {
+  const totals = { answered: 0, created: 0, done: 0 };
+  xpLog.forEach((row) => {
+    totals[row.kind] = (totals[row.kind] || 0) + row.amount;
+  });
+  return totals;
+}
+
+function totalXp() {
+  return xpLog.reduce((sum, row) => sum + row.amount, 0);
+}
+
+/* Stufe 2 ab 300 XP, 3 ab 600, 4 ab 1000; danach wächst der Abstand um je 100 */
+function levelThreshold(level) {
+  const fixed = [0, 0, 300, 600, 1000];
+  if (level < fixed.length) return fixed[level];
+  let prev = 1000;
+  let step = 400;
+  for (let n = 5; n <= level; n += 1) {
+    step += 100;
+    prev += step;
+  }
+  return prev;
+}
+
+function levelInfo(xp) {
+  let level = 1;
+  while (xp >= levelThreshold(level + 1)) level += 1;
+  const from = levelThreshold(level);
+  const to = levelThreshold(level + 1);
+  return { level, from, to, progress: Math.max(0, Math.min(1, (xp - from) / (to - from))) };
+}
+
+function formatNumber(value) {
+  return new Intl.NumberFormat("de-DE").format(value);
+}
+
+/* Runde Strich-Skala: 300 Grad, Lücke unten, erreichte Striche in Silberblau */
+function renderLevel() {
+  const info = levelInfo(totalXp());
+  const ticks = 40;
+  const lit = Math.round(info.progress * ticks);
+  const cx = 24;
+  const cy = 24;
+  const inner = 18.5;
+  const outer = 22.5;
+  let lines = "";
+  for (let n = 0; n < ticks; n += 1) {
+    const angle = ((120 + (300 / (ticks - 1)) * n) * Math.PI) / 180;
+    const x1 = cx + Math.cos(angle) * inner;
+    const y1 = cy + Math.sin(angle) * inner;
+    const x2 = cx + Math.cos(angle) * outer;
+    const y2 = cy + Math.sin(angle) * outer;
+    lines += `<line class="level-tick${n < lit ? " is-on" : ""}" x1="${x1.toFixed(2)}" y1="${y1.toFixed(2)}" x2="${x2.toFixed(2)}" y2="${y2.toFixed(2)}" />`;
+  }
+  levelGauge.innerHTML = `${lines}
+    <text class="level-num" x="24" y="27.5" text-anchor="middle">${info.level}</text>
+    <text class="level-label" x="24" y="42.5" text-anchor="middle">Lv.</text>`;
+  document.getElementById("level-btn").setAttribute(
+    "aria-label",
+    `Stufe ${info.level}, ${formatNumber(totalXp())} XP. Fortschritt öffnen`
+  );
+}
+
+/* ---------- Fortschritt-Blatt ---------- */
+
+function startOfDay(ts) {
+  const date = new Date(ts);
+  date.setHours(0, 0, 0, 0);
+  return date.getTime();
+}
+
+function dayHeading(ts) {
+  const today = startOfDay(Date.now());
+  const day = startOfDay(ts);
+  if (day === today) return "Heute";
+  if (day === today - 86400000) return "Gestern";
+  return new Intl.DateTimeFormat("de-DE", { weekday: "short", day: "numeric", month: "long" })
+    .format(new Date(ts))
+    .replace(",", "");
+}
+
+function xpItemStyle(item) {
+  return xpItems[item] || { label: item, icon: "placeholder", color: "var(--muted)" };
+}
+
+function renderDonutCard() {
+  const totals = xpTotals();
+  const total = totalXp();
+  const order = ["answered", "created", "done"];
+  const r = 80;
+  const circ = 2 * Math.PI * r;
+  const gap = total ? 4 : 0;
+  let offset = 0;
+  const segments = order
+    .filter((kind) => totals[kind] > 0)
+    .map((kind) => {
+      const share = totals[kind] / total;
+      const length = Math.max(0, share * circ - gap);
+      const seg = `<circle class="donut-seg" cx="105" cy="105" r="${r}" stroke="${xpKinds[kind].color}" stroke-dasharray="${length.toFixed(2)} ${(circ - length).toFixed(2)}" stroke-dashoffset="${(-offset).toFixed(2)}" transform="rotate(-90 105 105)" />`;
+      offset += share * circ;
+      return seg;
+    })
+    .join("");
+  const ring = total
+    ? segments
+    : `<circle class="donut-seg" cx="105" cy="105" r="${r}" stroke="var(--line)" />`;
+
+  const rows = order
+    .map((kind) => {
+      const pct = total ? Math.round((totals[kind] / total) * 100) : 0;
+      return `
+        <div class="xp-row">
+          <span style="color:${xpKinds[kind].color}">${icon(xpKinds[kind].icon)}</span>
+          <span class="xp-row-label">${xpKinds[kind].label}</span>
+          <span class="xp-row-pct">${pct} %</span>
+          <span class="xp-row-xp">${formatNumber(totals[kind])} XP</span>
+        </div>
+      `;
+    })
+    .join("");
+
+  return `
+    <section class="pcard">
+      <div class="donut-wrap">
+        <svg class="donut" viewBox="0 0 210 210" aria-hidden="true">
+          ${ring}
+          <text class="donut-total" x="105" y="102" text-anchor="middle">${formatNumber(total)} XP</text>
+          <text class="donut-sub" x="105" y="122" text-anchor="middle">insgesamt</text>
+        </svg>
+      </div>
+      ${rows}
+    </section>
+  `;
+}
+
+function niceStep(max) {
+  const steps = [5, 10, 20, 25, 50, 100, 200, 250, 500, 1000, 2000, 5000, 10000];
+  return steps.find((step) => max / step <= 5) || steps[steps.length - 1];
+}
+
+function renderHistoryCard() {
+  const days = progressRange;
+  const today = startOfDay(Date.now());
+  const start = today - (days - 1) * 86400000;
+  let base = 0;
+  const perDay = new Array(days).fill(0);
+  let inRange = 0;
+  xpLog.forEach((row) => {
+    if (row.ts == null || row.ts < start) {
+      base += row.amount;
+      return;
+    }
+    const index = Math.min(days - 1, Math.floor((startOfDay(row.ts) - start) / 86400000));
+    perDay[index] += row.amount;
+    inRange += row.amount;
+  });
+  const values = [];
+  let running = base;
+  perDay.forEach((amount) => {
+    running += amount;
+    values.push(running);
+  });
+
+  const width = 326;
+  const height = 200;
+  const plotLeft = 0;
+  const plotRight = 282;
+  const plotTop = 10;
+  const plotBottom = 160;
+  const max = Math.max(...values, 1);
+  const step = niceStep(max);
+  const yMax = Math.max(step, Math.ceil((max * 1.15) / step) * step); /* etwas Luft über der Kurve */
+  const x = (i) => plotLeft + (i / Math.max(1, days - 1)) * (plotRight - plotLeft);
+  const y = (v) => plotBottom - (v / yMax) * (plotBottom - plotTop);
+
+  let grid = "";
+  for (let v = 0; v <= yMax; v += step) {
+    grid += `<line class="chart-axis" x1="${plotLeft}" x2="${plotRight}" y1="${y(v).toFixed(1)}" y2="${y(v).toFixed(1)}" />
+      <text class="chart-label" x="${width}" y="${(y(v) + 4).toFixed(1)}" text-anchor="end">${formatNumber(v)}</text>`;
+  }
+
+  const labelStep = days <= 7 ? 1 : days <= 30 ? 7 : 21;
+  const labelFormat =
+    days <= 7
+      ? new Intl.DateTimeFormat("de-DE", { weekday: "short" })
+      : new Intl.DateTimeFormat("de-DE", { day: "numeric", month: "short" });
+  let labels = "";
+  /* Bei 30 und 90 Tagen beginnt die erste Beschriftung erst nach dem ersten Schritt, sonst überlappt sie */
+  for (let i = days <= 7 ? 0 : labelStep; i < days; i += labelStep) {
+    const ts = start + i * 86400000;
+    const xi = x(i).toFixed(1);
+    labels += `<line class="chart-grid" x1="${xi}" x2="${xi}" y1="${plotTop}" y2="${plotBottom}" />
+      <text class="chart-label" x="${xi}" y="${plotBottom + 22}" text-anchor="${i === 0 ? "start" : "middle"}">${labelFormat.format(new Date(ts))}</text>`;
+  }
+
+  const points = values.map((v, i) => `${x(i).toFixed(1)},${y(v).toFixed(1)}`);
+  const line = points.join(" ");
+  const area = `${x(0).toFixed(1)},${plotBottom} ${line} ${x(days - 1).toFixed(1)},${plotBottom}`;
+
+  return `
+    <section class="pcard">
+      <div class="pcard-head">${icon("trend")}<span>Verlauf</span></div>
+      <div class="seg" id="progress-range">
+        ${[7, 30, 90]
+          .map(
+            (n) =>
+              `<button type="button" data-range="${n}" class="${n === days ? "is-active" : ""}">${n} Tage</button>`
+          )
+          .join("")}
+      </div>
+      <svg class="chart" viewBox="0 0 ${width} ${height}" aria-hidden="true">
+        ${grid}
+        ${labels}
+        <polygon class="chart-area" points="${area}" />
+        <polyline class="chart-line" points="${line}" />
+      </svg>
+      <p class="chart-note">${formatNumber(inRange)} XP in diesem Zeitraum</p>
+    </section>
+  `;
+}
+
+function renderLevelsCard() {
+  const info = levelInfo(totalXp());
+  const rows = [1, 2, 3]
+    .map((n) => {
+      const level = info.level + n;
+      return `<div class="level-row"><b>Stufe ${level}</b><span>${formatNumber(levelThreshold(level))} XP</span></div>`;
+    })
+    .join("");
+  return `
+    <section class="pcard">
+      <div class="pcard-head">${icon("stairs")}<span>Nächste Stufen</span></div>
+      ${rows}
+    </section>
+  `;
+}
+
+function renderLogCard() {
+  const bulk = xpLog.filter((row) => row.ts == null);
+  const timed = xpLog.filter((row) => row.ts != null).sort((a, b) => b.ts - a.ts);
+
+  const bulkRows = bulk
+    .map(
+      (row) => `
+        <div class="hist-row hist-bulk">
+          <span style="color:${xpKinds[row.kind].color}">${icon(xpKinds[row.kind].icon)}</span>
+          <div class="hist-copy">
+            <p class="hist-title">${xpKinds[row.kind].label}</p>
+            <p class="hist-meta">${formatNumber(row.count)} Einträge · ohne Zeitpunkte</p>
+          </div>
+          <span class="hist-xp" style="color:${xpKinds[row.kind].color}">+${formatNumber(row.amount)}</span>
+        </div>
+      `
+    )
+    .join("");
+
+  const shown = timed.slice(0, historyLimit);
+  let html = "";
+  let currentDay = null;
+  shown.forEach((row) => {
+    const day = startOfDay(row.ts);
+    if (day !== currentDay) {
+      currentDay = day;
+      const dayTotal = timed
+        .filter((item) => startOfDay(item.ts) === day)
+        .reduce((sum, item) => sum + item.amount, 0);
+      html += `<div class="hist-group"><span>${dayHeading(row.ts)}</span><span>+${formatNumber(dayTotal)}</span></div>`;
+    }
+    const style = xpItemStyle(row.item);
+    html += `
+      <div class="hist-row">
+        <span style="color:${style.color}">${icon(style.icon)}</span>
+        <div class="hist-copy">
+          <p class="hist-title">${escapeHtml(row.title || style.label)}</p>
+          <p class="hist-meta">${xpKinds[row.kind].label} · ${style.label}</p>
+        </div>
+        <span class="hist-xp" style="color:${style.color}">+${formatNumber(row.amount)}</span>
+      </div>
+    `;
+  });
+
+  if (!bulk.length && !timed.length) html = `<p class="empty-note">Noch keine Aktivität.</p>`;
+  const more =
+    timed.length > historyLimit
+      ? `<button class="hist-more" type="button" id="history-more">Mehr anzeigen</button>`
+      : "";
+
+  return `
+    <section class="pcard">
+      <div class="pcard-head">${icon("history")}<span>Historie</span></div>
+      ${bulkRows}${html}${more}
+    </section>
+  `;
+}
+
+function renderProgress() {
+  progressBody.innerHTML =
+    renderDonutCard() + renderHistoryCard() + renderLevelsCard() + renderLogCard();
+}
+
+function openProgress(push = true) {
+  closeSheet();
+  closeCtxMenu();
+  closeComposer();
+  historyLimit = 20;
+  renderProgress();
+  progressModal.hidden = false;
+  progressBody.scrollTop = 0;
+  if (push) history.pushState({ view: "progress", from: sourceView }, "", "#/fortschritt");
+}
+
+function closeProgress() {
+  if (progressModal.hidden) return;
+  if (history.state && history.state.view === "progress") {
+    history.back();
+    return;
+  }
+  progressModal.hidden = true;
+}
+
+document.getElementById("level-btn").addEventListener("click", () => openProgress());
+document.getElementById("progress-close").addEventListener("click", closeProgress);
+progressModal.addEventListener("click", (event) => {
+  if (event.target === progressModal) closeProgress();
+});
+
+progressBody.addEventListener("click", (event) => {
+  const range = event.target.closest("[data-range]");
+  if (range) {
+    progressRange = Number(range.dataset.range);
+    const scroll = progressBody.scrollTop;
+    renderProgress();
+    progressBody.scrollTop = scroll;
+    return;
+  }
+  if (event.target.closest("#history-more")) {
+    historyLimit += 20;
+    const scroll = progressBody.scrollTop;
+    renderProgress();
+    progressBody.scrollTop = scroll;
+  }
+});
+
+/* ---------- Darstellung (Hell / Dunkel / System) ---------- */
+
+function currentTheme() {
+  try {
+    const saved = localStorage.getItem(themeKey);
+    if (saved === "light" || saved === "dark") return saved;
+  } catch (error) {
+    /* ohne Speicher gilt System */
+  }
+  return "system";
+}
+
+function applyTheme(theme) {
+  if (theme === "light" || theme === "dark") document.documentElement.dataset.theme = theme;
+  else delete document.documentElement.dataset.theme;
+}
+
+function setTheme(theme) {
+  try {
+    if (theme === "system") localStorage.removeItem(themeKey);
+    else localStorage.setItem(themeKey, theme);
+  } catch (error) {
+    /* ohne Speicher gilt die Wahl nur bis zum Neuladen */
+  }
+  applyTheme(theme);
+  renderThemeOptions();
+}
+
+function renderThemeOptions() {
+  const active = currentTheme();
+  themeOptions.innerHTML = themes
+    .map(
+      (theme) => `
+        <button class="settings-row${theme.id === active ? " is-active" : ""}" type="button" data-theme-option="${theme.id}">
+          ${icon(theme.icon)}
+          <span>${theme.label}</span>
+          ${icon("check", "settings-check")}
+        </button>
+      `
+    )
+    .join("");
+}
+
+themeOptions.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-theme-option]");
+  if (button) setTheme(button.dataset.themeOption);
+});
+
 /* ---------- Wischen ---------- */
 
 let drag = null;
@@ -997,8 +1477,7 @@ content.addEventListener("click", (event) => {
       return;
     }
     if (kind === "archive") {
-      entry.archived = true;
-      saveState();
+      archiveEntry(entry);
       refreshLists();
       return;
     }
@@ -1245,8 +1724,7 @@ document.getElementById("entry-menu").addEventListener("click", () => {
       label: "Archivieren",
       icon: "archive",
       onSelect: () => {
-        entry.archived = true;
-        saveState();
+        archiveEntry(entry);
         restoreFrom(sourceView);
       },
     },
@@ -1305,7 +1783,12 @@ window.addEventListener("popstate", (event) => {
   const state = event.state;
   closeSheet();
   closeCtxMenu();
+  progressModal.hidden = true;
 
+  if (state && state.view === "progress") {
+    openProgress(false);
+    return;
+  }
   if (!state || state.view === "home") {
     showHome(true);
     return;
@@ -1348,4 +1831,6 @@ renderOverview();
 renderTabs();
 renderWorkspaces();
 renderComposerTypes();
+renderLevel();
+renderThemeOptions();
 history.replaceState({ view: "home" }, "", "#/");

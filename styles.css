@@ -49,6 +49,19 @@
  * --project-icon-color      -> Farbe des Raketen-Icons auf der Projekte-Karte
  * --resource-icon-color     -> Farbe des Würfel-Icons auf der Ressourcen-Karte
  * --ctx-radius              -> Rundung des kleinen Menüs beim gedrückt Halten
+ * --icon-strong             -> dunkle Icon-Farbe oben (Profil)
+ * --placeholder             -> Farbe von Platzhaltertexten in Eingabefeldern
+ * --chevron                 -> Farbe der kleinen Pfeile rechts in Listen
+ * --level-color             -> Silberblau der Level-Anzeige oben links (Striche, Zahl, „Lv.“)
+ * --level-dim               -> Farbe der noch nicht erreichten Striche der Level-Anzeige
+ * --level-glow              -> Leuchten um die Level-Anzeige (nur im Dunkelmodus sichtbar)
+ * --xp-answered             -> Magenta für „Richtig beantwortet“ (Karteikarten, kommt später)
+ * --xp-created              -> Blau für „Angelegt“
+ * --xp-done                 -> Grün für „Erledigt“
+ * --xp-line                 -> Orange der Verlaufskurve im Fortschritt-Blatt
+ *
+ * Dunkelmodus: dieselben Variablen werden weiter unten unter
+ * „[data-theme="dark"]“ bzw. „prefers-color-scheme: dark“ überschrieben.
  */
 
 :root {
@@ -102,8 +115,68 @@
   --project-icon-color: #5B0E14;
   --resource-icon-color: #1A2517;
   --ctx-radius: 16px;
+  --icon-strong: #3a3a3c;
+  --placeholder: #aeaeb2;
+  --chevron: #c7c7cc;
+  --level-color: #4d72ad;
+  --level-dim: rgba(77, 114, 173, 0.22);
+  --level-glow: transparent;
+  --xp-answered: #c23fe0;
+  --xp-created: #007aff;
+  --xp-done: #34c759;
+  --xp-line: #ff9500;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* Dunkelmodus: folgt dem System, solange in den Einstellungen nichts anderes gewählt ist */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+  --bg: #000000;
+  --card: #1c1c1e;
+  --text: #f2f2f7;
+  --muted: #8e8e93;
+  --line: rgba(84, 84, 88, 0.55);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --tab-pill-active-bg: rgba(255, 255, 255, 0.12);
+  --inbox-icon-color: #9fc4dc;
+  --project-icon-color: #e8848d;
+  --resource-icon-color: #a3d39b;
+  --icon-strong: #e5e5ea;
+  --placeholder: #636366;
+  --chevron: #48484a;
+  --level-color: #a9c9ff;
+  --level-dim: rgba(169, 201, 255, 0.2);
+  --level-glow: rgba(120, 170, 255, 0.75);
+  --xp-answered: #d94ff2;
+  --xp-created: #0a84ff;
+  --xp-done: #30d158;
+  --xp-line: #ff9f0a;
+  }
+}
+
+/* Dunkelmodus: in den Einstellungen fest gewählt */
+:root[data-theme="dark"] {
+  --bg: #000000;
+  --card: #1c1c1e;
+  --text: #f2f2f7;
+  --muted: #8e8e93;
+  --line: rgba(84, 84, 88, 0.55);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --tab-pill-active-bg: rgba(255, 255, 255, 0.12);
+  --inbox-icon-color: #9fc4dc;
+  --project-icon-color: #e8848d;
+  --resource-icon-color: #a3d39b;
+  --icon-strong: #e5e5ea;
+  --placeholder: #636366;
+  --chevron: #48484a;
+  --level-color: #a9c9ff;
+  --level-dim: rgba(169, 201, 255, 0.2);
+  --level-glow: rgba(120, 170, 255, 0.75);
+  --xp-answered: #d94ff2;
+  --xp-created: #0a84ff;
+  --xp-done: #30d158;
+  --xp-line: #ff9f0a;
 }
 
 * {
@@ -189,7 +262,7 @@ button {
   background: var(--card);
   display: grid;
   place-items: center; /* Icon sitzt in der Mitte; mit flex allein wäre die Zentrierung umständlicher */
-  color: #3a3a3c;
+  color: var(--icon-strong);
   box-shadow: var(--shadow);
   flex: 0 0 auto;
 }
@@ -200,10 +273,57 @@ button {
   height: var(--top-bar-leading-btn-height);
 }
 
+/* Level-Anzeige oben links: runder Knopf mit Strich-Skala wie in der iOS-App */
+.level-btn {
+  width: var(--top-bar-leading-btn-width);
+  height: var(--top-bar-leading-btn-height);
+  border-radius: 50%; /* border-radius: macht den Knopf rund */
+  background: var(--card);
+  box-shadow: var(--shadow);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.level-btn:active {
+  opacity: 0.7;
+}
+
+.level-gauge {
+  width: 46px;
+  height: 46px;
+  display: block;
+  filter: drop-shadow(0 0 3px var(--level-glow)); /* filter: sanftes Leuchten, im Hellmodus unsichtbar */
+}
+
+.level-tick {
+  stroke: var(--level-dim);
+  stroke-width: 1.5;
+  stroke-linecap: round;
+}
+
+/* Erreichte Striche leuchten in Silberblau */
+.level-tick.is-on {
+  stroke: var(--level-color);
+}
+
+.level-num {
+  fill: var(--level-color);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+}
+
+.level-label {
+  fill: var(--level-color);
+  font-size: 6.5px;
+  font-weight: 600;
+}
+
 .avatar {
   width: var(--top-bar-profile-btn-width);
   height: var(--top-bar-profile-btn-height);
-  color: #3a3a3c;
+  color: var(--icon-strong);
   overflow: hidden;
 }
 
@@ -241,7 +361,7 @@ button {
 }
 
 .search input::placeholder {
-  color: #aeaeb2;
+  color: var(--placeholder);
 }
 
 .content {
@@ -303,7 +423,7 @@ button {
 .card-icon {
   width: 26px;
   height: 26px;
-  color: #c7c7cc;
+  color: var(--chevron);
 }
 
 /* Inbox-Icon auf der Übersichtskarte */
@@ -343,6 +463,10 @@ button {
   align-items: center;
   margin: var(--overview-gap) 0 var(--workspace-head-gap);
   padding-left: var(--title-side);
+}
+
+.screen-title + .section-head {
+  margin-top: 0;
 }
 
 .section-head h2 {
@@ -390,7 +514,7 @@ button {
 .workspace-row .icon:not(.chevron) {
   width: 22px;
   height: 22px;
-  color: #8e8e93;
+  color: var(--muted);
 }
 
 .workspace-row span {
@@ -400,18 +524,18 @@ button {
 .workspace-row .chevron {
   width: 16px;
   height: 16px;
-  color: #c7c7cc;
+  color: var(--chevron);
 }
 
 .workspace-add {
-  color: #aeaeb2;
+  color: var(--placeholder);
   border-bottom: 0;
 }
 
 .workspace-row.workspace-add .icon:not(.chevron) {
   width: var(--icon-folder-plus-width);
   height: var(--icon-folder-plus-height);
-  color: #c4c4c6;
+  color: var(--chevron);
 }
 
 .page-head {
@@ -461,7 +585,7 @@ button {
 .search-row .icon:not(.chevron) {
   width: 22px;
   height: 22px;
-  color: #8e8e93;
+  color: var(--muted);
 }
 
 .search-copy {
@@ -485,7 +609,7 @@ button {
 .search-row .chevron {
   width: 16px;
   height: 16px;
-  color: #c7c7cc;
+  color: var(--chevron);
 }
 
 .date-label {
@@ -635,7 +759,7 @@ button {
 }
 
 .composer-input::placeholder {
-  color: #aeaeb2;
+  color: var(--placeholder);
 }
 
 .composer-tools {
@@ -735,7 +859,7 @@ button {
 }
 
 .entry-title::placeholder {
-  color: #c7c7cc;
+  color: var(--chevron);
 }
 
 .entry-body {
@@ -752,7 +876,7 @@ button {
 }
 
 .entry-body::placeholder {
-  color: #c7c7cc;
+  color: var(--chevron);
 }
 
 /* Tab-Zeile: Pillen scrollen, Plus-Button bleibt rechts */
@@ -1115,4 +1239,388 @@ button {
     border-radius: 0;
     box-shadow: none;
   }
+}
+
+
+/* ---------- Einstellungen ---------- */
+
+.settings-group {
+  background: var(--card);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+  overflow: hidden; /* overflow: schneidet die Zeilen an den runden Ecken ab */
+  margin-bottom: 20px;
+}
+
+.settings-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 8px 16px;
+  border-bottom: 0.5px solid var(--line);
+  text-align: left;
+  font-size: 17px;
+  color: var(--text);
+}
+
+.settings-row:last-child {
+  border-bottom: 0;
+}
+
+.settings-row .icon {
+  width: 22px;
+  height: 22px;
+  color: var(--muted);
+  flex: 0 0 auto;
+}
+
+.settings-row span {
+  flex: 1;
+}
+
+/* Haken rechts: nur bei der gewählten Option sichtbar */
+.settings-row .settings-check {
+  width: 20px;
+  height: 20px;
+  color: var(--add);
+  opacity: 0;
+}
+
+.settings-row.is-active .settings-check {
+  opacity: 1;
+}
+
+.settings-row:active {
+  background: var(--bg);
+}
+
+/* ---------- Fortschritt-Blatt ---------- */
+
+.modal-backdrop {
+  position: absolute; /* position: liegt über der ganzen Gerätefläche */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 44; /* z-index: über Navigation und Auswahl-Blatt */
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+.modal-backdrop[hidden] {
+  display: none;
+}
+
+.modal {
+  height: calc(100% - 24px - var(--safe-top));
+  background: var(--bg);
+  border-radius: 28px 28px 0 0; /* border-radius: rundet nur die obere Kante wie ein iOS-Blatt */
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  box-shadow: 0 -8px 40px rgba(0, 0, 0, 0.3);
+  animation: modal-up 0.28s ease; /* animation: Blatt fährt von unten herein */
+}
+
+@keyframes modal-up {
+  from {
+    transform: translateY(48px);
+    opacity: 0.4;
+  }
+}
+
+.modal-head {
+  position: relative; /* position: der Schließen-Knopf hängt rechts im Kopf */
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 26px 16px 14px;
+}
+
+.modal-grip {
+  position: absolute;
+  top: 8px;
+  left: 50%;
+  width: 36px;
+  height: 5px;
+  border-radius: 3px;
+  background: var(--chevron);
+  transform: translateX(-50%); /* transform: zentriert den Griff */
+}
+
+.modal-head h2 {
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.modal-close {
+  position: absolute;
+  right: 12px;
+  top: 16px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%; /* border-radius: macht den Schließen-Knopf rund */
+  background: var(--tab-pill-active-bg);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+}
+
+.modal-close .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.modal-close:active {
+  opacity: 0.6;
+}
+
+.modal-body {
+  flex: 1;
+  overflow: auto;
+  padding: 4px var(--content-side) calc(24px + var(--safe-bottom));
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  scrollbar-width: none;
+}
+
+.modal-body::-webkit-scrollbar {
+  display: none;
+}
+
+/* Karten im Fortschritt-Blatt */
+.pcard {
+  background: var(--card);
+  border-radius: var(--radius-xl);
+  padding: 18px 16px;
+  box-shadow: var(--shadow);
+}
+
+.pcard-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin-bottom: 14px;
+}
+
+.pcard-head .icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* Ring: Anteil je XP-Art */
+.donut-wrap {
+  display: grid;
+  place-items: center;
+  margin: 4px 0 18px;
+}
+
+.donut {
+  width: 210px;
+  height: 210px;
+  display: block;
+}
+
+.donut-seg {
+  fill: none;
+  stroke-width: 26;
+}
+
+.donut-total {
+  fill: var(--text);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+
+.donut-sub {
+  fill: var(--muted);
+  font-size: 14px;
+}
+
+.xp-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 42px;
+  font-size: 17px;
+}
+
+.xp-row .icon {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+}
+
+.xp-row-label {
+  flex: 1;
+}
+
+.xp-row-pct {
+  color: var(--muted);
+  min-width: 52px;
+  text-align: right;
+}
+
+.xp-row-xp {
+  font-weight: 600;
+  min-width: 62px;
+  text-align: right;
+}
+
+/* Zeitraum-Schalter im Verlauf */
+.seg {
+  display: flex;
+  background: var(--bg);
+  border-radius: 999px; /* border-radius: macht den Schalter zur Pille */
+  padding: 3px;
+  margin-bottom: 14px;
+}
+
+.seg button {
+  flex: 1;
+  padding: 9px 0;
+  border-radius: 999px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text);
+}
+
+.seg button.is-active {
+  background: var(--tab-pill-active-bg);
+  font-weight: 600;
+}
+
+.chart {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.chart-grid {
+  stroke: var(--line);
+  stroke-dasharray: 3 4; /* stroke-dasharray: gestrichelte Hilfslinien */
+}
+
+.chart-axis {
+  stroke: var(--line);
+}
+
+.chart-label {
+  fill: var(--muted);
+  font-size: 12px;
+}
+
+.chart-line {
+  fill: none;
+  stroke: var(--xp-line);
+  stroke-width: 2.5;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.chart-area {
+  fill: var(--xp-line);
+  opacity: 0.28;
+}
+
+.chart-note {
+  color: var(--muted);
+  font-size: 15px;
+  margin-top: 10px;
+}
+
+.level-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 14px 0;
+  border-bottom: 0.5px solid var(--line);
+  font-size: 17px;
+}
+
+.level-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 4px;
+}
+
+.level-row b {
+  font-weight: 600;
+}
+
+.level-row span {
+  color: var(--muted);
+}
+
+/* Historie: Tagesgruppen mit Zeilen */
+.hist-group {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase; /* text-transform: Tagesnamen in Großbuchstaben wie in der App */
+  letter-spacing: 0.02em;
+  padding: 16px 0 6px;
+}
+
+.hist-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.hist-row .icon {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+}
+
+.hist-copy {
+  flex: 1;
+  min-width: 0; /* min-width: lange Titel werden abgeschnitten statt die Zeile zu sprengen */
+}
+
+.hist-title {
+  font-size: 17px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.hist-meta {
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.hist-xp {
+  font-weight: 600;
+  font-size: 17px;
+}
+
+.hist-bulk {
+  border-bottom: 0.5px solid var(--line);
+  padding-bottom: 12px;
+}
+
+.hist-more {
+  width: 100%;
+  padding: 14px 0 4px;
+  font-weight: 600;
+  font-size: 17px;
+  color: var(--text);
+}
+
+.hist-more:active {
+  opacity: 0.55;
 }
