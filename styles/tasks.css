@@ -1,7 +1,6 @@
 /*
  * Aufgaben-Seite: die Titelzeile mit dem runden Umschalter Liste ↔ Board und
- * der Pille „Gruppieren“, die Pillen Filtern und Sortieren darunter, und die
- * Listenansicht. Die Zeilen sind dieselben wie in allen übrigen Listen
+ * der Pille „Gruppieren“, darunter die Listenansicht. Die Zeilen sind dieselben wie in allen übrigen Listen
  * (styles/rows.css) — hier stehen nur die Zutaten, die eine Aufgabe zusätzlich
  * hat: der runde Haken-Knopf, das Label mit dem Ablageort und die kleinen
  * Chips. Das Board hat eine eigene Datei, styles/tasks-board.css.
@@ -9,7 +8,7 @@
  *
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
- * --task-tools-gap      -> Abstand zwischen den Pillen und der Liste
+ * --task-tools-gap      -> Abstand zwischen der Titelzeile und der Liste
  * --task-view-btn-size  -> Durchmesser des runden Umschalters
  * --task-pill-anim      -> wie lange die Pille „Gruppieren“ heraus- bzw. hineinfährt
  * --task-pill-slide     -> aus welcher Entfernung sie dabei herangleitet
@@ -32,7 +31,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: var(--overview-gap);
+  margin-bottom: var(--task-tools-gap);
 }
 
 .tasks-head .screen-title {
@@ -105,20 +104,6 @@
     opacity: 1;
     transform: translateX(0) scaleX(1);
   }
-}
-
-/* ---------- Pillen Filtern und Sortieren ---------- */
-
-/* Die Pillen laufen waagerecht weiter, wenn sie nicht nebeneinanderpassen.
-   Anders als über den Arbeitsbereichen steht rechts kein Plus-Knopf, der
-   Platz freihalten müsste. */
-.task-pills {
-  margin-bottom: var(--task-tools-gap);
-  padding-right: 2px;
-}
-
-.task-pill {
-  flex: 0 0 auto;
 }
 
 /* ---------- Runder Haken-Knopf ---------- */

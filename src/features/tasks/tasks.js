@@ -21,7 +21,7 @@ import { isViewActive } from "../../ui/views.js";
 import { taskBoardMarkup } from "./tasks-board.js";
 import { consumeDragClick, initTaskDrag } from "./tasks-drag.js";
 import { taskListMarkup } from "./tasks-list.js";
-import { handleToolClick, taskPillsMarkup, taskToolsMarkup } from "./tasks-tools.js";
+import { handleToolClick, taskToolsMarkup } from "./tasks-tools.js";
 
 /** Die ganze Seite neu zeichnen. */
 export function renderTasks() {
@@ -32,7 +32,6 @@ export function renderTasks() {
   const left = scrolled ? scrolled.scrollLeft : 0;
 
   dom.tasksTools.innerHTML = taskToolsMarkup();
-  dom.tasksPills.innerHTML = taskPillsMarkup();
   dom.tasksBody.innerHTML = board ? taskBoardMarkup(prefs) : taskListMarkup(prefs);
   dom.tasksBody.classList.toggle("is-board", board);
 
@@ -75,7 +74,6 @@ function onBodyClick(event) {
 function init() {
   const onToolClick = (event) => handleToolClick(event, renderTasks);
   dom.tasksTools.addEventListener("click", onToolClick);
-  dom.tasksPills.addEventListener("click", onToolClick);
   dom.tasksBody.addEventListener("click", onBodyClick);
   initTaskDrag(renderTasks);
 
