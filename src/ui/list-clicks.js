@@ -25,7 +25,7 @@ import { saveState, state } from "../data/state.js";
 import { archiveEntry } from "../data/xp.js";
 import { cancelHold, consumeClickBlock } from "./long-press.js";
 import { openPlacesPicker } from "./pickers.js";
-import { openEntry, openTarget } from "./router.js";
+import { openEntry, openTarget, showTab } from "./router.js";
 import { closeSwipes, isSwipedOpen } from "./swipe.js";
 import { toggleGroup } from "./groups.js";
 
@@ -103,6 +103,15 @@ function onClick(event) {
 
   if (event.target.closest("[data-add-workspace]")) {
     addWorkspace();
+    return;
+  }
+
+  /* Der graue Zweittitel: „Medien“ neben „Ressourcen“ und umgekehrt. */
+  const titleSwitch = event.target.closest("[data-title-switch]");
+  if (titleSwitch) {
+    const target = titleSwitch.dataset.titleSwitch;
+    if (target === "resources") openTarget("overview", "4");
+    else showTab(target);
     return;
   }
 

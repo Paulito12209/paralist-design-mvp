@@ -42,6 +42,8 @@
  * --card                    -> Hintergrundfarbe der weißen Karten
  * --text                    -> Textfarbe für Überschriften und normale Schrift
  * --muted                   -> hellere Textfarbe für Hinweise und das Add-Icon
+ * --title-alt               -> Grauton des zweiten Wortes in der großen Überschrift
+                               („Medien“ neben „Ressourcen“ und umgekehrt)
  * --line                    -> Farbe der dünnen Trennlinie unter Arbeitsbereichen
  * --shadow                  -> weicher Schatten unter Karten und Suche
  * --icon-strong             -> dunkle Icon-Farbe oben (Profil)
@@ -161,6 +163,7 @@
   --card: #ffffff;
   --text: #1c1c1e;
   --muted: #8e8e93;
+  --title-alt: #b4b4ba;
   --line: rgba(60, 60, 67, 0.12);
   --add: #007aff;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.05);
@@ -302,6 +305,7 @@
     --composer-mic-bg: #09090a;
     --text: #f2f2f7;
     --muted: #8e8e93;
+    --title-alt: #5a5a60;
     --line: rgba(84, 84, 88, 0.55);
     --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
     --tab-pill-active-bg: rgba(255, 255, 255, 0.12);
@@ -342,6 +346,7 @@
   --composer-mic-bg: #0e0e0f;
   --text: #f2f2f7;
   --muted: #8e8e93;
+  --title-alt: #5a5a60;
   --line: rgba(84, 84, 88, 0.55);
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
   --tab-pill-active-bg: rgba(255, 255, 255, 0.12);

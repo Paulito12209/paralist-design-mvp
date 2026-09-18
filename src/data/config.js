@@ -38,8 +38,11 @@ export const types = [
 /** Typ eines Eintrags ohne ausdrückliche Wahl. */
 export const defaultType = "dokument";
 
-/** Diese Typen sammelt die Ressourcen-Karte, egal wo sie abgelegt sind. */
-export const resourceTypes = ["dokument", "zeichnung", "medien"];
+/**
+ * Diese Typen sammelt die Ressourcen-Karte, egal wo sie abgelegt sind.
+ * Medien sind nicht dabei: die haben einen eigenen Reiter „Medien“.
+ */
+export const resourceTypes = ["notiz", "dokument", "zeichnung"];
 
 /* Extra-Knopf neben den Typen: sieht aus wie die Ressourcen-Kachel, legt aber ein Dokument an. */
 export const resourcePick = { id: "ressourcen", label: "Ressourcen", icon: "cube", typeId: "dokument" };
@@ -178,16 +181,18 @@ export const mediaFilters = [
 ];
 
 /**
- * Pillen oben auf der Ressourcen-Seite: „Alle“ zeigt alles, „Eigene“ nur
- * Geschriebenes und Gezeichnetes, die übrigen je eine Medienart.
+ * Pillen oben auf der Ressourcen-Seite: „Alle“ zeigt alles, „Notizen“ nur
+ * Notizen, „Eigene Dokumente“ das selbst Geschriebene und Gezeichnete.
  */
 export const resourceFilters = [
   { id: "all", label: "Alle", icon: "cube", empty: "Noch keine Ressourcen." },
-  { id: "own", label: "Eigene", icon: "pencil", empty: "Noch nichts Eigenes. Ein Eintrag ohne gewählten Typ wird zum Dokument." },
-  { id: "image", label: "Bilder", icon: "image", empty: "Noch keine Bilder." },
-  { id: "video", label: "Videos", icon: "video", empty: "Noch keine Videos." },
-  { id: "audio", label: "Audio", icon: "mic", empty: "Noch keine Aufnahmen." },
-  { id: "doc", label: "Dokumente", icon: "doc", empty: "Noch keine Dokumente." },
+  { id: "notes", label: "Notizen", icon: "note", empty: "Noch keine Notizen." },
+  {
+    id: "own",
+    label: "Eigene Dokumente",
+    icon: "doc",
+    empty: "Noch nichts Eigenes. Ein Eintrag ohne gewählten Typ wird zum Dokument.",
+  },
 ];
 
 /* ---------- Aufgaben-Seite: Status, Prioritäten und die drei Bedien-Listen ---------- */

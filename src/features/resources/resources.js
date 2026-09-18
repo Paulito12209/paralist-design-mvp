@@ -11,16 +11,16 @@ import { dom } from "../../core/dom.js";
 import { groupByMonth } from "../../core/format.js";
 import { icon } from "../../core/html.js";
 import { resourceFilters } from "../../data/config.js";
-import { mediaKindOf, resourceEntries } from "../../data/queries.js";
+import { resourceEntries } from "../../data/queries.js";
 import { state } from "../../data/state.js";
 import { entryRow } from "../../ui/rows.js";
 
 /** Die Ressourcen einer Filter-Pille. */
 function filtered(filter) {
   const all = resourceEntries();
-  if (filter === "all") return all;
-  if (filter === "own") return all.filter((entry) => entry.type !== "medien");
-  return all.filter((entry) => entry.type === "medien" && mediaKindOf(entry) === filter);
+  if (filter === "notes") return all.filter((entry) => entry.type === "notiz");
+  if (filter === "own") return all.filter((entry) => entry.type !== "notiz");
+  return all;
 }
 
 /** Pillen und Listen in die Unterseite zeichnen. */

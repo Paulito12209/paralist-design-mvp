@@ -15,6 +15,7 @@
 
 import { events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
+import { escapeHtml } from "../../core/html.js";
 import { load } from "../../core/lazy.js";
 import {
   clearFavorites,
@@ -34,6 +35,14 @@ import { commitStaleWorkspaceName, focusWorkspaceName } from "./workspaces.js";
 
 /* Sammlungen: dort gibt es nichts zu löschen oder zu markieren, also kein Menü. */
 const collectionsWithoutMenu = ["resources", "projects"];
+
+/*
+ * Seiten, die neben ihrem Titel noch einen grauen Zweittitel zeigen: ein Tippen
+ * darauf springt in den verwandten Bereich. Farbe: --title-alt in tokens.css.
+ */
+const titleSwitches = {
+  resources: { label: "Medien", target: "media" },
+};
 
 /* Ab wie viel Scrollweg Suche und Optionen in der Kopfzeile erscheinen. */
 const HEADER_REVEAL_PX = 4;
@@ -83,7 +92,12 @@ function updatePageHeadScroll() {
 function renderPage() {
   const page = ui.currentPage;
   if (!page) return;
-  dom.pageTitle.textContent = page.title;
+  const jump = titleSwitches[page.kind];
+  if (jump) {
+    dom.pageTitle.innerHTML = `${escapeHtml(page.title)}<button class="title-switch" type="button" data-title-switch="${jump.target}">${jump.label}</button>`;
+  } else {
+    dom.pageTitle.textContent = page.title;
+  }
   dom.pageMenuBtn.hidden = collectionsWithoutMenu.includes(page.kind);
   renderPageBody();
 }

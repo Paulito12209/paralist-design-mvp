@@ -131,6 +131,22 @@ body.is-subpage .content {
   padding: 0 var(--title-side);
 }
 
+/* Zweittitel neben der großen Überschrift: grau, gleich groß, führt zum verwandten Bereich */
+.title-switch {
+  border: 0;
+  padding: 0;
+  margin-left: 10px;
+  background: none;
+  color: var(--title-alt);
+  font: inherit;
+  letter-spacing: inherit;
+  cursor: pointer;
+}
+
+.title-switch:active {
+  opacity: 0.6;
+}
+
 .section-head {
   display: flex;
   align-items: center;
