@@ -201,8 +201,16 @@
 .settings-detail-head {
   display: flex;
   align-items: center;
-  padding: 2px 0 10px;
+  gap: 4px;
+  padding: 2px 0 4px;
   flex: 0 0 auto;
+}
+
+/* Der Name der Seite neben dem Pfeil — so groß wie eine Listenzeile. */
+.settings-detail-title {
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .settings-back {

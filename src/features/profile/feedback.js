@@ -64,7 +64,6 @@ const keepReports = 50;
 
 /** Alle Sätze der Seite an einer Stelle, damit man sie ohne Suchen ändern kann. */
 const texts = {
-  title: "Feedback",
   intro: "Ein Satz reicht. Jede Meldung wird gelesen.",
   pickHead: "Worum geht es?",
   formHead: "Deine Meldung",
@@ -151,7 +150,6 @@ export function feedbackCard() {
   const kind = kinds[draft.kind];
   return `
     <section class="fb">
-      <h2 class="fb-title">${escapeHtml(texts.title)}</h2>
       <p class="fb-intro">${escapeHtml(texts.intro)}</p>
       <p class="psection">${escapeHtml(texts.pickHead)}</p>
       <div class="fb-choices">${Object.keys(kinds).map(choiceMarkup).join("")}</div>

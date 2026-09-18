@@ -25,6 +25,8 @@
   padding-bottom: 8px;
 }
 
+/* Nur noch die Überschrift der Danke-Seite — den Namen der Seite selbst sagt
+   die Zeile neben dem Zurück-Pfeil (src/features/profile/settings-cards.js). */
 .fb-title {
   font-size: 28px;
   font-weight: 700;
@@ -221,9 +223,11 @@
 
 /* ---------- Danksagungen ---------- */
 
+/* Oben ohne Polster: den Abstand zur Kopfzeile setzt schon die Lücke
+   zwischen den Blöcken im Blatt (.modal-body in styles/overlays.css). */
 .credits {
   display: block;
-  padding: 24px 4px 16px;
+  padding: 0 4px 16px;
 }
 
 .credits-clip {

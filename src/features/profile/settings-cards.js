@@ -13,7 +13,7 @@
  * minBarShare -> Mindesthöhe eines Balkens (Anteil der Kachelhöhe), damit ein
  *                kurzer Tag nicht ganz verschwindet
  * details     -> welche große Seite hinter welcher Kachel und welcher
- *                Support-Zeile steckt
+ *                Support-Zeile steckt; `title` steht dort oben neben dem Pfeil
  *
  * Größen und Farben der Kacheln stehen in styles/settings.css.
  */
@@ -121,10 +121,10 @@ export function appearanceSection() {
  * Stück für die Adresse und — wenn nötig — was beim Öffnen zurückgesetzt wird.
  */
 const details = {
-  usage: { hash: "nutzungszeit", card: usageCard },
-  streak: { hash: "serie", card: streakCard },
-  feedback: { hash: "feedback", card: feedbackCard, enter: enterFeedback },
-  credits: { hash: "danksagungen", card: creditsCard, settle: startCreditsVideo },
+  usage: { hash: "nutzungszeit", title: "Nutzungszeit", card: usageCard },
+  streak: { hash: "serie", title: "Serie", card: streakCard },
+  feedback: { hash: "feedback", title: "Feedback", card: feedbackCard, enter: enterFeedback },
+  credits: { hash: "danksagungen", title: "Danksagungen", card: creditsCard, settle: startCreditsVideo },
 };
 
 /** Gibt es zu diesem Schlüssel eine große Ansicht? */
@@ -147,13 +147,17 @@ export function detailHash(key) {
   return details[key] ? details[key].hash : "";
 }
 
-/** Die große Ansicht einer Kachel: Zurück-Pfeil und darunter die volle Karte. */
+/**
+ * Die große Ansicht einer Kachel: Zurück-Pfeil mit dem Namen der Seite daneben
+ * — der Blattkopf sagt nur „Einstellungen“, erst diese Zeile sagt, wo man ist.
+ */
 export function detailMarkup(key) {
   const detail = details[key];
   if (!detail) return "";
   return `
     <div class="settings-detail-head">
       <button class="settings-back" type="button" data-settings-back="1" aria-label="Zurück">${icon("back")}</button>
+      <h3 class="settings-detail-title">${detail.title}</h3>
     </div>
     ${detail.card()}
   `;
