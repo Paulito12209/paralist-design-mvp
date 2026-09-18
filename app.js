@@ -147,11 +147,12 @@ function saveState() {
   try {
     localStorage.setItem(
       storageKey,
-      JSON.stringify({ tabs, activeTabId, workspaces, entries, nextEntryId, xpLog, nextXpId, calendar: calPrefs })
+      JSON.stringify({ tabs, activeTabId, workspaces, entries, nextEntryId, xpLog, nextXpId, calendar: calPrefs, media: mediaPrefs, mediaSeeded: true })
     );
   } catch (error) {
     /* ohne Speicher läuft die App weiter, nur ohne Merken */
   }
+  pruneThumbs();
 }
 
 function seedEntries() {
@@ -199,6 +200,7 @@ function loadState() {
 
   if (!saved) {
     seedEntries();
+    seedMedia();
     saveState();
     return;
   }
@@ -214,6 +216,14 @@ function loadState() {
   if (Array.isArray(saved.xpLog)) xpLog = saved.xpLog;
   else {
     seedXpFromExisting();
+    saveState();
+  }
+
+  if (saved.media && typeof saved.media === "object") mediaPrefs = { ...mediaPrefs, ...saved.media };
+  if (!mediaFilterList.some((filter) => filter.id === mediaPrefs.filter)) mediaPrefs.filter = "recent";
+  /* Ältere Speicherstände haben noch keine Beispielmedien: einmalig nachlegen */
+  if (!saved.mediaSeeded) {
+    seedMedia();
     saveState();
   }
 
@@ -280,6 +290,8 @@ function showView(name) {
   view.hidden = false;
   view.classList.add("is-active");
   if (name === "calendar") renderCalendar(true);
+  document.body.classList.toggle("is-media", name === "media");
+  if (name === "media") renderMedia();
 }
 
 function setActiveTab(tab) {
@@ -683,6 +695,7 @@ function openComposer() {
   navShell.classList.add("is-composing");
   tabBar.hidden = true;
   composer.hidden = false;
+  mediaActions.hidden = true;
   renderComposerTypes();
   renderComposerLink();
   composerInput.focus();
@@ -693,6 +706,7 @@ function closeComposer() {
   navShell.classList.remove("is-composing");
   composer.hidden = true;
   tabBar.hidden = false;
+  mediaActions.hidden = false;
   composerInput.value = "";
   calSlot = null;
 }
@@ -2222,6 +2236,351 @@ window.addEventListener("pointercancel", () => {
   if (hold || drag) endDrag();
 });
 
+/* ---------- Medien ---------- */
+
+const mediaFilters = document.getElementById("media-filters");
+const mediaBody = document.getElementById("media-body");
+const mediaActions = document.getElementById("media-actions");
+const mediaKey = "paralist-media";
+const thumbSize = 360; /* längste Kante der Vorschaubilder in Pixeln; kleiner = weniger Speicher, gröber */
+
+/* Welche Pille oben gewählt ist; wird mit dem übrigen Zustand gespeichert */
+let mediaPrefs = { filter: "recent" };
+
+/* Vorschaubilder je Eintrag: { "12": "data:image/jpeg;base64,…" }.
+   Liegen getrennt vom übrigen Zustand, weil sie viel Platz brauchen. */
+let mediaThumbs = {};
+
+/* Die Pillen oben: „Zuletzt erstellt“ zeigt alles, die anderen nur eine Art */
+const mediaFilterList = [
+  { id: "recent", label: "Zuletzt erstellt", icon: "history", empty: "Noch keine Medien." },
+  { id: "image", label: "Bilder", icon: "image", empty: "Noch keine Bilder." },
+  { id: "video", label: "Videos", icon: "video", empty: "Noch keine Videos." },
+  { id: "audio", label: "Audio", icon: "mic", empty: "Noch keine Aufnahmen." },
+  { id: "doc", label: "Dokumente", icon: "doc", empty: "Noch keine Dokumente." },
+];
+
+/* Beispielmedien für den ersten Start: „sample“ wählt eine Farbfläche aus styles.css,
+   „days“ sagt, wie viele Tage der Eintrag zurückliegt (so entstehen mehrere Monatsblöcke) */
+const sampleMedia = [
+  { kind: "image", sample: 1, title: "Foto 1", days: 0 },
+  { kind: "doc", title: "Lebenslauf", days: 0 },
+  { kind: "image", sample: 2, title: "Foto 2", days: 0 },
+  { kind: "video", sample: 8, title: "Video 1", days: 1, duration: 12 },
+  { kind: "image", sample: 3, title: "Foto 3", days: 1 },
+  { kind: "image", sample: 4, title: "Foto 4", days: 2 },
+  { kind: "audio", title: "Sprachmemo", days: 3, duration: 38 },
+  { kind: "image", sample: 5, title: "Foto 5", days: 5 },
+  { kind: "doc", title: "Skript Statistik", days: 6 },
+  { kind: "image", sample: 6, title: "Foto 6", days: 9 },
+  { kind: "video", sample: 9, title: "Video 2", days: 24, duration: 47 },
+  { kind: "image", sample: 7, title: "Foto 7", days: 26 },
+  { kind: "doc", title: "Mietvertrag", days: 30 },
+];
+
+/* Beispielmedien landen in der Inbox und zählen nicht als „angelegt“, darum kein XP-Eintrag */
+function seedMedia() {
+  sampleMedia.forEach((sample, index) => {
+    entries.push({
+      id: nextEntryId++,
+      type: "medien",
+      title: sample.title,
+      body: "",
+      parent: null,
+      archived: false,
+      favorite: false,
+      createdAt: Date.now() - sample.days * 86400000 - index * 60000,
+      media: { kind: sample.kind, sample: sample.sample || 0, duration: sample.duration || 0 },
+    });
+  });
+}
+
+function loadThumbs() {
+  try {
+    mediaThumbs = JSON.parse(localStorage.getItem(mediaKey)) || {};
+  } catch (error) {
+    mediaThumbs = {};
+  }
+}
+
+function saveThumbs() {
+  try {
+    localStorage.setItem(mediaKey, JSON.stringify(mediaThumbs));
+  } catch (error) {
+    /* Speicher voll: neue Vorschauen gelten nur bis zum Neuladen */
+  }
+}
+
+/* Gelöschte Einträge nehmen ihr Vorschaubild mit */
+function pruneThumbs() {
+  let changed = false;
+  Object.keys(mediaThumbs).forEach((id) => {
+    if (entries.some((entry) => String(entry.id) === id)) return;
+    delete mediaThumbs[id];
+    changed = true;
+  });
+  if (changed) saveThumbs();
+}
+
+/* Einträge aus dem Eingabefeld haben keine Datei und zählen als Dokument */
+function mediaKindOf(entry) {
+  return (entry.media && entry.media.kind) || "doc";
+}
+
+function mediaEntries() {
+  return entries
+    .filter((entry) => entry.type === "medien" && !entry.archived)
+    .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+}
+
+function mediaFiltered(filter) {
+  const all = mediaEntries();
+  if (filter === "recent") return all;
+  return all.filter((entry) => mediaKindOf(entry) === filter);
+}
+
+/* Überschrift je Monatsblock, z.B. „September 2026“ */
+function monthHeading(ts) {
+  if (!ts) return "Älter";
+  return new Date(ts).toLocaleDateString("de-DE", { month: "long", year: "numeric" });
+}
+
+function formatDuration(seconds) {
+  const total = Math.max(0, Math.round(seconds));
+  return `${Math.floor(total / 60)}:${pad2(total % 60)}`;
+}
+
+/* Eine Kachel: Bild oder Videovorschau, sonst Icon mit Name; Videos und Aufnahmen zeigen ihre Dauer */
+function mediaCell(entry) {
+  const media = entry.media || {};
+  const kind = mediaKindOf(entry);
+  const thumb = mediaThumbs[entry.id];
+  const title = escapeHtml(entry.title || media.name || "Ohne Titel");
+  const iconCell = (name) =>
+    `<div class="media-doc">${icon(name, "media-doc-icon")}<span class="media-doc-name">${title}</span></div>`;
+  let inner;
+
+  if ((kind === "image" || kind === "video") && thumb) inner = `<img class="media-img" src="${thumb}" alt="" />`;
+  else if ((kind === "image" || kind === "video") && media.sample) inner = `<div class="media-img media-sample-${media.sample}"></div>`;
+  else if (kind === "image") inner = iconCell("image");
+  else if (kind === "video") inner = iconCell("video");
+  else if (kind === "audio") inner = iconCell("wave");
+  else inner = iconCell("doc");
+
+  if (kind === "video") {
+    inner += `<span class="media-badge">${icon("video")}${media.duration ? formatDuration(media.duration) : ""}</span>`;
+  } else if (kind === "audio" && media.duration) {
+    inner += `<span class="media-badge">${formatDuration(media.duration)}</span>`;
+  }
+
+  return `<button class="media-cell" type="button" data-open-entry="${entry.id}" aria-label="${title}">${inner}</button>`;
+}
+
+function renderMediaFilters() {
+  mediaFilters.innerHTML = mediaFilterList
+    .map((filter) => {
+      const count = mediaFiltered(filter.id).length;
+      const mark = filter.id === mediaPrefs.filter ? " is-active" : "";
+      return `
+        <button class="tab-pill media-filter${mark}" type="button" data-media-filter="${filter.id}">
+          ${icon(filter.icon, "tab-pill-icon")}${filter.label}${count ? `<span class="media-count">${count}</span>` : ""}
+        </button>`;
+    })
+    .join("");
+}
+
+/* Raster: neueste zuerst, nach Monat gruppiert */
+function renderMediaGrid() {
+  const list = mediaFiltered(mediaPrefs.filter);
+  const filter = mediaFilterList.find((item) => item.id === mediaPrefs.filter) || mediaFilterList[0];
+  if (!list.length) {
+    mediaBody.innerHTML = `<p class="empty-note">${filter.empty}</p>`;
+    return;
+  }
+  const groups = [];
+  list.forEach((entry) => {
+    const heading = monthHeading(entry.createdAt);
+    const last = groups[groups.length - 1];
+    if (last && last.heading === heading) last.items.push(entry);
+    else groups.push({ heading, items: [entry] });
+  });
+  mediaBody.innerHTML = groups
+    .map(
+      (group) =>
+        `<h2 class="media-month">${group.heading}</h2><div class="media-grid">${group.items.map(mediaCell).join("")}</div>`
+    )
+    .join("");
+}
+
+function renderMedia() {
+  renderMediaFilters();
+  renderMediaGrid();
+}
+
+mediaFilters.addEventListener("click", (event) => {
+  const pill = event.target.closest("[data-media-filter]");
+  if (!pill) return;
+  mediaPrefs.filter = pill.dataset.mediaFilter;
+  saveState();
+  renderMedia();
+});
+
+/* --- Dateien hinzufügen --- */
+
+function fileKind(file) {
+  const mime = file.type || "";
+  if (mime.startsWith("image/")) return "image";
+  if (mime.startsWith("video/")) return "video";
+  if (mime.startsWith("audio/")) return "audio";
+  return "doc";
+}
+
+/* Aufnahmen heißen „Foto 18.09.2026 02:41“, importierte Dateien behalten ihren Namen ohne Endung */
+function fileTitle(file, kind, source) {
+  const now = new Date();
+  const stamp = `${pad2(now.getDate())}.${pad2(now.getMonth() + 1)}.${now.getFullYear()} ${pad2(now.getHours())}:${pad2(now.getMinutes())}`;
+  if (source === "photo") return `Foto ${stamp}`;
+  if (source === "video") return `Video ${stamp}`;
+  const base = (file.name || "").replace(/\.[^.]+$/, "").trim();
+  if (base) return base;
+  const labels = { image: "Foto", video: "Video", audio: "Aufnahme", doc: "Datei" };
+  return `${labels[kind]} ${stamp}`;
+}
+
+/* canvas: nötig, um ein Bild verkleinert als kleine Datei zu speichern */
+function drawThumb(source, width, height) {
+  const scale = Math.min(1, thumbSize / Math.max(width || 1, height || 1));
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.max(1, Math.round((width || 1) * scale));
+  canvas.height = Math.max(1, Math.round((height || 1) * scale));
+  canvas.getContext("2d").drawImage(source, 0, 0, canvas.width, canvas.height);
+  return canvas.toDataURL("image/jpeg", 0.8);
+}
+
+function imageThumb(file) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      let thumb = null;
+      try {
+        thumb = drawThumb(img, img.naturalWidth, img.naturalHeight);
+      } catch (error) {
+        /* z.B. HEIC ohne Browser-Unterstützung: Kachel zeigt dann nur das Icon */
+      }
+      URL.revokeObjectURL(url);
+      resolve(thumb);
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      resolve(null);
+    };
+    img.src = url;
+  });
+}
+
+/* Holt ein Standbild kurz nach dem Anfang des Videos und dessen Dauer */
+function videoThumb(file) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const video = document.createElement("video");
+    let done = false;
+    const finish = (thumb) => {
+      if (done) return;
+      done = true;
+      URL.revokeObjectURL(url);
+      resolve({ thumb, duration: Number.isFinite(video.duration) ? video.duration : 0 });
+    };
+    video.muted = true;
+    video.playsInline = true;
+    video.preload = "auto";
+    video.onloadedmetadata = () => {
+      video.currentTime = Math.min(0.5, (video.duration || 1) / 2);
+    };
+    video.onseeked = () => {
+      let thumb = null;
+      try {
+        thumb = drawThumb(video, video.videoWidth, video.videoHeight);
+      } catch (error) {
+        /* ohne Standbild bleibt das Video-Icon */
+      }
+      finish(thumb);
+    };
+    video.onerror = () => finish(null);
+    setTimeout(() => finish(null), 4000);
+    video.src = url;
+  });
+}
+
+function audioDuration(file) {
+  return new Promise((resolve) => {
+    const url = URL.createObjectURL(file);
+    const audio = new Audio();
+    let done = false;
+    const finish = (value) => {
+      if (done) return;
+      done = true;
+      URL.revokeObjectURL(url);
+      resolve(value);
+    };
+    audio.onloadedmetadata = () => finish(Number.isFinite(audio.duration) ? audio.duration : 0);
+    audio.onerror = () => finish(0);
+    setTimeout(() => finish(0), 4000);
+    audio.src = url;
+  });
+}
+
+/* Jede Datei wird ein Medien-Eintrag in der Inbox; Bilder und Videos bekommen eine Vorschau */
+async function addMediaFiles(fileList, source) {
+  const files = Array.from(fileList || []);
+  if (!files.length) return;
+  for (const file of files) {
+    const kind = fileKind(file);
+    const entry = {
+      id: nextEntryId++,
+      type: "medien",
+      title: fileTitle(file, kind, source),
+      body: "",
+      parent: null,
+      archived: false,
+      favorite: false,
+      createdAt: Date.now(),
+      media: { kind, name: file.name || "", size: file.size || 0, mime: file.type || "", duration: 0 },
+    };
+    if (kind === "image") {
+      const thumb = await imageThumb(file);
+      if (thumb) mediaThumbs[entry.id] = thumb;
+    } else if (kind === "video") {
+      const result = await videoThumb(file);
+      if (result.thumb) mediaThumbs[entry.id] = result.thumb;
+      entry.media.duration = result.duration;
+    } else if (kind === "audio") {
+      entry.media.duration = await audioDuration(file);
+    }
+    entries.push(entry);
+    logXp("created", "medien", entry.title);
+  }
+  saveThumbs();
+  saveState();
+  renderLevel();
+  refreshLists();
+}
+
+/* Die runden Knöpfe öffnen das passende unsichtbare Dateifeld */
+mediaActions.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-media-pick]");
+  if (!button) return;
+  document.getElementById(`media-file-${button.dataset.mediaPick}`).click();
+});
+
+["photo", "video", "audio", "import"].forEach((source) => {
+  const input = document.getElementById(`media-file-${source}`);
+  input.addEventListener("change", () => {
+    addMediaFiles(input.files, source);
+    input.value = "";
+  });
+});
+
 /* ---------- Klicks in Listen ---------- */
 
 function refreshLists() {
@@ -2229,6 +2588,7 @@ function refreshLists() {
   renderWorkspaces();
   renderPageBody();
   renderCalendar();
+  if (mediaView.classList.contains("is-active")) renderMedia();
 }
 
 content.addEventListener(
@@ -2628,6 +2988,7 @@ window.addEventListener("popstate", (event) => {
   }
 });
 
+loadThumbs();
 loadState();
 loadUsage();
 const tabMatch = location.hash.match(/^#\/tab\/(\d+)/);

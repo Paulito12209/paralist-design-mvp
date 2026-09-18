@@ -344,6 +344,33 @@
       <symbol id="icon-flame" viewBox="0 0 24 24" fill="none">
         <path d="M12 3.4c3.4 3 5.2 5.7 5.2 8.5a5.2 5.2 0 1 1-10.4 0c0-1.3.5-2.6 1.4-3.7.3 1 .9 1.7 1.7 2 .3-2.6.9-4.9 2.1-6.8Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
       </symbol>
+      <!-- Medien: Bild, Video, Mikrofon und Dokument für die Filter-Pillen; Kamera und Import für die Knöpfe unten -->
+      <symbol id="icon-image" viewBox="0 0 24 24" fill="none">
+        <rect x="3.5" y="5" width="17" height="14" rx="2.2" stroke="currentColor" stroke-width="1.6" />
+        <circle cx="8.6" cy="9.4" r="1.5" fill="currentColor" />
+        <path d="m6.2 16.8 3.6-3.7 2.6 2.5 2.4-2.2 3.2 3.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="icon-video" viewBox="0 0 24 24" fill="none">
+        <rect x="3" y="6.5" width="12.5" height="11" rx="2.4" stroke="currentColor" stroke-width="1.6" />
+        <path d="m15.5 10.3 4.2-2.4a.6.6 0 0 1 .9.5v7.2a.6.6 0 0 1-.9.5l-4.2-2.4" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+      </symbol>
+      <symbol id="icon-mic" viewBox="0 0 24 24" fill="none">
+        <rect x="9" y="3.5" width="6" height="11" rx="3" stroke="currentColor" stroke-width="1.6" />
+        <path d="M5.8 11.5a6.2 6.2 0 0 0 12.4 0M12 17.7v2.8M9 20.5h6" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+      </symbol>
+      <symbol id="icon-doc" viewBox="0 0 24 24" fill="none">
+        <path d="M6.5 3.5h7l5 5v10.8a2.2 2.2 0 0 1-2.2 2.2H6.5a2.2 2.2 0 0 1-2.2-2.2V5.7a2.2 2.2 0 0 1 2.2-2.2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+        <path d="M13.5 3.5v5h5" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+        <path d="M8.5 12.5h7M8.5 16h7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+      </symbol>
+      <symbol id="icon-camera" viewBox="0 0 24 24" fill="none">
+        <path d="M4.5 8.5A1.5 1.5 0 0 1 6 7h2.2l1.3-2h5l1.3 2H18a1.5 1.5 0 0 1 1.5 1.5v9A1.5 1.5 0 0 1 18 19H6a1.5 1.5 0 0 1-1.5-1.5v-9Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" />
+        <circle cx="12" cy="12.8" r="3.2" stroke="currentColor" stroke-width="1.6" />
+      </symbol>
+      <symbol id="icon-import" viewBox="0 0 24 24" fill="none">
+        <path d="M12 3.5v10M8.6 10.2 12 13.6l3.4-3.4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M4.5 12.5v5.3a2.2 2.2 0 0 0 2.2 2.2h10.6a2.2 2.2 0 0 0 2.2-2.2v-5.3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" />
+      </symbol>
     </svg>
 
     <div class="stage">
@@ -504,9 +531,11 @@
             <div class="cal-panel" id="cal-panel"></div>
           </section>
 
+          <!-- Medien: Filter-Pillen wie über den Arbeitsbereichen, darunter das Raster nach Monaten -->
           <section class="view" id="view-media" data-view="media" hidden>
             <h1 class="screen-title">Medien</h1>
-            <p class="empty-note">Noch keine Medien.</p>
+            <div class="tab-pills media-filters" id="media-filters"></div>
+            <div class="media-body" id="media-body"></div>
           </section>
 
           <section class="view" id="view-settings" data-view="settings" hidden>
@@ -519,6 +548,26 @@
         </main>
 
         <footer class="bottom-bar">
+          <!-- Medien-Knöpfe: Foto sitzt in der Bildschirmmitte, dann Video, Audio und ganz rechts Import; nur auf der Medien-Seite zu sehen -->
+          <div class="media-actions" id="media-actions">
+            <button class="media-btn" type="button" data-media-pick="photo" aria-label="Foto aufnehmen">
+              <svg class="icon"><use href="#icon-camera"></use></svg>
+            </button>
+            <button class="media-btn" type="button" data-media-pick="video" aria-label="Video aufnehmen">
+              <svg class="icon"><use href="#icon-video"></use></svg>
+            </button>
+            <button class="media-btn" type="button" data-media-pick="audio" aria-label="Audio hinzufügen">
+              <svg class="icon"><use href="#icon-mic"></use></svg>
+            </button>
+            <button class="media-btn" type="button" data-media-pick="import" aria-label="Importieren">
+              <svg class="icon"><use href="#icon-import"></use></svg>
+            </button>
+          </div>
+          <!-- input type=file: unsichtbar; nur so kann der Browser Kamera oder Dateiauswahl öffnen -->
+          <input id="media-file-photo" type="file" accept="image/*" capture="environment" hidden />
+          <input id="media-file-video" type="file" accept="video/*" capture="environment" hidden />
+          <input id="media-file-audio" type="file" accept="audio/*" multiple hidden />
+          <input id="media-file-import" type="file" multiple hidden />
           <!-- nav-shell: derselbe runde Container fuer Navigation und Composer -->
           <div class="nav-shell" id="nav-shell">
           <!-- nav: untere App-Leiste mit den Hauptseiten -->
