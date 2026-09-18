@@ -148,6 +148,10 @@ let profilePhoto = ""; /* gespeichertes Profilbild als kleine JPEG-Datei im Text
 let profilePhotoDraft = null; /* null = nichts zu speichern, sonst Vorschau oder "" zum Entfernen */
 let modalPull = null; /* laufende Ziehbewegung an einem Blatt */
 let ignoreClicksUntil = 0;
+let opens = []; /* Verlauf: was wurde wie oft und zuletzt wann geöffnet */
+let recentSearches = []; /* zuletzt getippte Suchbegriffe */
+let searchQuery = "";
+let searchList = null; /* null = Übersicht, "searches" oder "most" = eigene Unterseite */
 
 function escapeHtml(value) {
   return String(value).replace(
@@ -175,7 +179,7 @@ function saveState() {
   try {
     localStorage.setItem(
       storageKey,
-      JSON.stringify({ tabs, activeTabId, workspaces, entries, nextEntryId, xpLog, nextXpId, calendar: calPrefs, media: mediaPrefs, resources: resourcePrefs, mediaSeeded: true })
+      JSON.stringify({ tabs, activeTabId, workspaces, entries, nextEntryId, xpLog, nextXpId, calendar: calPrefs, media: mediaPrefs, resources: resourcePrefs, opens, recentSearches, mediaSeeded: true })
     );
   } catch (error) {
     /* ohne Speicher läuft die App weiter, nur ohne Merken */
@@ -246,6 +250,9 @@ function loadState() {
     seedXpFromExisting();
     saveState();
   }
+
+  if (Array.isArray(saved.opens)) opens = saved.opens;
+  if (Array.isArray(saved.recentSearches)) recentSearches = saved.recentSearches;
 
   if (saved.media && typeof saved.media === "object") mediaPrefs = { ...mediaPrefs, ...saved.media };
   if (!mediaFilterList.some((filter) => filter.id === mediaPrefs.filter)) mediaPrefs.filter = "recent";
@@ -607,13 +614,17 @@ function showTab(tab, replace = false) {
   else history.pushState({ view: tab }, "", url);
 }
 
-function showSearch(replace = false) {
+/* „list“ öffnet statt der Übersicht eine der beiden vollen Listen als eigene Seite */
+function showSearch(replace = false, list = null) {
+  searchList = list;
   showView("search");
+  searchQuery = searchInput.value.trim();
+  renderSearch();
   setActiveTab("");
   sourceView = "search";
-  const url = "#/suchen";
-  if (replace || location.hash === url) history.replaceState({ view: "search" }, "", url);
-  else history.pushState({ view: "search" }, "", url);
+  const url = list === "searches" ? "#/suchen/gesucht" : list === "most" ? "#/suchen/haeufig" : "#/suchen";
+  if (replace || location.hash === url) history.replaceState({ view: "search", list }, "", url);
+  else history.pushState({ view: "search", list }, "", url);
 }
 
 function addWorkspace() {
@@ -707,6 +718,7 @@ function openTarget(open, id) {
   if (open === "overview") {
     const page = overviewPages[id];
     if (!page) return;
+    noteOpen("overview", id);
     showPage({ title: page.title, parent: page.parent, kind: page.kind });
     history.pushState({ view: "overview", id, from: sourceView }, "", `#/uebersicht/${id}`);
     return;
@@ -714,6 +726,7 @@ function openTarget(open, id) {
 
   const workspace = workspaces.find((item) => String(item.id) === String(id));
   if (!workspace) return;
+  noteOpen("workspace", workspace.id);
   showPage({ title: workspace.name, parent: workspace.id, isWorkspace: true });
   history.pushState({ view: "workspace", id, from: sourceView }, "", `#/arbeitsbereich/${id}`);
 }
@@ -721,6 +734,7 @@ function openTarget(open, id) {
 function openEntry(id, push = true) {
   const entry = entries.find((item) => String(item.id) === String(id));
   if (!entry) return;
+  noteOpen("entry", entry.id);
   currentEntryId = entry.id;
   entryTitle.value = entry.title;
   entryBody.value = entry.body || "";
@@ -3654,12 +3668,329 @@ tabButtons.forEach((btn) => {
   });
 });
 
+/* ---------- Suchen ----------
+   Die Suchseite lebt von zwei Merklisten: „opens“ zaehlt, was wie oft und wann
+   zuletzt geoeffnet wurde, „recentSearches“ merkt die getippten Begriffe.
+   Ohne Eingabe zeigt die Seite diese Listen, mit Eingabe die Treffer. */
+
+const searchResults = document.getElementById("search-results");
+
+function noteOpen(kind, id) {
+  const key = `${kind}:${id}`;
+  const found = opens.find((item) => item.key === key);
+  if (found) {
+    found.count += 1;
+    found.ts = Date.now();
+  } else {
+    opens.push({ key, kind, id: String(id), count: 1, ts: Date.now() });
+  }
+  saveState();
+}
+
+function noteSearch(query) {
+  const text = query.trim();
+  if (!text) return;
+  recentSearches = [text, ...recentSearches.filter((item) => item.toLowerCase() !== text.toLowerCase())].slice(0, 8);
+  saveState();
+}
+
+function typeLabelOf(id) {
+  const type = types.find((item) => item.id === id);
+  return type ? type.label : "Eintrag";
+}
+
+/* Aus einem Merkposten wird erst beim Anzeigen eine Zeile: Geloeschtes faellt so von allein raus */
+function resolveOpen(open) {
+  if (open.kind === "entry") {
+    const entry = entries.find((item) => String(item.id) === open.id && !item.archived);
+    return entry ? searchItemOfEntry(entry) : null;
+  }
+  if (open.kind === "workspace") {
+    const workspace = workspaces.find((item) => String(item.id) === open.id);
+    return workspace ? searchItemOfWorkspace(workspace) : null;
+  }
+  const page = overviewPages[open.id];
+  return page ? { kind: "overview", id: open.id, title: page.title, icon: page.icon, label: "Übersicht" } : null;
+}
+
+function searchItemOfEntry(entry) {
+  return {
+    kind: "entry",
+    id: entry.id,
+    title: entry.title || "Ohne Titel",
+    icon: typeIcon(entry.type),
+    label: typeLabelOf(entry.type),
+    note: parentName(entry.parent),
+  };
+}
+
+function searchItemOfWorkspace(workspace) {
+  return { kind: "workspace", id: workspace.id, title: workspace.name, icon: workspaceIcon(workspace), label: "Arbeitsbereich" };
+}
+
+function openCountOf(kind, id) {
+  const found = opens.find((item) => item.key === `${kind}:${id}`);
+  return found ? found.count : 0;
+}
+
+function sameDay(a, b) {
+  return new Date(a).toDateString() === new Date(b).toDateString();
+}
+
+/* Uhrzeit bei heute, sonst Datum: in der Zeile steht nur das Kurze */
+function openTime(ts) {
+  const date = new Date(ts);
+  if (sameDay(ts, Date.now())) return date.toLocaleTimeString("de-DE", { hour: "2-digit", minute: "2-digit" });
+  return date.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit" });
+}
+
+/* Ueberschrift einer Tagesgruppe */
+function dayHeading(ts) {
+  const today = Date.now();
+  if (sameDay(ts, today)) return "Heute";
+  if (sameDay(ts, today - 86400000)) return "Gestern";
+  return new Date(ts).toLocaleDateString("de-DE", { weekday: "long", day: "2-digit", month: "2-digit" });
+}
+
+/* Treffer im Titel hervorheben, der Rest bleibt escaped */
+function markHit(text, query) {
+  const safe = escapeHtml(text);
+  if (!query) return safe;
+  const needle = escapeHtml(query);
+  const at = safe.toLowerCase().indexOf(needle.toLowerCase());
+  if (at < 0) return safe;
+  return `${safe.slice(0, at)}<mark class="search-hit">${safe.slice(at, at + needle.length)}</mark>${safe.slice(at + needle.length)}`;
+}
+
+function searchRow(item, meta, query = "") {
+  const attr =
+    item.kind === "entry"
+      ? `data-open-entry="${item.id}"`
+      : item.kind === "workspace"
+        ? `data-open-workspace="${item.id}"`
+        : `data-open-overview="${item.id}"`;
+  return `
+    <button class="search-row" type="button" ${attr}>
+      ${icon(item.icon)}
+      <div class="search-copy">
+        <p class="search-title">${markHit(item.title, query)}</p>
+        <p class="search-meta">${escapeHtml(meta)}</p>
+      </div>
+      ${icon("chevron", "chevron")}
+    </button>
+  `;
+}
+
+/* Durchsucht werden Eintraege (Titel und Text), Arbeitsbereiche und die Übersichtskarten */
+function searchPool() {
+  return [
+    ...entries
+      .filter((entry) => !entry.archived)
+      .map((entry) => ({ ...searchItemOfEntry(entry), text: `${entry.title} ${entry.body || ""}` })),
+    ...workspaces.map((workspace) => ({ ...searchItemOfWorkspace(workspace), text: workspace.name })),
+    ...Object.entries(overviewPages).map(([id, page]) => ({
+      kind: "overview",
+      id,
+      title: page.title,
+      icon: page.icon,
+      label: "Übersicht",
+      text: page.title,
+    })),
+  ];
+}
+
+function searchHits(query) {
+  const needle = query.toLowerCase();
+  return searchPool()
+    .filter((item) => item.text.toLowerCase().includes(needle))
+    .sort((a, b) => {
+      const startA = a.title.toLowerCase().startsWith(needle) ? 0 : 1;
+      const startB = b.title.toLowerCase().startsWith(needle) ? 0 : 1;
+      if (startA !== startB) return startA - startB;
+      return openCountOf(b.kind, b.id) - openCountOf(a.kind, a.id);
+    })
+    .slice(0, 30);
+}
+
+/* Eine Zeile je gemerktem Suchbegriff */
+function searchQueryRow(query) {
+  return `
+    <button class="search-row search-row-query" type="button" data-search-query="${escapeHtml(query)}">
+      ${icon("search")}
+      <div class="search-copy"><p class="search-title">${escapeHtml(query)}</p></div>
+    </button>
+  `;
+}
+
+/* Alle Merkposten, die es noch gibt, als fertige Zeilen-Bausteine */
+function knownOpens() {
+  return opens.map((open) => ({ open, item: resolveOpen(open) })).filter((row) => row.item);
+}
+
+function mostOpened() {
+  return [...knownOpens()].sort((a, b) => b.open.count - a.open.count || b.open.ts - a.open.ts);
+}
+
+/* Kopfzeile der Unterseiten: Zurück-Pfeil und Titel wie bei einem Arbeitsbereich */
+function searchListHead(title) {
+  return `
+    <div class="page-head">
+      <button class="back-btn" type="button" data-search-back aria-label="Zurück">${icon("back")}</button>
+      <h1 class="screen-title page-title">${escapeHtml(title)}</h1>
+    </div>
+  `;
+}
+
+/* Eigene Seite: erst alles Gesuchte, dann alles Geöffnete */
+function renderSearchList() {
+  if (searchList === "searches") {
+    searchResults.innerHTML =
+      searchListHead("Zuletzt gesucht") +
+      (recentSearches.length
+        ? `<div class="workspace-list">${recentSearches.map(searchQueryRow).join("")}</div>`
+        : `<p class="empty-note">Noch nichts gesucht.</p>`);
+    return;
+  }
+
+  const rows = mostOpened();
+  searchResults.innerHTML =
+    searchListHead("Am häufigsten geöffnet") +
+    (rows.length
+      ? `<div class="workspace-list">${rows
+          .map(({ open, item }) => searchRow(item, `${item.label} · ${open.count}× geöffnet`))
+          .join("")}</div>`
+      : `<p class="empty-note">Noch nichts geöffnet.</p>`);
+}
+
+function renderSearch() {
+  if (!searchResults) return;
+
+  if (searchQuery) {
+    const hits = searchHits(searchQuery);
+    searchResults.innerHTML =
+      `<h1 class="screen-title">Suchen</h1>` +
+      (hits.length
+        ? `
+          <div class="section-head"><h2>Ergebnisse</h2></div>
+          <div class="workspace-list">${hits
+            .map((item) => searchRow(item, item.note ? `${item.label} · ${item.note}` : item.label, searchQuery))
+            .join("")}</div>
+        `
+        : `<p class="empty-note">Keine Treffer für „${escapeHtml(searchQuery)}“.</p>`);
+    return;
+  }
+
+  if (searchList) {
+    renderSearchList();
+    return;
+  }
+
+  /* Übersicht zeigt nur die Spitze: der letzte Suchbegriff und die drei meistgeöffneten.
+     Der Pfeil rechts führt jeweils auf die volle Liste. */
+  const latestSearch = recentSearches[0];
+  const most = mostOpened()
+    .slice(0, 3)
+    .map(({ open, item }) => searchRow(item, `${item.label} · ${open.count}× geöffnet`))
+    .join("");
+
+  /* Zuletzt geöffnet: nach Tagen gruppiert, damit „Heute“ und „Gestern“ getrennt stehen */
+  const recent = [...knownOpens()].sort((a, b) => b.open.ts - a.open.ts).slice(0, 15);
+  const groups = [];
+  recent.forEach(({ open, item }) => {
+    const heading = dayHeading(open.ts);
+    const group = groups.find((entry) => entry.heading === heading);
+    const row = searchRow(item, `${item.label} · ${openTime(open.ts)}`);
+    if (group) group.rows.push(row);
+    else groups.push({ heading, rows: [row] });
+  });
+
+  searchResults.innerHTML = `
+    <h1 class="screen-title">Suchen</h1>
+    <div class="section-head">
+      <h2>Zuletzt gesucht</h2>
+      <button class="section-more" type="button" data-search-list="searches" aria-label="Alle anzeigen">${icon("chevron", "chevron")}</button>
+    </div>
+    ${latestSearch ? `<div class="workspace-list">${searchQueryRow(latestSearch)}</div>` : `<p class="empty-note">Noch nichts gesucht.</p>`}
+    <div class="section-head">
+      <h2>Am häufigsten geöffnet</h2>
+      <button class="section-more" type="button" data-search-list="most" aria-label="Alle anzeigen">${icon("chevron", "chevron")}</button>
+    </div>
+    ${most ? `<div class="workspace-list">${most}</div>` : `<p class="empty-note">Noch nichts geöffnet.</p>`}
+    <div class="section-head"><h2>Zuletzt geöffnet</h2></div>
+    ${
+      groups.length
+        ? groups
+            .map(
+              (group) =>
+                `<h3 class="date-label">${escapeHtml(group.heading)}</h3><div class="workspace-list">${group.rows.join("")}</div>`
+            )
+            .join("")
+        : `<p class="empty-note">Noch nichts geöffnet.</p>`
+    }
+  `;
+}
+
 document.getElementById("search-entry").addEventListener("click", () => {
   showSearch();
 });
 
 searchInput.addEventListener("focus", () => {
   showSearch();
+});
+
+searchInput.addEventListener("input", () => {
+  searchQuery = searchInput.value.trim();
+  if (searchQuery) searchList = null;
+  if (!searchView.classList.contains("is-active")) showSearch();
+  else renderSearch();
+});
+
+/* change: Handy-Tastaturen schicken beim „Suchen“-Knopf kein Enter, aber immer ein change */
+searchInput.addEventListener("change", () => {
+  noteSearch(searchInput.value);
+});
+
+searchInput.addEventListener("keydown", (event) => {
+  if (event.key === "Enter") {
+    event.preventDefault();
+    noteSearch(searchQuery);
+    searchInput.blur();
+    renderSearch();
+    return;
+  }
+  if (event.key === "Escape") {
+    searchInput.value = "";
+    searchQuery = "";
+    renderSearch();
+  }
+});
+
+searchView.addEventListener("click", (event) => {
+  const more = event.target.closest("[data-search-list]");
+  if (more) {
+    showSearch(false, more.dataset.searchList);
+    return;
+  }
+
+  if (event.target.closest("[data-search-back]")) {
+    history.back();
+    return;
+  }
+
+  const query = event.target.closest("[data-search-query]");
+  if (query) {
+    searchInput.value = query.dataset.searchQuery;
+    searchQuery = searchInput.value;
+    searchList = null;
+    renderSearch();
+    return;
+  }
+
+  /* Ein geoeffneter Treffer macht die Eingabe zu einer gemerkten Suche */
+  if (event.target.closest("[data-open-entry], [data-open-workspace], [data-open-overview]")) noteSearch(searchQuery);
+
+  const card = event.target.closest("[data-open-overview]");
+  if (card) openTarget("overview", card.dataset.openOverview);
 });
 
 window.addEventListener("popstate", (event) => {
@@ -3691,7 +4022,7 @@ window.addEventListener("popstate", (event) => {
     return;
   }
   if (state.view === "search") {
-    showSearch(true);
+    showSearch(true, state.list || null);
     return;
   }
   if (state.view === "calendar" || state.view === "media" || state.view === "settings") {

@@ -468,64 +468,9 @@
             </div>
           </section>
 
+          <!-- Suchen: Inhalt kommt aus app.js (renderSearch), damit die Listen echte Einträge zeigen -->
           <section class="view" id="view-search" data-view="search" hidden>
-            <h1 class="screen-title">Suchen</h1>
-
-            <button class="workspace-row" type="button">
-              <svg class="icon"><use href="#icon-clock"></use></svg>
-              <span>Zuletzt gesucht</span>
-              <svg class="icon chevron"><use href="#icon-chevron"></use></svg>
-            </button>
-
-            <div class="section-head">
-              <h2>Am häufigsten geöffnet</h2>
-            </div>
-            <div class="workspace-list">
-              <button class="search-row" type="button">
-                <svg class="icon"><use href="#icon-task"></use></svg>
-                <div class="search-copy">
-                  <p class="search-title">Startseite: Layout optimieren</p>
-                  <p class="search-meta">Aufgabe · 78× geöffnet</p>
-                </div>
-              </button>
-              <button class="search-row" type="button">
-                <svg class="icon"><use href="#icon-circle"></use></svg>
-                <div class="search-copy">
-                  <p class="search-title">Paralist iOS App</p>
-                  <p class="search-meta">Projekt · 41× geöffnet</p>
-                </div>
-              </button>
-              <button class="search-row" type="button">
-                <svg class="icon"><use href="#icon-circle"></use></svg>
-                <div class="search-copy">
-                  <p class="search-title">Prüfung Statistik</p>
-                  <p class="search-meta">Projekt · 8× geöffnet</p>
-                </div>
-              </button>
-            </div>
-
-            <div class="section-head">
-              <h2>Zuletzt geöffnet</h2>
-            </div>
-            <h3 class="date-label">Heute</h3>
-            <div class="workspace-list">
-              <button class="search-row" type="button">
-                <svg class="icon"><use href="#icon-calendar"></use></svg>
-                <div class="search-copy">
-                  <p class="search-title">Mama Geburtstag</p>
-                  <p class="search-meta">Termin · 20:05</p>
-                </div>
-                <svg class="icon chevron"><use href="#icon-chevron"></use></svg>
-              </button>
-              <button class="search-row" type="button">
-                <svg class="icon"><use href="#icon-task"></use></svg>
-                <div class="search-copy">
-                  <p class="search-title">Startseite: Layout optimieren</p>
-                  <p class="search-meta">Aufgabe · 18:10</p>
-                </div>
-                <svg class="icon chevron"><use href="#icon-chevron"></use></svg>
-              </button>
-            </div>
+            <div id="search-results"></div>
           </section>
 
           <!-- Kalender: Monat, Wochenstreifen, Bedienzeile und darunter die graue Fläche mit Stundenraster oder Liste -->

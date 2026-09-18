@@ -696,6 +696,50 @@ button {
   margin: 4px 2px 2px;
 }
 
+/* Suchen: die Abschnittsueberschriften stehen gross und duenn, die Tagesmarken
+   klein und kraeftig - so verwechselt man „Zuletzt geoeffnet“ und „Heute“ nicht */
+#view-search .section-head h2 {
+  font-size: 17px;
+  font-weight: 300;
+  color: var(--text);
+}
+
+#view-search .date-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  margin: 10px 2px 0;
+}
+
+/* Pfeil rechts in der Abschnittszeile: führt auf die volle Liste */
+.section-more {
+  margin-left: auto;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+}
+
+.section-more .chevron {
+  width: 16px;
+  height: 16px;
+  color: var(--chevron);
+}
+
+.section-more:active {
+  opacity: 0.55;
+}
+
+.search-row-query {
+  min-height: 48px;
+}
+
+.search-hit {
+  background: transparent;
+  color: var(--text);
+  font-weight: 600;
+}
+
 .bottom-bar {
   /* position: liegt fest unten im Gerät über der Seite, statt mitzuscrollen */
   position: absolute;
