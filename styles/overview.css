@@ -30,11 +30,12 @@
 }
 
 .overview-card {
-  min-width: 0; /* min-width: die Kachel darf schmaler als ihr Text werden, damit beide Spalten gleich bleiben */
+  min-width: 0;
+  /* min-width: die Kachel darf schmaler als ihr Text werden, damit beide Spalten gleich bleiben */
   background: var(--card);
   border-radius: var(--radius-lg);
-  min-height: 118px;
-  padding: 16px;
+  min-height: 112px;
+  padding: 12px;
   text-align: left;
   display: flex;
   flex-direction: column;
@@ -79,29 +80,35 @@
 
 .card-label {
   display: flex;
-  flex-wrap: nowrap; /* nowrap: Titel und Zähler bleiben in einer Zeile */
+  flex-wrap: nowrap;
+  /* nowrap: Titel und Zähler bleiben in einer Zeile */
   align-items: baseline;
   gap: 0.35em;
   max-width: 100%;
-  min-width: 0; /* min-width: Flex-Kind darf schmaler werden, sonst kein Ellipsis */
+  min-width: 0;
+  /* min-width: Flex-Kind darf schmaler werden, sonst kein Ellipsis */
 }
 
 /* Titel schrumpft und bekommt „…“, der Zähler daneben bleibt vollständig */
 .card-title {
   min-width: 0;
-  overflow: hidden; /* overflow: noetig fuer text-overflow */
-  text-overflow: ellipsis; /* text-overflow: langer Titel wird zu „Ressour…“ */
-  white-space: nowrap; /* white-space: kein Umbruch in eine zweite Zeile */
+  overflow: hidden;
+  /* overflow: noetig fuer text-overflow */
+  text-overflow: ellipsis;
+  /* text-overflow: langer Titel wird zu „Ressour…“ */
+  white-space: nowrap;
+  /* white-space: kein Umbruch in eine zweite Zeile */
 }
 
 .card-count {
-  flex: 0 0 auto; /* Zähler darf nie schrumpfen oder umbrechen */
+  flex: 0 0 auto;
+  /* Zähler darf nie schrumpfen oder umbrechen */
   color: var(--muted);
   font-weight: 500;
 }
 
 /* Abstand zwischen den vier Karten und der Zeile „Arbeitsbereiche“ */
-.overview-grid + .section-head {
+.overview-grid+.section-head {
   margin-top: var(--workspace-section-gap);
 }
 
@@ -126,9 +133,11 @@
 .tab-pills-row {
   display: flex;
   align-items: center;
-  position: relative; /* position: damit Linie und Button über den Tabs liegen können */
+  position: relative;
+  /* position: damit Linie und Button über den Tabs liegen können */
   margin: 0 0 6px;
-  min-height: 32px; /* min-height: Zeile bleibt so hoch wie der Plus-Button */
+  min-height: 32px;
+  /* min-height: Zeile bleibt so hoch wie der Plus-Button */
 }
 
 .tab-pills {
@@ -139,26 +148,30 @@
   padding-left: 2px;
   /* Platz rechts, damit der letzte Tab vor Linie und Button sichtbar bleiben kann */
   padding-right: calc(var(--tab-pills-fade) + 1px + var(--tab-pills-btn-gap) + 32px);
-  overflow-x: auto; /* overflow: viele Tabs sollen unter Linie und Button durchlaufen */
+  overflow-x: auto;
+  /* overflow: viele Tabs sollen unter Linie und Button durchlaufen */
   scrollbar-width: none;
 }
 
 /* Rechts fest: erst Fade, dann Linie, dann Plus */
 .tab-pills-tools {
-  position: absolute; /* position: bleibt rechts kleben, Tabs laufen darunter durch */
+  position: absolute;
+  /* position: bleibt rechts kleben, Tabs laufen darunter durch */
   right: 0;
   top: 0;
   bottom: 0;
   display: flex;
   align-items: center;
-  z-index: 1; /* z-index: hält Linie und Button über den scrollenden Tabs */
+  z-index: 1;
+  /* z-index: hält Linie und Button über den scrollenden Tabs */
 }
 
 .tab-pills-fade {
   width: var(--tab-pills-fade);
   height: 100%;
   background: linear-gradient(to right, transparent, var(--bg));
-  pointer-events: none; /* pointer-events: Klicks sollen die Tabs im Fade noch treffen */
+  pointer-events: none;
+  /* pointer-events: Klicks sollen die Tabs im Fade noch treffen */
 }
 
 .tab-pills-end {
@@ -181,7 +194,8 @@
 
 .tab-pill {
   padding: 8px 18px;
-  border-radius: 999px; /* border-radius: macht aus dem Knopf eine Pille */
+  border-radius: 999px;
+  /* border-radius: macht aus dem Knopf eine Pille */
   font-size: var(--tab-pill-size);
   font-weight: 600;
   color: var(--muted);
@@ -190,14 +204,17 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  user-select: none; /* user-select: Text soll beim gedrückt Halten nicht markiert werden */
-  -webkit-touch-callout: none; /* -webkit-touch-callout: verhindert das iPhone-Menü über unserem eigenen */
+  user-select: none;
+  /* user-select: Text soll beim gedrückt Halten nicht markiert werden */
+  -webkit-touch-callout: none;
+  /* -webkit-touch-callout: verhindert das iPhone-Menü über unserem eigenen */
 }
 
 .tab-pill-icon {
   width: 16px;
   height: 16px;
-  flex: 0 0 auto; /* Icon soll neben dem Namen nicht schrumpfen */
+  flex: 0 0 auto;
+  /* Icon soll neben dem Namen nicht schrumpfen */
 }
 
 /* Der ausgewählte Tab bekommt als einziger einen Hintergrund */
@@ -223,7 +240,8 @@
   field-sizing: content;
   font-size: var(--tab-pill-size);
   font-weight: 600;
-  user-select: text; /* user-select: im Eingabefeld soll man den Namen markieren können */
+  user-select: text;
+  /* user-select: im Eingabefeld soll man den Namen markieren können */
 }
 
 .tab-pill-add {
