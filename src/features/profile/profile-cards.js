@@ -6,7 +6,7 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * profile        -> Name, Mailadresse, Plan und Version im Kopf
- * roadmapUrl     -> Adresse hinter „Support → Feedback & Roadmap“ (Canny-Board)
+ * supportLinks   -> wohin „Feedback“ und „Roadmap“ unter „Support“ führen
  * stepSizes      -> die runden Schritte der senkrechten Achse (Minuten)
  * barWidthShare  -> wie breit ein Balken im Verhältnis zu seiner Spalte ist
  * dotLevels      -> wie viele Helligkeitsstufen das Punkte-Raster hat
@@ -33,11 +33,14 @@ const profile = {
 };
 
 /*
- * Das öffentliche Board: dort wird beides erledigt — Wünsche und Fehler
- * einreichen und über die Roadmap abstimmen. Deshalb führt unter „Support“
- * nur noch eine Zeile dorthin.
+ * Die beiden Wege zum öffentlichen Board. Getrennt, weil man das Formular
+ * sonst nicht findet: die Startseite zeigt nur die Roadmap, das Schreibfeld
+ * liegt eine Ebene tiefer und geht mit „/create“ sofort auf.
  */
-const roadmapUrl = "https://xool.canny.io";
+const supportLinks = {
+  feedback: "https://xool.canny.io/paralist/create",
+  roadmap: "https://xool.canny.io",
+};
 
 const stepSizes = [5, 10, 15, 30, 60, 90, 120, 180, 240, 360, 480];
 const fallbackStep = 720;
@@ -186,7 +189,8 @@ const listSections = [
   {
     title: "Support",
     rows: [
-      { icon: "roadmap", label: "Feedback & Roadmap", trail: "external", link: roadmapUrl },
+      { icon: "note", label: "Feedback", trail: "external", link: supportLinks.feedback },
+      { icon: "roadmap", label: "Roadmap", trail: "external", link: supportLinks.roadmap },
       { icon: "cube", label: "Danksagungen", trail: "chevron", detail: "credits" },
     ],
   },
