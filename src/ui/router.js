@@ -15,7 +15,7 @@ import { noteOpen } from "../data/opens.js";
 import { findEntry, findWorkspace, workspaceLabel } from "../data/queries.js";
 import { workspaceRef } from "../data/refs.js";
 import { ui } from "../data/state.js";
-import { currentView, setActiveTab, showView } from "./views.js";
+import { currentView, isViewActive, setActiveTab, showView } from "./views.js";
 
 /* Die Ansichten, die unten in der Navigationsleiste einen Knopf haben. */
 const navViews = ["home", "calendar", "media", "settings"];
@@ -38,6 +38,12 @@ export function showHome(replace = true) {
 /** Eine der Navigations-Ansichten zeigen. */
 export function showTab(tab, replace = false) {
   dom.searchInput.blur();
+  /* Antippen des schon aktiven Reiters baut nichts neu auf, sondern rollt nur
+     sanft nach oben — wie beim zweiten Tippen auf einen iOS-Tab. */
+  if (!replace && isViewActive(tab)) {
+    dom.content.scrollTo({ top: 0, behavior: "smooth" });
+    return;
+  }
   if (tab === "home") {
     showHome(replace);
     return;
