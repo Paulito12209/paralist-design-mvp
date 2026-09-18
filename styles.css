@@ -46,6 +46,8 @@
  * --tab-pills-fade          -> Breite des Ausblendens links von der Trennlinie, wenn Tabs darunter durchlaufen
  * --star-color              -> Goldfarbe für den Favoriten-Stern auf der Karte
  * --inbox-icon-color        -> Farbe des Inbox-Icons auf der Übersichtskarte
+ * --project-icon-color      -> Farbe des Raketen-Icons auf der Projekte-Karte
+ * --resource-icon-color     -> Farbe des Würfel-Icons auf der Ressourcen-Karte
  * --ctx-radius              -> Rundung des kleinen Menüs beim gedrückt Halten
  */
 
@@ -97,6 +99,8 @@
   --tab-pills-fade: 16px;
   --star-color: #f5c518;
   --inbox-icon-color: #233d4c;
+  --project-icon-color: #5B0E14;
+  --resource-icon-color: #1A2517;
   --ctx-radius: 16px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
@@ -310,6 +314,16 @@ button {
 /* Goldene Stern-Kontur auf der Favoriten-Karte */
 .card-icon-star {
   color: var(--star-color);
+}
+
+/* Raketen-Icon auf der Projekte-Karte */
+.card-icon-rocket {
+  color: var(--project-icon-color);
+}
+
+/* Würfel-Icon auf der Ressourcen-Karte */
+.card-icon-cube {
+  color: var(--resource-icon-color);
 }
 
 .card-label {

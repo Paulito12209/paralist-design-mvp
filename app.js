@@ -236,7 +236,11 @@ function renderOverview() {
           ? "card-icon card-icon-star"
           : page.icon === "inbox"
             ? "card-icon card-icon-inbox"
-            : "card-icon";
+            : page.icon === "rocket"
+              ? "card-icon card-icon-rocket"
+              : page.icon === "cube"
+                ? "card-icon card-icon-cube"
+                : "card-icon";
       return `
         <button class="overview-card" type="button" data-open="overview" data-id="${id}" onclick="openTarget('overview', '${id}')">
           ${icon(page.icon || "placeholder", iconClass)}
