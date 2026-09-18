@@ -847,6 +847,12 @@ button {
   align-items: center;
   gap: 4px;
   min-width: 0;
+  overflow-x: auto; /* overflow: bei vielen Typ-Knöpfen seitlich schieben statt umbrechen */
+  scrollbar-width: none; /* scrollbar-width: unsichtbare Leiste, der Inhalt bleibt schiebbar */
+}
+
+.composer-types::-webkit-scrollbar {
+  display: none; /* display: gleiche unsichtbare Leiste in Chrome und Safari */
 }
 
 .composer-type {

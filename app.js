@@ -53,17 +53,21 @@ const views = {
 
 // Eintragstypen: bestimmen das Icon vor dem Titel in den Listen.
 // „pick“ markiert die Knöpfe im Eingabefeld; ohne gewählten Knopf entsteht ein Dokument.
+// Ressourcen-Knopf unten legt ein Dokument an; Projekte-Knopf ein Projekt.
 // Dokumente, Zeichnungen und Medien sind Ressourcen, egal wo sie abgelegt sind.
 const types = [
   { id: "aufgabe", label: "Aufgabe", icon: "task", pick: true },
   { id: "notiz", label: "Notiz", icon: "note", pick: true },
   { id: "termin", label: "Termin", icon: "calendar", pick: true },
   { id: "zeichnung", label: "Zeichnung", icon: "scribble", pick: true },
+  { id: "projekt", label: "Projekte", icon: "rocket", pick: true },
   { id: "dokument", label: "Dokument", icon: "doc" },
   { id: "medien", label: "Medien", icon: "photos" },
 ];
 const defaultType = "dokument";
 const resourceTypes = ["dokument", "zeichnung", "medien"];
+/* Extra-Knopf neben den Typen: sieht aus wie die Ressourcen-Kachel, legt aber ein Dokument an */
+const resourcePick = { id: "ressourcen", label: "Ressourcen", icon: "cube", typeId: "dokument" };
 
 /* Jede Übersichtskarte ist ein Ablageort: „parent“ verbindet sie mit den
    Einträgen, „seed“ legt beim allerersten Start Beispieleinträge an.
@@ -98,6 +102,7 @@ const xpItems = {
   notiz: { label: "Notiz", icon: "note", color: "#ffd60a" },
   termin: { label: "Termin", icon: "calendar", color: "#5ac8fa" },
   medien: { label: "Medien", icon: "photos", color: "#30d158" },
+  projekt: { label: "Projekte", icon: "rocket", color: "#af2d3a" },
   dokument: { label: "Dokument", icon: "doc", color: "#64d2ff" },
   zeichnung: { label: "Zeichnung", icon: "scribble", color: "#ff375f" },
   arbeitsbereich: { label: "Arbeitsbereich", icon: "layers", color: "#ff9f0a" },
@@ -121,6 +126,7 @@ let sourceView = "home";
 let currentPage = null;
 let currentEntryId = null;
 let composerType = types[0].id;
+let composerPick = types[0].id;
 let composerParent = null;
 let sheetActions = [];
 let ctxActions = [];
@@ -733,13 +739,32 @@ function restoreFrom(from) {
 
 /* ---------- Eingabefeld ---------- */
 
+function composerPickButtons() {
+  return [
+    ...types.filter((type) => type.pick).map((type) => ({
+      id: type.id,
+      label: type.label,
+      icon: type.icon,
+      typeId: type.id,
+    })),
+    resourcePick,
+  ];
+}
+
+function chooseComposerType(typeId, pickId) {
+  composerType = typeId;
+  if (pickId !== undefined) composerPick = pickId;
+  else if (typeId === defaultType) composerPick = resourcePick.id;
+  else composerPick = types.some((type) => type.pick && type.id === typeId) ? typeId : null;
+  if (typeId === "projekt") composerParent = overviewPages[3].parent;
+}
+
 function renderComposerTypes() {
-  composerTypes.innerHTML = types
-    .filter((type) => type.pick)
+  composerTypes.innerHTML = composerPickButtons()
     .map(
-      (type) => `
-        <button class="composer-type${type.id === composerType ? " is-active" : ""}" type="button" data-type="${type.id}" aria-label="${type.label}">
-          ${icon(type.icon)}
+      (pick) => `
+        <button class="composer-type${pick.id === composerPick ? " is-active" : ""}" type="button" data-type="${pick.id}" aria-label="${pick.label}">
+          ${icon(pick.icon)}
         </button>
       `
     )
@@ -2199,6 +2224,7 @@ calPanel.addEventListener("click", (event) => {
   if (!hour) return;
   calSlot = { date: calSelected, time: `${pad2(Number(hour.dataset.hour))}:00` };
   composerType = "termin";
+  composerPick = "termin";
   openComposer();
 });
 
@@ -3093,9 +3119,17 @@ document.getElementById("composer-link").addEventListener("click", () => {
 composerTypes.addEventListener("click", (event) => {
   const button = event.target.closest("[data-type]");
   if (!button) return;
+  const pick = composerPickButtons().find((item) => item.id === button.dataset.type);
+  if (!pick) return;
   /* Der aktive Knopf lässt sich abwählen: ohne Typ entsteht ein Dokument */
-  composerType = button.dataset.type === composerType ? defaultType : button.dataset.type;
+  if (composerPick === pick.id) {
+    composerPick = null;
+    composerType = defaultType;
+  } else {
+    chooseComposerType(pick.typeId, pick.id);
+  }
   renderComposerTypes();
+  renderComposerLink();
   composerInput.focus();
 });
 
@@ -3109,8 +3143,9 @@ composerTypePill.addEventListener("click", () => {
         icon: type.icon,
         active: type.id === composerType,
         onSelect: () => {
-          composerType = type.id;
+          chooseComposerType(type.id);
           renderComposerTypes();
+          renderComposerLink();
           composerInput.focus();
         },
       }))
