@@ -26,6 +26,7 @@ const composerTypeLabel = document.getElementById("composer-type-label");
 const composerSend = document.getElementById("composer-send");
 const composerAttach = document.getElementById("composer-attach");
 const composerAttachments = document.getElementById("composer-attachments");
+const composerMic = document.getElementById("composer-mic");
 
 const entryTitle = document.getElementById("entry-title");
 const entryBody = document.getElementById("entry-body");
@@ -75,6 +76,16 @@ const defaultType = "dokument";
 const resourceTypes = ["dokument", "zeichnung", "medien"];
 /* Extra-Knopf neben den Typen: sieht aus wie die Ressourcen-Kachel, legt aber ein Dokument an */
 const resourcePick = { id: "ressourcen", label: "Ressourcen", icon: "cube", typeId: "dokument" };
+/* Platzhalter im Eingabefeld je gewähltem Typ */
+const composerPlaceholders = {
+  aufgabe: "Neue Aufgabe einfügen …",
+  notiz: "Neue Notiz einfügen …",
+  termin: "Neuen Termin eintragen …",
+  projekt: "Neues Projekt einfügen …",
+  dokument: "Neue Ressource anlegen …",
+  zeichnung: "Neue Zeichnung anlegen …",
+  medien: "Neues Medium anlegen …",
+};
 
 /* Jede Übersichtskarte ist ein Ablageort: „parent“ verbindet sie mit den
    Einträgen, „seed“ legt beim allerersten Start Beispieleinträge an.
@@ -138,6 +149,7 @@ let composerPick = types[0].id;
 let composerParent = null;
 let composerFiles = []; /* Anhänge des offenen Eingabefelds; erst beim Anlegen werden daraus Medien */
 let nextComposerFileId = 1;
+let dictation = null; /* laufende Spracherkennung fürs Eingabefeld */
 let sheetActions = [];
 let ctxActions = [];
 let skipClick = false;
@@ -809,6 +821,7 @@ function renderComposerTypePill() {
   const type = types.find((item) => item.id === composerType) || types.find((item) => item.id === defaultType);
   composerTypeIcon.setAttribute("href", `#icon-${type.icon}`);
   composerTypeLabel.textContent = type.label;
+  composerInput.placeholder = composerPlaceholders[type.id] || "Neuen Eintrag einfügen …";
 }
 
 function renderComposerLink() {
@@ -924,6 +937,7 @@ function closeComposer() {
   composerInput.value = "";
   composerFiles = [];
   renderComposerAttachments();
+  if (dictation) dictation.stop();
   calSlot = null;
 }
 
@@ -3614,6 +3628,39 @@ composerAttachments.addEventListener("click", (event) => {
   if (!button) return;
   composerFiles = composerFiles.filter((item) => String(item.id) !== button.dataset.dropAttachment);
   renderComposerAttachments();
+});
+
+/* Diktat: Web Speech API, wo der Browser sie hat; das Gesprochene landet hinter dem Getippten.
+   Ein zweiter Tipp beendet die Aufnahme. */
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+composerMic.addEventListener("click", () => {
+  if (!SpeechRecognition) {
+    openSheet("Diktieren", [{ label: "In diesem Browser nicht verfügbar", icon: "mic", onSelect: () => composerInput.focus() }]);
+    return;
+  }
+  if (dictation) {
+    dictation.stop();
+    return;
+  }
+  const typed = composerInput.value.trim();
+  dictation = new SpeechRecognition();
+  dictation.lang = "de-DE";
+  dictation.interimResults = true;
+  dictation.onresult = (event) => {
+    const spoken = Array.from(event.results)
+      .map((result) => result[0].transcript)
+      .join("")
+      .trim();
+    composerInput.value = typed && spoken ? `${typed} ${spoken}` : typed || spoken;
+  };
+  dictation.onend = () => {
+    dictation = null;
+    composerMic.classList.remove("is-recording");
+    composerInput.focus();
+  };
+  composerMic.classList.add("is-recording");
+  dictation.start();
 });
 
 composerSend.addEventListener("click", createEntry);

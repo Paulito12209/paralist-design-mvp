@@ -585,24 +585,32 @@
           <div class="composer" id="composer" hidden>
             <!-- Anhänge: Vorschauen der gewählten Medien über den Pillen -->
             <div class="composer-attachments" id="composer-attachments" hidden></div>
-            <div class="composer-chips">
-              <button class="composer-link" type="button" id="composer-link">
-                <svg class="icon"><use href="#icon-link"></use></svg>
-                <span id="composer-link-label">Inbox</span>
-                <svg class="icon composer-caret"><use href="#icon-chevron"></use></svg>
-              </button>
-              <!-- Typ-Pille: zeigt den gewählten Typ; ohne gewählten Knopf unten wird der Eintrag ein Dokument -->
-              <button class="composer-link" type="button" id="composer-type-pill">
-                <svg class="icon"><use id="composer-type-icon" href="#icon-doc"></use></svg>
-                <span id="composer-type-label">Dokument</span>
-                <svg class="icon composer-caret"><use href="#icon-chevron"></use></svg>
+            <!-- Oben: links die beiden Pillen, rechts der Anlegen-Knopf -->
+            <div class="composer-top">
+              <div class="composer-chips">
+                <button class="composer-link" type="button" id="composer-link">
+                  <svg class="icon"><use href="#icon-link"></use></svg>
+                  <span id="composer-link-label">Inbox</span>
+                  <svg class="icon composer-caret"><use href="#icon-chevron"></use></svg>
+                </button>
+                <!-- Typ-Pille: zeigt den gewählten Typ; ohne gewählten Knopf unten wird der Eintrag ein Dokument -->
+                <button class="composer-link" type="button" id="composer-type-pill">
+                  <svg class="icon"><use id="composer-type-icon" href="#icon-doc"></use></svg>
+                  <span id="composer-type-label">Dokument</span>
+                  <svg class="icon composer-caret"><use href="#icon-chevron"></use></svg>
+                </button>
+              </div>
+              <!-- Anlegen-Knopf: legt den Eintrag an, auch ohne Enter-Taste auf dem Handy -->
+              <button class="composer-send" type="button" id="composer-send" aria-label="Anlegen">
+                <svg class="icon"><use href="#icon-arrow-up"></use></svg>
               </button>
             </div>
+            <!-- placeholder: wird je nach gewähltem Typ aus app.js gesetzt -->
             <input
               class="composer-input"
               id="composer-input"
               type="text"
-              placeholder="Notiz, Aufgabe, Termin …"
+              placeholder="Neue Aufgabe einfügen …"
               aria-label="Neuer Eintrag"
               autocomplete="off"
             />
@@ -613,9 +621,9 @@
               </button>
               <div class="composer-types" id="composer-types"></div>
               <div class="composer-end">
-                <!-- Anlegen-Knopf: legt den Eintrag an, auch ohne Enter-Taste auf dem Handy -->
-                <button class="composer-send" type="button" id="composer-send" aria-label="Anlegen">
-                  <svg class="icon"><use href="#icon-arrow-up"></use></svg>
+                <!-- Diktat: spricht Text ins Eingabefeld -->
+                <button class="composer-mic" type="button" id="composer-mic" aria-label="Diktieren">
+                  <svg class="icon"><use href="#icon-mic"></use></svg>
                 </button>
                 <button class="composer-close" type="button" id="composer-close" aria-label="Schließen">
                   <svg class="icon"><use href="#icon-close"></use></svg>

@@ -942,10 +942,41 @@ button {
   height: 20px;
 }
 
+/* Diktat-Knopf neben dem Schließen: gleicher grauer Kreis, beim Aufnehmen rot */
+.composer-mic {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%; /* border-radius: rund wie der Schließen-Knopf daneben */
+  background: var(--bg);
+  color: var(--text);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+}
+
+.composer-mic .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.composer-mic.is-recording {
+  background: var(--danger);
+  color: #ffffff;
+}
+
 .composer-close:active,
+.composer-mic:active,
 .composer-type:active,
 .composer-send:active {
   opacity: 0.55;
+}
+
+/* Oberste Zeile: Pillen links, Anlegen-Knopf rechts außen */
+.composer-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
 }
 
 /* Beide Pillen oben: links der Ablageort, rechts der Typ */
@@ -982,6 +1013,7 @@ button {
   color: var(--card);
   display: grid;
   place-items: center;
+  flex: 0 0 auto;
 }
 
 .composer-send .icon {
@@ -1016,10 +1048,6 @@ button {
   display: flex;
   align-items: center;
   gap: 10px;
-  /* Das seitliche Schieben schneidet alles ab, was aus der Reihe ragt: die Innenabstände
-     lassen dem Kreuz an der Ecke Platz, die negativen Ränder halten die Kacheln bündig */
-  margin: 0 -8px;
-  padding: 8px 8px 0;
   overflow-x: auto; /* overflow: viele Anhänge schieben sich seitlich, statt umzubrechen */
   scrollbar-width: none;
 }
@@ -1081,16 +1109,17 @@ button {
   overflow-wrap: anywhere;
 }
 
-/* Kleines Kreuz an der Ecke: nimmt den Anhang wieder weg */
+/* Kleines Kreuz in der Kachel oben rechts: nimmt den Anhang wieder weg */
 .composer-attachment-remove {
   position: absolute;
-  top: -6px;
-  right: -6px;
+  top: 5px;
+  right: 5px;
   width: 22px;
   height: 22px;
   border-radius: 50%; /* border-radius: rundes Kreuz wie in Chat-Apps */
-  background: var(--text);
-  color: var(--card);
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); /* hebt den hellen Kreis auch auf hellen Fotos ab */
   display: grid;
   place-items: center;
 }
