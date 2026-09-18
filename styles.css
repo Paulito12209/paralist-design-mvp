@@ -42,6 +42,8 @@
  * --link-color              -> Blau für Verknüpfen
  * --tab-pill-size           -> Schriftgröße der Tab-Pillen über den Arbeitsbereichen
  * --tab-pill-active-bg      -> Hintergrund der ausgewählten Tab-Pille
+ * --tab-pills-btn-gap       -> Abstand zwischen der senkrechten Trennlinie und dem Plus-Button
+ * --tab-pills-fade          -> Breite des Ausblendens links von der Trennlinie, wenn Tabs darunter durchlaufen
  */
 
 :root {
@@ -88,6 +90,8 @@
   --link-color: #007aff;
   --tab-pill-size: 15px;
   --tab-pill-active-bg: rgba(60, 60, 67, 0.09);
+  --tab-pills-btn-gap: 8px;
+  --tab-pills-fade: 16px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
 }
@@ -307,7 +311,6 @@ button {
 .section-head {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   margin: var(--overview-gap) 0 var(--workspace-head-gap);
   padding-left: var(--title-side);
 }
@@ -720,14 +723,57 @@ button {
   color: #c7c7cc;
 }
 
-/* Tab-Pillen über der Arbeitsbereich-Liste */
+/* Tab-Zeile: Pillen scrollen, Plus-Button bleibt rechts */
+.tab-pills-row {
+  display: flex;
+  align-items: center;
+  position: relative; /* position: damit Linie und Button über den Tabs liegen können */
+  margin: 0 0 6px;
+  min-height: 32px; /* min-height: Zeile bleibt so hoch wie der Plus-Button */
+}
+
 .tab-pills {
   display: flex;
   align-items: center;
   gap: 2px;
-  margin: 0 2px 6px;
-  overflow-x: auto; /* overflow: viele Tabs sollen seitlich wegscrollen statt umzubrechen */
+  width: 100%;
+  padding-left: 2px;
+  /* Platz rechts, damit der letzte Tab vor Linie und Button sichtbar bleiben kann */
+  padding-right: calc(var(--tab-pills-fade) + 1px + var(--tab-pills-btn-gap) + 32px);
+  overflow-x: auto; /* overflow: viele Tabs sollen unter Linie und Button durchlaufen */
   scrollbar-width: none;
+}
+
+/* Rechts fest: erst Fade, dann Linie, dann Plus */
+.tab-pills-tools {
+  position: absolute; /* position: bleibt rechts kleben, Tabs laufen darunter durch */
+  right: 0;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  z-index: 1; /* z-index: hält Linie und Button über den scrollenden Tabs */
+}
+
+.tab-pills-fade {
+  width: var(--tab-pills-fade);
+  height: 100%;
+  background: linear-gradient(to right, transparent, var(--bg));
+  pointer-events: none; /* pointer-events: Klicks sollen die Tabs im Fade noch treffen */
+}
+
+.tab-pills-end {
+  display: flex;
+  align-items: center;
+  gap: var(--tab-pills-btn-gap);
+  height: 100%;
+  background: var(--bg);
+}
+
+.tab-pills-split {
+  width: 1px;
+  height: 16px;
+  background: var(--line);
 }
 
 .tab-pills::-webkit-scrollbar {

@@ -177,13 +177,21 @@
 
             <div class="section-head">
               <h2>Arbeitsbereiche</h2>
-              <button class="add-btn" type="button" data-action="add-workspace" aria-label="Hinzufügen" onclick="addWorkspace()">
-                <svg class="icon"><use href="#icon-folder-plus"></use></svg>
-              </button>
             </div>
 
-            <!-- Tabs: gruppieren die Arbeitsbereiche, erste Gruppe heißt „Privat“ -->
-            <div class="tab-pills" id="workspace-tabs"></div>
+            <!-- Tabs links, Plus-Button rechts; bei vielen Tabs laufen die Pillen unter Linie und Button durch -->
+            <div class="tab-pills-row">
+              <div class="tab-pills" id="workspace-tabs"></div>
+              <div class="tab-pills-tools">
+                <div class="tab-pills-fade"></div>
+                <div class="tab-pills-end">
+                  <div class="tab-pills-split"></div>
+                  <button class="add-btn" type="button" data-action="add-workspace" aria-label="Hinzufügen" onclick="addWorkspace()">
+                    <svg class="icon"><use href="#icon-folder-plus"></use></svg>
+                  </button>
+                </div>
+              </div>
+            </div>
 
             <div class="workspace-list" id="workspace-list"></div>
           </section>
