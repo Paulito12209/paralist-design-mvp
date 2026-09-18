@@ -150,6 +150,7 @@
  * --support-choice-active-bg -> Fläche der gewählten Art im Feedback
  * --credits-chip-bg          -> Fläche hinter einem Namen bei den Danksagungen
  * --composer-mic-bg          -> Fläche des Diktat-Knopfes: Ton zwischen Container und Schließen-Knopf
+ * --composer-mic-border      -> dünner Rand um den Diktat-Knopf: dunkelgrau, in beiden Darstellungen gleich
  *
  * Dunkelmodus: dieselben Werte werden weiter unten noch einmal gesetzt —
  * einmal für „folgt dem System“ und einmal für „in den Einstellungen gewählt“.
@@ -205,6 +206,7 @@
   --composer-side: 16px;
   --composer-btn-size: 36px;
   --composer-mic-bg: #f9f9fa;
+  --composer-mic-border: #48484a;
   --composer-input-size: 16px;
   --composer-chip-size: 13px;
   --entry-title-size: 28px;

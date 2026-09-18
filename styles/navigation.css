@@ -147,8 +147,10 @@ body.is-search-typing .bottom-bar {
 }
 
 .tab-add .icon {
-  width: 22px;
-  height: 22px;
+  /* icon-plus-long hat ein größeres viewBox (32 statt 24) mit 8px längeren
+     Armen bei gleicher Balkendicke — der Knopf wird deshalb mit angepasst */
+  width: 30px;
+  height: 30px;
 }
 
 .tab-add:active {

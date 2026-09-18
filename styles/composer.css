@@ -9,7 +9,8 @@
  * --composer-chip-size      -> Schriftgröße der beiden Pillen oben
  * --composer-radius         -> Rundung des Containers
  * --composer-btn-size       -> Größe der runden Knöpfe und Höhe der beiden Pillen
- * --composer-mic-bg         -> Fläche des Diktat-Knopfes (Ton zwischen Container und Schließen)
+ * --composer-mic-bg         -> Fläche des Diktat-Knopfes, nur zu 20% zu sehen
+ * --composer-mic-border     -> dünner Rand um den Diktat-Knopf
  * --danger                  -> Rot des Diktat-Knopfes beim Aufnehmen
  * --placeholder             -> Farbe des Platzhaltertexts
  * --line                    -> Trennlinien und Ränder der Anhang-Kacheln
@@ -66,7 +67,7 @@
   background: transparent;
   color: var(--text);
   font-size: var(--composer-input-size);
-  padding: 10px 4px 10px;
+  padding: 12px 4px 10px;
 }
 
 .composer-input::placeholder {
@@ -136,7 +137,10 @@
   width: var(--composer-btn-size);
   height: var(--composer-btn-size);
   border-radius: 50%; /* border-radius: rund wie der Schließen-Knopf daneben */
-  background: var(--composer-mic-bg);
+  /* color-mix: dieselbe Fläche wie zuvor, aber nur noch zu 20% zu sehen —
+     der Container scheint darunter durch */
+  background: color-mix(in srgb, var(--composer-mic-bg) 20%, transparent);
+  border: 1px solid var(--composer-mic-border); /* border: haelt den Knopf sichtbar, wo die Flaeche kaum noch traegt */
   color: var(--text);
   display: grid;
   place-items: center;

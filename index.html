@@ -20,15 +20,12 @@
         if (savedTheme === "light" || savedTheme === "dark") document.documentElement.dataset.theme = savedTheme;
       } catch (error) {}
 
-      /* Icons schon jetzt holen, parallel zu den Stilen; src/shell/sprite.js hängt sie später ein.
-         Schlägt es fehl, kommt hier null heraus und sprite.js versucht es noch einmal. */
-      window.__paralistSprite = fetch("assets/icons/sprite.svg")
-        .then(function (response) {
-          return response.ok ? response.text() : null;
-        })
-        .catch(function () {
-          return null;
-        });
+      /* Icons schon jetzt holen (zwei Dateien wegen der 400-Zeilen-Grenze je Datei);
+         src/shell/sprite.js hängt sie später ein und versucht es bei einem
+         Fehlschlag noch einmal. */
+      window.__paralistSprites = ["assets/icons/sprite.svg", "assets/icons/sprite-2.svg"].map(function (path) {
+        return fetch(path).then(function (r) { return r.ok ? r.text() : null; }).catch(function () { return null; });
+      });
     </script>
 
     <!--
@@ -254,7 +251,7 @@
               <span>Kalender</span>
             </button>
             <button class="tab-add" type="button" aria-label="Hinzufügen">
-              <svg class="icon"><use href="#icon-plus-full"></use></svg>
+              <svg class="icon"><use href="#icon-plus-long"></use></svg>
             </button>
             <button class="tab-btn" type="button" data-tab="tasks">
               <svg class="icon"><use href="#icon-checklist"></use></svg>

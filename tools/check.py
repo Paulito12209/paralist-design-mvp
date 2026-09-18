@@ -187,7 +187,9 @@ def check_html_ids():
     for name in sorted(used - ids - created_later):
         note("index.html", f"src/ spricht #{name} an, das Element fehlt")
 
-    sprite = (ROOT / "assets" / "icons" / "sprite.svg").read_text(encoding="utf-8")
+    sprite = "".join(
+        (ROOT / "assets" / "icons" / name).read_text(encoding="utf-8") for name in ("sprite.svg", "sprite-2.svg")
+    )
     symbols = set(re.findall(r'<symbol id="icon-([^"]+)"', sprite))
     for name in sorted(set(re.findall(r'href="#icon-([a-z0-9-]+)"', html)) - symbols):
         note("index.html", f"benutzt das Icon #{name}, es fehlt im Sprite")
