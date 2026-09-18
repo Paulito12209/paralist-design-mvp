@@ -10,6 +10,7 @@
  * --nav-radius              -> Rundung der Leiste
  * --tab-add-size            -> Größe des runden Plus-Knopfes in der Mitte
  * --tab-add-margin          -> Extra-Luft neben dem Plus-Kreis, damit die sichtbaren Lücken gleich wirken
+ * --nav-inner-pad           -> Innenrand der Leiste, gleicht die Luft der äußeren Icons zum Rand aus
  * --tab-icon-grow           -> um wie viel die Icons wachsen, solange die Namen aus sind
  * --tab-hit-grow            -> wie weit die Tippfläche über das Icon hinausgeht (Material 3: 48dp)
  * --tab-label-size          -> Schriftgröße der Wörter unter den Icons
@@ -56,7 +57,7 @@ body.is-search-typing .bottom-bar {
   border-radius: var(--nav-radius); /* border-radius: macht die Leiste rund wie eine Pille */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(0, 0, 0, 0.12);
   /* padding: nur seitlich, die Höhe gibt --nav-height in .tab-bar vor */
-  padding: 0 8px;
+  padding: 0 var(--nav-inner-pad);
 }
 
 /* Beim Anlegen wächst derselbe Container nach oben und wird eckiger */
@@ -75,12 +76,13 @@ body.is-search-typing .bottom-bar {
   min-height: var(--nav-height); /* Material 3: 80dp Containerhöhe */
   display: flex;
   align-items: center;
-  /* justify-content: der freie Platz wird gleichmäßig auf die vier Lücken verteilt.
-     Weil jeder Knopf nur so breit ist wie das, was man von ihm sieht, sind dadurch
-     alle sichtbaren Abstände gleich groß — auch neben dem breiteren Plus-Kreis.
-     Gleich breite Felder brächten das nicht: der 50px-Kreis würde die Lücken
-     neben sich auffressen, die Icons daneben rückten ihm näher. */
-  justify-content: space-between;
+  /* justify-content: der freie Platz wird gleichmäßig auf sechs Lücken verteilt —
+     vier zwischen den Knöpfen und je eine zum linken und rechten Rand. So sieht
+     der Abstand von „Übersicht“ zum Rand genauso aus wie der zwischen den Icons.
+     Die Icon-Grafiken füllen ihr Kästchen nicht ganz aus; --nav-inner-pad und
+     --tab-add-margin gleichen diese Luft aus, damit auch die sichtbaren Lücken
+     neben dem Rand und neben dem Plus-Kreis gleich groß sind. */
+  justify-content: space-evenly;
 }
 
 .tab-btn {

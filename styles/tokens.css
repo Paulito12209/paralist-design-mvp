@@ -101,6 +101,8 @@
  * --nav-height              -> Höhe der Navigationsleiste (Material 3: 80dp)
  * --nav-side / --nav-bottom / --nav-radius -> Lage und Rundung der Navigationsleiste
  * --tab-add-size            -> Größe des runden Plus-Knopfes in der Navigation
+ * --nav-inner-pad           -> Innenrand der Leiste: etwa so groß wie die Luft, die ein Icon in seinem
+                               Kästchen hat — so ist der Abstand zum Rand gleich dem zwischen den Icons
  * --tab-add-margin          -> Extra-Luft links und rechts vom Plus-Kreis: die Icons haben in ihren
                                Kästchen etwa so viel Rand, der Kreis nicht — so wirken alle Lücken gleich
  * --tab-icon-grow           -> um wie viel die Icons wachsen, solange ihre Namen aus sind
@@ -206,6 +208,7 @@
   --tab-label-size: 10px;
   --tab-add-size: 50px;
   --tab-add-margin: 4px;
+  --nav-inner-pad: 5px;
   --tab-icon-grow: 8px;
   --tab-hit-grow: 8px;
   --search-meta-size: 13px;
