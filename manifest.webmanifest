@@ -1,0 +1,14 @@
+{
+  "name": "Paralist",
+  "short_name": "Paralist",
+  "start_url": ".",
+  "display": "standalone",
+  "background_color": "#f3f3f5",
+  "theme_color": "#f3f3f5",
+  "icons": [
+    { "src": "icon.svg", "type": "image/svg+xml", "sizes": "any" },
+    { "src": "icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "icon-512.png", "type": "image/png", "sizes": "512x512" },
+    { "src": "icon-512.png", "type": "image/png", "sizes": "512x512", "purpose": "maskable" }
+  ]
+}
