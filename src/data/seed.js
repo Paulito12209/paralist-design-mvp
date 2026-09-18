@@ -1,21 +1,17 @@
 /*
- * Beispieldaten für den allerersten Start, damit keine Seite leer aussieht:
- * Projekte, Medien und der Arbeitsbereich „Entwicklung“ mit dem Projekt
- * „Paralist (Android App)“ und seinen Aufgaben.
+ * Nachträgliches Auffüllen für ältere Speicherstände: Beispielmedien und ein
+ * XP-Sammelposten für Daten, die es schon vor dem jeweiligen Feature gab.
+ * Der allererste Start bleibt seit dem Entfernen der Beispieldaten leer.
  * Pfad: src/data/seed.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * sampleMedia    -> die Beispielmedien (Art, Titel, wie viele Tage zurück)
- * androidTasks   -> Aufgaben und Termin im Projekt, Notizen im Arbeitsbereich
+ * sampleMedia -> die Beispielmedien (Art, Titel, wie viele Tage zurück)
  */
 
-import { MS_PER_DAY, dayKey } from "../core/dates.js";
-import { nextId } from "../core/ids.js";
+import { MS_PER_DAY } from "../core/dates.js";
 import { xpKinds } from "./config.js";
-import { entryRef, workspaceRef } from "./refs.js";
 import { state } from "./state.js";
-import { logXp } from "./xp.js";
 
 /** Legt einen Eintrag an und gibt ihn zurück. */
 function addEntry(fields) {
@@ -32,75 +28,6 @@ function addEntry(fields) {
   };
   state.entries.push(entry);
   return entry;
-}
-
-/* Drei Beispiel-Projekte in der Inbox, damit die Projekte-Karte nicht leer ist. */
-function seedProjects() {
-  ["Umzug", "Urlaub planen", "Website"].forEach((title, index) => {
-    const entry = addEntry({ type: "projekt", title, createdAt: Date.now() - (index + 1) * 3600000 });
-    logXp("created", "projekt", entry.title);
-  });
-}
-
-/*
- * Aufgaben des Projekts „Paralist (Android App)“.
- * `days` sagt, wie viele Tage der Termin in der Zukunft liegt (nur bei Terminen).
- */
-const androidTasks = [
-  { type: "aufgabe", title: "Übersichtsseite: alle Flows durchklicken" },
-  { type: "aufgabe", title: "Karten Inbox, Favoriten, Projekte, Ressourcen prüfen" },
-  { type: "aufgabe", title: "Tabs anlegen, umbenennen, löschen" },
-  { type: "aufgabe", title: "Arbeitsbereiche anlegen, umbenennen, wischen" },
-  { type: "aufgabe", title: "Eingabefeld: jeden Typ einmal anlegen" },
-  { type: "aufgabe", title: "Anhänge im Eingabefeld hinzufügen und entfernen" },
-  { type: "aufgabe", title: "Wisch-Knöpfe: Favorit, Archivieren, Verknüpfen, Löschen" },
-  { type: "aufgabe", title: "Zurück-Pfeil und Browser-Zurück auf jeder Seite" },
-  { type: "aufgabe", title: "Hell- und Dunkelmodus vergleichen" },
-  { type: "notiz", title: "Material 3: Navigationsleiste bleibt 80 dp hoch" },
-  { type: "notiz", title: "Ziel ist eine native Android-App, das Web ist nur die Probe" },
-  { type: "termin", title: "Design-Abnahme Übersichtsseite", days: 2, time: "10:00" },
-];
-
-/*
- * Arbeitsbereich „Entwicklung“ im ersten Tab. Darin liegt das Projekt
- * „Paralist (Android App)“, und IM Projekt liegen seine Aufgaben und der
- * Termin. Die zwei Notizen liegen direkt im Arbeitsbereich — so sieht man
- * beide Ebenen des Modells auf einen Blick.
- */
-function seedDevelopment() {
-  const workspace = {
-    id: nextId(state.workspaces),
-    name: "Entwicklung",
-    tab: state.tabs[0].id,
-    favorite: false,
-    icon: "briefcase",
-    body: "Alles rund um die Android-App. Der Web-Entwurf ist nur die Probe.",
-    awarded: true,
-  };
-  state.workspaces.push(workspace);
-  const inWorkspace = workspaceRef(workspace.id);
-
-  const project = addEntry({
-    type: "projekt",
-    title: "Paralist (Android App)",
-    places: [inWorkspace],
-    favorite: true,
-    body: "Erst die Übersichtsseite, dann der Rest. Jede Aufgabe hier liegt im Projekt.",
-  });
-  logXp("created", "projekt", project.title);
-  const inProject = entryRef(project.id);
-
-  androidTasks.forEach((task, index) => {
-    const entry = addEntry({
-      type: task.type,
-      title: task.title,
-      places: [task.type === "notiz" ? inWorkspace : inProject],
-      createdAt: Date.now() - index * 60000,
-      ...(task.time ? { time: task.time } : {}),
-    });
-    if (task.days) entry.date = dayKey(new Date(Date.now() + task.days * MS_PER_DAY));
-    logXp("created", task.type, entry.title);
-  });
 }
 
 /*
@@ -123,7 +50,11 @@ const sampleMedia = [
   { kind: "doc", title: "Mietvertrag", days: 30 },
 ];
 
-/** Beispielmedien landen in der Inbox und zählen nicht als „angelegt“ — darum kein XP-Eintrag. */
+/**
+ * Beispielmedien für ältere Speicherstände, die das Medien-Feature noch nicht
+ * kannten. Landen in der Inbox und zählen nicht als „angelegt“ — darum kein
+ * XP-Eintrag.
+ */
 export function seedMedia() {
   sampleMedia.forEach((sample, index) => {
     addEntry({
@@ -133,13 +64,6 @@ export function seedMedia() {
       media: { kind: sample.kind, sample: sample.sample || 0, duration: sample.duration || 0 },
     });
   });
-}
-
-/** Alles, was beim allerersten Start entsteht. */
-export function seedFirstStart() {
-  seedProjects();
-  seedDevelopment();
-  seedMedia();
 }
 
 /**
