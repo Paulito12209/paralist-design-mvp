@@ -19,7 +19,8 @@ import { entryRow } from "../../ui/rows.js";
 function filtered(filter) {
   const all = resourceEntries();
   if (filter === "notes") return all.filter((entry) => entry.type === "notiz");
-  if (filter === "own") return all.filter((entry) => entry.type !== "notiz");
+  if (filter === "own") return all.filter((entry) => entry.type === "dokument");
+  if (filter === "drawings") return all.filter((entry) => entry.type === "zeichnung");
   return all;
 }
 

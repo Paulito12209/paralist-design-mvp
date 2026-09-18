@@ -11,6 +11,7 @@
  * --content-top             -> Abstand unter der Suchleiste bis zum ersten Inhalt
  * --title-side              -> Extra-Abstand der großen Überschrift
  * --overview-gap            -> Abstand zwischen Überschrift und Karten/Inhalt
+ * --title-alt / --title-alt-gap -> Farbe und Abstand des grauen Zweittitels („Medien“ neben „Ressourcen“)
  * --tab-space               -> Platz am Seitenende hinter der Navigation
  * --device-radius           -> Rundung des Gerätefensters am Desktop
  
@@ -135,7 +136,7 @@ body.is-subpage .content {
 .title-switch {
   border: 0;
   padding: 0;
-  margin-left: 10px;
+  margin-left: var(--title-alt-gap);
   background: none;
   color: var(--title-alt);
   font: inherit;

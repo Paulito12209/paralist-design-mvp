@@ -9,6 +9,7 @@
  * --nav-side / --nav-bottom -> Abstand zum Rand und nach unten
  * --nav-radius              -> Rundung der Leiste
  * --tab-add-size            -> Größe des runden Plus-Knopfes in der Mitte
+ * --tab-add-margin          -> Extra-Luft neben dem Plus-Kreis, damit die sichtbaren Lücken gleich wirken
  * --tab-icon-grow           -> um wie viel die Icons wachsen, solange die Namen aus sind
  * --tab-hit-grow            -> wie weit die Tippfläche über das Icon hinausgeht (Material 3: 48dp)
  * --tab-label-size          -> Schriftgröße der Wörter unter den Icons
@@ -168,6 +169,9 @@ body.is-search-typing .bottom-bar {
   /* align-self: der Knopf sitzt senkrecht in der Mitte der Leiste — mit und ohne
      Namen unter den Icons, deren Höhe sich sonst auf ihn auswirken würde */
   align-self: center;
+  /* Die Icons füllen ihr Kästchen nicht ganz aus, der Kreis schon: ohne diesen
+     Rand sähen die beiden Lücken neben dem Kreis enger aus als die äußeren */
+  margin: 0 var(--tab-add-margin);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18); /* box-shadow: hebt den Knopf leicht von der Leiste ab */
 }
 

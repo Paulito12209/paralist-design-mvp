@@ -182,7 +182,7 @@ export const mediaFilters = [
 
 /**
  * Pillen oben auf der Ressourcen-Seite: „Alle“ zeigt alles, „Notizen“ nur
- * Notizen, „Eigene Dokumente“ das selbst Geschriebene und Gezeichnete.
+ * Notizen, „Eigene Dokumente“ das selbst Geschriebene, „Zeichnungen“ das Gezeichnete.
  */
 export const resourceFilters = [
   { id: "all", label: "Alle", icon: "cube", empty: "Noch keine Ressourcen." },
@@ -193,6 +193,7 @@ export const resourceFilters = [
     icon: "doc",
     empty: "Noch nichts Eigenes. Ein Eintrag ohne gewählten Typ wird zum Dokument.",
   },
+  { id: "drawings", label: "Zeichnungen", icon: "scribble", empty: "Noch keine Zeichnungen." },
 ];
 
 /* ---------- Aufgaben-Seite: Status, Prioritäten und die drei Bedien-Listen ---------- */

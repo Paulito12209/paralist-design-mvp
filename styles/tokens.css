@@ -43,6 +43,7 @@
  * --text                    -> Textfarbe für Überschriften und normale Schrift
  * --muted                   -> hellere Textfarbe für Hinweise und das Add-Icon
  * --title-alt               -> Grauton des zweiten Wortes in der großen Überschrift
+ * --title-alt-gap           -> Luft zwischen dem ersten und dem grauen zweiten Wort
                                („Medien“ neben „Ressourcen“ und umgekehrt)
  * --line                    -> Farbe der dünnen Trennlinie unter Arbeitsbereichen
  * --shadow                  -> weicher Schatten unter Karten und Suche
@@ -100,6 +101,8 @@
  * --nav-height              -> Höhe der Navigationsleiste (Material 3: 80dp)
  * --nav-side / --nav-bottom / --nav-radius -> Lage und Rundung der Navigationsleiste
  * --tab-add-size            -> Größe des runden Plus-Knopfes in der Navigation
+ * --tab-add-margin          -> Extra-Luft links und rechts vom Plus-Kreis: die Icons haben in ihren
+                               Kästchen etwa so viel Rand, der Kreis nicht — so wirken alle Lücken gleich
  * --tab-icon-grow           -> um wie viel die Icons wachsen, solange ihre Namen aus sind
  * --tab-hit-grow            -> wie weit die Tippfläche eines Reiters über sein Icon hinausgeht
  * --tab-pill-active-bg      -> Hintergrund der ausgewählten Tab-Pille
@@ -165,6 +168,7 @@
   --text: #1c1c1e;
   --muted: #8e8e93;
   --title-alt: #b4b4ba;
+  --title-alt-gap: 14px;
   --line: rgba(60, 60, 67, 0.12);
   --add: #007aff;
   --shadow: 0 1px 2px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.05);
@@ -201,6 +205,7 @@
   /* Material 3: Navigationsleiste ist 80dp hoch */
   --tab-label-size: 10px;
   --tab-add-size: 50px;
+  --tab-add-margin: 4px;
   --tab-icon-grow: 8px;
   --tab-hit-grow: 8px;
   --search-meta-size: 13px;
