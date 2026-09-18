@@ -33,7 +33,7 @@ const profile = {
 };
 
 /* Das öffentliche Board, auf dem Nutzer Wünsche einreichen und dafür stimmen. */
-const roadmapUrl = "https://xooldeutschland.canny.io";
+const roadmapUrl = "https://xool.canny.io";
 
 const stepSizes = [5, 10, 15, 30, 60, 90, 120, 180, 240, 360, 480];
 const fallbackStep = 720;
