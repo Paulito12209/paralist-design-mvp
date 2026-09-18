@@ -3,7 +3,9 @@
  * beiden Kacheln unter „Analyse“, die Darstellung und die Konto-Listen. Tippt
  * man eine Kachel an, tritt an die Stelle der Liste die volle Karte mit
  * Diagramm. Der Bereich heißt weiter „profile“, weil das Blatt am Profilkopf
- * hängt. Wird erst beim ersten Öffnen nachgeladen.
+ * hängt. Unter „Support“ führen zwei Zeilen auf eigene Seiten: das
+ * Feedback-Formular und die Danksagungen. Wird erst beim ersten Öffnen
+ * nachgeladen.
  * Pfad: src/features/profile/profile.js
  *
  * Keine anpassbaren visuellen Werte: siehe styles/profile.css,
@@ -28,8 +30,9 @@ import {
   renderProfileButton,
   setDraft,
 } from "./avatar.js";
+import { noteFeedbackInput, onFeedbackClick } from "./feedback.js";
 import { identityCard, listsMarkup } from "./profile-cards.js";
-import { appearanceSection, detailHash, detailMarkup, insightsSection, isDetail } from "./settings-cards.js";
+import { appearanceSection, detailHash, detailMarkup, enterDetail, insightsSection, isDetail } from "./settings-cards.js";
 import { setTheme } from "./theme.js";
 
 /* Welche große Ansicht zuletzt gezeichnet wurde — null steht für die Liste. */
@@ -69,6 +72,7 @@ function dropDraft() {
 /** Eine Kachel aufklappen: die volle Karte tritt an die Stelle der Liste. */
 function openDetail(key) {
   if (!isDetail(key)) return;
+  enterDetail(key);
   ui.settingsDetail = key;
   renderProfile();
   dom.profileBody.scrollTop = 0;
@@ -179,8 +183,12 @@ function openAvatarPicker() {
   openSheet("Profilbild", options);
 }
 
-/* Klicks im Blatt: Bild, Kacheln, Darstellung, Zeitraum. */
+/* Klicks im Blatt: Feedback-Seite, Bild, Kacheln, Darstellung, Zeitraum. */
 function onBodyClick(event) {
+  if (onFeedbackClick(event)) {
+    rerenderKeepingScroll();
+    return;
+  }
   if (event.target.closest("[data-avatar-edit]")) {
     openAvatarPicker();
     return;
@@ -217,6 +225,9 @@ function init() {
     if (event.target === dom.profileModal) close();
   });
   dom.profileBody.addEventListener("click", onBodyClick);
+  /* Tippen wird nur gemerkt, nicht neu gezeichnet — sonst spränge die
+     Schreibmarke im Feedback-Formular bei jedem Buchstaben ans Ende. */
+  dom.profileBody.addEventListener("input", noteFeedbackInput);
 
   el("avatar-view-close").addEventListener("click", closeAvatarView);
   dom.avatarView.addEventListener("click", (event) => {

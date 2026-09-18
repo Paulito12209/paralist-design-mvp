@@ -36,6 +36,11 @@ const fallbackStep = 720;
 const barWidthShare = 0.55;
 const dotLevels = 4;
 
+/** Die Versionszeile — das Feedback-Formular schickt sie mit. */
+export function appVersion() {
+  return profile.version;
+}
+
 /** Das runde Bild oder die Initialen. */
 export function avatarMarkup() {
   const photo = currentPhoto();
@@ -163,16 +168,19 @@ export function streakCard() {
   `;
 }
 
-/* Die Zeilenkarten unter den Diagrammen. Noch ohne Funktion: der MVP zeigt nur den Aufbau. */
+/*
+ * Die Zeilenkarten unter den Diagrammen. `detail` nennt die Seite, die sich
+ * beim Antippen auftut (siehe `details` in settings-cards.js); Zeilen ohne
+ * `detail` zeigen im MVP nur den Aufbau.
+ */
 const listSections = [
   { title: "Plan", rows: [{ icon: "arrow-up-circle", label: "Plan verwalten", trail: "chevron" }] },
   {
     title: "Support",
     rows: [
-      { icon: "help", label: "Hilfe", trail: "external" },
+      { icon: "note", label: "Feedback", trail: "chevron", detail: "feedback" },
       { icon: "roadmap", label: "Roadmap", trail: "external" },
-      { icon: "globe", label: "Produkt-Weltkarte", trail: "external" },
-      { icon: "cube", label: "Danksagungen", trail: "chevron" },
+      { icon: "cube", label: "Danksagungen", trail: "chevron", detail: "credits" },
     ],
   },
   { title: "Mehr", rows: [{ icon: "signout", label: "Abmelden" }] },
@@ -186,7 +194,7 @@ export function listsMarkup() {
       const rows = section.rows
         .map(
           (row) => `
-        <button class="plist-row${row.danger ? " is-danger" : ""}" type="button">
+        <button class="plist-row${row.danger ? " is-danger" : ""}" type="button"${row.detail ? ` data-settings-detail="${row.detail}"` : ""}>
           ${icon(row.icon)}
           <span>${escapeHtml(row.label)}</span>
           ${row.trail ? icon(row.trail, "plist-trail") : ""}

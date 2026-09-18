@@ -27,6 +27,7 @@
  * styles/progress.css        -> Fortschritt-Blatt: Ring, Verlauf, Historie
  * styles/profile.css         -> Profil-Blatt: Bild, Nutzungszeit, Serie, Listen
  * styles/settings.css        -> Einstellungs-Blatt: Analyse-Kacheln und Darstellung
+ * styles/support.css         -> Einstellungs-Blatt: Feedback-Formular und Danksagungen
  * styles/tasks.css           -> Aufgaben-Seite: Liste und Kanban-Board
  * styles/calendar.css        -> Kalender: Monat, Wochenstreifen, Bedienzeile
  * styles/calendar-panel.css  -> Kalender: graue Fläche mit Stundenraster und Liste
@@ -121,6 +122,10 @@
  * --cal-row-h / --cal-hour-h -> Höhe einer Wochenzeile und einer Stunde
  * --cal-panel-radius        -> Rundung der grauen Fläche unter dem Streifen
  * --media-doc-color / --media-badge-bg -> Dokument-Icon und Dauer-Schild
+ * --support-field-radius     -> Rundung der Felder und Art-Knöpfe im Feedback
+ * --support-text-min-height  -> Mindesthöhe des Beschreibungsfelds im Feedback
+ * --support-choice-active-bg -> Fläche der gewählten Art im Feedback
+ * --credits-chip-bg          -> Fläche hinter einem Namen bei den Danksagungen
  *
  * Dunkelmodus: dieselben Werte werden weiter unten noch einmal gesetzt —
  * einmal für „folgt dem System“ und einmal für „in den Einstellungen gewählt“.
@@ -229,6 +234,10 @@
   --mini-gap: 12px;
   --mini-card-height: 132px;
   --mini-chart-height: 34px;
+  --support-field-radius: 14px;
+  --support-text-min-height: 140px;
+  --support-choice-active-bg: rgba(0, 122, 255, 0.1);
+  --credits-chip-bg: rgba(60, 60, 67, 0.07);
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   /* Hoehe der eingeblendeten Bildschirmtastatur; src/shell/keyboard-inset.js setzt den Wert am Handy */
@@ -266,6 +275,8 @@
     --cal-now: #6fcbe8;
     --cal-day-ring: rgba(255, 255, 255, 0.07);
     --media-doc-color: #0a84ff;
+    --support-choice-active-bg: rgba(10, 132, 255, 0.18);
+    --credits-chip-bg: rgba(255, 255, 255, 0.1);
   }
 }
 
@@ -299,4 +310,6 @@
   --cal-now: #6fcbe8;
   --cal-day-ring: rgba(255, 255, 255, 0.07);
   --media-doc-color: #0a84ff;
+  --support-choice-active-bg: rgba(10, 132, 255, 0.18);
+  --credits-chip-bg: rgba(255, 255, 255, 0.1);
 }

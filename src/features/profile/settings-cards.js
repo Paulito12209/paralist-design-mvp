@@ -3,6 +3,8 @@
  * nebeneinander — Nutzungszeit und Serie — wie die Kacheln in Apple Fitness.
  * Sie zeigen nur den Kopfwert und einen winzigen Verlauf; das ganze Diagramm
  * erscheint erst beim Antippen. Darunter der Abschnitt „Darstellung“.
+ * Hier steht außerdem, welche große Seite hinter welchem Schlüssel liegt —
+ * auch die Feedback- und die Danksagungs-Seite aus dem Abschnitt „Support“.
  * Pfad: src/features/profile/settings-cards.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -10,7 +12,8 @@
  * miniDays    -> wie viele Tage die kleinen Balken und Punkte zeigen
  * minBarShare -> Mindesthöhe eines Balkens (Anteil der Kachelhöhe), damit ein
  *                kurzer Tag nicht ganz verschwindet
- * details     -> welche große Ansicht hinter welcher Kachel steckt
+ * details     -> welche große Seite hinter welcher Kachel und welcher
+ *                Support-Zeile steckt
  *
  * Größen und Farben der Kacheln stehen in styles/settings.css.
  */
@@ -18,6 +21,8 @@
 import { dayShift, startOfDay } from "../../core/dates.js";
 import { icon } from "../../core/html.js";
 import { usageOfDay, usageStreaks } from "../../data/usage.js";
+import { creditsCard } from "./credits.js";
+import { enterFeedback, feedbackCard } from "./feedback.js";
 import { streakCard, usageCard } from "./profile-cards.js";
 import { themeListMarkup } from "./theme.js";
 
@@ -111,15 +116,25 @@ export function appearanceSection() {
   return `<p class="psection">Darstellung</p>${themeListMarkup()}`;
 }
 
-/* Was hinter den Kacheln steckt: die volle Karte und das Stück für die Adresse. */
+/*
+ * Was hinter den Kacheln und den Support-Zeilen steckt: die volle Seite, das
+ * Stück für die Adresse und — wenn nötig — was beim Öffnen zurückgesetzt wird.
+ */
 const details = {
   usage: { hash: "nutzungszeit", card: usageCard },
   streak: { hash: "serie", card: streakCard },
+  feedback: { hash: "feedback", card: feedbackCard, enter: enterFeedback },
+  credits: { hash: "danksagungen", card: creditsCard },
 };
 
 /** Gibt es zu diesem Schlüssel eine große Ansicht? */
 export function isDetail(key) {
   return Boolean(details[key]);
+}
+
+/** Beim Öffnen einer Seite: ihr Bereich darf sich vorher frisch machen. */
+export function enterDetail(key) {
+  details[key]?.enter?.();
 }
 
 /** Das Stück Adresse hinter „#/einstellungen/“. */
