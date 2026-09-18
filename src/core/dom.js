@@ -68,6 +68,7 @@ export const dom = {
 
   /* Suchen */
   get searchResults() { return el("search-results"); },
+  get searchPill() { return el("search-pill"); },
 
   /* Untere Leiste */
   get navShell() { return el("nav-shell"); },

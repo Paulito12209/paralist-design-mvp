@@ -97,6 +97,8 @@
  * --media-gap               -> Fuge zwischen den Medien-Kacheln
  * --media-btn-size          -> Größe der runden Knöpfe über der Navigation
  * --media-actions-space     -> Extra-Platz am Ende der Medien-Seite
+ * --search-pill-height / --search-pill-side -> Größe der Suchen-Pille über der Navigation
+ * --search-actions-space    -> Extra-Platz am Ende der Suche, solange die Pille zu sehen ist
  * --draw-tool-size / --draw-color-size -> Größe der Werkzeug-Knöpfe und Farbpunkte
  * --draw-tools-space        -> Extra-Platz unter der Zeichenfläche
  *
@@ -202,6 +204,9 @@
   --media-badge-bg: rgba(0, 0, 0, 0.55);
   --media-btn-size: 48px;
   --media-actions-space: 60px;
+  --search-pill-height: 48px;
+  --search-pill-side: 20px;
+  --search-actions-space: 60px;
   --draw-tool-size: 38px;
   --draw-color-size: 22px;
   --draw-tools-space: 62px;
