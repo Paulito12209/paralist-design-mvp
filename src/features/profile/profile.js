@@ -4,8 +4,9 @@
  * man eine Kachel an, tritt an die Stelle der Liste die volle Karte mit
  * Diagramm. Der Bereich heißt weiter „profile“, weil das Blatt am Profilkopf
  * hängt. Unter „Support“ führen zwei Zeilen auf eigene Seiten: das
- * Feedback-Formular und die Danksagungen. Wird erst beim ersten Öffnen
- * nachgeladen.
+ * Feedback-Formular und die Danksagungen; „Roadmap“ öffnet dagegen das
+ * öffentliche Board in einem neuen Tab (Adresse in profile-cards.js). Wird
+ * erst beim ersten Öffnen nachgeladen.
  * Pfad: src/features/profile/profile.js
  *
  * Keine anpassbaren visuellen Werte: siehe styles/profile.css,
@@ -195,6 +196,12 @@ function onBodyClick(event) {
   }
   if (event.target.closest("[data-avatar-view]")) {
     openAvatarView();
+    return;
+  }
+  const link = event.target.closest("[data-external-link]");
+  if (link) {
+    /* noopener: der neue Tab darf sonst über window.opener auf die App zugreifen */
+    window.open(link.dataset.externalLink, "_blank", "noopener");
     return;
   }
   const card = event.target.closest("[data-settings-detail]");

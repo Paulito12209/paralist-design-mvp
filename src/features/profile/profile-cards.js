@@ -6,6 +6,7 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * profile        -> Name, Mailadresse, Plan und Version im Kopf
+ * roadmapUrl     -> Adresse hinter „Support → Roadmap“ (das Canny-Board)
  * stepSizes      -> die runden Schritte der senkrechten Achse (Minuten)
  * barWidthShare  -> wie breit ein Balken im Verhältnis zu seiner Spalte ist
  * dotLevels      -> wie viele Helligkeitsstufen das Punkte-Raster hat
@@ -30,6 +31,9 @@ const profile = {
   version: "PARALIST 0.1.0 (MVP)",
   initials: "PA",
 };
+
+/* Das öffentliche Board, auf dem Nutzer Wünsche einreichen und dafür stimmen. */
+const roadmapUrl = "https://paralist.canny.io";
 
 const stepSizes = [5, 10, 15, 30, 60, 90, 120, 180, 240, 360, 480];
 const fallbackStep = 720;
@@ -170,8 +174,8 @@ export function streakCard() {
 
 /*
  * Die Zeilenkarten unter den Diagrammen. `detail` nennt die Seite, die sich
- * beim Antippen auftut (siehe `details` in settings-cards.js); Zeilen ohne
- * `detail` zeigen im MVP nur den Aufbau.
+ * beim Antippen auftut (siehe `details` in settings-cards.js), `link` eine
+ * Adresse außerhalb der App; Zeilen ohne beides zeigen im MVP nur den Aufbau.
  */
 const listSections = [
   { title: "Plan", rows: [{ icon: "arrow-up-circle", label: "Plan verwalten", trail: "chevron" }] },
@@ -179,7 +183,7 @@ const listSections = [
     title: "Support",
     rows: [
       { icon: "note", label: "Feedback", trail: "chevron", detail: "feedback" },
-      { icon: "roadmap", label: "Roadmap", trail: "external" },
+      { icon: "roadmap", label: "Roadmap", trail: "external", link: roadmapUrl },
       { icon: "cube", label: "Danksagungen", trail: "chevron", detail: "credits" },
     ],
   },
@@ -194,7 +198,7 @@ export function listsMarkup() {
       const rows = section.rows
         .map(
           (row) => `
-        <button class="plist-row${row.danger ? " is-danger" : ""}" type="button"${row.detail ? ` data-settings-detail="${row.detail}"` : ""}>
+        <button class="plist-row${row.danger ? " is-danger" : ""}" type="button"${row.detail ? ` data-settings-detail="${row.detail}"` : ""}${row.link ? ` data-external-link="${escapeHtml(row.link)}"` : ""}>
           ${icon(row.icon)}
           <span>${escapeHtml(row.label)}</span>
           ${row.trail ? icon(row.trail, "plist-trail") : ""}
