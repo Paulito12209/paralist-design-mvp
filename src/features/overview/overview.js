@@ -3,7 +3,7 @@
  * Pfad: src/features/overview/overview.js
  *
  * Keine anpassbaren visuellen Werte: Größe, Rundung und Icon-Farben stehen in
- * styles/overview.css (Klassen .overview-card, .card-icon-*).
+ * styles/overview.css (Klassen .overview-card, .card-title, .card-icon-*).
  */
 
 import { on, events } from "../../core/bus.js";
@@ -30,7 +30,7 @@ function cardMarkup(id, page) {
     <button class="overview-card" type="button" data-open-overview="${id}" aria-label="${page.title}, ${count} Einträge">
       ${icon(iconName, iconClass)}
       <span class="card-label">
-        ${page.title}
+        <span class="card-title">${page.title}</span>
         <span class="card-count">${count}</span>
       </span>
     </button>

@@ -73,9 +73,12 @@
  * --device-radius           -> Rundung des Gerätefensters am Desktop
  * --modal-radius            -> Rundung der oberen Kante der Blätter von unten
  * --content-side            -> Abstand der Karten und Listen zum linken und rechten Rand
+ * --content-top             -> Abstand vom unteren Suchleisten-Rand bis zum Inhalt (unter dem Verlauf)
  * --title-side              -> Extra-Abstand für die große Überschrift
- * --overview-gap            -> Abstand zwischen Kopfzeile, Überschrift und Karten
+ * --overview-gap            -> Abstand zwischen Überschrift und Karten
+ * --workspace-section-gap   -> Abstand zwischen den vier Karten und „Arbeitsbereiche“
  * --workspace-head-gap      -> Abstand zwischen „Arbeitsbereiche“ und den Tab-Pillen
+ * --top-bar-fade            -> Höhe des Ausblend-Verlaufs unter der Suchleiste
  * --top-bar-icon-width/-height          -> Größe der Icons oben
  * --top-bar-leading-btn-width/-height   -> Größe des runden Knopfes oben links
  * --top-bar-profile-btn-width/-height   -> Größe des Profil-Knopfes oben rechts
@@ -135,9 +138,12 @@
   --radius-lg: 18px;
   --title-size: 32px;
   --content-side: 16px;
+  --content-top: 16px;
   --title-side: 4px;
   --overview-gap: 28px;
+  --workspace-section-gap: 40px;
   --workspace-head-gap: 12px;
+  --top-bar-fade: 16px;
   --top-bar-icon-width: 24px;
   --top-bar-icon-height: 24px;
   --top-bar-leading-btn-width: 48px;
