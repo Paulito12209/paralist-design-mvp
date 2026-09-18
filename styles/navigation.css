@@ -9,11 +9,16 @@
  * --nav-side / --nav-bottom -> Abstand zum Rand und nach unten
  * --nav-radius              -> Rundung der Leiste
  * --tab-add-size            -> Größe des runden Plus-Knopfes in der Mitte
+ * --tab-add-lift            -> wie weit der Plus-Knopf über die Leiste hinausragt
+ * --tab-icon-grow           -> um wie viel die Icons wachsen, solange die Namen aus sind
  * --tab-label-size          -> Schriftgröße der Wörter unter den Icons
  * --composer-radius         -> Rundung, sobald das Eingabefeld offen ist
  * --keyboard-inset          -> wird von src/shell/keyboard-inset.js gesetzt
 
  *
+ * Die Namen unter den Icons sind standardmäßig aus (dafür die Icons größer);
+ * die Klasse „show-labels“ auf der Leiste blendet sie wieder ein — gesetzt von
+ * src/shell/nav-bar.js nach der Wahl im Einstellungs-Blatt.
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
 
@@ -78,20 +83,32 @@ body.is-search-typing .bottom-bar {
 }
 
 .tab-btn span {
+  display: none; /* display: Namen sind standardmäßig aus, „show-labels“ blendet sie wieder ein */
   white-space: nowrap; /* sonst bricht „Einstellungen“ mitten im Wort um */
 }
 
-/* Unter dieser Breite passen die Untertitel nicht mehr nebeneinander:
-   dann bleiben nur die Icons, statt „Einstellungen“ zu quetschen oder mit … zu kürzen.
-   Gemessen wird die Innenbreite der Leiste (Gerät minus 2 × 12px), 344px entspricht
-   einem 368px breiten Gerät: 360er-Androids verlieren die Labels, iPhones ab 375px behalten sie */
-@container (max-width: 344px) {
-  .tab-btn span {
+.tab-bar.show-labels .tab-btn span {
+  display: block;
+}
+
+/* Unter dieser Breite passen die Untertitel nicht mehr nebeneinander, selbst mit
+   eingeschalteten Namen: dann bleiben nur die Icons, statt „Einstellungen“ zu
+   quetschen oder mit … zu kürzen. Gemessen wird die Innenbreite der Leiste
+   (Gerät minus 2 × 28px), 312px entspricht einem 368px breiten Gerät:
+   360er-Androids verlieren die Labels, iPhones ab 375px behalten sie */
+@container (max-width: 312px) {
+  .tab-bar.show-labels .tab-btn span {
     display: none;
   }
 }
 
 .tab-btn .icon {
+  /* Ohne Namen ist mehr Platz für das Icon: um --tab-icon-grow größer als mit Namen */
+  width: calc(24px + var(--tab-icon-grow));
+  height: calc(24px + var(--tab-icon-grow));
+}
+
+.tab-bar.show-labels .tab-btn .icon {
   width: 24px;
   height: 24px;
 }
@@ -115,6 +132,8 @@ body.is-search-typing .bottom-bar {
   flex: 0 0 auto;
   margin-left: 4px;
   margin-right: 4px;
+  margin-top: calc(-1 * var(--tab-add-lift)); /* margin-top: negativ, damit der Knopf über die Leiste hinausragt, wie im Vorbild */
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.22), 0 2px 5px rgba(0, 0, 0, 0.14); /* box-shadow: Tiefe unter dem schwebenden Knopf */
 }
 
 .tab-add .icon {

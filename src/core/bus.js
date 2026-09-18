@@ -28,6 +28,9 @@ export const events = {
   /* Die Bildschirmtastatur ist zu — auch wenn sie weggewischt statt mit
      einem Tipp geschlossen wurde und das Feld deshalb noch fokussiert ist. */
   keyboardClosed: "keyboard:closed",
+  /* Die Wahl im Einstellungs-Blatt hat sich geändert: die Navigationsleiste
+     zeigt oder verbirgt die Namen unter den Icons sofort, ohne Neuladen. */
+  navLabelsChanged: "nav:labels-changed",
 };
 
 const listeners = new Map();

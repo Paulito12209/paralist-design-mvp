@@ -23,6 +23,7 @@ import { icon } from "../../core/html.js";
 import { usageOfDay, usageStreaks } from "../../data/usage.js";
 import { creditsCard, startCreditsVideo } from "./credits.js";
 import { enterFeedback, feedbackCard } from "./feedback.js";
+import { navLabelsRowMarkup } from "./nav-labels.js";
 import { streakCard, usageCard } from "./profile-cards.js";
 import { themeListMarkup } from "./theme.js";
 
@@ -111,9 +112,9 @@ export function insightsSection() {
   return `<p class="psection">Analyse</p><div class="mini-grid">${usageMini()}${streakMini()}</div>`;
 }
 
-/** Der Abschnitt „Darstellung“: Überschrift und die drei Zeilen. */
+/** Der Abschnitt „Darstellung“: Überschrift, die drei Zeilen und die Reiter-Namen-Zeile. */
 export function appearanceSection() {
-  return `<p class="psection">Darstellung</p>${themeListMarkup()}`;
+  return `<p class="psection">Darstellung</p>${themeListMarkup()}${navLabelsRowMarkup()}`;
 }
 
 /*

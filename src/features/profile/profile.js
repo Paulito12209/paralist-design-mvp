@@ -32,6 +32,7 @@ import {
   setDraft,
 } from "./avatar.js";
 import { noteFeedbackInput, onFeedbackClick } from "./feedback.js";
+import { toggleNavLabels } from "./nav-labels.js";
 import { identityCard, listsMarkup } from "./profile-cards.js";
 import {
   appearanceSection,
@@ -220,6 +221,11 @@ function onBodyClick(event) {
   const theme = event.target.closest("[data-theme-option]");
   if (theme) {
     setTheme(theme.dataset.themeOption);
+    rerenderKeepingScroll();
+    return;
+  }
+  if (event.target.closest("[data-nav-labels-toggle]")) {
+    toggleNavLabels();
     rerenderKeepingScroll();
     return;
   }

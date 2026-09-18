@@ -15,6 +15,7 @@ export const storageKeys = {
   avatar: "paralist-avatar",
   media: "paralist-media",
   feedback: "paralist-feedback",
+  navLabels: "paralist-nav-labels",
 };
 
 /** Liest gespeichertes JSON. Fehlt es oder ist es kaputt, kommt `fallback` zurück. */
