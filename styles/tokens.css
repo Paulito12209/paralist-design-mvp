@@ -246,7 +246,7 @@
   --search-meta-size: 13px;
   --nav-side: 28px;
   --nav-bottom: 10px;
-  --nav-radius: 32px;
+  --nav-radius: 999px;
   --composer-radius: 26px;
   --composer-side: 16px;
   --composer-btn-size: 36px;
