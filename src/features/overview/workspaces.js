@@ -12,7 +12,7 @@ import { dom, el } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
 import { sameId } from "../../core/ids.js";
 import { archiveWorkspace, deleteWorkspace, nameWorkspace, toggleFavorite } from "../../data/mutations.js";
-import { findWorkspace, tabWorkspaces } from "../../data/queries.js";
+import { archivedEntries, archivedWorkspaces, findWorkspace, tabWorkspaces } from "../../data/queries.js";
 import { saveState, ui } from "../../data/state.js";
 import { openCtxMenu } from "../../ui/ctx-menu.js";
 import { iconPickerAction } from "../../ui/pickers.js";
@@ -35,6 +35,16 @@ export function renderWorkspaces() {
     .map((workspace) => workspaceRow(workspace, canEdit))
     .join("");
 
+  const hasArchived = archivedWorkspaces().length > 0 || archivedEntries().length > 0;
+  const archiveButton = hasArchived
+    ? `<div class="archive-link-row">
+      <button class="archive-link" type="button" data-open-archive="1">
+        ${icon("archive")}
+        <span>Zum Archiv</span>
+      </button>
+    </div>`
+    : "";
+
   /* Die Pille zum Archiv steht mit festem Abstand unter der Liste — nicht am
      unteren Bildschirmrand: auf kleinen Geräten hängt sie sonst hinter der
      Navigationsleiste, auf großen stünde sie einsam weit unten. */
@@ -43,12 +53,7 @@ export function renderWorkspaces() {
       ${icon("folder-plus")}
       <span>Arbeitsbereich hinzufügen</span>
     </button>
-    <div class="archive-link-row">
-      <button class="archive-link" type="button" data-open-archive="1">
-        ${icon("archive")}
-        <span>Zum Archiv</span>
-      </button>
-    </div>`;
+    ${archiveButton}`;
 
   if (canEdit) focusWorkspaceName();
 }
