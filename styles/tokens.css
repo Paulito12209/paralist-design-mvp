@@ -305,7 +305,7 @@
   --nav-glow-color: 17, 19, 24; /* #111318 — wie im Dunkelmodus die Kartenfarbe der Gegenseite (--avatar-btn-bg) */
   --nav-glow-height: 380px;
   --nav-glow-strength: 0.45;
-  --nav-glow-opacity: 1;
+  --nav-glow-opacity: 0.75;
   --nav-glow-arc: 115%;
   --nav-glow-fade: 28%;
   --inbox-icon-color: #233d4c;
