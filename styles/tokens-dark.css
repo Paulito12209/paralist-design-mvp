@@ -12,8 +12,8 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #000000;
-    --card: #000000;
-    --overview-card-bg: #000000;
+    --card: #303741; /* dunkle Version von #AAB2BD (Suchleiste, Karten, Navbar) */
+    --overview-card-bg: #303741;
     --viewer-stage-bg: #000000;
     --composer-mic-bg: #09090a;
     --text: #f2f2f7;
@@ -56,8 +56,8 @@
 /* Dunkelmodus: in den Einstellungen fest gewählt */
 :root[data-theme="dark"] {
   --bg: #000000;
-  --card: #000000;
-  --overview-card-bg: #000000;
+  --card: #303741; /* dunkle Version von #AAB2BD (Suchleiste, Karten, Navbar) */
+  --overview-card-bg: #303741;
   --viewer-stage-bg: #000000;
   --composer-mic-bg: #0e0e0f;
   --text: #f2f2f7;
