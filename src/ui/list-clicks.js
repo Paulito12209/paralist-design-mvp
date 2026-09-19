@@ -15,17 +15,19 @@ import { sameId } from "../core/ids.js";
 import {
   addTab,
   addWorkspace,
+  archiveWorkspace,
   deleteEntry,
   deleteWorkspace,
+  restoreFromArchive,
   selectTab,
   toggleFavorite,
 } from "../data/mutations.js";
-import { findEntry } from "../data/queries.js";
+import { findEntry, findWorkspace } from "../data/queries.js";
 import { saveState, state } from "../data/state.js";
 import { archiveEntry } from "../data/xp.js";
 import { cancelHold, consumeClickBlock } from "./long-press.js";
 import { openPlacesPicker } from "./pickers.js";
-import { openEntry, openTarget, showTab } from "./router.js";
+import { openArchive, openEntry, openTarget, showTab } from "./router.js";
 import { closeSwipes, isSwipedOpen } from "./swipe.js";
 import { toggleGroup } from "./groups.js";
 
@@ -42,16 +44,34 @@ let menus = {
   finishWorkspaceName: () => {},
 };
 
+/* Die Knöpfe einer Arbeitsbereichs-Zeile. Sie stehen getrennt, weil ein
+   Arbeitsbereich kein Eintrag ist und deshalb nicht in findEntry() auftaucht. */
+function handleWorkspaceAction(kind, id) {
+  if (kind === "delete-workspace") {
+    deleteWorkspace(id);
+    return true;
+  }
+  if (kind === "archive-workspace") {
+    archiveWorkspace(id);
+    return true;
+  }
+  if (kind === "favorite-workspace" || kind === "restore-workspace") {
+    const workspace = findWorkspace(id);
+    if (!workspace) return true;
+    if (kind === "favorite-workspace") toggleFavorite(workspace);
+    else restoreFromArchive(workspace);
+    return true;
+  }
+  return false;
+}
+
 /* Der Wisch-Knopf einer Zeile — links Favorit und Verknüpfen, rechts Archivieren
    und Löschen. Welcher es ist, sagt data-swipe, nicht die Seite. */
 function handleSwipeAction(action) {
   const kind = action.dataset.swipe;
   const wrap = action.closest(".swipe");
 
-  if (kind === "delete-workspace") {
-    deleteWorkspace(wrap.dataset.workspace);
-    return;
-  }
+  if (handleWorkspaceAction(kind, wrap.dataset.workspace)) return;
 
   const entry = findEntry(wrap.dataset.entry);
   if (!entry) return;
@@ -63,6 +83,10 @@ function handleSwipeAction(action) {
   if (kind === "archive") {
     archiveEntry(entry);
     emit(events.dataChanged);
+    return;
+  }
+  if (kind === "restore") {
+    restoreFromArchive(entry);
     return;
   }
   if (kind === "favorite") {
@@ -111,6 +135,11 @@ function onClick(event) {
 
   if (event.target.closest("[data-add-workspace]")) {
     addWorkspace();
+    return;
+  }
+
+  if (event.target.closest("[data-open-archive]")) {
+    openArchive();
     return;
   }
 

@@ -73,6 +73,13 @@ export const overviewPages = {
 };
 
 /*
+ * Das Archiv ist keine Karte auf der Startseite, sondern hängt an der Pille
+ * unter der Liste der Arbeitsbereiche. Es benutzt dieselbe Unterseite wie die
+ * Karten, deshalb steht es hier neben ihnen.
+ */
+export const archivePage = { title: "Archiv", kind: "archive" };
+
+/*
  * Die Ordnung der Dinge: Arbeitsbereiche ganz oben, darin Projekte, darin alles
  * andere. Nur diese Typen dürfen selbst Einträge aufnehmen. Ein Projekt kann
  * nicht in einem Projekt liegen — so kann nie ein Kreis entstehen.

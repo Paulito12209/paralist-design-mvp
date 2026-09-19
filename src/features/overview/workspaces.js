@@ -11,7 +11,7 @@ import { emit, events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
 import { sameId } from "../../core/ids.js";
-import { deleteWorkspace, nameWorkspace, toggleFavorite } from "../../data/mutations.js";
+import { archiveWorkspace, deleteWorkspace, nameWorkspace, toggleFavorite } from "../../data/mutations.js";
 import { findWorkspace, tabWorkspaces } from "../../data/queries.js";
 import { saveState, ui } from "../../data/state.js";
 import { openCtxMenu } from "../../ui/ctx-menu.js";
@@ -35,11 +35,20 @@ export function renderWorkspaces() {
     .map((workspace) => workspaceRow(workspace, canEdit))
     .join("");
 
+  /* Die Pille zum Archiv steht mit festem Abstand unter der Liste — nicht am
+     unteren Bildschirmrand: auf kleinen Geräten hängt sie sonst hinter der
+     Navigationsleiste, auf großen stünde sie einsam weit unten. */
   dom.workspaceList.innerHTML = `${rows}
     <button class="workspace-row workspace-add" type="button" data-add-workspace="1">
       ${icon("folder-plus")}
       <span>Arbeitsbereich hinzufügen</span>
-    </button>`;
+    </button>
+    <div class="archive-link-row">
+      <button class="archive-link" type="button" data-open-archive="1">
+        ${icon("archive")}
+        <span>Zum Archiv</span>
+      </button>
+    </div>`;
 
   if (canEdit) focusWorkspaceName();
 }
@@ -105,6 +114,11 @@ export function openWorkspaceMenu(button) {
       label: workspace.favorite ? "Aus Favoriten entfernen" : "Zu Favoriten",
       icon: workspace.favorite ? "star" : "star-outline",
       onSelect: () => toggleFavorite(workspace),
+    },
+    {
+      label: "Archivieren",
+      icon: "archive",
+      onSelect: () => archiveWorkspace(workspace.id),
     },
     {
       label: "Löschen",

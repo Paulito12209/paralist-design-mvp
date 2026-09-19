@@ -92,6 +92,23 @@ export function nameWorkspace(workspace, typed) {
   commit();
 }
 
+/**
+ * Arbeitsbereich ins Archiv legen. Er verschwindet aus der Liste, seine
+ * Einträge bleiben aber dort, wo sie liegen — anders als beim Löschen.
+ */
+export function archiveWorkspace(id) {
+  const workspace = state.workspaces.find((item) => sameId(item.id, id));
+  if (!workspace) return;
+  workspace.archived = true;
+  commit();
+}
+
+/** Aus dem Archiv zurückholen: Arbeitsbereich oder Eintrag steht wieder in seiner Liste. */
+export function restoreFromArchive(item) {
+  item.archived = false;
+  commit();
+}
+
 /** Arbeitsbereich löschen; was nur hier lag, wandert in die Inbox. */
 export function deleteWorkspace(id) {
   state.workspaces = state.workspaces.filter((workspace) => !sameId(workspace.id, id));

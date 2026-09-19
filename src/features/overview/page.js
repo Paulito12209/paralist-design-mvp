@@ -31,11 +31,12 @@ import { emptyState } from "../../ui/empty-state.js";
 import { entryRow, workspaceRow } from "../../ui/rows.js";
 import { openSheet } from "../../ui/sheet.js";
 import { isViewActive } from "../../ui/views.js";
+import { archiveMarkup } from "./archive.js";
 import { isWritingNotes, renderWorkspacePage } from "./workspace-page.js";
 import { commitStaleWorkspaceName, focusWorkspaceName } from "./workspaces.js";
 
 /* Sammlungen: dort gibt es nichts zu löschen oder zu markieren, also kein Menü. */
-const collectionsWithoutMenu = ["resources", "projects"];
+const collectionsWithoutMenu = ["resources", "projects", "archive"];
 
 /*
  * Seiten, die neben ihrem Titel noch einen grauen Zweittitel zeigen: ein Tippen
@@ -85,7 +86,7 @@ function listMarkup(entries, empty) {
 /* Favoriten-Karte: erst die markierten Arbeitsbereiche, dann die markierten Einträge. */
 function renderFavorites() {
   commitStaleWorkspaceName();
-  const spaces = state.workspaces.filter((workspace) => workspace.favorite);
+  const spaces = state.workspaces.filter((workspace) => workspace.favorite && !workspace.archived);
   const entries = state.entries.filter((entry) => entry.favorite && !entry.archived);
   const canEdit = isViewActive("page");
 
@@ -105,6 +106,7 @@ export function renderPageBody() {
   if (!page) return;
 
   if (page.kind === "favorites") renderFavorites();
+  else if (page.kind === "archive") dom.pageBody.innerHTML = archiveMarkup();
   else if (page.kind === "projects") dom.pageBody.innerHTML = listMarkup(projectEntries(), emptyStates.projects);
   else if (page.kind === "resources") load("resources").then((module) => module.renderResources());
   else if (page.isWorkspace) renderWorkspacePage(page);

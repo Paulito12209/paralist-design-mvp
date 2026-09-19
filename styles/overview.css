@@ -289,3 +289,33 @@
 .tab-pill-add:active {
   opacity: 0.55;
 }
+/* Die Pille „Zum Archiv“ unter der Liste der Arbeitsbereiche. Sie steht mittig
+   und hält immer denselben Abstand zur Zeile „Arbeitsbereich hinzufügen“ — so
+   rutscht sie auf kleinen Geräten nicht unter die Navigationsleiste und hängt
+   auf großen nicht am unteren Rand herum. */
+.archive-link-row {
+  display: flex;
+  justify-content: center;
+  margin-top: var(--archive-link-top);
+}
+
+.archive-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 18px;
+  border: 0.5px solid var(--line);
+  border-radius: 999px; /* border-radius: großer Wert macht aus dem Knopf eine Pille */
+  background: var(--card);
+  color: var(--muted);
+  font-size: 15px;
+}
+
+.archive-link .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.archive-link:active {
+  opacity: 0.6;
+}

@@ -10,7 +10,8 @@
  * --chevron                 -> Pfeil rechts in der Zeile
  * --swipe-action-size       -> Größe der runden Wisch-Knöpfe
  * --swipe-action-gap        -> Abstand zwischen den Knöpfen und zum Rand
- * --danger / --archive-color / --link-color / --star-color -> Farben der Wisch-Knöpfe
+ * --danger / --archive-color / --link-color / --star-color / --restore-color
+ *                           -> Farben der Wisch-Knöpfe
  * --content-side            -> Abstand der Zeilen zum Rand
  * --page-head-top           -> Abstand über dem Zurück-Pfeil auf Unterseiten
  * --safe-top                -> Platz für Notch und Statusleiste über dem Zurück-Pfeil
@@ -146,10 +147,33 @@
   user-select: text; /* user-select: im Eingabefeld soll man den Namen markieren können */
 }
 
-/* Wisch-Zeile: die Knöpfe liegen hinter der Zeile und kommen beim Ziehen zum Vorschein */
+/* Wisch-Zeile: die Knöpfe liegen hinter der Zeile und kommen beim Ziehen zum Vorschein.
+   Sie reicht über den Seitenrand hinaus bis an den Geräterand — sonst bliebe beim
+   Wischen links (oder rechts) ein Streifen Hintergrund neben der Zeile stehen. */
 .swipe {
   position: relative; /* position: nötig, damit die Knöpfe hinter der Zeile liegen können */
   overflow: hidden; /* overflow: schneidet die Knöpfe ab, solange nicht gewischt wird */
+  margin-left: calc(-1 * var(--content-side));
+  margin-right: calc(-1 * var(--content-side));
+}
+
+/* Die Trennlinie gehört zur Zeile, nicht zum verschobenen Inhalt: sie bleibt
+   beim Wischen stehen und behält den Abstand zum Rand, den die Liste sonst hat. */
+.swipe::after {
+  content: "";
+  position: absolute; /* position: legt die Linie unabhängig von der wandernden Zeile an den unteren Rand */
+  left: var(--content-side);
+  right: var(--content-side);
+  bottom: 0;
+  height: 0.5px;
+  background: var(--line);
+  z-index: 1; /* z-index: über der Zeile, sonst deckt deren Hintergrund die Linie ab */
+  pointer-events: none; /* pointer-events: die Linie soll keine Tipper abfangen */
+}
+
+/* In der Wisch-Zeile zeichnet .swipe::after die Linie — sonst stünde sie doppelt. */
+.swipe .workspace-row {
+  border-bottom: 0;
 }
 
 .swipe-actions {
@@ -194,6 +218,10 @@
   background: var(--archive-color);
 }
 
+.swipe-action-restore {
+  background: var(--restore-color);
+}
+
 .swipe-action-link {
   background: var(--link-color);
 }
@@ -206,9 +234,12 @@
   opacity: 0.75;
 }
 
-/* Die Zeile selbst wird beim Ziehen zur Seite geschoben */
+/* Die Zeile selbst wird beim Ziehen zur Seite geschoben. Der Seitenabstand, den
+   die Liste sonst hätte, steht hier: so wandert er beim Wischen mit. */
 .swipe-body {
   position: relative; /* position: hält die Zeile über den Knöpfen */
+  padding-left: var(--content-side);
+  padding-right: var(--content-side);
   background: var(--bg);
   transform: translateX(0); /* transform: verschiebt die Zeile beim Wischen */
   touch-action: pan-y; /* touch-action: senkrechtes Scrollen bleibt möglich, waagerechtes Wischen gehört uns */

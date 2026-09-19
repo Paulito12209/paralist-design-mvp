@@ -138,13 +138,12 @@
 /* ---------- Zeile in der Liste ---------- */
 
 /* Der Haken steht als eigener Knopf neben der Zeile, damit ein Tipp darauf
-   abhakt statt den Editor zu öffnen. Die Trennlinie wandert dafür an die
-   ganze Zeile, damit sie wie überall sonst über die volle Breite läuft. */
+   abhakt statt den Editor zu öffnen. Die Trennlinie zeichnet .swipe::after in
+   styles/rows.css — dort läuft sie über die ganze Zeile, Haken eingeschlossen. */
 .task-rows .swipe-body {
   display: flex;
   align-items: center;
   gap: 12px;
-  border-bottom: 0.5px solid var(--line);
 }
 
 .task-row {

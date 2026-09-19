@@ -128,13 +128,25 @@ export function placeOptionsFor(entry = null) {
 
 /** Arbeitsbereiche des gerade gewählten Tabs. */
 export function tabWorkspaces() {
-  return state.workspaces.filter((workspace) => sameId(workspace.tab, state.activeTabId));
+  return state.workspaces.filter(
+    (workspace) => !workspace.archived && sameId(workspace.tab, state.activeTabId)
+  );
+}
+
+/** Was im Archiv liegt: erst die Arbeitsbereiche, dann die Einträge. */
+export function archivedWorkspaces() {
+  return state.workspaces.filter((workspace) => workspace.archived);
+}
+
+/** Archivierte Einträge in der Reihenfolge, in der sie angelegt wurden. */
+export function archivedEntries() {
+  return state.entries.filter((entry) => entry.archived);
 }
 
 /** Zahl auf der Favoriten-Karte: markierte Arbeitsbereiche plus markierte Einträge. */
 export function favoriteCount() {
   return (
-    state.workspaces.filter((workspace) => workspace.favorite).length +
+    state.workspaces.filter((workspace) => workspace.favorite && !workspace.archived).length +
     state.entries.filter((entry) => entry.favorite && !entry.archived).length
   );
 }

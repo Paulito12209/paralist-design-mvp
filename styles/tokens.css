@@ -115,6 +115,8 @@
  * --composer-side           -> seitlicher Abstand, solange das Eingabefeld offen ist
  * --composer-btn-size       -> Größe der runden Knöpfe und Höhe der Pillen im Eingabefeld
  * --swipe-action-size / --swipe-action-gap -> Größe und Abstand der Wisch-Knöpfe
+ * --restore-color          -> Knopf „Zurückholen“ im Archiv
+ * --archive-link-top       -> Abstand der Pille „Zum Archiv“ zur Liste darüber
  * --ctx-radius              -> Rundung des kleinen Menüs beim gedrückt Halten
  * --modal-dismiss-pull      -> Wie weit man ein Blatt ziehen muss, damit es schließt
  * --profile-avatar-size     -> Größe des runden Profilbilds
@@ -191,6 +193,7 @@
   --title-side: 4px;
   --overview-gap: 24px;
   --workspace-section-gap: 40px;
+  --archive-link-top: 80px;
   --workspace-head-gap: 16px;
   --top-bar-fade: 24px;
   --top-bar-icon-width: 24px;
@@ -229,6 +232,7 @@
   --swipe-action-gap: 10px;
   --danger: #ff3b30;
   --archive-color: #6e6e73;
+  --restore-color: #34c759;
   --link-color: #007aff;
   --tab-pill-size: 15px;
   --tab-pill-active-bg: rgba(60, 60, 67, 0.09);

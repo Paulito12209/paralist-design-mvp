@@ -116,10 +116,16 @@ export function workspaceRow(workspace, canEdit = false) {
     `;
   }
 
+  /* Dieselbe Aufteilung wie bei einem Eintrag: links bleibt der Arbeitsbereich
+     in der Liste (Favorit), rechts geht er heraus — Archivieren grau neben dem
+     roten Löschen. */
   return swipeRow(
     `data-workspace="${workspace.id}"`,
-    [],
-    [swipeAction("delete-workspace", "Löschen", "trash", "delete")],
+    [swipeAction("favorite-workspace", "Favorit", workspace.favorite ? "star" : "star-outline", "favorite")],
+    [
+      swipeAction("archive-workspace", "Archivieren", "archive", "archive"),
+      swipeAction("delete-workspace", "Löschen", "trash", "delete"),
+    ],
     `
       <button class="workspace-row" type="button" data-open-workspace="${workspace.id}">
         ${icon(workspaceIcon(workspace))}

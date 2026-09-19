@@ -10,7 +10,7 @@
 import { emit, events } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { load, loadedModule } from "../core/lazy.js";
-import { overviewPages } from "../data/config.js";
+import { archivePage, overviewPages } from "../data/config.js";
 import { noteOpen } from "../data/opens.js";
 import { findEntry, findWorkspace, workspaceLabel } from "../data/queries.js";
 import { workspaceRef } from "../data/refs.js";
@@ -72,6 +72,12 @@ export function showSearch(replace = false, list = null) {
 export function showPage(page) {
   ui.currentPage = page;
   showView("page");
+}
+
+/** Das Archiv öffnen: dieselbe Unterseite wie eine Sammlung, nur andere Liste. */
+export function openArchive() {
+  showPage({ ...archivePage });
+  writeHistory({ view: "archive", from: ui.sourceView }, "#/archiv", false);
 }
 
 /** Eine Übersichtskarte oder einen Arbeitsbereich öffnen. */
@@ -190,6 +196,11 @@ window.addEventListener("popstate", (event) => {
   if (entry.view === "entry") {
     ui.sourceView = entry.from || "home";
     openEntry(entry.id, false);
+    return;
+  }
+  if (entry.view === "archive") {
+    ui.sourceView = entry.from || "home";
+    showPage({ ...archivePage });
     return;
   }
   if (entry.view === "overview") {
