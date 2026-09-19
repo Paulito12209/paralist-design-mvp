@@ -17,6 +17,10 @@ export const composer = {
   pick: types[0].id,
   /* Ablageort des neuen Eintrags; `null` ist die Inbox */
   place: null,
+  /* Was die Seite beim Öffnen vorgeschlagen hat. Steht in einer Pille noch
+     genau das, bleibt sie nur angedeutet; weicht sie ab, füllt sie sich —
+     so sieht man auf einen Blick, wo man selbst eingegriffen hat. */
+  preset: { type: types[0].id, place: null },
   /* Anhänge des offenen Eingabefelds; erst beim Anlegen werden daraus Medien */
   files: [],
   nextFileId: 1,
@@ -51,6 +55,19 @@ export function chooseComposerType(typeId, pickId) {
 export function clearComposerPick() {
   composer.pick = null;
   composer.type = defaultType;
+}
+
+/** Den Vorschlag der Seite festhalten, sobald das Eingabefeld aufgeht. */
+export function rememberComposerPreset() {
+  composer.preset = { type: composer.type, place: composer.place };
+}
+
+/**
+ * Steht in dieser Pille noch der Vorschlag der Seite?
+ * @param field "type" für die Typ-Pille, "place" für die Ablageort-Pille.
+ */
+export function isComposerPreset(field) {
+  return composer[field] === composer.preset[field];
 }
 
 /** Nach dem Anlegen oder Schließen zurücksetzen. */

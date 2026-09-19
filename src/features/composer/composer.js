@@ -3,8 +3,9 @@
  * Ablageort und Anhänge und legt daraus einen Eintrag an.
  * Pfad: src/features/composer/composer.js
  *
- * Keine anpassbaren visuellen Werte: Rundung, Schriftgrößen und Knöpfe stehen
- * in styles/composer.css (--composer-radius, --composer-input-size …).
+ * Keine anpassbaren visuellen Werte: Schriftgrößen, Pillen und Knöpfe stehen in
+ * styles/composer.css (--composer-input-size, --composer-btn-size …), die
+ * Rundung des Containers in styles/navigation.css (--composer-radius).
  */
 
 import { emit, events, on } from "../../core/bus.js";
@@ -33,6 +34,8 @@ import {
   clearComposerPick,
   composer,
   composerPickButtons,
+  isComposerPreset,
+  rememberComposerPreset,
   resetComposerDraft,
 } from "./composer-state.js";
 import { stopDictation } from "./dictation.js";
@@ -74,11 +77,15 @@ function renderComposerTypePill() {
   dom.composerTypeIcon.setAttribute("href", `#icon-${type.icon}`);
   dom.composerTypeLabel.textContent = type.label;
   dom.composerInput.placeholder = composerPlaceholders[type.id] || "Neuen Eintrag einfügen …";
+  dom.composerTypePill.classList.toggle("is-preset", isComposerPreset("type"));
 }
 
 /** Die Pille mit dem Ablageort auffrischen. */
 function renderComposerLink() {
   dom.composerLinkLabel.textContent = parentName(composer.place);
+  /* Angedeutet, solange dort noch der Vorschlag der Seite steht — gefüllt,
+     sobald man selbst einen anderen Ort gewählt hat. */
+  dom.composerLink.classList.toggle("is-preset", isComposerPreset("place"));
 }
 
 /*
@@ -125,6 +132,7 @@ export function openComposer(overrides = {}) {
   const start = { ...contextDefaults(), ...overrides };
   chooseComposerType(start.type, start.pick);
   composer.place = start.place;
+  rememberComposerPreset();
   dom.navShell.classList.add("is-composing");
   dom.tabBar.hidden = true;
   dom.composer.hidden = false;
@@ -263,7 +271,7 @@ export function initComposer() {
   dom.composerTypes.addEventListener("click", onTypeClick);
   dom.composerTypePill.addEventListener("click", openTypeSheet);
 
-  el("composer-link").addEventListener("click", () => {
+  dom.composerLink.addEventListener("click", () => {
     openPlacePicker("Ablegen in", composer.place, (place) => {
       composer.place = place;
       renderComposerLink();

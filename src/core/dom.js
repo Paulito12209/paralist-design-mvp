@@ -87,6 +87,7 @@ export const dom = {
   get composer() { return el("composer"); },
   get composerInput() { return el("composer-input"); },
   get composerTypes() { return el("composer-types"); },
+  get composerLink() { return el("composer-link"); },
   get composerLinkLabel() { return el("composer-link-label"); },
   get composerTypePill() { return el("composer-type-pill"); },
   get composerTypeIcon() { return el("composer-type-icon"); },

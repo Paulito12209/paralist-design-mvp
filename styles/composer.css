@@ -7,14 +7,17 @@
  * -----------------------------------
  * --composer-input-size     -> Schriftgröße im Textfeld
  * --composer-chip-size      -> Schriftgröße der beiden Pillen oben
- * --composer-radius         -> Rundung des Containers
  * --composer-btn-size       -> Größe der runden Knöpfe und Höhe der beiden Pillen
- * --composer-mic-bg         -> Fläche des Diktat-Knopfes, nur zu 20% zu sehen
- * --composer-mic-border     -> dünner Rand um den Diktat-Knopf
+ * --composer-mic-bg         -> Fläche des Diktat-Knopfes und der unveränderten Pillen, nur zu 20% zu sehen
+ * --composer-mic-border     -> dünner Rand darum
+ * --composer-close-angle    -> wie schief das Kreuz im Schließen-Knopf steht (45deg = X)
+ * --composer-close-angle-from -> Winkel, mit dem das X beim Aufgehen startet
+ * --composer-close-slide    -> aus welcher Entfernung der Schließen-Knopf heranrückt
+ * --composer-close-anim     -> wie lange dieses Heranrücken und Drehen dauert
+ * --text / --card           -> gefüllter Schließen-Knopf: Körper hell, Kreuz dunkel (im Dunkeln umgekehrt)
  * --danger                  -> Rot des Diktat-Knopfes beim Aufnehmen
  * --placeholder             -> Farbe des Platzhaltertexts
- * --line                    -> Trennlinien und Ränder der Anhang-Kacheln
- 
+ * --media-doc-color         -> Farbe des Datei-Icons auf einer Anhang-Kachel
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -39,11 +42,26 @@
   min-height: var(--composer-btn-size);
   padding: 0 12px;
   border-radius: 999px; /* border-radius: macht den Knopf zur kleinen Pille */
+  /* border: immer da, nur meist unsichtbar — sonst würde die Pille um 2px
+     springen, sobald sie den Rand der Vorschlags-Fassung bekommt */
+  border: 1px solid transparent;
   background: var(--bg);
   color: var(--muted);
   font-size: var(--composer-chip-size);
   font-weight: 500;
   max-width: 100%;
+}
+
+/*
+ * Solange Ablageort und Typ noch genau so stehen, wie die Seite sie
+ * vorgeschlagen hat, sind die Pillen nur angedeutet — dieselbe Fassung wie
+ * beim Diktat-Knopf. Erst eine eigene Wahl füllt sie und macht damit sichtbar,
+ * dass hier nicht mehr die Vorgabe steht.
+ */
+.composer-link.is-preset {
+  /* color-mix: dieselbe Fläche wie beim Diktat-Knopf, nur zu 20% zu sehen */
+  background: color-mix(in srgb, var(--composer-mic-bg) 20%, transparent);
+  border-color: var(--composer-mic-border);
 }
 
 .composer-link span {
@@ -115,12 +133,14 @@
   color: var(--type-color, var(--text));
 }
 
+/* Schließen-Knopf: derselbe gefüllte Kreis wie der Plus-Knopf der Navigation —
+   heller Körper, dunkles Kreuz; im Dunkelmodus tauschen die beiden die Rollen */
 .composer-close {
   width: var(--composer-btn-size);
   height: var(--composer-btn-size);
   border-radius: 50%; /* border-radius: macht den Schließen-Knopf rund */
-  background: var(--bg);
-  color: var(--text);
+  background: var(--text);
+  color: var(--card);
   display: grid;
   place-items: center;
   flex: 0 0 auto;
@@ -129,7 +149,35 @@
 .composer-close .icon {
   width: 16px;
   height: 16px;
-  transform: rotate(45deg); /* transform: aus dem Kreuz der Navigation wird so das X zum Schließen */
+  transform: rotate(var(--composer-close-angle)); /* transform: aus dem Kreuz der Navigation wird so das X zum Schließen */
+}
+
+/*
+ * Beim Aufgehen kommt der Knopf von links heran und das Kreuz dreht die
+ * letzten Grad zum X — die Fortsetzung des Plus-Knopfes, der beim Drücken nach
+ * rechts rutscht (styles/navigation.css). Die Regeln hängen an
+ * `.composer:not([hidden])`, weil eine Animation von selbst neu startet,
+ * sobald ein Element aus display:none wieder auftaucht.
+ */
+@keyframes composer-close-in {
+  from {
+    transform: translateX(calc(-1 * var(--composer-close-slide)));
+    opacity: 0;
+  }
+}
+
+@keyframes composer-close-turn {
+  from {
+    transform: rotate(var(--composer-close-angle-from));
+  }
+}
+
+.composer:not([hidden]) .composer-close {
+  animation: composer-close-in var(--composer-close-anim) ease-out;
+}
+
+.composer:not([hidden]) .composer-close .icon {
+  animation: composer-close-turn var(--composer-close-anim) ease-out;
 }
 
 /* Diktat-Knopf neben dem Schließen: gleicher grauer Kreis, beim Aufnehmen rot */

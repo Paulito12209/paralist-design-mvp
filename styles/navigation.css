@@ -10,6 +10,8 @@
  * --nav-radius              -> Rundung der Leiste
  * --tab-add-size            -> Größe des runden Plus-Knopfes in der Mitte
  * --tab-add-margin          -> Extra-Luft neben dem Plus-Kreis, damit die sichtbaren Lücken gleich wirken
+ * --tab-add-shift           -> wie weit der Plus-Knopf beim Drücken nach rechts rutscht
+ * --tab-add-shift-time      -> wie lange dieses Rutschen dauert
  * --nav-inner-pad           -> Innenrand der Leiste, gleicht die Luft der äußeren Icons zum Rand aus
  * --tab-icon-grow           -> um wie viel die Icons wachsen, solange die Namen aus sind
  * --tab-hit-grow            -> wie weit die Tippfläche über das Icon hinausgeht (Material 3: 48dp)
@@ -175,6 +177,7 @@ body.is-search-typing .bottom-bar {
      Rand sähen die beiden Lücken neben dem Kreis enger aus als die äußeren */
   margin: 0 var(--tab-add-margin);
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18); /* box-shadow: hebt den Knopf leicht von der Leiste ab */
+  transition: transform var(--tab-add-shift-time) ease-out; /* transition: der Kreis gleitet beim Drücken, statt zu springen */
 }
 
 .tab-add .icon {
@@ -184,8 +187,15 @@ body.is-search-typing .bottom-bar {
   height: 30px;
 }
 
+/*
+ * Solange der Finger liegt, rutscht der Kreis ein Stück nach rechts — dorthin,
+ * wo gleich der Schließen-Knopf des Eingabefelds sitzt. Zusammen mit dem X,
+ * das sich beim Aufgehen von 35 auf 45 Grad dreht (styles/composer.css), sieht
+ * es aus, als wanderte derselbe Knopf hinüber.
+ */
 .tab-add:active {
   opacity: 0.55;
+  transform: translateX(var(--tab-add-shift)); /* transform: verschiebt den Kreis, ohne das Layout der Leiste anzufassen */
 }
 
 /* Eingabefeld: sitzt im selben Container wie die Navigation */

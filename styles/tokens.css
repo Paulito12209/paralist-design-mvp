@@ -109,6 +109,8 @@
  * --tab-add-margin          -> Extra-Luft links und rechts vom Plus-Kreis: die Icons haben in ihren
                                Kästchen etwa so viel Rand, der Kreis nicht — so wirken alle Lücken gleich
  * --tab-icon-grow           -> um wie viel die Icons wachsen, solange ihre Namen aus sind
+ * --tab-add-shift           -> wie weit der Plus-Knopf beim Drücken nach rechts rutscht
+ * --tab-add-shift-time      -> wie lange dieses Rutschen dauert
  * --tab-hit-grow            -> wie weit die Tippfläche eines Reiters über sein Icon hinausgeht
  * --tab-pill-active-bg      -> Hintergrund der ausgewählten Tab-Pille
  * --tab-pills-btn-gap       -> Abstand zwischen Trennlinie und Plus-Knopf
@@ -116,6 +118,10 @@
  * --composer-radius         -> Rundung des Eingabe-Containers
  * --composer-side           -> seitlicher Abstand, solange das Eingabefeld offen ist
  * --composer-btn-size       -> Größe der runden Knöpfe und Höhe der Pillen im Eingabefeld
+ * --composer-close-angle    -> wie schief das Kreuz des Schließen-Knopfes steht (45deg = X)
+ * --composer-close-angle-from -> Winkel, mit dem das X beim Aufgehen startet
+ * --composer-close-slide    -> aus welcher Entfernung der Schließen-Knopf dabei heranrückt
+ * --composer-close-anim     -> wie lange dieses Heranrücken und Drehen dauert
  * --swipe-action-size / --swipe-action-gap -> Größe und Abstand der Wisch-Knöpfe
  * --restore-color          -> Knopf „Zurückholen“ im Archiv
  * --archive-link-top       -> Abstand der Pille „Zum Archiv“ zur Liste darüber
@@ -169,8 +175,8 @@
  * --support-text-min-height  -> Mindesthöhe des Beschreibungsfelds im Feedback
  * --support-choice-active-bg -> Fläche der gewählten Art im Feedback
  * --credits-chip-bg          -> Fläche hinter einem Namen bei den Danksagungen
- * --composer-mic-bg          -> Fläche des Diktat-Knopfes: Ton zwischen Container und Schließen-Knopf
- * --composer-mic-border      -> dünner Rand um den Diktat-Knopf: dunkelgrau, in beiden Darstellungen gleich
+ * --composer-mic-bg          -> Fläche des Diktat-Knopfes und der noch nicht geänderten Pillen
+ * --composer-mic-border      -> dünner Rand darum: dunkelgrau, in beiden Darstellungen gleich
  *
  * Dunkelmodus: dieselben Werte werden weiter unten noch einmal gesetzt —
  * einmal für „folgt dem System“ und einmal für „in den Einstellungen gewählt“.
@@ -221,6 +227,8 @@
   --tab-label-size: 10px;
   --tab-add-size: 50px;
   --tab-add-margin: 4px;
+  --tab-add-shift: 10px;
+  --tab-add-shift-time: 0.14s;
   --nav-inner-pad: 5px;
   --tab-icon-grow: 8px;
   --tab-hit-grow: 8px;
@@ -231,6 +239,10 @@
   --composer-radius: 26px;
   --composer-side: 16px;
   --composer-btn-size: 36px;
+  --composer-close-angle: 45deg;
+  --composer-close-angle-from: 35deg;
+  --composer-close-slide: 14px;
+  --composer-close-anim: 0.22s;
   --composer-mic-bg: #f9f9fa;
   --composer-mic-border: #48484a;
   --composer-input-size: 16px;
