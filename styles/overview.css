@@ -29,6 +29,12 @@
   /* minmax(0, 1fr): sonst darf eine Spalte mit langem Wort („Ressourcen“) breiter werden als die andere */
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   gap: 12px;
+  /* Negativer Rand + Padding: die Schatten der Cards brechen links/rechts über den
+     content-Padding hinaus, damit sie nicht vom overflow:hidden abgeschnitten werden */
+  margin-left: -12px;
+  margin-right: -12px;
+  padding-left: 12px;
+  padding-right: 12px;
 }
 
 .overview-card {
