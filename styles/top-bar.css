@@ -192,4 +192,5 @@ body.is-subpage .top-bar {
 
 .search input::placeholder {
   color: var(--avatar-btn-bg);
+  opacity: 0.75;
 }
