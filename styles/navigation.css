@@ -258,9 +258,10 @@ body.is-search-typing .bottom-bar {
 
 /* Dunkelmodus: Farben der Navigation invertieren */
 @media (prefers-color-scheme: dark) {
-  /* Aktiver Reiter: dezentes Dunkelsilber statt reinem Weiß */
+  /* Aktiver Reiter: sicher reines Weiß statt --text (#F2F2F7), auf dem
+     dunklen Silber-Hintergrund (--tab-pill-active-bg) soll es klar hell sein */
   :root:not([data-theme="light"]) .tab-btn.is-active {
-    color: #a0a0a8;
+    color: #ffffff;
   }
   /* Add-Button: schwarzer Hintergrund, weiße Border, innerer Glow, weißes Icon */
   :root:not([data-theme="light"]) .tab-add {
@@ -271,7 +272,7 @@ body.is-search-typing .bottom-bar {
   }
 }
 :root[data-theme="dark"] .tab-btn.is-active {
-  color: #a0a0a8;
+  color: #ffffff;
 }
 :root[data-theme="dark"] .tab-add {
   background: #000000;
