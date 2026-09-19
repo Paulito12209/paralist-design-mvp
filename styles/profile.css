@@ -57,6 +57,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover; /* object-fit: füllt den Kreis, ohne das Bild zu verzerren */
+  border-radius: 50%; /* border-radius: hält das Foto kreisrund */
   display: block;
 }
 

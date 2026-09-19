@@ -134,7 +134,7 @@ body.is-subpage .top-bar {
   place-items: center;
   color: var(--icon-strong);
   flex: 0 0 auto;
-  overflow: hidden;
+  /* Kein overflow: hidden, damit Vektor-Icons an Subpixel-Rändern nicht abgeschnitten werden */
 }
 
 .avatar:active {
