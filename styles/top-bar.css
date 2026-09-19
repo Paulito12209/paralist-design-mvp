@@ -167,7 +167,6 @@ body.is-subpage .top-bar {
   align-items: center;
   gap: 8px;
   padding: 0 16px;
-  box-shadow: var(--shadow);
   color: var(--muted);
 }
 

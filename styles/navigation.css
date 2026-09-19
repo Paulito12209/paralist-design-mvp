@@ -21,6 +21,7 @@
  * --keyboard-inset          -> wird von src/shell/keyboard-inset.js gesetzt
  * --nav-glow-color          -> Farbe des Verlaufs hinter der Leiste (nur Dunkelmodus)
  * --nav-glow-height         -> wie hoch die Verlaufs-Zone über dem unteren Rand reicht
+ * --nav-glow-strength       -> wie kräftig der Verlauf am unteren Rand ist (0 = aus, 1 = voll)
  *
  * Die Namen unter den Icons sind standardmäßig aus (dafür die Icons größer);
  * die Klasse „show-labels“ auf der Leiste blendet sie wieder ein — gesetzt von
@@ -217,8 +218,20 @@ body.is-search-typing .bottom-bar {
     right: 0;
     bottom: 0;
     height: var(--nav-glow-height); /* Höhe: wie weit die Zone nach oben reicht */
-    background: radial-gradient(ellipse at bottom, rgba(var(--nav-glow-color), 0.45), rgba(var(--nav-glow-color), 0) 70%);
-    filter: blur(30px); /* filter: macht aus dem Verlauf ein weiches Glühen statt einer harten Kante */
+    /* Zwei Lagen: unten in der Mitte etwas heller (radial), darunter der lange
+       weiche Verlauf nach oben. Die vielen Zwischenstufen sind Absicht — mit nur
+       zwei Stopps entstehen sichtbare Streifen im Dunkeln. */
+    background:
+      radial-gradient(90% 70% at 50% 100%, rgba(var(--nav-glow-color), 0.16), rgba(var(--nav-glow-color), 0) 70%),
+      linear-gradient(
+        to top,
+        rgba(var(--nav-glow-color), var(--nav-glow-strength)) 0%,
+        rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.72)) 18%,
+        rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.45)) 38%,
+        rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.24)) 56%,
+        rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.1)) 74%,
+        rgba(var(--nav-glow-color), 0) 100%
+      );
     pointer-events: none;
   }
   /* Aktiver Reiter: dezentes Dunkelsilber statt reinem Weiß */
@@ -243,8 +256,17 @@ body.is-search-typing .bottom-bar {
   right: 0;
   bottom: 0;
   height: var(--nav-glow-height);
-  background: radial-gradient(ellipse at bottom, rgba(var(--nav-glow-color), 0.45), rgba(var(--nav-glow-color), 0) 70%);
-  filter: blur(30px);
+  background:
+    radial-gradient(90% 70% at 50% 100%, rgba(var(--nav-glow-color), 0.16), rgba(var(--nav-glow-color), 0) 70%),
+    linear-gradient(
+      to top,
+      rgba(var(--nav-glow-color), var(--nav-glow-strength)) 0%,
+      rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.72)) 18%,
+      rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.45)) 38%,
+      rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.24)) 56%,
+      rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.1)) 74%,
+      rgba(var(--nav-glow-color), 0) 100%
+    );
   pointer-events: none;
 }
 :root[data-theme="dark"] .tab-btn.is-active {
