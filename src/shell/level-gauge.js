@@ -66,7 +66,9 @@ export function renderLevel() {
       icon: "star",
       accent: "var(--star-color)",
       title: `Stufe ${info.level} erreicht`,
-      note: `${formatNumber(xp)} XP`,
+      /* Keine Punktzahl daneben: dort steht sonst der Gesamtstand in der Farbe,
+         die beim Anlegen einen Zugewinn meint — „300 XP“ läse sich wie „+300“.
+         Wer es genau wissen will, tippt auf „Fortschritt“. */
       action: { label: "Fortschritt", onSelect: () => load("progress").then((module) => module.open()) },
     });
   }

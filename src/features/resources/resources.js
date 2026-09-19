@@ -72,19 +72,10 @@ function filtered(filter) {
   return all;
 }
 
-/*
- * Welche Pille gilt gerade? Ältere Stände können hier noch „media“ stehen
- * haben — diese Pille gibt es nicht mehr, dafür führt der graue Zweittitel
- * „Medien“ in den eigenen Reiter. Unbekanntes fällt auf „Alle“ zurück.
- */
-function activeFilter() {
-  const saved = state.prefs.resources.filter;
-  return resourceFilters.some((filter) => filter.id === saved) ? saved : resourceFilters[0].id;
-}
-
 /** Pillen und Listen in die Unterseite zeichnen. */
 export function renderResources() {
-  const active = activeFilter();
+  /* Dass der gespeicherte Filter noch existiert, prüft adoptPrefs in src/data/state.js. */
+  const active = state.prefs.resources.filter;
   const pills = resourceFilters
     .map((filter) => {
       const count = filtered(filter.id).length;

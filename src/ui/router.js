@@ -68,13 +68,18 @@ export function showSearch(replace = false, list = null) {
   writeHistory({ view: "search", list }, url, replace || location.hash === url);
 }
 
-/** Unterseite einer Übersichtskarte oder eines Arbeitsbereichs zeigen. */
-export function showPage(page) {
+/**
+ * Unterseite einer Übersichtskarte oder eines Arbeitsbereichs zeigen.
+ * @param fresh `false`, wenn die Seite aus dem Verlauf zurückkommt.
+ */
+export function showPage(page, fresh = true) {
   ui.currentPage = page;
-  /* Jede frisch geöffnete Seite fängt beim ersten Reiter an. Ohne das würde
+  /* Eine frisch geöffnete Seite fängt beim ersten Reiter an. Ohne das würde
      die Wahl von der zuletzt besuchten Seite mitwandern — wer einmal auf
-     „Verknüpfte Einträge“ getippt hat, landet sonst überall dort. */
-  ui.pagePill = "notes";
+     „Verknüpfte Einträge“ getippt hat, landet sonst überall dort. Kommt die
+     Seite dagegen über Zurück wieder, bleibt die Wahl stehen: man will in die
+     Liste zurück, aus der man gerade heraus ist. */
+  if (fresh) ui.pagePill = "notes";
   showView("page");
 }
 
@@ -108,8 +113,9 @@ export function openEntry(id, push = true) {
   if (!entry) return;
   noteOpen("entry", entry.id);
   ui.currentEntryId = entry.id;
-  /* Wie bei einer Unterseite: jeder Eintrag geht beim Inhalt auf. */
-  ui.entryPill = "notes";
+  /* Wie bei einer Unterseite: ein frisch geöffneter Eintrag geht beim Inhalt
+     auf, einer aus dem Verlauf behält seine Pille. */
+  if (push) ui.entryPill = "notes";
   showView("entry");
   if (push) writeHistory({ view: "entry", id: entry.id, from: ui.sourceView }, `#/eintrag/${entry.id}`, false);
 }
@@ -217,20 +223,23 @@ window.addEventListener("popstate", (event) => {
   }
   if (entry.view === "archive") {
     ui.sourceView = entry.from || "home";
-    showPage({ ...archivePage });
+    showPage({ ...archivePage }, false);
     return;
   }
   if (entry.view === "overview") {
     const page = overviewPages[entry.id];
     if (!page) return;
     ui.sourceView = entry.from || "home";
-    showPage({ title: page.title, parent: page.parent, kind: page.kind });
+    showPage({ title: page.title, parent: page.parent, kind: page.kind }, false);
     return;
   }
   if (entry.view === "workspace") {
     const workspace = findWorkspace(entry.id);
     if (!workspace) return;
     ui.sourceView = entry.from || "home";
-    showPage({ title: workspaceLabel(workspace), parent: workspaceRef(workspace.id), isWorkspace: true, workspaceId: workspace.id });
+    showPage(
+      { title: workspaceLabel(workspace), parent: workspaceRef(workspace.id), isWorkspace: true, workspaceId: workspace.id },
+      false
+    );
   }
 });

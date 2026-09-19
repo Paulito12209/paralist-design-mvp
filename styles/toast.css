@@ -8,8 +8,9 @@
  * --toast-gap        -> Abstand zur Navigation darunter
  * --toast-anim       -> wie lange die Meldung heraufgleitet
  * --toast-rise       -> aus welcher Tiefe sie dabei kommt
+ * --toast-hit-grow   -> wie weit die Tippfläche des Knopfes über ihn hinausgeht
  * --card             -> Fläche der Meldung, wie bei der Navigation darunter
- * --text / --muted   -> Schrift der Meldung
+ * --text             -> Schrift der Meldung
  * --xp-done          -> Farbe des Hakens links, solange der Aufrufer nichts sagt
  * --toast-icon       -> setzt src/ui/toast.js je Meldung, z.B. Gold beim Stufenaufstieg
  * --xp-created       -> Farbe der Punkte-Angabe
@@ -83,6 +84,18 @@
   font-size: 13px;
   font-weight: 600;
   color: var(--link-color);
+  position: relative; /* position: Anker für die größere Tippfläche darunter */
+}
+
+/* Der Knopf ist nur so hoch wie seine Schrift — zum Tippen wäre das zu wenig.
+   Diese unsichtbare Fläche liegt darüber und greift nach allen Seiten darüber
+   hinaus, sodass das Tippziel die von Material 3 verlangten 48dp erreicht,
+   ohne dass sich das Layout ändert. Dieselbe Lösung wie bei den Reitern der
+   Navigation (.tab-btn::after in styles/navigation.css). */
+.toast-action::after {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--toast-hit-grow));
 }
 
 .toast-action-icon {

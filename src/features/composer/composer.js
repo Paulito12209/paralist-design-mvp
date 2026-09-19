@@ -60,6 +60,13 @@ const fileSources = [
 
 /** Anlegen-Knopf: erst aktiv, wenn Text da ist oder ein Anhang den Titel liefern kann. */
 export function updateComposerSend() {
+  /* Ein Medium besteht aus seiner Datei. Ohne Anhang gäbe es auch mit Titel
+     nur eine Kachel, die nie etwas zeigt — dann bleibt der Knopf grau und der
+     Plus-Knopf daneben ist der Weg. */
+  if (composer.type === "medien") {
+    dom.composerSend.disabled = !composer.files.length;
+    return;
+  }
   dom.composerSend.disabled = !dom.composerInput.value.trim() && !composer.files.length;
 }
 
@@ -207,6 +214,11 @@ export function createEntry() {
 
   state.entries.push(entry);
   attachFilesTo(entry);
+  /* Jeder Anhang wird ein eigener Medien-Eintrag und bringt dieselben Punkte
+     wie der Eintrag selbst (src/features/composer/attachments.js) — die
+     Meldung muss also mitzählen, sonst nennt sie eine andere Zahl als die
+     Stufenanzeige gleich danach. */
+  const points = xpKinds.created.amount * (1 + (entry.attachments || []).length);
 
   dom.composerInput.value = "";
   closeComposer();
@@ -224,12 +236,18 @@ export function createEntry() {
    * Ohne Rückmeldung merkt man vom Anlegen nichts — nur eine Zahl auf einer
    * Karte springt hoch. Erst die Meldung, dann die Punkte: steigt dabei die
    * Stufe, löst deren Meldung diese hier ab. Die größere Nachricht gewinnt.
+   *
+   * Eine Zeichnung bekommt keine: ihre Fläche geht gleich auf, das ist die
+   * Rückmeldung. Die Meldung läge sonst über dem unteren Rand der Fläche und
+   * böte einen Weg auf die Seite an, auf der man schon steht.
    */
-  showToast({
-    title: `${typeSingular(entry.type)} erstellt`,
-    note: `+${xpKinds.created.amount} XP`,
-    action: { label: "Zur Seite", onSelect: () => openEntry(entry.id) },
-  });
+  if (entry.type !== "zeichnung") {
+    showToast({
+      title: `${typeSingular(entry.type)} erstellt`,
+      note: `+${points} XP`,
+      action: { label: "Zur Seite", onSelect: () => openEntry(entry.id) },
+    });
+  }
   awardXp("created", entry.type, title);
 
   /* Eine neue Zeichnung öffnet sich gleich, damit man sofort loslegen kann. */
@@ -257,6 +275,7 @@ function openTypeSheet() {
         chooseComposerType(type.id);
         renderComposerTypes();
         renderComposerLink();
+        updateComposerSend();
         dom.composerInput.focus();
       },
     }))
@@ -276,6 +295,7 @@ function onTypeClick(event) {
 
   renderComposerTypes();
   renderComposerLink();
+  updateComposerSend();
   dom.composerInput.focus();
 }
 

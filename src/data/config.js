@@ -10,6 +10,7 @@
  * xpKinds[*].amount       -> wie viele XP ein Ereignis bringt
  * composerPlaceholders    -> Platzhaltertext im Eingabefeld je gewähltem Typ
  * proposedType            -> Typ, den das Eingabefeld ohne nähere Angabe vorschlägt
+ * typeSingulars           -> Einzahl der Typen, deren Name in der Mehrzahl steht
  * resourceFilterTypes     -> welchen Typ jede Filter-Pille der Ressourcen-Seite anlegt
  * typeOrder               -> Reihenfolge der Gruppen unter „Verknüpfte Einträge“
  * workspaceDefaultName    -> Vorgabename eines neuen Arbeitsbereichs
@@ -168,12 +169,15 @@ export function typeLabel(id) {
 }
 
 /*
- * Anzeigename in der Einzahl, für kurze Meldungen wie „Projekt erstellt“.
- * Nur „projekt“ weicht ab: sein label heißt „Projekte“, weil es zugleich die
- * Übersichtskarte und die Typ-Pille beschriftet.
+ * Die beiden Typen, deren `label` in der Mehrzahl steht, weil es zugleich eine
+ * Übersichtskarte oder einen Reiter beschriftet. Für kurze Meldungen über
+ * genau einen Eintrag braucht es die Einzahl.
  */
+const typeSingulars = { projekt: "Projekt", medien: "Medium" };
+
+/** Anzeigename in der Einzahl, für Meldungen wie „Projekt erstellt“. */
 export function typeSingular(id) {
-  return id === "projekt" ? "Projekt" : typeLabel(id);
+  return typeSingulars[id] || typeLabel(id);
 }
 
 /** Icon und Farbe für einen Historien-Posten; unbekannte Posten bleiben grau. */

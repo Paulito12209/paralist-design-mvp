@@ -124,6 +124,7 @@
  * --composer-btn-size       -> Größe der runden Knöpfe und Höhe der Pillen im Eingabefeld
  * --composer-type-off       -> wie blass ein gesperrter Typ-Knopf im Eingabefeld ist
  * --toast-radius            -> Rundung der Meldung über der Navigation
+ * --toast-hit-grow          -> wie weit die Tippfläche des Knopfes „Zur Seite“ über ihn hinausgeht
  * --toast-gap               -> Abstand der Meldung zur Navigation darunter
  * --toast-anim              -> wie lange die Meldung heraufgleitet
  * --toast-rise              -> aus welcher Tiefe sie dabei kommt
@@ -252,6 +253,7 @@
   --composer-btn-size: 36px;
   --composer-type-off: 0.3;
   --toast-radius: 18px;
+  --toast-hit-grow: 17px;
   --toast-gap: 10px;
   --toast-anim: 0.26s;
   --toast-rise: 12px;
