@@ -60,10 +60,11 @@
  * --archive-color           -> Grau des Archivieren-Knopfes hinter einer Zeile
  * --link-color              -> Blau für Verknüpfen
  * --star-color              -> Goldfarbe für den Favoriten-Stern auf der Karte
- * --avatar-btn-bg           -> Grauton #AAB2BD: Profil-Icon, Kartenzähler, Abschnitts-Überschriften,
+ * --avatar-btn-bg           -> Akzent-Grauton für Profil-Icon, Kartenzähler, Abschnitts-Überschriften,
  *                              Such-Icon, Platzhaltertext „Suchen“, Ordner-Plus-Icon,
  *                              Plus-Icon der Tab-Pille sowie Text und Icon von
- *                              „Arbeitsbereich hinzufügen“
+ *                              „Arbeitsbereich hinzufügen“. Im Dunkeln #AAB2BD, im Hellen
+ *                              #111318 — über Kreuz getauscht mit --card.
  * --nav-glow-color          -> Farbe des Verlaufs hinter der Navigationsleiste (nur Dunkelmodus)
  * --nav-glow-height         -> wie hoch die Verlaufs-Zone über dem unteren Rand reicht
  * --nav-glow-strength       -> wie kräftig der Verlauf am unteren Rand ist (0 = aus, 1 = voll)
@@ -212,10 +213,13 @@
  */
 
 :root {
-  --bg: #ffffff;
-  --card: #ffffff;
-  --overview-card-bg: #ffffff;
-  --text: #1c1c1e;
+  /* Die vier Grundfarben stehen über Kreuz zum Dunkelmodus: dessen Textweiß wird
+     hier Hintergrund, dessen Schwarz wird Text, dessen Akzent #AAB2BD wird
+     Kartenfläche und dessen Kartenton #111318 wird Akzent (--avatar-btn-bg). */
+  --bg: #f2f2f7;
+  --card: #aab2bd;
+  --overview-card-bg: #aab2bd;
+  --text: #000000;
   --muted: #8e8e93;
   --title-alt: #b4b4ba;
   --title-alt-gap: 14px;
@@ -297,7 +301,7 @@
   --tab-pills-btn-gap: 8px;
   --tab-pills-fade: 16px;
   --star-color: #f5c518;
-  --avatar-btn-bg: #aab2bd;
+  --avatar-btn-bg: #111318;
   --nav-glow-color: 170, 178, 189;
   --nav-glow-height: 380px;
   --nav-glow-strength: 0.45;
