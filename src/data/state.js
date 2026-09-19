@@ -23,6 +23,7 @@ import {
   taskStatuses,
   taskViews,
 } from "./config.js";
+import { sanitizeLinks } from "./links.js";
 import { entryRef, normalizeRef, workspaceRef } from "./refs.js";
 import { seedMedia, seedXpFromExisting } from "./seed.js";
 import { pruneThumbs } from "./thumbs.js";
@@ -189,6 +190,11 @@ function migrate() {
   state.entries.forEach((entry) => {
     entry.places = entry.places.filter((ref) => workspaceRefs.has(ref) || projectRefs.has(ref));
   });
+  /* Verknüpfte Einträge standen früher gar nicht in den Daten — die Liste
+     „Verknüpfte Einträge“ war nur die Rückseite des Ablageorts. Was ein
+     Eintrag beim Anlegen an Medien mitbrachte, stand einseitig in
+     `attachments`. Beides bringt src/data/links.js auf die heutige Form. */
+  sanitizeLinks(state.entries);
   /* Ein Arbeitsbereich ohne gültigen Tab wäre unerreichbar: zurück in den ersten Tab. */
   const tabIds = state.tabs.map((tab) => String(tab.id));
   state.workspaces.forEach((workspace) => {

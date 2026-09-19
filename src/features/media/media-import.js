@@ -32,6 +32,7 @@ export async function addMediaFiles(fileList, source) {
       title: described.title,
       body: "",
       places: [],
+      links: [],
       archived: false,
       favorite: false,
       createdAt: Date.now(),

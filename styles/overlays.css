@@ -7,6 +7,8 @@
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
  * --ctx-radius              -> Rundung des kleinen Menüs
+ * --sheet-options-max       -> ab welcher Höhe die Liste im Blatt scrollt
+ * --sheet-heading-size      -> Schriftgröße der Abschnitts-Überschrift
  * --modal-radius            -> Rundung der oberen Kante der Blätter
  * --composer-radius         -> Rundung des Auswahl-Blatts
  * --card / --line / --danger -> Flächen, Trennlinien und rote Einträge
@@ -55,6 +57,26 @@
 .sheet-options {
   display: flex;
   flex-direction: column;
+  /* „Verknüpfen mit“ kann jeden Eintrag der App anbieten. Ohne diese Grenze
+     wüchse das Blatt oben aus dem Bild heraus und die unteren Einträge wären
+     nicht mehr erreichbar. */
+  max-height: var(--sheet-options-max);
+  overflow-y: auto; /* overflow-y: die Liste scrollt in sich, das Blatt bleibt stehen */
+  overscroll-behavior: contain; /* overscroll-behavior: am Ende der Liste scrollt nicht die Seite dahinter mit */
+}
+
+/* Überschrift eines Abschnitts im Blatt — teilt „Verknüpfen mit“ in Ablageorte und Einträge */
+.sheet-heading {
+  padding: 12px 12px 4px;
+  color: var(--muted);
+  font-size: var(--sheet-heading-size);
+  font-weight: 600;
+  text-transform: uppercase; /* text-transform: hebt die Überschrift von den Optionen ab, ohne sie größer zu machen */
+  letter-spacing: 0.04em; /* letter-spacing: Großbuchstaben brauchen etwas mehr Luft, sonst kleben sie */
+}
+
+.sheet-heading:first-child {
+  padding-top: 4px;
 }
 
 .sheet-option {

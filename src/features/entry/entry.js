@@ -1,8 +1,13 @@
 /*
  * Die Seite eines Eintrags: Titel, zwei Pillen „Inhalt“ und „Verknüpfte
- * Inhalte“ (wie auf der Seite eines Arbeitsbereichs), und das Menü oben
+ * Einträge“ (wie auf der Seite eines Arbeitsbereichs), und das Menü oben
  * rechts. Bei einer Zeichnung steht im Inhalt die Zeichenfläche statt des
  * Textes.
+ *
+ * Unter der zweiten Pille steht bei einem Projekt sein INHALT — was dort
+ * abgelegt ist. Bei jedem anderen Eintrag stehen dort die VERKNÜPFTEN
+ * Einträge: die Verbindung gilt auf beiden Seiten, keiner der beiden ist dem
+ * anderen untergeordnet (src/data/links.js).
  * Pfad: src/features/entry/entry.js
  *
  * Keine anpassbaren visuellen Werte: Schriftgrößen stehen in styles/entry.css
@@ -12,33 +17,28 @@
 import { emit, events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
 import { load } from "../../core/lazy.js";
+import { linkedEntries } from "../../data/links.js";
 import { deleteEntry, toggleFavorite } from "../../data/mutations.js";
-import { entriesOf, findEntry, placesLabel } from "../../data/queries.js";
+import { entriesOf, findEntry, isContainer, placesLabel } from "../../data/queries.js";
 import { entryRef } from "../../data/refs.js";
-import { groupedListMarkup } from "../../ui/groups.js";
+import { groupedListMarkup, linkedListMarkup } from "../../ui/groups.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { archiveEntry } from "../../data/xp.js";
-import { mediaCell } from "../../ui/media-cell.js";
-import { openPlacesPicker } from "../../ui/pickers.js";
+import { openLinkPicker } from "../../ui/pickers.js";
 import { restoreFrom } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
 import { isViewActive } from "../../ui/views.js";
 
-/* Die beiden Pillen; die zweite trägt die Anzahl der Anhänge und dessen,
-   was im Eintrag liegt (bei einem Projekt). Kein Icon: es wird nie mehr als
-   diese zwei geben, das Wort allein reicht. */
+/* Die beiden Pillen; die zweite trägt die Anzahl dessen, was darunter steht.
+   Kein Icon: es wird nie mehr als diese zwei geben, das Wort allein reicht. */
 const entryPills = [
   { id: "notes", label: "Inhalt" },
   { id: "links", label: "Verknüpfte Einträge" },
 ];
 
-/** Anhänge und Verknüpftes zusammen, für die Zahl auf der zweiten Pille. */
+/** Die Zahl auf der zweiten Pille: bei einem Projekt sein Inhalt, sonst die Verknüpfungen. */
 function entryLinksCount(entry) {
-  const attachments = (entry.attachments || []).filter((id) => {
-    const item = findEntry(id);
-    return item && !item.archived;
-  });
-  return attachments.length + entriesOf(entryRef(entry.id)).length;
+  return isContainer(entry) ? entriesOf(entryRef(entry.id)).length : linkedEntries(entry).length;
 }
 
 /** Pillen neu zeichnen und die passende Fläche darunter zeigen. */
@@ -56,20 +56,11 @@ function renderEntryPills(entry) {
   dom.entryPanelLinks.hidden = ui.entryPill !== "links";
 }
 
-/** Die Anhänge eines Eintrags als Kachelraster. */
-function renderAttachments(entry) {
-  const list = (entry.attachments || [])
-    .map((id) => findEntry(id))
-    .filter((item) => item && !item.archived);
-  dom.entryAttachments.hidden = !list.length;
-  dom.entryAttachments.innerHTML = list.length
-    ? `<div class="media-grid">${list.map(mediaCell).join("")}</div>`
-    : "";
-}
-
-/* Was in diesem Eintrag liegt, z.B. bei einem Projekt Aufgaben und Notizen. */
+/* Ein Projekt zeigt, was darin liegt; jeder andere Eintrag, womit er verknüpft ist. */
 function renderLinks(entry) {
-  dom.entryLinks.innerHTML = groupedListMarkup(entryRef(entry.id));
+  dom.entryLinks.innerHTML = isContainer(entry)
+    ? groupedListMarkup(entryRef(entry.id))
+    : linkedListMarkup(entry);
 }
 
 /** Die Seite mit dem Eintrag füllen, der gerade offen ist. */
@@ -80,7 +71,6 @@ function renderEntry() {
   dom.entryTitle.value = entry.title;
   dom.entryBody.value = entry.body || "";
   dom.entryCrumb.textContent = placesLabel(entry);
-  renderAttachments(entry);
 
   /* Zeichnungen zeigen statt des Textes die Zeichenfläche. */
   const isDrawing = entry.type === "zeichnung";
@@ -105,7 +95,7 @@ function openEntryMenu() {
     {
       label: "Verknüpfen",
       icon: "link",
-      onSelect: () => openPlacesPicker(entry),
+      onSelect: () => openLinkPicker(entry),
     },
   ];
 
@@ -175,18 +165,16 @@ export function initEntry() {
     if (name === "entry") renderEntry();
   });
 
-  /* Was in einem Projekt liegt, kann sich ändern, während es offen ist. */
+  /* Inhalt und Verknüpfungen können sich ändern, während die Seite offen ist. */
   on(events.dataChanged, () => {
     if (!isViewActive("entry")) return;
     const entry = findEntry(ui.currentEntryId);
     if (!entry) {
-      dom.entryAttachments.hidden = true;
       dom.entryLinks.innerHTML = "";
       return;
     }
-    /* Die Orte können sich im offenen Blatt „Verknüpfen mit“ gerade ändern */
+    /* Ort und Verknüpfungen können sich im offenen Blatt gerade ändern */
     dom.entryCrumb.textContent = placesLabel(entry);
-    renderAttachments(entry);
     renderLinks(entry);
     renderEntryPills(entry);
   });

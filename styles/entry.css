@@ -1,5 +1,5 @@
 /*
- * Seite eines Eintrags: Titel, die Pillen „Inhalt“/„Verknüpfte Inhalte“
+ * Seite eines Eintrags: Titel, die Pillen „Inhalt“/„Verknüpfte Einträge“
  * (Klasse .page-pills aus styles/rows.css) mit ihren beiden Flächen, und der
  * Knopf oben rechts.
  * Pfad: styles/entry.css
@@ -18,14 +18,6 @@
 /* Fläche unter einer der beiden Pillen; welche zu sehen ist, steuert
    src/features/entry/entry.js über das hidden-Attribut. */
 .entry-panel[hidden] {
-  display: none;
-}
-
-.entry-attachments {
-  margin: 0 0 16px;
-}
-
-.entry-attachments[hidden] {
   display: none;
 }
 
@@ -95,9 +87,8 @@
   color: var(--chevron);
 }
 
-/* Was im Eintrag liegt, z.B. bei einem Projekt. Der Abstand zu den Anhängen
-   darüber kommt von deren eigenem unteren Rand (.entry-attachments), damit
-   ohne Anhänge keine Lücke vor der Liste entsteht. */
+/* Inhalt eines Projekts bzw. die verknüpften Einträge. Der Abstand nach oben
+   kommt von den Pillen darüber, damit die erste Gruppe nicht doppelt Luft hat. */
 .entry-links {
   margin-top: 0;
 }

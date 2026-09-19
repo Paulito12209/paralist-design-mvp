@@ -12,6 +12,11 @@
  * --media-badge-bg          -> Hintergrund des Dauer-Schilds
  * --media-btn-size          -> Größe der runden Knöpfe
  * --media-actions-space     -> Extra-Platz am Seitenende
+ * --media-strip-width       -> Breite einer Kachel unter „Verknüpfte Einträge“
+ * --media-strip-gap         -> Fuge zwischen diesen Kacheln
+ * --media-strip-radius      -> Rundung dieser Kacheln
+ * --media-strip-bg          -> Fläche dieser Kacheln ohne Bild
+ * --media-kind-size         -> Schriftgröße der Überschriften Bilder/Videos/Audio/Dokumente
  *
  * Die Farbflächen .media-sample-1 bis -9 sind Platzhalter für die
  * Beispielmedien aus src/data/seed.js.
@@ -216,4 +221,65 @@ body.is-media .content {
 
 .workspace-list + .media-month {
   margin-top: 24px;
+}
+
+/* ---------- Medien unter „Verknüpfte Einträge“ ---------- */
+
+/*
+ * Anders als auf der Medien-Seite stehen die Medien eines Eintrags nicht im
+ * Raster, sondern je Art in einer Reihe. Die Überschriften sind bewusst klein:
+ * sie gliedern nur innerhalb der Gruppe „Medien“ und dürfen deren eigener
+ * Überschrift keine Konkurrenz machen.
+ */
+.media-kind + .media-kind {
+  margin-top: 14px;
+}
+
+.media-kind-title {
+  font-size: var(--media-kind-size);
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+/* Die Reihe schiebt sich seitlich; was nicht hineinpasst, wartet am Rand */
+.media-strip {
+  display: flex;
+  gap: var(--media-strip-gap);
+  overflow-x: auto; /* overflow-x: viele Fotos machen die Reihe lang statt die Seite */
+  overscroll-behavior-x: contain; /* overscroll-behavior-x: am Ende der Reihe wandert nicht die Seite mit */
+  scrollbar-width: none; /* scrollbar-width: am Telefon gibt es keinen Balken, am Rechner soll auch keiner stören */
+  /* Ohne diesen Ausgleich wären die Kacheln unten abgeschnitten, sobald die
+     Reihe scrollt — der Name darunter gehört zur Kachel. */
+  padding-bottom: 2px;
+}
+
+.media-strip::-webkit-scrollbar {
+  display: none; /* display: versteckt den Balken auch in Safari und Chrome */
+}
+
+.media-strip-item {
+  flex: 0 0 var(--media-strip-width); /* flex: jede Kachel behält ihre Breite, statt sich zu quetschen */
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+/*
+ * Hier ist die Kachel gerundet und hat eine eigene Fläche — sie steht frei,
+ * nicht dicht an dicht im Raster. Ohne die Fläche schwebte das Icon einer
+ * Audio- oder Dokument-Kachel im Dunkelmodus im Nichts: dort ist --card
+ * dasselbe Schwarz wie der Seitenhintergrund.
+ */
+.media-strip-item .media-cell {
+  border-radius: var(--media-strip-radius);
+  background: var(--media-strip-bg);
+}
+
+.media-strip-name {
+  font-size: var(--media-name-size);
+  color: var(--text);
+  white-space: nowrap; /* white-space + text-overflow: ein langer Name bleibt einzeilig und endet mit „…“ */
+  overflow: hidden;
+  text-overflow: ellipsis;
 }

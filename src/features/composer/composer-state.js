@@ -1,6 +1,7 @@
 /*
- * Der Zustand des Eingabefelds, solange es offen ist: gewählter Typ,
- * gewählter Knopf, Ablageort und die noch nicht angelegten Anhänge.
+ * Der Zustand des Eingabefelds, solange es offen ist: gewählter Typ, gewählter
+ * Knopf, Ablageort, die Seite, von der aus angelegt wird, und die noch nicht
+ * angelegten Anhänge.
  * Eigene Datei, damit Eingabefeld, Anhänge und Diktat denselben Stand sehen,
  * ohne sich gegenseitig zu kennen.
  * Pfad: src/features/composer/composer-state.js
@@ -17,6 +18,11 @@ export const composer = {
   pick: types[0].id,
   /* Ablageort des neuen Eintrags; `null` ist die Inbox */
   place: null,
+  /* Nummer des Eintrags, von dessen Seite aus angelegt wird — mit ihm wird der
+     neue Eintrag verknüpft. `null` heißt: von nirgends her, also keine
+     Verknüpfung. Nicht mit `place` verwechseln: der sagt, WO der neue Eintrag
+     liegt, das hier, WOMIT er verbunden ist. */
+  link: null,
   /* Was die Seite beim Öffnen vorgeschlagen hat. Steht in einer Pille noch
      genau das, bleibt sie nur angedeutet; weicht sie ab, füllt sie sich —
      so sieht man auf einen Blick, wo man selbst eingegriffen hat. */
@@ -74,4 +80,5 @@ export function isComposerPreset(field) {
 export function resetComposerDraft() {
   composer.files = [];
   composer.slot = null;
+  composer.link = null;
 }

@@ -22,6 +22,7 @@ import {
   isTaskDone,
   workspaceDefaultName,
 } from "./config.js";
+import { canLink, connectEntries, disconnectEntries, dropLinksTo, isLinked } from "./links.js";
 import { hasPlace, isContainer, tabWorkspaces, taskOrder } from "./queries.js";
 import { entryRef, isEntryRef, refId, workspaceRef } from "./refs.js";
 import { awardXp } from "./xp.js";
@@ -166,6 +167,9 @@ export function deleteEntry(id) {
   const entry = state.entries.find((item) => sameId(item.id, id));
   if (!entry) return;
   if (isContainer(entry)) liftChildren(entryRef(entry.id), entry.places);
+  /* Eine Verknüpfung steht auf beiden Seiten: ohne diese Zeile bliebe beim
+     Partner ein Verweis auf etwas, das es nicht mehr gibt. */
+  dropLinksTo(entry.id);
   state.entries = state.entries.filter((item) => !sameId(item.id, id));
   commit({ prunedEntries: true });
 }
@@ -187,6 +191,7 @@ export function deleteEntriesOf(ref) {
   doomed.forEach((entry) => {
     if (isContainer(entry)) liftChildren(entryRef(entry.id), ref ? [ref] : []);
   });
+  doomed.forEach((entry) => dropLinksTo(entry.id));
   const doomedIds = new Set(doomed.map((entry) => entry.id));
   state.entries = state.entries.filter((entry) => !doomedIds.has(entry.id));
   commit({ prunedEntries: true });
@@ -203,6 +208,17 @@ export function togglePlace(entry, ref) {
   if (!allowedPlace(entry, ref)) return;
   const places = entry.places || [];
   entry.places = places.includes(ref) ? places.filter((place) => place !== ref) : [...places, ref];
+  commit();
+}
+
+/**
+ * Zwei Einträge verbinden oder die Verbindung wieder lösen. Sie gilt immer in
+ * beide Richtungen — siehe src/data/links.js.
+ */
+export function toggleLink(entry, other) {
+  if (!canLink(entry) || !canLink(other)) return;
+  if (isLinked(entry, other)) disconnectEntries(entry, other);
+  else connectEntries(entry, other);
   commit();
 }
 

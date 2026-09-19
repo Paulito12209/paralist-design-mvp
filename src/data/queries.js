@@ -102,11 +102,12 @@ export function inboxEntries() {
 }
 
 /**
- * Die Einträge eines Ablageorts nach Typ gruppiert, in der Ordnung aus
- * config.js: [{ type, label, icon, items }] — nur Gruppen mit Inhalt.
+ * Eine Liste von Einträgen nach Typ gruppieren, in der Ordnung aus config.js:
+ * [{ type, label, icon, items }] — nur Gruppen mit Inhalt. Dieselbe Gruppierung
+ * benutzen der Inhalt eines Ablageorts und die verknüpften Einträge, damit
+ * beide Listen gleich aussehen.
  */
-export function groupedEntriesOf(ref) {
-  const list = entriesOf(ref);
+export function groupByType(list) {
   return typeOrder
     .map((type) => ({
       type,
@@ -115,6 +116,11 @@ export function groupedEntriesOf(ref) {
       items: list.filter((entry) => entry.type === type),
     }))
     .filter((group) => group.items.length);
+}
+
+/** Die Einträge eines Ablageorts nach Typ gruppiert. */
+export function groupedEntriesOf(ref) {
+  return groupByType(entriesOf(ref));
 }
 
 /** Alle Projekte, egal wo sie liegen — die Projekte-Karte. */

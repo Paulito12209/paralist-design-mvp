@@ -10,6 +10,7 @@
 import { dom } from "../../core/dom.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { load } from "../../core/lazy.js";
+import { connectEntries } from "../../data/links.js";
 import { state } from "../../data/state.js";
 import { saveThumbs, setThumb } from "../../data/thumbs.js";
 import { logXp } from "../../data/xp.js";
@@ -57,19 +58,23 @@ export function dropComposerFile(id, onChange) {
 }
 
 /**
- * Jeder Anhang wird beim Anlegen ein Medien-Eintrag; der neue Eintrag merkt
- * sich deren Nummern in `attachments`.
+ * Jeder Anhang wird beim Anlegen ein eigener Medien-Eintrag und mit dem neuen
+ * Eintrag verknüpft — in beide Richtungen: das Foto steht beim Eintrag unter
+ * „Verknüpfte Einträge“, und der Eintrag steht beim Foto. Den Ablageort
+ * bekommt das Medium gleich mit, damit es dort liegt, wo auch der Eintrag liegt.
+ * @returns die angelegten Medien-Einträge.
  */
 export function attachFilesTo(entry) {
-  if (!composer.files.length) return;
+  if (!composer.files.length) return [];
 
-  entry.attachments = composer.files.map((item) => {
+  const created = composer.files.map((item) => {
     const media = {
       id: state.nextEntryId++,
       type: "medien",
       title: item.title,
       body: "",
       places: [...(entry.places || [])],
+      links: [],
       archived: false,
       favorite: false,
       createdAt: Date.now(),
@@ -77,9 +82,11 @@ export function attachFilesTo(entry) {
     };
     if (item.thumb) setThumb(media.id, item.thumb);
     state.entries.push(media);
+    connectEntries(entry, media);
     logXp("created", "medien", media.title);
-    return media.id;
+    return media;
   });
 
   saveThumbs();
+  return created;
 }

@@ -13,6 +13,7 @@
  * typeSingulars           -> Einzahl der Typen, deren Name in der Mehrzahl steht
  * resourceFilterTypes     -> welchen Typ jede Filter-Pille der Ressourcen-Seite anlegt
  * typeOrder               -> Reihenfolge der Gruppen unter „Verknüpfte Einträge“
+ * linkableTypes           -> welche Typen sich mit einem Eintrag verknüpfen lassen
  * workspaceDefaultName    -> Vorgabename eines neuen Arbeitsbereichs
  * levelSteps / levelStep  -> ab wie vielen XP die nächste Stufe beginnt
  * taskPriorities          -> Name, Icon und Farbe der vier Board-Spalten
@@ -98,6 +99,18 @@ export const archivePage = { title: "Archiv", kind: "archive" };
  * nicht in einem Projekt liegen — so kann nie ein Kreis entstehen.
  */
 export const containerTypes = ["projekt"];
+
+/*
+ * Was sich mit einem Eintrag VERKNÜPFEN lässt — alles außer dem Projekt.
+ * Verknüpfen und Ablegen sind zwei verschiedene Dinge: eine Verknüpfung gilt
+ * in beide Richtungen und keiner der beiden steht über dem anderen, während
+ * der Ablageort sagt, wo ein Eintrag liegt. Ein Projekt ist ein Ablageort und
+ * steht darum im Fußpfad unter dem Titel, nicht in der Liste der verknüpften
+ * Einträge. Arbeitsbereiche sind gar keine Einträge und darum ohnehin nur Ort.
+ */
+export const linkableTypes = types
+  .map((type) => type.id)
+  .filter((id) => !containerTypes.includes(id));
 
 /** Reihenfolge der Gruppen unter „Verknüpfte Einträge“: Projekte zuerst. */
 export const typeOrder = ["projekt", "aufgabe", "notiz", "termin", "dokument", "zeichnung", "medien"];
@@ -215,6 +228,13 @@ export const mediaFilters = [
   { id: "audio", label: "Audio", icon: "mic" },
   { id: "doc", label: "Dokumente", icon: "doc" },
 ];
+
+/**
+ * Die vier Medien-Arten in der Reihenfolge, in der sie unter „Verknüpfte
+ * Einträge“ untereinander stehen. Dieselben Namen wie die Pillen oben auf der
+ * Medien-Seite, nur ohne „Zuletzt erstellt“ — das ist keine Art, sondern alles.
+ */
+export const mediaKinds = mediaFilters.filter((item) => item.id !== "recent");
 
 /**
  * Pillen oben auf der Ressourcen-Seite: „Alle“ zeigt alles — auch Fotos und

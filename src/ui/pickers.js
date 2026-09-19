@@ -1,16 +1,19 @@
 /*
  * Drei Auswahl-Blätter, die an mehreren Stellen gebraucht werden:
- * einen Ablageort wählen (Eingabefeld), die Orte eines Eintrags an- und
- * abwählen (Verknüpfen), und ein Icon wählen.
+ * einen Ablageort wählen (Eingabefeld), auf der Seite eines Eintrags
+ * verknüpfen, und ein Icon wählen.
  * Pfad: src/ui/pickers.js
  *
  * Keine anpassbaren visuellen Werte: siehe styles/overlays.css.
  */
 
+import { dom } from "../core/dom.js";
 import { sameParent } from "../core/ids.js";
-import { presetIcons } from "../data/config.js";
-import { clearPlaces, togglePlace } from "../data/mutations.js";
-import { placeOptionsFor } from "../data/queries.js";
+import { presetIcons, typeIcon, typeLabel } from "../data/config.js";
+import { canLink, isLinked, linkOptionsFor } from "../data/links.js";
+import { clearPlaces, togglePlace, toggleLink } from "../data/mutations.js";
+import { hasPlace, placeOptionsFor } from "../data/queries.js";
+import { entryRef } from "../data/refs.js";
 import { openSheet } from "./sheet.js";
 
 /**
@@ -31,27 +34,68 @@ export function openPlacePicker(title, current, onPick, draftType = null) {
   );
 }
 
-/**
- * „Verknüpfen mit“ für einen Eintrag: jeder Ort lässt sich an- und abwählen,
- * das Blatt bleibt dabei offen. „Inbox“ nimmt alle Orte weg. Ein Projekt
- * bekommt nur Arbeitsbereiche angeboten, nie andere Projekte.
+/* Die Ablageorte im oberen Abschnitt: „Inbox“ nimmt alle Orte weg. */
+function placeOptions(entry, render) {
+  const places = entry.places || [];
+  return placeOptionsFor(entry).map((option) => ({
+    label: option.label,
+    icon: option.icon,
+    active: option.ref === null ? places.length === 0 : places.includes(option.ref),
+    stay: true,
+    onSelect: () => {
+      if (option.ref === null) clearPlaces(entry);
+      else togglePlace(entry, option.ref);
+      render();
+    },
+  }));
+}
+
+/*
+ * Die Einträge im unteren Abschnitt. Für einen gewöhnlichen Eintrag ist das
+ * die beidseitige Verknüpfung. Auf der Seite eines Projekts bedeutet dasselbe
+ * Anhaken das Umgekehrte: ein Projekt lässt sich nicht verknüpfen, es nimmt
+ * auf — die angehakte Aufgabe bekommt dieses Projekt als Ablageort.
  */
-export function openPlacesPicker(entry) {
+function entryOptions(entry, render) {
+  const takesIn = !canLink(entry);
+  return linkOptionsFor(entry).map((other) => ({
+    label: other.title || typeLabel(other.type),
+    icon: typeIcon(other.type),
+    active: takesIn ? hasPlace(other, entryRef(entry.id)) : isLinked(entry, other),
+    stay: true,
+    onSelect: () => {
+      if (takesIn) togglePlace(other, entryRef(entry.id));
+      else toggleLink(entry, other);
+      render();
+    },
+  }));
+}
+
+/**
+ * „Verknüpfen mit“ auf der Seite eines Eintrags: ein Blatt, zwei Abschnitte.
+ * Oben der Ablageort — wo der Eintrag liegt, Inbox, Arbeitsbereich oder
+ * Projekt. Unten die Einträge, mit denen er verbunden ist; diese Verbindung
+ * gilt in beide Richtungen (src/data/links.js).
+ *
+ * Das Blatt bleibt beim Antippen offen, damit man mehreres nacheinander an-
+ * und abwählen kann. Wie weit die Liste gescrollt ist, wird dabei gemerkt:
+ * sonst spränge sie bei jedem Haken zurück nach oben.
+ */
+export function openLinkPicker(entry) {
   const render = () => {
-    const places = entry.places || [];
-    const options = placeOptionsFor(entry).map((option) => ({
-      label: option.label,
-      icon: option.icon,
-      active: option.ref === null ? places.length === 0 : places.includes(option.ref),
-      stay: true,
-      onSelect: () => {
-        if (option.ref === null) clearPlaces(entry);
-        else togglePlace(entry, option.ref);
-        render();
-      },
-    }));
+    const scrolled = dom.sheet.hidden ? 0 : dom.sheetOptions.scrollTop;
+    const takesIn = !canLink(entry);
+    const entries = entryOptions(entry, render);
+    const options = [{ heading: true, label: "Ablageort" }, ...placeOptions(entry, render)];
+
+    if (entries.length) {
+      options.push({ heading: true, label: takesIn ? "Einträge aufnehmen" : "Einträge" });
+      options.push(...entries);
+    }
+
     options.push({ label: "Fertig", icon: "check", split: true, onSelect: () => {} });
     openSheet("Verknüpfen mit", options);
+    dom.sheetOptions.scrollTop = scrolled;
   };
   render();
 }

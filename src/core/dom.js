@@ -66,7 +66,6 @@ export const dom = {
   get entryPanelNotes() { return el("entry-panel-notes"); },
   get entryPanelLinks() { return el("entry-panel-links"); },
   get entryBody() { return el("entry-body"); },
-  get entryAttachments() { return el("entry-attachments"); },
   get entryLinks() { return el("entry-links"); },
   get entryCrumb() { return el("entry-crumb"); },
   get entryBack() { return el("entry-back"); },

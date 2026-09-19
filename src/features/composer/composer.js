@@ -21,8 +21,9 @@ import {
   xpItemStyle,
   xpKinds,
 } from "../../data/config.js";
+import { connectEntries } from "../../data/links.js";
 import { applyEntryDefaults } from "../../data/mutations.js";
-import { parentName } from "../../data/queries.js";
+import { findEntry, parentName } from "../../data/queries.js";
 import { entryRef, isEntryRef } from "../../data/refs.js";
 import { state, ui } from "../../data/state.js";
 import { awardXp } from "../../data/xp.js";
@@ -140,6 +141,7 @@ export function openComposer(overrides = {}) {
   const start = { ...contextDefaults(), ...overrides };
   chooseComposerType(start.type, start.pick);
   composer.place = start.place;
+  composer.link = start.link || null;
   rememberComposerPreset();
   dom.navShell.classList.add("is-composing");
   dom.tabBar.hidden = true;
@@ -208,6 +210,7 @@ export function createEntry() {
     title,
     body: "",
     places: composer.place ? [composer.place] : [],
+    links: [],
     archived: false,
     favorite: false,
     createdAt: Date.now(),
@@ -217,12 +220,16 @@ export function createEntry() {
   applyEntryDefaults(entry);
 
   state.entries.push(entry);
-  attachFilesTo(entry);
+  const attached = attachFilesTo(entry);
+  /* Von der Seite eines Eintrags aus Angelegtes wird mit ihm verknüpft — in
+     beide Richtungen. Der Ablageort kommt davon unabhängig aus `composer.place`. */
+  const source = composer.link ? findEntry(composer.link) : null;
+  if (source) connectEntries(entry, source);
   /* Jeder Anhang wird ein eigener Medien-Eintrag und bringt dieselben Punkte
      wie der Eintrag selbst (src/features/composer/attachments.js) — die
      Meldung muss also mitzählen, sonst nennt sie eine andere Zahl als die
      Stufenanzeige gleich danach. */
-  const points = xpKinds.created.amount * (1 + (entry.attachments || []).length);
+  const points = xpKinds.created.amount * (1 + attached.length);
 
   dom.composerInput.value = "";
   closeComposer();
@@ -231,7 +238,7 @@ export function createEntry() {
   if (isViewActive("page") && ui.currentPage?.isWorkspace && entry.places.includes(ui.currentPage.parent)) {
     ui.pagePill = "links";
   }
-  if (isViewActive("entry") && entry.places.includes(entryRef(ui.currentEntryId))) {
+  if (isViewActive("entry") && (source || entry.places.includes(entryRef(ui.currentEntryId)))) {
     ui.entryPill = "links";
   }
   emit(events.dataChanged);

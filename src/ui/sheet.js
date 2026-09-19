@@ -1,9 +1,11 @@
 /*
  * Das Auswahl-Blatt von unten: „Verknüpfen mit“, „Typ wählen“, Seitenmenüs.
  * Jede Option ist { label, icon, onSelect } plus optional active/danger/split/gap,
- * `stay` (das Blatt bleibt nach dem Antippen offen, z.B. zum An-/Abwählen) und
+ * `stay` (das Blatt bleibt nach dem Antippen offen, z.B. zum An-/Abwählen),
  * `pair` (die Option rutscht ganz nach unten in eine Zeile neben die andere
- * `pair`-Option — so stehen Archivieren und Löschen nebeneinander).
+ * `pair`-Option — so stehen Archivieren und Löschen nebeneinander) und
+ * `heading` (keine Option, sondern eine Überschrift, die die Liste in
+ * Abschnitte teilt — „Verknüpfen mit“ trennt damit Ablageorte und Einträge).
  * Pfad: src/ui/sheet.js
  *
  * Keine anpassbaren visuellen Werte: Aussehen und Abstände stehen in
@@ -21,6 +23,10 @@ let actions = [];
 let stays = [];
 
 function optionMarkup(option, index) {
+  /* Eine Überschrift ist kein Knopf: ohne data-sheet lässt sie sich nicht
+     antippen und rutscht im Klick-Empfänger unten auch nie dazwischen. */
+  if (option.heading) return `<p class="sheet-heading">${escapeHtml(option.label)}</p>`;
+
   const classes = ["sheet-option"];
   if (option.active) classes.push("is-active");
   if (option.danger) classes.push("is-danger");

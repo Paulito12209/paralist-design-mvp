@@ -21,6 +21,7 @@ function addEntry(fields) {
     title: "",
     body: "",
     places: [],
+    links: [],
     archived: false,
     favorite: false,
     createdAt: Date.now(),

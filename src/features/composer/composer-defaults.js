@@ -47,6 +47,12 @@ function calendarType() {
  * gehört auch nach X. Sammlungen (Favoriten, Projekte, Ressourcen, Archiv)
  * sind keine Orte — dort bleibt es bei der Inbox.
  *
+ * VERKNÜPFUNG — steht man auf der Seite eines Eintrags, der selbst nichts
+ * aufnehmen kann, wird das Neue zusätzlich mit ihm verknüpft: die Notiz neben
+ * der Aufgabe gehört zu dieser Aufgabe, und man findet sie auf beiden Seiten.
+ * Bei einem Projekt braucht es das nicht — dort ist der Ablageort schon die
+ * Verbindung, und ein Projekt steht nie unter „Verknüpfte Einträge“.
+ *
  * TYP — das, was die Seite gerade zeigt: die Projekte-Karte ein Projekt, die
  * Ressourcen-Seite den Typ ihrer aktiven Pille, der Kalender einen Termin, die
  * Aufgaben-Seite und ein offenes Projekt eine Aufgabe, die Medien-Seite ein
@@ -69,7 +75,7 @@ export function contextDefaults() {
   if (view === "entry") {
     const entry = findEntry(ui.currentEntryId);
     if (isContainer(entry)) return { type: "aufgabe", place: entryRef(entry.id) };
-    if (entry) return { ...proposal, place: mainPlace(entry) };
+    if (entry) return { ...proposal, place: mainPlace(entry), link: entry.id };
     return proposal;
   }
   if (view === "calendar") return { type: calendarType(), place: null };

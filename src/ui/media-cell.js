@@ -17,14 +17,18 @@ const kindIcons = { image: "image", video: "video", audio: "wave", doc: "doc" };
 
 /** Kachel-Inhalt für eine Datei ohne Bild: Icon oben, Name darunter. */
 function docCell(iconName, title) {
-  return `<div class="media-doc">${icon(iconName, "media-doc-icon")}<span class="media-doc-name">${title}</span></div>`;
+  const name = title ? `<span class="media-doc-name">${title}</span>` : "";
+  return `<div class="media-doc">${icon(iconName, "media-doc-icon")}${name}</div>`;
 }
 
 /**
  * Eine Kachel: Bild oder Videovorschau, sonst Icon mit Name.
  * Videos und Aufnahmen zeigen unten rechts ihre Dauer.
+ * @param showName ob der Name in die Kachel gehört. In der Reihe unter
+ *   „Verknüpfte Einträge“ steht er schon darunter — dort stünde er sonst
+ *   zweimal untereinander.
  */
-export function mediaCell(entry) {
+export function mediaCell(entry, showName = true) {
   const media = entry.media || {};
   const kind = mediaKindOf(entry);
   const thumb = thumbOf(entry.id);
@@ -35,7 +39,7 @@ export function mediaCell(entry) {
   if (isPicture && thumb) inner = `<img class="media-img" src="${thumb}" alt="" loading="lazy" decoding="async" />`;
   /* Beispielmedien haben kein Bild, sondern eine Farbfläche aus styles/media.css */
   else if (isPicture && media.sample) inner = `<div class="media-img media-sample-${media.sample}"></div>`;
-  else inner = docCell(kindIcons[kind] || "doc", title);
+  else inner = docCell(kindIcons[kind] || "doc", showName ? title : "");
 
   if (kind === "video") {
     inner += `<span class="media-badge">${icon("video")}${media.duration ? formatClock(media.duration) : ""}</span>`;

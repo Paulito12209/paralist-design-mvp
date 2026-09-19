@@ -16,7 +16,7 @@ import { icon } from "../../core/html.js";
 import { findEntry } from "../../data/queries.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { openEntry, registerOverlay } from "../../ui/router.js";
-import { openPlacesPicker } from "../../ui/pickers.js";
+import { openLinkPicker } from "../../ui/pickers.js";
 import { openViewerMenu, shareEntry } from "./viewer-menu.js";
 import { releaseStage, renderStage } from "./viewer-stage.js";
 
@@ -140,7 +140,7 @@ function onClick(event) {
     return;
   }
   if (button.dataset.viewer === "link") {
-    openPlacesPicker(entry);
+    openLinkPicker(entry);
     return;
   }
   if (button.dataset.viewer === "goto") {

@@ -21,7 +21,7 @@
  * styles/overview.css        -> Startseite: die vier Karten und die Tab-Pillen
  * styles/rows.css            -> Listenzeilen, Wisch-Knöpfe, Kopfzeile einer Unterseite
  * styles/empty-state.css     -> Platzhalter für leere Listen (eigene Werte, siehe dort)
- * styles/entry.css           -> Seite eines Eintrags: Titel, Text, Anhänge
+ * styles/entry.css           -> Seite eines Eintrags: Titel, Text, verknüpfte Einträge
  * styles/navigation.css      -> untere Navigationsleiste
  * styles/composer.css        -> Eingabefeld zum Anlegen
  * styles/composer-attachments.css -> Kachelreihe der Anhänge im Eingabefeld
@@ -136,6 +136,8 @@
  * --restore-color          -> Knopf „Zurückholen“ im Archiv
  * --archive-link-top       -> Abstand der Pille „Zum Archiv“ zur Liste darüber
  * --ctx-radius              -> Rundung des kleinen Menüs beim gedrückt Halten
+ * --sheet-options-max       -> ab welcher Höhe die Liste im Auswahl-Blatt scrollt
+ * --sheet-heading-size      -> Schriftgröße der Abschnitts-Überschrift im Auswahl-Blatt
  * --modal-dismiss-pull      -> Wie weit man ein Blatt ziehen muss, damit es schließt
  * --profile-avatar-size     -> Größe des runden Profilbilds
  * --profile-avatar-edit-size -> Größe des kleinen Stift-Knopfs am Profilbild
@@ -156,6 +158,11 @@
  * --board-drop-min          -> Mindesthöhe einer leeren Spalte, damit man dort ablegen kann
  * --board-edge              -> ab wie vielen Pixeln am Rand beim Ziehen mitgescrollt wird
  * --media-gap               -> Fuge zwischen den Medien-Kacheln
+ * --media-strip-width       -> Breite einer Kachel in der Reihe unter „Verknüpfte Einträge“
+ * --media-strip-gap         -> Fuge zwischen diesen Kacheln
+ * --media-strip-radius      -> Rundung dieser Kacheln
+ * --media-strip-bg          -> Fläche dieser Kacheln, solange kein Bild darauf liegt
+ * --media-kind-size         -> Schriftgröße der kleinen Überschriften Bilder/Videos/Audio/Dokumente
  * --media-btn-size          -> Größe der runden Knöpfe über der Navigation
  * --media-actions-space     -> Extra-Platz am Ende der Medien-Seite
  * --search-pill-height / --search-pill-side -> Größe der Suchen-Pille über der Navigation
@@ -282,6 +289,8 @@
   --project-icon-color: #5B0E14;
   --resource-icon-color: #1A2517;
   --ctx-radius: 16px;
+  --sheet-options-max: 52vh;
+  --sheet-heading-size: 12px;
   --icon-strong: #3a3a3c;
   --placeholder: #aeaeb2;
   --chevron: #c7c7cc;
@@ -323,6 +332,11 @@
   --board-drop-min: 72px;
   --board-edge: 44px;
   --media-gap: 3px;
+  --media-strip-width: 104px;
+  --media-strip-gap: 10px;
+  --media-strip-radius: 14px;
+  --media-strip-bg: rgba(60, 60, 67, 0.09);
+  --media-kind-size: 13px;
   --media-month-size: 19px;
   --media-name-size: 13px;
   --media-doc-color: #007aff;
