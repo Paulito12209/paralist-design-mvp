@@ -62,6 +62,7 @@
  * --star-color              -> Goldfarbe für den Favoriten-Stern auf der Karte
  * --avatar-btn-bg           -> Farbe des Icons im Profil-/Einstellungs-Knopf oben rechts
  * --nav-glow-color          -> Farbe des Verlaufs hinter der Navigationsleiste (nur Dunkelmodus)
+ * --nav-glow-height         -> wie hoch die Verlaufs-Zone über dem unteren Rand reicht
  * --stage-bg                -> Fläche rund um das Gerätefenster am Desktop
  * --avatar-view-bg          -> Hintergrund der großen Profilbild-Ansicht (immer dunkel)
  * --avatar-gradient-from/-to -> Farbverlauf hinter den Initialen im Profil
@@ -289,6 +290,7 @@
   --star-color: #f5c518;
   --avatar-btn-bg: #aab2bd;
   --nav-glow-color: 170, 178, 189;
+  --nav-glow-height: 260px;
   --inbox-icon-color: #233d4c;
   --project-icon-color: #5B0E14;
   --resource-icon-color: #1A2517;

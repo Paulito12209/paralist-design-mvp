@@ -20,6 +20,7 @@
  * --composer-side           -> seitlicher Abstand, solange das Eingabefeld offen ist
  * --keyboard-inset          -> wird von src/shell/keyboard-inset.js gesetzt
  * --nav-glow-color          -> Farbe des Verlaufs hinter der Leiste (nur Dunkelmodus)
+ * --nav-glow-height         -> wie hoch die Verlaufs-Zone über dem unteren Rand reicht
  *
  * Die Namen unter den Icons sind standardmäßig aus (dafür die Icons größer);
  * die Klasse „show-labels“ auf der Leiste blendet sie wieder ein — gesetzt von
@@ -55,7 +56,6 @@ body.is-search-typing .bottom-bar {
 
 /* Gemeinsamer Container: trägt sowohl die Navigation als auch das Eingabefeld */
 .nav-shell {
-  position: relative; /* position: Bezugspunkt für den Verlauf dahinter (::before) im Dunkelmodus */
   background: var(--card);
   border-radius: var(--nav-radius); /* border-radius: macht die Leiste rund wie eine Pille */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(0, 0, 0, 0.12);
@@ -207,13 +207,18 @@ body.is-search-typing .bottom-bar {
   :root:not([data-theme="light"]) .nav-shell {
     box-shadow: none;
   }
-  :root:not([data-theme="light"]) .nav-shell::before {
+  /* Der Verlauf sitzt auf .device statt auf der Leiste selbst: so bleibt er
+     hinter dem Inhalt (der als nächstes Geschwister darüber gemalt wird) und
+     nur die Navbar (z-index 20) liegt sichtbar darüber. */
+  :root:not([data-theme="light"]) .device::before {
     content: "";
     position: absolute;
-    inset: -28px; /* inset: wie weit der Verlauf über die Leiste hinausreicht */
-    background: radial-gradient(closest-side, rgba(var(--nav-glow-color), 0.55), rgba(var(--nav-glow-color), 0) 70%);
-    filter: blur(22px); /* filter: macht aus dem Verlauf ein weiches Glühen statt einer harten Kante */
-    z-index: -1;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--nav-glow-height); /* Höhe: wie weit die Zone nach oben reicht */
+    background: radial-gradient(ellipse at bottom, rgba(var(--nav-glow-color), 0.45), rgba(var(--nav-glow-color), 0) 70%);
+    filter: blur(30px); /* filter: macht aus dem Verlauf ein weiches Glühen statt einer harten Kante */
     pointer-events: none;
   }
   /* Aktiver Reiter: dezentes Dunkelsilber statt reinem Weiß */
@@ -231,13 +236,15 @@ body.is-search-typing .bottom-bar {
 :root[data-theme="dark"] .nav-shell {
   box-shadow: none;
 }
-:root[data-theme="dark"] .nav-shell::before {
+:root[data-theme="dark"] .device::before {
   content: "";
   position: absolute;
-  inset: -28px;
-  background: radial-gradient(closest-side, rgba(var(--nav-glow-color), 0.55), rgba(var(--nav-glow-color), 0) 70%);
-  filter: blur(22px);
-  z-index: -1;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--nav-glow-height);
+  background: radial-gradient(ellipse at bottom, rgba(var(--nav-glow-color), 0.45), rgba(var(--nav-glow-color), 0) 70%);
+  filter: blur(30px);
   pointer-events: none;
 }
 :root[data-theme="dark"] .tab-btn.is-active {
