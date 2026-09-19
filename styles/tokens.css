@@ -305,7 +305,7 @@
   --nav-glow-color: 209, 213, 219;
   --nav-glow-height: 380px;
   --nav-glow-strength: 0.45;
-  --nav-glow-opacity: 0.6;
+  --nav-glow-opacity: 1;
   --nav-glow-arc: 115%;
   --nav-glow-fade: 28%;
   --inbox-icon-color: #233d4c;
