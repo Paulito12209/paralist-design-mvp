@@ -77,6 +77,7 @@ export const dom = {
   get searchPill() { return el("search-pill"); },
 
   /* Untere Leiste */
+  get bottomBar() { return q(".bottom-bar"); },
   get navShell() { return el("nav-shell"); },
   get tabBar() { return el("tab-bar"); },
   get tabButtons() { return qa(".tab-btn"); },

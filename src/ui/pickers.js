@@ -13,11 +13,16 @@ import { clearPlaces, togglePlace } from "../data/mutations.js";
 import { placeOptionsFor } from "../data/queries.js";
 import { openSheet } from "./sheet.js";
 
-/** „Ablegen in“ für das Eingabefeld: genau ein Ort, das Blatt schließt beim Antippen. */
-export function openPlacePicker(title, current, onPick) {
+/**
+ * „Ablegen in“ für das Eingabefeld: genau ein Ort, das Blatt schließt beim
+ * Antippen.
+ * @param draftType Typ des Entwurfs. Ein Projekt bekommt so nur
+ *   Arbeitsbereiche angeboten — ein Projekt in einem Projekt gibt es nicht.
+ */
+export function openPlacePicker(title, current, onPick, draftType = null) {
   openSheet(
     title,
-    placeOptionsFor().map((option) => ({
+    placeOptionsFor(draftType ? { type: draftType } : null).map((option) => ({
       label: option.label,
       icon: option.icon,
       active: sameParent(current, option.ref),

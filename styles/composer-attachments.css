@@ -1,0 +1,107 @@
+/*
+ * Die Anhänge des Eingabefelds: die Kachelreihe über den Pillen und das kleine
+ * Kreuz, mit dem eine Kachel wieder verschwindet.
+ * Pfad: styles/composer-attachments.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --bg               -> Fläche einer Kachel, solange kein Bild darauf liegt
+ * --card             -> Fläche des kleinen Kreuzes in der Ecke
+ * --text             -> Farbe des Dateinamens und des Kreuzes
+ * --media-doc-color  -> Farbe des Datei-Icons auf einer Dokument-Kachel
+ *
+ * Die Schriftgröße des Dateinamens steht direkt bei ihrer Regel in dieser Datei
+ * (.attach-file-name, 10px) — sie betrifft nur dieses eine Element.
+*/
+
+/* Reihe der Anhänge ganz oben im Eingabefeld, über den Pillen */
+.composer-attachments {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  overflow-x: auto; /* overflow: viele Anhänge schieben sich seitlich, statt umzubrechen */
+  scrollbar-width: none;
+}
+
+.composer-attachments[hidden] {
+  display: none;
+}
+
+.composer-attachments::-webkit-scrollbar {
+  display: none;
+}
+
+.composer-attachment {
+  position: relative; /* position: das Kreuz sitzt in der oberen rechten Ecke */
+  width: 60px;
+  height: 60px;
+  flex: 0 0 auto;
+}
+
+.attach-img,
+.attach-file {
+  width: 100%;
+  height: 100%;
+  border-radius: 14px; /* border-radius: weiche Ecken wie bei Anhängen in Chat-Apps */
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.attach-img {
+  display: block;
+  object-fit: cover; /* object-fit: das Bild füllt die Kachel und wird dafür beschnitten */
+}
+
+.attach-file {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px 4px;
+  color: var(--text);
+}
+
+.attach-file-icon {
+  width: 20px;
+  height: 20px;
+  color: var(--media-doc-color);
+}
+
+.attach-file-name {
+  font-size: 10px;
+  line-height: 1.2;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  display: -webkit-box; /* -webkit-box + line-clamp: lange Namen enden nach zwei Zeilen */
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow-wrap: anywhere;
+}
+
+/* Kleines Kreuz in der Kachel oben rechts: nimmt den Anhang wieder weg */
+.composer-attachment-remove {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%; /* border-radius: rundes Kreuz wie in Chat-Apps */
+  background: var(--card);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); /* hebt den hellen Kreis auch auf hellen Fotos ab */
+  display: grid;
+  place-items: center;
+}
+
+.composer-attachment-remove .icon {
+  width: 13px;
+  height: 13px;
+}
+
+.composer-attachment-remove:active {
+  opacity: 0.55;
+}
+
+/* Anhänge auf der Eintragsseite: Kachelraster zwischen Titel und Text */

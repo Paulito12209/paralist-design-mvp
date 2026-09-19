@@ -9,7 +9,9 @@
  * xpKinds[*].color        -> Farbe im Ring des Fortschritt-Blatts (verweist auf styles/tokens.css)
  * xpKinds[*].amount       -> wie viele XP ein Ereignis bringt
  * composerPlaceholders    -> Platzhaltertext im Eingabefeld je gewähltem Typ
- * typeOrder               -> Reihenfolge der Gruppen unter „Verknüpfte Inhalte“
+ * proposedType            -> Typ, den das Eingabefeld ohne nähere Angabe vorschlägt
+ * resourceFilterTypes     -> welchen Typ jede Filter-Pille der Ressourcen-Seite anlegt
+ * typeOrder               -> Reihenfolge der Gruppen unter „Verknüpfte Einträge“
  * workspaceDefaultName    -> Vorgabename eines neuen Arbeitsbereichs
  * levelSteps / levelStep  -> ab wie vielen XP die nächste Stufe beginnt
  * taskPriorities          -> Name, Icon und Farbe der vier Board-Spalten
@@ -27,8 +29,8 @@
  * Ohne gewählten Knopf entsteht ein Dokument.
  */
 export const types = [
-  { id: "aufgabe", label: "Aufgabe", icon: "task", pick: true },
   { id: "notiz", label: "Notiz", icon: "note", pick: true },
+  { id: "aufgabe", label: "Aufgabe", icon: "task", pick: true },
   { id: "termin", label: "Termin", icon: "calendar", pick: true },
   { id: "projekt", label: "Projekte", icon: "rocket", pick: true },
   { id: "dokument", label: "Dokument", icon: "doc" },
@@ -36,8 +38,16 @@ export const types = [
   { id: "medien", label: "Medien", icon: "photos" },
 ];
 
-/** Typ eines Eintrags ohne ausdrückliche Wahl. */
+/** Typ eines Eintrags ohne ausdrückliche Wahl — kein Knopf gewählt heißt Dokument. */
 export const defaultType = "dokument";
+
+/*
+ * Was das Eingabefeld von sich aus vorschlägt, wenn die offene Seite nichts
+ * Näheres sagt. Bewusst die Notiz und nicht die Aufgabe: die meisten fangen
+ * mit einem Gedanken an, und für Aufgaben gibt es einen eigenen Reiter.
+ * Nicht mit `defaultType` verwechseln — der gilt, wenn gar kein Knopf leuchtet.
+ */
+export const proposedType = "notiz";
 
 /**
  * Diese Typen sammelt die Ressourcen-Karte, egal wo sie abgelegt sind — auch
@@ -88,7 +98,7 @@ export const archivePage = { title: "Archiv", kind: "archive" };
  */
 export const containerTypes = ["projekt"];
 
-/** Reihenfolge der Gruppen unter „Verknüpfte Inhalte“: Projekte zuerst. */
+/** Reihenfolge der Gruppen unter „Verknüpfte Einträge“: Projekte zuerst. */
 export const typeOrder = ["projekt", "aufgabe", "notiz", "termin", "dokument", "zeichnung", "medien"];
 
 /** Mehrzahl je Typ für die Gruppenüberschriften. */
@@ -157,6 +167,15 @@ export function typeLabel(id) {
   return type ? type.label : "Eintrag";
 }
 
+/*
+ * Anzeigename in der Einzahl, für kurze Meldungen wie „Projekt erstellt“.
+ * Nur „projekt“ weicht ab: sein label heißt „Projekte“, weil es zugleich die
+ * Übersichtskarte und die Typ-Pille beschriftet.
+ */
+export function typeSingular(id) {
+  return id === "projekt" ? "Projekt" : typeLabel(id);
+}
+
 /** Icon und Farbe für einen Historien-Posten; unbekannte Posten bleiben grau. */
 export function xpItemStyle(item) {
   return xpItems[item] || { label: item, icon: "placeholder", color: "var(--muted)" };
@@ -194,19 +213,32 @@ export const mediaFilters = [
 ];
 
 /**
- * Pillen oben auf der Ressourcen-Seite: „Alle“ zeigt alles, „Notizen“ nur
- * Notizen, „Eigene Dokumente“ das selbst Geschriebene, „Zeichnungen“ das
- * Gezeichnete, „Medien“ Fotos, Videos, Aufnahmen und Dateien — so lässt sich
- * eigenes Geschriebenes von Medien unterscheiden, obwohl beides hier zählt.
+ * Pillen oben auf der Ressourcen-Seite: „Alle“ zeigt alles — auch Fotos und
+ * Dateien —, „Notizen“ nur Notizen, „Zeichnungen“ das Gezeichnete, „Eigene
+ * Dokumente“ das selbst Geschriebene. Für Medien gibt es hier bewusst keine
+ * Pille: dafür steht der graue Zweittitel „Medien“ neben der Überschrift, und
+ * der führt in den eigenen Reiter.
  * Was eine leere Seite zeigt, steht in src/features/resources/resources.js.
  */
 export const resourceFilters = [
   { id: "all", label: "Alle", icon: "cube" },
   { id: "notes", label: "Notizen", icon: "note" },
-  { id: "own", label: "Eigene Dokumente", icon: "doc" },
   { id: "drawings", label: "Zeichnungen", icon: "scribble" },
-  { id: "media", label: "Medien", icon: "photos" },
+  { id: "own", label: "Eigene Dokumente", icon: "doc" },
 ];
+
+/*
+ * Welchen Typ das Eingabefeld anlegt, wenn man auf der Ressourcen-Seite etwas
+ * anlegt: den, den die gerade aktive Pille zeigt. Unter „Alle“ ist das ein
+ * Dokument — daneben stehen ja die Pillen „Notizen“ und „Zeichnungen“, man
+ * sieht also sofort, wo das Übrige hingehört.
+ */
+export const resourceFilterTypes = {
+  all: "dokument",
+  notes: "notiz",
+  drawings: "zeichnung",
+  own: "dokument",
+};
 
 /* ---------- Aufgaben-Seite: Status, Prioritäten und die drei Bedien-Listen ---------- */
 

@@ -1,6 +1,6 @@
 /*
  * Die Seite eines Arbeitsbereichs: zwei Pillen oben — „Inhalt“ mit dem
- * freien Text zum Arbeitsbereich und „Verknüpfte Inhalte“ mit allem, was darin
+ * freien Text zum Arbeitsbereich und „Verknüpfte Einträge“ mit allem, was darin
  * liegt, nach Typ gruppiert und auf-/zuklappbar. Dieselben zwei Pillen zeigt
  * auch die Seite eines einzelnen Eintrags (src/features/entry/entry.js).
  * Pfad: src/features/overview/workspace-page.js
@@ -19,7 +19,7 @@ import { groupedListMarkup } from "../../ui/groups.js";
    es wird nie mehr als diese zwei geben, das Wort allein reicht. */
 const pills = [
   { id: "notes", label: "Inhalt" },
-  { id: "links", label: "Verknüpfte Inhalte" },
+  { id: "links", label: "Verknüpfte Einträge" },
 ];
 
 function pillsMarkup(active, count) {

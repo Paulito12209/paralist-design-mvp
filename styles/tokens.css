@@ -24,6 +24,8 @@
  * styles/entry.css           -> Seite eines Eintrags: Titel, Text, Anhänge
  * styles/navigation.css      -> untere Navigationsleiste
  * styles/composer.css        -> Eingabefeld zum Anlegen
+ * styles/composer-attachments.css -> Kachelreihe der Anhänge im Eingabefeld
+ * styles/toast.css           -> kurze Meldung über der Navigation nach dem Anlegen
  * styles/overlays.css        -> Auswahl-Blatt, kleines Menü, Blätter von unten
  * styles/search.css          -> Suchseite
  * styles/progress.css        -> Fortschritt-Blatt: Ring, Verlauf, Historie
@@ -118,6 +120,11 @@
  * --composer-radius         -> Rundung des Eingabe-Containers
  * --composer-side           -> seitlicher Abstand, solange das Eingabefeld offen ist
  * --composer-btn-size       -> Größe der runden Knöpfe und Höhe der Pillen im Eingabefeld
+ * --composer-type-off       -> wie blass ein gesperrter Typ-Knopf im Eingabefeld ist
+ * --toast-radius            -> Rundung der Meldung über der Navigation
+ * --toast-gap               -> Abstand der Meldung zur Navigation darunter
+ * --toast-anim              -> wie lange die Meldung heraufgleitet
+ * --toast-rise              -> aus welcher Tiefe sie dabei kommt
  * --composer-close-angle    -> wie schief das Kreuz des Schließen-Knopfes steht (45deg = X)
  * --composer-close-angle-from -> Winkel, mit dem das X beim Aufgehen startet
  * --composer-close-slide    -> aus welcher Entfernung der Schließen-Knopf dabei heranrückt
@@ -239,6 +246,11 @@
   --composer-radius: 26px;
   --composer-side: 16px;
   --composer-btn-size: 36px;
+  --composer-type-off: 0.3;
+  --toast-radius: 18px;
+  --toast-gap: 10px;
+  --toast-anim: 0.26s;
+  --toast-rise: 12px;
   --composer-close-angle: 45deg;
   --composer-close-angle-from: 35deg;
   --composer-close-slide: 14px;

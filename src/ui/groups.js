@@ -1,5 +1,5 @@
 /*
- * „Verknüpfte Inhalte“: die Einträge eines Ablageorts, nach Typ gruppiert,
+ * „Verknüpfte Einträge“: die Einträge eines Ablageorts, nach Typ gruppiert,
  * jede Gruppe mit Überschrift zum Auf- und Zuklappen. Kommt auf der Seite
  * eines Arbeitsbereichs und eines Projekts vor.
  * Pfad: src/ui/groups.js
@@ -25,7 +25,9 @@ const emptyLinks = {
   accent: "var(--prio-irgendwann)",
   title: "Noch nichts verknüpft",
   text: "Was du hier anlegst, bleibt an diesem Ort — Aufgaben, Notizen und Termine.",
-  action: { label: "Eintrag hinzufügen", pick: "aufgabe" },
+  /* Ohne `pick`: was hier entsteht, schlägt die Seite vor — in einem Projekt
+     eine Aufgabe, in einem Arbeitsbereich eine Notiz. */
+  action: { label: "Eintrag hinzufügen" },
 };
 
 /** Schlüssel einer Gruppe im Merkzettel der eingeklappten Gruppen. */

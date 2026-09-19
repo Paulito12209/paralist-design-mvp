@@ -29,7 +29,7 @@ import { isViewActive } from "../../ui/views.js";
    diese zwei geben, das Wort allein reicht. */
 const entryPills = [
   { id: "notes", label: "Inhalt" },
-  { id: "links", label: "Verknüpfte Inhalte" },
+  { id: "links", label: "Verknüpfte Einträge" },
 ];
 
 /** Anhänge und Verknüpftes zusammen, für die Zahl auf der zweiten Pille. */

@@ -108,10 +108,10 @@ Tab
   Orte: sie zeigen alle Projekte, alles Markierte, alle Dokumente, Zeichnungen
   und Medien — egal, wo sie liegen. Nur die Inbox ist ein Ort.
 - Arbeitsbereiche und Projekte haben einen freien Text (`body`) und zeigen
-  ihre Einträge unter **Verknüpfte Inhalte**, nach Typ gruppiert in der
+  ihre Einträge unter **Verknüpfte Einträge**, nach Typ gruppiert in der
   Reihenfolge aus `typeOrder`. Jede Unterseite — Arbeitsbereich, Übersichts-
   karte oder einzelner Eintrag (Aufgabe, Notiz, Termin, Zeichnung, Projekt …)
-  — zeigt dafür dieselben zwei Pillen **Inhalt** und **Verknüpfte Inhalte**.
+  — zeigt dafür dieselben zwei Pillen **Inhalt** und **Verknüpfte Einträge**.
 
 ## Performance
 
@@ -172,7 +172,7 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   und nachsehen).
 - Menü: Favorit, Verknüpfen, Archivieren, Löschen. Eine archivierte Aufgabe
   gibt Punkte.
-- Zwischen den Pillen „Inhalt“ und „Verknüpfte Inhalte“ wechseln — bei jedem
+- Zwischen den Pillen „Inhalt“ und „Verknüpfte Einträge“ wechseln — bei jedem
   Eintragstyp (Aufgabe, Notiz, Termin, Zeichnung, Projekt). Bei einer
   Zeichnung steht unter „Inhalt“ die Zeichenfläche.
 

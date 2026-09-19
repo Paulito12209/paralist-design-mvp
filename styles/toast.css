@@ -1,0 +1,96 @@
+/*
+ * Die kurze Meldung über der Navigation, nachdem etwas angelegt wurde.
+ * Pfad: styles/toast.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --toast-radius     -> Rundung der Meldung
+ * --toast-gap        -> Abstand zur Navigation darunter
+ * --toast-anim       -> wie lange die Meldung heraufgleitet
+ * --toast-rise       -> aus welcher Tiefe sie dabei kommt
+ * --card             -> Fläche der Meldung, wie bei der Navigation darunter
+ * --text / --muted   -> Schrift der Meldung
+ * --xp-done          -> Farbe des Hakens links, solange der Aufrufer nichts sagt
+ * --toast-icon       -> setzt src/ui/toast.js je Meldung, z.B. Gold beim Stufenaufstieg
+ * --xp-created       -> Farbe der Punkte-Angabe
+ * --link-color       -> Farbe des Knopfes rechts
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+*/
+
+.toast-host {
+  margin-bottom: var(--toast-gap);
+}
+
+.toast-host[hidden] {
+  display: none;
+}
+
+.toast {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: var(--toast-radius); /* border-radius: weiche Ecken wie bei der Navigation darunter */
+  background: var(--card);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(0, 0, 0, 0.12);
+}
+
+/* Beim Auftauchen gleitet die Meldung von unten herauf. Die Regel hängt an
+   `:not([hidden])`, weil eine Animation von selbst neu startet, sobald ein
+   Element aus display:none wieder auftaucht. */
+@keyframes toast-in {
+  from {
+    transform: translateY(var(--toast-rise));
+    opacity: 0;
+  }
+}
+
+.toast-host:not([hidden]) .toast {
+  animation: toast-in var(--toast-anim) ease-out;
+}
+
+.toast-icon {
+  width: 20px;
+  height: 20px;
+  flex: 0 0 auto;
+  color: var(--toast-icon, var(--xp-done));
+}
+
+.toast-title {
+  flex: 1;
+  min-width: 0; /* min-width: ohne das schrumpft der Text nicht und der Knopf rutscht heraus */
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.toast-note {
+  flex: 0 0 auto;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--xp-created);
+}
+
+.toast-action {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--link-color);
+}
+
+.toast-action-icon {
+  width: 14px;
+  height: 14px;
+  transform: rotate(45deg); /* transform: aus dem Pfeil nach oben wird der Pfeil, der aus der Meldung hinausführt */
+}
+
+.toast-action:active {
+  opacity: 0.55;
+}

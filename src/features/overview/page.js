@@ -59,15 +59,16 @@ const emptyStates = {
     icon: "inbox",
     accent: "var(--cal-accent)",
     title: "Noch nichts in der Inbox",
-    text: "Alles, was du anlegst und nirgends ablegst, sammelt sich hier.",
-    action: { label: "Eintrag hinzufügen", pick: "aufgabe" },
+    text: "Leg hier Einträge ab — Notizen, Aufgaben, Termine. Alles, was du nirgends ablegst, sammelt sich hier.",
+    /* Ohne `pick`: die Seite schlägt ohnehin eine Notiz vor (proposedType). */
+    action: { label: "Eintrag hinzufügen" },
   },
   projects: {
     icon: "rocket",
     accent: "var(--prio-jetzt)",
     title: "Noch keine Projekte",
     text: "Ein Projekt bündelt Aufgaben, Notizen und Termine an einem Ort.",
-    action: { label: "Projekt anlegen", pick: "projekt" },
+    action: { label: "Projekt anlegen" },
   },
   favorites: {
     icon: "star",

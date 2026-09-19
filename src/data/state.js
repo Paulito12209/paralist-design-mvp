@@ -57,12 +57,12 @@ export const ui = {
   sourceView: "home",
   /* offene Unterseite: { title, parent, kind, isWorkspace } — parent ist ein Verweis aus refs.js */
   currentPage: null,
-  /* Auf der Seite eines Arbeitsbereichs: "notes" (Inhalt) oder "links" (Verknüpfte Inhalte) */
+  /* Auf der Seite eines Arbeitsbereichs: "notes" (Inhalt) oder "links" (Verknüpfte Einträge) */
   pagePill: "notes",
-  /* Eingeklappte Gruppen unter „Verknüpfte Inhalte“, als „<Verweis>|<Typ>“ */
+  /* Eingeklappte Gruppen unter „Verknüpfte Einträge“, als „<Verweis>|<Typ>“ */
   collapsedGroups: new Set(),
   currentEntryId: null,
-  /* Auf der Seite eines Eintrags: "notes" (Inhalt) oder "links" (Verknüpfte Inhalte) */
+  /* Auf der Seite eines Eintrags: "notes" (Inhalt) oder "links" (Verknüpfte Einträge) */
   entryPill: "notes",
   editingTabId: null,
   editingWorkspaceId: null,

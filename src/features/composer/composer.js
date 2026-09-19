@@ -12,23 +12,33 @@ import { emit, events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { dayKey, timeKey } from "../../core/dates.js";
 import { icon } from "../../core/html.js";
-import { composerPlaceholders, defaultType, resourcePick, types, xpItemStyle } from "../../data/config.js";
+import {
+  composerPlaceholders,
+  defaultType,
+  overviewPages,
+  typeSingular,
+  types,
+  xpItemStyle,
+  xpKinds,
+} from "../../data/config.js";
 import { applyEntryDefaults } from "../../data/mutations.js";
-import { findEntry, isContainer, parentName } from "../../data/queries.js";
-import { entryRef } from "../../data/refs.js";
+import { parentName } from "../../data/queries.js";
+import { entryRef, isEntryRef } from "../../data/refs.js";
 import { state, ui } from "../../data/state.js";
 import { awardXp } from "../../data/xp.js";
 import { closeCtxMenu } from "../../ui/ctx-menu.js";
 import { openPlacePicker } from "../../ui/pickers.js";
 import { openEntry } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
-import { currentView, isViewActive } from "../../ui/views.js";
+import { showToast } from "../../ui/toast.js";
+import { isViewActive } from "../../ui/views.js";
 import {
   addComposerFiles,
   attachFilesTo,
   dropComposerFile,
   renderComposerAttachments,
 } from "./attachments.js";
+import { contextDefaults, pickOverrides } from "./composer-defaults.js";
 import {
   chooseComposerType,
   clearComposerPick,
@@ -53,15 +63,26 @@ export function updateComposerSend() {
   dom.composerSend.disabled = !dom.composerInput.value.trim() && !composer.files.length;
 }
 
+/*
+ * Darf gerade ein Projekt entstehen? Steht als Ablageort schon ein Projekt
+ * fest, dann nicht: ein Projekt in einem Projekt schließt src/data/config.js
+ * aus (containerTypes), sonst könnte ein Kreis entstehen.
+ */
+function projectAllowed() {
+  return !isEntryRef(composer.place);
+}
+
 /** Die Typ-Knöpfe unten neu zeichnen. */
 function renderComposerTypes() {
+  const allowProject = projectAllowed();
   dom.composerTypes.innerHTML = composerPickButtons()
     .map((pick) => {
       const active = pick.id === composer.pick;
+      const locked = pick.id === "projekt" && !allowProject;
       /* Der gewählte Typ hebt sich nur über die Icon-Farbe ab — je Typ wie in Kalender und Verlauf */
       const style = active ? ` style="--type-color:${xpItemStyle(pick.typeId).color}"` : "";
       return `
-        <button class="composer-type${active ? " is-active" : ""}" type="button" data-type="${pick.id}" aria-label="${pick.label}"${style}>
+        <button class="composer-type${active ? " is-active" : ""}" type="button" data-type="${pick.id}" aria-label="${pick.label}"${locked ? " disabled" : ""}${style}>
           ${icon(pick.icon)}
         </button>
       `;
@@ -80,47 +101,23 @@ function renderComposerTypePill() {
   dom.composerTypePill.classList.toggle("is-preset", isComposerPreset("type"));
 }
 
+/*
+ * Name in der Ablageort-Pille. Ein Medium ohne gewählten Ort landet nicht in
+ * der Inbox, sondern bei den Ressourcen — `inboxEntries` in
+ * src/data/queries.js siebt Medien aus. Die Pille sagt dann auch das, statt
+ * einen Ort zu versprechen, an dem der Eintrag nie auftaucht.
+ */
+function composerPlaceName() {
+  if (!composer.place && composer.type === "medien") return overviewPages[4].title;
+  return parentName(composer.place);
+}
+
 /** Die Pille mit dem Ablageort auffrischen. */
 function renderComposerLink() {
-  dom.composerLinkLabel.textContent = parentName(composer.place);
+  dom.composerLinkLabel.textContent = composerPlaceName();
   /* Angedeutet, solange dort noch der Vorschlag der Seite steht — gefüllt,
      sobald man selbst einen anderen Ort gewählt hat. */
   dom.composerLink.classList.toggle("is-preset", isComposerPreset("place"));
-}
-
-/*
- * Was das Eingabefeld beim Öffnen vorschlägt, hängt davon ab, wo man ist:
- * in einem Arbeitsbereich oder Projekt landet der Eintrag dort, auf der
- * Projekte-Karte ist „Projekt“ gewählt, auf der Ressourcen-Karte „Ressourcen“,
- * überall sonst eine Aufgabe für die Inbox.
- */
-function contextDefaults() {
-  const aufgabe = { type: "aufgabe", pick: "aufgabe", place: null };
-  const view = currentView();
-
-  if (view === "page" && ui.currentPage) {
-    const page = ui.currentPage;
-    if (page.kind === "projects") return { type: "projekt", pick: "projekt", place: null };
-    if (page.kind === "resources") return { type: defaultType, pick: resourcePick.id, place: null };
-    if (page.isWorkspace) return { ...aufgabe, place: page.parent };
-    return aufgabe;
-  }
-  if (view === "entry") {
-    const entry = findEntry(ui.currentEntryId);
-    if (isContainer(entry)) return { ...aufgabe, place: entryRef(entry.id) };
-  }
-  return aufgabe;
-}
-
-/*
- * Welchen Typ die Pille im Platzhalter einer leeren Liste vorwählt. Der Knopf
- * „Ressourcen“ ist der einzige, der nicht wie ein Typ heißt: er legt ein
- * Dokument an. Ohne Angabe bleibt es bei dem, was die Seite ohnehin vorschlägt.
- */
-function pickOverrides(pick) {
-  if (!pick) return {};
-  if (pick === resourcePick.id) return { type: resourcePick.typeId, pick: resourcePick.id };
-  return { type: pick, pick };
 }
 
 /**
@@ -155,6 +152,10 @@ export function closeComposer() {
   dom.drawTools.hidden = false;
   dom.composerInput.value = "";
   resetComposerDraft();
+  /* Die Spalte, um die der Knopf am Board-Ende gebeten hat, gilt nur für den
+     Entwurf, der gerade offen war. Ohne diese Zeile erbt die nächste Aufgabe
+     — auch die von der Startseite — still deren Priorität. */
+  ui.taskDraftColumn = null;
   renderComposerAttachments(updateComposerSend);
   stopDictation();
 }
@@ -206,15 +207,30 @@ export function createEntry() {
 
   state.entries.push(entry);
   attachFilesTo(entry);
-  awardXp("created", composer.type, title);
 
   dom.composerInput.value = "";
   closeComposer();
-  /* Auf der Seite eines Arbeitsbereichs soll man den neuen Eintrag gleich sehen. */
+  /* Auf der Seite eines Arbeitsbereichs oder eines Projekts soll man den neuen
+     Eintrag gleich sehen — beide zeigen ihre Liste erst unter der zweiten Pille. */
   if (isViewActive("page") && ui.currentPage?.isWorkspace && entry.places.includes(ui.currentPage.parent)) {
     ui.pagePill = "links";
   }
+  if (isViewActive("entry") && entry.places.includes(entryRef(ui.currentEntryId))) {
+    ui.entryPill = "links";
+  }
   emit(events.dataChanged);
+
+  /*
+   * Ohne Rückmeldung merkt man vom Anlegen nichts — nur eine Zahl auf einer
+   * Karte springt hoch. Erst die Meldung, dann die Punkte: steigt dabei die
+   * Stufe, löst deren Meldung diese hier ab. Die größere Nachricht gewinnt.
+   */
+  showToast({
+    title: `${typeSingular(entry.type)} erstellt`,
+    note: `+${xpKinds.created.amount} XP`,
+    action: { label: "Zur Seite", onSelect: () => openEntry(entry.id) },
+  });
+  awardXp("created", entry.type, title);
 
   /* Eine neue Zeichnung öffnet sich gleich, damit man sofort loslegen kann. */
   if (entry.type === "zeichnung") openEntry(entry.id);
@@ -222,8 +238,11 @@ export function createEntry() {
 
 /* Die Typ-Pille oben öffnet die volle Liste der Typen. */
 function openTypeSheet() {
+  const allowProject = projectAllowed();
   const sheetTypes = types.filter(
-    (type) => type.pick || type.id === "dokument" || type.id === "zeichnung"
+    (type) =>
+      (type.pick || type.id === "dokument" || type.id === "zeichnung") &&
+      !(type.id === "projekt" && !allowProject)
   );
   openSheet(
     "Typ wählen",
@@ -248,6 +267,7 @@ function openTypeSheet() {
 function onTypeClick(event) {
   const button = event.target.closest("[data-type]");
   if (!button) return;
+  if (button.disabled) return;
   const pick = composerPickButtons().find((item) => item.id === button.dataset.type);
   if (!pick) return;
 
@@ -272,11 +292,20 @@ export function initComposer() {
   dom.composerTypePill.addEventListener("click", openTypeSheet);
 
   dom.composerLink.addEventListener("click", () => {
-    openPlacePicker("Ablegen in", composer.place, (place) => {
-      composer.place = place;
-      renderComposerLink();
-      dom.composerInput.focus();
-    });
+    /* Der Typ des Entwurfs kommt mit: ein Projekt bekommt nur Arbeitsbereiche
+       angeboten, nie ein anderes Projekt. */
+    openPlacePicker(
+      "Ablegen in",
+      composer.place,
+      (place) => {
+        composer.place = place;
+        /* Der neue Ort kann den Projekt-Knopf sperren, darum beide neu zeichnen. */
+        renderComposerTypes();
+        renderComposerLink();
+        dom.composerInput.focus();
+      },
+      composer.type
+    );
   });
 
   dom.composerAttach.addEventListener("click", () => {

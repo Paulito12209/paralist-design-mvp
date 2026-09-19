@@ -80,7 +80,9 @@ function emblemMarkup(withBadge) {
  * @param options.title   Überschrift, kurz und in Alltagssprache.
  * @param options.text    Ein Satz darunter; ohne Text bleibt die Zeile weg.
  * @param options.action  { label, pick } für die Pille zum Anlegen; ohne Angabe keine Pille.
- *                        `pick` ist der Typ, den das Eingabefeld vorwählt ("aufgabe", "projekt" …).
+ *                        `pick` ist der Typ, den das Eingabefeld vorwählt ("aufgabe",
+ *                        "projekt" …). Ohne `pick` bleibt es bei dem, was die Seite
+ *                        ohnehin vorschlägt — die Pille ist dann reine Abkürzung.
  * @param options.data    Fertiges data-Attribut statt `action.pick`, wenn ein
  *                        Bereich den Knopf selbst behandelt (Medien: Datei wählen).
  * @param options.compact Kleineres Emblem ohne Erklärtext — für Platzhalter
@@ -88,7 +90,7 @@ function emblemMarkup(withBadge) {
  */
 export function emptyState({ icon: iconName, accent, title, text = "", action = null, data = "", compact = false }) {
   const pill = action
-    ? `<button class="empty-add" type="button" ${data || `data-empty-add="${action.pick}"`}>
+    ? `<button class="empty-add" type="button" ${data || `data-empty-add="${action.pick || ""}"`}>
         ${icon("plus", "empty-add-icon")}<span>${escapeHtml(action.label)}</span>
       </button>`
     : "";

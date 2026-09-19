@@ -19,6 +19,15 @@ import { dom } from "../core/dom.js";
 import { formatNumber } from "../core/format.js";
 import { load } from "../core/lazy.js";
 import { levelInfo, totalXp } from "../data/xp.js";
+import { showToast } from "../ui/toast.js";
+
+/*
+ * Welche Stufe zuletzt zu sehen war. Steigt sie, gibt es dafür eine kurze
+ * Meldung — sonst bliebe ein Stufenaufstieg ganz unbemerkt, die Anzeige oben
+ * links springt ja nur um eine Zahl weiter. Beim ersten Zeichnen steht hier
+ * noch `null`: der Start der App ist kein Aufstieg.
+ */
+let shownLevel = null;
 
 const tickCount = 40;
 const arcDegrees = 300;
@@ -51,6 +60,17 @@ export function renderLevel() {
     "aria-label",
     `Stufe ${info.level}, ${formatNumber(xp)} XP. Fortschritt öffnen`
   );
+
+  if (shownLevel !== null && info.level > shownLevel) {
+    showToast({
+      icon: "star",
+      accent: "var(--star-color)",
+      title: `Stufe ${info.level} erreicht`,
+      note: `${formatNumber(xp)} XP`,
+      action: { label: "Fortschritt", onSelect: () => load("progress").then((module) => module.open()) },
+    });
+  }
+  shownLevel = info.level;
 }
 
 /** Den Knopf anmelden; das Fortschritt-Blatt wird beim ersten Tippen nachgeladen. */

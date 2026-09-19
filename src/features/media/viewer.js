@@ -117,7 +117,7 @@ function currentEntry() {
 }
 
 /* „Zur Seite“: von der bildschirmfüllenden Datei zu ihrer eigenen Eintragsseite
-   (Titel, Inhalt, Verknüpfte Inhalte). Die Ansicht schließt dafür ohne
+   (Titel, Inhalt, Verknüpfte Einträge). Die Ansicht schließt dafür ohne
    Verlaufsschritt zurück, die Eintragsseite öffnet stattdessen einen neuen
    Schritt nach vorn — Browser-Zurück führt so zur Datei zurück. */
 function goToEntryPage(entry) {

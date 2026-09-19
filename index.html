@@ -28,11 +28,9 @@
       });
     </script>
 
-    <!--
-      Stile in der Reihenfolge der Kaskade: erst die Werte, dann das Grundgerüst,
-      dann die einzelnen Seiten. Getrennte Dateien laden parallel — eine Übersicht,
-      welche Datei welche Werte enthält, steht in styles/tokens.css und in README.md.
-    -->
+    <!-- Stile in der Reihenfolge der Kaskade: erst die Werte, dann das Grundgerüst, dann die
+         einzelnen Seiten. Getrennte Dateien laden parallel; welche Datei welche Werte
+         enthält, steht in styles/tokens.css und in README.md. -->
     <link rel="stylesheet" href="styles/tokens.css" />
     <link rel="stylesheet" href="styles/tokens-dark.css" />
     <link rel="stylesheet" href="styles/base.css" />
@@ -43,6 +41,8 @@
     <link rel="stylesheet" href="styles/entry.css" />
     <link rel="stylesheet" href="styles/navigation.css" />
     <link rel="stylesheet" href="styles/composer.css" />
+    <link rel="stylesheet" href="styles/composer-attachments.css" />
+    <link rel="stylesheet" href="styles/toast.css" />
     <link rel="stylesheet" href="styles/overlays.css" />
     <link rel="stylesheet" href="styles/search.css" />
     <link rel="stylesheet" href="styles/progress.css" />
@@ -135,7 +135,7 @@
             </div>
             <!-- input: noetig, damit der Titel wirklich bearbeitbar ist -->
             <input class="entry-title" id="entry-title" type="text" placeholder="Ohne Titel" aria-label="Titel" />
-            <!-- Pillen wie auf der Seite eines Arbeitsbereichs: Inhalt und Verknüpfte Inhalte -->
+            <!-- Pillen wie auf der Seite eines Arbeitsbereichs: Inhalt und Verknüpfte Einträge -->
             <div class="tab-pills page-pills" id="entry-pills"></div>
             <div class="entry-panel" id="entry-panel-notes">
               <!-- textarea: noetig, damit der Text wirklich bearbeitbar ist -->

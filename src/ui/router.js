@@ -71,6 +71,10 @@ export function showSearch(replace = false, list = null) {
 /** Unterseite einer Übersichtskarte oder eines Arbeitsbereichs zeigen. */
 export function showPage(page) {
   ui.currentPage = page;
+  /* Jede frisch geöffnete Seite fängt beim ersten Reiter an. Ohne das würde
+     die Wahl von der zuletzt besuchten Seite mitwandern — wer einmal auf
+     „Verknüpfte Einträge“ getippt hat, landet sonst überall dort. */
+  ui.pagePill = "notes";
   showView("page");
 }
 
@@ -104,6 +108,8 @@ export function openEntry(id, push = true) {
   if (!entry) return;
   noteOpen("entry", entry.id);
   ui.currentEntryId = entry.id;
+  /* Wie bei einer Unterseite: jeder Eintrag geht beim Inhalt auf. */
+  ui.entryPill = "notes";
   showView("entry");
   if (push) writeHistory({ view: "entry", id: entry.id, from: ui.sourceView }, `#/eintrag/${entry.id}`, false);
 }
