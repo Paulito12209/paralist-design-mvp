@@ -13,17 +13,12 @@
 import { events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
-import { findEntry, mainPlace } from "../../data/queries.js";
-import { isEntryRef, isWorkspaceRef, refId } from "../../data/refs.js";
+import { findEntry } from "../../data/queries.js";
 import { scheduleSave, ui } from "../../data/state.js";
-import { openEntry, openTarget, registerOverlay } from "../../ui/router.js";
+import { openEntry, registerOverlay } from "../../ui/router.js";
 import { openPlacesPicker } from "../../ui/pickers.js";
 import { openViewerMenu, shareEntry } from "./viewer-menu.js";
 import { releaseStage, renderStage } from "./viewer-stage.js";
-
-/* Die Übersichtskarte „Inbox“ (id in overviewPages, src/data/config.js) —
-   dahin geht „Zur Seite“, wenn die Datei nirgends abgelegt ist. */
-const inboxOverviewId = 1;
 
 /* Welche Datei gerade offen ist. 0 heißt: die Ansicht ist zu. */
 let openId = 0;
@@ -121,15 +116,13 @@ function currentEntry() {
   return openId ? findEntry(openId) : null;
 }
 
-/* „Zur Seite“: zum Ablageort der Datei springen — Arbeitsbereich, Projekt
-   oder Inbox. Die Ansicht schließt dafür ohne Verlaufsschritt zurück, das
-   Ziel öffnet stattdessen einen neuen Schritt nach vorn. */
-function goToPlace(entry) {
-  const ref = mainPlace(entry);
+/* „Zur Seite“: von der bildschirmfüllenden Datei zu ihrer eigenen Eintragsseite
+   (Titel, Inhalt, Verknüpfte Inhalte). Die Ansicht schließt dafür ohne
+   Verlaufsschritt zurück, die Eintragsseite öffnet stattdessen einen neuen
+   Schritt nach vorn — Browser-Zurück führt so zur Datei zurück. */
+function goToEntryPage(entry) {
   hide();
-  if (isWorkspaceRef(ref)) openTarget("workspace", refId(ref));
-  else if (isEntryRef(ref)) openEntry(refId(ref));
-  else openTarget("overview", inboxOverviewId);
+  openEntry(entry.id);
 }
 
 function onClick(event) {
@@ -151,7 +144,7 @@ function onClick(event) {
     return;
   }
   if (button.dataset.viewer === "goto") {
-    goToPlace(entry);
+    goToEntryPage(entry);
     return;
   }
   openViewerMenu(entry, {

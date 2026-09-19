@@ -174,9 +174,12 @@ export function deleteEntry(id) {
  * Einen Ablageort leeren. Was NUR hier liegt, wird gelöscht; was auch woanders
  * liegt, wird hier nur ausgehängt und bleibt dort erhalten. Inhalte eines
  * gelöschten Projekts rücken in diesen Ort und bleiben.
+ * In der Inbox (`ref` null) bleiben Medien verschont: die stehen dort gar
+ * nicht in der Liste (siehe inboxEntries in queries.js), „Alle löschen“ darf
+ * sie deshalb auch nicht mitnehmen.
  */
 export function deleteEntriesOf(ref) {
-  const here = state.entries.filter((entry) => hasPlace(entry, ref));
+  const here = state.entries.filter((entry) => hasPlace(entry, ref) && (ref !== null || entry.type !== "medien"));
   const doomed = here.filter((entry) => (entry.places || []).length <= 1);
   here.forEach((entry) => {
     if (!doomed.includes(entry)) entry.places = entry.places.filter((place) => place !== ref);

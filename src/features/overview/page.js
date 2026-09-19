@@ -23,7 +23,7 @@ import {
   deleteWorkspace,
   toggleFavorite,
 } from "../../data/mutations.js";
-import { entriesOf, findWorkspace, projectEntries } from "../../data/queries.js";
+import { findWorkspace, inboxEntries, projectEntries } from "../../data/queries.js";
 import { saveState, state, ui } from "../../data/state.js";
 import { iconPickerAction } from "../../ui/pickers.js";
 import { restoreFrom, showSearch } from "../../ui/router.js";
@@ -110,7 +110,7 @@ export function renderPageBody() {
   else if (page.kind === "projects") dom.pageBody.innerHTML = listMarkup(projectEntries(), emptyStates.projects);
   else if (page.kind === "resources") load("resources").then((module) => module.renderResources());
   else if (page.isWorkspace) renderWorkspacePage(page);
-  else dom.pageBody.innerHTML = listMarkup(entriesOf(page.parent), emptyStates.inbox);
+  else dom.pageBody.innerHTML = listMarkup(inboxEntries(), emptyStates.inbox);
 }
 
 /* Suche und Optionen ein-/ausblenden, je nachdem wie weit die Liste gescrollt ist. */
