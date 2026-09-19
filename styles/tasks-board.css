@@ -208,3 +208,13 @@
 body.is-dragging-task {
   user-select: none;
 }
+
+/* Dunkelmodus: Board-Drag-Schatten invertieren (weiß statt schwarz) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .board-row.is-lifted {
+    box-shadow: 0 12px 28px rgba(255, 255, 255, 0.12);
+  }
+}
+:root[data-theme="dark"] .board-row.is-lifted {
+  box-shadow: 0 12px 28px rgba(255, 255, 255, 0.12);
+}

@@ -20,7 +20,7 @@
     --muted: #8e8e93;
     --title-alt: #5a5a60;
     --line: rgba(84, 84, 88, 0.55);
-    --shadow: 0 1px 3px rgba(255, 255, 255, 0.06), 0 8px 24px rgba(255, 255, 255, 0.09);
+    --shadow: 0 1px 3px rgba(255, 255, 255, 0.08), 0 8px 24px rgba(255, 255, 255, 0.11);
     --tab-pill-active-bg: rgba(255, 255, 255, 0.12);
     --inbox-icon-color: #9fc4dc;
     --project-icon-color: #e8848d;
@@ -63,7 +63,7 @@
   --muted: #8e8e93;
   --title-alt: #5a5a60;
   --line: rgba(84, 84, 88, 0.55);
-  --shadow: 0 1px 3px rgba(255, 255, 255, 0.06), 0 8px 24px rgba(255, 255, 255, 0.09);
+  --shadow: 0 1px 3px rgba(255, 255, 255, 0.08), 0 8px 24px rgba(255, 255, 255, 0.11);
   --tab-pill-active-bg: rgba(255, 255, 255, 0.12);
   --inbox-icon-color: #9fc4dc;
   --project-icon-color: #e8848d;

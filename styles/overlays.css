@@ -334,3 +334,25 @@
 .modal-body::-webkit-scrollbar {
   display: none;
 }
+
+/* Dunkelmodus: Overlay-Schatten invertieren (weiß statt schwarz) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .sheet {
+    box-shadow: 0 12px 40px rgba(255, 255, 255, 0.12);
+  }
+  :root:not([data-theme="light"]) .ctx-card {
+    box-shadow: 0 8px 28px rgba(255, 255, 255, 0.1);
+  }
+  :root:not([data-theme="light"]) .modal {
+    box-shadow: 0 -8px 40px rgba(255, 255, 255, 0.15);
+  }
+}
+:root[data-theme="dark"] .sheet {
+  box-shadow: 0 12px 40px rgba(255, 255, 255, 0.12);
+}
+:root[data-theme="dark"] .ctx-card {
+  box-shadow: 0 8px 28px rgba(255, 255, 255, 0.1);
+}
+:root[data-theme="dark"] .modal {
+  box-shadow: 0 -8px 40px rgba(255, 255, 255, 0.15);
+}
