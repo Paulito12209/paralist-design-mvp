@@ -5,7 +5,7 @@
  *
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
- * --card / --shadow / --radius-lg   -> Aussehen der Karten
+ * --overview-card-bg / --card / --shadow / --radius-lg   -> Aussehen der Karten
  * --inbox-icon-color                -> Inbox-Icon
  * --star-color                      -> Favoriten-Stern
  * --project-icon-color              -> Raketen-Icon
@@ -34,7 +34,7 @@
 .overview-card {
   min-width: 0;
   /* min-width: die Kachel darf schmaler als ihr Text werden, damit beide Spalten gleich bleiben */
-  background: var(--card);
+  background: var(--overview-card-bg, var(--card));
   border-radius: var(--radius-lg);
   min-height: 112px;
   padding: 12px;

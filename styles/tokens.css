@@ -45,6 +45,7 @@
  * FARBEN
  * --bg                      -> Hintergrundfarbe hinter den Karten
  * --card                    -> Hintergrundfarbe der weißen Karten
+ * --overview-card-bg        -> Hintergrundfarbe der vier Übersichtskarten
  * --text                    -> Textfarbe für Überschriften und normale Schrift
  * --muted                   -> hellere Textfarbe für Hinweise und das Add-Icon
  * --title-alt               -> Grauton des zweiten Wortes in der großen Überschrift
@@ -192,6 +193,7 @@
 :root {
   --bg: #f3f3f5;
   --card: #ffffff;
+  --overview-card-bg: #F8FAFC;
   --text: #1c1c1e;
   --muted: #8e8e93;
   --title-alt: #b4b4ba;
