@@ -48,6 +48,12 @@ const emptyArt = {
     title: "Noch keine Zeichnungen",
     text: "Skizzen von der Zeichenfläche landen hier.",
   },
+  media: {
+    icon: "photos",
+    accent: "var(--xp-line)",
+    title: "Noch keine Medien",
+    text: "Fotos, Videos, Aufnahmen und Dateien stehen hier, egal wo sie liegen.",
+  },
 };
 
 /* Die Pille unter dem Platzhalter legt eine Ressource an (ein Dokument). */
@@ -59,6 +65,7 @@ function filtered(filter) {
   if (filter === "notes") return all.filter((entry) => entry.type === "notiz");
   if (filter === "own") return all.filter((entry) => entry.type === "dokument");
   if (filter === "drawings") return all.filter((entry) => entry.type === "zeichnung");
+  if (filter === "media") return all.filter((entry) => entry.type === "medien");
   return all;
 }
 

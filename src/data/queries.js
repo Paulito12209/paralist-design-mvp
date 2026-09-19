@@ -55,10 +55,15 @@ export function hasPlace(entry, ref) {
   return ref ? places.includes(ref) : places.length === 0;
 }
 
-/** Alle Orte eines Eintrags als Text, z.B. „Marketing · Design“; ohne Ort „Inbox“. */
+/**
+ * Alle Orte eines Eintrags als Text, z.B. „Marketing · Design“. Ohne Ort steht
+ * „Inbox“ — außer bei Medien: die zählen ohne Ort zu den Ressourcen, nie zur
+ * Inbox (siehe inboxEntries unten), darum zeigt ihr Fußpfad das auch so an.
+ */
 export function placesLabel(entry) {
   const places = entry.places || [];
-  return places.length ? places.map(parentName).join(" · ") : overviewPages[1].title;
+  if (places.length) return places.map(parentName).join(" · ");
+  return entry.type === "medien" ? overviewPages[4].title : overviewPages[1].title;
 }
 
 /** Anzeigename eines Ablageorts — Inbox, Arbeitsbereich oder Projekt. */
@@ -85,6 +90,15 @@ export function parentIcon(ref) {
 /** Sichtbare Einträge eines Ablageorts (Archiviertes bleibt draußen). */
 export function entriesOf(ref) {
   return state.entries.filter((entry) => !entry.archived && hasPlace(entry, ref));
+}
+
+/**
+ * Was wirklich in der Inbox steht: Einträge ohne Ort, außer Medien — ein
+ * Foto oder eine Aufnahme ohne gewählten Ort ist eine Ressource, keine
+ * Inbox-Karteikarte, und läuft deshalb nie versehentlich mit ein.
+ */
+export function inboxEntries() {
+  return entriesOf(null).filter((entry) => entry.type !== "medien");
 }
 
 /**
@@ -175,6 +189,8 @@ export function pageCount(page) {
   if (page.kind === "favorites") return favoriteCount();
   if (page.kind === "projects") return projectEntries().length;
   if (page.kind === "resources") return resourceEntries().length;
+  /* Die Inbox-Karte (parent null) zählt wie ihre Liste, ohne Medien. */
+  if (page.parent === null) return inboxEntries().length;
   return entriesOf(page.parent).length;
 }
 

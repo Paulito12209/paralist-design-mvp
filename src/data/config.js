@@ -40,10 +40,12 @@ export const types = [
 export const defaultType = "dokument";
 
 /**
- * Diese Typen sammelt die Ressourcen-Karte, egal wo sie abgelegt sind.
- * Medien sind nicht dabei: die haben einen eigenen Reiter „Medien“.
+ * Diese Typen sammelt die Ressourcen-Karte, egal wo sie abgelegt sind — auch
+ * Medien: die haben zwar zusätzlich einen eigenen Reiter „Medien“, zählen auf
+ * der Startseite aber zu Ressourcen und nie zur Inbox (siehe inboxEntries in
+ * src/data/queries.js).
  */
-export const resourceTypes = ["notiz", "dokument", "zeichnung"];
+export const resourceTypes = ["notiz", "dokument", "zeichnung", "medien"];
 
 /* Extra-Knopf neben den Typen: sieht aus wie die Ressourcen-Kachel, legt aber ein Dokument an. */
 export const resourcePick = { id: "ressourcen", label: "Ressourcen", icon: "cube", typeId: "dokument" };
@@ -194,14 +196,16 @@ export const mediaFilters = [
 /**
  * Pillen oben auf der Ressourcen-Seite: „Alle“ zeigt alles, „Notizen“ nur
  * Notizen, „Eigene Dokumente“ das selbst Geschriebene, „Zeichnungen“ das
- * Gezeichnete. Was eine leere Seite zeigt, steht in
- * src/features/resources/resources.js.
+ * Gezeichnete, „Medien“ Fotos, Videos, Aufnahmen und Dateien — so lässt sich
+ * eigenes Geschriebenes von Medien unterscheiden, obwohl beides hier zählt.
+ * Was eine leere Seite zeigt, steht in src/features/resources/resources.js.
  */
 export const resourceFilters = [
   { id: "all", label: "Alle", icon: "cube" },
   { id: "notes", label: "Notizen", icon: "note" },
   { id: "own", label: "Eigene Dokumente", icon: "doc" },
   { id: "drawings", label: "Zeichnungen", icon: "scribble" },
+  { id: "media", label: "Medien", icon: "photos" },
 ];
 
 /* ---------- Aufgaben-Seite: Status, Prioritäten und die drei Bedien-Listen ---------- */
