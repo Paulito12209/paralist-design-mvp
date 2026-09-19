@@ -57,18 +57,37 @@ export function entryGlyph(entry) {
 }
 
 /**
- * Zeile eines Eintrags mit allen vier Wisch-Knöpfen.
+ * Die vier Wisch-Knöpfe einer Eintrags-Zeile, je zwei auf jeder Seite: links
+ * steht, was den Eintrag in der Liste lässt (Favorit, Verknüpfen), rechts das,
+ * was ihn herausnimmt — Archivieren direkt neben dem roten Löschen.
+ *
+ * Die Liste steht hier und nicht bei den einzelnen Zeilen, weil es zwei Arten
+ * von Eintrags-Zeilen gibt (diese hier und die Aufgaben-Liste). Standen die
+ * Knöpfe zweimal im Code, hatte eine Seite sie irgendwann anders als die andere.
+ */
+export function entryActions(entry) {
+  return {
+    left: [
+      swipeAction("favorite", "Favorit", entry.favorite ? "star" : "star-outline", "favorite"),
+      swipeAction("link", "Verknüpfen", "link"),
+    ],
+    right: [
+      swipeAction("archive", "Archivieren", "archive"),
+      swipeAction("delete", "Löschen", "trash"),
+    ],
+  };
+}
+
+/**
+ * Zeile eines Eintrags mit ihren Wisch-Knöpfen.
  * @param prefix optionaler Einschub vor dem Titel, z.B. die Uhrzeit im Kalender.
  */
 export function entryRow(entry, prefix = "") {
+  const actions = entryActions(entry);
   return swipeRow(
     `data-entry="${entry.id}"`,
-    [
-      swipeAction("favorite", "Favorit", entry.favorite ? "star" : "star-outline", "favorite"),
-      swipeAction("archive", "Archivieren", "archive"),
-      swipeAction("link", "Verknüpfen", "link"),
-    ],
-    [swipeAction("delete", "Löschen", "trash")],
+    actions.left,
+    actions.right,
     `
       <button class="workspace-row entry-row" type="button" data-open-entry="${entry.id}">
         ${entryGlyph(entry)}

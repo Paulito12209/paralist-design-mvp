@@ -42,7 +42,8 @@ let menus = {
   finishWorkspaceName: () => {},
 };
 
-/* Der Wisch-Knopf einer Zeile: Favorit, Archivieren, Verknüpfen, Löschen. */
+/* Der Wisch-Knopf einer Zeile — links Favorit und Verknüpfen, rechts Archivieren
+   und Löschen. Welcher es ist, sagt data-swipe, nicht die Seite. */
 function handleSwipeAction(action) {
   const kind = action.dataset.swipe;
   const wrap = action.closest(".swipe");

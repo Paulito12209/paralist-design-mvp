@@ -14,7 +14,7 @@
  */
 
 import { emptyState } from "../../ui/empty-state.js";
-import { swipeAction, swipeRow } from "../../ui/rows.js";
+import { entryActions, swipeRow } from "../../ui/rows.js";
 import { isTaskDone } from "../../data/config.js";
 import { taskEntries, visibleTasks } from "../../data/queries.js";
 import { icon } from "../../core/html.js";
@@ -37,17 +37,17 @@ const emptyFilter = {
   text: "Ändere die Filter in der Bedienzeile oder zeige erledigte Aufgaben wieder an.",
 };
 
-/** Eine Zeile: Haken-Knopf, Titel mit Ort und Chips, Pfeil — dahinter die Wisch-Knöpfe. */
+/**
+ * Eine Zeile: Haken-Knopf, Titel mit Ort und Chips, Pfeil — dahinter dieselben
+ * Wisch-Knöpfe wie in jeder anderen Liste (src/ui/rows.js).
+ */
 function taskRow(entry) {
   const done = isTaskDone(entry);
+  const actions = entryActions(entry);
   return swipeRow(
     `data-entry="${entry.id}"`,
-    [
-      swipeAction("favorite", "Favorit", entry.favorite ? "star" : "star-outline", "favorite"),
-      swipeAction("archive", "Archivieren", "archive"),
-      swipeAction("link", "Verknüpfen", "link"),
-    ],
-    [swipeAction("delete", "Löschen", "trash")],
+    actions.left,
+    actions.right,
     `
       ${taskCheck(entry)}
       <button class="workspace-row entry-row task-row" type="button" data-open-entry="${entry.id}">

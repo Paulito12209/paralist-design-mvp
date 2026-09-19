@@ -155,7 +155,7 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 - Arbeitsbereich anlegen, umbenennen, Icon geben, zu Favoriten, löschen.
 - Lange auf eine Tab-Pille oder eine Arbeitsbereich-Zeile drücken: das Menü
   geht auf und die Seite darunter öffnet sich **nicht**.
-- Zeile nach links wischen (Löschen) und nach rechts (Favorit, Archivieren,
+- Zeile nach links wischen (Archivieren, Löschen) und nach rechts (Favorit,
   Verknüpfen). Eine aufgewischte Zeile schiebt sich beim Antippen erst zu.
 
 **Anlegen**

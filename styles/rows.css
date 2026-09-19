@@ -10,7 +10,7 @@
  * --chevron                 -> Pfeil rechts in der Zeile
  * --swipe-action-size       -> Größe der runden Wisch-Knöpfe
  * --swipe-action-gap        -> Abstand zwischen den Knöpfen und zum Rand
- * --danger / --archive-color / --link-color / --star-color -> Farben der Knöpfe
+ * --danger / --archive-color / --link-color / --star-color -> Farben der Wisch-Knöpfe
  * --content-side            -> Abstand der Zeilen zum Rand
  * --page-head-top           -> Abstand über dem Zurück-Pfeil auf Unterseiten
  * --safe-top                -> Platz für Notch und Statusleiste über dem Zurück-Pfeil
@@ -245,10 +245,10 @@
 /* ---------- Seite eines Arbeitsbereichs oder Eintrags ---------- */
 
 /* Die beiden Pillen „Inhalt“ und „Verknüpfte Inhalte“ oben auf der Seite;
-   dieselbe Klasse trägt auch die Pillenzeile auf der Seite eines Eintrags. */
+   dieselbe Klasse trägt auch die Pillenzeile auf der Seite eines Eintrags.
+   Die seitlichen Abstände stehen bei .tab-pills (styles/overview.css). */
 .page-pills {
-  padding-right: 2px;
-  margin: 0 0 18px;
+  margin-bottom: 18px;
 }
 
 /* Inhalt eines Arbeitsbereichs: wie der Text eines Eintrags, nur nicht ganz so hoch */

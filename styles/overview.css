@@ -14,6 +14,8 @@
  * --tab-pill-active-bg              -> Hintergrund der gewählten Pille
  * --tab-pills-btn-gap               -> Abstand zwischen Trennlinie und Plus-Knopf
  * --tab-pills-fade                  -> Breite des Ausblendens links der Trennlinie
+ * --content-side                    -> Abstand des Inhalts zum Rand; so weit brechen
+                                        die Pillen nach beiden Seiten aus
  * --icon-folder-plus-width / -height -> Größe des Ordner-Plus-Icons
  * --workspace-section-gap           -> Abstand zwischen Karten und „Arbeitsbereiche“
  * --workspace-head-gap              -> Abstand über den Pillen
@@ -132,7 +134,9 @@
   opacity: 0.55;
 }
 
-/* Tab-Zeile: Pillen scrollen, Plus-Button bleibt rechts */
+/* Tab-Zeile: Pillen scrollen, Plus-Button bleibt rechts.
+   Der Streifen selbst bleibt auf der Breite des Inhalts — nur die scrollenden
+   Pillen darin brechen seitlich aus. */
 .tab-pills-row {
   display: flex;
   align-items: center;
@@ -143,24 +147,42 @@
   /* min-height: Zeile bleibt so hoch wie der Plus-Button */
 }
 
+/*
+ * Eine Leiste mit Pillen — über den Arbeitsbereichen, auf den Medien, den
+ * Ressourcen und über einem Eintrag. Sie reicht mit negativen Außenabständen
+ * über den Seitenrand des Inhalts hinaus, damit die Pillen beim Schieben bis
+ * an den Geräterand laufen, statt am Rand wie abgeschnitten zu enden. Der
+ * gleich große Innenabstand setzt die erste Pille wieder auf die Fluchtlinie
+ * des übrigen Inhalts; die 2px sind der Luftraum, den eine Pille beim Antippen
+ * braucht.
+ */
 .tab-pills {
   display: flex;
   align-items: center;
   gap: 2px;
-  width: 100%;
-  padding-left: 2px;
-  /* Platz rechts, damit der letzte Tab vor Linie und Button sichtbar bleiben kann */
-  padding-right: calc(var(--tab-pills-fade) + 1px + var(--tab-pills-btn-gap) + 32px);
+  margin-left: calc(-1 * var(--content-side));
+  margin-right: calc(-1 * var(--content-side));
+  padding: 0 calc(var(--content-side) + 2px);
   overflow-x: auto;
-  /* overflow: viele Tabs sollen unter Linie und Button durchlaufen */
+  /* overflow: mehr Pillen, als nebeneinander passen, schiebt man seitlich */
+  overscroll-behavior-x: contain; /* am Ende der Pillen wird nicht die Seite darunter mitgezogen */
   scrollbar-width: none;
+}
+
+/* In der Tab-Zeile füllt die Leiste den Streifen und wächst dabei über beide
+   Ränder hinaus; ohne flex bliebe sie auf der Breite des Inhalts stehen. */
+.tab-pills-row .tab-pills {
+  flex: 1;
+  min-width: 0;
+  /* Platz rechts, damit der letzte Tab vor Linie und Button sichtbar bleiben kann */
+  padding-right: calc(var(--content-side) + var(--tab-pills-fade) + 1px + var(--tab-pills-btn-gap) + 32px);
 }
 
 /* Rechts fest: erst Fade, dann Linie, dann Plus */
 .tab-pills-tools {
   position: absolute;
   /* position: bleibt rechts kleben, Tabs laufen darunter durch */
-  right: 0;
+  right: calc(-1 * var(--content-side));
   top: 0;
   bottom: 0;
   display: flex;
@@ -177,11 +199,14 @@
   /* pointer-events: Klicks sollen die Tabs im Fade noch treffen */
 }
 
+/* Der Plus-Knopf steht weiter am Rand des Inhalts; der Innenabstand deckt nur
+   den Streifen bis zum Geräterand ab, damit dort keine Pille hervorschaut. */
 .tab-pills-end {
   display: flex;
   align-items: center;
   gap: var(--tab-pills-btn-gap);
   height: 100%;
+  padding-right: var(--content-side);
   background: var(--bg);
 }
 

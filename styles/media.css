@@ -22,10 +22,10 @@
 
 /* ---------- Medien ---------- */
 
-/* Filter-Pillen: sehen aus wie die Tabs über den Arbeitsbereichen, nur ohne Plus-Knopf rechts */
+/* Filter-Pillen: sehen aus wie die Tabs über den Arbeitsbereichen, nur ohne
+   Plus-Knopf rechts. Seitliche Abstände stehen bei .tab-pills (styles/overview.css). */
 .media-filters {
-  padding-right: 2px;
-  margin: 0 0 22px;
+  margin-bottom: 22px;
 }
 
 /* Anzahl hinter dem Namen der Pille, z.B. „Bilder 7“ */
@@ -211,8 +211,7 @@ body.is-media .content {
 
 /* Filter-Pillen wie auf der Medien-Seite; darunter Listen je Monat statt Kacheln */
 .resource-filters {
-  padding-right: 2px;
-  margin: 0 0 22px;
+  margin-bottom: 22px;
 }
 
 .workspace-list + .media-month {

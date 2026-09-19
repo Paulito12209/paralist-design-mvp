@@ -52,7 +52,7 @@
  * --placeholder             -> Farbe von Platzhaltertexten in Eingabefeldern
  * --chevron                 -> Farbe der kleinen Pfeile rechts in Listen
  * --danger                  -> Rot für Löschen
- * --archive-color           -> Gelb für Archivieren
+ * --archive-color           -> Grau des Archivieren-Knopfes hinter einer Zeile
  * --link-color              -> Blau für Verknüpfen
  * --star-color              -> Goldfarbe für den Favoriten-Stern auf der Karte
  * --stage-bg                -> Fläche rund um das Gerätefenster am Desktop
@@ -228,7 +228,7 @@
   --swipe-action-size: 44px;
   --swipe-action-gap: 10px;
   --danger: #ff3b30;
-  --archive-color: #ffc700;
+  --archive-color: #6e6e73;
   --link-color: #007aff;
   --tab-pill-size: 15px;
   --tab-pill-active-bg: rgba(60, 60, 67, 0.09);
