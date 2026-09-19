@@ -18,8 +18,8 @@
  * --level-color / --level-dim / --level-glow            -> Striche und Zahl der Level-Anzeige
  * --icon-strong / --placeholder                         -> Icon- und Platzhalterfarbe
  * --bg                                                  -> Hintergrundfarbe (wird am unteren Rand ausgeblendet)
- * --avatar-btn-bg                                       -> Farbe des Icons im Profil-/Einstellungs-Knopf rechts
- *                                                          und des Such-Icons
+ * --avatar-btn-bg                                       -> Farbe des Icons im Profil-/Einstellungs-Knopf rechts,
+ *                                                          des Such-Icons und des Platzhaltertexts „Suchen“
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -191,5 +191,5 @@ body.is-subpage .top-bar {
 }
 
 .search input::placeholder {
-  color: var(--placeholder);
+  color: var(--avatar-btn-bg);
 }

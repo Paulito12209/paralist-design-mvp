@@ -17,6 +17,7 @@
  * --safe-top                -> Platz für Notch und Statusleiste über dem Zurück-Pfeil
  * --placeholder             -> grauer Vorgabename beim Benennen eines Arbeitsbereichs
  * --muted                   -> Überschriften der Gruppen unter „Verknüpfte Inhalte“
+ * --avatar-btn-bg           -> Text und Icon der Zeile „Arbeitsbereich hinzufügen“
  
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
@@ -58,14 +59,14 @@
 }
 
 .workspace-add {
-  color: var(--placeholder);
+  color: var(--avatar-btn-bg);
   border-bottom: 0;
 }
 
 .workspace-row.workspace-add .icon:not(.chevron) {
   width: var(--icon-folder-plus-width);
   height: var(--icon-folder-plus-height);
-  color: var(--chevron);
+  color: var(--avatar-btn-bg);
 }
 
 /* Kopfzeile einer Unterseite: der Zurück-Pfeil steht ganz oben, dort wo sonst
