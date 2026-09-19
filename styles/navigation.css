@@ -22,6 +22,8 @@
  * --nav-glow-color          -> Farbe des Verlaufs hinter der Leiste (nur Dunkelmodus)
  * --nav-glow-height         -> wie hoch die Verlaufs-Zone über dem unteren Rand reicht
  * --nav-glow-strength       -> wie kräftig der Verlauf am unteren Rand ist (0 = aus, 1 = voll)
+ * --nav-glow-opacity        -> Deckkraft des ganzen Verlaufs (im Hellmodus 0, also aus)
+ * --nav-glow-arc            -> wie stark der Bogen der Oberkante durchhängt
  *
  * Die Namen unter den Icons sind standardmäßig aus (dafür die Icons größer);
  * die Klasse „show-labels“ auf der Leiste blendet sie wieder ein — gesetzt von
@@ -53,6 +55,43 @@
    setzt is-search-typing, solange der Cursor im Suchfeld blinkt). */
 body.is-search-typing .bottom-bar {
   bottom: 0;
+}
+
+/*
+ * Der Verlauf unten im Gerät. Er sitzt auf .device statt auf der Leiste selbst:
+ * so bleibt er hinter dem Inhalt (der als nächstes Geschwister darüber gemalt
+ * wird) und nur die Navbar (z-index 20) liegt sichtbar darüber.
+ *
+ * Der Bogen entsteht dadurch, dass der Mittelpunkt des Verlaufs OBERHALB der
+ * Fläche liegt (at 50% -40%): dort, wo es zu diesem Punkt am weitesten ist —
+ * also unten und an den Seiten — wird es am hellsten, oben in der Mitte bleibt
+ * es dunkel. Die Oberkante hängt dadurch in der Mitte durch.
+ * Die zweite Lage hellt die Mitte unten wieder etwas auf, sonst wirkt der Bogen
+ * dort eingesackt. Die vielen Zwischenstufen sind Absicht — mit nur zwei
+ * Stopps entstehen im Dunkeln sichtbare Streifen.
+ *
+ * Im Hellmodus steht --nav-glow-opacity auf 0, dann ist nichts davon zu sehen.
+ */
+.device::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--nav-glow-height);
+  opacity: var(--nav-glow-opacity);
+  background:
+    radial-gradient(var(--nav-glow-arc) 158% at 50% -40%,
+      rgba(var(--nav-glow-color), 0) 42%,
+      rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.1)) 55%,
+      rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.26)) 68%,
+      rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.48)) 80%,
+      rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.74)) 90%,
+      rgba(var(--nav-glow-color), var(--nav-glow-strength)) 100%),
+    radial-gradient(80% 60% at 50% 100%,
+      rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.3)),
+      rgba(var(--nav-glow-color), 0) 75%);
+  pointer-events: none;
 }
 
 /* Gemeinsamer Container: trägt sowohl die Navigation als auch das Eingabefeld */
@@ -208,32 +247,6 @@ body.is-search-typing .bottom-bar {
   :root:not([data-theme="light"]) .nav-shell {
     box-shadow: none;
   }
-  /* Der Verlauf sitzt auf .device statt auf der Leiste selbst: so bleibt er
-     hinter dem Inhalt (der als nächstes Geschwister darüber gemalt wird) und
-     nur die Navbar (z-index 20) liegt sichtbar darüber. */
-  :root:not([data-theme="light"]) .device::before {
-    content: "";
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: var(--nav-glow-height); /* Höhe: wie weit die Zone nach oben reicht */
-    /* Zwei Lagen: unten in der Mitte etwas heller (radial), darunter der lange
-       weiche Verlauf nach oben. Die vielen Zwischenstufen sind Absicht — mit nur
-       zwei Stopps entstehen sichtbare Streifen im Dunkeln. */
-    background:
-      radial-gradient(90% 70% at 50% 100%, rgba(var(--nav-glow-color), 0.16), rgba(var(--nav-glow-color), 0) 70%),
-      linear-gradient(
-        to top,
-        rgba(var(--nav-glow-color), var(--nav-glow-strength)) 0%,
-        rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.72)) 18%,
-        rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.45)) 38%,
-        rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.24)) 56%,
-        rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.1)) 74%,
-        rgba(var(--nav-glow-color), 0) 100%
-      );
-    pointer-events: none;
-  }
   /* Aktiver Reiter: dezentes Dunkelsilber statt reinem Weiß */
   :root:not([data-theme="light"]) .tab-btn.is-active {
     color: #a0a0a8;
@@ -248,26 +261,6 @@ body.is-search-typing .bottom-bar {
 }
 :root[data-theme="dark"] .nav-shell {
   box-shadow: none;
-}
-:root[data-theme="dark"] .device::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: var(--nav-glow-height);
-  background:
-    radial-gradient(90% 70% at 50% 100%, rgba(var(--nav-glow-color), 0.16), rgba(var(--nav-glow-color), 0) 70%),
-    linear-gradient(
-      to top,
-      rgba(var(--nav-glow-color), var(--nav-glow-strength)) 0%,
-      rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.72)) 18%,
-      rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.45)) 38%,
-      rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.24)) 56%,
-      rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.1)) 74%,
-      rgba(var(--nav-glow-color), 0) 100%
-    );
-  pointer-events: none;
 }
 :root[data-theme="dark"] .tab-btn.is-active {
   color: #a0a0a8;
