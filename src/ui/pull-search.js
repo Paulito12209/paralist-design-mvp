@@ -36,13 +36,13 @@ function canStartPull(event) {
   /* Nur mit linker Maustaste oder Touch */
   if (event.button) return false;
 
-  /* Formular- und Klick-Elemente behalten ihre eigene Interaktion */
-  if (event.target.closest("button, input, textarea, select, a, .tab-pills, .cal-strip, .drawing-canvas")) {
+  /* Eingabefelder und horizontale Wischbereiche behalten ihre eigene Interaktion */
+  if (event.target.closest("input, textarea, select, .tab-pills, .cal-strip, .drawing-canvas")) {
     return false;
   }
 
-  /* Der Inhalt muss ganz oben stehen und darf nicht weiter nach oben scrollbar sein */
-  return !dom.content || dom.content.scrollTop <= 0;
+  /* Der Inhalt muss ganz oben stehen (mit kleiner Toleranz für Subpixel-Rundung) */
+  return !dom.content || dom.content.scrollTop <= 1;
 }
 
 function onPointerDown(event) {
@@ -73,7 +73,7 @@ function onPointerMove(event) {
     }
 
     /* Sobald schon nach oben gescrollt wurde, greift normales Scrollen */
-    if (dom.content && dom.content.scrollTop > 0) {
+    if (dom.content && dom.content.scrollTop > 1) {
       pull = null;
       return;
     }
