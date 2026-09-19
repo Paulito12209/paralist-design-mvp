@@ -211,7 +211,10 @@ body.is-search-typing .bottom-bar {
 }
 
 .tab-btn.is-active {
-  color: var(--text);
+  /* color: --bg statt --text, weil der Hintergrund jetzt die Zähler-Akzentfarbe
+     ist (hell im Dunkelmodus, dunkel im Hellmodus) - das Icon braucht darauf
+     den jeweils entgegengesetzten Kontrast, den --bg genau abbildet */
+  color: var(--bg);
   background: var(--tab-pill-active-bg);
 }
 
@@ -258,11 +261,6 @@ body.is-search-typing .bottom-bar {
 
 /* Dunkelmodus: Farben der Navigation invertieren */
 @media (prefers-color-scheme: dark) {
-  /* Aktiver Reiter: sicher reines Weiß statt --text (#F2F2F7), auf dem
-     dunklen Silber-Hintergrund (--tab-pill-active-bg) soll es klar hell sein */
-  :root:not([data-theme="light"]) .tab-btn.is-active {
-    color: #ffffff;
-  }
   /* Add-Button: schwarzer Hintergrund, weiße Border, innerer Glow, weißes Icon */
   :root:not([data-theme="light"]) .tab-add {
     background: #000000;
@@ -270,9 +268,6 @@ body.is-search-typing .bottom-bar {
     border: 1.5px solid rgba(255, 255, 255, 0.5);
     box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.25), 0 0 6px rgba(255, 255, 255, 0.2);
   }
-}
-:root[data-theme="dark"] .tab-btn.is-active {
-  color: #ffffff;
 }
 :root[data-theme="dark"] .tab-add {
   background: #000000;

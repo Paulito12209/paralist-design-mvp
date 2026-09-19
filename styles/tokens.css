@@ -296,7 +296,7 @@
   --restore-color: #34c759;
   --link-color: #007aff;
   --tab-pill-size: 15px;
-  --tab-pill-active-bg: var(--card); /* wie die Übersichtskarten, statt kaum sichtbarem Grauschleier */
+  --tab-pill-active-bg: var(--avatar-btn-bg); /* Zähler-Akzentfarbe statt Kartenfarbe; wechselt automatisch mit dem Modus */
   --tab-pills-btn-gap: 8px;
   --tab-pills-fade: 16px;
   --star-color: #f5c518;

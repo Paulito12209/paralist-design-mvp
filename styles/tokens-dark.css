@@ -24,7 +24,6 @@
     --avatar-btn-bg: #aab2bd; /* im Hellmodus steht hier #111318 — die vier Grundfarben sind über Kreuz getauscht */
     --nav-bg: #000000;
     --nav-glow-color: 170, 178, 189; /* im Hellmodus steht hier 209, 213, 219 (#D1D5DB) */
-    --tab-pill-active-bg: var(--card); /* wie die Übersichtskarten, genau wie im Hellmodus */
     --nav-glow-opacity: 0.6;
     --media-strip-bg: rgba(255, 255, 255, 0.1);
     --inbox-icon-color: #9fc4dc;
@@ -72,7 +71,6 @@
   --avatar-btn-bg: #aab2bd; /* im Hellmodus steht hier #111318 — die vier Grundfarben sind über Kreuz getauscht */
   --nav-bg: #000000;
   --nav-glow-color: 170, 178, 189; /* im Hellmodus steht hier 209, 213, 219 (#D1D5DB) */
-  --tab-pill-active-bg: var(--card); /* wie die Übersichtskarten, genau wie im Hellmodus */
   --nav-glow-opacity: 0.6;
   --media-strip-bg: rgba(255, 255, 255, 0.1);
   --inbox-icon-color: #9fc4dc;
