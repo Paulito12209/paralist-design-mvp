@@ -4,9 +4,10 @@
  * Pfad: src/features/media/media-import.js
  *
  * Keine anpassbaren visuellen Werte: die Größe der Vorschaubilder steht in
- * src/data/files.js (thumbSize).
+ * src/data/files.js (thumbSize), die Ablage der Dateien in src/core/blobs.js.
  */
 
+import { putBlob } from "../../core/blobs.js";
 import { emit, events } from "../../core/bus.js";
 import { el } from "../../core/dom.js";
 import { load } from "../../core/lazy.js";
@@ -43,6 +44,9 @@ export async function addMediaFiles(fileList, source) {
       },
     };
     if (described.thumb) setThumb(entry.id, described.thumb);
+    /* Die Datei selbst kommt in die Browser-Datenbank — nur so lässt sie sich
+       später in der Dateiansicht wirklich zeigen und abspielen. */
+    await putBlob(entry.id, file);
     state.entries.push(entry);
     logXp("created", "medien", entry.title);
   }

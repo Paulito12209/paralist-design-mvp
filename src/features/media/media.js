@@ -14,10 +14,11 @@
 
 import { events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
+import { load } from "../../core/lazy.js";
 import { groupByMonth } from "../../core/format.js";
 import { icon } from "../../core/html.js";
 import { mediaFilters } from "../../data/config.js";
-import { mediaEntries, mediaKindOf } from "../../data/queries.js";
+import { findEntry, mediaEntries, mediaKindOf } from "../../data/queries.js";
 import { saveState, state } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { mediaCell } from "../../ui/media-cell.js";
@@ -104,6 +105,21 @@ function renderGrid() {
     .join("");
 }
 
+/*
+ * Eine Kachel im Raster zeigt die Datei selbst, statt die Eintragsseite zu
+ * öffnen. Der Klick wird deshalb abgefangen, bevor ihn die allgemeine
+ * Listen-Behandlung (src/ui/list-clicks.js) sieht.
+ */
+function onCellClick(event) {
+  const cell = event.target.closest("[data-open-entry]");
+  if (!cell) return;
+  const entry = findEntry(cell.dataset.openEntry);
+  if (!entry) return;
+  event.stopPropagation();
+  event.preventDefault();
+  load("viewer").then((module) => module.openViewer(entry));
+}
+
 /** Die ganze Seite neu zeichnen. */
 export function renderMedia() {
   renderFilters();
@@ -119,6 +135,9 @@ function init() {
     saveState();
     renderMedia();
   });
+
+  /* true: vor der allgemeinen Listen-Behandlung, die sonst die Eintragsseite öffnet */
+  dom.mediaBody.addEventListener("click", onCellClick, true);
 
   initMediaImport(dom.mediaActions);
   bindMediaPicks(dom.mediaBody);
