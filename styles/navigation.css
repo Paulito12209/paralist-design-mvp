@@ -88,16 +88,18 @@ body.is-search-typing .bottom-bar {
 }
 
 .tab-btn {
-  min-width: 0; /* Labels wie „Einstellungen“ dürfen schmaler werden, statt die Leiste zu sprengen */
+  min-width: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
   gap: 4px;
   color: var(--muted);
   font-size: var(--tab-label-size);
   font-weight: 500;
-  padding: 4px 0;
-  position: relative; /* position: Anker für die größere Tippfläche darunter */
+  padding: 8px;
+  border-radius: 50%;
+  position: relative;
 }
 
 /* Der Knopf ist nur so breit wie sein Icon, damit die Abstände stimmen — zum
@@ -156,9 +158,6 @@ body.is-search-typing .bottom-bar {
 .tab-btn.is-active {
   color: var(--text);
   background: var(--tab-pill-active-bg);
-  border-radius: 50%;
-  padding: 8px;
-  aspect-ratio: 1;
 }
 
 .tab-btn:active {
