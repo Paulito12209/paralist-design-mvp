@@ -37,6 +37,7 @@ import { closeCtxMenu, initCtxMenu } from "./ui/ctx-menu.js";
 import { initListClicks } from "./ui/list-clicks.js";
 import { setLongPressMenus } from "./ui/long-press.js";
 import { initModalPull } from "./ui/modal-pull.js";
+import { initPullSearch } from "./ui/pull-search.js";
 import { initSheet } from "./ui/sheet.js";
 import { initSwipe } from "./ui/swipe.js";
 
@@ -76,6 +77,7 @@ function initShell() {
   initSheet();
   initCtxMenu();
   initModalPull();
+  initPullSearch();
   setLongPressMenus({ tab: openTabMenu, workspace: openWorkspaceMenu });
   initSwipe();
   initListClicks({ openTabMenu, openWorkspaceMenu, beginRenameTab, finishWorkspaceName: commitWorkspaceName });

@@ -99,6 +99,7 @@
  * --workspace-head-gap      -> Abstand zwischen „Arbeitsbereiche“ und den Tab-Pillen
  * --top-bar-fade            -> Höhe des Ausblend-Verlaufs unter der Suchleiste
  * --top-bar-icon-width/-height          -> Größe der Icons oben
+ * --top-bar-profile-icon-size           -> Größe des Profil-Icons im Kopfzeilen-Knopf
  * --top-bar-leading-btn-width/-height   -> Größe des runden Knopfes oben links
  * --top-bar-profile-btn-width/-height   -> Größe des Profil-Knopfes oben rechts
  * --search-bar-height / --search-bar-radius -> Höhe und Rundung der Suchleiste
@@ -222,12 +223,13 @@
   --top-bar-fade: 24px;
   --top-bar-icon-width: 24px;
   --top-bar-icon-height: 24px;
-  --top-bar-leading-btn-width: 48px;
-  --top-bar-leading-btn-height: 48px;
-  --top-bar-profile-btn-width: 48px;
-  --top-bar-profile-btn-height: 48px;
-  --search-bar-height: 56px;
-  --search-bar-radius: 28px;
+  --top-bar-profile-icon-size: 28px;
+  --top-bar-leading-btn-width: 44px;
+  --top-bar-leading-btn-height: 44px;
+  --top-bar-profile-btn-width: 44px;
+  --top-bar-profile-btn-height: 44px;
+  --search-bar-height: 44px;
+  --search-bar-radius: 22px;
   --icon-folder-plus-width: 22px;
   --icon-folder-plus-height: 22px;
   --tab-space: 116px;

@@ -5,6 +5,7 @@
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
  * --top-bar-icon-width / --top-bar-icon-height          -> Größe der Icons oben
+ * --top-bar-profile-icon-size                           -> Größe des Einstellungs-/Profil-Icons
  * --top-bar-leading-btn-width / -height                 -> runder Knopf oben links
  * --top-bar-profile-btn-width / -height                 -> Profil-Knopf oben rechts
  * --top-bar-fade                                        -> FADE-EFFEKT: Höhe der Ausblendung unter der Suche.
@@ -17,7 +18,6 @@
  * --level-color / --level-dim / --level-glow            -> Striche und Zahl der Level-Anzeige
  * --icon-strong / --placeholder                         -> Icon- und Platzhalterfarbe
  * --bg                                                  -> Hintergrundfarbe (wird am unteren Rand ausgeblendet)
-
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -60,8 +60,7 @@ body.is-subpage .top-bar {
   display: none;
 }
 
-.icon-btn,
-.avatar {
+.icon-btn {
   border-radius: 50%;
   /* macht die Buttons rund; Breite/Höhe allein ergeben kein Kreis */
   background: var(--card);
@@ -71,22 +70,18 @@ body.is-subpage .top-bar {
   color: var(--icon-strong);
   box-shadow: var(--shadow);
   flex: 0 0 auto;
-}
-
-/* Android Material: Icon-Button mindestens 48×48 */
-.icon-btn {
   width: var(--top-bar-leading-btn-width);
   height: var(--top-bar-leading-btn-height);
 }
 
-/* Level-Anzeige oben links: runder Knopf mit Strich-Skala wie in der iOS-App */
+/* Level-Anzeige oben links: transparenter runder Knopf mit Strich-Skala */
 .level-btn {
   width: var(--top-bar-leading-btn-width);
   height: var(--top-bar-leading-btn-height);
   border-radius: 50%;
   /* border-radius: macht den Knopf rund */
-  background: var(--card);
-  box-shadow: var(--shadow);
+  background: transparent;
+  box-shadow: none;
   display: grid;
   place-items: center;
   flex: 0 0 auto;
@@ -97,8 +92,8 @@ body.is-subpage .top-bar {
 }
 
 .level-gauge {
-  width: 46px;
-  height: 46px;
+  width: 44px;
+  height: 44px;
   display: block;
   filter: drop-shadow(0 0 3px var(--level-glow));
   /* filter: sanftes Leuchten, im Hellmodus unsichtbar */
@@ -117,7 +112,7 @@ body.is-subpage .top-bar {
 
 .level-num {
   fill: var(--level-color);
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
   letter-spacing: -0.03em;
 }
@@ -128,16 +123,30 @@ body.is-subpage .top-bar {
   font-weight: 600;
 }
 
+/* Profil-/Einstellungs-Knopf rechts: transparent ohne Schatten */
 .avatar {
   width: var(--top-bar-profile-btn-width);
   height: var(--top-bar-profile-btn-height);
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: none;
+  display: grid;
+  place-items: center;
   color: var(--icon-strong);
+  flex: 0 0 auto;
   overflow: hidden;
 }
 
-/* Android Material: Standard-Icons 24×24 dp, hier Filter, Suche und Profil */
+.avatar:active {
+  opacity: 0.7;
+}
+
+.avatar .icon {
+  width: var(--top-bar-profile-icon-size);
+  height: var(--top-bar-profile-icon-size);
+}
+
 .icon-btn .icon,
-.avatar .icon,
 .search-icon {
   width: var(--top-bar-icon-width);
   height: var(--top-bar-icon-height);
@@ -149,11 +158,13 @@ body.is-subpage .top-bar {
   /* min-width: die Suche darf schmaler als „Suchen“ werden, statt Level und Profil wegzudrücken */
   height: var(--search-bar-height);
   background: var(--card);
+  border: 0;
+  outline: none;
   border-radius: var(--search-bar-radius);
   /* Pillenform; Höhe allein macht die Ecken nicht rund */
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding: 0 16px;
   box-shadow: var(--shadow);
   color: var(--muted);
