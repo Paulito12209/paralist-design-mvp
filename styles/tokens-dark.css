@@ -12,8 +12,8 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
     --bg: #000000;
-    --card: #1e2329; /* dunkle Version von #AAB2BD (Suchleiste, Karten, Navbar) */
-    --overview-card-bg: #1e2329;
+    --card: #12151a; /* dunkle Version von #AAB2BD (Suchleiste, Karten, Navbar) */
+    --overview-card-bg: #12151a;
     --viewer-stage-bg: #000000;
     --composer-mic-bg: #09090a;
     --text: #f2f2f7;
@@ -21,7 +21,7 @@
     --title-alt: #5a5a60;
     --line: rgba(84, 84, 88, 0.55);
     --shadow: 0 0 3px rgba(255, 255, 255, 0.08), 0 0 24px rgba(255, 255, 255, 0.11);
-    --tab-pill-active-bg: #1e2329;
+    --tab-pill-active-bg: #12151a;
     --media-strip-bg: rgba(255, 255, 255, 0.1);
     --inbox-icon-color: #9fc4dc;
     --project-icon-color: #e8848d;
@@ -56,8 +56,8 @@
 /* Dunkelmodus: in den Einstellungen fest gewählt */
 :root[data-theme="dark"] {
   --bg: #000000;
-  --card: #1e2329; /* dunkle Version von #AAB2BD (Suchleiste, Karten, Navbar) */
-  --overview-card-bg: #1e2329;
+  --card: #12151a; /* dunkle Version von #AAB2BD (Suchleiste, Karten, Navbar) */
+  --overview-card-bg: #12151a;
   --viewer-stage-bg: #000000;
   --composer-mic-bg: #0e0e0f;
   --text: #f2f2f7;
@@ -65,7 +65,7 @@
   --title-alt: #5a5a60;
   --line: rgba(84, 84, 88, 0.55);
   --shadow: 0 0 3px rgba(255, 255, 255, 0.08), 0 0 24px rgba(255, 255, 255, 0.11);
-  --tab-pill-active-bg: #1e2329;
+  --tab-pill-active-bg: #12151a;
   --media-strip-bg: rgba(255, 255, 255, 0.1);
   --inbox-icon-color: #9fc4dc;
   --project-icon-color: #e8848d;
