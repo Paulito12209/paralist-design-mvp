@@ -30,7 +30,7 @@ import { closeCtxMenu } from "../../ui/ctx-menu.js";
 import { openPlacePicker } from "../../ui/pickers.js";
 import { openEntry } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
-import { showToast } from "../../ui/toast.js";
+import { hideToast, showToast } from "../../ui/toast.js";
 import { isViewActive } from "../../ui/views.js";
 import {
   addComposerFiles,
@@ -133,6 +133,10 @@ function renderComposerLink() {
  */
 export function openComposer(overrides = {}) {
   closeCtxMenu();
+  /* Eine noch stehende Meldung geht weg: sie spricht über den vorigen Eintrag,
+     und die Leiste rückt beim Tippen näher an den Rand — die Meldung würde
+     sonst seitlich zucken, während der Finger ihren Knopf sucht. */
+  hideToast();
   const start = { ...contextDefaults(), ...overrides };
   chooseComposerType(start.type, start.pick);
   composer.place = start.place;
@@ -359,8 +363,12 @@ export function initComposer() {
     createEntry();
   });
 
-  /* Beim Wechsel der Ansicht schließt sich das Eingabefeld von selbst. */
-  on(events.viewWillChange, closeComposer);
+  /* Beim Wechsel der Ansicht schließt sich das Eingabefeld von selbst — und
+     die Meldung geht mit: sie spräche auf der neuen Seite über die alte. */
+  on(events.viewWillChange, () => {
+    closeComposer();
+    hideToast();
+  });
   /* Der Kalender bittet über diese Nachricht um das Eingabefeld, damit er es
      nicht importieren muss. */
   on(events.composerRequested, openComposerForSlot);
