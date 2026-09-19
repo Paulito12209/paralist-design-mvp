@@ -1,6 +1,7 @@
 /*
- * Das Drei-Punkte-Menü der Dateiansicht und der Teilen-Knopf.
- * Oben stehen Umbenennen, Favorisieren und Verknüpfen, unten nebeneinander
+ * Das Drei-Punkte-Menü der Dateiansicht und der Teilen-Knopf. Verknüpfen hat
+ * einen eigenen Knopf in der Leiste unten (viewer.js) und steht deshalb nicht
+ * mehr hier. Oben stehen Umbenennen und Favorisieren, unten nebeneinander
  * Archivieren und Löschen.
  * Pfad: src/features/media/viewer-menu.js
  *
@@ -15,7 +16,6 @@ import { getBlob } from "../../core/blobs.js";
 import { emit, events } from "../../core/bus.js";
 import { deleteEntry, toggleFavorite } from "../../data/mutations.js";
 import { archiveEntry } from "../../data/xp.js";
-import { openPlacesPicker } from "../../ui/pickers.js";
 import { openSheet } from "../../ui/sheet.js";
 
 const noteTime = 2200;
@@ -84,11 +84,6 @@ export function openViewerMenu(entry, { onRename, onClose }) {
       label: entry.favorite ? "Aus Favoriten entfernen" : "Zu Favoriten",
       icon: entry.favorite ? "star" : "star-outline",
       onSelect: () => toggleFavorite(entry),
-    },
-    {
-      label: "Verknüpfen",
-      icon: "link",
-      onSelect: () => openPlacesPicker(entry),
     },
     {
       label: "Archivieren",

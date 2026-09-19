@@ -1,14 +1,19 @@
 /*
- * Dateiansicht: Foto, Video, Aufnahme und PDF bildschirmfüllend, mit Namen,
- * Teilen-Knopf und Drei-Punkte-Menü in der Kopfzeile.
+ * Dateiansicht: Foto, Video, Aufnahme und PDF bildschirmfüllend, mit Namen und
+ * Teilen-Knopf in der Kopfzeile. Unten liegt eine eigene schwarze Leiste mit
+ * Verknüpfen, „Zur Seite“ und dem Drei-Punkte-Menü — sie nimmt eigenen Platz
+ * ein, statt sich über das Bild oder ein Hochkant-Video zu legen.
  * Pfad: styles/viewer.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
- * --viewer-stage-bg    -> Fläche hinter Bild, Video und PDF
- * --viewer-btn-size    -> Größe der runden Knöpfe in der Kopfzeile
- * --viewer-title-size  -> Schriftgröße des Namens oben
- * --viewer-pad         -> Abstand vom Rand rundherum
+ * --viewer-stage-bg     -> Fläche hinter Bild, Video und PDF
+ * --viewer-btn-size     -> Größe der runden Knöpfe in der Kopfzeile
+ * --viewer-title-size   -> Schriftgröße des Namens oben
+ * --viewer-pad          -> Abstand vom Rand rundherum
+ * --viewer-foot-bg      -> Fläche der Leiste unten
+ * --viewer-foot-btn-size -> Größe von Verknüpfen-Knopf und Drei-Punkte-Menü unten
+ * --viewer-foot-goto-h  -> Höhe des Knopfes „Zur Seite“ in der Mitte
  * --text / --muted / --card -> Schrift, Hinweise und die Fläche der Kopfzeile
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
@@ -94,6 +99,60 @@
 
 .viewer-btn:active {
   background: var(--tab-pill-active-bg);
+}
+
+/* ---------- Fußleiste: Verknüpfen, Zur Seite, Drei-Punkte-Menü ---------- */
+
+/* Eigener schwarzer Bereich statt Überlagerung: so bleibt bei einem
+   Hochkant-Video oder -Bild die ganze Datei sichtbar. */
+.viewer-foot {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 10px var(--viewer-pad) calc(10px + var(--safe-bottom));
+  background: var(--viewer-foot-bg);
+}
+
+.viewer-foot-btn {
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.viewer-foot-btn .icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Links und rechts: Verknüpfen und die drei Punkte, nur als runde Icon-Knöpfe */
+.viewer-foot-icon {
+  width: var(--viewer-foot-btn-size);
+  height: var(--viewer-foot-btn-size);
+  flex: 0 0 auto;
+  border-radius: 50%; /* border-radius: macht die Tippfläche rund */
+  background: rgba(255, 255, 255, 0.14); /* rgba: dezente Fläche auf Schwarz, unabhängig vom Farbschema */
+}
+
+.viewer-foot-icon:active {
+  background: rgba(255, 255, 255, 0.24);
+}
+
+/* Mitte: „Zur Seite“ — eine Pille, absichtlich niedriger als die runden Knöpfe */
+.viewer-foot-goto {
+  height: var(--viewer-foot-goto-h);
+  padding: 0 16px;
+  border-radius: 999px; /* border-radius: Pillenform */
+  background: rgba(255, 255, 255, 0.14);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.viewer-foot-goto:active {
+  background: rgba(255, 255, 255, 0.24);
 }
 
 /* ---------- Die Datei selbst ---------- */
