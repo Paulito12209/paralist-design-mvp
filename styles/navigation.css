@@ -111,7 +111,8 @@ body.is-search-typing .bottom-bar {
 .nav-shell {
   background: var(--nav-bg);
   border-radius: var(--nav-radius); /* border-radius: macht die Leiste rund wie eine Pille */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(0, 0, 0, 0.12);
+  /* kein box-shadow: die Leiste hebt sich wie im Dunkelmodus allein durch
+     den Verlauf dahinter vom Inhalt ab, nicht durch einen eigenen Schatten */
   /* padding: nur seitlich, die Höhe gibt --nav-height in .tab-bar vor */
   padding: 0 var(--nav-inner-pad);
 }
@@ -255,11 +256,8 @@ body.is-search-typing .bottom-bar {
   transform: translateX(var(--tab-add-shift)); /* transform: verschiebt den Kreis, ohne das Layout der Leiste anzufassen */
 }
 
-/* Dunkelmodus: Schatten und Farben der Navigation invertieren */
+/* Dunkelmodus: Farben der Navigation invertieren */
 @media (prefers-color-scheme: dark) {
-  :root:not([data-theme="light"]) .nav-shell {
-    box-shadow: none;
-  }
   /* Aktiver Reiter: dezentes Dunkelsilber statt reinem Weiß */
   :root:not([data-theme="light"]) .tab-btn.is-active {
     color: #a0a0a8;
@@ -271,9 +269,6 @@ body.is-search-typing .bottom-bar {
     border: 1.5px solid rgba(255, 255, 255, 0.5);
     box-shadow: inset 0 0 8px rgba(255, 255, 255, 0.25), 0 0 6px rgba(255, 255, 255, 0.2);
   }
-}
-:root[data-theme="dark"] .nav-shell {
-  box-shadow: none;
 }
 :root[data-theme="dark"] .tab-btn.is-active {
   color: #a0a0a8;
