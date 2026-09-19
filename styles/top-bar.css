@@ -123,12 +123,12 @@ body.is-subpage .top-bar {
   font-weight: 600;
 }
 
-/* Profil-/Einstellungs-Knopf rechts: transparent ohne Schatten */
+/* Profil-/Einstellungs-Knopf rechts: Fläche wie Suchleiste/Karten/Navbar */
 .avatar {
   width: var(--top-bar-profile-btn-width);
   height: var(--top-bar-profile-btn-height);
   border-radius: 50%;
-  background: transparent;
+  background: var(--card);
   box-shadow: none;
   display: grid;
   place-items: center;
