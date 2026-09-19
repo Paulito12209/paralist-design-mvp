@@ -67,6 +67,8 @@
  * --nav-glow-opacity        -> Deckkraft des ganzen Verlaufs (im Hellmodus 0, also aus)
  * --nav-glow-arc            -> wie stark die Oberkante durchhängt: kleiner = der Bogen
                                ist deutlicher gebogen, größer = flacher bis gerade
+ * --nav-glow-fade           -> auf welcher Strecke die Oberkante ausgeblendet wird,
+                               damit der Verlauf oben nicht hart abbricht
  * --stage-bg                -> Fläche rund um das Gerätefenster am Desktop
  * --avatar-view-bg          -> Hintergrund der großen Profilbild-Ansicht (immer dunkel)
  * --avatar-gradient-from/-to -> Farbverlauf hinter den Initialen im Profil
@@ -297,7 +299,8 @@
   --nav-glow-height: 380px;
   --nav-glow-strength: 0.45;
   --nav-glow-opacity: 0;
-  --nav-glow-arc: 100%;
+  --nav-glow-arc: 115%;
+  --nav-glow-fade: 28%;
   --inbox-icon-color: #233d4c;
   --project-icon-color: #5B0E14;
   --resource-icon-color: #1A2517;

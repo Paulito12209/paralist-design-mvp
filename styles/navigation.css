@@ -24,6 +24,7 @@
  * --nav-glow-strength       -> wie kräftig der Verlauf am unteren Rand ist (0 = aus, 1 = voll)
  * --nav-glow-opacity        -> Deckkraft des ganzen Verlaufs (im Hellmodus 0, also aus)
  * --nav-glow-arc            -> wie stark der Bogen der Oberkante durchhängt
+ * --nav-glow-fade           -> auf welcher Strecke die Oberkante ausgeblendet wird
  *
  * Die Namen unter den Icons sind standardmäßig aus (dafür die Icons größer);
  * die Klasse „show-labels“ auf der Leiste blendet sie wieder ein — gesetzt von
@@ -58,9 +59,14 @@ body.is-search-typing .bottom-bar {
 }
 
 /*
- * Der Verlauf unten im Gerät. Er sitzt auf .device statt auf der Leiste selbst:
- * so bleibt er hinter dem Inhalt (der als nächstes Geschwister darüber gemalt
- * wird) und nur die Navbar (z-index 20) liegt sichtbar darüber.
+ * Der Verlauf unten im Gerät. Er sitzt auf .device statt auf der Leiste selbst.
+ *
+ * z-index 10 heißt: der Verlauf liegt ÜBER dem Inhalt (der steht auf 0), aber
+ * unter Navigation und Kopfzeile (20) und unter allen Blättern (ab 36). Das
+ * muss so sein, weil jede Listenzeile einen deckenden Hintergrund hat — sonst
+ * würden die Wisch-Knöpfe dahinter durchscheinen. Läge der Verlauf dahinter,
+ * würden Einträge ihn einfach abschneiden. So scrollt der Inhalt stattdessen
+ * sanft in den Verlauf hinein.
  *
  * Der Bogen entsteht dadurch, dass der Mittelpunkt des Verlaufs OBERHALB der
  * Fläche liegt (at 50% -40%): dort, wo es zu diesem Punkt am weitesten ist —
@@ -79,6 +85,7 @@ body.is-search-typing .bottom-bar {
   right: 0;
   bottom: 0;
   height: var(--nav-glow-height);
+  z-index: 10;
   opacity: var(--nav-glow-opacity);
   background:
     radial-gradient(var(--nav-glow-arc) 158% at 50% -40%,
@@ -91,6 +98,11 @@ body.is-search-typing .bottom-bar {
     radial-gradient(80% 60% at 50% 100%,
       rgba(var(--nav-glow-color), calc(var(--nav-glow-strength) * 0.3)),
       rgba(var(--nav-glow-color), 0) 75%);
+  /* mask-image: blendet die Oberkante aus. Ohne das bricht der Verlauf oben
+     hart ab — an den Seiten ist er dort schon hell, und genau da endet die
+     Fläche. Wie weit oben das passiert, hängt von der Gerätebreite ab, darum
+     die Maske statt eines festen Werts im Verlauf selbst. */
+  mask-image: linear-gradient(to bottom, transparent 0%, #000 var(--nav-glow-fade));
   pointer-events: none;
 }
 
