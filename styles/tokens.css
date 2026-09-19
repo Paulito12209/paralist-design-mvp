@@ -228,12 +228,12 @@
   --top-bar-leading-btn-height: 44px;
   --top-bar-profile-btn-width: 44px;
   --top-bar-profile-btn-height: 44px;
-  --search-bar-height: 44px;
-  --search-bar-radius: 22px;
+  --search-bar-height: 48px;
+  --search-bar-radius: 24px;
   --icon-folder-plus-width: 22px;
   --icon-folder-plus-height: 22px;
   --tab-space: 116px;
-  --nav-height: 80px;
+  --nav-height: 76px;
   /* Material 3: Navigationsleiste ist 80dp hoch */
   --tab-label-size: 10px;
   --tab-add-size: 50px;
