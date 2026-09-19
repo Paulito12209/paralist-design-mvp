@@ -1,0 +1,209 @@
+/*
+ * Dateiansicht: Foto, Video, Aufnahme und PDF bildschirmfüllend, mit Namen,
+ * Teilen-Knopf und Drei-Punkte-Menü in der Kopfzeile.
+ * Pfad: styles/viewer.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --viewer-stage-bg    -> Fläche hinter Bild, Video und PDF
+ * --viewer-btn-size    -> Größe der runden Knöpfe in der Kopfzeile
+ * --viewer-title-size  -> Schriftgröße des Namens oben
+ * --viewer-pad         -> Abstand vom Rand rundherum
+ * --text / --muted / --card -> Schrift, Hinweise und die Fläche der Kopfzeile
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+*/
+
+.viewer-backdrop {
+  position: absolute; /* position: liegt über der ganzen Gerätefläche */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 46; /* z-index: über der Navigation, unter dem Auswahl-Blatt (z-index 50) */
+}
+
+.viewer-backdrop[hidden] {
+  display: none;
+}
+
+.viewer {
+  height: 100%;
+  background: var(--viewer-stage-bg);
+  display: flex;
+  flex-direction: column;
+  animation: viewer-in 0.2s ease; /* animation: die Datei blendet kurz auf, statt zu springen */
+}
+
+@keyframes viewer-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/* ---------- Kopfzeile ---------- */
+
+/* Zurück-Pfeil, Name, Teilen und die drei Punkte — alles in einer Zeile */
+.viewer-head {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: calc(var(--viewer-pad) + var(--safe-top)) var(--viewer-pad) var(--viewer-pad);
+  background: var(--card);
+  border-bottom: 1px solid var(--line); /* border-bottom: trennt die Kopfzeile von der Datei */
+}
+
+/* Der Name ist zugleich das Feld zum Umbenennen: einfach hineintippen */
+.viewer-title {
+  flex: 1;
+  min-width: 0; /* min-width: sonst drückt ein langer Name die Knöpfe aus dem Bild */
+  font-size: var(--viewer-title-size);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+  background: none;
+  border: none;
+  padding: 4px 6px;
+  border-radius: 10px; /* border-radius: rundet die Fläche, solange man tippt */
+}
+
+.viewer-title:focus {
+  background: var(--bg);
+  outline: none;
+}
+
+.viewer-title::placeholder {
+  color: var(--placeholder);
+}
+
+.viewer-btn {
+  width: var(--viewer-btn-size);
+  height: var(--viewer-btn-size);
+  flex: 0 0 auto;
+  border-radius: 50%; /* border-radius: macht die Tippfläche rund */
+  display: grid;
+  place-items: center;
+  color: var(--text);
+}
+
+.viewer-btn .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.viewer-btn:active {
+  background: var(--tab-pill-active-bg);
+}
+
+/* ---------- Die Datei selbst ---------- */
+
+.viewer-stage {
+  flex: 1;
+  min-height: 0; /* min-height: erst damit darf ein großes Bild schrumpfen statt überzulaufen */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 12px;
+  padding: var(--viewer-pad);
+  padding-bottom: calc(var(--viewer-pad) + var(--safe-bottom));
+  overflow: auto;
+}
+
+/* Bild und Video bleiben ganz im Bild, statt beschnitten zu werden */
+.viewer-img,
+.viewer-video {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain; /* object-fit: die ganze Datei ist zu sehen, nichts wird abgeschnitten */
+}
+
+.viewer-video {
+  width: 100%;
+}
+
+/* PDF: das eingebettete Fenster füllt die ganze Fläche */
+.viewer-pdf {
+  width: 100%;
+  height: 100%;
+  border: none;
+  border-radius: var(--radius-lg); /* border-radius: passt zu den Karten der App */
+  background: var(--card);
+}
+
+/* Karte für Aufnahmen und Dateien ohne eigene Vorschau */
+.viewer-player {
+  width: 100%;
+  max-width: 320px;
+  background: var(--card);
+  border-radius: var(--radius-xl); /* border-radius: wie die übrigen Karten */
+  box-shadow: var(--shadow);
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.viewer-player-icon .icon {
+  width: 38px;
+  height: 38px;
+  color: var(--text);
+}
+
+.viewer-player-name {
+  font-size: 15px;
+  font-weight: 600;
+  text-align: center;
+  overflow-wrap: anywhere; /* overflow-wrap: lange Dateinamen ohne Leerzeichen dürfen umbrechen */
+}
+
+/* Die Bedienleiste des Browsers für Ton */
+.viewer-audio {
+  width: 100%;
+}
+
+/* Knopf, wenn sich eine Datei nur herunterladen lässt (z.B. ein Word-Dokument) */
+.viewer-open {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  text-decoration: none;
+  padding: 10px 18px;
+  border-radius: 999px; /* border-radius: Pillenform des Knopfes */
+  background: var(--bg);
+}
+
+/* Icon und Hinweis, wenn die Datei nicht in diesem Browser liegt */
+.viewer-missing-icon .icon {
+  width: 44px;
+  height: 44px;
+  color: var(--muted);
+}
+
+.viewer-note {
+  font-size: 14px;
+  color: var(--muted);
+  text-align: center;
+  max-width: 280px;
+}
+
+/* Kurze Rückmeldung nach dem Teilen, unten über der Datei */
+.viewer-hint {
+  position: absolute; /* position: legt sich über die Datei, ohne sie zu verschieben */
+  left: var(--viewer-pad);
+  right: var(--viewer-pad);
+  bottom: calc(var(--viewer-pad) + var(--safe-bottom));
+  padding: 12px 14px;
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  box-shadow: var(--shadow);
+  font-size: 14px;
+  color: var(--text);
+  text-align: center;
+}
+
+.viewer-hint[hidden] {
+  display: none;
+}

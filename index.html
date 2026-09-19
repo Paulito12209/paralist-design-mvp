@@ -34,6 +34,7 @@
       welche Datei welche Werte enthält, steht in styles/tokens.css und in README.md.
     -->
     <link rel="stylesheet" href="styles/tokens.css" />
+    <link rel="stylesheet" href="styles/tokens-dark.css" />
     <link rel="stylesheet" href="styles/base.css" />
     <link rel="stylesheet" href="styles/top-bar.css" />
     <link rel="stylesheet" href="styles/overview.css" />
@@ -53,6 +54,7 @@
     <link rel="stylesheet" href="styles/tasks.css" />
     <link rel="stylesheet" href="styles/tasks-board.css" />
     <link rel="stylesheet" href="styles/media.css" />
+    <link rel="stylesheet" href="styles/viewer.css" />
     <link rel="stylesheet" href="styles/drawing.css" />
   </head>
   <body>
@@ -375,6 +377,7 @@
         <input id="profile-file-photo" type="file" accept="image/*" capture="user" hidden />
         <input id="profile-file-library" type="file" accept="image/*" hidden />
 
+        <div class="viewer-backdrop" id="media-viewer" hidden></div><!-- Dateiansicht; Inhalt entsteht erst beim Öffnen: src/features/media/viewer.js -->
         <!-- Kleines Menü beim gedrückt Halten von Tabs und Arbeitsbereichen -->
         <div class="ctx-backdrop" id="ctx-menu" hidden>
           <div class="ctx-card" id="ctx-card"></div>

@@ -1,7 +1,9 @@
 /*
  * Das Auswahl-Blatt von unten: „Verknüpfen mit“, „Typ wählen“, Seitenmenüs.
- * Jede Option ist { label, icon, onSelect } plus optional active/danger/split/gap
- * und `stay` (das Blatt bleibt nach dem Antippen offen, z.B. zum An-/Abwählen).
+ * Jede Option ist { label, icon, onSelect } plus optional active/danger/split/gap,
+ * `stay` (das Blatt bleibt nach dem Antippen offen, z.B. zum An-/Abwählen) und
+ * `pair` (die Option rutscht ganz nach unten in eine Zeile neben die andere
+ * `pair`-Option — so stehen Archivieren und Löschen nebeneinander).
  * Pfad: src/ui/sheet.js
  *
  * Keine anpassbaren visuellen Werte: Aussehen und Abstände stehen in
@@ -25,6 +27,8 @@ function optionMarkup(option, index) {
   /* split: setzt eine Trennlinie über die Option; gap: lässt etwas Luft darüber */
   if (option.split) classes.push("is-split");
   if (option.gap) classes.push("is-gap");
+  /* pair: halbe Breite, damit zwei Optionen nebeneinander in eine Zeile passen */
+  if (option.pair) classes.push("is-pair");
   return `
     <button class="${classes.join(" ")}" type="button" data-sheet="${index}">
       ${icon(option.icon)}
@@ -33,11 +37,20 @@ function optionMarkup(option, index) {
   `;
 }
 
+/* Erst die gewöhnlichen Optionen untereinander, darunter die `pair`-Optionen
+   gemeinsam in einer Zeile. */
+function sheetMarkup(options) {
+  const marks = options.map(optionMarkup);
+  const rest = options.map((option, index) => (option.pair ? "" : marks[index])).join("");
+  const paired = options.map((option, index) => (option.pair ? marks[index] : "")).join("");
+  return paired ? `${rest}<div class="sheet-pair">${paired}</div>` : rest;
+}
+
 /** Blatt mit Titel und Optionen öffnen. */
 export function openSheet(title, options) {
   closeCtxMenu();
   dom.sheetTitle.textContent = title;
-  dom.sheetOptions.innerHTML = options.map(optionMarkup).join("");
+  dom.sheetOptions.innerHTML = sheetMarkup(options);
   actions = options.map((option) => option.onSelect);
   stays = options.map((option) => Boolean(option.stay));
   dom.sheet.hidden = false;

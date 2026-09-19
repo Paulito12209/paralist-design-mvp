@@ -1,0 +1,93 @@
+/*
+ * Die Werte für den Dunkelmodus — einmal automatisch nach der Einstellung des
+ * Geräts, einmal fest in den Einstellungen der App gewählt. Alles Übrige steht
+ * in styles/tokens.css; hier stehen nur die Werte, die im Dunkeln anders sind.
+ * Pfad: styles/tokens-dark.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * Dieselben Namen wie in styles/tokens.css — dort steht, was jeder bewirkt.
+ */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #000000;
+    --card: #121214;
+    --viewer-stage-bg: #000000;
+    --composer-mic-bg: #09090a;
+    --text: #f2f2f7;
+    --muted: #8e8e93;
+    --title-alt: #5a5a60;
+    --line: rgba(84, 84, 88, 0.55);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+    --tab-pill-active-bg: rgba(255, 255, 255, 0.12);
+    --inbox-icon-color: #9fc4dc;
+    --project-icon-color: #e8848d;
+    --resource-icon-color: #a3d39b;
+    --icon-strong: #e5e5ea;
+    --placeholder: #636366;
+    --chevron: #48484a;
+    --level-color: #a9c9ff;
+    --level-dim: rgba(169, 201, 255, 0.2);
+    --level-glow: rgba(120, 170, 255, 0.75);
+    --xp-created: #0a84ff;
+    --xp-done: #30d158;
+    --xp-line: #ff9f0a;
+    --dot-empty: rgba(255, 255, 255, 0.1);
+    --dot-1: rgba(255, 159, 10, 0.3);
+    --dot-2: rgba(255, 159, 10, 0.52);
+    --dot-3: rgba(255, 159, 10, 0.76);
+    --dot-4: #ff9f0a;
+    --cal-accent: #4aa3ff;
+    --cal-now: #6fcbe8;
+    --cal-day-ring: rgba(255, 255, 255, 0.07);
+    --prio-jetzt: #ff6961;
+    --prio-next: #ff9f0a;
+    --prio-spaeter: #4aa3ff;
+    --prio-irgendwann: #c77dff;
+    --media-doc-color: #0a84ff;
+    --support-choice-active-bg: rgba(10, 132, 255, 0.18);
+    --credits-chip-bg: rgba(255, 255, 255, 0.1);
+  }
+}
+
+/* Dunkelmodus: in den Einstellungen fest gewählt */
+:root[data-theme="dark"] {
+  --bg: #000000;
+  --card: #1c1c1e;
+  --viewer-stage-bg: #000000;
+  --composer-mic-bg: #0e0e0f;
+  --text: #f2f2f7;
+  --muted: #8e8e93;
+  --title-alt: #5a5a60;
+  --line: rgba(84, 84, 88, 0.55);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.3), 0 8px 24px rgba(0, 0, 0, 0.35);
+  --tab-pill-active-bg: rgba(255, 255, 255, 0.12);
+  --inbox-icon-color: #9fc4dc;
+  --project-icon-color: #e8848d;
+  --resource-icon-color: #a3d39b;
+  --icon-strong: #e5e5ea;
+  --placeholder: #636366;
+  --chevron: #48484a;
+  --level-color: #a9c9ff;
+  --level-dim: rgba(169, 201, 255, 0.2);
+  --level-glow: rgba(120, 170, 255, 0.75);
+  --xp-created: #0a84ff;
+  --xp-done: #30d158;
+  --xp-line: #ff9f0a;
+  --dot-empty: rgba(255, 255, 255, 0.1);
+  --dot-1: rgba(255, 159, 10, 0.3);
+  --dot-2: rgba(255, 159, 10, 0.52);
+  --dot-3: rgba(255, 159, 10, 0.76);
+  --dot-4: #ff9f0a;
+  --cal-accent: #4aa3ff;
+  --cal-now: #6fcbe8;
+  --cal-day-ring: rgba(255, 255, 255, 0.07);
+  --prio-jetzt: #ff6961;
+  --prio-next: #ff9f0a;
+  --prio-spaeter: #4aa3ff;
+  --prio-irgendwann: #c77dff;
+  --media-doc-color: #0a84ff;
+  --support-choice-active-bg: rgba(10, 132, 255, 0.18);
+  --credits-chip-bg: rgba(255, 255, 255, 0.1);
+}

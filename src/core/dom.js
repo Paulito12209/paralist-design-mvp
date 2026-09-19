@@ -131,6 +131,7 @@ export const dom = {
   /* Medien */
   get mediaFilters() { return el("media-filters"); },
   get mediaBody() { return el("media-body"); },
+  get mediaViewer() { return el("media-viewer"); },
 
   /* Zeichnung */
   get drawPad() { return el("draw-pad"); },
