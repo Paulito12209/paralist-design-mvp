@@ -1,7 +1,8 @@
 /*
  * Die Dateiansicht: tippt man im Medien-Raster auf eine Kachel, geht die Datei
  * hier bildschirmfüllend auf — Foto, Video, Aufnahme oder PDF. Oben stehen der
- * Name zum Ändern, der Teilen-Knopf und das Drei-Punkte-Menü.
+ * Name zum Ändern und der Teilen-Knopf, unten in einer eigenen schwarzen
+ * Leiste liegen Verknüpfen, „Zur Seite“ und das Drei-Punkte-Menü.
  * Wird erst beim ersten Öffnen einer Datei nachgeladen.
  * Pfad: src/features/media/viewer.js
  *
@@ -12,11 +13,17 @@
 import { events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
-import { findEntry } from "../../data/queries.js";
+import { findEntry, mainPlace } from "../../data/queries.js";
+import { isEntryRef, isWorkspaceRef, refId } from "../../data/refs.js";
 import { scheduleSave, ui } from "../../data/state.js";
-import { registerOverlay } from "../../ui/router.js";
+import { openEntry, openTarget, registerOverlay } from "../../ui/router.js";
+import { openPlacesPicker } from "../../ui/pickers.js";
 import { openViewerMenu, shareEntry } from "./viewer-menu.js";
 import { releaseStage, renderStage } from "./viewer-stage.js";
+
+/* Die Übersichtskarte „Inbox“ (id in overviewPages, src/data/config.js) —
+   dahin geht „Zur Seite“, wenn die Datei nirgends abgelegt ist. */
+const inboxOverviewId = 1;
 
 /* Welche Datei gerade offen ist. 0 heißt: die Ansicht ist zu. */
 let openId = 0;
@@ -37,10 +44,16 @@ function mount() {
         </button>
         <input class="viewer-title" type="text" aria-label="Name der Datei" placeholder="Ohne Titel" />
         <button class="viewer-btn" type="button" data-viewer="share" aria-label="Teilen">${icon("share")}</button>
-        <button class="viewer-btn" type="button" data-viewer="menu" aria-label="Optionen">${icon("dots")}</button>
       </header>
       <div class="viewer-stage"></div>
       <p class="viewer-hint" hidden></p>
+      <footer class="viewer-foot">
+        <button class="viewer-foot-btn viewer-foot-icon" type="button" data-viewer="link" aria-label="Verknüpfen">${icon("link")}</button>
+        <button class="viewer-foot-btn viewer-foot-goto" type="button" data-viewer="goto">
+          <span>Zur Seite</span>${icon("external")}
+        </button>
+        <button class="viewer-foot-btn viewer-foot-icon" type="button" data-viewer="menu" aria-label="Optionen">${icon("dots")}</button>
+      </footer>
     </div>`;
 }
 
@@ -108,6 +121,17 @@ function currentEntry() {
   return openId ? findEntry(openId) : null;
 }
 
+/* „Zur Seite“: zum Ablageort der Datei springen — Arbeitsbereich, Projekt
+   oder Inbox. Die Ansicht schließt dafür ohne Verlaufsschritt zurück, das
+   Ziel öffnet stattdessen einen neuen Schritt nach vorn. */
+function goToPlace(entry) {
+  const ref = mainPlace(entry);
+  hide();
+  if (isWorkspaceRef(ref)) openTarget("workspace", refId(ref));
+  else if (isEntryRef(ref)) openEntry(refId(ref));
+  else openTarget("overview", inboxOverviewId);
+}
+
 function onClick(event) {
   const button = event.target.closest("[data-viewer]");
   if (!button) return;
@@ -120,6 +144,14 @@ function onClick(event) {
   if (!entry) return;
   if (button.dataset.viewer === "share") {
     shareEntry(entry, parts().hint);
+    return;
+  }
+  if (button.dataset.viewer === "link") {
+    openPlacesPicker(entry);
+    return;
+  }
+  if (button.dataset.viewer === "goto") {
+    goToPlace(entry);
     return;
   }
   openViewerMenu(entry, {

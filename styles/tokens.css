@@ -162,6 +162,9 @@
  * --viewer-btn-size         -> Größe der runden Knöpfe in der Dateiansicht
  * --viewer-title-size       -> Schriftgröße des Dateinamens oben
  * --viewer-pad              -> Abstand vom Rand in der Dateiansicht
+ * --viewer-foot-bg          -> Fläche der schwarzen Leiste unten in der Dateiansicht
+ * --viewer-foot-btn-size    -> Größe von Verknüpfen-Knopf und Drei-Punkte-Menü unten
+ * --viewer-foot-goto-h      -> Höhe des Knopfes „Zur Seite“ in der Mitte (schmaler als die Runden)
  * --support-field-radius     -> Rundung der Felder und Art-Knöpfe im Feedback
  * --support-text-min-height  -> Mindesthöhe des Beschreibungsfelds im Feedback
  * --support-choice-active-bg -> Fläche der gewählten Art im Feedback
@@ -298,6 +301,9 @@
   --viewer-btn-size: 40px;
   --viewer-title-size: 17px;
   --viewer-pad: 12px;
+  --viewer-foot-bg: #000000;
+  --viewer-foot-btn-size: 44px;
+  --viewer-foot-goto-h: 36px;
   --media-btn-size: 48px;
   --media-actions-space: 60px;
   --search-pill-height: 48px;
