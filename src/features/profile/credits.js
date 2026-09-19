@@ -25,7 +25,7 @@ const credits = {
     "An meine Mutter und an meine Freunde — dafür, dass ihr da wart, als das hier noch nichts als eine Idee war.",
     "Und vor allem an meine folgenden Familienangehörigen:",
   ],
-  people: ["Katja", "David", "Marina", "Antawara"],
+  people: ["Katia", "David", "Marina", "Antawara"],
   close:
     "Ihr seid für mich die größte Motivation, am Ball zu bleiben und meine Energie dafür einzusetzen, eure Zukunft eines Tages ein Stück besser zu machen.",
 };
