@@ -60,6 +60,7 @@
 
 .workspace-add {
   color: var(--avatar-btn-bg);
+  opacity: 0.6;
   border-bottom: 0;
 }
 
@@ -67,7 +68,7 @@
   width: var(--icon-folder-plus-width);
   height: var(--icon-folder-plus-height);
   color: var(--avatar-btn-bg);
-  opacity: 0.75;
+  opacity: 0.6;
 }
 
 /* Kopfzeile einer Unterseite: der Zurück-Pfeil steht ganz oben, dort wo sonst
