@@ -12,6 +12,7 @@
  * --title-side              -> Extra-Abstand der großen Überschrift
  * --overview-gap            -> Abstand zwischen Überschrift und Karten/Inhalt
  * --title-alt / --title-alt-gap -> Farbe und Abstand des grauen Zweittitels („Medien“ neben „Ressourcen“)
+ * --avatar-btn-bg           -> Farbe der Abschnitts-Überschriften (.section-head h2)
  * --tab-space               -> Platz am Seitenende hinter der Navigation
  * --device-radius           -> Rundung des Gerätefensters am Desktop
  
@@ -162,7 +163,7 @@ body.is-subpage .content {
 .section-head h2 {
   font-size: 15px;
   font-weight: 400; /* 400 = normal, 500 = mittel, 700 = fett */
-  color: var(--muted);
+  color: var(--avatar-btn-bg);
 }
 
 .empty-note {

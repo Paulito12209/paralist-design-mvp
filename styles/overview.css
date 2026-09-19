@@ -17,6 +17,7 @@
  * --content-side                    -> Abstand des Inhalts zum Rand; so weit brechen
                                         die Pillen nach beiden Seiten aus
  * --icon-folder-plus-width / -height -> Größe des Ordner-Plus-Icons
+ * --avatar-btn-bg                    -> Farbe von Kartenzähler und Ordner-Plus-Icon
  * --workspace-section-gap           -> Abstand zwischen Karten und „Arbeitsbereiche“
  * --workspace-head-gap              -> Abstand über den Pillen
  
@@ -110,7 +111,7 @@
 .card-count {
   flex: 0 0 auto;
   /* Zähler darf nie schrumpfen oder umbrechen */
-  color: var(--muted);
+  color: var(--avatar-btn-bg);
   font-weight: 500;
 }
 
@@ -133,6 +134,7 @@
 .add-btn .icon {
   width: var(--icon-folder-plus-width);
   height: var(--icon-folder-plus-height);
+  color: var(--avatar-btn-bg);
 }
 
 .add-btn:active {

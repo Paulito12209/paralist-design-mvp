@@ -19,6 +19,7 @@
  * --icon-strong / --placeholder                         -> Icon- und Platzhalterfarbe
  * --bg                                                  -> Hintergrundfarbe (wird am unteren Rand ausgeblendet)
  * --avatar-btn-bg                                       -> Farbe des Icons im Profil-/Einstellungs-Knopf rechts
+ *                                                          und des Such-Icons
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -173,6 +174,7 @@ body.is-subpage .top-bar {
 .search-icon {
   flex: 0 0 auto;
   /* Such-Icon soll nicht mit dem Textfeld mitwachsen */
+  color: var(--avatar-btn-bg);
 }
 
 .search input {
