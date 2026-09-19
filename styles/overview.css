@@ -17,7 +17,7 @@
  * --content-side                    -> Abstand des Inhalts zum Rand; so weit brechen
                                         die Pillen nach beiden Seiten aus
  * --icon-folder-plus-width / -height -> Größe des Ordner-Plus-Icons
- * --avatar-btn-bg                    -> Farbe von Kartenzähler und Ordner-Plus-Icon
+ * --avatar-btn-bg                    -> Farbe von Kartenzähler, Ordner-Plus-Icon und Plus-Icon der Tab-Pille
  * --workspace-section-gap           -> Abstand zwischen Karten und „Arbeitsbereiche“
  * --workspace-head-gap              -> Abstand über den Pillen
  
@@ -291,6 +291,7 @@
 .tab-pill-add .icon {
   width: 16px;
   height: 16px;
+  color: var(--avatar-btn-bg);
 }
 
 .tab-pill-add:active {

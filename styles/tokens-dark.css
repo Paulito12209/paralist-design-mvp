@@ -22,7 +22,7 @@
     --line: rgba(84, 84, 88, 0.55);
     --shadow: 0 0 3px rgba(255, 255, 255, 0.08), 0 0 24px rgba(255, 255, 255, 0.11);
     --tab-pill-active-bg: #111318;
-    --nav-glow-opacity: 0.75;
+    --nav-glow-opacity: 0.6;
     --media-strip-bg: rgba(255, 255, 255, 0.1);
     --inbox-icon-color: #9fc4dc;
     --project-icon-color: #e8848d;
@@ -67,7 +67,7 @@
   --line: rgba(84, 84, 88, 0.55);
   --shadow: 0 0 3px rgba(255, 255, 255, 0.08), 0 0 24px rgba(255, 255, 255, 0.11);
   --tab-pill-active-bg: #111318;
-  --nav-glow-opacity: 0.75;
+  --nav-glow-opacity: 0.6;
   --media-strip-bg: rgba(255, 255, 255, 0.1);
   --inbox-icon-color: #9fc4dc;
   --project-icon-color: #e8848d;
