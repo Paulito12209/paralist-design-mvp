@@ -71,14 +71,18 @@ export function mostOpened() {
   return knownOpens().sort((a, b) => b.open.count - a.open.count || b.open.ts - a.open.ts);
 }
 
-/* Alles Durchsuchbare mit dem Text, in dem gesucht wird. */
+/*
+ * Alles Durchsuchbare: der Text, in dem gesucht wird, und wie daraus eine
+ * Zeile wird. Die Zeile entsteht erst für die Treffer — sonst würde bei jedem
+ * getippten Buchstaben für jeden Eintrag der Ablageort nachgeschlagen.
+ */
 function searchPool() {
   return [
     ...state.entries
       .filter((entry) => !entry.archived)
-      .map((entry) => ({ ...itemOfEntry(entry), text: `${entry.title} ${entry.body || ""}` })),
-    ...state.workspaces.map((workspace) => ({ ...itemOfWorkspace(workspace), text: workspace.name })),
-    ...Object.entries(overviewPages).map(([id, page]) => ({ ...itemOfPage(id, page), text: page.title })),
+      .map((entry) => ({ text: `${entry.title} ${entry.body || ""}`, make: () => itemOfEntry(entry) })),
+    ...state.workspaces.map((workspace) => ({ text: workspace.name, make: () => itemOfWorkspace(workspace) })),
+    ...Object.entries(overviewPages).map(([id, page]) => ({ text: page.title, make: () => itemOfPage(id, page) })),
   ];
 }
 
@@ -93,7 +97,8 @@ export function searchHits(query) {
   const countOf = (item) => counts.get(`${item.kind}:${item.id}`) || 0;
 
   return searchPool()
-    .filter((item) => item.text.toLowerCase().includes(needle))
+    .filter((row) => row.text.toLowerCase().includes(needle))
+    .map((row) => row.make())
     .sort((a, b) => {
       const startA = a.title.toLowerCase().startsWith(needle) ? 0 : 1;
       const startB = b.title.toLowerCase().startsWith(needle) ? 0 : 1;

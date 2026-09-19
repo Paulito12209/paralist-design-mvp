@@ -70,6 +70,8 @@ function onPointerDown(event) {
     startY: event.clientY,
     start: Number(body.dataset.x || 0),
     axis: null,
+    /* Wie weit die Zeile darf, einmal beim Aufsetzen gezählt — nicht bei jeder Bewegung */
+    limits: limitsOf(body),
   };
 }
 
@@ -91,7 +93,7 @@ function onPointerMove(event) {
   }
   if (drag.axis !== "x") return;
 
-  const limits = limitsOf(drag.body);
+  const { limits } = drag;
   setOffset(drag.body, Math.max(-limits.right, Math.min(limits.left, drag.start + dx)));
 }
 
@@ -108,11 +110,10 @@ function endDrag() {
   }
 
   if (!drag) return;
-  const { body } = drag;
+  const { body, limits } = drag;
   drag = null;
   body.classList.remove("is-sliding");
 
-  const limits = limitsOf(body);
   const x = Number(body.dataset.x || 0);
   if (limits.right && x <= -limits.right / 2) setOffset(body, -limits.right);
   else if (limits.left && x >= limits.left / 2) setOffset(body, limits.left);

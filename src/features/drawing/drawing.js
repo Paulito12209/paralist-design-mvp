@@ -37,6 +37,8 @@ let stroke = null;
 let undoStack = [];
 let dirty = false;
 let saveTimer = null;
+/* Angeforderter Bildaufbau für den Marker (0 = keiner offen) */
+let frame = 0;
 
 /** Zeichnung speichern. Sie liegt wie ein Vorschaubild unter der Eintrags-ID, nur als PNG. */
 export function saveDrawing() {
@@ -115,8 +117,10 @@ export function openDrawing(entry) {
   fitCanvas();
 }
 
-function pointOf(event) {
-  const rect = canvas.getBoundingClientRect();
+/* Die Lage der Fläche wird einmal beim Aufsetzen gemessen (rect), nicht bei
+   jeder Bewegung — Messen zwingt den Browser sonst hundertfach pro Sekunde
+   zum Neurechnen des Layouts. Während eines Strichs verschiebt sich nichts. */
+function pointOf(event, rect) {
   return { x: event.clientX - rect.left, y: event.clientY - rect.top };
 }
 
@@ -125,20 +129,26 @@ function pushUndo() {
   if (undoStack.length > undoLimit) undoStack.shift();
 }
 
-/*
- * Der ganze Strich wird bei jeder Bewegung neu auf das Bild davor gemalt: so
- * bleibt der durchscheinende Marker gleichmäßig, statt an jedem Zwischenpunkt
- * dunkler zu werden.
- */
-function paintStroke(current) {
+/* Werkzeug auf den Kontext übertragen; gilt bis zum nächsten ctx.restore(). */
+function applyTool(current) {
   const settings = tools[current.tool];
-  ctx.putImageData(current.before, 0, 0);
-  ctx.save();
   /* destination-out: der Radierer nimmt Farbe weg, statt Weiß aufzutragen */
   ctx.globalCompositeOperation = settings.erase ? "destination-out" : "source-over";
   ctx.globalAlpha = settings.alpha;
   ctx.strokeStyle = current.color;
   ctx.lineWidth = settings.width;
+}
+
+/*
+ * Der ganze Strich wird neu auf das Bild davor gemalt: so bleibt der
+ * durchscheinende Marker gleichmäßig, statt an jedem Zwischenpunkt dunkler zu
+ * werden. Das kopiert jedes Mal die ganze Fläche — darum nur für den Marker,
+ * und höchstens einmal je Bildaufbau (siehe onPointerMove).
+ */
+function paintStroke(current) {
+  ctx.putImageData(current.before, 0, 0);
+  ctx.save();
+  applyTool(current);
   ctx.beginPath();
   current.points.forEach((point, index) =>
     index ? ctx.lineTo(point.x, point.y) : ctx.moveTo(point.x, point.y)
@@ -147,6 +157,43 @@ function paintStroke(current) {
   if (current.points.length === 1) ctx.lineTo(current.points[0].x + 0.01, current.points[0].y);
   ctx.stroke();
   ctx.restore();
+}
+
+/*
+ * Deckende Werkzeuge (Stift, Radierer) malen nur das neue Stück ab dem
+ * zuletzt gemalten Punkt weiter. Bei voller Deckkraft sieht man keinen
+ * Übergang, und die Fläche muss nicht bei jeder Bewegung kopiert werden.
+ */
+function extendStroke(current, from) {
+  const points = current.points;
+  const start = Math.max(0, from - 1);
+  ctx.save();
+  applyTool(current);
+  ctx.beginPath();
+  ctx.moveTo(points[start].x, points[start].y);
+  for (let index = start + 1; index < points.length; index += 1) ctx.lineTo(points[index].x, points[index].y);
+  ctx.stroke();
+  ctx.restore();
+}
+
+/* Beim Marker sammeln sich die Bewegungen bis zum nächsten Bildaufbau. */
+function requestPaint() {
+  if (frame) return;
+  frame = requestAnimationFrame(() => {
+    frame = 0;
+    if (stroke) paintStroke(stroke);
+  });
+}
+
+/* Strich zu Ende: einen noch offenen Bildaufbau sofort nachholen. */
+function finishStroke() {
+  if (frame) {
+    cancelAnimationFrame(frame);
+    frame = 0;
+    paintStroke(stroke);
+  }
+  stroke = null;
+  scheduleSaveDrawing();
 }
 
 /** Letzten Strich zurücknehmen. */
@@ -173,16 +220,19 @@ function onPointerDown(event) {
     /* ohne Capture folgt der Strich nur, solange der Finger auf der Fläche bleibt */
   }
   pushUndo();
-  stroke = { tool, color, points: [pointOf(event)], before: undoStack[undoStack.length - 1] };
+  const rect = canvas.getBoundingClientRect();
+  stroke = { tool, color, rect, points: [pointOf(event, rect)], before: undoStack[undoStack.length - 1] };
   paintStroke(stroke);
 }
 
 function onPointerMove(event) {
   if (!stroke) return;
+  const from = stroke.points.length;
   /* getCoalescedEvents: liefert auch die Zwischenpunkte, die der Browser sonst zusammenfasst */
   const moves = event.getCoalescedEvents ? event.getCoalescedEvents() : [event];
-  (moves.length ? moves : [event]).forEach((move) => stroke.points.push(pointOf(move)));
-  paintStroke(stroke);
+  (moves.length ? moves : [event]).forEach((move) => stroke.points.push(pointOf(move, stroke.rect)));
+  if (tools[stroke.tool].alpha < 1) requestPaint();
+  else extendStroke(stroke, from);
 }
 
 function onToolsClick(event) {
@@ -209,9 +259,7 @@ function init() {
   canvas.addEventListener("pointermove", onPointerMove);
   ["pointerup", "pointercancel"].forEach((name) => {
     canvas.addEventListener(name, () => {
-      if (!stroke) return;
-      stroke = null;
-      scheduleSaveDrawing();
+      if (stroke) finishStroke();
     });
   });
 

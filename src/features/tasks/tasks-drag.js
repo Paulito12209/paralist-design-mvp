@@ -74,9 +74,15 @@ function updateGap(x, y) {
   if (box !== drag.box) placeGap(box, null);
 }
 
-/* Rollt Seite und Board weiter, solange der Zeiger am Rand steht. */
+/*
+ * Läuft einmal je Bildaufbau, solange gezogen wird: rollt Seite und Board
+ * weiter, wenn der Zeiger am Rand steht, und setzt die Lücke. Die Lücke wird
+ * hier und nicht bei jeder Bewegung gesetzt, weil sie das Layout misst —
+ * einmal je Bild reicht dem Auge, mehr kostet nur.
+ */
 function autoScroll() {
   if (!drag) return;
+  if (drag.moved) updateGap(drag.x, drag.y);
   const edge = cssNumber("--board-edge", 44);
   const { x, y, board } = drag;
   const view = dom.content;
@@ -195,7 +201,6 @@ function onPointerMove(event) {
   drag.x = event.clientX;
   drag.y = event.clientY;
   drag.card.style.transform = `translate(${dx}px, ${dy}px)`;
-  updateGap(event.clientX, event.clientY);
 }
 
 /**

@@ -7,6 +7,7 @@
  */
 
 import { addDays, dayKey, parseDay } from "../../core/dates.js";
+import { dom } from "../../core/dom.js";
 import { saveState, state, ui } from "../../data/state.js";
 import { cal } from "./calendar-state.js";
 
@@ -60,7 +61,14 @@ export function goToday() {
 export function setSpan(span) {
   state.prefs.calendar.span = span;
   saveState();
+  /* Wird der Kopf höher (mehr Wochen), verankert Chrome den Scrollstand an
+     einer Stundenzeile und rollt von selbst um die Kopfhöhe weiter: die Zeile
+     bliebe stehen, der höhere Kopf legte sich über die Jetzt-Linie. Der alte
+     Scrollstand lässt Kopf und Stunden gemeinsam wandern — der Abstand
+     zwischen beiden bleibt, wie er war. */
+  const scrollBefore = dom.content.scrollTop;
   redraw();
+  dom.content.scrollTop = scrollBefore;
 }
 
 /** Zwischen Stundenraster und Liste wechseln. */
