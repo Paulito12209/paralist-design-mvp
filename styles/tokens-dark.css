@@ -21,7 +21,7 @@
     --title-alt: #5a5a60;
     --line: rgba(84, 84, 88, 0.55);
     --shadow: 0 0 3px rgba(255, 255, 255, 0.08), 0 0 24px rgba(255, 255, 255, 0.11);
-    --tab-pill-active-bg: #111318;
+    --tab-pill-active-bg: rgba(var(--nav-glow-color), 0.18); /* AAB2BD als schwacher Kreis hinter dem aktiven Tab-Icon */
     --nav-glow-opacity: 0.6;
     --media-strip-bg: rgba(255, 255, 255, 0.1);
     --inbox-icon-color: #9fc4dc;
@@ -66,7 +66,7 @@
   --title-alt: #5a5a60;
   --line: rgba(84, 84, 88, 0.55);
   --shadow: 0 0 3px rgba(255, 255, 255, 0.08), 0 0 24px rgba(255, 255, 255, 0.11);
-  --tab-pill-active-bg: #111318;
+  --tab-pill-active-bg: rgba(var(--nav-glow-color), 0.18); /* AAB2BD als schwacher Kreis hinter dem aktiven Tab-Icon */
   --nav-glow-opacity: 0.6;
   --media-strip-bg: rgba(255, 255, 255, 0.1);
   --inbox-icon-color: #9fc4dc;
