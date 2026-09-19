@@ -6,7 +6,9 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * untitledTask -> wie eine Aufgabe ohne Titel heißt
+ * untitledTask       -> wie eine Aufgabe ohne Titel heißt
+ * priorityFieldIcon  -> Icon vor der Dringlichkeit in einer Zeile; kommt aus
+ *                       taskGroupings in src/data/config.js
  *
  * Aussehen und Größen stehen in styles/tasks.css (--task-check-size,
  * --task-meta-size, --task-chip-size).
@@ -14,10 +16,21 @@
 
 import { escapeHtml, icon } from "../../core/html.js";
 import { shortDay } from "../../core/format.js";
-import { isTaskDone, taskPriorityOf, taskStatusOf } from "../../data/config.js";
+import { isTaskDone, taskGroupings, taskPriorityOf, taskStatusOf } from "../../data/config.js";
 import { entryDay, mainPlace, parentIcon, placesLabel } from "../../data/queries.js";
 
 const untitledTask = "Ohne Titel";
+
+/*
+ * Welches Icon in einer Zeile vor der Dringlichkeit steht. Nicht das der
+ * einzelnen Stufe: die Uhr bei „Später“ sagt nichts darüber, um welches Feld
+ * es überhaupt geht, und sieht dem Verlaufs-Icon von „In Arbeit“ zum
+ * Verwechseln ähnlich. Stattdessen das Icon der Gruppierung „Dringlichkeit“ —
+ * dasselbe, das auch die Pille „Gruppieren“ trägt. Die Spaltenköpfe im Board
+ * behalten ihr eigenes Icon je Stufe: dort ist die Stufe ja die Überschrift.
+ */
+const priorityGroup = taskGroupings.find((group) => group.field === "priority");
+const priorityFieldIcon = priorityGroup ? priorityGroup.icon : "flame";
 
 /** Titel einer Aufgabe, abgesichert für die Ausgabe. */
 export function taskTitle(entry) {
@@ -63,10 +76,10 @@ export function taskStatusChip(entry) {
   return chip(status.icon, status.label, status.color);
 }
 
-/** Dringlichkeits-Chip mit der Farbe der Dringlichkeit. */
+/** Dringlichkeits-Chip: Icon des Feldes, Name und Farbe der Stufe. */
 export function taskPriorityChip(entry) {
   const priority = taskPriorityOf(entry.priority);
-  return chip(priority.icon, priority.label, priority.color);
+  return chip(priorityFieldIcon, priority.label, priority.color);
 }
 
 /** Datums-Chip: „Heute“, „Morgen“, sonst der kurze Tag. */

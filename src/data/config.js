@@ -279,10 +279,15 @@ export const taskViews = ["list", "board"];
  * Wonach die Board-Spalten gruppieren. `columns` sagt, welche Liste die Spalten
  * liefert — ein weiteres Kriterium ist nur ein weiteres Objekt hier plus seine
  * Liste oben.
+ *
+ * Der Status steht bewusst vorn: mit „offen, in Arbeit, erledigt“ kann fast
+ * jeder etwas anfangen, mit „Dringlichkeit“ erst nach kurzem Nachdenken. Diese
+ * Reihenfolge bestimmt zugleich, was das Menü „Gruppieren“ zuerst anbietet und
+ * worauf die Seite zurückfällt, wenn eine gespeicherte Wahl nicht mehr gilt.
  */
 export const taskGroupings = [
-  { id: "priority", label: "Dringlichkeit", icon: "flame", field: "priority", columns: taskPriorities },
   { id: "status", label: "Status", icon: "check-circle", field: "status", columns: taskStatuses },
+  { id: "priority", label: "Dringlichkeit", icon: "flame", field: "priority", columns: taskPriorities },
 ];
 
 /**
@@ -299,7 +304,7 @@ export const taskSorts = [
 /** Vorgabe der Bedienzeile, solange nichts anderes gewählt wurde. */
 export const taskDefaults = {
   view: "list",
-  group: "priority",
+  group: "status",
   sort: "neu",
   status: "alle",
   place: "alle",
