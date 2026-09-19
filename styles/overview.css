@@ -299,16 +299,18 @@
   margin-top: var(--archive-link-top);
 }
 
+/* Normal: nur Text und Icon, subtil wie ein Link */
 .archive-link {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 9px 18px;
-  border: 0.5px solid var(--line);
-  border-radius: 999px; /* border-radius: großer Wert macht aus dem Knopf eine Pille */
-  background: var(--card);
+  border: none;
+  border-radius: 999px;
+  background: transparent;
   color: var(--muted);
   font-size: 15px;
+  transition: border-color 0.08s ease, background-color 0.08s ease;
 }
 
 .archive-link .icon {
@@ -316,6 +318,8 @@
   height: 18px;
 }
 
+/* Beim Drücken: kurz den Button-Stil zeigen, dann öffnet sich das Archiv */
 .archive-link:active {
-  opacity: 0.6;
+  border: 0.5px solid var(--line);
+  background: var(--card);
 }
