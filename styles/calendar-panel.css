@@ -34,7 +34,10 @@
 }
 
 .cal-seg-btn {
-  padding: 10px 20px;
+  display: flex;
+  align-items: center;
+  gap: 6px; /* gap: Abstand zwischen Beschriftung und Zähler, wie bei .tab-pill */
+  padding: 10px 14px; /* schmaler als andere Pillen, damit die drei mit Zähler bei 375px nebeneinanderpassen */
   border-radius: 999px;
   font-size: 18px;
   font-weight: 600;
@@ -96,8 +99,11 @@
   font-size: 15px;
 }
 
-/* Einträge in der Liste: Uhrzeit vor dem Titel */
-.cal-time {
+/* Einträge in der Liste: Uhrzeit vor dem Titel. Selektor mit „.workspace-row“
+   davor, weil sonst die allgemeine Regel „.workspace-row span“ aus
+   styles/rows.css gewinnt (zwei Klassen schlagen Klasse+Element) und die
+   Uhrzeit über die halbe Zeile wachsen ließ, statt am Titel zu kleben. */
+.workspace-row .cal-time {
   font-size: 13px;
   font-weight: 600;
   color: var(--muted);

@@ -1,12 +1,13 @@
 /*
  * Die Listenansicht der Kalenderseite: drei Spalten (Aufgaben, Termine,
- * Projekte) und darunter die Einträge des gewählten Tages.
+ * Projekte) mit der Anzahl ihrer Einträge auf der Pille und darunter die
+ * Einträge des gewählten Tages.
  * Pfad: src/features/calendar/calendar-list.js
  *
  * Keine anpassbaren visuellen Werte: siehe styles/calendar-panel.css
- * (Klassen .cal-empty, .cal-time) und styles/calendar.css (.cal-seg). Die
- * Beschriftung der Pille am leeren Tag steht bei `calendarSegments` in
- * src/data/config.js.
+ * (Klassen .cal-empty, .cal-time, .cal-seg-btn) und styles/overview.css
+ * (Klasse .card-count, für die Zahl auf der Pille). Die Beschriftung der
+ * Pille am leeren Tag steht bei `calendarSegments` in src/data/config.js.
  */
 
 import { icon } from "../../core/html.js";
@@ -17,27 +18,38 @@ import { state, ui } from "../../data/state.js";
 import { entryRow } from "../../ui/rows.js";
 import { cal } from "./calendar-state.js";
 
+/** Ordnet der Spalte den Eintragstyp zu, den sie zeigt. */
+const segTypes = { aufgaben: "aufgabe", termine: "termin", projekte: "projekt" };
+
 /** Die Einträge, die in der gewählten Spalte stehen — nach Uhrzeit sortiert. */
 export function listEntries() {
-  const seg = state.prefs.calendar.seg;
+  const type = segTypes[state.prefs.calendar.seg] || "projekt";
   return entriesOfDay(ui.calendarDay)
-    .filter((entry) => {
-      if (seg === "aufgaben") return entry.type === "aufgabe";
-      if (seg === "termine") return entry.type === "termin";
-      return entry.type === "projekt";
-    })
+    .filter((entry) => entry.type === type)
     .sort((a, b) => String(entryTime(a) || "").localeCompare(String(entryTime(b) || "")));
+}
+
+/** Wie viele Einträge des Tages in jede der drei Spalten gehören. */
+function segmentCounts() {
+  const dayEntries = entriesOfDay(ui.calendarDay);
+  const counts = {};
+  for (const item of calendarSegments) {
+    const type = segTypes[item.id] || "projekt";
+    counts[item.id] = dayEntries.filter((entry) => entry.type === type).length;
+  }
+  return counts;
 }
 
 /** Die Liste des gewählten Tages als HTML. */
 export function renderList() {
   const list = listEntries();
+  const counts = segmentCounts();
   const seg = calendarSegments.find((item) => item.id === state.prefs.calendar.seg) || calendarSegments[0];
 
   const tabs = calendarSegments
     .map(
       (item) =>
-        `<button class="cal-seg-btn${item.id === seg.id ? " is-active" : ""}" type="button" data-seg="${item.id}">${item.label}</button>`
+        `<button class="cal-seg-btn${item.id === seg.id ? " is-active" : ""}" type="button" data-seg="${item.id}">${item.label}<span class="card-count">${counts[item.id]}</span></button>`
     )
     .join("");
 
