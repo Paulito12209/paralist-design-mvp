@@ -62,8 +62,8 @@ export function entryGlyph(entry) {
  * was ihn herausnimmt — Archivieren direkt neben dem roten Löschen.
  *
  * Die Liste steht hier und nicht bei den einzelnen Zeilen, weil es zwei Arten
- * von Eintrags-Zeilen gibt (diese hier und die Aufgaben-Liste). Standen die
- * Knöpfe zweimal im Code, hatte eine Seite sie irgendwann anders als die andere.
+ * von Eintrags-Zeilen gibt (diese hier und die der Aufgaben-Seite). Stünde sie
+ * zweimal im Code, liefen die beiden Seiten mit der Zeit auseinander.
  */
 export function entryActions(entry) {
   return {
