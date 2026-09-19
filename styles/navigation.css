@@ -155,6 +155,9 @@ body.is-search-typing .bottom-bar {
 
 .tab-btn.is-active {
   color: var(--text);
+  background: var(--tab-pill-active-bg);
+  border-radius: 14px;
+  padding: 4px 10px;
 }
 
 .tab-btn:active {
