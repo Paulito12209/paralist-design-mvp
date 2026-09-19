@@ -5,6 +5,7 @@
  *
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
+ * --nav-bg                  -> Fläche der Leiste: weiß im Hellmodus, schwarz im Dunkelmodus
  * --nav-height              -> Höhe der Leiste (Material 3: 80dp)
  * --nav-side / --nav-bottom -> Abstand zum Rand und nach unten
  * --nav-radius              -> Rundung der Leiste
@@ -108,7 +109,7 @@ body.is-search-typing .bottom-bar {
 
 /* Gemeinsamer Container: trägt sowohl die Navigation als auch das Eingabefeld */
 .nav-shell {
-  background: var(--card);
+  background: var(--nav-bg);
   border-radius: var(--nav-radius); /* border-radius: macht die Leiste rund wie eine Pille */
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06), 0 12px 32px rgba(0, 0, 0, 0.12);
   /* padding: nur seitlich, die Höhe gibt --nav-height in .tab-bar vor */

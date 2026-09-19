@@ -22,6 +22,8 @@
     --line: rgba(84, 84, 88, 0.55);
     --shadow: 0 0 3px rgba(255, 255, 255, 0.08), 0 0 24px rgba(255, 255, 255, 0.11);
     --avatar-btn-bg: #aab2bd; /* im Hellmodus steht hier #111318 — die vier Grundfarben sind über Kreuz getauscht */
+    --nav-bg: #000000;
+    --nav-glow-color: 170, 178, 189; /* im Hellmodus steht hier 209, 213, 219 (#D1D5DB) */
     --tab-pill-active-bg: rgba(var(--nav-glow-color), 0.18); /* AAB2BD als schwacher Kreis hinter dem aktiven Tab-Icon */
     --nav-glow-opacity: 0.6;
     --media-strip-bg: rgba(255, 255, 255, 0.1);
@@ -68,6 +70,8 @@
   --line: rgba(84, 84, 88, 0.55);
   --shadow: 0 0 3px rgba(255, 255, 255, 0.08), 0 0 24px rgba(255, 255, 255, 0.11);
   --avatar-btn-bg: #aab2bd; /* im Hellmodus steht hier #111318 — die vier Grundfarben sind über Kreuz getauscht */
+  --nav-bg: #000000;
+  --nav-glow-color: 170, 178, 189; /* im Hellmodus steht hier 209, 213, 219 (#D1D5DB) */
   --tab-pill-active-bg: rgba(var(--nav-glow-color), 0.18); /* AAB2BD als schwacher Kreis hinter dem aktiven Tab-Icon */
   --nav-glow-opacity: 0.6;
   --media-strip-bg: rgba(255, 255, 255, 0.1);
