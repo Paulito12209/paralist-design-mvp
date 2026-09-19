@@ -214,11 +214,12 @@
 
 :root {
   /* Die vier Grundfarben stehen über Kreuz zum Dunkelmodus: dessen Textweiß wird
-     hier Hintergrund, dessen Schwarz wird Text, dessen Akzent #AAB2BD wird
-     Kartenfläche und dessen Kartenton #111318 wird Akzent (--avatar-btn-bg). */
+     hier Hintergrund, dessen Schwarz wird Text, dessen Akzent #AAB2BD wird zur
+     Kartenfläche (probeweise als helleres #D1D5DB) und dessen Kartenton #111318
+     wird Akzent (--avatar-btn-bg). */
   --bg: #f2f2f7;
-  --card: #aab2bd;
-  --overview-card-bg: #aab2bd;
+  --card: #d1d5db;
+  --overview-card-bg: #d1d5db;
   --text: #000000;
   --muted: #8e8e93;
   --title-alt: #b4b4ba;
