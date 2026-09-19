@@ -18,6 +18,7 @@
  * --level-color / --level-dim / --level-glow            -> Striche und Zahl der Level-Anzeige
  * --icon-strong / --placeholder                         -> Icon- und Platzhalterfarbe
  * --bg                                                  -> Hintergrundfarbe (wird am unteren Rand ausgeblendet)
+ * --avatar-btn-bg                                       -> Fläche des Profil-/Einstellungs-Knopfes rechts
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -123,12 +124,12 @@ body.is-subpage .top-bar {
   font-weight: 600;
 }
 
-/* Profil-/Einstellungs-Knopf rechts: Fläche wie Suchleiste/Karten/Navbar */
+/* Profil-/Einstellungs-Knopf rechts: eigene feste Fläche */
 .avatar {
   width: var(--top-bar-profile-btn-width);
   height: var(--top-bar-profile-btn-height);
   border-radius: 50%;
-  background: var(--card);
+  background: var(--avatar-btn-bg);
   box-shadow: none;
   display: grid;
   place-items: center;
