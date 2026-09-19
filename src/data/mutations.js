@@ -12,6 +12,7 @@
  * Keine anpassbaren visuellen Werte.
  */
 
+import { pruneBlobs } from "../core/blobs.js";
 import { emit, events } from "../core/bus.js";
 import { nextId, sameId } from "../core/ids.js";
 import {
@@ -30,7 +31,12 @@ import { pruneThumbs } from "./thumbs.js";
 /* Nach jeder Änderung: speichern, Vorschaubilder aufräumen, Listen auffrischen. */
 function commit({ prunedEntries = false } = {}) {
   saveState();
-  if (prunedEntries) pruneThumbs(state.entries);
+  if (prunedEntries) {
+    pruneThumbs(state.entries);
+    /* Die abgelegten Dateien gehören zu den Einträgen: fällt einer weg, ist
+       seine Datei sonst für immer Ballast in der Browser-Datenbank. */
+    pruneBlobs(state.entries.map((entry) => entry.id));
+  }
   emit(events.dataChanged);
 }
 

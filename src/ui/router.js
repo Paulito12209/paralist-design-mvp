@@ -139,10 +139,15 @@ function hideAllOverlays() {
   overlays.forEach((handlers) => handlers.hide());
 }
 
+/* Welcher nachladbare Bereich bringt welches Blatt mit? Steht ein Blatt nicht
+   hier, heißt sein Bereich genauso. */
+const overlayModules = { avatar: "profile", file: "viewer" };
+
 /*
  * Ein Blatt aus dem Verlauf wiederherstellen; bei Bedarf wird sein Bereich
  * nachgeladen. `entry` ist der gespeicherte Verlaufseintrag — das
- * Einstellungs-Blatt liest daraus, ob eine Kachel aufgeklappt war.
+ * Einstellungs-Blatt liest daraus, ob eine Kachel aufgeklappt war, die
+ * Dateiansicht, welche Datei offen war.
  */
 function restoreOverlay(name, entry = null, extra = "") {
   const openIt = () => {
@@ -150,9 +155,9 @@ function restoreOverlay(name, entry = null, extra = "") {
     if (handlers) handlers.open(false, entry);
     if (extra) restoreOverlay(extra);
   };
-  const module = loadedModule(name === "avatar" ? "profile" : name);
-  if (module) openIt();
-  else load(name === "avatar" ? "profile" : name).then(openIt);
+  const moduleName = overlayModules[name] || name;
+  if (loadedModule(moduleName)) openIt();
+  else load(moduleName).then(openIt);
 }
 
 window.addEventListener("popstate", (event) => {
@@ -164,6 +169,12 @@ window.addEventListener("popstate", (event) => {
      stehen, wenn man von ihr zum Profil zurückgeht. */
   overlays.get("progress")?.hide();
   overlays.get("avatar")?.hide();
+  overlays.get("file")?.hide();
+
+  if (entry && entry.view === "file") {
+    restoreOverlay("file", entry);
+    return;
+  }
 
   if (entry && entry.view === "progress") {
     overlays.get("profile")?.hide();

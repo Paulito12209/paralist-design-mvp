@@ -11,6 +11,7 @@
  * --composer-radius         -> Rundung des Auswahl-Blatts
  * --card / --line / --danger -> Flächen, Trennlinien und rote Einträge
  * --modal-dismiss-pull      -> wie weit man ziehen muss, damit ein Blatt schließt
+ * --bg                      -> Fläche der beiden Knöpfe unten nebeneinander (.sheet-pair)
  * --modal-dim               -> wird beim Ziehen von src/ui/modal-pull.js gesetzt
  
  *
@@ -93,6 +94,33 @@
 
 .sheet-option.is-gap {
   margin-top: 8px; /* Abstand zwischen Aufgabe/Notiz, Termin und Projekte */
+}
+
+/* Die beiden letzten Optionen eines Menüs stehen nebeneinander in einer Zeile:
+   in der Dateiansicht sind das Archivieren und Löschen. */
+.sheet-pair {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+  padding-top: 8px;
+  border-top: 1px solid var(--line); /* border-top: trennt die Zeile von den Optionen darüber */
+}
+
+/* Jede der beiden Hälften: Icon über dem Wort, zusammen halbe Breite */
+.sheet-option.is-pair {
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 72px;
+  background: var(--bg);
+  font-size: 15px;
+  text-align: center;
+}
+
+.sheet-option.is-pair:active {
+  opacity: 0.6;
 }
 
 .sheet-option:active {
