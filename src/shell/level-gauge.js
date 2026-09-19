@@ -29,9 +29,9 @@ import { showToast } from "../ui/toast.js";
  */
 let shownLevel = null;
 
-const tickCount = 40;
-const arcDegrees = 300;
-const arcStart = 120;
+const tickCount = 36;
+const arcDegrees = 270;
+const arcStart = 135;
 const center = 24;
 const innerRadius = 18.5;
 const outerRadius = 22.5;
