@@ -79,6 +79,23 @@
   font-size: 19px;
 }
 
+/* Die Pille zum Anlegen erbt sonst das große Kalender-Icon von oben. */
+.cal-empty .empty-add {
+  margin-top: 18px;
+}
+
+.cal-empty .empty-add .icon {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  opacity: 1;
+  color: inherit;
+}
+
+.cal-empty .empty-add span {
+  font-size: 15px;
+}
+
 /* Einträge in der Liste: Uhrzeit vor dem Titel */
 .cal-time {
   font-size: 13px;

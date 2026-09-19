@@ -95,6 +95,13 @@ function onClick(event) {
     return;
   }
 
+  /* Die Pille im Platzhalter einer leeren Liste: Eingabefeld mit passendem Typ. */
+  const emptyAdd = event.target.closest("[data-empty-add]");
+  if (emptyAdd) {
+    emit(events.createRequested, emptyAdd.dataset.emptyAdd);
+    return;
+  }
+
   const overviewCard = event.target.closest("[data-open-overview]");
   if (overviewCard) {
     openTarget("overview", overviewCard.dataset.openOverview);

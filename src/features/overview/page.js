@@ -27,6 +27,7 @@ import { entriesOf, findWorkspace, projectEntries } from "../../data/queries.js"
 import { saveState, state, ui } from "../../data/state.js";
 import { iconPickerAction } from "../../ui/pickers.js";
 import { restoreFrom, showSearch } from "../../ui/router.js";
+import { emptyState } from "../../ui/empty-state.js";
 import { entryRow, workspaceRow } from "../../ui/rows.js";
 import { openSheet } from "../../ui/sheet.js";
 import { isViewActive } from "../../ui/views.js";
@@ -47,10 +48,38 @@ const titleSwitches = {
 /* Ab wie viel Scrollweg Suche und Optionen in der Kopfzeile erscheinen. */
 const HEADER_REVEAL_PX = 4;
 
+/*
+ * Was eine leere Seite zeigt: Emblem in der Farbe der Karte, ein Satz dazu und
+ * die Pille zum Anlegen. Favoriten bekommen keine Pille — ein Favorit entsteht
+ * nur, indem man eine vorhandene Zeile markiert.
+ */
+const emptyStates = {
+  inbox: {
+    icon: "inbox",
+    accent: "var(--cal-accent)",
+    title: "Noch nichts in der Inbox",
+    text: "Alles, was du anlegst und nirgends ablegst, sammelt sich hier.",
+    action: { label: "Eintrag hinzufügen", pick: "aufgabe" },
+  },
+  projects: {
+    icon: "rocket",
+    accent: "var(--prio-jetzt)",
+    title: "Noch keine Projekte",
+    text: "Ein Projekt bündelt Aufgaben, Notizen und Termine an einem Ort.",
+    action: { label: "Projekt anlegen", pick: "projekt" },
+  },
+  favorites: {
+    icon: "star",
+    accent: "var(--prio-next)",
+    title: "Noch keine Favoriten",
+    text: "Wisch eine Zeile nach rechts und tippe auf den Stern, dann steht sie hier.",
+  },
+};
+
 function listMarkup(entries, empty) {
   return entries.length
     ? `<div class="workspace-list">${entries.map((entry) => entryRow(entry)).join("")}</div>`
-    : `<p class="empty-note">${empty}</p>`;
+    : emptyState(empty);
 }
 
 /* Favoriten-Karte: erst die markierten Arbeitsbereiche, dann die markierten Einträge. */
@@ -65,7 +94,7 @@ function renderFavorites() {
       ? `<div class="workspace-list">${spaces
           .map((workspace) => workspaceRow(workspace, canEdit))
           .join("")}${entries.map((entry) => entryRow(entry)).join("")}</div>`
-      : `<p class="empty-note">Noch keine Favoriten.</p>`;
+      : emptyState(emptyStates.favorites);
 
   if (canEdit) focusWorkspaceName();
 }
@@ -76,10 +105,10 @@ export function renderPageBody() {
   if (!page) return;
 
   if (page.kind === "favorites") renderFavorites();
-  else if (page.kind === "projects") dom.pageBody.innerHTML = listMarkup(projectEntries(), "Noch keine Projekte.");
+  else if (page.kind === "projects") dom.pageBody.innerHTML = listMarkup(projectEntries(), emptyStates.projects);
   else if (page.kind === "resources") load("resources").then((module) => module.renderResources());
   else if (page.isWorkspace) renderWorkspacePage(page);
-  else dom.pageBody.innerHTML = listMarkup(entriesOf(page.parent), "Noch keine Einträge.");
+  else dom.pageBody.innerHTML = listMarkup(entriesOf(page.parent), emptyStates.inbox);
 }
 
 /* Suche und Optionen ein-/ausblenden, je nachdem wie weit die Liste gescrollt ist. */

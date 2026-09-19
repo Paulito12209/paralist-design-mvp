@@ -7,18 +7,35 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * emptyNote -> Text, solange keine Aufgabe zu den Filtern passt
+ * emptyAll    -> Platzhalter, solange es überhaupt keine Aufgabe gibt
+ * emptyFilter -> Platzhalter, wenn nur die gewählten Filter nichts übrig lassen
  *
  * Aussehen und Abstände stehen in styles/rows.css und styles/tasks.css.
  */
 
+import { emptyState } from "../../ui/empty-state.js";
 import { swipeAction, swipeRow } from "../../ui/rows.js";
 import { isTaskDone } from "../../data/config.js";
-import { visibleTasks } from "../../data/queries.js";
+import { taskEntries, visibleTasks } from "../../data/queries.js";
 import { icon } from "../../core/html.js";
 import { taskCheck, taskDateChip, taskPlaceLabel, taskStatusChip, taskTitle } from "./tasks-parts.js";
 
-const emptyNote = "Keine Aufgabe passt zu dieser Auswahl.";
+/* Noch gar keine Aufgabe: dann lädt der Platzhalter zum Anlegen ein. */
+const emptyAll = {
+  icon: "task",
+  accent: "var(--xp-created)",
+  title: "Noch keine Aufgaben",
+  text: "Schreib auf, was ansteht — die Dringlichkeit stellst du später im Board ein.",
+  action: { label: "Aufgabe hinzufügen", pick: "aufgabe" },
+};
+
+/* Es gibt Aufgaben, aber die Bedienzeile blendet sie gerade alle aus. */
+const emptyFilter = {
+  icon: "sliders",
+  accent: "var(--prio-spaeter)",
+  title: "Nichts passt zu dieser Auswahl",
+  text: "Ändere die Filter in der Bedienzeile oder zeige erledigte Aufgaben wieder an.",
+};
 
 /** Eine Zeile: Haken-Knopf, Titel mit Ort und Chips, Pfeil — dahinter die Wisch-Knöpfe. */
 function taskRow(entry) {
@@ -49,6 +66,6 @@ function taskRow(entry) {
 /** Die ganze Liste als HTML; leer, wenn die Filter nichts übrig lassen. */
 export function taskListMarkup(prefs) {
   const list = visibleTasks(prefs);
-  if (!list.length) return `<p class="empty-note">${emptyNote}</p>`;
+  if (!list.length) return emptyState(taskEntries().length ? emptyFilter : emptyAll);
   return `<div class="workspace-list task-rows">${list.map(taskRow).join("")}</div>`;
 }

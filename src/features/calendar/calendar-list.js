@@ -3,8 +3,10 @@
  * Projekte) und darunter die Einträge des gewählten Tages.
  * Pfad: src/features/calendar/calendar-list.js
  *
- * Keine anpassbaren visuellen Werte: siehe styles/calendar.css
- * (Klassen .cal-seg, .cal-empty, .cal-time).
+ * Keine anpassbaren visuellen Werte: siehe styles/calendar-panel.css
+ * (Klassen .cal-empty, .cal-time) und styles/calendar.css (.cal-seg). Die
+ * Beschriftung der Pille am leeren Tag steht bei `calendarSegments` in
+ * src/data/config.js.
  */
 
 import { icon } from "../../core/html.js";
@@ -50,6 +52,9 @@ export function renderList() {
         ${icon("calendar")}
         <b>${seg.empty}</b>
         <span>${longDate(ui.calendarDay)}</span>
+        <button class="empty-add" type="button" data-empty-add="${seg.pick}">
+          ${icon("plus", "empty-add-icon")}<span>${seg.add}</span>
+        </button>
       </div>`;
 
   return `<div class="cal-seg">${tabs}</div>${body}`;

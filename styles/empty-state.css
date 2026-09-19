@@ -1,0 +1,146 @@
+/*
+ * Platzhalter für leere Listen und Sammlungen: Emblem, Überschrift, Erklärung
+ * und die Pille zum Anlegen. Gebaut wird der Block in src/ui/empty-state.js.
+ * Pfad: styles/empty-state.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * --empty-art-width      -> Breite des Emblems (die Höhe folgt dem Seitenverhältnis)
+ * --empty-art-width-sm   -> dieselbe Breite im kleinen Platzhalter (in einer Karte)
+ * --empty-icon-size      -> Größe des Themen-Icons auf der vorderen Karte
+ * --empty-pad-top        -> Luft über dem Emblem, damit der Block mittig wirkt
+ * --empty-gap            -> Abstand zwischen Emblem, Überschrift, Text und Pille
+ * --empty-title-size     -> Schriftgröße der Überschrift
+ * --empty-text-size      -> Schriftgröße des Erklärsatzes
+ * --empty-text-width     -> ab welcher Breite der Erklärsatz umbricht
+ * --empty-badge-bg       -> Fläche des runden Plus-Abzeichens am Emblem
+ * --empty-badge-ink      -> Farbe des Pluszeichens darin
+ * --empty-add-bg         -> Fläche der Pille „… hinzufügen“
+ * --empty-add-color      -> Schrift- und Icon-Farbe der Pille
+ *
+ * Die Farbe des Emblems selbst (--empty-accent) gibt die jeweilige Seite mit,
+ * damit jedes Thema seinen eigenen Ton behält.
+ */
+
+/*
+ * Die Werte dieses Bereichs. Sie stehen hier statt in tokens.css, weil sie nur
+ * den Platzhalter betreffen; die Pille wird zusätzlich am leeren Kalendertag
+ * benutzt, deshalb hängen sie an :root und nicht am Block.
+ */
+:root {
+  --empty-art-width: 148px;
+  --empty-art-width-sm: 92px;
+  --empty-icon-size: 34px;
+  --empty-pad-top: 36px;
+  --empty-gap: 10px;
+  --empty-title-size: 19px;
+  --empty-text-size: 14px;
+  --empty-text-width: 270px;
+  --empty-badge-bg: #1c1c1e;
+  --empty-badge-ink: #ffffff;
+  --empty-add-bg: rgba(0, 122, 255, 0.1);
+  --empty-add-color: #007aff;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--empty-gap);
+  padding: var(--empty-pad-top) 16px 20px;
+}
+
+/* Dunkelmodus: folgt dem System, solange in den Einstellungen nichts gewählt ist */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --empty-badge-bg: #f2f2f7;
+    --empty-badge-ink: #1c1c1e;
+    --empty-add-bg: rgba(10, 132, 255, 0.18);
+    --empty-add-color: #4aa3ff;
+  }
+}
+
+/* Dunkelmodus: in den Einstellungen fest gewählt */
+:root[data-theme="dark"] {
+  --empty-badge-bg: #f2f2f7;
+  --empty-badge-ink: #1c1c1e;
+  --empty-add-bg: rgba(10, 132, 255, 0.18);
+  --empty-add-color: #4aa3ff;
+}
+
+/* position: das Themen-Icon liegt frei auf der vorderen Karte des Emblems */
+.empty-art {
+  position: relative;
+  width: var(--empty-art-width);
+  max-width: 70%;
+}
+
+.empty-emblem {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* position/transform: genau auf die Mitte der vorderen Karte gesetzt */
+.empty-emblem-icon {
+  position: absolute;
+  left: 50%;
+  top: 67%;
+  transform: translate(-50%, -50%);
+  width: var(--empty-icon-size);
+  height: var(--empty-icon-size);
+  color: #ffffff;
+}
+
+.empty-title {
+  font-size: var(--empty-title-size);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.empty-text {
+  font-size: var(--empty-text-size);
+  line-height: 1.4;
+  color: var(--muted);
+  max-width: var(--empty-text-width);
+}
+
+.empty-add {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 10px 18px;
+  border-radius: 22px;
+  background: var(--empty-add-bg);
+  color: var(--empty-add-color);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.empty-add-icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Kleiner Platzhalter innerhalb einer Karte oder eines Abschnitts */
+.empty-state.is-compact {
+  padding: 18px 12px;
+  gap: 8px;
+}
+
+.empty-state.is-compact .empty-art {
+  width: var(--empty-art-width-sm);
+}
+
+.empty-state.is-compact .empty-title {
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.empty-state.is-compact .empty-emblem-icon {
+  width: 22px;
+  height: 22px;
+}

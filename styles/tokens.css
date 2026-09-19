@@ -19,6 +19,7 @@
  * styles/top-bar.css         -> Kopfzeile: Level-Anzeige, Suchleiste, Profil-Knopf
  * styles/overview.css        -> Startseite: die vier Karten und die Tab-Pillen
  * styles/rows.css            -> Listenzeilen, Wisch-Knöpfe, Kopfzeile einer Unterseite
+ * styles/empty-state.css     -> Platzhalter für leere Listen (eigene Werte, siehe dort)
  * styles/entry.css           -> Seite eines Eintrags: Titel, Text, Anhänge
  * styles/navigation.css      -> untere Navigationsleiste
  * styles/composer.css        -> Eingabefeld zum Anlegen

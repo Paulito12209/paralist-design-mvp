@@ -18,6 +18,7 @@
  * taskStatuses            -> Name, Icon und Farbe der Status-Chips
  * taskSorts / taskGroupings -> was die Pillen „Sortieren“ und „Gruppieren“ anbieten
  * taskDefaults            -> womit die Aufgaben-Seite beim allerersten Mal startet
+ * calendarSegments[*].add -> Beschriftung der Pille am leeren Kalendertag
  */
 
 /*
@@ -164,36 +165,36 @@ export const calendarSpans = [
 /** Ansicht der grauen Fläche unter dem Kalenderstreifen. */
 export const calendarModes = ["grid", "list"];
 
-/** Die drei Spalten der Kalenderliste. */
+/**
+ * Die drei Spalten der Kalenderliste. `pick` sagt, welchen Typ das Eingabefeld
+ * vorwählt, wenn man am leeren Tag auf die Pille zum Anlegen tippt.
+ */
 export const calendarSegments = [
-  { id: "aufgaben", label: "Aufgaben", empty: "Keine Aufgaben" },
-  { id: "termine", label: "Termine", empty: "Nichts geplant" },
-  { id: "projekte", label: "Projekte", empty: "Keine Projekte" },
+  { id: "aufgaben", label: "Aufgaben", empty: "Keine Aufgaben", pick: "aufgabe", add: "Aufgabe hinzufügen" },
+  { id: "termine", label: "Termine", empty: "Nichts geplant", pick: "termin", add: "Termin eintragen" },
+  { id: "projekte", label: "Projekte", empty: "Keine Projekte", pick: "projekt", add: "Projekt anlegen" },
 ];
 
 /** Pillen oben auf der Medien-Seite: „Zuletzt erstellt“ zeigt alles, die anderen je eine Art. */
 export const mediaFilters = [
-  { id: "recent", label: "Zuletzt erstellt", icon: "history", empty: "Noch keine Medien." },
-  { id: "image", label: "Bilder", icon: "image", empty: "Noch keine Bilder." },
-  { id: "video", label: "Videos", icon: "video", empty: "Noch keine Videos." },
-  { id: "audio", label: "Audio", icon: "mic", empty: "Noch keine Aufnahmen." },
-  { id: "doc", label: "Dokumente", icon: "doc", empty: "Noch keine Dokumente." },
+  { id: "recent", label: "Zuletzt erstellt", icon: "history" },
+  { id: "image", label: "Bilder", icon: "image" },
+  { id: "video", label: "Videos", icon: "video" },
+  { id: "audio", label: "Audio", icon: "mic" },
+  { id: "doc", label: "Dokumente", icon: "doc" },
 ];
 
 /**
  * Pillen oben auf der Ressourcen-Seite: „Alle“ zeigt alles, „Notizen“ nur
- * Notizen, „Eigene Dokumente“ das selbst Geschriebene, „Zeichnungen“ das Gezeichnete.
+ * Notizen, „Eigene Dokumente“ das selbst Geschriebene, „Zeichnungen“ das
+ * Gezeichnete. Was eine leere Seite zeigt, steht in
+ * src/features/resources/resources.js.
  */
 export const resourceFilters = [
-  { id: "all", label: "Alle", icon: "cube", empty: "Noch keine Ressourcen." },
-  { id: "notes", label: "Notizen", icon: "note", empty: "Noch keine Notizen." },
-  {
-    id: "own",
-    label: "Eigene Dokumente",
-    icon: "doc",
-    empty: "Noch nichts Eigenes. Ein Eintrag ohne gewählten Typ wird zum Dokument.",
-  },
-  { id: "drawings", label: "Zeichnungen", icon: "scribble", empty: "Noch keine Zeichnungen." },
+  { id: "all", label: "Alle", icon: "cube" },
+  { id: "notes", label: "Notizen", icon: "note" },
+  { id: "own", label: "Eigene Dokumente", icon: "doc" },
+  { id: "drawings", label: "Zeichnungen", icon: "scribble" },
 ];
 
 /* ---------- Aufgaben-Seite: Status, Prioritäten und die drei Bedien-Listen ---------- */

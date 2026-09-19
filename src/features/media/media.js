@@ -3,8 +3,13 @@
  * Wird erst beim ersten Öffnen nachgeladen.
  * Pfad: src/features/media/media.js
  *
- * Keine anpassbaren visuellen Werte: Fugen, Kachelgröße und Monatsüberschrift
- * stehen in styles/media.css (--media-gap, --media-month-size).
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * emptyArt[*]  -> Icon, Farbe und Texte des Platzhalters je Filter-Pille
+ * emptyAction  -> Beschriftung der Pille, mit der man Dateien hinzufügt
+ *
+ * Fugen, Kachelgröße und Monatsüberschrift stehen in styles/media.css
+ * (--media-gap, --media-month-size), der Platzhalter in styles/empty-state.css.
  */
 
 import { events, on } from "../../core/bus.js";
@@ -14,9 +19,47 @@ import { icon } from "../../core/html.js";
 import { mediaFilters } from "../../data/config.js";
 import { mediaEntries, mediaKindOf } from "../../data/queries.js";
 import { saveState, state } from "../../data/state.js";
+import { emptyState } from "../../ui/empty-state.js";
 import { mediaCell } from "../../ui/media-cell.js";
 import { isViewActive } from "../../ui/views.js";
-import { initMediaImport } from "./media-import.js";
+import { bindMediaPicks, initMediaImport } from "./media-import.js";
+
+/* Platzhalter je Filter-Pille: Icon und Farbe passen zu der fehlenden Art. */
+const emptyArt = {
+  recent: {
+    icon: "photos",
+    accent: "var(--xp-line)",
+    title: "Noch keine Medien",
+    text: "Fotos, Videos, Aufnahmen und Dateien sammeln sich hier nach Monaten.",
+  },
+  image: {
+    icon: "image",
+    accent: "var(--xp-done)",
+    title: "Noch keine Bilder",
+    text: "Nimm ein Foto auf oder importiere eines vom Gerät.",
+  },
+  video: {
+    icon: "video",
+    accent: "var(--prio-irgendwann)",
+    title: "Noch keine Videos",
+    text: "Aufgenommene und importierte Videos stehen hier.",
+  },
+  audio: {
+    icon: "mic",
+    accent: "var(--prio-jetzt)",
+    title: "Noch keine Aufnahmen",
+    text: "Sprachnotizen und Tonaufnahmen sammeln sich hier.",
+  },
+  doc: {
+    icon: "doc",
+    accent: "var(--cal-accent)",
+    title: "Noch keine Dokumente",
+    text: "Importierte Dateien wie PDFs stehen hier.",
+  },
+};
+
+/* Die Pille unter dem Platzhalter öffnet dieselbe Dateiauswahl wie der Knopf „Importieren“. */
+const emptyAction = { label: "Medien hinzufügen" };
 
 /** Die Medien einer Filter-Pille. „recent“ zeigt alles. */
 function filtered(filter) {
@@ -43,10 +86,13 @@ function renderFilters() {
 function renderGrid() {
   const active = state.prefs.media.filter;
   const list = filtered(active);
-  const filter = mediaFilters.find((item) => item.id === active) || mediaFilters[0];
 
   if (!list.length) {
-    dom.mediaBody.innerHTML = `<p class="empty-note">${filter.empty}</p>`;
+    dom.mediaBody.innerHTML = emptyState({
+      ...(emptyArt[active] || emptyArt.recent),
+      action: emptyAction,
+      data: 'data-media-pick="import"',
+    });
     return;
   }
 
@@ -75,6 +121,7 @@ function init() {
   });
 
   initMediaImport(dom.mediaActions);
+  bindMediaPicks(dom.mediaBody);
 
   on(events.viewOpened, (name) => {
     if (name === "media") renderMedia();

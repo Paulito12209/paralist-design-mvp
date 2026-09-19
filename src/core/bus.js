@@ -23,6 +23,9 @@ export const events = {
   /* Die Aufgaben-Seite bittet um das Eingabefeld mit schon gewähltem Typ
      „Aufgabe“ — der Knopf am Ende einer Board-Spalte. */
   taskRequested: "task:requested",
+  /* Die Pille im Platzhalter einer leeren Liste bittet um das Eingabefeld mit
+     dem Typ, der auf diese Liste passt („aufgabe“, „projekt“, „ressourcen“ …). */
+  createRequested: "create:requested",
   /* Ein Blatt von unten (Fortschritt, Profil) geht auf: das Eingabefeld schließt. */
   overlayOpened: "overlay:opened",
   /* Die Bildschirmtastatur ist zu — auch wenn sie weggewischt statt mit

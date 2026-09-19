@@ -4,14 +4,29 @@
  * eines Arbeitsbereichs und eines Projekts vor.
  * Pfad: src/ui/groups.js
  *
- * Keine anpassbaren visuellen Werte: Überschrift und Pfeil stehen in
- * styles/rows.css (Klassen .group-head, .group-body).
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * emptyLinks -> Emblem, Überschrift, Satz und Pille, solange hier nichts liegt
+ *
+ * Aussehen von Überschrift und Pfeil steht in styles/rows.css
+ * (Klassen .group-head, .group-body), das des Platzhalters in
+ * styles/empty-state.css.
  */
 
 import { icon } from "../core/html.js";
 import { groupedEntriesOf } from "../data/queries.js";
 import { ui } from "../data/state.js";
+import { emptyState } from "./empty-state.js";
 import { entryRow } from "./rows.js";
+
+/* Platzhalter, solange in diesem Arbeitsbereich oder Projekt nichts liegt. */
+const emptyLinks = {
+  icon: "layers",
+  accent: "var(--prio-irgendwann)",
+  title: "Noch nichts verknüpft",
+  text: "Was du hier anlegst, bleibt an diesem Ort — Aufgaben, Notizen und Termine.",
+  action: { label: "Eintrag hinzufügen", pick: "aufgabe" },
+};
 
 /** Schlüssel einer Gruppe im Merkzettel der eingeklappten Gruppen. */
 export function groupKey(ref, type) {
@@ -40,7 +55,7 @@ function groupMarkup(ref, group) {
 /** Alle Gruppen eines Ablageorts; leer, wenn dort nichts liegt. */
 export function groupedListMarkup(ref) {
   const groups = groupedEntriesOf(ref);
-  if (!groups.length) return `<p class="empty-note">Noch keine Einträge.</p>`;
+  if (!groups.length) return emptyState(emptyLinks);
   return groups.map((group) => groupMarkup(ref, group)).join("");
 }
 

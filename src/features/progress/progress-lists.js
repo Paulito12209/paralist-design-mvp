@@ -7,8 +7,10 @@
  * -----------------------------------
  * nextLevelCount -> wie viele kommende Stufen die Karte zeigt
  * historyPageSize -> wie viele Zeilen „Mehr anzeigen“ nachlegt
+ * emptyLog        -> Platzhalter in der Historie, solange nichts passiert ist
  *
- * Farben und Abstände stehen in styles/progress.css (.level-row, .hist-row).
+ * Farben und Abstände stehen in styles/progress.css (.level-row, .hist-row),
+ * der Platzhalter steht in styles/empty-state.css.
  */
 
 import { startOfDay } from "../../core/dates.js";
@@ -17,6 +19,15 @@ import { escapeHtml, icon } from "../../core/html.js";
 import { xpItemStyle } from "../../data/config.js";
 import { state, ui } from "../../data/state.js";
 import { levelInfo, levelThreshold, totalXp, xpKindStyle } from "../../data/xp.js";
+import { emptyState } from "../../ui/empty-state.js";
+
+/* Kleiner Platzhalter in der Karte: die Historie füllt sich von allein. */
+const emptyLog = {
+  icon: "history",
+  accent: "var(--xp-line)",
+  title: "Noch keine Aktivität",
+  compact: true,
+};
 
 const nextLevelCount = 3;
 export const historyPageSize = 20;
@@ -95,7 +106,7 @@ export function logCard() {
   const timed = state.xpLog.filter((row) => row.ts != null).sort((a, b) => b.ts - a.ts);
 
   let body = bulkRows(bulk) + timedRows(timed);
-  if (!bulk.length && !timed.length) body = `<p class="empty-note">Noch keine Aktivität.</p>`;
+  if (!bulk.length && !timed.length) body = emptyState(emptyLog);
 
   const more =
     timed.length > ui.historyLimit

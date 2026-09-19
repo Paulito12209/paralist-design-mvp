@@ -53,14 +53,23 @@ export async function addMediaFiles(fileList, source) {
   emit(events.dataChanged);
 }
 
-/** Die runden Knöpfe über der Navigation und die Dateifelder anmelden. */
-export function initMediaImport(mediaActions) {
-  mediaActions.addEventListener("click", (event) => {
+/**
+ * Klicks auf [data-media-pick] in einem Bereich an die Dateifelder weiterreichen.
+ * Gebraucht für die runden Knöpfe über der Navigation und für die Pille im
+ * Platzhalter, solange die Medien-Seite noch leer ist.
+ */
+export function bindMediaPicks(scope) {
+  scope.addEventListener("click", (event) => {
     const button = event.target.closest("[data-media-pick]");
     if (!button) return;
     /* Nur ein echter Klick auf ein input[type=file] öffnet Kamera oder Dateiauswahl. */
     el(`media-file-${button.dataset.mediaPick}`).click();
   });
+}
+
+/** Die runden Knöpfe über der Navigation und die Dateifelder anmelden. */
+export function initMediaImport(mediaActions) {
+  bindMediaPicks(mediaActions);
 
   mediaSources.forEach((source) => {
     const input = el(`media-file-${source}`);

@@ -105,6 +105,17 @@ function contextDefaults() {
   return aufgabe;
 }
 
+/*
+ * Welchen Typ die Pille im Platzhalter einer leeren Liste vorwählt. Der Knopf
+ * „Ressourcen“ ist der einzige, der nicht wie ein Typ heißt: er legt ein
+ * Dokument an. Ohne Angabe bleibt es bei dem, was die Seite ohnehin vorschlägt.
+ */
+function pickOverrides(pick) {
+  if (!pick) return {};
+  if (pick === resourcePick.id) return { type: resourcePick.typeId, pick: resourcePick.id };
+  return { type: pick, pick };
+}
+
 /**
  * Eingabefeld öffnen; die Navigation und die Knopfleisten weichen dafür.
  * @param overrides Typ, Knopf oder Ablageort, die die Vorgaben der Seite überstimmen.
@@ -298,6 +309,7 @@ export function initComposer() {
   on(events.composerRequested, openComposerForSlot);
   /* Dasselbe für die Aufgaben-Seite: ihr Knopf am Spaltenende will eine Aufgabe. */
   on(events.taskRequested, () => openComposer({ type: "aufgabe", pick: "aufgabe" }));
+  on(events.createRequested, (pick) => openComposer(pickOverrides(pick)));
   /* Geht ein Blatt von unten auf, gibt das Eingabefeld auf: es lag sonst
      unsichtbar dahinter weiter offen — samt laufendem Diktat. */
   on(events.overlayOpened, closeComposer);

@@ -7,8 +7,10 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * topOpenedCount / recentOpenedCount -> wie viele Zeilen die Übersicht zeigt
+ * emptySearches / emptyOpened / emptyHits -> die drei Platzhalter der Seite
  *
- * Schriftgrößen stehen in styles/search.css (--search-meta-size).
+ * Schriftgrößen stehen in styles/search.css (--search-meta-size), der
+ * Platzhalter steht in styles/empty-state.css.
  */
 
 import { events, on } from "../../core/bus.js";
@@ -17,12 +19,34 @@ import { historyDayHeading, shortOpenTime } from "../../core/format.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { noteSearch } from "../../data/opens.js";
 import { state, ui } from "../../data/state.js";
+import { emptyState } from "../../ui/empty-state.js";
 import { showSearch } from "../../ui/router.js";
 import { isViewActive } from "../../ui/views.js";
 import { knownOpens, mostOpened, searchHits } from "./search-data.js";
 
 const topOpenedCount = 3;
 const recentOpenedCount = 15;
+
+/* Die drei Platzhalter. Angelegt wird hier nichts, deshalb ohne Pille. */
+const emptySearches = {
+  icon: "search",
+  accent: "var(--cal-accent)",
+  title: "Noch nichts gesucht",
+  text: "Deine letzten Suchbegriffe stehen hier und lassen sich mit einem Tipp wiederholen.",
+};
+
+const emptyOpened = {
+  icon: "history",
+  accent: "var(--xp-line)",
+  title: "Noch nichts geöffnet",
+  text: "Was du oft aufmachst, findest du hier ohne Umweg wieder.",
+};
+
+const emptyHits = {
+  icon: "search",
+  accent: "var(--prio-spaeter)",
+  title: "Keine Treffer",
+};
 
 /* Treffer im Titel hervorheben; der Rest bleibt abgesichert. */
 function markHit(text, query) {
@@ -81,7 +105,7 @@ function renderSubList() {
       listHead("Zuletzt gesucht") +
       (state.recentSearches.length
         ? `<div class="workspace-list">${state.recentSearches.map(queryRow).join("")}</div>`
-        : `<p class="empty-note">Noch nichts gesucht.</p>`);
+        : emptyState(emptySearches));
     return;
   }
 
@@ -92,7 +116,7 @@ function renderSubList() {
       ? `<div class="workspace-list">${rows
           .map(({ open, item }) => resultRow(item, `${item.label} · ${open.count}× geöffnet`))
           .join("")}</div>`
-      : `<p class="empty-note">Noch nichts geöffnet.</p>`);
+      : emptyState(emptyOpened));
 }
 
 /* Treffer zum eingegebenen Begriff. */
@@ -107,7 +131,7 @@ function renderHits() {
           .map((item) => resultRow(item, item.note ? `${item.label} · ${item.note}` : item.label, ui.searchQuery))
           .join("")}</div>
       `
-      : `<p class="empty-note">Keine Treffer für „${escapeHtml(ui.searchQuery)}“.</p>`);
+      : emptyState({ ...emptyHits, text: `Zu „${ui.searchQuery}“ gibt es nichts. Versuch ein kürzeres Wort.` }));
 }
 
 /* Zuletzt geöffnet, nach Tagen gruppiert, damit „Heute“ und „Gestern“ getrennt stehen. */
@@ -142,12 +166,12 @@ function renderOverviewLists() {
       <h2>Zuletzt gesucht</h2>
       <button class="section-more" type="button" data-search-list="searches" aria-label="Alle anzeigen">${icon("chevron", "chevron")}</button>
     </div>
-    ${latestSearch ? `<div class="workspace-list">${queryRow(latestSearch)}</div>` : `<p class="empty-note">Noch nichts gesucht.</p>`}
+    ${latestSearch ? `<div class="workspace-list">${queryRow(latestSearch)}</div>` : emptyState({ ...emptySearches, compact: true })}
     <div class="section-head">
       <h2>Am häufigsten geöffnet</h2>
       <button class="section-more" type="button" data-search-list="most" aria-label="Alle anzeigen">${icon("chevron", "chevron")}</button>
     </div>
-    ${most ? `<div class="workspace-list">${most}</div>` : `<p class="empty-note">Noch nichts geöffnet.</p>`}
+    ${most ? `<div class="workspace-list">${most}</div>` : emptyState({ ...emptyOpened, compact: true })}
     <div class="section-head"><h2>Zuletzt geöffnet</h2></div>
     ${
       groups.length
@@ -157,7 +181,7 @@ function renderOverviewLists() {
                 `<h3 class="date-label">${escapeHtml(group.heading)}</h3><div class="workspace-list">${group.rows.join("")}</div>`
             )
             .join("")
-        : `<p class="empty-note">Noch nichts geöffnet.</p>`
+        : emptyState({ ...emptyOpened, compact: true })
     }
   `;
 }
