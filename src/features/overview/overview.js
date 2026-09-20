@@ -4,6 +4,8 @@
  *
  * Keine anpassbaren visuellen Werte: Größe, Rundung und Icon-Farben stehen in
  * styles/overview.css (Klassen .overview-card, .card-title, .card-icon-*).
+ * Die Zahl neben dem Titel steht erst ab einem Eintrag da — eine „0“ wird
+ * gar nicht erst gezeigt.
  */
 
 import { on, events } from "../../core/bus.js";
@@ -31,7 +33,7 @@ function cardMarkup(id, page) {
       ${icon(iconName, iconClass)}
       <span class="card-label">
         <span class="card-title">${page.title}</span>
-        <span class="card-count">${count}</span>
+        ${count ? `<span class="card-count">${count}</span>` : ""}
       </span>
     </button>
   `;

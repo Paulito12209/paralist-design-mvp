@@ -1,7 +1,8 @@
 /*
  * Die Listenansicht der Kalenderseite: drei Spalten (Aufgaben, Termine,
  * Projekte) mit der Anzahl ihrer Einträge auf der Pille und darunter die
- * Einträge des gewählten Tages.
+ * Einträge des gewählten Tages. Die Zahl steht erst ab einem Eintrag da —
+ * eine „0“ wird gar nicht erst gezeigt.
  * Pfad: src/features/calendar/calendar-list.js
  *
  * Keine anpassbaren visuellen Werte: siehe styles/calendar-panel.css
@@ -49,7 +50,9 @@ export function renderList() {
   const tabs = calendarSegments
     .map(
       (item) =>
-        `<button class="cal-seg-btn${item.id === seg.id ? " is-active" : ""}" type="button" data-seg="${item.id}">${item.label}<span class="card-count">${counts[item.id]}</span></button>`
+        `<button class="cal-seg-btn${item.id === seg.id ? " is-active" : ""}" type="button" data-seg="${item.id}">${item.label}${
+          counts[item.id] ? `<span class="card-count">${counts[item.id]}</span>` : ""
+        }</button>`
     )
     .join("");
 
