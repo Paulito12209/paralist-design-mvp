@@ -13,8 +13,9 @@
  * --search-pill-side        -> Platz links und rechts vom Wort „Suchen“
  * --search-actions-space    -> Zusätzlicher Platz am Seitenende, solange die Knöpfe zu sehen sind
  * --overview-gap            -> Abstand unter der Kopfzeile „Zuletzt gesucht“/„Am häufigsten geöffnet“
- * --link-color               -> Füllung des Suchen-Knopfs im Gehäuse
- * --danger                   -> Farbe des X im Schließen-Kreis
+ * --search-combo-inset      -> Innenabstand des Gehäuses, dadurch schwebt die Suchen-Pille sichtbar darin
+ * --tab-pill-active-bg      -> Fläche des Suchen-Knopfs im Gehäuse
+ * --danger                  -> Farbe des X im Schließen-Kreis
 
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
@@ -160,23 +161,26 @@ body.is-search .search-actions:not([hidden]) {
   display: flex;
 }
 
-/* Gehäuse: Mikrofon und Suchen teilen sich eine Pille, das Mikrofon gedämpft
-   als Nebenfunktion, „Suchen“ als eigentliche Handlung deutlich hervor —
-   overflow: hidden schneidet beide Knöpfe auf die Rundung der Pille zurecht. */
+/* Gehäuse: Mikrofon und Suchen teilen sich eine Pille. Ein Innenabstand lässt
+   die Suchen-Fläche als eigene, kleinere Pille im Gehäuse schweben statt bis
+   an dessen Rand zu reichen — so bleibt die Pillenform auch innen sichtbar. */
 .search-combo {
   display: flex;
   align-items: stretch;
+  gap: 2px;
   height: var(--search-pill-height);
+  padding: var(--search-combo-inset);
+  box-sizing: border-box;
   border-radius: 999px;
   background: var(--card);
   box-shadow: var(--shadow);
-  overflow: hidden;
 }
 
 .search-combo-btn {
   display: grid;
   place-items: center;
   flex: 0 0 auto;
+  border-radius: 999px;
   color: var(--muted); /* Grundfarbe: gedämpft, wie ein inaktiver Nebenknopf */
 }
 
@@ -185,14 +189,14 @@ body.is-search .search-actions:not([hidden]) {
   height: 20px;
 }
 
-/* Mikrofon: quadratisches Feld in der Breite der Zeilenhöhe, wie ein runder Knopf ohne eigene Pille. */
+/* Mikrofon: quadratisches Feld, so hoch wie das eingerückte Innere des Gehäuses. */
 #search-voice {
-  width: var(--search-pill-height);
+  aspect-ratio: 1 / 1;
 }
 
 .search-combo-btn.is-active {
-  background: var(--link-color); /* eigene Füllung: „Suchen“ hebt sich sichtbar vom gedämpften Mikrofon ab */
-  color: #ffffff;
+  background: var(--tab-pill-active-bg); /* dieselbe neutrale Fläche wie bei anderen gewählten Pillen im Rest der App */
+  color: var(--text);
   padding: 0 var(--search-pill-side);
   font-size: 15px;
   font-weight: 600;

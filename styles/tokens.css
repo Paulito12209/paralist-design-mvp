@@ -175,9 +175,8 @@
  * --media-strip-radius      -> Rundung dieser Kacheln
  * --media-strip-bg          -> Fläche dieser Kacheln, solange kein Bild darauf liegt
  * --media-kind-size         -> Schriftgröße der kleinen Überschriften Bilder/Videos/Audio/Dokumente
- * --media-btn-size          -> Größe der runden Knöpfe über der Navigation
- * --media-actions-space     -> Extra-Platz am Ende der Medien-Seite
- * --search-pill-height / --search-pill-side / --search-actions-space -> die Knöpfe unten auf der Suche
+ * --media-btn-size / --media-actions-space -> Größe der runden Knöpfe über der Navigation und ihr Extra-Platz
+ * --search-pill-height / --search-pill-side / --search-actions-space / --search-combo-inset -> die Knöpfe unten auf der Suche
  * --draw-tool-size / --draw-color-size -> Größe der Werkzeug-Knöpfe und Farbpunkte
  * --draw-tools-space        -> Extra-Platz unter der Zeichenfläche
  *
@@ -376,6 +375,7 @@
   --media-actions-space: 60px;
   --search-pill-height: 48px;
   --search-pill-side: 20px;
+  --search-combo-inset: 4px;
   --search-actions-space: 60px;
   --draw-tool-size: 38px;
   --draw-color-size: 22px;
