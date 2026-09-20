@@ -63,10 +63,12 @@ Dass all das stimmt, prüft `python3 tools/check.py`.
 
 ### Wo ändere ich das Aussehen?
 
-Die Werte, die mehr als eine Stelle betreffen — alle Farben, die Maße der
+Die Werte, die auf jeder Seite wirken — die Grundfarben, die Maße der
 Bedienelemente, die wiederkehrenden Abstände —, stehen in
-**`styles/tokens.css`**. Dort oben steht auch, welche Stil-Datei welchen Bereich
-abdeckt.
+**`styles/tokens.css`**. Was nur eine einzelne Seite betrifft (Kalender,
+Aufgaben, Medien, Suche, Zeichnung, Profil, Einstellungen), steht in
+**`styles/tokens-pages.css`**. Oben in `tokens.css` steht auch, welche Stil-Datei
+welchen Bereich abdeckt.
 
 Die Schriftgröße eines einzelnen Elements (die Stundenbeschriftung im Kalender,
 eine Überschrift im Profil-Blatt) steht dagegen direkt bei ihrer Regel in der

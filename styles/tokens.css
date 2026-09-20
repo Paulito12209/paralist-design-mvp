@@ -2,9 +2,11 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * Pfad: styles/tokens.css
  * -----------------------------------
- * Hier stehen die Werte, die mehr als eine Stelle betreffen: die Farben, die
- * Maße der Bedienelemente und die wiederkehrenden Abstände. Ändert man einen
- * davon, ändert sich die ganze App.
+ * Hier stehen die Werte, die auf jeder Seite wirken: die Grundfarben, die Maße
+ * der Bedienelemente und die wiederkehrenden Abstände. Ändert man einen davon,
+ * ändert sich die ganze App. Was nur eine einzelne Seite betrifft — Kalender,
+ * Aufgaben, Medien, Suche, Zeichnung, Profil, Einstellungen —, steht in
+ * styles/tokens-pages.css.
  *
  * Nicht alles steht hier: die Schriftgröße eines einzelnen Elements — etwa die
  * Stundenbeschriftung im Kalender oder eine Überschrift im Profil-Blatt — steht
@@ -14,7 +16,8 @@
  *
  * WELCHE DATEI MACHT WAS
  * -----------------------------------
- * styles/tokens.css          -> alle Werte (diese Datei)
+ * styles/tokens.css          -> die Werte, die auf jeder Seite wirken (diese Datei)
+ * styles/tokens-pages.css    -> die Werte, die nur eine einzelne Seite betreffen
  * styles/tokens-dark.css     -> dieselben Werte, soweit sie im Dunkeln anders sind
  * styles/base.css            -> Grundgerüst: Seite, Gerätefenster, Inhaltsbereich, Icons
  * styles/top-bar.css         -> Kopfzeile: Level-Anzeige, Suchleiste, Profil-Knopf
@@ -73,28 +76,20 @@
  * --stage-bg                -> Fläche rund um das Gerätefenster am Desktop
  * --avatar-view-bg          -> Hintergrund der großen Profilbild-Ansicht (immer dunkel)
  * --avatar-gradient-from/-to -> Farbverlauf hinter den Initialen im Profil
- * --cal-now-label           -> Schriftfarbe in der Uhrzeit-Pille der Jetzt-Linie
  * --inbox-icon-color        -> Farbe des Inbox-Icons auf der Übersichtskarte
  * --project-icon-color      -> Farbe des Raketen-Icons auf der Projekte-Karte
  * --resource-icon-color     -> Farbe des Würfel-Icons auf der Ressourcen-Karte
- * --prio-jetzt              -> Farbe der Board-Spalte „Jetzt“
- * --prio-next               -> Farbe der Board-Spalte „Als Nächstes“
- * --prio-spaeter            -> Farbe der Board-Spalte „Später“
- * --prio-irgendwann         -> Farbe der Board-Spalte „Irgendwann“
+ * --composer-mic-bg          -> Fläche des Diktat-Knopfes und der noch nicht geänderten Pillen
+ * --composer-mic-border      -> dünner Rand darum: dunkelgrau, in beiden Darstellungen gleich
  *
  * SCHRIFTGRÖSSEN
  * --title-size              -> Schriftgröße der großen Überschrift „Übersicht“
  * --tab-label-size          -> Schriftgröße der Wörter unter den Navigations-Icons
  * --tab-pill-size           -> Schriftgröße der Tab-Pillen über den Arbeitsbereichen
- * --search-meta-size        -> Schriftgröße der kleinen Infos unter Such-Einträgen
  * --composer-input-size     -> Schriftgröße im Eingabefeld
  * --composer-chip-size      -> Schriftgröße des Verknüpfen-Knopfes im Eingabefeld
  * --entry-title-size        -> Schriftgröße des Titels auf der Editor-Seite
  * --entry-body-size         -> Schriftgröße des Textes auf der Editor-Seite
- * --task-meta-size          -> Schriftgröße des Ortes unter einer Aufgabe
- * --task-chip-size          -> Schriftgröße der Status- und Datums-Chips
- * --media-month-size        -> Schriftgröße der Monatsüberschrift auf der Medien-Seite
- * --media-name-size         -> Schriftgröße des Dateinamens auf Dokument-Kacheln
  *
  * ABSTÄNDE UND GRÖSSEN
  * --radius-xl / --radius-lg -> Rundung der Karten im Fortschritt- und Profil-Blatt
@@ -151,59 +146,6 @@
  * --sheet-options-max       -> ab welcher Höhe die Liste im Auswahl-Blatt scrollt
  * --sheet-heading-size      -> Schriftgröße der Abschnitts-Überschrift im Auswahl-Blatt
  * --modal-dismiss-pull      -> Wie weit man ein Blatt ziehen muss, damit es schließt
- * --profile-avatar-size     -> Größe des runden Profilbilds
- * --profile-avatar-edit-size -> Größe des kleinen Stift-Knopfs am Profilbild
- * --mini-gap                -> Fuge zwischen den beiden Analyse-Kacheln
- * --mini-card-height        -> Mindesthöhe einer Analyse-Kachel
- * --mini-chart-height       -> Höhe der kleinen Grafik auf der Kachel
- * --task-check-size         -> Größe des runden Haken-Knopfes an einer Aufgabe
- * --task-tools-gap          -> Abstand zwischen Bedienzeile und Inhalt der Aufgaben-Seite
- * --task-view-btn-size      -> Durchmesser des runden Umschalters Liste ↔ Board
- * --task-pill-anim          -> wie lange die Pille „Gruppieren“ aus dem Umschalter herausfährt
- * --task-pill-slide         -> aus welcher Entfernung die Pille dabei herangleitet
- * --board-col-width         -> Breite einer Board-Spalte
- * --board-gap               -> Fuge zwischen zwei Spalten
- * --board-head-gap          -> Abstand zwischen Kopfzeile und erster Zeile einer Spalte
- * --board-grip-width        -> Breite des Griffstreifens am rechten Rand einer Zeile
- * --board-card-radius       -> Rundung einer angehobenen Zeile und der Lücke beim Ziehen
- * --board-head-radius       -> Rundung der farbigen Spalten-Kopfzeile
- * --board-drop-min          -> Mindesthöhe einer leeren Spalte, damit man dort ablegen kann
- * --board-edge              -> ab wie vielen Pixeln am Rand beim Ziehen mitgescrollt wird
- * --media-gap               -> Fuge zwischen den Medien-Kacheln
- * --media-strip-width       -> Breite einer Kachel in der Reihe unter „Verknüpfte Einträge“
- * --media-strip-gap         -> Fuge zwischen diesen Kacheln
- * --media-strip-radius      -> Rundung dieser Kacheln
- * --media-strip-bg          -> Fläche dieser Kacheln, solange kein Bild darauf liegt
- * --media-kind-size         -> Schriftgröße der kleinen Überschriften Bilder/Videos/Audio/Dokumente
- * --media-btn-size / --media-actions-space -> Größe der runden Knöpfe über der Navigation und ihr Extra-Platz
- * --search-pill-height / --search-pill-side / --search-actions-space / --search-combo-inset -> die Knöpfe unten auf der Suche
- * --draw-tool-size / --draw-color-size -> Größe der Werkzeug-Knöpfe und Farbpunkte
- * --draw-tools-space        -> Extra-Platz unter der Zeichenfläche
- *
- * LEVEL-ANZEIGE, DIAGRAMME UND KALENDER
- * --level-color / --level-dim / --level-glow -> Level-Anzeige oben links; --level-color färbt auch Plus und Ring des Navigations-Knopfes
- * --xp-created / --xp-done  -> Blau für „Angelegt“, Grün für „Erledigt“
- * --xp-line                 -> Orange der Verlaufskurve im Fortschritt-Blatt
- * --dot-empty / --dot-1..4  -> Punkte-Raster der Nutzungszeit im Profil-Blatt
- * --cal-accent              -> Blau des gewählten Tages und des „Heute“-Knopfes
- * --cal-now                 -> Farbe der Jetzt-Linie im Stundenraster
- * --cal-day-ring            -> Kreis hinter Tagen, an denen etwas eingetragen ist
- * --cal-row-h / --cal-hour-h -> Höhe einer Wochenzeile und einer Stunde
- * --date-wheel-h / --date-wheel-item-h -> Höhe einer Rolle und einer Zeile im Blatt „Monat und Jahr“
- * --media-doc-color / --media-badge-bg -> Dokument-Icon und Dauer-Schild
- * --viewer-stage-bg         -> Fläche hinter Bild, Video und PDF in der Dateiansicht
- * --viewer-btn-size         -> Größe der runden Knöpfe in der Dateiansicht
- * --viewer-title-size       -> Schriftgröße des Dateinamens oben
- * --viewer-pad              -> Abstand vom Rand in der Dateiansicht
- * --viewer-foot-bg          -> Fläche der schwarzen Leiste unten in der Dateiansicht
- * --viewer-foot-btn-size    -> Größe von Verknüpfen-Knopf und Drei-Punkte-Menü unten
- * --viewer-foot-goto-h      -> Höhe des Knopfes „Zur Seite“ in der Mitte (schmaler als die Runden)
- * --support-field-radius     -> Rundung der Felder und Art-Knöpfe im Feedback
- * --support-text-min-height  -> Mindesthöhe des Beschreibungsfelds im Feedback
- * --support-choice-active-bg -> Fläche der gewählten Art im Feedback
- * --credits-chip-bg          -> Fläche hinter einem Namen bei den Danksagungen
- * --composer-mic-bg          -> Fläche des Diktat-Knopfes und der noch nicht geänderten Pillen
- * --composer-mic-border      -> dünner Rand darum: dunkelgrau, in beiden Darstellungen gleich
  *
  * Dunkelmodus: dieselben Werte werden weiter unten noch einmal gesetzt —
  * einmal für „folgt dem System“ und einmal für „in den Einstellungen gewählt“.
@@ -229,7 +171,6 @@
   --avatar-view-bg: #111111;
   --avatar-gradient-from: #7aa7d9;
   --avatar-gradient-to: #4d72ad;
-  --cal-now-label: #0b1a2a;
   --modal-radius: 28px;
   --radius-lg: 18px;
   --title-size: 28px;
@@ -264,7 +205,6 @@
   --nav-inner-pad: 5px;
   --tab-icon-grow: 8px;
   --tab-hit-grow: 8px;
-  --search-meta-size: 13px;
   --nav-side: 28px;
   --nav-bottom: 10px;
   --nav-radius: 999px;
@@ -317,79 +257,7 @@
   --icon-strong: #3a3a3c;
   --placeholder: #aeaeb2;
   --chevron: #c7c7cc;
-  --level-color: #4d72ad;
-  --level-dim: rgba(77, 114, 173, 0.22);
-  --level-glow: transparent;
-  --xp-created: #007aff;
-  --xp-done: #34c759;
-  --xp-line: #ff9500;
-  --dot-empty: rgba(60, 60, 67, 0.09);
-  --dot-1: rgba(255, 149, 0, 0.3);
-  --dot-2: rgba(255, 149, 0, 0.5);
-  --dot-3: rgba(255, 149, 0, 0.75);
-  --dot-4: #ff9500;
-  --cal-accent: #007aff;
-  --cal-now: #32ade6;
-  --cal-day-ring: rgba(60, 60, 67, 0.08);
-  --cal-row-h: 52px;
-  --cal-hour-h: 56px;
-  --date-wheel-h: 220px;
-  --date-wheel-item-h: 44px;
-  --prio-jetzt: #ff453a;
-  --prio-next: #ff9500;
-  --prio-spaeter: #007aff;
-  --prio-irgendwann: #af52de;
-  --task-meta-size: 13px;
-  --task-chip-size: 12px;
-  --task-check-size: 24px;
-  --task-tools-gap: 18px;
-  --task-view-btn-size: 36px;
-  --task-pill-anim: 0.24s;
-  --task-pill-slide: 28px;
-  --board-col-width: 264px;
-  --board-gap: 12px;
-  --board-head-gap: 6px;
-  --board-grip-width: 32px;
-  --board-card-radius: 16px;
-  --board-head-radius: 14px;
-  --board-drop-min: 72px;
-  --board-edge: 44px;
-  --media-gap: 3px;
-  --media-strip-width: 104px;
-  --media-strip-gap: 10px;
-  --media-strip-radius: 14px;
-  --media-strip-bg: rgba(60, 60, 67, 0.09);
-  --media-kind-size: 13px;
-  --media-month-size: 19px;
-  --media-name-size: 13px;
-  --media-doc-color: #007aff;
-  --media-badge-bg: rgba(0, 0, 0, 0.55);
-  --viewer-stage-bg: #ffffff;
-  --viewer-btn-size: 40px;
-  --viewer-title-size: 17px;
-  --viewer-pad: 12px;
-  --viewer-foot-bg: #000000;
-  --viewer-foot-btn-size: 44px;
-  --viewer-foot-goto-h: 36px;
-  --media-btn-size: 48px;
-  --media-actions-space: 60px;
-  --search-pill-height: 56px;
-  --search-pill-side: 20px;
-  --search-combo-inset: 4px;
-  --search-actions-space: 60px;
-  --draw-tool-size: 38px;
-  --draw-color-size: 22px;
-  --draw-tools-space: 62px;
   --modal-dismiss-pull: 100px;
-  --profile-avatar-size: 128px;
-  --profile-avatar-edit-size: 36px;
-  --mini-gap: 12px;
-  --mini-card-height: 132px;
-  --mini-chart-height: 34px;
-  --support-field-radius: 14px;
-  --support-text-min-height: 140px;
-  --support-choice-active-bg: rgba(0, 122, 255, 0.1);
-  --credits-chip-bg: rgba(60, 60, 67, 0.07);
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   /* Hoehe der eingeblendeten Bildschirmtastatur; src/shell/keyboard-inset.js setzt den Wert am Handy */

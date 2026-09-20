@@ -29,9 +29,9 @@
     </script>
 
     <!-- Stile in der Reihenfolge der Kaskade: erst die Werte, dann das Grundgerüst, dann die
-         einzelnen Seiten. Getrennte Dateien laden parallel; welche Datei welche Werte
-         enthält, steht in styles/tokens.css und in README.md. -->
-    <link rel="stylesheet" href="styles/tokens.css" />
+         einzelnen Seiten. Welche Datei welche Werte enthält, steht in styles/tokens.css und in
+         README.md; tokens-dark.css steht hinter beiden Wert-Dateien und überschreibt sie. -->
+    <link rel="stylesheet" href="styles/tokens.css" /><link rel="stylesheet" href="styles/tokens-pages.css" />
     <link rel="stylesheet" href="styles/tokens-dark.css" />
     <link rel="stylesheet" href="styles/base.css" />
     <link rel="stylesheet" href="styles/top-bar.css" />
@@ -236,7 +236,7 @@
               <svg class="icon"><use href="#icon-undo"></use></svg>
             </button>
           </div>
-          <!-- Suchen-Knoepfe: Mikrofon+Suchen teilen sich ein Gehaeuse, Schliessen steht separat rechts -->
+          <!-- Suchen-Knoepfe: Mikrofon+Suchen teilen sich ein mittig stehendes Gehaeuse, Abbrechen steht separat rechts daneben -->
           <div class="search-actions" id="search-actions">
             <div class="search-combo"><button class="search-combo-btn" type="button" id="search-voice" aria-label="Suche einsprechen"><svg class="icon"><use href="#icon-mic"></use></svg></button><button class="search-combo-btn is-active" type="button" id="search-pill">Suchen</button></div>
             <button class="search-cancel" type="button" id="search-close">Abbrechen</button>

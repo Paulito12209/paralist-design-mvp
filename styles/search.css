@@ -15,7 +15,7 @@
  * --overview-gap            -> Abstand unter der Kopfzeile „Zuletzt gesucht“/„Am häufigsten geöffnet“
  * --search-combo-inset      -> Innenabstand des Gehäuses, dadurch schwebt die Suchen-Pille sichtbar darin
  * --tab-pill-active-bg      -> Fläche des Suchen-Knopfs im Gehäuse
- * --danger                  -> Farbe der Schrift des Abbrechen-Knopfs
+ * --search-cancel-color     -> Rot der Schrift des Abbrechen-Knopfs
 
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
@@ -144,27 +144,34 @@ body.is-search .nav-shell {
   display: none;
 }
 
-/* Die Knöpfe unten rechts: links das Gehäuse mit Mikrofon und Suchen, rechts
-   getrennt der Abbrechen-Knopf. Sie liegen dort, wo sonst die Navigation
-   steht, und bleiben auch bei offener Tastatur stehen (sie rücken mit ihr
-   nach oben, siehe styles/navigation.css): gerade dann will man abbrechen
-   können. Alle drei sind gleich hoch (--search-pill-height). */
+/* Die Knöpfe unten: mittig das Gehäuse mit Mikrofon und Suchen, rechts daneben
+   der Abbrechen-Knopf. Sie liegen dort, wo sonst die Navigation steht, und
+   bleiben auch bei offener Tastatur stehen (sie rücken mit ihr nach oben,
+   siehe styles/navigation.css): gerade dann will man abbrechen können. Alle
+   drei sind gleich hoch (--search-pill-height).
+
+   Drei Spalten statt einer Reihe: die leere linke Spalte ist genauso breit wie
+   die rechte mit „Abbrechen“, dadurch steht das Gehäuse in der Mitte der Seite
+   und nicht nur in der Mitte des freien Platzes. Beide Randspalten dürfen bis
+   auf null schrumpfen (minmax(0, 1fr)) — auf schmalen Geräten wird „Abbrechen“
+   dann abgekürzt, statt das Gehäuse aus der Mitte zu schieben. */
 .search-actions {
   display: none;
   align-items: center;
-  justify-content: flex-end;
-  gap: 10px; /* gap: Abstand zwischen dem Gehäuse und dem Schließen-Kreis */
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: 6px; /* gap: Abstand zwischen dem Gehäuse und dem Abbrechen-Knopf — schmal, damit bei 375 px Breite noch das ganze Wort danebenpasst */
   margin: 0 0 12px;
 }
 
 body.is-search .search-actions:not([hidden]) {
-  display: flex;
+  display: grid;
 }
 
 /* Gehäuse: Mikrofon und Suchen teilen sich eine Pille. Ein Innenabstand lässt
    die Suchen-Fläche als eigene, kleinere Pille im Gehäuse schweben statt bis
    an dessen Rand zu reichen — so bleibt die Pillenform auch innen sichtbar. */
 .search-combo {
+  grid-column: 2; /* grid-column: die mittlere Spalte, damit das Gehäuse mittig steht */
   display: flex;
   align-items: stretch;
   gap: 2px;
@@ -211,15 +218,22 @@ body.is-search .search-actions:not([hidden]) {
   color: var(--link-color);
 }
 
+/* Abbrechen: steht rechts neben dem Gehäuse und wird auf schmalen Geräten mit
+   Punkten abgekürzt, statt die Pille aus der Mitte zu drücken. */
 .search-cancel {
+  grid-column: 3; /* grid-column: die rechte Spalte, direkt neben dem Gehäuse */
+  justify-self: start;
+  min-width: 0; /* min-width: erst dadurch darf der Knopf schmaler werden als sein Wort */
+  max-width: 100%;
   height: var(--search-pill-height);
-  display: grid;
-  place-items: center;
-  padding: 0 4px;
-  color: var(--danger); /* rot, weil dieser Knopf die Suche verwirft statt sie auszuführen */
-  font-size: 15px;
-  font-weight: 600;
+  line-height: var(--search-pill-height); /* line-height: legt die Schrift auf dieselbe Mitte wie die Pille daneben */
+  overflow: hidden;
+  text-overflow: ellipsis; /* text-overflow: aus „Abbrechen“ wird „Abbre…“, wenn der Platz nicht reicht */
   white-space: nowrap;
+  text-align: left;
+  color: var(--search-cancel-color);
+  font-size: 15px;
+  font-weight: 400; /* normal statt fett: „Suchen“ in der Pille bleibt die Hauptsache, und das schmalere Wort passt neben die mittige Pille */
 }
 
 .search-cancel:active {
