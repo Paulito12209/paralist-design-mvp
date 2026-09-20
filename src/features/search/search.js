@@ -166,12 +166,12 @@ function renderOverviewLists() {
       <h2>Zuletzt gesucht</h2>
       <button class="section-more" type="button" data-search-list="searches" aria-label="Alle anzeigen">${icon("chevron", "chevron")}</button>
     </div>
-    ${latestSearch ? `<div class="workspace-list">${queryRow(latestSearch)}</div>` : emptyState({ ...emptySearches, compact: true })}
+    ${latestSearch ? `<div class="workspace-list">${queryRow(latestSearch)}</div>` : emptyState({ ...emptySearches, compact: true, art: false })}
     <div class="section-head">
       <h2>Am häufigsten geöffnet</h2>
       <button class="section-more" type="button" data-search-list="most" aria-label="Alle anzeigen">${icon("chevron", "chevron")}</button>
     </div>
-    ${most ? `<div class="workspace-list">${most}</div>` : emptyState({ ...emptyOpened, compact: true })}
+    ${most ? `<div class="workspace-list">${most}</div>` : emptyState({ ...emptyOpened, compact: true, art: false })}
     <div class="section-head"><h2>Zuletzt geöffnet</h2></div>
     ${
       groups.length
@@ -181,7 +181,7 @@ function renderOverviewLists() {
                 `<h3 class="date-label">${escapeHtml(group.heading)}</h3><div class="workspace-list">${group.rows.join("")}</div>`
             )
             .join("")
-        : emptyState({ ...emptyOpened, compact: true })
+        : emptyState({ ...emptyOpened, compact: true, art: false })
     }
   `;
 }

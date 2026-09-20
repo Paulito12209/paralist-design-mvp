@@ -144,3 +144,8 @@
   width: 22px;
   height: 22px;
 }
+
+/* Ganz ohne Emblem: nur die Zeile mit dem Titel, für dicht stehende Abschnitte */
+.empty-state.is-bare {
+  padding: 4px 12px 14px;
+}

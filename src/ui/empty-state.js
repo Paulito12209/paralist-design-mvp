@@ -87,8 +87,20 @@ function emblemMarkup(withBadge) {
  *                        Bereich den Knopf selbst behandelt (Medien: Datei wählen).
  * @param options.compact Kleineres Emblem ohne Erklärtext — für Platzhalter
  *                        innerhalb einer Karte oder eines Abschnitts.
+ * @param options.art     Auf false weglassen: nur Titel (und Text), ohne Emblem —
+ *                        für Platzhalter, die dicht neben anderen Abschnitten stehen
+ *                        (Übersicht der allgemeinen Suche).
  */
-export function emptyState({ icon: iconName, accent, title, text = "", action = null, data = "", compact = false }) {
+export function emptyState({
+  icon: iconName,
+  accent,
+  title,
+  text = "",
+  action = null,
+  data = "",
+  compact = false,
+  art = true,
+}) {
   const pill = action
     ? `<button class="empty-add" type="button" ${data || `data-empty-add="${action.pick || ""}"`}>
         ${icon("plus", "empty-add-icon")}<span>${escapeHtml(action.label)}</span>
@@ -96,11 +108,15 @@ export function emptyState({ icon: iconName, accent, title, text = "", action = 
     : "";
 
   return `
-    <div class="empty-state${compact ? " is-compact" : ""}" style="--empty-accent:${accent}">
-      <div class="empty-art">
+    <div class="empty-state${compact ? " is-compact" : ""}${art ? "" : " is-bare"}" style="--empty-accent:${accent}">
+      ${
+        art
+          ? `<div class="empty-art">
         ${emblemMarkup(Boolean(action))}
         ${icon(iconName, "empty-emblem-icon")}
-      </div>
+      </div>`
+          : ""
+      }
       <p class="empty-title">${escapeHtml(title)}</p>
       ${text && !compact ? `<p class="empty-text">${escapeHtml(text)}</p>` : ""}
       ${pill}
