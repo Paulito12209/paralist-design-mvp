@@ -19,7 +19,6 @@
   background: var(--card);
   border-radius: var(--radius-xl);
   padding: 18px 16px;
-  box-shadow: var(--shadow);
 }
 
 .pcard-head {

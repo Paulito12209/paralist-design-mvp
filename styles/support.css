@@ -57,7 +57,6 @@
   padding: 12px 16px;
   background: var(--card);
   border-radius: var(--support-field-radius);
-  box-shadow: var(--shadow);
   text-align: left;
   color: var(--text);
 }

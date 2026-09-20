@@ -197,7 +197,6 @@
   max-width: 320px;
   background: var(--card);
   border-radius: var(--radius-xl); /* border-radius: wie die übrigen Karten */
-  box-shadow: var(--shadow);
   padding: 24px 20px;
   display: flex;
   flex-direction: column;
