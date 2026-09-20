@@ -11,7 +11,6 @@
  * --project-icon-color              -> Raketen-Icon
  * --resource-icon-color             -> Würfel-Icon
  * --tab-pill-size                   -> Schriftgröße der Tab-Pillen
- * --tab-pill-active-bg              -> Hintergrund der gewählten Pille
  * --tab-pills-btn-gap               -> Abstand zwischen Trennlinie und Plus-Knopf
  * --tab-pills-fade                  -> Breite des Ausblendens links der Trennlinie
  * --content-side                    -> Abstand des Inhalts zum Rand; so weit brechen
@@ -252,9 +251,11 @@
   /* Icon soll neben dem Namen nicht schrumpfen */
 }
 
-/* Der ausgewählte Tab bekommt als einziger einen Hintergrund */
+/* Der ausgewählte Tab bekommt als einziger einen Hintergrund - wie eine Karte,
+   nicht wie der Reiter unten (der nutzt bewusst die andere Akzentfarbe,
+   siehe --tab-pill-active-bg in styles/navigation.css) */
 .tab-pill.is-active {
-  background: var(--tab-pill-active-bg);
+  background: var(--card);
   color: var(--text);
 }
 

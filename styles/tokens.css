@@ -127,7 +127,8 @@
  * --tab-add-shift           -> wie weit der Plus-Knopf beim Drücken nach rechts rutscht
  * --tab-add-shift-time      -> wie lange dieses Rutschen dauert
  * --tab-hit-grow            -> wie weit die Tippfläche eines Reiters über sein Icon hinausgeht
- * --tab-pill-active-bg      -> Hintergrund der ausgewählten Tab-Pille
+ * --tab-pill-active-bg      -> Hintergrund des aktiven Reiters unten (nicht der Arbeitsbereich-Pille,
+ *                              die nutzt --card wie die Übersichtskarten)
  * --tab-pills-btn-gap       -> Abstand zwischen Trennlinie und Plus-Knopf
  * --tab-pills-fade          -> Breite des Ausblendens links von der Trennlinie
  * --composer-radius         -> Rundung des Eingabe-Containers

@@ -6,6 +6,7 @@
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
  * --nav-bg                  -> Fläche der Leiste: weiß im Hellmodus, schwarz im Dunkelmodus
+ * --tab-pill-active-bg      -> Hintergrund des aktiven Reiters (Zähler-Akzentfarbe, siehe tokens.css)
  * --nav-height              -> Höhe der Leiste (Material 3: 80dp)
  * --nav-side / --nav-bottom -> Abstand zum Rand und nach unten
  * --nav-radius              -> Rundung der Leiste
