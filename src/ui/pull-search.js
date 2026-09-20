@@ -46,11 +46,6 @@ function canStartPull(target) {
     return false;
   }
 
-  /* Bereiche, die in sich selbst rollen (das Stundenraster im Kalender),
-     behalten ihre eigene Bewegung, solange sie nicht selbst ganz oben stehen */
-  const inner = target.closest(".cal-panel.is-grid");
-  if (inner && inner.scrollTop > 1) return false;
-
   /* Der Inhalt muss ganz oben stehen (mit kleiner Toleranz für Subpixel-Rundung) */
   return !dom.content || dom.content.scrollTop <= 1;
 }

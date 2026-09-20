@@ -75,6 +75,10 @@ export function setSpan(span) {
 export function setMode(mode) {
   state.prefs.calendar.mode = mode;
   saveState();
+  /* Beim Umschalten auf das Stundenraster beginnt die Seite wieder ganz oben:
+     Titel, Monat, Streifen und die drei Knöpfe sind vollständig zu sehen, die
+     Uhrzeit sucht sich das Raster in sich selbst. */
+  if (mode === "grid") dom.content.scrollTop = 0;
   redraw(mode === "grid");
 }
 

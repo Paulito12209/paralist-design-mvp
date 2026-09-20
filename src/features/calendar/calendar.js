@@ -53,6 +53,7 @@ export function renderCalendar(jumpToNow = false) {
     sizeGrid();
     if (jumpToNow) scrollToNow();
     else dom.calPanel.scrollTop = keepScroll;
+    updateGridLock();
   } else {
     dom.calPanel.style.height = "";
   }
@@ -76,12 +77,29 @@ function updateTodayPill() {
   dom.calTodayBtn.classList.toggle("is-on", isOnToday() && nowLineVisible());
 }
 
+/*
+ * Zwei Stufen beim Scrollen: Solange die Seite noch nicht ganz oben
+ * angekommen ist, rollt ein Wisch im Raster die ganze Seite — Titel, Monat
+ * und Streifen wandern nach oben, bis der Streifen unter der Suchleiste
+ * einrastet. Erst danach darf das Raster in sich selbst rollen.
+ * Dafür ist es vorher gesperrt (styles/calendar-panel.css, Klasse is-free);
+ * gesperrt heißt nur: kein eigenes Scrollen — sein Stand bleibt erhalten.
+ */
+function updateGridLock() {
+  if (!dom.calPanel.classList.contains("is-grid")) return;
+  const page = dom.content;
+  const atEnd = page.scrollTop >= page.scrollHeight - page.clientHeight - 1;
+  dom.calPanel.classList.toggle("is-free", atEnd);
+}
+
 /* Beim Scrollen im Raster oder auf der Seite kann die Jetzt-Linie in den
    sichtbaren Ausschnitt hinein- oder herauslaufen — die Optik des Knopfes
    zieht dann sofort nach. An anderen Tagen gibt es keine Jetzt-Linie: dann
    gar nicht erst messen. */
 function onScroll() {
-  if (!isViewActive("calendar") || !isOnToday()) return;
+  if (!isViewActive("calendar")) return;
+  updateGridLock();
+  if (!isOnToday()) return;
   dom.calTodayBtn.classList.toggle("is-on", nowLineVisible());
 }
 
@@ -141,7 +159,9 @@ function init() {
   /* Dreht sich das Gerät oder ändert sich die Fensterhöhe, passt die Höhe des
      Rasters nicht mehr: neu messen. */
   window.addEventListener("resize", () => {
-    if (isViewActive("calendar") && state.prefs.calendar.mode === "grid") sizeGrid();
+    if (!isViewActive("calendar") || state.prefs.calendar.mode !== "grid") return;
+    sizeGrid();
+    updateGridLock();
   });
 
   on(events.viewOpened, (name) => {

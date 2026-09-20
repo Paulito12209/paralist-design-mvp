@@ -29,16 +29,25 @@
  * Nur das Stundenraster rollt in sich selbst. Die Höhe setzt
  * src/features/calendar/calendar-grid.js (sizeGrid): sie reicht vom
  * eingerasteten Kopf bis zum unteren Rand. So bleibt der Kopfbereich beim
- * Öffnen vollständig sichtbar, und die Seite darüber lässt sich trotzdem
- * hochschieben, bis der Wochenstreifen unter der Suchleiste einrastet.
+ * Öffnen vollständig sichtbar.
+ *
+ * overflow-y: hidden -> das Raster rollt zunächst NICHT selbst: ein Wisch
+ * darin schiebt erst die ganze Seite hoch, bis der Wochenstreifen unter der
+ * Suchleiste einrastet. Sein Stand bleibt dabei erhalten, nur die Bedienung
+ * ist gesperrt. Erst dann setzt src/features/calendar/calendar.js die Klasse
+ * is-free, und die Stunden rollen im Raster weiter.
  * flex: none -> die feste Höhe soll nicht wieder gedehnt werden
  * scrollbar-width/-webkit-scrollbar -> keine Leiste, wie im Rest der App
  */
 .cal-panel.is-grid {
   flex: none;
-  overflow-y: auto;
+  overflow-y: hidden;
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
+}
+
+.cal-panel.is-grid.is-free {
+  overflow-y: auto;
 }
 
 .cal-panel.is-grid::-webkit-scrollbar {
