@@ -159,7 +159,7 @@ body.is-search .nav-shell {
   display: none;
   align-items: center;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  gap: 6px; /* gap: Abstand zwischen dem Gehäuse und dem Abbrechen-Knopf — schmal, damit bei 375 px Breite noch das ganze Wort danebenpasst */
+  gap: 14px; /* gap: Abstand zwischen dem Gehäuse und dem Abbrechen-Knopf */
   margin: 0 0 12px;
 }
 
