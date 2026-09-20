@@ -1,0 +1,49 @@
+/*
+ * Der runde Pfeil unten rechts in einem Blatt, der wieder nach oben bringt.
+ * Pfad: styles/modal-top.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * .modal-top width/height -> Größe des runden Knopfes (42px wie der Schließen-Knopf)
+ * .modal-top bottom/right -> Abstand zur unteren und rechten Kante des Blatts
+ * .modal-top .icon transform -> Drehung des Zurück-Pfeils, damit er nach oben zeigt
+ *
+ * Farben und Schatten kommen aus styles/tokens.css:
+ * --card, --text, --shadow, --content-side, --safe-bottom
+ */
+
+.modal-top {
+  position: absolute; /* position: der Knopf schwebt über dem rollenden Inhalt */
+  right: var(--content-side);
+  bottom: calc(16px + var(--safe-bottom));
+  width: 42px;
+  height: 42px;
+  border-radius: 50%; /* border-radius: macht den Knopf rund */
+  display: grid;
+  place-items: center;
+  background: var(--card);
+  color: var(--text);
+  box-shadow: var(--shadow);
+  z-index: 2; /* z-index: liegt über dem Inhalt des Blatts */
+  opacity: 0;
+  /* transform: kommt leicht von unten herein, statt einfach aufzublitzen */
+  transform: translateY(8px);
+  pointer-events: none; /* pointer-events: unsichtbar heißt auch nicht antippbar */
+  transition: opacity 0.18s ease, transform 0.18s ease;
+}
+
+.modal-top.is-visible {
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.modal-top .icon {
+  width: 22px;
+  height: 22px;
+  transform: rotate(90deg); /* transform: aus dem Zurück-Pfeil („<“) wird ein Pfeil nach oben */
+}
+
+.modal-top:active {
+  opacity: 0.6;
+}

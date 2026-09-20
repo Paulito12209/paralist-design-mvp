@@ -238,6 +238,7 @@
 }
 
 .modal {
+  position: relative; /* position: der Pfeil nach oben hängt unten rechts im Blatt */
   height: calc(100% - 24px - var(--safe-top));
   background: var(--bg);
   /* border-radius: rundet nur die obere Kante wie ein iOS-Blatt */
