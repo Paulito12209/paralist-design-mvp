@@ -37,7 +37,8 @@
 .search-page-head .screen-title {
   margin: 0;
   padding: 0;
-  line-height: 36px; /* line-height: gleiche Höhe wie .back-btn, dadurch auf gleicher Mitte */
+  line-height: 36px;
+  /* line-height: gleiche Höhe wie .back-btn, dadurch auf gleicher Mitte */
 }
 
 .search-row {
@@ -47,7 +48,8 @@
   width: 100%;
   min-height: 58px;
   padding: 10px 2px;
-  border-bottom: 0.5px solid var(--line); /* dünne Linie zwischen den Such-Einträgen */
+  border-bottom: 0.5px solid var(--line);
+  /* dünne Linie zwischen den Such-Einträgen */
   text-align: left;
 }
 
@@ -62,7 +64,8 @@
   display: flex;
   flex-direction: column;
   gap: 2px;
-  min-width: 0; /* langer Titel soll in der Zeile bleiben und nicht die Icons wegdrücken */
+  min-width: 0;
+  /* langer Titel soll in der Zeile bleiben und nicht die Icons wegdrücken */
 }
 
 .search-title {
@@ -159,7 +162,8 @@ body.is-search .nav-shell {
   display: none;
   align-items: center;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  gap: 14px; /* gap: Abstand zwischen dem Gehäuse und dem Abbrechen-Knopf */
+  gap: 12px;
+  /* gap: Abstand zwischen dem Gehäuse und dem Abbrechen-Knopf */
   margin: 0 0 12px;
 }
 
@@ -171,7 +175,8 @@ body.is-search .search-actions:not([hidden]) {
    die Suchen-Fläche als eigene, kleinere Pille im Gehäuse schweben statt bis
    an dessen Rand zu reichen — so bleibt die Pillenform auch innen sichtbar. */
 .search-combo {
-  grid-column: 2; /* grid-column: die mittlere Spalte, damit das Gehäuse mittig steht */
+  grid-column: 2;
+  /* grid-column: die mittlere Spalte, damit das Gehäuse mittig steht */
   display: flex;
   align-items: stretch;
   gap: 2px;
@@ -188,7 +193,8 @@ body.is-search .search-actions:not([hidden]) {
   place-items: center;
   flex: 0 0 auto;
   border-radius: 999px;
-  color: var(--muted); /* Grundfarbe: gedämpft, wie ein inaktiver Nebenknopf */
+  color: var(--muted);
+  /* Grundfarbe: gedämpft, wie ein inaktiver Nebenknopf */
 }
 
 .search-combo-btn .icon {
@@ -202,7 +208,8 @@ body.is-search .search-actions:not([hidden]) {
 }
 
 .search-combo-btn.is-active {
-  background: var(--tab-pill-active-bg); /* dieselbe neutrale Fläche wie bei anderen gewählten Pillen im Rest der App */
+  background: var(--tab-pill-active-bg);
+  /* dieselbe neutrale Fläche wie bei anderen gewählten Pillen im Rest der App */
   color: var(--text);
   padding: 0 var(--search-pill-side);
   font-size: 15px;
@@ -221,19 +228,24 @@ body.is-search .search-actions:not([hidden]) {
 /* Abbrechen: steht rechts neben dem Gehäuse und wird auf schmalen Geräten mit
    Punkten abgekürzt, statt die Pille aus der Mitte zu drücken. */
 .search-cancel {
-  grid-column: 3; /* grid-column: die rechte Spalte, direkt neben dem Gehäuse */
+  grid-column: 3;
+  /* grid-column: die rechte Spalte, direkt neben dem Gehäuse */
   justify-self: start;
-  min-width: 0; /* min-width: erst dadurch darf der Knopf schmaler werden als sein Wort */
+  min-width: 0;
+  /* min-width: erst dadurch darf der Knopf schmaler werden als sein Wort */
   max-width: 100%;
   height: var(--search-pill-height);
-  line-height: var(--search-pill-height); /* line-height: legt die Schrift auf dieselbe Mitte wie die Pille daneben */
+  line-height: var(--search-pill-height);
+  /* line-height: legt die Schrift auf dieselbe Mitte wie die Pille daneben */
   overflow: hidden;
-  text-overflow: ellipsis; /* text-overflow: aus „Abbrechen“ wird „Abbre…“, wenn der Platz nicht reicht */
+  text-overflow: ellipsis;
+  /* text-overflow: aus „Abbrechen“ wird „Abbre…“, wenn der Platz nicht reicht */
   white-space: nowrap;
   text-align: left;
   color: var(--search-cancel-color);
   font-size: 15px;
-  font-weight: 400; /* normal statt fett: „Suchen“ in der Pille bleibt die Hauptsache, und das schmalere Wort passt neben die mittige Pille */
+  font-weight: 400;
+  /* normal statt fett: „Suchen“ in der Pille bleibt die Hauptsache, und das schmalere Wort passt neben die mittige Pille */
 }
 
 .search-cancel:active {
