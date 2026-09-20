@@ -8,7 +8,7 @@
  * --mini-gap                -> Fuge zwischen den beiden Kacheln
  * --mini-card-height        -> Mindesthöhe einer Kachel
  * --mini-chart-height       -> Höhe der kleinen Grafik unter der Zahl
- * --card / --line           -> Fläche und Trennlinien von Kacheln und Liste
+ * --card / --line           -> Fläche und Trennlinien von Kacheln und Liste (ohne Schatten)
  * --radius-lg               -> Rundung von Kacheln und Liste
  * --chevron                 -> Pfeil oben rechts auf der Kachel
  * --muted                   -> Beschriftungen auf der Kachel
@@ -35,7 +35,6 @@
   min-height: var(--mini-card-height);
   background: var(--card);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
   padding: 12px 14px 12px;
   display: flex;
   flex-direction: column;
@@ -146,7 +145,6 @@
 .settings-group {
   background: var(--card);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow);
   overflow: hidden; /* overflow: schneidet die Zeilen an den runden Ecken ab */
   margin-bottom: 4px;
   flex: 0 0 auto; /* flex: im Blatt sonst auf null zusammengedrückt */
