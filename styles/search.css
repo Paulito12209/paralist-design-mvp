@@ -13,6 +13,8 @@
  * --search-pill-side        -> Platz links und rechts vom Wort „Suchen“
  * --search-actions-space    -> Zusätzlicher Platz am Seitenende, solange die Knöpfe zu sehen sind
  * --overview-gap            -> Abstand unter der Kopfzeile „Zuletzt gesucht“/„Am häufigsten geöffnet“
+ * --link-color               -> Füllung des Suchen-Knopfs im Gehäuse
+ * --danger                   -> Farbe des X im Schließen-Kreis
 
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
@@ -189,10 +191,11 @@ body.is-search .search-actions:not([hidden]) {
 }
 
 .search-combo-btn.is-active {
-  color: var(--text); /* betonte Farbe: „Suchen“ ist die eigentliche Handlung */
+  background: var(--link-color); /* eigene Füllung: „Suchen“ hebt sich sichtbar vom gedämpften Mikrofon ab */
+  color: #ffffff;
   padding: 0 var(--search-pill-side);
   font-size: 15px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .search-combo-btn:active {
@@ -218,6 +221,7 @@ body.is-search .search-actions:not([hidden]) {
 .search-round .icon {
   width: 20px;
   height: 20px;
+  color: var(--danger); /* rot, weil dieser Knopf die Suche verwirft statt sie auszuführen */
 }
 
 .search-round:active {
