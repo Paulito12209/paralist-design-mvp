@@ -15,7 +15,7 @@
  * --overview-gap            -> Abstand unter der Kopfzeile „Zuletzt gesucht“/„Am häufigsten geöffnet“
  * --search-combo-inset      -> Innenabstand des Gehäuses, dadurch schwebt die Suchen-Pille sichtbar darin
  * --tab-pill-active-bg      -> Fläche des Suchen-Knopfs im Gehäuse
- * --danger                  -> Farbe des X im Schließen-Kreis
+ * --danger                  -> Farbe der Schrift des Abbrechen-Knopfs
 
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
@@ -145,7 +145,7 @@ body.is-search .nav-shell {
 }
 
 /* Die Knöpfe unten rechts: links das Gehäuse mit Mikrofon und Suchen, rechts
-   getrennt der Schließen-Kreis. Sie liegen dort, wo sonst die Navigation
+   getrennt der Abbrechen-Knopf. Sie liegen dort, wo sonst die Navigation
    steht, und bleiben auch bei offener Tastatur stehen (sie rücken mit ihr
    nach oben, siehe styles/navigation.css): gerade dann will man abbrechen
    können. Alle drei sind gleich hoch (--search-pill-height). */
@@ -211,23 +211,17 @@ body.is-search .search-actions:not([hidden]) {
   color: var(--link-color);
 }
 
-.search-round {
-  width: var(--search-pill-height);
+.search-cancel {
   height: var(--search-pill-height);
-  border-radius: 50%; /* border-radius: macht aus dem Knopf einen Kreis */
-  background: var(--card);
-  box-shadow: var(--shadow);
-  color: var(--muted);
   display: grid;
   place-items: center;
-}
-
-.search-round .icon {
-  width: 20px;
-  height: 20px;
+  padding: 0 4px;
   color: var(--danger); /* rot, weil dieser Knopf die Suche verwirft statt sie auszuführen */
+  font-size: 15px;
+  font-weight: 600;
+  white-space: nowrap;
 }
 
-.search-round:active {
+.search-cancel:active {
   opacity: 0.55;
 }

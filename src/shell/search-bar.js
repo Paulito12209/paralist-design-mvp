@@ -4,7 +4,7 @@
  * Antippen nachgeladen.
  *
  * Auf der Suche tritt die untere Navigation zurück (styles/search.css); an
- * ihrer Stelle stehen drei Knöpfe: Schließen, Mikrofon und die Suchen-Pille.
+ * ihrer Stelle stehen drei Knöpfe: Mikrofon, die Suchen-Pille und Abbrechen.
  * Solange die Tastatur offen ist (ui.searchTyping), sind sie weg und ein
  * Tippen in der Liste schließt nur die Tastatur
  * (src/features/search/search.js).
@@ -52,7 +52,7 @@ export function initSearchBar() {
      wurde, und holt sie mit dem Cursor im Suchfeld zurück. */
   dom.searchPill.addEventListener("click", () => dom.searchInput.focus());
 
-  /* Kreis zum Schließen: leert die Suche und geht zurück auf die Übersicht. */
+  /* Abbrechen: leert die Suche und geht zurück auf die Übersicht. */
   el("search-close").addEventListener("click", () => {
     dom.searchInput.value = "";
     ui.searchQuery = "";
