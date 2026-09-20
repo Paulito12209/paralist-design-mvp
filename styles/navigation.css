@@ -7,6 +7,7 @@
  * -----------------------------------
  * --nav-bg                  -> Fläche der Leiste: weiß im Hellmodus, schwarz im Dunkelmodus
  * --tab-pill-active-bg      -> Hintergrund des aktiven Reiters (Zähler-Akzentfarbe, siehe tokens.css)
+ * --avatar-btn-bg           -> Icon-/Textfarbe der inaktiven Reiter
  * --nav-height              -> Höhe der Leiste (Material 3: 80dp)
  * --nav-side / --nav-bottom -> Abstand zum Rand und nach unten
  * --nav-radius              -> Rundung der Leiste
@@ -150,7 +151,7 @@ body.is-search-typing .bottom-bar {
   align-items: center;
   justify-content: center;
   gap: 4px;
-  color: var(--muted);
+  color: var(--avatar-btn-bg); /* Zähler-Akzentfarbe statt --muted, damit sie zu den anderen drei Farben passt */
   font-size: var(--tab-label-size);
   font-weight: 500;
   padding: 8px;
