@@ -12,7 +12,7 @@
  *
  * Keine anpassbaren visuellen Werte: Höhe und Rundung stehen in
  * styles/top-bar.css (--search-bar-height, --search-bar-radius); die Knöpfe
- * stehen in styles/search.css (--search-pill-height, --search-round-size).
+ * stehen in styles/search.css (--search-pill-height, --search-pill-side).
  */
 
 import { events, on } from "../core/bus.js";

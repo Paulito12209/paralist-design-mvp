@@ -9,9 +9,8 @@
  * --chevron                 -> Pfeil rechts
  * --line                    -> Trennlinien
  * --muted                   -> Farbe der Abschnittsüberschriften
- * --search-pill-height      -> Höhe der Suchen-Pille unten rechts
- * --search-pill-side        -> Platz links und rechts vom Wort in der Pille
- * --search-round-size       -> Größe der runden Knöpfe (Schließen, Mikrofon)
+ * --search-pill-height      -> Höhe aller drei Knöpfe unten rechts
+ * --search-pill-side        -> Platz links und rechts vom Wort „Suchen“
  * --search-actions-space    -> Zusätzlicher Platz am Seitenende, solange die Knöpfe zu sehen sind
  * --overview-gap            -> Abstand unter der Kopfzeile „Zuletzt gesucht“/„Am häufigsten geöffnet“
 
@@ -142,15 +141,16 @@ body.is-search .nav-shell {
   display: none;
 }
 
-/* Die drei Knöpfe unten rechts: Schließen, Mikrofon, Suchen. Sie liegen dort,
-   wo sonst die Navigation steht — die runden Kreise dezent, das Wort deutlich.
-   Sie bleiben auch bei offener Tastatur stehen (sie rücken mit ihr nach oben,
-   siehe styles/navigation.css): gerade dann will man abbrechen können. */
+/* Die Knöpfe unten rechts: links das Gehäuse mit Mikrofon und Suchen, rechts
+   getrennt der Schließen-Kreis. Sie liegen dort, wo sonst die Navigation
+   steht, und bleiben auch bei offener Tastatur stehen (sie rücken mit ihr
+   nach oben, siehe styles/navigation.css): gerade dann will man abbrechen
+   können. Alle drei sind gleich hoch (--search-pill-height). */
 .search-actions {
   display: none;
   align-items: center;
   justify-content: flex-end;
-  gap: 10px; /* gap: Abstand zwischen Schließen, Mikrofon und der Suchen-Pille */
+  gap: 10px; /* gap: Abstand zwischen dem Gehäuse und dem Schließen-Kreis */
   margin: 0 0 12px;
 }
 
@@ -158,14 +158,59 @@ body.is-search .search-actions:not([hidden]) {
   display: flex;
 }
 
+/* Gehäuse: Mikrofon und Suchen teilen sich eine Pille, das Mikrofon gedämpft
+   als Nebenfunktion, „Suchen“ als eigentliche Handlung deutlich hervor —
+   overflow: hidden schneidet beide Knöpfe auf die Rundung der Pille zurecht. */
+.search-combo {
+  display: flex;
+  align-items: stretch;
+  height: var(--search-pill-height);
+  border-radius: 999px;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.search-combo-btn {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: var(--muted); /* Grundfarbe: gedämpft, wie ein inaktiver Nebenknopf */
+}
+
+.search-combo-btn .icon {
+  width: 20px;
+  height: 20px;
+}
+
+/* Mikrofon: quadratisches Feld in der Breite der Zeilenhöhe, wie ein runder Knopf ohne eigene Pille. */
+#search-voice {
+  width: var(--search-pill-height);
+}
+
+.search-combo-btn.is-active {
+  color: var(--text); /* betonte Farbe: „Suchen“ ist die eigentliche Handlung */
+  padding: 0 var(--search-pill-side);
+  font-size: 15px;
+  font-weight: 500;
+}
+
+.search-combo-btn:active {
+  opacity: 0.55;
+}
+
+/* Solange zugehört wird, leuchtet das Mikrofon in der Akzentfarbe. */
+.search-combo-btn.is-listening {
+  color: var(--link-color);
+}
+
 .search-round {
-  width: var(--search-round-size);
-  height: var(--search-round-size);
+  width: var(--search-pill-height);
+  height: var(--search-pill-height);
   border-radius: 50%; /* border-radius: macht aus dem Knopf einen Kreis */
   background: var(--card);
   box-shadow: var(--shadow);
   color: var(--muted);
-  opacity: 0.9; /* opacity: hält die beiden Kreise hinter dem Wort „Suchen“ zurück */
   display: grid;
   place-items: center;
 }
@@ -176,28 +221,5 @@ body.is-search .search-actions:not([hidden]) {
 }
 
 .search-round:active {
-  opacity: 0.55;
-}
-
-/* Solange zugehört wird, leuchtet das Mikrofon in der Akzentfarbe. */
-.search-round.is-listening {
-  color: var(--link-color);
-  opacity: 1;
-}
-
-.search-pill {
-  height: var(--search-pill-height);
-  padding: 0 var(--search-pill-side);
-  border-radius: 999px; /* border-radius: macht aus dem Knopf eine Pille wie den Verknüpfen-Knopf im Eingabefeld */
-  background: var(--card);
-  box-shadow: var(--shadow);
-  color: var(--text);
-  font-size: 15px;
-  font-weight: 500;
-  display: grid;
-  place-items: center;
-}
-
-.search-pill:active {
   opacity: 0.55;
 }

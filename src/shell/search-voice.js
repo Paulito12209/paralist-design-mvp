@@ -10,8 +10,8 @@
  * -----------------------------------
  * speechLang -> Sprache, auf die das Zuhören eingestellt ist
  *
- * Das Aussehen des Knopfes steht in styles/search.css (.search-round,
- * .search-round.is-listening).
+ * Das Aussehen des Knopfes steht in styles/search.css (.search-combo-btn,
+ * .search-combo-btn.is-listening).
  */
 
 import { dom } from "../core/dom.js";
