@@ -60,15 +60,13 @@
  * --archive-color           -> Grau des Archivieren-Knopfes hinter einer Zeile
  * --link-color              -> Blau für Verknüpfen
  * --star-color              -> Goldfarbe für den Favoriten-Stern auf der Karte
- * --avatar-btn-bg           -> Akzent-Grauton für Profil-Icon, Kartenzähler, Abschnitts-Überschriften,
- *                              Such-Icon, Platzhaltertext „Suchen“, Ordner-Plus-Icon,
- *                              Plus-Icon der Tab-Pille sowie Text/Icon von „Arbeitsbereich
- *                              hinzufügen“. Im Dunkeln #AAB2BD, im Hellen #111318 (Kreuz zu --card).
+ * --avatar-btn-bg           -> Akzent-Grauton: Profil-Icon, Kartenzähler, Abschnitts-Überschriften,
+ *                              Such-Icon, „Suchen“, Ordner-Plus, Plus der Tab-Pille, inaktive
+ *                              Reiter. Im Dunkeln #AAB2BD, im Hellen #111318 (Kreuz zu --card).
  * --nav-bg                  -> Fläche der Navigationsleiste: weiß im Hellmodus, schwarz im Dunkelmodus
  * --nav-glow-color          -> Farbe des Verlaufs hinter der Navigationsleiste (heller Akzent je Modus)
  * --nav-glow-height         -> wie hoch die Verlaufs-Zone über dem unteren Rand reicht
- * --nav-glow-strength       -> wie kräftig der Verlauf am unteren Rand ist (0 = aus, 1 = voll)
- * --nav-glow-opacity        -> Deckkraft des ganzen Verlaufs
+ * --nav-glow-strength / --nav-glow-opacity -> Kraft (0 = aus, 1 = voll) und Deckkraft des Verlaufs
  * --nav-glow-arc            -> wie stark die Oberkante durchhängt: kleiner = deutlicher gebogen
  * --nav-glow-fade           -> auf welcher Strecke die Oberkante ausgeblendet wird (kein harter Abbruch)
  * --stage-bg                -> Fläche rund um das Gerätefenster am Desktop
@@ -106,8 +104,8 @@
  * --page-head-top           -> Abstand über dem Zurück-Pfeil auf Unterseiten (zusätzlich zur Statusleiste)
  * --title-side              -> Extra-Abstand für die große Überschrift
  * --overview-gap            -> Abstand zwischen Überschrift und Karten
- * --workspace-section-gap   -> Abstand zwischen den vier Karten und „Arbeitsbereiche“
- * --workspace-head-gap      -> Abstand zwischen „Arbeitsbereiche“ und den Tab-Pillen
+ * --workspace-section-gap / --workspace-head-gap -> Abstand der vier Karten zu
+ *                              „Arbeitsbereiche“ und von dort zu den Tab-Pillen
  * --top-bar-fade            -> Höhe des Ausblend-Verlaufs unter der Suchleiste
  * --top-bar-icon-width/-height          -> Größe der Icons oben
  * --top-bar-profile-icon-size           -> Größe des Profil-Icons im Kopfzeilen-Knopf
@@ -124,11 +122,12 @@
  * --tab-add-margin          -> Extra-Luft links und rechts vom Plus-Kreis: die Icons haben in ihren
                                Kästchen etwa so viel Rand, der Kreis nicht — so wirken alle Lücken gleich
  * --tab-icon-grow           -> um wie viel die Icons wachsen, solange ihre Namen aus sind
- * --tab-add-shift           -> wie weit der Plus-Knopf beim Drücken nach rechts rutscht
- * --tab-add-shift-time      -> wie lange dieses Rutschen dauert
+ * --tab-add-shift / --tab-add-shift-time -> Rutschen des Plus-Knopfes beim Drücken: Weite und Dauer
  * --tab-hit-grow            -> wie weit die Tippfläche eines Reiters über sein Icon hinausgeht
- * --tab-pill-active-bg      -> Hintergrund des aktiven Reiters unten (nicht der Arbeitsbereich-Pille,
- *                              die nutzt --card wie die Übersichtskarten)
+ * --tab-pill-active-bg      -> neutrale, durchsichtige Knopffläche (Schließen-Kreuz, Chips,
+ *                              gedrückte Knöpfe): --text darauf muss immer lesbar bleiben
+ * --tab-active-bg           -> Hintergrund NUR des aktiven Reiters unten in der Navigation
+ * --tab-add-bg              -> Fläche des runden Plus-Knopfes (schwarz in beiden Modi)
  * --tab-pills-btn-gap       -> Abstand zwischen Trennlinie und Plus-Knopf
  * --tab-pills-fade          -> Breite des Ausblendens links von der Trennlinie
  * --composer-radius         -> Rundung des Eingabe-Containers
@@ -183,7 +182,7 @@
  * --draw-tools-space        -> Extra-Platz unter der Zeichenfläche
  *
  * LEVEL-ANZEIGE, DIAGRAMME UND KALENDER
- * --level-color / --level-dim / --level-glow -> Level-Anzeige oben links
+ * --level-color / --level-dim / --level-glow -> Level-Anzeige oben links; --level-color färbt auch Plus und Ring des Navigations-Knopfes
  * --xp-created / --xp-done  -> Blau für „Angelegt“, Grün für „Erledigt“
  * --xp-line                 -> Orange der Verlaufskurve im Fortschritt-Blatt
  * --dot-empty / --dot-1..4  -> Punkte-Raster der Nutzungszeit im Profil-Blatt
@@ -213,9 +212,8 @@
 
 :root {
   /* Die vier Grundfarben stehen über Kreuz zum Dunkelmodus: dessen Textweiß wird
-     hier Hintergrund, dessen Schwarz wird Text, dessen Akzent #AAB2BD wird zur
-     Kartenfläche (probeweise als helleres #D1D5DB) und dessen Kartenton #111318
-     wird Akzent (--avatar-btn-bg). */
+     Hintergrund, dessen Schwarz wird Text, dessen Akzent #AAB2BD wird Kartenfläche
+     (probeweise als helleres #D1D5DB), dessen Kartenton #111318 wird Akzent. */
   --bg: #f2f2f7;
   --card: #d1d5db;
   --overview-card-bg: #d1d5db;
@@ -297,7 +295,9 @@
   --restore-color: #34c759;
   --link-color: #007aff;
   --tab-pill-size: 15px;
-  --tab-pill-active-bg: var(--avatar-btn-bg); /* Zähler-Akzentfarbe statt Kartenfarbe; wechselt automatisch mit dem Modus */
+  --tab-pill-active-bg: rgba(60, 60, 67, 0.09);
+  --tab-active-bg: var(--avatar-btn-bg); /* Zähler-Akzentfarbe, wechselt automatisch mit dem Modus */
+  --tab-add-bg: #000000; /* in beiden Modi schwarz: der Strich-Ring und das blaue Plus zeichnen den Knopf */
   --tab-pills-btn-gap: 8px;
   --tab-pills-fade: 16px;
   --star-color: #f5c518;

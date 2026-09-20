@@ -6,7 +6,7 @@
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
  * --nav-bg                  -> Fläche der Leiste: weiß im Hellmodus, schwarz im Dunkelmodus
- * --tab-pill-active-bg      -> Hintergrund des aktiven Reiters (Zähler-Akzentfarbe, siehe tokens.css)
+ * --tab-active-bg           -> Hintergrund des aktiven Reiters (Zähler-Akzentfarbe, siehe tokens.css)
  * --avatar-btn-bg           -> Icon-/Textfarbe der inaktiven Reiter
  * --nav-height              -> Höhe der Leiste (Material 3: 80dp)
  * --nav-side / --nav-bottom -> Abstand zum Rand und nach unten
@@ -225,7 +225,7 @@ body.is-search-typing .bottom-bar {
      ist (hell im Dunkelmodus, dunkel im Hellmodus) - das Icon braucht darauf
      den jeweils entgegengesetzten Kontrast, den --bg genau abbildet */
   color: var(--bg);
-  background: var(--tab-pill-active-bg);
+  background: var(--tab-active-bg);
 }
 
 .tab-btn:active {
@@ -236,8 +236,8 @@ body.is-search-typing .bottom-bar {
   width: var(--tab-add-size);
   height: var(--tab-add-size);
   border-radius: 50%; /* border-radius: macht den Plus-Button rund */
-  background: var(--level-color); /* dieselbe silberblaue Farbe wie die Level-Zahl oben links */
-  color: #ffffff;
+  background: var(--tab-add-bg); /* dunkle Fläche in beiden Modi, nicht blau */
+  color: var(--level-color); /* nur das Plus-Icon trägt das Silberblau der Level-Anzeige */
   display: grid;
   place-items: center;
   position: relative; /* position: Bezugspunkt für den Strich-Ring im ::before */
@@ -262,12 +262,14 @@ body.is-search-typing .bottom-bar {
  * bei einer Torte, von der nur der äußere Rand übrig bleibt. So entstehen
  * viele einzelne Striche, ohne dass jeder Strich einzeln gezeichnet wird.
  */
-/* Abstand (5px), Ringbreite (6px) und Strichmaße (3deg/7deg) sind feste Werte:
+/* Der Ring sitzt INNERHALB des Knopfes, dicht am Rand (inset 2px), so wie die
+   Skala beim Level-Knopf oben links auch innerhalb ihres Kreises liegt.
+   Abstand (5px), Ringbreite (6px) und Strichmaße (3deg/7deg) sind feste Werte:
    reine Optik ohne eigenen Regelbedarf, deshalb keine Variablen in tokens.css */
 .tab-add::before {
   content: "";
   position: absolute;
-  inset: -11px;
+  inset: 2px;
   border-radius: 50%;
   background: repeating-conic-gradient(var(--level-color) 0deg 3deg, transparent 3deg 10deg);
   -webkit-mask-image: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
@@ -276,8 +278,8 @@ body.is-search-typing .bottom-bar {
 }
 
 .tab-add .icon {
-  /* icon-plus-long hat ein größeres viewBox (32 statt 24) mit 8px längeren
-     Armen bei gleicher Balkendicke — der Knopf wird deshalb mit angepasst */
+  /* icon-plus-long hat ein größeres viewBox (32 statt 24) mit längeren Armen —
+     der Knopf wird deshalb mit angepasst. Die Maße der Balken stehen im Sprite */
   width: 30px;
   height: 30px;
 }

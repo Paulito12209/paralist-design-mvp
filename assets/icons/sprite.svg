@@ -125,9 +125,13 @@
   <symbol id="icon-plus-full" viewBox="0 0 24 24" fill="none">
     <path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1 0.9 2 2 2h5v5c0 1.1 0.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z" fill="currentColor" />
   </symbol>
-  <!-- Dasselbe Steuerkreuz mit 8px längeren Armen (gleiche Balkendicke): nur der Knopf in der Navigation -->
+  <!-- Dasselbe Steuerkreuz mit längeren Armen: nur der Knopf in der Navigation.
+       Arme reichen von 3.1 bis 28.9 und die Balken sind 3.86 Einheiten dick —
+       bei 30px Darstellung im 32er-viewBox sind das je 2px weniger Länge und
+       2px weniger Dicke als beim vollen Kreuz. Eckenradius 1.5, weil 2 mehr
+       als die halbe Balkendicke wäre und die Rundungen dann brechen würden. -->
   <symbol id="icon-plus-long" viewBox="0 0 32 32" fill="none">
-    <path d="M15 2a2 2 0 0 0-2 2v9H4a2 2 0 0 0-2 2v2c0 1.1 0.9 2 2 2h9v9c0 1.1 0.9 2 2 2h2a2 2 0 0 0 2-2v-9h9a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-9V4a2 2 0 0 0-2-2h-2z" fill="currentColor" />
+    <path d="M15.57 3.1a1.5 1.5 0 0 0-1.5 1.5v9.47H4.6a1.5 1.5 0 0 0-1.5 1.5v0.86a1.5 1.5 0 0 0 1.5 1.5h9.47v9.47a1.5 1.5 0 0 0 1.5 1.5h0.86a1.5 1.5 0 0 0 1.5-1.5v-9.47h9.47a1.5 1.5 0 0 0 1.5-1.5v-0.86a1.5 1.5 0 0 0-1.5-1.5h-9.47V4.6a1.5 1.5 0 0 0-1.5-1.5h-0.86z" fill="currentColor" />
   </symbol>
   <symbol id="icon-circle" viewBox="0 0 24 24" fill="none">
     <circle cx="12" cy="12" r="7.25" stroke="currentColor" stroke-width="1.6" />
