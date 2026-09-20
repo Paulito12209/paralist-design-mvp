@@ -18,7 +18,7 @@ import { openSheet } from "../../ui/sheet.js";
 import { isViewActive } from "../../ui/views.js";
 import { openDatePicker } from "./calendar-date-picker.js";
 import { initCalendarGestures, setRedraw as setGestureRedraw } from "./calendar-gestures.js";
-import { moveNowLine, nowLineVisible, renderGrid, scrollToNow } from "./calendar-grid.js";
+import { moveNowLine, nowLineVisible, renderGrid, scrollToNow, sizeGrid } from "./calendar-grid.js";
 import { renderList } from "./calendar-list.js";
 import {
   goToday,
@@ -37,16 +37,27 @@ let tickTimer = null;
 
 /**
  * Die ganze Seite neu zeichnen.
- * @param jumpToNow true, wenn die Fläche zur aktuellen Uhrzeit rollen soll.
+ * @param jumpToNow true, wenn das Raster zur aktuellen Uhrzeit rollen soll.
  */
 export function renderCalendar(jumpToNow = false) {
+  /* Der Scrollstand des Rasters geht beim Neuzeichnen verloren: erst merken,
+     danach wiederherstellen — sonst springt der Tag bei jeder Änderung auf
+     00:00 zurück. */
+  const keepScroll = dom.calPanel.scrollTop;
   renderStrip();
   const grid = state.prefs.calendar.mode === "grid";
+  /* is-grid: nur das Stundenraster rollt in sich selbst (styles/calendar-panel.css) */
+  dom.calPanel.classList.toggle("is-grid", grid);
   dom.calPanel.innerHTML = grid ? renderGrid() : renderList();
-  if (jumpToNow && grid) scrollToNow();
-  /* rAF: erst nachdem ein moegliches scrollToNow() oben seinen eigenen
-     rAF-Sprung ausgefuehrt hat, sonst wird die Sichtbarkeit noch an der
-     alten Scroll-Position gemessen. */
+  if (grid) {
+    sizeGrid();
+    if (jumpToNow) scrollToNow();
+    else dom.calPanel.scrollTop = keepScroll;
+  } else {
+    dom.calPanel.style.height = "";
+  }
+  /* rAF: die Sichtbarkeit der Jetzt-Linie erst messen, wenn das Rollen im
+     Raster übernommen wurde. */
   requestAnimationFrame(updateTodayPill);
 }
 
@@ -65,10 +76,11 @@ function updateTodayPill() {
   dom.calTodayBtn.classList.toggle("is-on", isOnToday() && nowLineVisible());
 }
 
-/* Beim Scrollen im Raster kann die Jetzt-Linie in den sichtbaren Ausschnitt
-   hinein- oder herauslaufen — die Optik des Knopfes zieht dann sofort nach.
-   An anderen Tagen gibt es keine Jetzt-Linie: dann gar nicht erst messen. */
-function onContentScroll() {
+/* Beim Scrollen im Raster oder auf der Seite kann die Jetzt-Linie in den
+   sichtbaren Ausschnitt hinein- oder herauslaufen — die Optik des Knopfes
+   zieht dann sofort nach. An anderen Tagen gibt es keine Jetzt-Linie: dann
+   gar nicht erst messen. */
+function onScroll() {
   if (!isViewActive("calendar") || !isOnToday()) return;
   dom.calTodayBtn.classList.toggle("is-on", nowLineVisible());
 }
@@ -124,13 +136,23 @@ function init() {
   dom.calTodayBtn.addEventListener("click", goToday);
   dom.calSpanBtn.addEventListener("click", openSpanSheet);
   dom.calPanel.addEventListener("click", onPanelClick);
-  dom.content.addEventListener("scroll", onContentScroll, { passive: true });
+  dom.content.addEventListener("scroll", onScroll, { passive: true });
+  dom.calPanel.addEventListener("scroll", onScroll, { passive: true });
+  /* Dreht sich das Gerät oder ändert sich die Fensterhöhe, passt die Höhe des
+     Rasters nicht mehr: neu messen. */
+  window.addEventListener("resize", () => {
+    if (isViewActive("calendar") && state.prefs.calendar.mode === "grid") sizeGrid();
+  });
 
   on(events.viewOpened, (name) => {
     if (name !== "calendar") {
       stopTick();
       return;
     }
+    /* Beim Öffnen steht die Seite wieder ganz oben: Titel, Monat, Streifen
+       und die drei Knöpfe sind vollständig zu sehen. Die Uhrzeit sucht sich
+       das Raster in sich selbst. */
+    dom.content.scrollTop = 0;
     renderCalendar(true);
     startTick();
   });
@@ -140,6 +162,7 @@ function init() {
 
   /* Wurde die Seite schon geöffnet, bevor dieses Modul fertig geladen war: jetzt zeichnen. */
   if (isViewActive("calendar")) {
+    dom.content.scrollTop = 0;
     renderCalendar(true);
     startTick();
   }

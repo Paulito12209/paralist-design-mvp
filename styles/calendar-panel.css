@@ -25,6 +25,26 @@
   background: var(--bg);
 }
 
+/*
+ * Nur das Stundenraster rollt in sich selbst. Die Höhe setzt
+ * src/features/calendar/calendar-grid.js (sizeGrid): sie reicht vom
+ * eingerasteten Kopf bis zum unteren Rand. So bleibt der Kopfbereich beim
+ * Öffnen vollständig sichtbar, und die Seite darüber lässt sich trotzdem
+ * hochschieben, bis der Wochenstreifen unter der Suchleiste einrastet.
+ * flex: none -> die feste Höhe soll nicht wieder gedehnt werden
+ * scrollbar-width/-webkit-scrollbar -> keine Leiste, wie im Rest der App
+ */
+.cal-panel.is-grid {
+  flex: none;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+.cal-panel.is-grid::-webkit-scrollbar {
+  display: none;
+}
+
 /* Drei Spalten in der Liste: Aufgaben, Termine, Projekte */
 .cal-seg {
   display: flex;
