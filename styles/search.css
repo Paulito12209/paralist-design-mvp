@@ -13,10 +13,30 @@
  * --search-pill-side        -> Platz links und rechts vom Wort in der Pille
  * --search-round-size       -> Größe der runden Knöpfe (Schließen, Mikrofon)
  * --search-actions-space    -> Zusätzlicher Platz am Seitenende, solange die Knöpfe zu sehen sind
+ * --overview-gap            -> Abstand unter der Kopfzeile „Zuletzt gesucht“/„Am häufigsten geöffnet“
 
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
+
+/* Kopfzeile „Zuletzt gesucht“/„Am häufigsten geöffnet“: anders als bei einem
+   Arbeitsbereich steht die Suchleiste hier schon fest oben (kein is-subpage),
+   darum eine normale Zeile im Textfluss statt der sticky .page-head aus
+   styles/rows.css — die würde den Sicherheitsabstand der Statusleiste ein
+   zweites Mal dazurechnen. Zurück-Pfeil und Überschrift bekommen dieselbe
+   Zeilenhöhe, damit sie auf gleicher Höhe stehen statt gegeneinander versetzt. */
+.search-page-head {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0 0 var(--overview-gap) -8px;
+}
+
+.search-page-head .screen-title {
+  margin: 0;
+  padding: 0;
+  line-height: 36px; /* line-height: gleiche Höhe wie .back-btn, dadurch auf gleicher Mitte */
+}
 
 .search-row {
   display: flex;

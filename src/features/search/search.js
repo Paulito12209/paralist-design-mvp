@@ -88,12 +88,15 @@ function queryRow(query) {
   `;
 }
 
-/* Kopfzeile der Unterseiten: Zurück-Pfeil und Titel wie bei einem Arbeitsbereich. */
+/* Kopfzeile der Unterseiten: Zurück-Pfeil und Titel in einer Zeile. Anders als
+   bei einem Arbeitsbereich steht die Suchleiste oben ja schon fest (nicht
+   is-subpage), darum keine eigene Kopfzeile mit Sicherheitsabstand nach oben —
+   nur eine normale Zeile im Textfluss, siehe .search-page-head in search.css. */
 function listHead(title) {
   return `
-    <div class="page-head">
+    <div class="search-page-head">
       <button class="back-btn" type="button" data-search-back aria-label="Zurück">${icon("back")}</button>
-      <h1 class="screen-title page-title">${escapeHtml(title)}</h1>
+      <h1 class="screen-title">${escapeHtml(title)}</h1>
     </div>
   `;
 }
