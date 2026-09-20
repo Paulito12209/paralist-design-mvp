@@ -9,9 +9,10 @@
  * --chevron                 -> Pfeil rechts
  * --line                    -> Trennlinien
  * --muted                   -> Farbe der Abschnittsüberschriften
- * --search-pill-height      -> Höhe der Suchen-Pille über der Navigation
+ * --search-pill-height      -> Höhe der Suchen-Pille unten rechts
  * --search-pill-side        -> Platz links und rechts vom Wort in der Pille
- * --search-actions-space    -> Zusätzlicher Platz am Seitenende, solange die Pille zu sehen ist
+ * --search-round-size       -> Größe der runden Knöpfe (Schließen, Mikrofon)
+ * --search-actions-space    -> Zusätzlicher Platz am Seitenende, solange die Knöpfe zu sehen sind
 
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
@@ -109,23 +110,59 @@
   font-weight: 600;
 }
 
-/* Extra Platz am Ende der Suche, solange die Pille über der Navigation
-   steht, sonst verdeckt sie die letzten Zeilen der Liste. */
-body.is-search:not(.is-search-typing) .content {
+/* Extra Platz am Ende der Suche, weil die Knöpfe unten stehen,
+   sonst verdecken sie die letzten Zeilen der Liste. */
+body.is-search .content {
   padding-bottom: calc(var(--tab-space) + var(--search-actions-space));
 }
 
-/* Suchen-Pille: liegt wie die Medien-Knöpfe über der Navigation, aber rechts
-   und als Wort statt als Icon-Kreis. Erscheint erst, wenn die Tastatur
-   zugeklappt ist — offen liegt der Cursor ja schon im Suchfeld oben. */
+/* Auf der Suche tritt die Navigationsleiste ganz zurück: unten stehen nur die
+   drei Knöpfe der Suche, damit die Seite so ruhig bleibt wie das Suchfeld oben. */
+body.is-search .nav-shell {
+  display: none;
+}
+
+/* Die drei Knöpfe unten rechts: Schließen, Mikrofon, Suchen. Sie liegen dort,
+   wo sonst die Navigation steht — die runden Kreise dezent, das Wort deutlich.
+   Sie bleiben auch bei offener Tastatur stehen (sie rücken mit ihr nach oben,
+   siehe styles/navigation.css): gerade dann will man abbrechen können. */
 .search-actions {
   display: none;
+  align-items: center;
   justify-content: flex-end;
+  gap: 10px; /* gap: Abstand zwischen Schließen, Mikrofon und der Suchen-Pille */
   margin: 0 0 12px;
 }
 
-body.is-search:not(.is-search-typing) .search-actions:not([hidden]) {
+body.is-search .search-actions:not([hidden]) {
   display: flex;
+}
+
+.search-round {
+  width: var(--search-round-size);
+  height: var(--search-round-size);
+  border-radius: 50%; /* border-radius: macht aus dem Knopf einen Kreis */
+  background: var(--card);
+  box-shadow: var(--shadow);
+  color: var(--muted);
+  opacity: 0.9; /* opacity: hält die beiden Kreise hinter dem Wort „Suchen“ zurück */
+  display: grid;
+  place-items: center;
+}
+
+.search-round .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.search-round:active {
+  opacity: 0.55;
+}
+
+/* Solange zugehört wird, leuchtet das Mikrofon in der Akzentfarbe. */
+.search-round.is-listening {
+  color: var(--link-color);
+  opacity: 1;
 }
 
 .search-pill {

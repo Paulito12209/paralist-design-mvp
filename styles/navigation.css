@@ -56,12 +56,10 @@
   padding-right: var(--composer-side);
 }
 
-/* Beim Suchen liegt das Eingabefeld oben, nicht in dieser Leiste: sie bleibt
-   unten stehen, die Tastatur legt sich einfach darüber (src/shell/search-bar.js
-   setzt is-search-typing, solange der Cursor im Suchfeld blinkt). */
-body.is-search-typing .bottom-bar {
-  bottom: 0;
-}
+/* Beim Suchen steht in dieser Leiste nur noch die Knopfreihe der Suche
+   (styles/search.css blendet die Navigation dort aus). Sie rückt mit der
+   Tastatur nach oben wie das Eingabefeld, damit Schließen und Mikrofon auch
+   beim Tippen erreichbar bleiben — dafür genügt das bottom oben. */
 
 /*
  * Der Verlauf unten im Gerät. Er sitzt auf .device statt auf der Leiste selbst.

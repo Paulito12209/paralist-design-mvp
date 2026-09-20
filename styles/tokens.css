@@ -176,8 +176,7 @@
  * --media-kind-size         -> Schriftgröße der kleinen Überschriften Bilder/Videos/Audio/Dokumente
  * --media-btn-size          -> Größe der runden Knöpfe über der Navigation
  * --media-actions-space     -> Extra-Platz am Ende der Medien-Seite
- * --search-pill-height / --search-pill-side -> Größe der Suchen-Pille über der Navigation
- * --search-actions-space    -> Extra-Platz am Ende der Suche, solange die Pille zu sehen ist
+ * --search-pill-height / --search-pill-side / --search-round-size / --search-actions-space -> die Knöpfe unten auf der Suche
  * --draw-tool-size / --draw-color-size -> Größe der Werkzeug-Knöpfe und Farbpunkte
  * --draw-tools-space        -> Extra-Platz unter der Zeichenfläche
  *
@@ -376,6 +375,7 @@
   --media-actions-space: 60px;
   --search-pill-height: 48px;
   --search-pill-side: 20px;
+  --search-round-size: 44px;
   --search-actions-space: 60px;
   --draw-tool-size: 38px;
   --draw-color-size: 22px;
