@@ -15,7 +15,7 @@
  * --tab-add-margin          -> Extra-Luft neben dem Plus-Kreis, damit die sichtbaren Lücken gleich wirken
  * --tab-add-shift           -> wie weit der Plus-Knopf beim Drücken nach rechts rutscht
  * --tab-add-shift-time      -> wie lange dieses Rutschen dauert
- * --level-color             -> Silberblaue Farbe des Plus-Kreises und seines Strich-Rings (aus der
+ * --level-color             -> Silberblau der Striche, aus denen der Plus-Knopf besteht (aus der
  *                              Level-Anzeige oben links übernommen, siehe styles/top-bar.css)
  * --nav-inner-pad           -> Innenrand der Leiste, gleicht die Luft der äußeren Icons zum Rand aus
  * --tab-icon-grow           -> um wie viel die Icons wachsen, solange die Namen aus sind
@@ -236,11 +236,10 @@ body.is-search-typing .bottom-bar {
   width: var(--tab-add-size);
   height: var(--tab-add-size);
   border-radius: 50%; /* border-radius: macht den Plus-Button rund */
-  background: var(--tab-add-bg); /* dunkle Fläche in beiden Modi, nicht blau */
-  color: var(--level-color); /* nur das Plus-Icon trägt das Silberblau der Level-Anzeige */
+  background: var(--tab-add-bg); /* ohne Füllung: das Kreuz aus Strichen ist der ganze Knopf */
+  color: var(--level-color); /* Silberblau der Level-Anzeige, die Striche stammen von dort */
   display: grid;
   place-items: center;
-  position: relative; /* position: Bezugspunkt für den Strich-Ring im ::before */
   flex: 0 0 auto; /* flex: der Kreis behält seine Größe, er wächst und schrumpft nicht mit */
   /* align-self: der Knopf sitzt senkrecht in der Mitte der Leiste — mit und ohne
      Namen unter den Icons, deren Höhe sich sonst auf ihn auswirken würde */
@@ -248,40 +247,17 @@ body.is-search-typing .bottom-bar {
   /* Die Icons füllen ihr Kästchen nicht ganz aus, der Kreis schon: ohne diesen
      Rand sähen die beiden Lücken neben dem Kreis enger aus als die äußeren */
   margin: 0 var(--tab-add-margin);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18); /* box-shadow: hebt den Knopf leicht von der Leiste ab */
+  /* kein box-shadow: ohne Füllung stünde der Schatten allein da, ohne dass
+     etwas zu sehen wäre, das ihn wirft */
   transition: transform var(--tab-add-shift-time) ease-out; /* transition: der Kreis gleitet beim Drücken, statt zu springen */
 }
 
-/*
- * Der Strich-Ring drumherum: derselbe Aufbau wie die Skala der Level-Anzeige
- * (src/shell/level-gauge.js), nur einmal komplett rundherum statt als Bogen
- * mit Lücke, und ohne Fortschritt — hier sind immer alle Striche "an".
- *
- * repeating-conic-gradient zeichnet abwechselnd Farbe und Lücke rund um die
- * Mitte; die radiale Maske schneidet daraus einen dünnen Ring aus, genau wie
- * bei einer Torte, von der nur der äußere Rand übrig bleibt. So entstehen
- * viele einzelne Striche, ohne dass jeder Strich einzeln gezeichnet wird.
- */
-/* Der Ring sitzt INNERHALB des Knopfes, dicht am Rand (inset 2px), so wie die
-   Skala beim Level-Knopf oben links auch innerhalb ihres Kreises liegt.
-   Abstand (5px), Ringbreite (6px) und Strichmaße (3deg/7deg) sind feste Werte:
-   reine Optik ohne eigenen Regelbedarf, deshalb keine Variablen in tokens.css */
-.tab-add::before {
-  content: "";
-  position: absolute;
-  inset: 2px;
-  border-radius: 50%;
-  background: repeating-conic-gradient(var(--level-color) 0deg 3deg, transparent 3deg 10deg);
-  -webkit-mask-image: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
-  mask-image: radial-gradient(farthest-side, transparent calc(100% - 6px), #000 calc(100% - 5px));
-  pointer-events: none; /* pointer-events: der Ring darf keine Klicks auf den Plus-Knopf abfangen */
-}
-
 .tab-add .icon {
-  /* icon-plus-long hat ein größeres viewBox (32 statt 24) mit längeren Armen —
-     der Knopf wird deshalb mit angepasst. Die Maße der Balken stehen im Sprite */
-  width: 30px;
-  height: 30px;
+  /* Das Icon füllt den Knopf fast ganz aus: das Kreuz aus Strichen IST der
+     Knopf, es sitzt nicht mehr als kleines Zeichen auf einer Fläche.
+     Die Maße der einzelnen Striche stehen im Sprite bei icon-plus-ticks */
+  width: 46px;
+  height: 46px;
 }
 
 /*

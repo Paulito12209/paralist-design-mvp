@@ -125,13 +125,22 @@
   <symbol id="icon-plus-full" viewBox="0 0 24 24" fill="none">
     <path d="M11 2a2 2 0 0 0-2 2v5H4a2 2 0 0 0-2 2v2c0 1.1 0.9 2 2 2h5v5c0 1.1 0.9 2 2 2h2a2 2 0 0 0 2-2v-5h5a2 2 0 0 0 2-2v-2a2 2 0 0 0-2-2h-5V4a2 2 0 0 0-2-2h-2z" fill="currentColor" />
   </symbol>
-  <!-- Dasselbe Steuerkreuz mit längeren Armen: nur der Knopf in der Navigation.
-       Arme reichen von 3.1 bis 28.9 und die Balken sind 3.86 Einheiten dick —
-       bei 30px Darstellung im 32er-viewBox sind das je 2px weniger Länge und
-       2px weniger Dicke als beim vollen Kreuz. Eckenradius 1.5, weil 2 mehr
-       als die halbe Balkendicke wäre und die Rundungen dann brechen würden. -->
-  <symbol id="icon-plus-long" viewBox="0 0 32 32" fill="none">
-    <path d="M15.57 3.1a1.5 1.5 0 0 0-1.5 1.5v9.47H4.6a1.5 1.5 0 0 0-1.5 1.5v0.86a1.5 1.5 0 0 0 1.5 1.5h9.47v9.47a1.5 1.5 0 0 0 1.5 1.5h0.86a1.5 1.5 0 0 0 1.5-1.5v-9.47h9.47a1.5 1.5 0 0 0 1.5-1.5v-0.86a1.5 1.5 0 0 0-1.5-1.5h-9.47V4.6a1.5 1.5 0 0 0-1.5-1.5h-0.86z" fill="currentColor" />
+  <!-- Das Kreuz des Knopfes in der Navigation, gebaut aus lauter kurzen Strichen
+       wie bei der Level-Anzeige. Die Striche sitzen auf vier Viertelkreisen mit
+       Radius 17, deren Mittelpunkte in den vier Ecken liegen (7/7, 41/7, 7/41,
+       41/41). Weil sich jeder Bogen zur Mitte hin öffnet, entsteht aus den vier
+       Bögen zusammen ein Kreuz mit Spitzen auf den Achsen und eingezogenen
+       Seiten. Je Bogen 6 Striche im Abstand von 15°, jeder 5 Einheiten lang
+       und quer zum Bogen, mittig auf dem Bogen sitzend. Der Endwinkel jedes
+       Bogens bleibt frei, damit an jeder Spitze genau ein Strich als Abschluss
+       steht und dort nichts doppelt liegt.
+
+       Die Strichlänge ist der empfindliche Wert: bei 6.5 überlappen sich an
+       den Spitzen die Striche der beiden angrenzenden Bögen und es wird
+       unruhig, unter 4.5 fällt die Form auseinander. Mehr als 6 Striche je
+       Bogen sehen bei 50px Knopfgröße matschig aus. -->
+  <symbol id="icon-plus-ticks" viewBox="0 0 48 48" fill="none">
+    <path d="M26.50 41.00L21.50 41.00M26.99 37.25L22.16 35.95M28.44 33.75L24.11 31.25M30.75 30.75L27.21 27.21M33.75 28.44L31.25 24.11M37.25 26.99L35.95 22.16M7.00 26.50L7.00 21.50M10.75 26.99L12.05 22.16M14.25 28.44L16.75 24.11M17.25 30.75L20.79 27.21M19.56 33.75L23.89 31.25M21.01 37.25L25.84 35.95M21.50 7.00L26.50 7.00M21.01 10.75L25.84 12.05M19.56 14.25L23.89 16.75M17.25 17.25L20.79 20.79M14.25 19.56L16.75 23.89M10.75 21.01L12.05 25.84M41.00 21.50L41.00 26.50M37.25 21.01L35.95 25.84M33.75 19.56L31.25 23.89M30.75 17.25L27.21 20.79M28.44 14.25L24.11 16.75M26.99 10.75L22.16 12.05" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
   </symbol>
   <symbol id="icon-circle" viewBox="0 0 24 24" fill="none">
     <circle cx="12" cy="12" r="7.25" stroke="currentColor" stroke-width="1.6" />

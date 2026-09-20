@@ -127,7 +127,7 @@
  * --tab-pill-active-bg      -> neutrale, durchsichtige Knopffläche (Schließen-Kreuz, Chips,
  *                              gedrückte Knöpfe): --text darauf muss immer lesbar bleiben
  * --tab-active-bg           -> Hintergrund NUR des aktiven Reiters unten in der Navigation
- * --tab-add-bg              -> Fläche des runden Plus-Knopfes (schwarz in beiden Modi)
+ * --tab-add-bg              -> Fläche hinter dem Plus-Knopf (jetzt transparent, Striche allein)
  * --tab-pills-btn-gap       -> Abstand zwischen Trennlinie und Plus-Knopf
  * --tab-pills-fade          -> Breite des Ausblendens links von der Trennlinie
  * --composer-radius         -> Rundung des Eingabe-Containers
@@ -297,7 +297,7 @@
   --tab-pill-size: 15px;
   --tab-pill-active-bg: rgba(60, 60, 67, 0.09);
   --tab-active-bg: var(--avatar-btn-bg); /* Zähler-Akzentfarbe, wechselt automatisch mit dem Modus */
-  --tab-add-bg: #000000; /* in beiden Modi schwarz: der Strich-Ring und das blaue Plus zeichnen den Knopf */
+  --tab-add-bg: transparent; /* ohne Füllung: das Kreuz aus Strichen ist der ganze Knopf */
   --tab-pills-btn-gap: 8px;
   --tab-pills-fade: 16px;
   --star-color: #f5c518;
