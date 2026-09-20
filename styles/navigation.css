@@ -159,6 +159,12 @@ body.is-search-typing .bottom-bar {
   position: relative;
 }
 
+/* Inaktive Reiter gedämpft wie der Verlauf (--nav-glow-opacity), der aktive
+   Reiter bleibt voll deckend */
+.tab-btn:not(.is-active) {
+  opacity: 0.6;
+}
+
 /* Der Knopf ist nur so breit wie sein Icon, damit die Abstände stimmen — zum
    Tippen wäre das zu wenig. Diese unsichtbare Fläche liegt über dem Icon und
    greift nach allen Seiten darüber hinaus, sodass das Tippziel die von
