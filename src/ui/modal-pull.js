@@ -1,7 +1,8 @@
 /*
- * Ein Blatt (Fortschritt, Profil, Profilbild, Auswahl-Blatt) nach unten ziehen,
- * um es zu schließen. Gezogen wird nur, wenn der Inhalt schon oben steht —
- * sonst scrollt man ganz normal.
+ * Eine Überlagerung nach unten ziehen, um sie zu schließen: die Blätter
+ * (Fortschritt, Einstellungen mit allen Unterseiten, Profilbild, Datum,
+ * Auswahl-Blatt) und die bildschirmfüllende Dateiansicht. Gezogen wird nur,
+ * wenn der Inhalt schon oben steht — sonst scrollt man ganz normal.
  * Pfad: src/ui/modal-pull.js
  *
  * ANPASSBARE WERTE
@@ -21,8 +22,14 @@ const closeAnimationMs = 180;
 let pull = null;
 let ignoreClicksUntil = 0;
 
+/* Was sich beim Ziehen mitbewegt: das Blatt selbst oder die ganze Dateiansicht. */
 function panelOf(backdrop) {
-  return backdrop.querySelector(".modal") || backdrop.querySelector(".sheet");
+  return backdrop.querySelector(".modal, .sheet, .viewer");
+}
+
+/* Die Fläche, die in sich rollt — nur wenn sie oben steht, darf gezogen werden. */
+function bodyOf(backdrop) {
+  return backdrop.querySelector(".modal-body, .viewer-stage");
 }
 
 /** Reste einer Ziehbewegung entfernen, damit das Blatt beim nächsten Öffnen sauber steht. */
@@ -34,7 +41,7 @@ export function clearModalPull(backdrop) {
     panel.style.transition = "";
   }
   backdrop.style.removeProperty("--modal-dim");
-  const body = backdrop.querySelector(".modal-body");
+  const body = bodyOf(backdrop);
   if (body) body.style.overflow = "";
 }
 
@@ -45,12 +52,15 @@ export function bindModalPull(backdrop, closeFn) {
     if (backdrop.dataset.dismissing === "1") return;
     /* Liegt das Auswahl-Blatt darüber, gehört die Geste ihm */
     if (!dom.sheet.hidden && backdrop !== dom.sheet) return;
-    /* Die Rollen des Datum-Blatts rollen selbst; nur daneben zieht man das Blatt zu */
+    /* Die Rollen des Datum-Blatts rollen selbst; nur daneben zieht man das Blatt zu.
+       In der Dateiansicht bleiben Knöpfe, Namensfeld, die Leiste unten und die
+       eigenen Bedienelemente von Video, Ton und PDF von der Geste verschont. */
     if (event.target.closest(".modal-close, .profile-save, .profile-avatar-edit, .date-wheels")) return;
+    if (event.target.closest(".viewer-btn, .viewer-title, .viewer-foot, .viewer-video, .viewer-audio, .viewer-pdf, .viewer-open")) return;
     if (event.target === backdrop) return;
 
-    const body = backdrop.querySelector(".modal-body");
-    const head = backdrop.querySelector(".modal-head");
+    const body = bodyOf(backdrop);
+    const head = backdrop.querySelector(".modal-head, .viewer-head");
     const inHead = Boolean(head && head.contains(event.target));
     const atTop = !body || body.scrollTop <= 0;
     if (!inHead && !atTop) return;
@@ -76,7 +86,7 @@ function onMove(event) {
     return;
   }
   const panel = panelOf(backdrop);
-  const body = backdrop.querySelector(".modal-body");
+  const body = bodyOf(backdrop);
   const dy = event.clientY - pull.startY;
   const dx = event.clientX - pull.startX;
 
@@ -113,7 +123,7 @@ function onEnd(event) {
   if (!pull || (event && event.pointerId !== pull.pointerId)) return;
   const { backdrop, closeFn, active, y } = pull;
   const panel = panelOf(backdrop);
-  const body = backdrop.querySelector(".modal-body");
+  const body = bodyOf(backdrop);
   if (body) body.style.overflow = "";
   pull = null;
   if (!active || backdrop.dataset.dismissing === "1") return;

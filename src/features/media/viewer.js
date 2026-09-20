@@ -16,6 +16,7 @@ import { icon } from "../../core/html.js";
 import { findEntry } from "../../data/queries.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { openEntry, registerOverlay } from "../../ui/router.js";
+import { bindModalPull, clearModalPull } from "../../ui/modal-pull.js";
 import { openLinkPicker } from "../../ui/pickers.js";
 import { openViewerMenu, shareEntry } from "./viewer-menu.js";
 import { releaseStage, renderStage } from "./viewer-stage.js";
@@ -67,6 +68,7 @@ function hide() {
   openId = 0;
   closing = false;
   releaseStage();
+  clearModalPull(dom.mediaViewer);
   /* Leeren, damit ein laufendes Video wirklich anhält und nicht weiterspielt. */
   dom.mediaViewer.innerHTML = "";
   dom.mediaViewer.hidden = true;
@@ -96,6 +98,7 @@ function open(push = true, entryOrState = null) {
   openId = entry.id;
   closing = false;
   mount();
+  clearModalPull(dom.mediaViewer);
   dom.mediaViewer.hidden = false;
 
   const { title, stage } = parts();
@@ -183,6 +186,7 @@ function init() {
     if (document.activeElement !== title) title.value = entry.title || "";
   });
 
+  bindModalPull(dom.mediaViewer, close);
   registerOverlay("file", { open, hide });
 }
 
