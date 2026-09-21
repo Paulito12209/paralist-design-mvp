@@ -17,7 +17,8 @@
  * --tab-add-shift-time      -> wie lange dieses Rutschen dauert
  * --level-color             -> Silberblau der Striche, aus denen der Plus-Knopf besteht (aus der
  *                              Level-Anzeige oben links übernommen, siehe styles/top-bar.css)
- * --nav-inner-pad           -> Innenrand der Leiste, gleicht die Luft der äußeren Icons zum Rand aus
+ * --nav-inner-pad           -> Abstand des äußeren Kreises zum linken und rechten Rand der Leiste
+ *                              (steht auf --tab-active-gap, also denselben 8px wie oben und unten)
  * --tab-icon-grow           -> um wie viel die Icons wachsen, solange die Namen aus sind
  * --tab-hit-grow            -> wie weit die Tippfläche über das Icon hinausgeht (Material 3: 48dp)
  * --tab-active-gap          -> Abstand zwischen dem Kreis des aktiven Reiters und dem Rand der Leiste
@@ -140,13 +141,12 @@
   min-height: var(--nav-height); /* Material 3: 80dp Containerhöhe */
   display: flex;
   align-items: center;
-  /* justify-content: der freie Platz wird gleichmäßig auf sechs Lücken verteilt —
-     vier zwischen den Knöpfen und je eine zum linken und rechten Rand. So sieht
-     der Abstand von „Übersicht“ zum Rand genauso aus wie der zwischen den Icons.
-     Die Icon-Grafiken füllen ihr Kästchen nicht ganz aus; --nav-inner-pad und
-     --tab-add-margin gleichen diese Luft aus, damit auch die sichtbaren Lücken
-     neben dem Rand und neben dem Plus-Kreis gleich groß sind. */
-  justify-content: space-evenly;
+  /* justify-content: der freie Platz geht nur in die Lücken ZWISCHEN den
+     Knöpfen, nicht an die Ränder. Nur so ist der Abstand vom äußeren Kreis zum
+     Rand immer genau --nav-inner-pad (also dieselben 8px wie oben und unten) —
+     mit space-evenly hing er an der Gerätebreite und war z.B. auf 375px nur
+     6,8px. Der Plus-Kreis holt sich seine Extra-Luft über --tab-add-margin. */
+  justify-content: space-between;
 }
 
 .tab-btn {
@@ -186,6 +186,7 @@
 .tab-circle {
   width: var(--tab-active-size);
   height: var(--tab-active-size);
+  flex: 0 0 auto; /* flex: auf schmalen Geräten rücken die Kreise zusammen, statt zu Ovalen zu schrumpfen */
   border-radius: 50%; /* border-radius: aus dem Quadrat wird der Kreis */
   display: flex;
   flex-direction: column;

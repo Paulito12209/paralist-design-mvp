@@ -113,9 +113,12 @@
  * --tab-space               -> Platz am Seitenende, damit nichts hinter der Navigation liegt
  * --nav-height              -> Höhe der Navigationsleiste (Material 3: 80dp)
  * --nav-side / --nav-bottom / --nav-radius -> Lage und Rundung der Navigationsleiste
+                               (--nav-side rückt auf Handys unter 370px Breite näher an den Rand,
+                               siehe die Abfrage unten in dieser Datei)
  * --tab-add-size            -> Größe des runden Plus-Knopfes in der Navigation
- * --nav-inner-pad           -> Innenrand der Leiste: etwa so groß wie die Luft, die ein Icon in seinem
-                               Kästchen hat — so ist der Abstand zum Rand gleich dem zwischen den Icons
+ * --nav-inner-pad           -> Innenrand der Leiste links und rechts: hält den Kreis des äußeren
+                               Reiters genauso weit vom Rand weg wie --tab-active-gap ihn oben und
+                               unten hält, damit er rundum gleich viel Luft hat
  * --tab-add-margin          -> Extra-Luft links und rechts vom Plus-Kreis: die Icons haben in ihren
                                Kästchen etwa so viel Rand, der Kreis nicht — so wirken alle Lücken gleich
  * --tab-icon-grow           -> um wie viel die Icons wachsen, solange ihre Namen aus sind
@@ -212,7 +215,7 @@
   --tab-add-margin: 4px;
   --tab-add-shift: 10px;
   --tab-add-shift-time: 0.14s;
-  --nav-inner-pad: 5px;
+  --nav-inner-pad: var(--tab-active-gap);
   --tab-icon-grow: 8px;
   --tab-hit-grow: 8px;
   --tab-active-gap: 8px;
@@ -274,6 +277,22 @@
   --safe-bottom: env(safe-area-inset-bottom, 0px);
   /* Hoehe der eingeblendeten Bildschirmtastatur; src/shell/keyboard-inset.js setzt den Wert am Handy */
   --keyboard-inset: 0px;
+}
+
+/*
+ * Schmale Handys: unter 370px Gerätebreite reicht die Leiste nicht mehr für
+ * vier Kreise, den Plus-Knopf und die 8px Rand — der äußere Kreis würde sonst
+ * über den Rand hinausrutschen. Sie rückt dort näher an den Bildschirmrand.
+ * 360px ist die übliche Android-Breite und der Fall, der zählt; noch schmalere
+ * Geräte (320px) bleiben eng.
+ * Gefragt wird nach „echtes Handy UND schmal“ wie in styles/base.css: nur dort
+ * ist das Gerät genau so breit wie das Fenster. Im Rahmen auf dem Rechner ist
+ * es immer 390px breit, da passt alles ohnehin.
+ */
+@media (hover: none) and (pointer: coarse) and (max-width: 369px) {
+  :root {
+    --nav-side: 20px;
+  }
 }
 
 /* Dunkelmodus: folgt dem System, solange in den Einstellungen nichts anderes gewählt ist */
