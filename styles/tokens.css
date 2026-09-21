@@ -84,7 +84,8 @@
  *
  * SCHRIFTGRÖSSEN
  * --title-size              -> Schriftgröße der großen Überschrift „Übersicht“
- * --tab-label-size          -> Schriftgröße der Wörter unter den Navigations-Icons
+ * --tab-label-size          -> Schriftgröße der Wörter unter den Navigations-Icons (sie stehen mit im
+                               Kreis, darum wird der Name ab etwa 11px breiter als der Kreis)
  * --tab-pill-size           -> Schriftgröße der Tab-Pillen über den Arbeitsbereichen
  * --composer-input-size     -> Schriftgröße im Eingabefeld
  * --composer-chip-size      -> Schriftgröße des Verknüpfen-Knopfes im Eingabefeld
@@ -122,7 +123,11 @@
  * --tab-hit-grow            -> wie weit die Tippfläche eines Reiters über sein Icon hinausgeht
  * --tab-active-gap          -> Abstand zwischen dem Kreis des aktiven Reiters und dem Rand der Leiste
  * --tab-active-size         -> Durchmesser dieses Kreises (Leistenhöhe minus --tab-active-gap oben und
-                               unten) — macht ihn zum Kreis, egal ob der Name daneben viel Platz braucht
+                               unten) — Icon und Name stehen darin, er bleibt dadurch immer rund
+ * --tab-label-gap           -> Luft zwischen Icon und Name im Kreis: größer schiebt den Namen weiter
+                               nach unten, wo der Kreis schmaler wird
+ * --tab-label-lift          -> wie weit Icon und Name zusammen über der Kreismitte sitzen; hebt den
+                               breiten Namen aus dem schmalen unteren Teil des Kreises heraus
  * --tab-pill-active-bg      -> neutrale, durchsichtige Knopffläche (Schließen-Kreuz, Chips,
  *                              gedrückte Knöpfe): --text darauf muss immer lesbar bleiben
  * --tab-active-bg           -> Hintergrund NUR des aktiven Reiters unten in der Navigation
@@ -200,7 +205,9 @@
   --tab-space: 116px;
   --nav-height: 76px;
   /* Material 3: Navigationsleiste ist 80dp hoch */
-  --tab-label-size: 10px;
+  --tab-label-size: 9px;
+  --tab-label-gap: 2px;
+  --tab-label-lift: 3px;
   --tab-add-size: 50px;
   --tab-add-margin: 4px;
   --tab-add-shift: 10px;
