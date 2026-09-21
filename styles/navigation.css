@@ -20,6 +20,9 @@
  * --nav-inner-pad           -> Innenrand der Leiste, gleicht die Luft der äußeren Icons zum Rand aus
  * --tab-icon-grow           -> um wie viel die Icons wachsen, solange die Namen aus sind
  * --tab-hit-grow            -> wie weit die Tippfläche über das Icon hinausgeht (Material 3: 48dp)
+ * --tab-active-gap          -> Abstand zwischen dem Kreis des aktiven Reiters und dem Rand der Leiste
+ * --tab-active-size         -> Durchmesser des Kreises (immer rund, auch wenn der Name daneben viel
+ *                              Platz braucht — der Kreis liegt in .tab-icon, getrennt vom Namen)
  * --tab-label-size          -> Schriftgröße der Wörter unter den Icons
  * --composer-radius         -> Rundung, sobald das Eingabefeld offen ist
  * --composer-side           -> seitlicher Abstand, solange das Eingabefeld offen ist
@@ -149,13 +152,10 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 4px;
   color: var(--avatar-btn-bg); /* Zähler-Akzentfarbe statt --muted, damit sie zu den anderen drei Farben passt */
   font-size: var(--tab-label-size);
   font-weight: 500;
-  padding: 8px;
-  border-radius: 50%;
   position: relative;
 }
 
@@ -175,12 +175,34 @@
   inset: calc(-1 * var(--tab-hit-grow));
 }
 
-.tab-btn span {
-  display: none; /* display: Namen sind standardmäßig aus, „show-labels“ blendet sie wieder ein */
-  white-space: nowrap; /* sonst bricht „Einstellungen“ mitten im Wort um */
+/* Feste Zone in Höhe der ganzen Leiste: der Kreis darin sitzt dadurch immer
+   lotrecht in der Mitte, mit und ohne sichtbaren Namen genau gleich weit von
+   oben entfernt. Erst darunter kommt bei Bedarf noch der Name. */
+.tab-icon-slot {
+  height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.tab-bar.show-labels .tab-btn span {
+/* Der eigentliche Kreis: feste Größe (Leistenhöhe minus --tab-active-gap oben
+   und unten), unabhängig davon, wie breit der Knopf durch einen langen Namen
+   daneben wird — nur so bleibt er immer rund statt zum Oval gezogen. */
+.tab-icon {
+  width: var(--tab-active-size);
+  height: var(--tab-active-size);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.tab-label {
+  display: none; /* display: Namen sind standardmäßig aus, „show-labels“ blendet sie wieder ein */
+  white-space: nowrap; /* sonst bricht „Einstellungen“ mitten im Wort um */
+  padding-bottom: var(--tab-active-gap); /* padding-bottom: gleicher Abstand zum unteren Rand wie der Kreis ihn oben hat */
+}
+
+.tab-bar.show-labels .tab-label {
   display: block;
 }
 
@@ -197,7 +219,7 @@
    (Gerät minus 2 × 28px), 312px entspricht einem 368px breiten Gerät:
    360er-Androids verlieren die Labels, iPhones ab 375px behalten sie */
 @container (max-width: 312px) {
-  .tab-bar.show-labels .tab-btn span {
+  .tab-bar.show-labels .tab-label {
     display: none;
   }
 
@@ -218,10 +240,11 @@
   height: 24px;
 }
 
-.tab-btn.is-active {
-  /* color: --bg statt --text, weil der Hintergrund jetzt die Zähler-Akzentfarbe
+.tab-btn.is-active .tab-icon {
+  /* color: --bg statt --text, weil der Kreis jetzt die Zähler-Akzentfarbe
      ist (hell im Dunkelmodus, dunkel im Hellmodus) - das Icon braucht darauf
-     den jeweils entgegengesetzten Kontrast, den --bg genau abbildet */
+     den jeweils entgegengesetzten Kontrast, den --bg genau abbildet. Der Name
+     bleibt außen vor: er sitzt unter dem Kreis, nicht darin. */
   color: var(--bg);
   background: var(--tab-active-bg);
 }

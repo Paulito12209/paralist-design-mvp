@@ -120,6 +120,9 @@
  * --tab-icon-grow           -> um wie viel die Icons wachsen, solange ihre Namen aus sind
  * --tab-add-shift / --tab-add-shift-time -> Rutschen des Plus-Knopfes beim Drücken: Weite und Dauer
  * --tab-hit-grow            -> wie weit die Tippfläche eines Reiters über sein Icon hinausgeht
+ * --tab-active-gap          -> Abstand zwischen dem Kreis des aktiven Reiters und dem Rand der Leiste
+ * --tab-active-size         -> Durchmesser dieses Kreises (Leistenhöhe minus --tab-active-gap oben und
+                               unten) — macht ihn zum Kreis, egal ob der Name daneben viel Platz braucht
  * --tab-pill-active-bg      -> neutrale, durchsichtige Knopffläche (Schließen-Kreuz, Chips,
  *                              gedrückte Knöpfe): --text darauf muss immer lesbar bleiben
  * --tab-active-bg           -> Hintergrund NUR des aktiven Reiters unten in der Navigation
@@ -205,6 +208,8 @@
   --nav-inner-pad: 5px;
   --tab-icon-grow: 8px;
   --tab-hit-grow: 8px;
+  --tab-active-gap: 8px;
+  --tab-active-size: calc(var(--nav-height) - (2 * var(--tab-active-gap)));
   --nav-side: 28px;
   --nav-bottom: 10px;
   --nav-radius: 999px;
