@@ -31,11 +31,18 @@ export function awardXp(kind, item, title, count = 1) {
   emit(events.xpChanged);
 }
 
-/** Archivierte Aufgaben zählen als erledigt; andere Typen nur als weggeräumt. */
+/**
+ * Archivierte Aufgaben zählen als erledigt; andere Typen nur als weggeräumt.
+ * Die Punkte fürs Erledigen gibt es je Aufgabe nur einmal — wie beim Abhaken
+ * (noteDone in src/data/mutations.js). Sonst brächte eine abgehakte und danach
+ * archivierte Aufgabe doppelte Punkte und zählte bei „Erledigt“ zweimal.
+ */
 export function archiveEntry(entry) {
   entry.archived = true;
-  if (entry.type === "aufgabe") awardXp("done", "aufgabe", entry.title);
-  else saveState();
+  if (entry.type === "aufgabe" && !entry.doneAwarded) {
+    entry.doneAwarded = true;
+    awardXp("done", "aufgabe", entry.title);
+  } else saveState();
 }
 
 /** Punkte je XP-Art. Unbekannte Arten aus älteren Ständen werden übersprungen. */
