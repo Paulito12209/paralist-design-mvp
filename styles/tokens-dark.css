@@ -27,6 +27,7 @@
     --tab-pill-active-bg: rgba(170, 178, 189, 0.18); /* im Hellen dieselbe Idee mit dunklem Ton */
     --nav-glow-opacity: 0.6;
     --media-strip-bg: rgba(255, 255, 255, 0.1);
+    --star-color: #f5c518; /* helles Gold auf der dunklen Karte */
     --inbox-icon-color: #9fc4dc;
     --project-icon-color: #e8848d;
     --resource-icon-color: #a3d39b;
@@ -75,6 +76,7 @@
   --tab-pill-active-bg: rgba(170, 178, 189, 0.18); /* im Hellen dieselbe Idee mit dunklem Ton */
   --nav-glow-opacity: 0.6;
   --media-strip-bg: rgba(255, 255, 255, 0.1);
+  --star-color: #f5c518; /* helles Gold auf der dunklen Karte */
   --inbox-icon-color: #9fc4dc;
   --project-icon-color: #e8848d;
   --resource-icon-color: #a3d39b;

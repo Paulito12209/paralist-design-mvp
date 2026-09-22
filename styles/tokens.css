@@ -63,7 +63,7 @@
  * --danger                  -> Rot für Löschen
  * --archive-color           -> Grau des Archivieren-Knopfes hinter einer Zeile
  * --link-color              -> Blau für Verknüpfen
- * --star-color              -> Goldfarbe für den Favoriten-Stern auf der Karte
+ * --star-color              -> Goldfarbe für den Favoriten-Stern auf der Karte (im Dunkeln heller, siehe tokens-dark.css)
  * --avatar-btn-bg           -> Akzent-Grauton: Profil-Icon, Kartenzähler, Abschnitts-Überschriften,
  *                              Such-Icon, „Suchen“, Ordner-Plus, Plus der Tab-Pille, inaktive
  *                              Reiter. Im Dunkeln #AAB2BD, im Hellen #111318 (Kreuz zu --card).
@@ -254,7 +254,7 @@
   --tab-add-bg: transparent; /* ohne Füllung: das Kreuz aus Strichen ist der ganze Knopf */
   --tab-pills-btn-gap: 8px;
   --tab-pills-fade: 16px;
-  --star-color: #f5c518;
+  --star-color: #c99a00; /* dunkleres Gold, damit der Stern auf der hellen Karte Kontrast hat */
   --avatar-btn-bg: #111318;
   --nav-bg: #ffffff;
   --nav-glow-color: 17, 19, 24; /* #111318 — wie im Dunkelmodus die Kartenfarbe der Gegenseite (--avatar-btn-bg) */

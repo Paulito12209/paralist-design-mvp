@@ -9,7 +9,7 @@
  */
 
 import { events, on } from "../../core/bus.js";
-import { dom, el } from "../../core/dom.js";
+import { dom, el, focusAtEnd } from "../../core/dom.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { sameId } from "../../core/ids.js";
 import { deleteTab } from "../../data/mutations.js";
@@ -76,8 +76,7 @@ export function renderTabs() {
   const input = el("tab-name-input");
   if (!input) return;
   fitTabNameInput(input);
-  input.focus();
-  input.select();
+  focusAtEnd(input);
 }
 
 /** Den eingegebenen Namen übernehmen. Ein leerer Name behält den Platzhalter. */

@@ -11,7 +11,7 @@
  */
 
 import { events, on } from "../../core/bus.js";
-import { dom } from "../../core/dom.js";
+import { dom, focusAtEnd } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
 import { findEntry } from "../../data/queries.js";
 import { scheduleSave, ui } from "../../data/state.js";
@@ -152,9 +152,7 @@ function onClick(event) {
   }
   openViewerMenu(entry, {
     onRename: () => {
-      const { title } = parts();
-      title.focus();
-      title.select();
+      focusAtEnd(parts().title);
     },
     onClose: close,
   });

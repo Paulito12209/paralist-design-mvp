@@ -8,7 +8,7 @@
  */
 
 import { emit, events, on } from "../../core/bus.js";
-import { dom, el } from "../../core/dom.js";
+import { dom, el, focusAtEnd } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
 import { sameId } from "../../core/ids.js";
 import { archiveWorkspace, deleteWorkspace, nameWorkspace, toggleFavorite } from "../../data/mutations.js";
@@ -21,10 +21,7 @@ import { isViewActive } from "../../ui/views.js";
 
 /** Die Eingabe beim Umbenennen fokussieren, falls sie gerade im Dokument steht. */
 export function focusWorkspaceName() {
-  const input = el("workspace-name-input");
-  if (!input) return;
-  input.focus();
-  input.select();
+  focusAtEnd(el("workspace-name-input"));
 }
 
 /** Die Liste neu zeichnen. Umbenennen ist nur möglich, wenn die Startseite offen ist. */

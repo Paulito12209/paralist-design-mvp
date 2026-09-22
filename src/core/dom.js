@@ -30,6 +30,18 @@ function q(selector) {
   return document.querySelector(selector);
 }
 
+/**
+ * Ein Eingabefeld fokussieren und die Schreibmarke ans Ende setzen. `focus()`
+ * allein lässt manche Browser den ganzen Text markieren — das sieht nach
+ * „alles wird gleich überschrieben“ aus, obwohl man nur weitertippen will.
+ */
+export function focusAtEnd(input) {
+  if (!input) return;
+  input.focus();
+  const end = input.value.length;
+  input.setSelectionRange(end, end);
+}
+
 /** Alle Elemente, die zum Selektor passen, als echte Liste. */
 export function qa(selector) {
   return Array.from(document.querySelectorAll(selector));
