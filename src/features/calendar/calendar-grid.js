@@ -95,7 +95,7 @@ export function renderGrid() {
  * Monat zum Wegscrollen brauchen.
  */
 export function sizeGrid() {
-  const stuckHead = dom.calHead.offsetHeight - cssNumber("--content-top", 32);
+  const stuckHead = dom.calHead.offsetHeight - cssNumber("--content-top", 40);
   const height = Math.max(minGridHeight, dom.content.clientHeight - stuckHead);
   dom.calPanel.style.height = `${height}px`;
 }
