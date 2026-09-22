@@ -9,6 +9,7 @@
  * usageTickSeconds -> wie oft die Nutzungszeit fortgeschrieben wird (Sekunden)
  */
 
+import { pauseNoHistoryForm, resumeNoHistoryForm } from "../core/no-history.js";
 import { flushSave } from "../data/state.js";
 import { flushUsage, resetUsageTick, trackUsage } from "../data/usage.js";
 
@@ -35,5 +36,12 @@ export function initLifecycle({ onShow = () => {} } = {}) {
     trackUsage();
     flushUsage();
     flushSave();
+    /* Muss hier im pagehide stehen: der Browser legt die Seite erst danach weg
+       und merkt sich dabei, welche Formulare er beim Zurückkommen leert
+       (Erklärung in src/core/no-history.js). */
+    pauseNoHistoryForm();
   });
+
+  /* Läuft beim ersten Laden und nach jedem Zurückkommen aus dem Zurück-Speicher. */
+  window.addEventListener("pageshow", resumeNoHistoryForm);
 }

@@ -17,6 +17,7 @@
 
 import { events, on } from "./core/bus.js";
 import { load, prefetchWhenIdle, registerLoader } from "./core/lazy.js";
+import { mountNoHistoryForm } from "./core/no-history.js";
 import { loadState } from "./data/state.js";
 import { loadThumbs } from "./data/thumbs.js";
 import { loadUsage } from "./data/usage.js";
@@ -144,6 +145,8 @@ function showStartPage() {
 }
 
 function start() {
+  /* Zuerst: ohne das Formular hätten die Felder wieder Chromes Eingabe-Verlauf. */
+  mountNoHistoryForm();
   initLazyViews();
   loadEverything();
   initShell();

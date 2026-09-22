@@ -12,6 +12,7 @@ import { emit, events, on } from "../../core/bus.js";
 import { dom, el, focusAtEnd } from "../../core/dom.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { sameId } from "../../core/ids.js";
+import { noHistoryForm } from "../../core/no-history.js";
 import { deleteTab } from "../../data/mutations.js";
 import { saveState, state, ui } from "../../data/state.js";
 import { awardXp } from "../../data/xp.js";
@@ -26,7 +27,7 @@ function pillMarkup(tab) {
     return `
       <div class="tab-pill is-active">
         ${glyph}
-        <input class="tab-pill-input" id="tab-name-input" type="text" size="1" value="${escapeHtml(tab.name)}" placeholder="${escapeHtml(tab.placeholder || "")}" aria-label="Tab benennen" />
+        <input class="tab-pill-input" id="tab-name-input" type="text" size="1" value="${escapeHtml(tab.name)}" placeholder="${escapeHtml(tab.placeholder || "")}" aria-label="Tab benennen" form="${noHistoryForm}" enterkeyhint="go" />
       </div>
     `;
   }

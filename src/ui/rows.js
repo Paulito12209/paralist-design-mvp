@@ -9,6 +9,7 @@
 
 import { escapeHtml, icon } from "../core/html.js";
 import { sameId } from "../core/ids.js";
+import { noHistoryForm } from "../core/no-history.js";
 import { typeIcon } from "../data/config.js";
 import { mediaKindOf, workspaceIcon, workspaceLabel } from "../data/queries.js";
 import { ui } from "../data/state.js";
@@ -111,7 +112,7 @@ export function workspaceRow(workspace, canEdit = false) {
     return `
       <div class="workspace-row">
         ${icon(workspaceIcon(workspace))}
-        <input class="workspace-name-input" id="workspace-name-input" type="text" data-editing="${workspace.id}" value="${escapeHtml(draft)}" placeholder="${escapeHtml(workspace.placeholder || workspaceLabel(workspace))}" aria-label="Arbeitsbereich benennen" />
+        <input class="workspace-name-input" id="workspace-name-input" type="text" data-editing="${workspace.id}" value="${escapeHtml(draft)}" placeholder="${escapeHtml(workspace.placeholder || workspaceLabel(workspace))}" aria-label="Arbeitsbereich benennen" form="${noHistoryForm}" enterkeyhint="go" />
       </div>
     `;
   }

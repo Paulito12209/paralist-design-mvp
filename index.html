@@ -71,7 +71,7 @@
           </button>
           <label class="search" id="search-entry">
             <svg class="icon search-icon"><use href="#icon-search"></use></svg>
-            <input id="search-input" type="search" placeholder="Suchen" />
+            <input id="search-input" type="search" placeholder="Suchen" form="no-history" />
           </label>
           <button class="avatar" id="profile-btn" type="button" aria-label="Einstellungen öffnen">
             <svg class="icon"><use href="#icon-profile"></use></svg>
@@ -138,12 +138,12 @@
               </button>
             </div>
             <!-- input: noetig, damit der Titel wirklich bearbeitbar ist -->
-            <input class="entry-title" id="entry-title" type="text" placeholder="Ohne Titel" aria-label="Titel" />
+            <input class="entry-title" id="entry-title" type="text" placeholder="Ohne Titel" aria-label="Titel" form="no-history" />
             <!-- Pillen wie auf der Seite eines Arbeitsbereichs: Inhalt und Verknüpfte Einträge -->
             <div class="tab-pills page-pills" id="entry-pills"></div>
             <div class="entry-panel" id="entry-panel-notes">
               <!-- textarea: noetig, damit der Text wirklich bearbeitbar ist -->
-              <textarea class="entry-body" id="entry-body" placeholder="Schreib etwas …" aria-label="Inhalt"></textarea>
+              <textarea class="entry-body" id="entry-body" placeholder="Schreib etwas …" aria-label="Inhalt" form="no-history"></textarea>
               <!-- canvas: Zeichenfläche statt des Textes bei Einträgen vom Typ Zeichnung -->
               <div class="draw-pad" id="draw-pad" hidden>
                 <canvas id="draw-canvas"></canvas>
@@ -296,7 +296,7 @@
               type="text"
               placeholder="Neue Aufgabe einfügen …"
               aria-label="Neuer Eintrag"
-              autocomplete="off"
+              form="no-history" enterkeyhint="go"
             />
             <div class="composer-tools">
               <!-- Plus vor den Typ-Knöpfen: hängt Foto, Video, Audio oder Datei an den Eintrag -->
