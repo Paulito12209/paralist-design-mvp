@@ -16,7 +16,7 @@ export const composer = {
   type: types[0].id,
   /* Welcher Knopf unten hervorgehoben ist; `null` heißt: keiner, es entsteht ein Dokument */
   pick: types[0].id,
-  /* Ablageort des neuen Eintrags; `null` ist die Inbox */
+  /* Ablageort des neuen Eintrags; `null` ist der Eingang */
   place: null,
   /* Nummer des Eintrags, von dessen Seite aus angelegt wird — mit ihm wird der
      neue Eintrag verknüpft. `null` heißt: von nirgends her, also keine

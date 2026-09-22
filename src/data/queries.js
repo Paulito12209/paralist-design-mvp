@@ -6,7 +6,7 @@
  * Projekte, in Projekten alles andere. Jeder Eintrag hat eine Liste von
  * Ablageorten (`places`, Verweise aus refs.js) und erscheint an jedem davon —
  * so kann ein Projekt zugleich bei Marketing und bei Design liegen. Eine leere
- * Liste heißt Inbox.
+ * Liste heißt Eingang.
  * Pfad: src/data/queries.js
  *
  * Keine anpassbaren visuellen Werte.
@@ -49,16 +49,16 @@ export function isContainer(entry) {
   return Boolean(entry && containerTypes.includes(entry.type));
 }
 
-/** Liegt der Eintrag an diesem Ort? `null` fragt nach der Inbox (nirgends abgelegt). */
+/** Liegt der Eintrag an diesem Ort? `null` fragt nach dem Eingang (nirgends abgelegt). */
 export function hasPlace(entry, ref) {
   const places = entry.places || [];
   return ref ? places.includes(ref) : places.length === 0;
 }
 
 /**
- * Alle Orte eines Eintrags als Text, z.B. „Marketing · Design“. Ohne Ort steht
- * „Inbox“ — außer bei Medien: die zählen ohne Ort zu den Ressourcen, nie zur
- * Inbox (siehe inboxEntries unten), darum zeigt ihr Fußpfad das auch so an.
+ * Alle Orte eines Eintrags als Text, z.B. „Marketing · Design”. Ohne Ort steht
+ * „Eingang” — außer bei Medien: die zählen ohne Ort zu den Ressourcen, nie zum
+ * Eingang (siehe inboxEntries unten), darum zeigt ihr Fußpfad das auch so an.
  */
 export function placesLabel(entry) {
   const places = entry.places || [];
@@ -66,7 +66,7 @@ export function placesLabel(entry) {
   return entry.type === "medien" ? overviewPages[4].title : overviewPages[1].title;
 }
 
-/** Anzeigename eines Ablageorts — Inbox, Arbeitsbereich oder Projekt. */
+/** Anzeigename eines Ablageorts — Eingang, Arbeitsbereich oder Projekt. */
 export function parentName(ref) {
   if (!ref) return overviewPages[1].title;
   if (isWorkspaceRef(ref)) {
@@ -93,9 +93,9 @@ export function entriesOf(ref) {
 }
 
 /**
- * Was wirklich in der Inbox steht: Einträge ohne Ort, außer Medien — ein
+ * Was wirklich im Eingang steht: Einträge ohne Ort, außer Medien — ein
  * Foto oder eine Aufnahme ohne gewählten Ort ist eine Ressource, keine
- * Inbox-Karteikarte, und läuft deshalb nie versehentlich mit ein.
+ * Eingang-Karteikarte, und läuft deshalb nie versehentlich mit ein.
  */
 export function inboxEntries() {
   return entriesOf(null).filter((entry) => entry.type !== "medien");
@@ -129,7 +129,7 @@ export function projectEntries() {
 }
 
 /**
- * Alle Ablageorte, die ein Eintrag bekommen kann: Inbox, jeder Arbeitsbereich,
+ * Alle Ablageorte, die ein Eintrag bekommen kann: Eingang, jeder Arbeitsbereich,
  * jedes Projekt. Ein Projekt darf nicht in ein Projekt, und nichts in sich selbst.
  * @returns [{ ref, label, icon }]
  */
@@ -195,7 +195,7 @@ export function pageCount(page) {
   if (page.kind === "favorites") return favoriteCount();
   if (page.kind === "projects") return projectEntries().length;
   if (page.kind === "resources") return resourceEntries().length;
-  /* Die Inbox-Karte (parent null) zählt wie ihre Liste, ohne Medien. */
+  /* Die Eingang-Karte (parent null) zählt wie ihre Liste, ohne Medien. */
   if (page.parent === null) return inboxEntries().length;
   return entriesOf(page.parent).length;
 }

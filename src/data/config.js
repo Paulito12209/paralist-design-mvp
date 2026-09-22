@@ -53,8 +53,8 @@ export const proposedType = "notiz";
 
 /**
  * Diese Typen sammelt die Ressourcen-Karte, egal wo sie abgelegt sind — auch
- * Medien: die haben zwar zusätzlich einen eigenen Reiter „Medien“, zählen auf
- * der Startseite aber zu Ressourcen und nie zur Inbox (siehe inboxEntries in
+ * Medien: die haben zwar zusätzlich einen eigenen Reiter „Medien”, zählen auf
+ * der Startseite aber zu Ressourcen und nie zum Eingang (siehe inboxEntries in
  * src/data/queries.js).
  */
 export const resourceTypes = ["notiz", "dokument", "zeichnung", "medien"];
@@ -74,13 +74,13 @@ export const composerPlaceholders = {
 };
 
 /*
- * Die vier Übersichtskarten. Nur die Inbox ist ein Ablageort (parent null =
+ * Die vier Übersichtskarten. Nur der Eingang ist ein Ablageort (parent null =
  * „nirgends abgelegt“). Die anderen drei sind Sammlungen („kind“): Favoriten
  * zeigt Markiertes, Projekte alle Projekte, Ressourcen alle Dokumente,
  * Zeichnungen und Medien — egal, wo sie liegen.
  */
 export const overviewPages = {
-  1: { title: "Inbox", icon: "inbox", parent: null },
+  1: { title: "Eingang", icon: "inbox", parent: null },
   2: { title: "Favoriten", icon: "star-outline", kind: "favorites" },
   3: { title: "Projekte", icon: "rocket", kind: "projects" },
   4: { title: "Ressourcen", icon: "cube", kind: "resources" },

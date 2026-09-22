@@ -51,7 +51,7 @@ export function taskCheck(entry) {
   `;
 }
 
-/** Wozu die Aufgabe gehört: Projekt, Arbeitsbereich oder „Inbox“. */
+/** Wozu die Aufgabe gehört: Projekt, Arbeitsbereich oder „Eingang”. */
 export function taskPlaceLabel(entry) {
   return `
     <span class="task-place">

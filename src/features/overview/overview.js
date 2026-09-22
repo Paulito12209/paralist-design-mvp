@@ -1,5 +1,5 @@
 /*
- * Die vier Karten oben auf der Startseite: Inbox, Favoriten, Projekte, Ressourcen.
+ * Die vier Karten oben auf der Startseite: Eingang, Favoriten, Projekte, Ressourcen.
  * Pfad: src/features/overview/overview.js
  *
  * Keine anpassbaren visuellen Werte: Größe, Rundung und Icon-Farben stehen in

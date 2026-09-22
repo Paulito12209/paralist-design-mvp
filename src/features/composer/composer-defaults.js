@@ -45,7 +45,7 @@ function calendarType() {
  * andere geöffnete Eintrag kann nichts aufnehmen und gibt stattdessen seinen
  * eigenen Ort weiter: was man neben einer Aufgabe aus Projekt X notiert,
  * gehört auch nach X. Sammlungen (Favoriten, Projekte, Ressourcen, Archiv)
- * sind keine Orte — dort bleibt es bei der Inbox.
+ * sind keine Orte — dort bleibt es beim Eingang.
  *
  * VERKNÜPFUNG — steht man auf der Seite eines Eintrags, der selbst nichts
  * aufnehmen kann, wird das Neue zusätzlich mit ihm verknüpft: die Notiz neben

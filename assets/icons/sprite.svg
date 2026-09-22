@@ -12,7 +12,7 @@
     <circle cx="9" cy="10" r="1.6" fill="currentColor" />
     <path d="M6.5 16.5 10 13l3 2.5 2.2-1.8 2.3 2.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
   </symbol>
-  <!-- svg/symbol: Inbox-Tray mit Pfeil nach unten; ohne Grafik-Tag gäbe es kein Bild für die Inbox-Karte -->
+  <!-- svg/symbol: Inbox-Tray mit Pfeil nach unten; ohne Grafik-Tag gäbe es kein Bild für die Eingang-Karte -->
   <symbol id="icon-inbox" viewBox="0 0 24 24" fill="none">
     <path
       d="M12 3.4v8.6M8.7 8.6 12 12l3.3-3.4"
