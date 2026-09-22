@@ -13,7 +13,7 @@
  * styles/rows.css (Klassen .page-head, .page-body).
  */
 
-import { events, on } from "../../core/bus.js";
+import { emit, events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
 import { escapeHtml } from "../../core/html.js";
 import { load } from "../../core/lazy.js";
@@ -159,7 +159,10 @@ function openPageMenu() {
       iconPickerAction(workspace.icon, (name) => {
         workspace.icon = name;
         saveState();
-        renderPage();
+        /* Das Icon steht nicht auf dieser Seite, sondern in den Listen der
+           Übersicht und der Seitenleiste: die frischen sich bei der Meldung
+           selbst auf, diese Seite zeichnet dabei ihren Inhalt neu. */
+        emit(events.dataChanged);
       })
     );
   }

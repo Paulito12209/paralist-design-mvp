@@ -8,7 +8,7 @@
  * stehen in styles/overview.css (--tab-pill-size, --tab-pill-active-bg).
  */
 
-import { events, on } from "../../core/bus.js";
+import { emit, events, on } from "../../core/bus.js";
 import { dom, el, focusAtEnd } from "../../core/dom.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { sameId } from "../../core/ids.js";
@@ -94,7 +94,10 @@ export function commitTabName() {
     }
   }
   saveState();
-  renderTabs();
+  /* Als Datenänderung melden statt nur die Pillen hier neu zu zeichnen: den
+     Namen zeigt auch die Seitenleiste der Desktop-Fassung. Die Pillen zeichnet
+     der Zuhörer in initTabs() neu — wie beim Umbenennen eines Arbeitsbereichs. */
+  emit(events.dataChanged);
 }
 
 /** Umbenennen einer Pille starten. */
@@ -116,7 +119,7 @@ export function openTabMenu(pill) {
     iconPickerAction(tab.icon, (name) => {
       tab.icon = name;
       saveState();
-      renderTabs();
+      emit(events.dataChanged);
     }),
   ];
   /* Der letzte Tab lässt sich nicht löschen: es muss immer einer übrig bleiben. */
