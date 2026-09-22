@@ -184,7 +184,7 @@ function migrate() {
     if (typeof entry.priority !== "string") entry.priority = defaultTaskPriority;
     if (!Number.isFinite(entry.order)) entry.order = -(entry.createdAt || Date.now());
   });
-  /* Ein Verweis auf etwas, das es nicht mehr gibt, fällt weg; ohne Ort heißt Inbox. */
+  /* Ein Verweis auf etwas, das es nicht mehr gibt, fällt weg; ohne Ort heißt Eingang. */
   const workspaceRefs = new Set(state.workspaces.map((workspace) => workspaceRef(workspace.id)));
   const projectRefs = new Set(state.entries.filter((entry) => entry.type === "projekt").map((entry) => `e:${entry.id}`));
   state.entries.forEach((entry) => {

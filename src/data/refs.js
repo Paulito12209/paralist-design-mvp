@@ -1,6 +1,6 @@
 /*
  * Verweise auf Ablageorte. Ein Eintrag liegt an genau einem Ort:
- * in der Inbox (null), in einem Arbeitsbereich ("w:3") oder in einem
+ * im Eingang (null), in einem Arbeitsbereich ("w:3") oder in einem
  * Projekt ("e:17" — die Nummer des Projekt-Eintrags).
  *
  * Warum Text statt Nummer: Arbeitsbereiche und Einträge haben getrennte
@@ -35,7 +35,7 @@ export function isEntryRef(ref) {
   return typeof ref === "string" && ref.startsWith(`${ENTRY}:`);
 }
 
-/** Die Nummer hinter dem Kürzel, oder null für die Inbox. */
+/** Die Nummer hinter dem Kürzel, oder null für den Eingang. */
 export function refId(ref) {
   if (!isWorkspaceRef(ref) && !isEntryRef(ref)) return null;
   const id = Number(ref.slice(2));
@@ -44,8 +44,8 @@ export function refId(ref) {
 
 /**
  * Ältere Speicherstände auf die heutige Form bringen: dort stand die nackte
- * Nummer des Arbeitsbereichs, oder „o3“ für die frühere Projekte-Karte.
- * Alles, was sich nicht deuten lässt, landet in der Inbox.
+ * Nummer des Arbeitsbereichs, oder „o3” für die frühere Projekte-Karte.
+ * Alles, was sich nicht deuten lässt, landet im Eingang.
  */
 export function normalizeRef(value) {
   if (value === null || value === undefined || value === "") return null;

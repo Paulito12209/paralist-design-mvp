@@ -7,7 +7,7 @@
  * Keine anpassbaren visuellen Werte.
  */
 
-/** Zeigen zwei Ablageort-Angaben auf denselben Ort? `null` und "" gelten als Inbox. */
+/** Zeigen zwei Ablageort-Angaben auf denselben Ort? `null` und "" gelten als Eingang. */
 export function sameParent(a, b) {
   return String(a ?? "") === String(b ?? "");
 }

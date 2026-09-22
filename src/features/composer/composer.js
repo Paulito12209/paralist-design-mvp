@@ -99,7 +99,7 @@ function renderComposerTypes() {
   renderComposerTypePill();
 }
 
-/** Typ-Pille neben „Inbox“: zeigt den gewählten Typ und setzt den Platzhaltertext. */
+/** Typ-Pille neben „Eingang”: zeigt den gewählten Typ und setzt den Platzhaltertext. */
 function renderComposerTypePill() {
   const type =
     types.find((item) => item.id === composer.type) || types.find((item) => item.id === defaultType);
@@ -110,8 +110,8 @@ function renderComposerTypePill() {
 }
 
 /*
- * Name in der Ablageort-Pille. Ein Medium ohne gewählten Ort landet nicht in
- * der Inbox, sondern bei den Ressourcen — `inboxEntries` in
+ * Name in der Ablageort-Pille. Ein Medium ohne gewählten Ort landet nicht im
+ * Eingang, sondern bei den Ressourcen — `inboxEntries` in
  * src/data/queries.js siebt Medien aus. Die Pille sagt dann auch das, statt
  * einen Ort zu versprechen, an dem der Eintrag nie auftaucht.
  */

@@ -58,7 +58,7 @@ const emptyStates = {
   inbox: {
     icon: "inbox",
     accent: "var(--cal-accent)",
-    title: "Noch nichts in der Inbox",
+    title: "Noch nichts im Eingang",
     text: "Leg hier Einträge ab — Notizen, Aufgaben, Termine. Alles, was du nirgends ablegst, sammelt sich hier.",
     /* Ohne `pick`: die Seite schlägt ohnehin eine Notiz vor (proposedType). */
     action: { label: "Eintrag hinzufügen" },

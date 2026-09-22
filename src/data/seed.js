@@ -53,7 +53,7 @@ const sampleMedia = [
 
 /**
  * Beispielmedien für ältere Speicherstände, die das Medien-Feature noch nicht
- * kannten. Landen in der Inbox und zählen nicht als „angelegt“ — darum kein
+ * kannten. Landen im Eingang und zählen nicht als „angelegt” — darum kein
  * XP-Eintrag.
  */
 export function seedMedia() {

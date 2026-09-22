@@ -92,7 +92,7 @@ Tab
   liegen nie in etwas anderem und sind keine Einträge.
 - **Jeder Eintrag hat eine Liste von Ablageorten** (`places`) und erscheint an
   jedem davon: `"w:<id>"` ist ein Arbeitsbereich, `"e:<id>"` ein Projekt, die
-  leere Liste heißt Inbox. So liegt ein Projekt zugleich bei Marketing und bei
+  leere Liste heißt Eingang. So liegt ein Projekt zugleich bei Marketing und bei
   Design, wenn beide daran arbeiten. Die Kürzel stehen in `src/data/refs.js`
   und machen eindeutig, welche Nummer gemeint ist.
 - **Nur Projekte nehmen Einträge auf** (`containerTypes` in
@@ -101,14 +101,14 @@ Tab
   tief.
 - **Verknüpfen heißt an- und abwählen:** „Verknüpfen mit“ zeigt alle Orte mit
   Haken, jeder lässt sich hinzunehmen oder wegnehmen, nachträglich und von
-  überall. „Inbox“ nimmt alle weg.
+  überall. „Eingang” nimmt alle weg.
 - **Löschen ist ortsbezogen:** Verschwindet ein Ort (Arbeitsbereich gelöscht,
   „Alle Einträge löschen“), wird er aus den Einträgen gestrichen. Was nur dort
-  lag, ist weg bzw. rückt in die Inbox; was auch woanders liegt, bleibt dort.
+  lag, ist weg bzw. rückt in den Eingang; was auch woanders liegt, bleibt dort.
   Inhalte eines gelöschten Projekts übernehmen dessen Orte.
 - **Die Karten Projekte, Favoriten und Ressourcen sind Sammlungen**, keine
   Orte: sie zeigen alle Projekte, alles Markierte, alle Dokumente, Zeichnungen
-  und Medien — egal, wo sie liegen. Nur die Inbox ist ein Ort.
+  und Medien — egal, wo sie liegen. Nur der Eingang ist ein Ort.
 - Arbeitsbereiche und Projekte haben einen freien Text (`body`) und zeigen
   ihre Einträge unter **Verknüpfte Einträge**, nach Typ gruppiert in der
   Reihenfolge aus `typeOrder`. Jede Unterseite — Arbeitsbereich, Übersichts-
@@ -142,7 +142,7 @@ Build-Schritt hinzufügen, der nach Android nicht mitwandert.
 Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 
 **Übersicht**
-- Die vier Karten öffnen (Inbox, Favoriten, Projekte, Ressourcen) und zurück —
+- Die vier Karten öffnen (Eingang, Favoriten, Projekte, Ressourcen) und zurück —
   die Zahl auf der Karte passt zur Zahl der Zeilen.
 - Auf einer Unterseite (Karte, Arbeitsbereich, Eintrag) ist die allgemeine
   Kopfzeile mit Level, Suche und Profil weg: ganz oben links steht nur der
@@ -153,7 +153,7 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   allgemeine Kopfzeile wieder da und der Cursor steht im Feld.
 - Tab anlegen, benennen (Enter **und** Klick daneben), wechseln, umbenennen,
   Icon geben, löschen. Beim Löschen verschwinden seine Arbeitsbereiche, deren
-  Einträge wandern in die Inbox.
+  Einträge wandern in den Eingang.
 - Arbeitsbereich anlegen, umbenennen, Icon geben, zu Favoriten, löschen.
 - Lange auf eine Tab-Pille oder eine Arbeitsbereich-Zeile drücken: das Menü
   geht auf und die Seite darunter öffnet sich **nicht**.

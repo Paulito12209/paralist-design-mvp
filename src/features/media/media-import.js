@@ -1,6 +1,6 @@
 /*
  * Dateien auf der Medien-Seite hinzufügen: aus jeder Datei wird ein
- * Medien-Eintrag in der Inbox, Bilder und Videos bekommen eine Vorschau.
+ * Medien-Eintrag im Eingang, Bilder und Videos bekommen eine Vorschau.
  * Pfad: src/features/media/media-import.js
  *
  * Keine anpassbaren visuellen Werte: die Größe der Vorschaubilder steht in
@@ -18,7 +18,7 @@ import { logXp } from "../../data/xp.js";
 /** Die vier Quellen und ihre unsichtbaren Dateifelder in index.html. */
 export const mediaSources = ["photo", "video", "audio", "import"];
 
-/** Jede Datei wird ein Medien-Eintrag in der Inbox. */
+/** Jede Datei wird ein Medien-Eintrag im Eingang. */
 export async function addMediaFiles(fileList, source) {
   const files = Array.from(fileList || []);
   if (!files.length) return;

@@ -43,7 +43,7 @@ function commit({ prunedEntries = false } = {}) {
 
 /*
  * Ein Ablageort verschwindet: er wird aus allen Einträgen gestrichen, und wer
- * dadurch heimatlos würde, bekommt die Orte in `targets` (leer = Inbox).
+ * dadurch heimatlos würde, bekommt die Orte in `targets` (leer = Eingang).
  * Was noch woanders liegt, bleibt einfach dort.
  */
 function liftChildren(ref, targets = []) {
@@ -116,7 +116,7 @@ export function restoreFromArchive(item) {
   commit();
 }
 
-/** Arbeitsbereich löschen; was nur hier lag, wandert in die Inbox. */
+/** Arbeitsbereich löschen; was nur hier lag, wandert in den Eingang. */
 export function deleteWorkspace(id) {
   state.workspaces = state.workspaces.filter((workspace) => !sameId(workspace.id, id));
   liftChildren(workspaceRef(id));
@@ -133,7 +133,7 @@ export function addTab() {
   emit(events.dataChanged);
 }
 
-/** Tab löschen; seine Arbeitsbereiche verschwinden, deren Einträge wandern in die Inbox. */
+/** Tab löschen; seine Arbeitsbereiche verschwinden, deren Einträge wandern in den Eingang. */
 export function deleteTab(id) {
   if (state.tabs.length < 2) return;
   state.workspaces
@@ -178,8 +178,8 @@ export function deleteEntry(id) {
  * Einen Ablageort leeren. Was NUR hier liegt, wird gelöscht; was auch woanders
  * liegt, wird hier nur ausgehängt und bleibt dort erhalten. Inhalte eines
  * gelöschten Projekts rücken in diesen Ort und bleiben.
- * In der Inbox (`ref` null) bleiben Medien verschont: die stehen dort gar
- * nicht in der Liste (siehe inboxEntries in queries.js), „Alle löschen“ darf
+ * Im Eingang (`ref` null) bleiben Medien verschont: die stehen dort gar
+ * nicht in der Liste (siehe inboxEntries in queries.js), „Alle löschen” darf
  * sie deshalb auch nicht mitnehmen.
  */
 export function deleteEntriesOf(ref) {
@@ -222,7 +222,7 @@ export function toggleLink(entry, other) {
   commit();
 }
 
-/** Alle Orte wegnehmen: der Eintrag liegt dann in der Inbox. */
+/** Alle Orte wegnehmen: der Eintrag liegt dann im Eingang. */
 export function clearPlaces(entry) {
   entry.places = [];
   commit();

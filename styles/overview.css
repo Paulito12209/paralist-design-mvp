@@ -6,7 +6,7 @@
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
  * --overview-card-bg / --card / --shadow / --radius-lg   -> Aussehen der Karten
- * --inbox-icon-color                -> Inbox-Icon
+ * --inbox-icon-color                -> Eingang-Icon
  * --star-color                      -> Favoriten-Stern
  * --project-icon-color              -> Raketen-Icon
  * --resource-icon-color             -> Würfel-Icon
@@ -65,7 +65,7 @@
   color: var(--chevron);
 }
 
-/* Inbox-Icon auf der Übersichtskarte */
+/* Eingang-Icon auf der Übersichtskarte */
 .card-icon-inbox {
   color: var(--inbox-icon-color);
 }

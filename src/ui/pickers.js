@@ -34,7 +34,7 @@ export function openPlacePicker(title, current, onPick, draftType = null) {
   );
 }
 
-/* Die Ablageorte im oberen Abschnitt: „Inbox“ nimmt alle Orte weg. */
+/* Die Ablageorte im oberen Abschnitt: „Eingang” nimmt alle Orte weg. */
 function placeOptions(entry, render) {
   const places = entry.places || [];
   return placeOptionsFor(entry).map((option) => ({
@@ -72,8 +72,8 @@ function entryOptions(entry, render) {
 }
 
 /**
- * „Verknüpfen mit“ auf der Seite eines Eintrags: ein Blatt, zwei Abschnitte.
- * Oben der Ablageort — wo der Eintrag liegt, Inbox, Arbeitsbereich oder
+ * „Verknüpfen mit” auf der Seite eines Eintrags: ein Blatt, zwei Abschnitte.
+ * Oben der Ablageort — wo der Eintrag liegt, Eingang, Arbeitsbereich oder
  * Projekt. Unten die Einträge, mit denen er verbunden ist; diese Verbindung
  * gilt in beide Richtungen (src/data/links.js).
  *
