@@ -17,7 +17,9 @@ Die harten Punkte in einem Satz:
    auf Deutsch, in Alltagssprache.
 4. **Performance:** große Bereiche über `src/core/lazy.js` nachladen, nur die
    sichtbare Ansicht neu zeichnen, Tippen über `scheduleSave()` speichern.
-5. **Keine Bugs:** `python3 tools/check.py` muss „alles in Ordnung“ melden,
+5. **Keine Bugs:** erst `python3 tools/version.py` (neuer Versionsstempel, damit
+   offene Apps das Update-Fenster zeigen), dann muss `python3 tools/check.py`
+   „alles in Ordnung“ melden,
    dann im Browser auf `http://localhost:4173` öffnen, Konsole muss leer sein,
    betroffene Flows anklicken — leerer und voller Speicher, hell und dunkel,
    375 px Breite, Zurück-Pfeil und Browser-Zurück.

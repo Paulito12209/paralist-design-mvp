@@ -29,6 +29,7 @@
  * styles/composer.css        -> Eingabefeld zum Anlegen
  * styles/composer-attachments.css -> Kachelreihe der Anhänge im Eingabefeld
  * styles/toast.css           -> kurze Meldung über der Navigation nach dem Anlegen
+ * styles/update.css          -> Fenster „Neue Version verfügbar“ mit Später und Aktualisieren
  * styles/overlays.css        -> Auswahl-Blatt, kleines Menü, Blätter von unten
  * styles/modal-top.css       -> runder Pfeil in einem Blatt, der nach oben rollt
  * styles/search.css          -> Suchseite
@@ -146,6 +147,12 @@
  * --toast-gap               -> Abstand der Meldung zur Navigation darunter
  * --toast-anim              -> wie lange die Meldung heraufgleitet
  * --toast-rise              -> aus welcher Tiefe sie dabei kommt
+ * --update-bg               -> Fläche des Fensters „Neue Version verfügbar“ (im Dunkeln eigener Wert)
+ * --update-radius           -> Rundung dieses Fensters (Material 3: 28dp)
+ * --update-width            -> größte Breite des Fensters; schmaler, wenn das Gerät schmaler ist
+ * --update-pad              -> Innenabstand des Fensters
+ * --update-btn-height       -> Höhe der beiden Knöpfe (48 = Mindest-Tippziel von Material 3)
+ * --update-anim             -> wie lange das Fenster beim Auftauchen braucht
  * --composer-close-angle    -> wie schief das Kreuz des Schließen-Knopfes steht (45deg = X)
  * --composer-close-angle-from -> Winkel, mit dem das X beim Aufgehen startet
  * --composer-close-slide    -> aus welcher Entfernung der Schließen-Knopf dabei heranrückt
@@ -232,6 +239,12 @@
   --toast-gap: 10px;
   --toast-anim: 0.26s;
   --toast-rise: 12px;
+  --update-bg: #ffffff;
+  --update-radius: 28px;
+  --update-width: 320px;
+  --update-pad: 24px;
+  --update-btn-height: 48px;
+  --update-anim: 0.22s;
   --composer-close-angle: 45deg;
   --composer-close-angle-from: 35deg;
   --composer-close-slide: 14px;

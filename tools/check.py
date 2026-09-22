@@ -19,6 +19,10 @@ import pathlib
 import re
 import sys
 
+# Keinen __pycache__-Ordner in tools/ anlegen: das Skript soll nichts ändern.
+sys.dont_write_bytecode = True
+import version  # noqa: E402  tools/version.py liegt daneben
+
 MAX_LINES = 400
 LAYERS = {"core": 0, "data": 1, "ui": 2, "features": 3, "shell": 3}
 ROOT = pathlib.Path(__file__).resolve().parent.parent
@@ -197,6 +201,12 @@ def check_html_ids():
         note("src/", f"benutzt das Icon #{name}, es fehlt im Sprite")
 
 
+def check_version():
+    # Ohne frischen Stempel merkt eine offene App nicht, dass es Neues gibt.
+    if not version.is_current():
+        note("src/data/version.js", "Versionsstempel veraltet — python3 tools/version.py ausführen")
+
+
 def main():
     check_line_limit()
     check_headers()
@@ -205,6 +215,7 @@ def main():
     check_data_layer()
     check_css_variables()
     check_html_ids()
+    check_version()
 
     if not problems:
         print("alles in Ordnung")

@@ -28,6 +28,7 @@
     --nav-glow-opacity: 0.6;
     --media-strip-bg: rgba(255, 255, 255, 0.1);
     --star-color: #f5c518; /* helles Gold auf der dunklen Karte */
+    --update-bg: #1c1c1e; /* etwas heller als der schwarze Grund, damit das Fenster sich abhebt */
     --inbox-icon-color: #9fc4dc;
     --project-icon-color: #e8848d;
     --resource-icon-color: #a3d39b;
@@ -77,6 +78,7 @@
   --nav-glow-opacity: 0.6;
   --media-strip-bg: rgba(255, 255, 255, 0.1);
   --star-color: #f5c518; /* helles Gold auf der dunklen Karte */
+  --update-bg: #1c1c1e; /* etwas heller als der schwarze Grund, damit das Fenster sich abhebt */
   --inbox-icon-color: #9fc4dc;
   --project-icon-color: #e8848d;
   --resource-icon-color: #a3d39b;

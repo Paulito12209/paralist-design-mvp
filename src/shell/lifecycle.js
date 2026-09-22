@@ -14,8 +14,12 @@ import { flushUsage, resetUsageTick, trackUsage } from "../data/usage.js";
 
 const usageTickSeconds = 15;
 
-/** Speichern und Zeitzählung an den Lebenszyklus der Seite hängen. */
-export function initLifecycle() {
+/**
+ * Speichern und Zeitzählung an den Lebenszyklus der Seite hängen.
+ * @param hooks.onShow läuft, wenn die App wieder sichtbar wird — z.B. um nach
+ *                     einer neuen Fassung zu sehen. Kommt aus src/main.js.
+ */
+export function initLifecycle({ onShow = () => {} } = {}) {
   setInterval(trackUsage, usageTickSeconds * 1000);
 
   document.addEventListener("visibilitychange", () => {
@@ -24,6 +28,7 @@ export function initLifecycle() {
     flushUsage();
     flushSave();
     resetUsageTick();
+    if (!document.hidden) onShow();
   });
 
   window.addEventListener("pagehide", () => {

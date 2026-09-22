@@ -32,6 +32,7 @@ assets/icons/               sprite.svg (alle Icons) und die App-Icons
 styles/                     Stile, je Bereich eine Datei
 src/                        die App, in kleine Module geteilt
 tools/check.py              prüft die Projektregeln (Zeilengrenze, Struktur, Kommentare)
+tools/version.py            schreibt den Versionsstempel src/data/version.js (für das Update-Fenster)
 CLAUDE.md                   Kurzregeln für die Arbeit am Projekt
 .claude/skills/…/SKILL.md   die vollständigen Regeln
 ```
@@ -202,7 +203,7 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   Bild groß ansehen und mit Browser-Zurück schließen.
 
 **Immer**
-- `python3 tools/check.py` meldet „alles in Ordnung“.
+- `python3 tools/version.py` ausführen, dann meldet `python3 tools/check.py` „alles in Ordnung“.
 - Konsole muss leer sein.
 - Einmal mit `localStorage.clear()` neu laden, einmal mit vorhandenen Daten.
 - Hell und Dunkel, 375 px Breite.

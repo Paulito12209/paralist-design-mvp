@@ -32,6 +32,7 @@ import { initLevelGauge } from "./shell/level-gauge.js";
 import { initLifecycle } from "./shell/lifecycle.js";
 import { initNavBar } from "./shell/nav-bar.js";
 import { initSearchBar } from "./shell/search-bar.js";
+import { checkForUpdate, initUpdatePrompt } from "./shell/update-prompt.js";
 import { mountSprite } from "./shell/sprite.js";
 import { closeCtxMenu, initCtxMenu } from "./ui/ctx-menu.js";
 import { initListClicks } from "./ui/list-clicks.js";
@@ -128,7 +129,8 @@ function start() {
   initShell();
   initFeatures();
   showStartPage();
-  initLifecycle();
+  initLifecycle({ onShow: checkForUpdate });
+  initUpdatePrompt();
   /* Die Icons kommen nach, das Gerüst steht schon. */
   mountSprite();
   prefetchWhenIdle(prefetchOrder);

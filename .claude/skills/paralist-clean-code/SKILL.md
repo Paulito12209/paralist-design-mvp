@@ -169,12 +169,19 @@ Code als nackte Zahl.
 
 Eine Änderung ist erst fertig, wenn diese Kette durchlaufen ist:
 
-1. **Regeln prüfen** — Zeilengrenze, Kopfkommentare, Importrichtung, auflösbare
-   Importe, CSS-Variablen und die IDs in index.html:
+1. **Versionsstempel und Regeln prüfen** — erst den Stempel neu schreiben,
+   dann Zeilengrenze, Kopfkommentare, Importrichtung, auflösbare Importe,
+   CSS-Variablen, die IDs in index.html und den Stempel prüfen:
    ```bash
+   python3 tools/version.py
    python3 tools/check.py
    ```
-   Die Ausgabe muss genau „alles in Ordnung“ sein.
+   Die Ausgabe muss genau „alles in Ordnung“ sein. Der Stempel in
+   `src/data/version.js` ist ein Prüfwert über alle ausgelieferten Dateien:
+   ändert er sich, zeigt jede offene App das Fenster „Neue Version verfügbar“
+   (`src/shell/update-prompt.js`). Die Datei wird immer komplett neu
+   geschrieben — bei einem Merge-Konflikt darin einfach das Skript erneut
+   laufen lassen und die ganze Datei stagen.
 2. **Syntax prüfen** — jede Datei lässt sich als ES-Modul lesen:
    ```bash
    for f in $(find src -name '*.js'); do cp "$f" "/tmp/$(basename $f).mjs"; node --check "/tmp/$(basename $f).mjs" || echo "FEHLER $f"; done

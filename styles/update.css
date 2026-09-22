@@ -1,0 +1,127 @@
+/*
+ * Das Fenster „Neue Version verfügbar“ mit den Knöpfen Später und Aktualisieren.
+ * Es liegt mittig über allem und dunkelt den Rest des Geräts ab.
+ * Pfad: styles/update.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --update-bg          -> Fläche des Fensters (im Dunkeln eigener Wert in tokens-dark.css)
+ * --update-radius      -> Rundung des Fensters
+ * --update-width       -> größte Breite des Fensters
+ * --update-pad         -> Innenabstand des Fensters
+ * --update-btn-height  -> Höhe der beiden Knöpfe
+ * --update-anim        -> wie lange das Fenster beim Auftauchen braucht
+ * --content-side       -> Mindestabstand des Fensters zum Geräterand
+ * --link-color         -> Farbe des Pfeils oben im Fenster
+ * --avatar-btn-bg      -> Fläche des Knopfes „Aktualisieren“ (wechselt mit dem Modus)
+ * --tab-pill-active-bg -> Fläche des Knopfes „Später“
+ * --text / --muted     -> Schrift von Überschrift und Hinweis
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+ */
+
+.update-backdrop {
+  position: absolute; /* position: liegt über der ganzen Gerätefläche */
+  inset: 0;
+  z-index: 60; /* z-index: über allem, auch über dem Auswahl-Blatt (50) — die Frage betrifft die ganze App */
+  display: grid;
+  place-items: center;
+  padding: 0 var(--content-side);
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.update-backdrop[hidden] {
+  display: none;
+}
+
+.update-dialog {
+  width: 100%;
+  max-width: var(--update-width);
+  padding: var(--update-pad);
+  border-radius: var(--update-radius);
+  background: var(--update-bg);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+}
+
+/* Beim Auftauchen wächst das Fenster leicht heran. Die Regel hängt an
+   `:not([hidden])`, weil eine Animation von selbst neu startet, sobald ein
+   Element aus display:none wieder auftaucht. */
+@keyframes update-in {
+  from {
+    transform: scale(0.94);
+    opacity: 0;
+  }
+}
+
+.update-backdrop:not([hidden]) .update-dialog {
+  animation: update-in var(--update-anim) ease-out;
+}
+
+.update-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--link-color);
+  margin-bottom: 14px;
+}
+
+.update-title {
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.update-text {
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.update-actions {
+  width: 100%;
+  margin-top: var(--update-pad);
+  display: flex;
+  gap: 10px;
+}
+
+.update-btn {
+  flex: 1;
+  height: var(--update-btn-height);
+  border-radius: 999px; /* border-radius: volle Pille wie die übrigen Knöpfe der App */
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.update-later {
+  background: var(--tab-pill-active-bg);
+  color: var(--text);
+}
+
+/* Die Schrift nimmt die Fensterfläche auf: so bleibt der Knopf in beiden Modi
+   ein kräftiger Block mit gut lesbarer Schrift. */
+.update-now {
+  background: var(--avatar-btn-bg);
+  color: var(--update-bg);
+}
+
+.update-btn:active {
+  opacity: 0.7;
+}
+
+.update-btn:disabled {
+  opacity: 0.6;
+}
+
+/* Dunkelmodus: heller Schein statt dunklem Schatten, wie bei der Meldung (styles/toast.css) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .update-dialog {
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.07), 0 0 32px rgba(255, 255, 255, 0.13);
+  }
+}
+:root[data-theme="dark"] .update-dialog {
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.07), 0 0 32px rgba(255, 255, 255, 0.13);
+}
