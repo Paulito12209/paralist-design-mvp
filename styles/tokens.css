@@ -153,6 +153,8 @@
  * --update-pad              -> Innenabstand des Fensters
  * --update-btn-height       -> Höhe der beiden Knöpfe (48 = Mindest-Tippziel von Material 3)
  * --update-anim             -> wie lange das Fenster beim Auftauchen braucht
+ * --autofill-hold           -> wie lange ein Feld nach einem Chrome-Vorschlag seine Farben behält,
+ *                              bevor Chromes Blau durchkäme (600000s ≈ eine Woche, also praktisch nie)
  * --composer-close-angle    -> wie schief das Kreuz des Schließen-Knopfes steht (45deg = X)
  * --composer-close-angle-from -> Winkel, mit dem das X beim Aufgehen startet
  * --composer-close-slide    -> aus welcher Entfernung der Schließen-Knopf dabei heranrückt
@@ -245,6 +247,7 @@
   --update-pad: 24px;
   --update-btn-height: 48px;
   --update-anim: 0.22s;
+  --autofill-hold: 600000s;
   --composer-close-angle: 45deg;
   --composer-close-angle-from: 35deg;
   --composer-close-slide: 14px;

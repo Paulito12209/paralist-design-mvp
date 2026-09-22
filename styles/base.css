@@ -15,6 +15,7 @@
  * --avatar-btn-bg           -> Farbe der Abschnitts-Überschriften (.section-head h2)
  * --tab-space               -> Platz am Seitenende hinter der Navigation
  * --device-radius           -> Rundung des Gerätefensters am Desktop
+ * --autofill-hold           -> wie lange ein Feld nach einem Browser-Vorschlag seine Farben behält
  
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
@@ -47,6 +48,22 @@ button,
 input,
 textarea {
   font: inherit;
+}
+
+/* Übernimmt man einen Vorschlag aus Chromes Leiste über der Tastatur, färbt
+   Chrome das Feld hellblau mit schwarzer Schrift — auch im Dunkelmodus. Diese
+   Farben setzt Chrome mit !important, eigenes CSS kommt dagegen nicht an.
+   transition: verschiebt den Farbwechsel um --autofill-hold, das Feld behält
+   also seinen eigenen Hintergrund (meist durchsichtig) und seine Schriftfarbe.
+   -webkit-text-fill-color / caret-color: Schrift und Schreibmarke bleiben in
+   der App-Farbe, auch wenn man danach zwischen Hell und Dunkel wechselt.
+   :-webkit-autofill ist der Name, den alle Browser verstehen; das neuere
+   :autofill in derselben Liste würde die Regel in älteren Browsern kippen. */
+input:-webkit-autofill,
+textarea:-webkit-autofill {
+  transition: background-color 0s var(--autofill-hold), color 0s var(--autofill-hold);
+  -webkit-text-fill-color: var(--text);
+  caret-color: var(--text);
 }
 
 button {
