@@ -1,0 +1,279 @@
+/*
+ * Desktop: wie die Seiten die Breite nutzen — Übersicht, Sammlung, Eintrag,
+ * Suche, Kalender, Aufgaben und Medien. Ab 1024px steht die Seite in der
+ * mittleren Spalte (Raster in styles/desk.css). Hier bekommt jede Seite ihre
+ * größte Breite, die vier Übersichtskarten werden zu ruhigen Kennzahl-Kacheln
+ * mit großer, dünner Zahl, und Aufgaben-Liste, Board und Medien-Raster ordnen
+ * sich für die Breite neu. Nur Anordnung: was unter der Maus, beim Drücken und
+ * beim Tastatur-Fokus passiert, steht für die ganze mittlere Spalte in
+ * styles/desk-hover.css. Unter 1024px gilt nichts davon.
+ * Pfad: styles/desk-views.css
+ *
+ * ANPASSBARE WERTE
+ * -----------------------------------
+ * IN DIESER DATEI (stehen an .view und gelten nur am Desktop)
+ * --views-card-min-h / --views-card-pad / --views-card-gap -> Mindesthöhe,
+ *                          Innenabstand und Fuge der vier Übersichtskarten
+ * --views-section-gap    -> Luft über der Zeile „Arbeitsbereiche“
+ * --views-cal-stick-gap  -> Luft über dem eingerasteten Wochenstreifen im Kalender
+ * --views-board-col-min  -> schmalste Board-Spalte; passen nicht alle Spalten
+ *                          mindestens so breit hinein, rollt das Board seitlich
+ * --views-board-bar      -> Dicke des Rollbalkens unter dem Board (nur Safari, s. u.)
+ * --views-board-bar-gap  -> Luft zwischen der letzten Zeile des Boards und seinem Rollbalken
+ * --views-media-tile     -> kleinste Breite einer Medien-Kachel (breiteres Fenster = mehr Spalten)
+ * --views-media-gap      -> Fuge zwischen den Medien-Kacheln
+ * --views-entry-min-h    -> Mindesthöhe der Schreibfläche eines Eintrags
+ * --views-enter          -> wie lange eine Seite beim Wechsel aufblendet
+ *
+ * FÜR DEN DESKTOP NEU GESETZT (Grundwert in tokens.css, tokens-pages.css, empty-state.css)
+ * --entry-title-size / --entry-body-size -> Titel und Text eines Eintrags
+ * --empty-pad-top        -> Luft über dem Platzhalter leerer Listen
+ * --board-gap            -> Fuge zwischen den Spalten des Aufgaben-Boards
+ *
+ * GELESEN (styles/tokens-desk.css und die übrigen Wert-Dateien)
+ * --desk-wide-width / --desk-read-width -> größte Breite der breiten Seiten und der Lese-Seiten
+ * --desk-radius / --desk-radius-sm -> Rundung der Übersichtskarten und der Medien-Kacheln
+ * --desk-num-weight / --desk-tile-num-size -> Strichstärke und Größe der Zahl auf den Karten
+ * --desk-edge            -> Haarlinie um die Zeichenfläche
+ * --desk-scroll-thumb    -> Farbe des Rollbalkens unter dem Board
+ * --desk-ease / --desk-enter-rise -> Kurve und Tiefe beim Aufblenden einer Seite
+ * --text / --muted / --avatar-btn-bg -> Zahl, blasse Null und Kartentitel
+ * --content-side / --content-top -> Seitenrand und Luft oben
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel:
+ * Kartentitel 15px, Überschrift „Arbeitsbereiche“ 19px.
+ */
+
+@media (min-width: 1024px) {
+  .view {
+    --views-card-min-h: 150px;
+    --views-card-pad: 18px;
+    --views-card-gap: 16px;
+    --views-section-gap: 56px;
+    --views-cal-stick-gap: 16px;
+    --views-board-col-min: 220px;
+    --views-board-bar: 6px;
+    --views-board-bar-gap: 12px;
+    --views-media-tile: 150px;
+    --views-media-gap: 8px;
+    --views-entry-min-h: 420px;
+    --views-enter: 0.36s;
+    --entry-title-size: 40px;
+    --entry-body-size: 17px;
+    --empty-pad-top: 64px;
+    --board-gap: 20px;
+  }
+
+  /* ---------- Breite ---------- */
+  /* width: 100%: auf einer Zeichnung ist .content eine Flex-Spalte (styles/drawing.css),
+     dort schrumpfte die Seite mit margin-inline: auto sonst auf ihren Inhalt.
+     Pillen-Leisten, Wisch-Zeilen und Board reichen wie am Handy um --content-side
+     über den Rand — am Desktop genau bis an den Rand der Spalte, das passt so. */
+  #view-home, #view-calendar, #view-tasks, #view-media {
+    width: 100%;
+    max-width: var(--desk-wide-width);
+    margin-inline: auto;
+  }
+
+  #view-page, #view-entry, #view-search {
+    width: 100%;
+    max-width: var(--desk-read-width);
+    margin-inline: auto;
+  }
+
+  /* :has: die Aufgaben-Liste liest sich in Lesebreite besser, nur das Board
+     braucht die volle Breite. Ohne :has bleibt die Seite einfach breit. */
+  #view-tasks:not(:has(.board)) {
+    max-width: var(--desk-read-width);
+  }
+
+  /* ---------- Übersicht: vier Kennzahl-Karten ---------- */
+  /* Der negative Rand am Handy schafft nur Platz für Kartenschatten; die
+     Desktop-Karten haben keinen, sonst stünde das Raster 12px über dem Rand. */
+  #view-home .overview-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--views-card-gap);
+    margin-inline: 0;
+    padding-inline: 0;
+  }
+
+  #view-home .overview-card {
+    min-height: var(--views-card-min-h);
+    padding: var(--views-card-pad);
+    border-radius: var(--desk-radius);
+    gap: 0;
+    font-size: 15px;
+  }
+
+  /* margin-bottom: auto schiebt das Icon nach oben links; Zahl und Titel bleiben unten */
+  #view-home .overview-card .card-icon {
+    margin-bottom: auto;
+  }
+
+  /* column-reverse: im Markup steht der Titel vor der Zahl — am Desktop steht
+     die große Zahl darüber, ohne das Markup des Handys anzufassen. */
+  #view-home .card-label {
+    flex-direction: column-reverse;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+  }
+
+  #view-home .card-title {
+    max-width: 100%;
+    color: var(--avatar-btn-bg);
+    font-weight: 500;
+    letter-spacing: -0.01em;
+  }
+
+  /* font-variant-numeric: alle Ziffern gleich breit, damit nichts springt, wenn sich die Zahl ändert */
+  #view-home .card-count {
+    font-size: var(--desk-tile-num-size);
+    font-weight: var(--desk-num-weight);
+    letter-spacing: -0.05em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+  }
+
+  /* Ohne Einträge zeigt das Handy keine Zahl; hier steht statt eines Lochs eine
+     blasse Null. content: nur Zierde, die Anzahl steht im aria-label der Karte.
+     Eigene Regel: kennt ein Browser :has nicht, fällt nur sie weg. */
+  #view-home .card-label:not(:has(.card-count))::after {
+    content: "0";
+    font-size: var(--desk-tile-num-size);
+    font-weight: var(--desk-num-weight);
+    letter-spacing: -0.05em;
+    line-height: 1;
+    color: var(--muted);
+  }
+
+  /* Die Arbeitsbereiche bekommen mehr Luft und eine Überschrift, die zur Breite passt */
+  #view-home .section-head {
+    margin-top: var(--views-section-gap);
+  }
+
+  #view-home .section-head h2 {
+    font-size: 19px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  /* ---------- Eintrag und Zeichnung ---------- */
+  #view-entry .entry-title {
+    line-height: 1.15;
+    letter-spacing: -0.04em;
+    margin-bottom: 16px;
+  }
+
+  #view-entry .entry-body {
+    min-height: var(--views-entry-min-h);
+    line-height: 1.6;
+  }
+
+  /* Den Schatten schaltet styles/desk.css ab; die weiße Fläche bekommt dafür
+     eine Haarlinie. Die Leinwand misst ihren Platz selbst nach (ResizeObserver
+     in src/features/drawing/drawing.js), der Rand verschiebt keine Striche. */
+  .content .draw-pad {
+    border: 0.5px solid var(--desk-edge);
+  }
+
+  /* ---------- Kalender ---------- */
+  /* Über dem eingerasteten Wochenstreifen steht am Desktop keine Suchleiste —
+     er klebte am Fensterrand. Der Kopf wird um --views-cal-stick-gap weiter
+     verlängert (padding-top) und genauso weit hochgezogen (margin-top): in Ruhe
+     steht der Streifen wie zuvor, eingerastet hat er Luft über sich. top bleibt:
+     sizeGrid() in src/features/calendar/calendar-grid.js zieht genau
+     --content-top von der Kopfhöhe ab und zählt die Luft so zum sichtbaren Kopf.
+     Die Luft bleibt kleiner als der Abstand unter dem Monat (18px), sonst
+     schaute der Monat über dem eingerasteten Streifen hervor. */
+  #view-calendar .cal-head {
+    margin-top: calc(-1 * (var(--content-top) + var(--views-cal-stick-gap)));
+    padding-top: calc(var(--content-top) + var(--views-cal-stick-gap));
+  }
+
+  /* Die Fläche reicht bis an den Spaltenrand; ihr Innenabstand folgt dem breiteren
+     Rand, damit Stunden und Liste auf der Fluchtlinie von Titel und Streifen stehen. */
+  #view-calendar .cal-panel {
+    padding-inline: var(--content-side);
+  }
+
+  /* ---------- Aufgaben: Liste und Board ---------- */
+  /* Der mittlere Block einer Aufgabe nimmt den freien Platz, damit der Pfeil am
+     rechten Rand steht statt direkt hinter dem Titel. Die ID ist nötig:
+     „.task-row span“ in styles/tasks.css hält jedes span der Zeile schmal und
+     wiegt schwerer als „.task-main“ daneben. Board-Zeilen haben eigene Klassen
+     (.board-row-main in styles/tasks-board.css) und bleiben unberührt. */
+  #view-tasks .task-row .task-main {
+    flex: 1 1 auto;
+  }
+
+  /* Grundbreite 0: alle Spalten teilen sich die Breite gleich und schrumpfen
+     mit, statt von der Handy-Breite (--board-col-width, wird hier nicht mehr
+     gelesen) aus nur zu wachsen — so passen mehr Spalten ohne seitliches Rollen.
+     Erst unter --views-board-col-min je Spalte rollt das Board. Das Ziehen misst
+     die Zeile und das Board beim Anfassen (src/features/tasks/tasks-drag.js),
+     nie die Spaltenbreite; die Spalten hängen auch nicht an ihrem Inhalt. */
+  #view-tasks .board-col {
+    flex: 1 1 0;
+    min-width: var(--views-board-col-min);
+  }
+
+  /* Am Handy wischt man das Board mit dem Finger, der Balken ist dort versteckt
+     (styles/tasks-board.css). Mit der Maus gibt es keine Wischgeste: ein dünner
+     Balken zeigt, dass es seitlich weitergeht, und lässt sich ziehen.
+     overflow-x: auto aus tasks-board.css zeigt ihn nur, wenn das Board wirklich
+     breiter ist als die Spalte. padding-bottom: Luft, damit der Balken nicht am
+     Knopf „Aufgabe hinzufügen“ klebt oder ihn als schwebender Balken verdeckt. */
+  #view-tasks .board {
+    padding-bottom: var(--views-board-bar-gap);
+    scrollbar-width: thin; /* scrollbar-width: schmaler Balken statt des vollen Systembalkens */
+    scrollbar-color: var(--desk-scroll-thumb) transparent; /* scrollbar-color: Griff in der Rollbalken-Tönung der Spalten, ohne Schiene */
+  }
+
+  /* ::-webkit-scrollbar: für Browser, die den Balken noch darüber zeichnen
+     (Safari) — dort bliebe er sonst durch das „display: none“ aus
+     tasks-board.css versteckt. Chrome und Edge übergehen diese Regeln, sobald
+     scrollbar-width gesetzt ist, und zeichnen den dünnen Balken von oben. */
+  #view-tasks .board::-webkit-scrollbar {
+    display: block;
+    height: var(--views-board-bar);
+  }
+
+  #view-tasks .board::-webkit-scrollbar-thumb {
+    border-radius: var(--views-board-bar);
+    background: var(--desk-scroll-thumb);
+  }
+
+  /* ---------- Medien ---------- */
+  /* auto-fill: statt drei fester Spalten wächst das Raster mit dem Fenster;
+     aspect-ratio in styles/media.css hält die Kacheln dabei quadratisch. */
+  #view-media .media-grid {
+    grid-template-columns: repeat(auto-fill, minmax(var(--views-media-tile), 1fr));
+    gap: var(--views-media-gap);
+  }
+
+  #view-media .media-cell {
+    border-radius: var(--desk-radius-sm);
+  }
+}
+
+/* ---------- Seitenwechsel ---------- */
+
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  /* animation: die neue Seite blendet beim Wechsel kurz auf (hidden fällt weg),
+     nie beim Neuzeichnen — dann wird nur ihr Inhalt ersetzt. Die Übersicht hat
+     ihren eigenen Auftritt (styles/dashboard.css). backwards statt both: danach
+     hängt kein transform mehr an der Seite, das Messungen darin verschöbe. */
+  .view.is-active:not(#view-home) {
+    animation: desk-views-enter var(--views-enter) var(--desk-ease) backwards;
+  }
+
+  @keyframes desk-views-enter {
+    from {
+      opacity: 0;
+      transform: translateY(calc(var(--desk-enter-rise) / 2));
+    }
+  }
+}

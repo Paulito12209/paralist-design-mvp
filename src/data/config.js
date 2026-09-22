@@ -62,6 +62,11 @@ export const resourceTypes = ["notiz", "dokument", "zeichnung", "medien"];
 /* Extra-Knopf neben den Typen: sieht aus wie die Ressourcen-Kachel, legt aber ein Dokument an. */
 export const resourcePick = { id: "ressourcen", label: "Ressourcen", icon: "cube", typeId: "dokument" };
 
+/* Bitte „neu im Eingang“: wählt keinen Typ, sondern den Ort — der Plus-Knopf
+   auf der Eingang-Kachel der Desktop-Fassung legt dort ab, wo er draufsteht,
+   egal auf welcher Seite man gerade ist. */
+export const inboxPick = "eingang";
+
 /** Platzhalter im Eingabefeld je gewähltem Typ. */
 export const composerPlaceholders = {
   aufgabe: "Neue Aufgabe einfügen …",

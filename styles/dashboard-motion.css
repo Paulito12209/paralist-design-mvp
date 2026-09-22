@@ -1,0 +1,147 @@
+/*
+ * Desktop: was sich im Kopf der Übersicht bewegt — Tönung beim Überfahren,
+ * Einsinken beim Drücken, der Tastatur-Rahmen und das Auftauchen von Zahlen,
+ * Band und Karten beim Öffnen der Übersicht. Aufbau und Aussehen in Ruhe
+ * stehen in styles/dashboard.css, das Markup in src/features/dashboard/.
+ * Am Handy greift hier nichts: alles steht in Abfragen ab 1024px.
+ * Pfad: styles/dashboard-motion.css
+ *
+ * ANPASSBARE WERTE
+ * -----------------------------------
+ * GELESEN (styles/tokens-desk.css, tokens.css und styles/dashboard.css)
+ * --desk-hover              -> Tönung beim Überfahren als eigene Ebene (Zahlen, Karten)
+ * --desk-tint               -> dieselbe Tönung als Bild-Ebene über dem Glas des Stufen-Chips
+ * --desk-radius-sm          -> Rundung der Tönung hinter einer Zahl
+ * --dash-stat-pad           -> wie weit diese Tönung über Zahl und Pille hinausragt
+ * --desk-fast / --desk-ease -> Dauer und Kurve von Tönung, Druck und Pfeil-Kreis
+ * --desk-enter / --desk-enter-rise / --desk-enter-step -> Dauer, Tiefe und Versatz beim Auftauchen
+ * --avatar-btn-bg           -> Farbe des Tastatur-Rahmens
+ * --text / --bg             -> gefüllter Pfeil-Kreis beim Überfahren einer Karte
+ *
+ * Direkt bei ihrer Regel: wie tief Zahlen (0.98), Karten (0.99) und Chip
+ * (0.98) beim Drücken einsinken, Dicke 2px und Abstand 2px des Tastatur-Rahmens.
+ */
+
+@media (min-width: 1024px) {
+  /* position/isolation: Anker und eigene Ebene für die Tönung darunter, damit sie
+     über der Fläche, aber hinter Schrift und Grafik liegt */
+  .dash-stat,
+  .dash-card {
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* Tönung als eigene Ebene statt als Bild-Ebene der Fläche: bei den Zahlen ragt
+     sie über den Rand hinaus, und die Karten tragen schon zwei Verläufe — eine
+     Bild-Ebene müsste beide wiederholen und ließe sich nicht weich einblenden. */
+  .dash-stat::before,
+  .dash-card::after {
+    content: "";
+    /* position/inset/z-index: deckt die ganze Fläche, liegt aber hinter Schrift und Grafik */
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: var(--desk-hover);
+    opacity: 0;
+    /* transition: die Tönung blendet weich ein */
+    transition: opacity var(--desk-fast) var(--desk-ease);
+  }
+
+  /* Die Tönung ragt über Zahl und Pille hinaus, ohne das Raster zu verschieben. */
+  .dash-stat::before {
+    inset: calc(-1 * var(--dash-stat-pad));
+    border-radius: var(--desk-radius-sm);
+  }
+
+  /* transition: der Druck folgt weich */
+  .dash-stat,
+  .dash-chip,
+  .dash-card {
+    transition: transform var(--desk-fast) var(--desk-ease);
+  }
+
+  /* transition: beim Überfahren einer Karte füllt sich der Kreis weich */
+  .dash-card-go {
+    transition: background-color var(--desk-fast) var(--desk-ease), color var(--desk-fast) var(--desk-ease);
+  }
+
+  /* transform: in Ruhe zeigt der Pfeil schräg nach oben („öffnen“), beim Überfahren
+     nach vorn; transition: er dreht sich dabei weich */
+  .dash-card-go .icon {
+    transform: rotate(-45deg);
+    transition: transform var(--desk-fast) var(--desk-ease);
+  }
+
+  /* Drücken */
+  .dash-stat[data-dash]:active {
+    transform: scale(0.98);
+  }
+
+  .dash-card:active {
+    transform: scale(0.99);
+  }
+
+  /* transform: beim Chip die Mitte behalten und dabei leicht einsinken */
+  .dash-chip:active {
+    transform: translate(-50%, -50%) scale(0.98);
+  }
+
+  /* Tastatur. Bei den Zahlen trägt die Tönung den Rahmen, damit er die Pille mit umschließt. */
+  .dash-chip:focus-visible,
+  .dash-card:focus-visible,
+  .dash-stat:focus-visible::before {
+    outline: 2px solid var(--avatar-btn-bg);
+    outline-offset: 2px;
+  }
+
+  .dash-stat:focus-visible {
+    outline: none;
+  }
+
+  .dash-stat:focus-visible::before {
+    opacity: 1;
+  }
+}
+
+/* Überfahren nur mit Maus oder Trackpad — am Tablet bliebe die Tönung sonst nach dem Tippen stehen. */
+@media (min-width: 1024px) and (hover: hover) {
+  .dash-stat[data-dash]:hover::before,
+  .dash-card:hover::after {
+    opacity: 1;
+  }
+
+  /* background-image: die Tönung legt sich über das Glas, dessen Farbe bleibt
+     darunter stehen. Sie springt ohne Blende um — eine Bild-Ebene lässt sich
+     nicht weich einblenden, beim kleinen Chip fällt das nicht auf. */
+  .dash-chip:hover {
+    background-image: var(--desk-tint);
+  }
+
+  .dash-card:hover .dash-card-go {
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .dash-card:hover .dash-card-go .icon {
+    transform: rotate(0deg);
+  }
+}
+
+/* Auftauchen nur, wenn Bewegung nicht abgeschaltet ist. dashboard.js setzt .is-entering
+   beim Öffnen der Übersicht, nicht beim Neuzeichnen nach einer Änderung. */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .desk-hero.is-entering .dash-enter {
+    /* animation: Zahlen, Band und Karten steigen nacheinander weich auf; --i ist der Platz in der Reihe */
+    animation: dash-rise var(--desk-enter) var(--desk-ease) backwards;
+    animation-delay: calc(var(--i, 0) * var(--desk-enter-step));
+  }
+}
+
+/* @keyframes: nur der Anfang steht hier, das Ende ist der normale Zustand. */
+@keyframes dash-rise {
+  from {
+    opacity: 0;
+    transform: translateY(var(--desk-enter-rise));
+  }
+}

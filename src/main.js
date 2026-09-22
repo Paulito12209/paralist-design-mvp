@@ -7,7 +7,9 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * lazyModules   -> welche Bereiche erst beim Öffnen geladen werden
+ * lazyModules   -> welche Bereiche erst beim Öffnen geladen werden;
+ *                  „desk“ und „dashboard“ braucht nur die Desktop-Fassung, sie
+ *                  laden erst, wenn das Fenster breit genug ist (src/ui/desk-mode.js)
  * lazyViews     -> welche Ansichten dabei eine eigene Seite sind
  * prefetchOrder -> in welcher Reihenfolge sie in Ruhephasen vorgeladen werden
  *                  (das erste Öffnen geht dann ohne Warten)
@@ -36,6 +38,7 @@ import { checkForUpdate, initUpdatePrompt } from "./shell/update-prompt.js";
 import { mountSprite } from "./shell/sprite.js";
 import { closeCtxMenu, initCtxMenu } from "./ui/ctx-menu.js";
 import { initListClicks } from "./ui/list-clicks.js";
+import { isDesk, onDeskChange } from "./ui/desk-mode.js";
 import { setLongPressMenus } from "./ui/long-press.js";
 import { initModalPull } from "./ui/modal-pull.js";
 import { initModalTop } from "./ui/modal-top.js";
@@ -56,6 +59,8 @@ const lazyModules = {
   drawing: () => import("./features/drawing/drawing.js"),
   files: () => import("./data/files.js"),
 };
+  desk: () => import("./shell/desk.js"),
+  dashboard: () => import("./features/dashboard/dashboard.js"),
 
 /* Von den nachladbaren Bereichen sind das die, die eine eigene Ansicht haben. */
 const lazyViews = ["calendar", "tasks", "media", "search"];
@@ -115,6 +120,21 @@ function initLazyViews() {
 }
 
 /* Die Startseite aufbauen und die Adresse setzen. */
+/*
+ * Desktop-Fassung einhängen, sobald das Fenster breit genug ist — beim Start
+ * oder später beim Aufziehen. Am Handy wird davon nichts geladen. Beide
+ * Module dürfen mehrmals angestoßen werden und hängen sich nur einmal ein.
+ */
+function initDeskWhenWide() {
+  const mount = () => {
+    if (!isDesk()) return;
+    load("desk").then((module) => module.initDesk({ openWorkspaceMenu }));
+    load("dashboard").then((module) => module.initDashboard());
+  };
+  mount();
+  onDeskChange(mount);
+}
+
 function showStartPage() {
   renderOverview();
   renderTabs();
@@ -132,6 +152,7 @@ function start() {
   initLifecycle({ onShow: checkForUpdate });
   initUpdatePrompt();
   /* Die Icons kommen nach, das Gerüst steht schon. */
+  initDeskWhenWide();
   mountSprite();
   prefetchWhenIdle(prefetchOrder);
 }

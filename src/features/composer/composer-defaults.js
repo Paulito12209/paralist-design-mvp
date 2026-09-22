@@ -13,6 +13,7 @@
 
 import {
   calendarSegments,
+  inboxPick,
   proposedType,
   resourceFilterTypes,
   resourcePick,
@@ -92,6 +93,14 @@ export function contextDefaults() {
  */
 export function pickOverrides(pick) {
   if (!pick) return {};
+  /* Nur der Ort wird überstimmt: der Typ bleibt der Vorschlag der Seite —
+     außer einem Medium: das zählt nie zum Eingang (inboxEntries in
+     src/data/queries.js), dort entsteht stattdessen eine Notiz. */
+  if (pick === inboxPick) {
+    const inbox = { place: null, link: null };
+    if (contextDefaults().type === "medien") return { ...inbox, type: proposedType, pick: undefined };
+    return inbox;
+  }
   if (pick === resourcePick.id) return { type: resourcePick.typeId, pick: resourcePick.id };
   return { type: pick, pick };
 }

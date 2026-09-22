@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "7d9767b8d443";
+export const appVersion = "8c9f7899d369";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -37,6 +37,7 @@ export const appFiles = [
   "src/core/storage.js",
   "src/data/config.js",
   "src/data/files.js",
+  "src/data/insights.js",
   "src/data/links.js",
   "src/data/mutations.js",
   "src/data/nav-labels.js",
@@ -61,6 +62,9 @@ export const appFiles = [
   "src/features/composer/composer-state.js",
   "src/features/composer/composer.js",
   "src/features/composer/dictation.js",
+  "src/features/dashboard/dashboard-charts.js",
+  "src/features/dashboard/dashboard-parts.js",
+  "src/features/dashboard/dashboard.js",
   "src/features/drawing/drawing-tools.js",
   "src/features/drawing/drawing.js",
   "src/features/entry/entry.js",
@@ -96,6 +100,12 @@ export const appFiles = [
   "src/features/tasks/tasks-tools.js",
   "src/features/tasks/tasks.js",
   "src/main.js",
+  "src/shell/desk-nav-parts.js",
+  "src/shell/desk-nav.js",
+  "src/shell/desk-rail-cards.js",
+  "src/shell/desk-rail-visuals.js",
+  "src/shell/desk-rail.js",
+  "src/shell/desk.js",
   "src/shell/keyboard-inset.js",
   "src/shell/level-gauge.js",
   "src/shell/lifecycle.js",
@@ -106,6 +116,7 @@ export const appFiles = [
   "src/shell/update-prompt.js",
   "src/ui/chart.js",
   "src/ui/ctx-menu.js",
+  "src/ui/desk-mode.js",
   "src/ui/empty-state.js",
   "src/ui/groups.js",
   "src/ui/list-clicks.js",
@@ -127,6 +138,16 @@ export const appFiles = [
   "styles/calendar.css",
   "styles/composer-attachments.css",
   "styles/composer.css",
+  "styles/dashboard-motion.css",
+  "styles/dashboard.css",
+  "styles/desk-hover.css",
+  "styles/desk-nav-tip.css",
+  "styles/desk-nav.css",
+  "styles/desk-overlays.css",
+  "styles/desk-rail-tiles.css",
+  "styles/desk-rail.css",
+  "styles/desk-views.css",
+  "styles/desk.css",
   "styles/drawing.css",
   "styles/empty-state.css",
   "styles/entry.css",
@@ -145,6 +166,7 @@ export const appFiles = [
   "styles/tasks.css",
   "styles/toast.css",
   "styles/tokens-dark.css",
+  "styles/tokens-desk.css",
   "styles/tokens-pages.css",
   "styles/tokens.css",
   "styles/top-bar.css",

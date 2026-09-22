@@ -1,0 +1,174 @@
+/*
+ * Desktop: alles zu den Tastenkürzeln in der Seitenleiste — die kleinen
+ * Tasten-Schilder („1“ an den Hauptseiten, „N“ im Knopf „Neu anlegen“) und die
+ * Tipp-Karte am Ende der Leiste —, dazu das ruhige Auftauchen der Blöcke beim
+ * ersten Zeigen. Die Karte rollt als letzter Block mit: Bei hohem Fenster ruht
+ * sie unten, bei niedrigem folgt sie den Arbeitsbereichen und verdeckt sie nie.
+ * Gilt erst ab 1024px Fensterbreite; darunter ändert diese Datei nichts. Das
+ * Markup entsteht in src/shell/desk-nav-parts.js, die übrige Leiste steht in
+ * styles/desk-nav.css.
+ * Pfad: styles/desk-nav-tip.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (die drei Abstände der Karte oben bei .desk-tip)
+ * -----------------------------------
+ * --sidebar-tip-pad     -> Innenrand der Karte ringsum
+ * --sidebar-tip-gap     -> Luft zwischen Pille, Titel und Kreuz, unter der Kopfzeile
+ *                          und zwischen Tasten-Schild und Beschreibung
+ * --sidebar-tip-row-gap -> Luft zwischen den drei Tastenzeilen
+ * --sidebar-hint        -> 1, solange das Tasten-Schild einer Hauptseite zu sehen ist
+ *                          (beim Überfahren oder mit der Tastatur; die Zahl weicht dann)
+ * Einzelne Größen stehen bei ihrer Regel: Tasten-Schilder 11px, Titel „Tastenkürzel“ 14px.
+ *
+ * WERTE AUS styles/desk-nav.css (auf .desk-nav)
+ * --sidebar-group-gap   -> kleinster Abstand über der Karte, wenn sie direkt den Arbeitsbereichen folgt
+ * --sidebar-fade        -> Höhe der Ausblendung am unteren Rand; die Karte ruht knapp darüber
+ * --sidebar-kbd         -> Höhe der Tasten-Schilder
+ * --sidebar-tool / --sidebar-tool-icon -> runder Knopf und sein Icon: daraus rechnet sich,
+ *                          wie weit das Kreuz der Karte über seinen Platz ragen darf
+ *
+ * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * --desk-gutter         -> Abstand der Karte zum unteren Fensterrand, wenn sie unten ruht
+ * --desk-radius / --desk-panel -> Rundung und Fläche der Karte
+ * --desk-kbd-bg         -> Fläche der Tasten-Schilder
+ * --desk-label-size     -> Schrift der Tastenzeilen
+ * --text / --bg / --muted / --avatar-btn-bg -> Titel, Schild „N“ auf dunklem Knopf, Kreuz und Schilder, Beschreibungen
+ * --desk-fast / --desk-ease -> Dauer und Kurve, mit der ein Tasten-Schild erscheint
+ * --desk-enter / --desk-enter-rise / --desk-enter-step -> Dauer, Tiefe und Staffelung beim Auftauchen der Blöcke
+ * --i                   -> Reihenfolge beim Auftauchen; setzt src/shell/desk-nav-parts.js je Block
+ */
+
+@media (min-width: 1024px) {
+  /* ---------- Tasten-Schilder ---------- */
+
+  .desk-nav-kbd {
+    display: inline-grid;
+    place-items: center;
+    min-width: var(--sidebar-kbd);
+    height: var(--sidebar-kbd);
+    padding: 0 6px;
+    border-radius: 6px;
+    background: var(--desk-kbd-bg);
+    font-family: inherit; /* font-family: kbd nähme sonst die Schreibmaschinenschrift des Browsers */
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    color: var(--muted);
+  }
+
+  /* Das Schild „N“ im dunklen Knopf „Neu anlegen“ */
+  .desk-nav-kbd-inverse {
+    margin-left: auto; /* margin-left: schiebt das Schild an das rechte Ende der Pille */
+    background: color-mix(in srgb, var(--bg) 18%, transparent); /* color-mix: ein Hauch der hellen Grundfarbe auf der dunklen Fläche, kein neuer Farbton */
+    color: var(--bg);
+  }
+
+  /* Das Tasten-Schild einer Hauptseite zeigt sich beim Überfahren (unten) oder
+     mit der Tastatur und tritt an die Stelle der Zahl (styles/desk-nav.css);
+     --sidebar-hint schaltet beides. */
+  .desk-nav-page:focus-visible {
+    --sidebar-hint: 1;
+  }
+
+  .desk-nav-hint {
+    opacity: var(--sidebar-hint, 0);
+    transform: translateX(calc((1 - var(--sidebar-hint, 0)) * 4px)); /* transform: das Schild rückt beim Erscheinen ein Stück nach links, ohne das Layout zu bewegen */
+    transition: opacity var(--desk-fast) var(--desk-ease), transform var(--desk-fast) var(--desk-ease); /* transition: weiches Erscheinen statt Aufblitzen */
+  }
+
+  @media (hover: hover) {
+    .desk-nav-page:hover {
+      --sidebar-hint: 1;
+    }
+  }
+
+  /* ---------- Tipp-Karte ---------- */
+
+  .desk-nav-block {
+    flex-shrink: 0; /* flex-shrink: kein Block wird gestaucht — ist die Leiste zu kurz, rollt sie */
+  }
+
+  /* Der Block um die Karte: margin-top: auto drückt ihn im rollenden Teil
+     (eine Spalte, styles/desk-nav.css) nach unten, solange Platz ist; fehlt
+     der Platz, wird der Rand 0 und die Karte folgt einfach der Liste. */
+  .desk-nav-foot {
+    margin-top: auto;
+    padding-top: var(--sidebar-group-gap);
+    padding-bottom: calc(var(--desk-gutter) - var(--sidebar-fade));
+  }
+
+  .desk-tip {
+    --sidebar-tip-pad: 12px;
+    --sidebar-tip-gap: 8px;
+    --sidebar-tip-row-gap: 4px;
+
+    padding: var(--sidebar-tip-pad);
+    border-radius: var(--desk-radius);
+    background: var(--desk-panel);
+  }
+
+  /* Kopfzeile: Pille „Tipp“, Titel und Kreuz in einer Reihe */
+  .desk-tip-head {
+    display: flex;
+    align-items: center;
+    gap: var(--sidebar-tip-gap);
+    margin-bottom: var(--sidebar-tip-gap);
+  }
+
+  .desk-tip-title {
+    min-width: 0; /* min-width: bei schmaler Leiste darf der Titel weichen, das Kreuz bleibt */
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text);
+  }
+
+  /* Das Kreuz ist ein runder Knopf der Leiste (desk-nav-tool). Seine Fläche
+     darf über die Kopfzeile ragen, damit sie nicht höher wird als die Pille,
+     und das Icon steht bündig mit dem Innenrand der Karte. */
+  .desk-tip-close {
+    margin-block: calc((var(--sidebar-kbd) - var(--sidebar-tool)) / 2); /* margin-block: negativ — der Knopf zählt nur so hoch wie ein Tasten-Schild */
+    margin-inline: auto calc((var(--sidebar-tool-icon) - var(--sidebar-tool)) / 2); /* margin-inline: links auto schiebt das Kreuz nach rechts, rechts negativ macht das Icon bündig */
+    color: var(--muted);
+  }
+
+  /* Die Liste ist ein Raster mit zwei Spalten; jede Zeile übernimmt sie. Die
+     Tasten-Spalte ist so breit wie das breiteste Schild („1–4“), darum stehen
+     alle Beschreibungen bündig untereinander. */
+  .desk-tip-keys {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    column-gap: var(--sidebar-tip-gap);
+    row-gap: var(--sidebar-tip-row-gap);
+    list-style: none; /* list-style: Tastenzeilen ohne Aufzählungspunkte */
+  }
+
+  .desk-tip-keys li {
+    display: grid;
+    grid-column: 1 / -1;
+    grid-template-columns: subgrid; /* subgrid: die Zeile nimmt die Spalten der Liste — mit display: contents verlöre die li für Vorlesehilfen ihre Rolle als Listenpunkt */
+    align-items: center;
+    font-size: var(--desk-label-size);
+    color: var(--avatar-btn-bg);
+  }
+
+  .desk-tip-keys .desk-nav-kbd {
+    justify-self: start; /* justify-self: schmale Schilder („N“, „/“) behalten ihre Breite und stehen links */
+  }
+
+  /* ---------- Auftauchen ---------- */
+
+  /* Nur die festen Blöcke tauchen auf — sie entstehen ein einziges Mal. Die
+     Listen darin werden bei Änderungen neu gesetzt und dürfen nicht flackern. */
+  @media (prefers-reduced-motion: no-preference) {
+    .desk-nav-block {
+      animation: desk-nav-rise var(--desk-enter) var(--desk-ease) both; /* animation: die Leiste baut sich ruhig von oben nach unten auf */
+      animation-delay: calc(var(--i, 0) * var(--desk-enter-step)); /* animation-delay: jeder Block ein wenig nach dem vorigen */
+    }
+
+    @keyframes desk-nav-rise {
+      from {
+        opacity: 0;
+        transform: translateY(var(--desk-enter-rise)); /* transform: jeder Block kommt ein Stück von unten */
+      }
+    }
+  }
+}

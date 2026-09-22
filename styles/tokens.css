@@ -44,6 +44,17 @@
  * styles/media.css           -> Medien- und Ressourcen-Seite
  * styles/viewer.css          -> Dateiansicht: Foto, Video, Aufnahme und PDF
  * styles/drawing.css         -> Zeichenfläche und Werkzeugleiste
+ * styles/tokens-desk.css     -> die Werte der Desktop-Fassung (Spalten, Flächen, große Zahlen)
+ * styles/desk.css            -> Desktop: Raster aus Seitenleiste, Seite und rechter Spalte; Kopfzeile, Eingabefeld unten
+ * styles/desk-overlays.css   -> Desktop: große Blätter, Auswahl-Blatt, Menü und Update-Fenster als Dialoge in der Mitte, samt Auftauchen
+ * styles/desk-views.css      -> Desktop: wie Übersicht, Kalender, Aufgaben, Medien und Eintrag die Breite nutzen
+ * styles/desk-hover.css      -> Desktop: Überfahren, Drücken und Tastatur-Rahmen für Seite, Kopfzeile und Dialoge
+ * styles/desk-nav.css        -> Desktop: Seitenleiste links mit Seiten, Sammlungen und Arbeitsbereichen
+ * styles/desk-nav-tip.css    -> Desktop: Tasten-Schilder, Tipp-Karte am Ende der Seitenleiste und das Auftauchen ihrer Blöcke
+ * styles/desk-rail.css       -> Desktop: rechte Spalte mit nächstem Termin, Aufgaben und zuletzt Geöffnetem
+ * styles/desk-rail-tiles.css -> Desktop: die zwei Kacheln oben rechts (Eingang-Stapel, Stufen-Ring) und die Tagesleiste
+ * styles/dashboard.css       -> Desktop: Kopf der Übersicht mit Zahlen, Aktivitätsband und zwei großen Karten
+ * styles/dashboard-motion.css -> Desktop: Überfahren, Drücken und Auftauchen im Kopf der Übersicht
  *
  * WERTE IN DIESER DATEI
  * -----------------------------------

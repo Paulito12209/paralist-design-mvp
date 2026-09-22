@@ -1,0 +1,246 @@
+/*
+ * Desktop-Rahmen ab 1024px: das Gerätefenster wird zum Raster über das ganze
+ * Fenster — links Seitenleiste mit Level, Suche und Profil obendrauf, Mitte die
+ * Seite, ab 1280px rechts „Heute und zuletzt“. Die Handy-Navigation entfällt,
+ * Eingabefeld, Meldung und Knöpfe schweben als Glas über der Mitte. Grenzen
+ * wie in src/ui/desk-mode.js. Dialoge und das Auftauchen von Dialogen und
+ * Eingabefeld stehen in styles/desk-overlays.css; Überfahren, Drücken und
+ * Tastatur-Rahmen in styles/desk-hover.css.
+ * Pfad: styles/desk.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (auf .device, nur am Desktop)
+ * -----------------------------------
+ * --frame-bar-top / --frame-bar-bottom -> Luft über und unter Level, Suche und Profil
+ * --frame-composer-width / --frame-toast-width -> größte Breite von Eingabefeld und Meldung
+ * Einzelwerte stehen bei ihrer Regel: Medien-Knöpfe (12px Abstand nach unten,
+ * 4px Fuge, 6px Innenrand), „Abbrechen“ (18px Innenrand seitlich) und die
+ * Breite des Rollbalkens in Safari (6px).
+ *
+ * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * -----------------------------------
+ * --desk-nav-width / --desk-rail-width -> Breite von Seitenleiste und rechter Spalte
+ * --desk-gutter        -> Rand der Kopfzeile links und Abstand der Knöpfe zum unteren Rand
+ * --desk-panel         -> Fläche des Suchfelds links oben
+ * --desk-glass / --desk-glass-blur -> Glas und Unschärfe von Eingabefeld, Meldung und Knöpfen unten
+ * --desk-edge          -> Haarlinie um das Glas
+ * --desk-scroll-thumb  -> Farbe des Rollbalkens, solange die Maus über einer Spalte steht
+ * --bg                 -> Fläche des Fensters
+ * --content-top / --safe-top / --safe-bottom -> Abstand oben und unten (Tablets: plus Statusleiste)
+ * --shadow             -> wird am Desktop abgeschaltet: Tiefe kommt aus Flächen und Glas
+ */
+
+/* Am Handy gibt es weder Seitenleiste noch rechte Spalte. src/shell/desk.js hängt
+   sie nur bei breitem Fenster ein; wird es danach schmal, verschwinden sie hier. */
+.desk-nav,
+.desk-rail {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  body {
+    background: var(--bg);
+  }
+
+  .stage {
+    padding: 0;
+  }
+
+  /* Das Gerätefenster wird zum ganzen Fenster und zum Raster: oben links die
+     Kopfzeile (bar), darunter die Seitenleiste (nav), die Seite (main) daneben. */
+  .device {
+    --frame-bar-top: 16px;
+    --frame-bar-bottom: 12px;
+    --frame-composer-width: 680px;
+    --frame-toast-width: 420px;
+    --shadow: none; /* --shadow: am Desktop werfen Karten, Knöpfe und Leisten keine Schatten */
+    width: 100%;
+    max-width: none;
+    height: 100vh; /* Rückfall für Browser ohne dvh */
+    height: 100dvh; /* dvh: die wirklich sichtbare Höhe des Fensters */
+    border-radius: 0;
+    box-shadow: none;
+    background: var(--bg);
+    display: grid;
+    /* grid-template: feste Seitenleiste, die Mitte nimmt den Rest; minmax(0, …)
+       lässt Mitte und untere Zeile schrumpfen, statt das Fenster zu sprengen */
+    grid-template-columns: var(--desk-nav-width) minmax(0, 1fr);
+    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-areas:
+      "bar main"
+      "nav main";
+  }
+
+  /* Am Desktop ohne Aufgabe: der Verlauf hinter der Handy-Navigation und der
+     runde Container, solange nicht angelegt wird. Mit ihm verschwindet die
+     Handy-Navigation (.tab-bar) darin — die Seitenleiste ersetzt sie. Beim
+     Anlegen versteckt src/features/composer/composer.js sie selbst über [hidden]. */
+  .device::before,
+  .nav-shell:not(.is-composing) {
+    display: none;
+  }
+
+  /* Kopfzeile oben in der Seitenleiste: ohne Ausblend-Verlauf (nichts rollt mehr
+     unter ihr durch) und auch auf Unterseiten da — nur die Mitte wechselt. */
+  .top-bar,
+  body.is-subpage .top-bar {
+    grid-area: bar;
+    display: flex;
+    mask-image: none; /* mask-image: der Handy-Verlauf würde hier die Suche anschneiden */
+    margin-bottom: 0;
+    padding: calc(var(--frame-bar-top) + var(--safe-top)) var(--desk-gutter) var(--frame-bar-bottom);
+  }
+
+  .top-bar .search {
+    background: var(--desk-panel);
+  }
+
+  .desk-nav {
+    grid-area: nav;
+    display: block;
+  }
+
+  /* Tablets: sonst begänne die Mitte unter der Statusleiste. Unterseiten behalten
+     ihr padding-top 0 aus styles/base.css (die Regel dort ist stärker). */
+  .content {
+    grid-area: main;
+    padding-top: calc(var(--content-top) + var(--safe-top));
+    /* scrollbar-gutter: der Platz des Balkens bleibt immer frei — die Seite
+       springt nicht, wenn sie beim Wechsel lang genug zum Rollen wird */
+    scrollbar-gutter: stable;
+  }
+
+  /* Jede Spalte rollt in sich. Die Seitenleiste rollt nur ihren mittleren Teil
+     (.desk-nav-scroll): styles/desk-nav.css setzt die Spalte selbst auf
+     overflow hidden, damit die Tipp-Karte unten stehen bleibt. Die rechte
+     Spalte ist bis 1280px aus. */
+  .desk-nav,
+  .content,
+  .desk-rail {
+    min-height: 0; /* min-height: sonst wächst die Spalte über das Fenster, statt zu rollen */
+    overflow-y: auto; /* overflow: lange Listen rollen in ihrer Spalte */
+    overscroll-behavior: contain; /* overscroll-behavior: am Ende rollt nichts dahinter mit */
+  }
+
+  /* ---------- Rollbalken: nur sichtbar, solange die Maus über der Spalte steht ---------- */
+
+  /* Dauerhafte Rollbalken (Windows, macOS mit „Rollbalken immer einblenden“)
+     machten drei schwere Striche mitten ins Fenster. In Ruhe sind Griff und
+     Schiene darum durchsichtig; erst über der Spalte zeigt ein schmaler blasser
+     Griff, wie weit es weitergeht. Nur die Farbe wechselt, die Breite bleibt —
+     beim Überfahren springt nichts. .device hebt die Regeln über die gleich
+     starken in styles/base.css (Mitte am Handy ohne Balken) und styles/desk-nav.css. */
+  .device :is(.desk-nav, .desk-nav-scroll, .content, .desk-rail) {
+    scrollbar-width: thin; /* scrollbar-width: schmal (Chrome, Firefox) */
+    scrollbar-color: transparent transparent; /* scrollbar-color: Griff und Schiene unsichtbar, der Platz bleibt */
+  }
+
+  /* Safari kennt scrollbar-color nicht und zeichnet den Balken über diese
+     Vorsilben-Teile. Chrome übergeht sie, sobald scrollbar-color gesetzt ist. */
+  .device :is(.desk-nav, .desk-nav-scroll, .content, .desk-rail)::-webkit-scrollbar {
+    display: block; /* display: styles/base.css blendet den Balken der Mitte fürs Handy aus */
+    width: 6px;
+  }
+
+  .device :is(.desk-nav, .desk-nav-scroll, .content, .desk-rail)::-webkit-scrollbar-track,
+  .device :is(.desk-nav, .desk-nav-scroll, .content, .desk-rail)::-webkit-scrollbar-thumb {
+    background: transparent;
+  }
+
+  /* ---------- Unten: Eingabefeld, Meldung und Knöpfe schweben über der Mitte ---------- */
+
+  .bottom-bar {
+    left: var(--desk-nav-width);
+    right: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center; /* align-items: alles steht in der Mitte der Seite */
+    padding: 0 var(--desk-gutter) calc(var(--desk-gutter) + var(--safe-bottom));
+    pointer-events: none; /* pointer-events: die meist leere Leiste lässt Klicks zur Seite durch */
+  }
+
+  .bottom-bar :is(.toast, .media-actions, .draw-tools, .search-combo, .search-cancel, .nav-shell) {
+    pointer-events: auto; /* pointer-events: die sichtbaren Flächen sind wieder anklickbar */
+  }
+
+  /* Beim Anlegen zeigt sich der runde Container — auch auf der Suche, wo
+     styles/search.css ihn sonst ausblendet („N“ geht überall). */
+  .nav-shell.is-composing,
+  body.is-search .nav-shell.is-composing {
+    display: block;
+    width: min(var(--frame-composer-width), 100%);
+  }
+
+  .toast-host {
+    width: min(var(--frame-toast-width), 100%);
+  }
+
+  /* Medien-Knöpfe: eine Glaspille in der Mitte statt über die halbe Breite verteilt */
+  .media-actions {
+    margin: 0 0 12px;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px;
+    border-radius: 999px; /* border-radius: Pillenform wie die Werkzeugleiste der Zeichnung */
+  }
+
+  .media-btn {
+    background: transparent;
+  }
+
+  /* Die Suchknöpfe bleiben (Mikrofon, und „Abbrechen“ als Weg mit der Maus zurück).
+     Volle Breite, damit das Gehäuse wie am Handy genau in der Mitte steht. */
+  .search-actions {
+    align-self: stretch; /* align-self: volle Breite für die drei Spalten aus styles/search.css */
+  }
+
+  .search-cancel {
+    padding: 0 18px;
+    border-radius: 999px; /* border-radius: eigene Glaspille, damit das Wort über der Liste lesbar bleibt */
+  }
+
+  /* Glas für alles, was unten über der Seite schwebt. .device und :is() machen
+     die Regel so stark wie die Dunkelmodus-Schatten in styles/toast.css.
+     Auswahl-Dialog und Menü bekommen dasselbe Glas in styles/desk-overlays.css. */
+  .device :is(.nav-shell.is-composing, .media-actions, .draw-tools, .search-combo, .search-cancel, .bottom-bar .toast) {
+    background: var(--desk-glass);
+    -webkit-backdrop-filter: blur(var(--desk-glass-blur)); /* backdrop-filter: ältere Safari kennen nur die Vorsilbe */
+    backdrop-filter: blur(var(--desk-glass-blur)); /* backdrop-filter: die Seite scheint verwischt durch das Glas */
+    border: 0.5px solid var(--desk-edge);
+    box-shadow: none;
+  }
+}
+
+/* ---------- Ab 1280px: rechte Spalte ---------- */
+
+@media (min-width: 1280px) {
+  .device {
+    grid-template-columns: var(--desk-nav-width) minmax(0, 1fr) var(--desk-rail-width); /* grid-template: dritte Spalte rechts */
+    grid-template-areas:
+      "bar main rail"
+      "nav main rail";
+  }
+
+  .desk-rail {
+    grid-area: rail;
+    display: block;
+  }
+
+  /* Eingabefeld und Knöpfe bleiben über der Mitte, nicht über der rechten Spalte */
+  .bottom-bar {
+    right: var(--desk-rail-width);
+  }
+}
+
+/* Den Griff nur zeigen, wo es wirklich eine Maus gibt: auf einem Tablet ab
+   1024px bliebe nach einem Tippen sonst ein „Überfahren“ hängen und der Balken
+   stünde dauerhaft da. */
+@media (min-width: 1024px) and (hover: hover) {
+  .device :is(.desk-nav, .desk-nav-scroll, .content, .desk-rail):hover {
+    scrollbar-color: var(--desk-scroll-thumb) transparent; /* scrollbar-color: blasser Griff, keine Schiene */
+  }
+
+  .device :is(.desk-nav, .desk-nav-scroll, .content, .desk-rail):hover::-webkit-scrollbar-thumb {
+    background: var(--desk-scroll-thumb);
+    border-radius: 999px; /* border-radius: runde Enden am Griff */
+  }
+}

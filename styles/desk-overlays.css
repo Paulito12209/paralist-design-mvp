@@ -1,0 +1,149 @@
+/*
+ * Desktop ab 1024px: Blätter werden Dialoge in der Fenstermitte. Die großen
+ * Blätter (Fortschritt, Einstellungen, „Monat und Jahr“ …), das Update-Fenster,
+ * der Auswahl-Dialog (Verknüpfen, Seitenmenü) und das Kontextmenü stehen über
+ * abgedunkelter App, statt von unten hereinzufahren — dazu ihr Auftauchen.
+ * Das Eingabefeld unten (Platz und Glas in styles/desk.css) taucht mit
+ * derselben Bewegung auf wie die Dialoge, darum steht diese Bewegung hier.
+ * Überfahren, Drücken und Tastatur-Rahmen zeichnet styles/desk-hover.css.
+ * Unter 1024px ändert diese Datei nichts.
+ * Pfad: styles/desk-overlays.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (auf .device, nur am Desktop)
+ * -----------------------------------
+ * --frame-dialog-width / --frame-dialog-height -> größte Breite und Höhe der großen Dialoge
+ * --frame-dialog-inset  -> Mindestabstand der Dialoge zum Fensterrand
+ * --frame-sheet-width   -> Breite des Auswahl-Dialogs (Verknüpfen, Seitenmenü)
+ * --frame-backdrop-blur -> wie stark die App hinter einem großen Dialog verwischt
+ * --frame-dialog-anim   -> Dauer des Auftauchens von Dialogen und Eingabefeld
+ * --frame-dialog-scale  -> Startgröße beim Auftauchen (1 = kein Heranwachsen)
+ *
+ * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * -----------------------------------
+ * --desk-backdrop       -> Abdunklung hinter den Dialogen
+ * --desk-glass / --desk-glass-blur -> Glas und Unschärfe von Auswahl-Dialog und Menü
+ * --desk-edge           -> Haarlinie um Dialoge und Glas (statt Schatten)
+ * --modal-radius        -> Rundung der großen Dialoge
+ * --desk-ease           -> Kurve jedes Auftauchens
+ * --desk-fast           -> Dauer, mit der das Kontextmenü aufgeht
+ * --desk-enter-rise     -> aus welcher Tiefe Dialoge und Eingabefeld aufsteigen
+ */
+
+@media (min-width: 1024px) {
+  .device {
+    --frame-dialog-width: 560px;
+    --frame-dialog-height: 820px;
+    --frame-dialog-inset: 32px;
+    --frame-sheet-width: 420px;
+    --frame-backdrop-blur: 8px;
+    --frame-dialog-anim: 0.26s;
+    --frame-dialog-scale: 0.97;
+  }
+
+  /* Der Griff oben auf den Blättern ist zum Herunterziehen mit dem Finger da;
+     mit der Maus schließt man über das Kreuz oder mit einem Klick daneben. */
+  .modal-grip {
+    display: none;
+  }
+
+  /* Blätter stehen in der Fenstermitte statt am unteren Rand; der Innenrand
+     hält sie auch im kleinen Fenster vom Rand fern. */
+  .modal-backdrop,
+  .sheet-backdrop {
+    justify-content: center;
+    align-items: center;
+    padding: var(--frame-dialog-inset);
+  }
+
+  /* Die große Profilbild-Ansicht behält ihr dunkleres Schwarz (styles/profile.css) */
+  .modal-backdrop:not(.avatar-view),
+  .sheet-backdrop,
+  .update-backdrop {
+    background: var(--desk-backdrop);
+  }
+
+  /* Verwischt wird nur hinter den deckenden Dialogen. Hinter dem Auswahl-Dialog
+     nicht: sein Glas verwischt selbst, ein Filter darunter nähme ihm die Seite. */
+  .modal-backdrop,
+  .update-backdrop {
+    -webkit-backdrop-filter: blur(var(--frame-backdrop-blur)); /* backdrop-filter: Vorsilbe für ältere Safari */
+    backdrop-filter: blur(var(--frame-backdrop-blur)); /* backdrop-filter: die App tritt hinter den Dialog zurück */
+  }
+
+  /* Deckende Dialoge: Haarlinie statt Schatten. .device und :is() machen die
+     Regel so stark wie die Dunkelmodus-Schatten in styles/overlays.css und
+     styles/update.css. */
+  .device :is(.modal-backdrop .modal, .update-backdrop .update-dialog) {
+    border: 0.5px solid var(--desk-edge);
+    box-shadow: none;
+  }
+
+  /* Auswahl-Dialog und Kontextmenü schweben als Glas über der App, wie das
+     Eingabefeld unten (styles/desk.css). Stärke wie die Regel darüber. */
+  .device :is(.sheet-backdrop .sheet, .ctx-backdrop .ctx-card) {
+    background: var(--desk-glass);
+    -webkit-backdrop-filter: blur(var(--desk-glass-blur)); /* backdrop-filter: ältere Safari kennen nur die Vorsilbe */
+    backdrop-filter: blur(var(--desk-glass-blur)); /* backdrop-filter: die Seite scheint verwischt durch das Glas */
+    border: 0.5px solid var(--desk-edge);
+    box-shadow: none;
+  }
+
+  .device .modal-backdrop .modal {
+    width: min(var(--frame-dialog-width), 100%);
+    height: min(var(--frame-dialog-height), 100%);
+    border-radius: var(--modal-radius); /* border-radius: rundum — der Dialog hängt nicht mehr am unteren Rand */
+    animation: none; /* animation: kein Hereinfahren von unten; das Auftauchen steht weiter unten */
+  }
+
+  /* „Monat und Jahr“ bleibt so hoch wie seine Rollen (styles/calendar.css) */
+  .device .modal-backdrop .date-modal {
+    height: auto;
+  }
+
+  .sheet {
+    width: min(var(--frame-sheet-width), 100%);
+  }
+}
+
+/* ---------- Auftauchen: nur, wenn Bewegung erwünscht ist ---------- */
+
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  /* :not([hidden]): eine Animation startet neu, sobald ein Element aus display:none auftaucht */
+  .modal-backdrop:not([hidden]),
+  .update-backdrop:not([hidden]) {
+    animation: desk-frame-fade var(--frame-dialog-anim) var(--desk-ease); /* animation: Abdunklung blendet ein */
+  }
+
+  /* Dialoge und das Eingabefeld steigen leicht auf und wachsen heran, statt von
+     unten zu fahren. Steht nach der Regel oben, die das Hereinfahren abschaltet. */
+  .device .modal-backdrop .modal,
+  .sheet-backdrop:not([hidden]) .sheet,
+  .nav-shell.is-composing {
+    animation: desk-frame-dialog-in var(--frame-dialog-anim) var(--desk-ease); /* animation: s. o. */
+  }
+
+  .ctx-backdrop:not([hidden]) .ctx-card {
+    transform-origin: top left; /* transform-origin: das Menü geht an der Ecke beim Element auf */
+    animation: desk-frame-pop-in var(--desk-fast) var(--desk-ease); /* animation: kurzes Aufgehen */
+  }
+}
+
+@keyframes desk-frame-fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes desk-frame-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--desk-enter-rise)) scale(var(--frame-dialog-scale));
+  }
+}
+
+@keyframes desk-frame-pop-in {
+  from {
+    opacity: 0;
+    transform: scale(var(--frame-dialog-scale));
+  }
+}

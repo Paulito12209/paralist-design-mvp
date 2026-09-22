@@ -1,0 +1,307 @@
+/*
+ * Desktop: die Seitenleiste links — die vier Hauptseiten, der Knopf „Neu
+ * anlegen“, die Sammlungen und die Arbeitsbereiche mit ihren Tab-Pillen. Gilt
+ * erst ab 1024px Fensterbreite; darunter ändert diese Datei nichts (die Spalte
+ * selbst blendet styles/desk.css am Handy aus). Tasten-Schilder, Tipp-Karte und
+ * das Auftauchen der Blöcke stehen in styles/desk-nav-tip.css, das Markup in
+ * src/shell/desk-nav-parts.js.
+ * Pfad: styles/desk-nav.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-nav)
+ * -----------------------------------
+ * --sidebar-row-pad    -> Innenrand der Zeilen: so weit reicht die Fläche beim Überfahren über Icon und Zahl hinaus
+ * --sidebar-icon / --sidebar-group-gap -> Größe der Icons in den Zeilen / Luft über „Sammlungen“, „Arbeitsbereiche“, Tipp-Karte
+ * --sidebar-new-gap / --sidebar-new-height -> Luft über dem Knopf „Neu anlegen“ und seine Höhe
+ * --sidebar-tool / --sidebar-tool-icon -> Größe der runden Knöpfe (Ordner-Plus, Tipp schließen) und ihrer Icons
+ * --sidebar-kbd / --sidebar-tab-height -> Höhe der Tasten-Schilder „N“, „1“ … / der Tab-Pillen über den Arbeitsbereichen
+ * --sidebar-fade      -> Höhe der weichen Ausblendung oben und unten
+ * Einzelne Größen stehen bei ihrer Regel: kleine Pillen 12px, Stern und Tab-Icon 14px.
+ *
+ * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * --desk-gutter -> Rand links und rechts (bündig mit der Kopfzeile darüber); --desk-label-size -> kleine Schrift
+ * --desk-nav-item-height / --desk-nav-item-size -> Höhe und Schrift einer Zeile (auch „Neu anlegen“)
+ * --desk-item-radius / --desk-panel-strong -> Rundung der Zeilen / Fläche der gewählten Zeile und Tab-Pille
+ * --desk-hover / --desk-kbd-bg -> Tönung beim Überfahren / Fläche der kleinen Pillen
+ * --desk-fast / --desk-ease -> Dauer und Kurve der kleinen Übergänge
+ * --text / --bg / --muted / --avatar-btn-bg -> Schrift, Grund (im Knopf „Neu anlegen“ vertauscht), leise Zahlen, Zeilen
+ * --star-color / --inbox-icon-color / --project-icon-color / --resource-icon-color -> farbige Icons der Sammlungen, Stern
+ * --sidebar-hint (styles/desk-nav-tip.css) -> 1, solange das Tasten-Schild einer Hauptseite zu sehen ist: die Zahl weicht
+ */
+
+@media (min-width: 1024px) {
+  .desk-nav {
+    --sidebar-row-pad: 12px;
+    --sidebar-icon: 20px;
+    --sidebar-group-gap: 28px;
+    --sidebar-new-gap: 16px;
+    --sidebar-new-height: 44px;
+    --sidebar-tool: 28px;
+    --sidebar-tool-icon: 18px;
+    --sidebar-kbd: 20px;
+    --sidebar-tab-height: 28px;
+    --sidebar-fade: 16px;
+
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* min-height: im Raster darf die Spalte schrumpfen — sonst schöbe eine lange Liste sie über das Fenster */
+    overflow: hidden; /* overflow: nur der innere Teil rollt, die Spalte selbst nie */
+  }
+
+  /* Der rollende Teil ist zugleich eine Spalte aus Blöcken: So kann die
+     Tipp-Karte mit margin-top: auto unten ruhen, solange Platz ist
+     (styles/desk-nav-tip.css), und rollt sonst einfach mit. */
+  .desk-nav-scroll {
+    flex: 1 1 auto; /* flex: nimmt die ganze Höhe unter der Kopfzeile */
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* min-height: sonst wächst der Bereich mit der Liste, statt zu rollen */
+    overflow-y: auto; /* overflow-y: viele Arbeitsbereiche rollen hier, samt der Tipp-Karte danach */
+    overflow-x: hidden; /* overflow-x: nichts ragt seitlich heraus und erzeugt einen Querbalken */
+    overscroll-behavior: contain; /* overscroll-behavior: am Listenende zieht das Rad nicht die Seite daneben mit */
+    /* Den Rollbalken (in Ruhe unsichtbar, beim Überfahren ein blasser Griff)
+       zeichnet styles/desk.css für alle drei Spalten gleich. */
+    padding: var(--sidebar-fade) calc(var(--desk-gutter) - var(--sidebar-row-pad));
+    /* mask: Zeilen verlaufen oben und unten weich statt hart abgeschnitten; nur die Deckkraft zählt, nicht der Farbton */
+    -webkit-mask-image: linear-gradient(to bottom, transparent, var(--text) var(--sidebar-fade), var(--text) calc(100% - var(--sidebar-fade)), transparent);
+    mask-image: linear-gradient(to bottom, transparent, var(--text) var(--sidebar-fade), var(--text) calc(100% - var(--sidebar-fade)), transparent);
+  }
+
+  /* Alles, was sich anklicken lässt, reagiert gleich weich */
+  .desk-nav-row,
+  .desk-nav-new,
+  .desk-nav-tool,
+  .desk-nav-tab {
+    transition: background-color var(--desk-fast) var(--desk-ease), color var(--desk-fast) var(--desk-ease),
+      transform var(--desk-fast) var(--desk-ease), opacity var(--desk-fast) var(--desk-ease); /* transition: Tönung und Drücken gleiten statt zu springen */
+  }
+
+  .desk-nav-row {
+    display: grid;
+    grid-template-columns: var(--sidebar-icon) minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 12px;
+    width: 100%;
+    height: var(--desk-nav-item-height);
+    padding: 0 var(--sidebar-row-pad);
+    border-radius: var(--desk-item-radius);
+    font-size: var(--desk-nav-item-size);
+    font-weight: 500;
+    color: var(--avatar-btn-bg);
+    margin-bottom: 2px;
+    text-align: left;
+    user-select: none; /* user-select: ein Doppelklick markiert keinen Text in der Leiste */
+  }
+
+  .desk-nav-row.is-active,
+  .desk-nav-tab.is-active {
+    background: var(--desk-panel-strong);
+    color: var(--text);
+  }
+
+  .desk-nav-icon,
+  .desk-nav-new-icon {
+    width: var(--sidebar-icon);
+    height: var(--sidebar-icon);
+  }
+
+  .desk-nav-icon {
+    color: var(--avatar-btn-bg);
+  }
+
+  /* Graue Icons werden in der gewählten Zeile so kräftig wie ihr Text; die farbigen (.desk-nav-tone) bleiben */
+  .desk-nav-row.is-active .desk-nav-icon:not(.desk-nav-tone) {
+    color: var(--text);
+  }
+
+  .desk-nav-icon-space {
+    color: var(--muted);
+  }
+
+  /* Die vier Sammlungen tragen dieselben Icon-Farben wie ihre Karten auf dem Handy */
+  .desk-nav-icon-inbox {
+    color: var(--inbox-icon-color);
+  }
+
+  .desk-nav-icon-star,
+  .desk-nav-star {
+    color: var(--star-color);
+  }
+
+  .desk-nav-icon-project {
+    color: var(--project-icon-color);
+  }
+
+  .desk-nav-icon-resource {
+    color: var(--resource-icon-color);
+  }
+
+  /* min-width: lange Namen dürfen schmaler werden und enden dann mit „…“ */
+  .desk-nav-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .desk-nav-text {
+    min-width: 0;
+    overflow: hidden; /* overflow/text-overflow/white-space: lange Namen enden einzeilig mit „…“ */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .desk-nav-star,
+  .desk-nav-tab .icon {
+    flex: 0 0 auto; /* flex: das kleine Icon schrumpft nie, der Name weicht */
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Zahl und Tasten-Schild liegen in derselben Zelle rechts — beim Überfahren
+     wechseln sie sich ab, ohne dass etwas verrutscht */
+  .desk-nav-count,
+  .desk-nav-badge,
+  .desk-nav-hint {
+    grid-area: 1 / 3; /* grid-area: beide in die letzte Spalte, übereinander */
+    justify-self: end;
+    font-variant-numeric: tabular-nums; /* font-variant-numeric: gleich breite Ziffern, Zahlen untereinander springen nicht */
+  }
+
+  .desk-nav-count {
+    font-size: var(--desk-label-size);
+    font-weight: 500;
+    color: var(--muted);
+    opacity: calc(1 - var(--sidebar-hint, 0)); /* opacity: weicht dem Tasten-Schild einer Hauptseite (nur dort ist --sidebar-hint gesetzt) */
+    transition: opacity var(--desk-fast) var(--desk-ease); /* transition: Zahl und Schild blenden weich ineinander */
+  }
+
+  /* Kleine Pillen: Zahl einer Sammlung und „Tipp“ in der Tipp-Karte */
+  .desk-nav-badge,
+  .desk-tip-pill {
+    min-width: 22px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--desk-kbd-bg);
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 16px;
+    text-align: center;
+    color: var(--avatar-btn-bg);
+  }
+
+  .desk-nav-empty {
+    padding: 8px var(--sidebar-row-pad);
+    font-size: var(--desk-label-size);
+    color: var(--muted);
+  }
+
+  /* Knopf „Neu anlegen“: die eine gefüllte Fläche der Leiste, Schrift und Grund vertauscht */
+  .desk-nav-new {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    height: var(--sidebar-new-height);
+    margin-top: var(--sidebar-new-gap);
+    padding: 0 10px 0 var(--sidebar-row-pad);
+    border-radius: 999px;
+    background: var(--text);
+    color: var(--bg);
+    font-size: var(--desk-nav-item-size);
+    font-weight: 600;
+  }
+
+  .desk-nav-group {
+    margin-top: var(--sidebar-group-gap);
+  }
+
+  /* Rechts so eingerückt, dass das Ordner-Plus bündig über den Zahlen steht */
+  .desk-nav-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-height: var(--sidebar-tool);
+    margin-bottom: 6px;
+    padding: 0 calc(var(--sidebar-row-pad) - (var(--sidebar-tool) - var(--sidebar-tool-icon)) / 2) 0 var(--sidebar-row-pad);
+  }
+
+  .desk-nav-heading {
+    font-size: var(--desk-label-size);
+    font-weight: 500;
+    color: var(--avatar-btn-bg);
+  }
+
+  /* Runde Knöpfe: Ordner-Plus und das Kreuz der Tipp-Karte */
+  .desk-nav-tool {
+    display: grid;
+    place-items: center;
+    width: var(--sidebar-tool);
+    height: var(--sidebar-tool);
+    border-radius: 999px;
+    color: var(--avatar-btn-bg);
+  }
+
+  .desk-nav-tool .icon {
+    width: var(--sidebar-tool-icon);
+    height: var(--sidebar-tool-icon);
+  }
+
+  /* Viele Tabs brechen in eine zweite Zeile um — so bleiben alle zu sehen */
+  .desk-nav-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    margin-bottom: 6px;
+    padding: 0 2px;
+  }
+
+  .desk-nav-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 100%;
+    height: var(--sidebar-tab-height);
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: var(--desk-label-size);
+    font-weight: 600;
+    color: var(--muted);
+    white-space: nowrap; /* white-space: ein Tab-Name bricht nie mitten in der Pille um */
+    overflow: hidden; /* overflow: ein sehr langer Name wird an der Pille abgeschnitten statt die Leiste zu sprengen */
+  }
+
+  @media (hover: hover) {
+    .desk-nav-row:hover,
+    .desk-nav-tool:hover,
+    .desk-nav-tab:not(.is-active):hover {
+      background: var(--desk-hover);
+      color: var(--text);
+    }
+
+    .desk-nav-row.is-active:hover {
+      background: var(--desk-panel-strong);
+    }
+
+    .desk-nav-new:hover {
+      background: color-mix(in srgb, var(--text) 86%, var(--bg)); /* color-mix: die dunkle Fläche hellt einen Hauch auf, aus den zwei Grundfarben gemischt */
+    }
+  }
+
+  .desk-nav-row:active,
+  .desk-nav-new:active {
+    transform: scale(0.98); /* transform: gibt beim Drücken wie in der App ein wenig nach */
+  }
+
+  .desk-nav-tool:active,
+  .desk-nav-tab:active {
+    opacity: 0.6;
+  }
+
+  .desk-nav-row:focus-visible,
+  .desk-nav-new:focus-visible,
+  .desk-nav-tool:focus-visible,
+  .desk-nav-tab:focus-visible {
+    outline: 2px solid var(--avatar-btn-bg); /* outline: sichtbarer Ring nur bei Bedienung mit der Tastatur */
+    outline-offset: 2px;
+  }
+}

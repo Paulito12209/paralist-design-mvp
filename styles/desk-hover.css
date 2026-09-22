@@ -1,0 +1,254 @@
+/*
+ * Desktop: was Maus und Tastatur sehen — die Tönung beim Überfahren und der
+ * Fokus-Ring der Tastatur. Zuständig für die Kopfzeile über der Seitenleiste
+ * (Level, Suche, Profil), alles in der Mitte (.content), die schwebenden
+ * Knöpfe unten (Eingabefeld, Medien, Zeichnen, Suche, Meldung) und die
+ * Dialoge, Blätter und Menüs. Seitenleiste, rechte Spalte und Kopf der
+ * Übersicht tönen sich selbst (styles/desk-nav.css, styles/desk-rail.css,
+ * styles/dashboard-motion.css): jede Regel hier hängt an .top-bar, .content,
+ * .bottom-bar oder einer Dialog-Hülle, und keine der Klassen hier kommt in
+ * .desk-hero vor (dort stehen nur dash-Klassen). Drücken bleibt wie am Handy.
+ * Unter 1024px gilt nichts davon.
+ * Pfad: styles/desk-hover.css
+ *
+ * SO WIRD GETÖNT
+ * - Durchsichtige Knöpfe: --desk-hover wird ihre Fläche und gleitet weich ein.
+ * - Gefüllte Flächen (Karten, Pillen, Tage mit Einträgen): --desk-tint liegt als
+ *   Bild-Ebene über der Füllung — die Farbe bleibt, sie wird nur einen Hauch tiefer.
+ * - Dunkle und farbige Knöpfe (Anlegen, Schließen, Aktualisieren, Fertig) und
+ *   reine Textknöpfe werden etwas durchscheinend; eine Tönung sähe man dort nicht.
+ * - Listenzeilen: ein ::before mit z-index -1 hinter Icon und Titel, isolation
+ *   macht die Zeile zur eigenen Ebene; es steht seitlich etwas über und wird so
+ *   trotz overflow hidden der Wisch-Zeile (.swipe) zum runden Balken.
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (auf .device, nur am Desktop)
+ * -----------------------------------
+ * --hover-ring / --hover-ring-gap -> Stärke des Tastatur-Rings und sein Abstand zum
+ *                        Knopf (in rollenden Leisten und Listen liegt er so weit innen)
+ * --hover-row-y        -> Luft über und unter der Tönung einer Listenzeile
+ * --hover-row-bleed    -> wie weit die Tönung einer Zeile seitlich übersteht
+ * --hover-group-inset  -> Abstand der Tönung zum Rand in den Gruppen der Einstellungen
+ * --hover-solid        -> Deckkraft dunkler und farbiger Knöpfe unter der Maus (1 = unverändert)
+ * --hover-dim          -> Deckkraft reiner Textknöpfe unter der Maus (Zweittitel, Monat, Links)
+ * --hover-media-zoom   -> wie stark ein Bild unter der Maus näher rückt (1 = gar nicht)
+ *
+ * GELESEN (styles/tokens-desk.css, styles/tokens.css, styles/calendar-panel.css)
+ * --desk-hover / --desk-tint -> Tönung als Fläche / als Bild-Ebene über einer Füllung
+ * --desk-fast / --desk-ease  -> Dauer und Kurve der Übergänge
+ * --desk-enter               -> wie langsam ein Bild näher rückt
+ * --desk-item-radius / --desk-radius-sm -> Rundung der Zeilen-Tönung / der Stunden-Tönung
+ * --avatar-btn-bg            -> Farbe des Tastatur-Rings
+ * --desk-tint-on-dark        -> heller Hauch auf Knöpfen, die immer auf Schwarz liegen
+ * --content-side             -> Seitenrand; in der Aufgaben-Liste beginnt die Tönung darin
+ * --cal-label-w              -> Breite der Uhrzeiten; die Tönung einer Stunde beginnt rechts davon
+ */
+
+@media (min-width: 1024px) {
+  .device {
+    --hover-ring: 2px;
+    --hover-ring-gap: 2px;
+    --hover-row-y: 2px;
+    --hover-row-bleed: 10px;
+    --hover-group-inset: 4px;
+    --hover-solid: 0.86;
+    --hover-dim: 0.7;
+    --hover-media-zoom: 1.04;
+  }
+
+  /* Am Handy ohne Fläche und darum eckig — Tönung und Ring wären sonst Quadrate */
+  .content :is(.back-btn, .head-btn, .add-btn, .section-more, .tab-pill-add) {
+    border-radius: 50%; /* border-radius: Tönung und Ring als Kreis */
+  }
+
+  .date-modal .date-item {
+    border-radius: var(--desk-item-radius); /* border-radius: die Tönung einer Zeile der Rollen als runder Balken */
+  }
+
+  /* ---------- Tastatur: sichtbarer Fokus ---------- */
+
+  /* :where hält die Regel so schwach wie :focus-visible allein, damit
+     Seitenleiste, rechte Spalte und Übersicht ihre Ringe einfach darüber
+     setzen. Schreibfelder fehlen absichtlich: sie zeigen den Cursor und haben
+     schon am Handy ihr eigenes Fokus-Bild (Rand, Fläche) — ein Ring um Editor
+     oder Eingabefeld stünde bei jedem Tippen da. */
+  :where(.device) :where(button, [role="button"], a, select):focus-visible {
+    outline: var(--hover-ring) solid var(--avatar-btn-bg); /* outline: zeigt, wo die Tastatur gerade steht */
+    outline-offset: var(--hover-ring-gap); /* outline-offset: Luft zwischen Knopf und Ring */
+  }
+
+  /* In rollenden Leisten, Wisch-Zeilen und Gruppen mit overflow schnitte der
+     Rand einen äußeren Ring ab — dort liegt er innen. */
+  :is(.content, .bottom-bar, .modal-backdrop, .sheet-backdrop, .ctx-backdrop)
+    :is(.swipe .workspace-row, .tab-pills :is(.tab-pill, .tab-pill-add), .settings-row, .plist-row,
+      .composer-type, .sheet-option, .ctx-item, .board-grip, .date-item, .media-strip .media-cell,
+      .cal-controls :is(.cal-round, .cal-pill)):focus-visible {
+    outline-offset: calc(-1 * var(--hover-ring-gap)); /* outline-offset: negativ = der Ring liegt innen */
+  }
+
+  /* Das Suchfeld selbst trägt keinen Ring (s. o.): die ganze Pille zeigt, wohin getippt wird */
+  .top-bar .search:focus-within {
+    outline: var(--hover-ring) solid var(--avatar-btn-bg); /* outline: Ring um die Pille statt um das Wort */
+    outline-offset: var(--hover-ring-gap); /* outline-offset: wie bei den Knöpfen */
+  }
+
+  /* Im Kalender trägt die Zahl den Ring, nicht die hohe Tageszelle */
+  .content .cal-day:focus-visible {
+    outline: none; /* outline: der Ring sitzt an der Zahl darunter */
+  }
+
+  .content .cal-day:focus-visible .cal-day-num {
+    outline: var(--hover-ring) solid var(--avatar-btn-bg); /* outline: derselbe Ring wie bei allen Knöpfen */
+    outline-offset: var(--hover-ring-gap); /* outline-offset: passt genau in die Wochenzeile */
+  }
+}
+
+/* ---------- Maus: Tönung beim Überfahren ---------- */
+
+@media (min-width: 1024px) and (hover: hover) {
+  .top-bar .search {
+    cursor: text; /* cursor: die ganze Pille ist das Feld, nicht nur das Wort darin */
+  }
+
+  /* transition: Tönung und Blässe gleiten, statt hart umzuspringen. Nicht dabei
+     sind Knöpfe mit eigenem Übergang am Handy (Haken, „Zum Archiv“, Pfeil nach oben). */
+  .top-bar :is(.level-btn, .avatar),
+  .content :is(.back-btn, .head-btn, .add-btn, .section-more, .tab-pill-add, .board-add, .tab-pill,
+    .cal-seg-btn, .cal-today, .title-switch, .cal-month, .swipe-action),
+  .bottom-bar :is(.media-btn, .draw-tool, .draw-color, .composer-type, .search-combo-btn,
+    .composer-send, .composer-close, .toast-action),
+  :is(.modal-backdrop, .sheet-backdrop, .ctx-backdrop, .update-backdrop, .viewer-backdrop)
+    :is(.sheet-option, .ctx-item, .modal-back, .viewer-btn, .date-item, .seg button, .date-done,
+      .update-now, .fb-send, .profile-save-ok, .profile-avatar, .hist-more, .fb-link) {
+    transition: background-color var(--desk-fast) var(--desk-ease), opacity var(--desk-fast) var(--desk-ease);
+  }
+
+  /* Durchsichtige Knöpfe: die Tönung wird ihre Fläche. :not(:active) dort, wo
+     am Handy schon das Drücken eine Fläche zeigt — die soll sichtbar bleiben. */
+  .top-bar :is(.level-btn, .avatar):hover,
+  .content :is(.back-btn, .head-btn, .add-btn, .section-more, .tab-pill-add, .board-add,
+    .task-check:not(.is-done), .tab-pill:not(.is-active, .task-group-pill), .cal-seg-btn:not(.is-active),
+    .cal-today:not(.is-on)):hover,
+  .bottom-bar :is(.media-btn, .draw-tool:not(.is-active), .composer-type:not(:disabled),
+    .search-combo-btn:not(.is-active)):hover,
+  .content .archive-link:not(:active):hover,
+  :is(.modal-backdrop, .sheet-backdrop, .ctx-backdrop, .viewer-backdrop)
+    :is(.sheet-option:not(.is-active, .is-pair), .ctx-item, .modal-back, .viewer-btn, .date-item,
+      .seg button:not(.is-active)):not(:active):hover {
+    background-color: var(--desk-hover);
+  }
+
+  /* Gefüllte Flächen: die Tönung liegt über der Füllung, die Farbe darunter
+     bleibt. Der aktive Tab ist ein Knopf (Klick benennt ihn um). Die Tage im
+     Kalender tönen ihre Zahl, damit der Kreis der Tage mit Einträgen bleibt. */
+  .top-bar .search:hover,
+  .content :is(.overview-card, .page-search, .empty-add, button.tab-pill.is-active, .task-view-btn,
+    .task-group-pill, .cal-round, .cal-span, .cal-today.is-on, .cal-event, .cal-allday-chip):hover,
+  .content .cal-day:hover .cal-day-num,
+  .bottom-bar :is(.composer-link, .composer-attach, .composer-mic, .composer-attachment-remove,
+    .draw-tool.is-active, .search-combo-btn.is-active, .search-cancel):hover,
+  :is(.modal-backdrop, .sheet-backdrop, .update-backdrop, .viewer-backdrop)
+    :is(.modal-close, .modal-top, .sheet-option.is-active, .sheet-option.is-pair, .update-later,
+      .viewer-open, .mini-card, .fb-choice, .profile-avatar-edit, .profile-save-cancel):not(:disabled):hover {
+    background-image: var(--desk-tint); /* background-image: Tönung über der Füllung statt an ihrer Stelle */
+  }
+
+  /* Auf Schwarz sähe man die dunkle Tönung des Hellmodus nicht: dort liegt ein
+     heller Hauch darüber. Steht nach der Regel darüber, die für das Kreuz des
+     Profilbilds sonst gleich stark wäre. */
+  .viewer-backdrop .viewer-foot-btn:not(:active):hover,
+  .modal-backdrop.avatar-view .modal-close:not(:active):hover {
+    background-image: var(--desk-tint-on-dark); /* background-image: s. o. */
+  }
+
+  /* Dunkle und farbige Knöpfe: eine Tönung wäre darauf unsichtbar, sie scheinen
+     etwas durch. :not(:active) lässt das Drücken aus den Handy-Stilen sichtbar. */
+  .content .swipe-action:not(:active):hover,
+  .bottom-bar :is(.composer-send, .composer-close, .draw-color):not(:disabled):not(:active):hover,
+  .modal-backdrop :is(.date-done, .fb-send, .profile-save-ok, .profile-avatar):not(:disabled):not(:active):hover,
+  .update-backdrop .update-now:not(:disabled):not(:active):hover {
+    opacity: var(--hover-solid);
+  }
+
+  /* Reine Textknöpfe: eine Fläche klebte ohne Innenabstand am Wort */
+  .content :is(.title-switch, .cal-month):not(:active):hover,
+  .bottom-bar .toast-action:not(:active):hover,
+  .modal-backdrop :is(.hist-more, .fb-link):not(:active):hover {
+    opacity: var(--hover-dim);
+  }
+
+  /* ---------- Listenzeilen, leere Stunden, Medien: Tönung als eigene Ebene ---------- */
+
+  /* position: Anker der Tönung; isolation: eigene Ebene für z-index -1 (s. Kopf).
+     cursor: auch die Board-Zeile (ein div) öffnet beim Klick die Aufgabe. In der
+     Aufgaben-Liste trägt die ganze Wisch-Zeile die Tönung, damit der Haken links
+     darin liegt. Die gezogene Board-Zeile bleibt ausgenommen — sie braucht ihr
+     position: absolute aus styles/tasks-board.css. */
+  .content :is(button.workspace-row:not(.task-row), .search-row, .group-head, .task-rows .swipe-body,
+    .board-row:not(.is-dragging)),
+  .modal-backdrop :is(.settings-row, .plist-row) {
+    position: relative;
+    isolation: isolate;
+    cursor: pointer;
+  }
+
+  /* :where: die Grundregel bleibt schwach, damit die Abweichungen darunter greifen */
+  :where(.content) :where(button.workspace-row:not(.task-row), .search-row, .group-head,
+    .task-rows .swipe-body, .board-row:not(.is-dragging))::before,
+  :where(.modal-backdrop) :where(.settings-row, .plist-row)::before,
+  :where(.content) :where(.cal-hour, .media-cell)::after {
+    content: "";
+    position: absolute; /* position: liegt frei über der Zeile, ohne sie zu verschieben */
+    inset: var(--hover-row-y) calc(-1 * var(--hover-row-bleed)); /* inset: steht seitlich über die Zeile hinaus */
+    z-index: -1; /* z-index: hinter Icon und Titel, vor der Fläche der Wisch-Zeile */
+    border-radius: var(--desk-item-radius); /* border-radius: runder Balken statt Streifen */
+    background: var(--desk-hover);
+    opacity: 0;
+    transition: opacity var(--desk-fast) var(--desk-ease); /* transition: blendet weich ein */
+    pointer-events: none; /* pointer-events: fängt keinen Klick ab, der Haken daneben bleibt erreichbar */
+  }
+
+  /* Aufgaben: die Wisch-Zeile reicht bis an den Rand der Spalte, ihr Innenrand ist der Seitenrand */
+  .content .task-rows .swipe-body::before {
+    inset: var(--hover-row-y) calc(var(--content-side) - var(--hover-row-bleed)); /* inset: auf der Fluchtlinie der übrigen Zeilen */
+  }
+
+  /* Einstellungen: die Gruppe schneidet an ihrer Kante ab — die Tönung bleibt darin */
+  .modal-backdrop :is(.settings-row, .plist-row)::before {
+    inset: var(--hover-group-inset); /* inset: rundum etwas Luft zur Gruppe */
+  }
+
+  /* Leere Stunde: die Tönung zeigt rechts der Uhrzeit, wo ein Klick den Termin
+     anlegt. Ohne z-index liegt sie über der Stundenlinie, aber unter Terminen
+     und Jetzt-Linie (styles/calendar-panel.css). */
+  .content .cal-hour::after {
+    inset: var(--hover-row-y) 0 var(--hover-row-y) var(--cal-label-w); /* inset: erst rechts der Uhrzeit */
+    z-index: auto; /* z-index: s. o. */
+    border-radius: var(--desk-radius-sm); /* border-radius: so rund wie die Termine */
+  }
+
+  /* Medien-Kachel: ein Hauch über dem ganzen Bild; overflow der Kachel rundet die Ecken */
+  .content .media-cell::after {
+    inset: 0; /* inset: deckt die ganze Kachel */
+    z-index: auto; /* z-index: über dem Bild statt dahinter */
+  }
+
+  .content :is(button.workspace-row:not(.task-row), .search-row, .group-head, .task-rows .swipe-body,
+    .board-row:not(.is-dragging)):hover::before,
+  .modal-backdrop :is(.settings-row, .plist-row):hover::before,
+  .content :is(.cal-hour, .media-cell):hover::after {
+    opacity: 1;
+  }
+}
+
+/* ---------- Bilder rücken näher: nur, wenn Bewegung erwünscht ist ---------- */
+
+@media (min-width: 1024px) and (hover: hover) and (prefers-reduced-motion: no-preference) {
+  /* transition: das Bild rückt langsam näher; overflow der Kachel schneidet den Rand ab */
+  .content .media-img {
+    transition: transform var(--desk-enter) var(--desk-ease);
+  }
+
+  .content .media-cell:hover .media-img {
+    transform: scale(var(--hover-media-zoom)); /* transform: rückt näher, ohne das Raster zu verschieben */
+  }
+}

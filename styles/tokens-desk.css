@@ -1,0 +1,158 @@
+/*
+ * Die Werte der Desktop-Fassung (ab 1024px Fensterbreite: Seitenleiste links,
+ * Seite in der Mitte, ab 1280px zusätzlich die Spalte rechts).
+ * Pfad: styles/tokens-desk.css
+ *
+ * Es gibt hier absichtlich KEINE neuen Farbtöne: jede Fläche und jede Tinte
+ * wird aus den Grundfarben in styles/tokens.css gemischt (color-mix, rgba aus
+ * --nav-glow-color). So bleibt der Desktop in denselben Farben wie das Handy,
+ * und der Dunkelmodus stimmt von selbst, weil die Grundfarben dort schon
+ * umgestellt sind. Nur wo Hell und Dunkel eine andere Mischung brauchen, steht
+ * unten ein eigener Block.
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * MASSE DER SPALTEN
+ * --desk-nav-width          -> Breite der Seitenleiste links
+ * --desk-rail-width         -> Breite der Spalte rechts
+ * --desk-gutter             -> Luft zwischen den Spalten und zum Fensterrand
+ * --desk-read-width         -> größte Breite von Lese-Seiten (Eintrag, Sammlung, Suche)
+ * --desk-wide-width         -> größte Breite der breiten Seiten (Übersicht, Kalender, Aufgaben, Medien)
+ *
+ * FLÄCHEN (alle aus den Grundfarben gemischt)
+ * --desk-panel              -> ruhige Fläche der Kacheln und Karten rechts und unten links
+ * --desk-panel-strong       -> kräftigere Fläche: gewählter Eintrag der Seitenleiste
+ * --desk-hover              -> Tönung beim Überfahren mit der Maus
+ * --desk-tint               -> dieselbe Tönung als Bild-Ebene: legt sich über eine schon
+ *                              gefüllte Fläche, statt deren Farbe zu ersetzen
+ * --desk-tint-on-dark        -> heller Hauch als Bild-Ebene für Knöpfe, die in beiden
+ *                              Darstellungen auf Schwarz liegen (Dateiansicht, großes Profilbild)
+ * --desk-hero-from / --desk-hero-to -> Verlauf der zwei großen Karten auf der Übersicht
+ * --desk-glass              -> halbdurchsichtige Fläche schwebender Chips und des Eingabefelds
+ * --desk-glass-blur         -> wie stark das Glas den Hintergrund verwischt
+ * --desk-edge               -> Haarlinie um Glas und Karten, wo sie sich sonst nicht abheben
+ * --desk-sheen              -> weicher Lichtfleck oben links auf den großen Karten
+ * --desk-backdrop           -> Abdunklung hinter Dialogen
+ *
+ * TINTE (für Punkte, Striche und Balken)
+ * --desk-ink                -> volle Tinte: Text-Ton als Farbe für Grafiken
+ * --desk-level-0 … -4       -> fünf Helligkeiten der Punkte im Aktivitätsband, 0 = nichts, 4 = viel
+ * --desk-kbd-bg             -> Fläche der kleinen Tasten-Schilder („N“, „/“)
+ * --desk-scroll-thumb       -> Farbe des Rollbalkens, solange die Maus über einer Spalte steht
+ *
+ * RUNDUNGEN
+ * --desk-radius-lg          -> die zwei großen Karten der Übersicht
+ * --desk-radius             -> Karten und Kacheln der rechten Spalte
+ * --desk-radius-sm          -> kleine Kacheln innerhalb einer Karte
+ * --desk-item-radius        -> Zeilen der Seitenleiste
+ *
+ * SCHRIFT
+ * --desk-num-weight         -> Strichstärke der großen Zahlen (dünn = edler)
+ * --desk-stat-size          -> Größe der vier Zahlen oben auf der Übersicht
+ * --desk-hero-num-size      -> Größe der Zahl in den zwei großen Karten
+ * --desk-tile-num-size      -> Größe der Zahlen in Kacheln der rechten Spalte
+ * --desk-label-size         -> kleine Beschriftungen (Kartentitel, Chips)
+ * --desk-nav-item-size      -> Schrift der Zeilen in der Seitenleiste
+ * --desk-nav-item-height    -> Höhe einer Zeile in der Seitenleiste
+ *
+ * BEWEGUNG
+ * --desk-ease               -> Kurve aller Übergänge (weich auslaufend)
+ * --desk-fast               -> Dauer kleiner Übergänge (Überfahren, Drücken)
+ * --desk-enter              -> Dauer des Auftauchens von Karten
+ * --desk-enter-rise         -> aus welcher Tiefe Karten beim Auftauchen kommen
+ * --desk-enter-step         -> Verzögerung von Karte zu Karte beim Auftauchen
+ *
+ * Die Grundwerte des Handys, die am Desktop anders sind (Seitenrand, Titel,
+ * Platz am Seitenende), werden unten in der @media-Abfrage überschrieben.
+ */
+
+:root {
+  --desk-nav-width: 288px;
+  --desk-rail-width: 360px;
+  --desk-gutter: 24px;
+  --desk-read-width: 820px;
+  --desk-wide-width: 1240px;
+
+  --desk-panel: color-mix(in srgb, var(--card) 42%, var(--bg));
+  --desk-panel-strong: var(--card);
+  --desk-hover: var(--tab-pill-active-bg);
+  --desk-hero-from: var(--nav-bg);
+  --desk-hero-to: color-mix(in srgb, var(--card) 72%, var(--bg));
+  --desk-glass: color-mix(in srgb, var(--nav-bg) 72%, transparent);
+  --desk-glass-blur: 22px;
+  --desk-edge: rgba(var(--nav-glow-color), 0.08);
+  --desk-sheen: color-mix(in srgb, var(--nav-bg) 70%, transparent);
+  --desk-backdrop: rgba(var(--nav-glow-color), 0.28);
+
+  --desk-ink: rgba(var(--nav-glow-color), 0.92);
+  --desk-level-0: rgba(var(--nav-glow-color), 0.08);
+  --desk-level-1: rgba(var(--nav-glow-color), 0.24);
+  --desk-level-2: rgba(var(--nav-glow-color), 0.42);
+  --desk-level-3: rgba(var(--nav-glow-color), 0.64);
+  --desk-level-4: rgba(var(--nav-glow-color), 0.9);
+  --desk-kbd-bg: rgba(var(--nav-glow-color), 0.08);
+  --desk-scroll-thumb: rgba(var(--nav-glow-color), 0.2);
+  --desk-tint: linear-gradient(var(--desk-hover), var(--desk-hover));
+  --desk-tint-on-dark: linear-gradient(color-mix(in srgb, var(--nav-bg) 12%, transparent), color-mix(in srgb, var(--nav-bg) 12%, transparent));
+
+  --desk-radius-lg: 32px;
+  --desk-radius: 24px;
+  --desk-radius-sm: 16px;
+  --desk-item-radius: 14px;
+
+  --desk-num-weight: 250;
+  --desk-stat-size: 44px;
+  --desk-hero-num-size: 104px;
+  --desk-tile-num-size: 34px;
+  --desk-label-size: 13px;
+  --desk-nav-item-size: 15px;
+  --desk-nav-item-height: 40px;
+
+  --desk-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --desk-fast: 0.16s;
+  --desk-enter: 0.6s;
+  --desk-enter-rise: 12px;
+  --desk-enter-step: 60ms;
+}
+
+/* Dunkelmodus, vom System gewählt: die ruhige Fläche ist die Kartenfarbe
+   selbst — eine Mischung mit dem schwarzen Grund wäre kaum zu sehen. Die
+   großen Karten bekommen einen Graphit-Verlauf mit einem Hauch Akzent. */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --desk-panel: var(--card);
+    --desk-panel-strong: color-mix(in srgb, var(--avatar-btn-bg) 14%, var(--card));
+    --desk-hero-from: color-mix(in srgb, var(--avatar-btn-bg) 16%, var(--card));
+    --desk-hero-to: var(--bg);
+    --desk-glass: color-mix(in srgb, var(--card) 70%, transparent);
+    --desk-edge: rgba(var(--nav-glow-color), 0.12);
+    --desk-sheen: rgba(var(--nav-glow-color), 0.14);
+    --desk-backdrop: color-mix(in srgb, var(--bg) 60%, transparent);
+    --desk-tint-on-dark: linear-gradient(rgba(var(--nav-glow-color), 0.14), rgba(var(--nav-glow-color), 0.14));
+  }
+}
+
+/* Dunkelmodus, in den Einstellungen gewählt: dieselben Werte wie darüber. */
+:root[data-theme="dark"] {
+  --desk-panel: var(--card);
+  --desk-panel-strong: color-mix(in srgb, var(--avatar-btn-bg) 14%, var(--card));
+  --desk-hero-from: color-mix(in srgb, var(--avatar-btn-bg) 16%, var(--card));
+  --desk-hero-to: var(--bg);
+  --desk-glass: color-mix(in srgb, var(--card) 70%, transparent);
+  --desk-edge: rgba(var(--nav-glow-color), 0.12);
+  --desk-sheen: rgba(var(--nav-glow-color), 0.14);
+  --desk-backdrop: color-mix(in srgb, var(--bg) 60%, transparent);
+  --desk-tint-on-dark: linear-gradient(rgba(var(--nav-glow-color), 0.14), rgba(var(--nav-glow-color), 0.14));
+}
+
+/* Am Desktop mehr Luft: breiterer Seitenrand, größerer Titel, und am
+   Seitenende kein Platz mehr für eine Navigationsleiste, die es dort nicht gibt.
+   Dieselbe Grenze steht in src/ui/desk-mode.js (deskQuery). */
+@media (min-width: 1024px) {
+  :root {
+    --content-side: 40px;
+    --content-top: 32px;
+    --title-size: 34px;
+    --tab-space: 64px;
+  }
+}

@@ -1,0 +1,393 @@
+/*
+ * Desktop: rechte Spalte ab 1280px — Aufbau der Spalte, die Karten „Als
+ * Nächstes“ und „Aufgaben“, die kleinen Karten unter „Zuletzt geöffnet“, die
+ * Pillen und das Auftauchen beim ersten Zeigen. Kacheln, Ring, Papierstapel und
+ * Tagesleiste stehen in styles/desk-rail-tiles.css; Platz, Rollen und
+ * Ausblenden der Spalte regelt styles/desk.css. Unter 1280px gilt hier nichts.
+ * Keine eigenen Farben, keine Schatten.
+ * Pfad: styles/desk-rail.css
+ *
+ * ANPASSBARE WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * -----------------------------------
+ * --desk-gutter        -> Innenabstand der Spalte
+ * --desk-panel / --desk-radius / --desk-radius-sm -> Fläche und Rundung von Karten und kleinen Karten
+ * --desk-hover / --desk-tint -> Tönung unter der Maus: als Farbe auf leeren Flächen,
+ *                         als Ebene über schon gefüllten (Pillen, kleine Karten)
+ * --desk-edge / --desk-hero-from / --desk-ink -> Haarlinie, Fläche und Punkt des Zeit-Chips
+ * --desk-label-size    -> Schrift von Pillen und blassen Angaben
+ * --desk-ease / --desk-fast -> Kurve und Dauer von Überfahren und Drücken
+ * --desk-enter / --desk-enter-rise / --desk-enter-step -> Dauer, Tiefe und Takt des Auftauchens
+ * --text / --muted / --line / --bg -> Schrift, blasse Schrift, Trennlinie, Haken beim Abhaken
+ * --avatar-btn-bg      -> Akzent: Fokus-Ring, gefüllter Haken, Typ-Pille
+ * --tab-pill-active-bg -> Fläche der Pillen
+ * --level-dim          -> Startfarbe der Ring-Striche beim Auftauchen
+ *
+ * EIGENE WERTE (bei .desk-rail, gelten nur in dieser Spalte)
+ * -----------------------------------
+ * --rail-gap / --rail-card-pad -> Luft zwischen den Karten, Innenabstand einer Karte
+ * --rail-pill-height   -> Höhe der Pillen („Alle“, „Kalender“) und der Kartenköpfe
+ * --rail-check-size / --rail-prio-size -> Abhak-Kreis, Punkt der Dringlichkeit
+ * --rail-recent-height -> Höhe der kleinen Karten unter „Zuletzt geöffnet“
+ * --rail-tick-step / --rail-pulse -> Takt der Ring-Striche beim Auftauchen, Dauer eines Pulses im Zeit-Chip
+ *
+ * VON JAVASCRIPT GESETZT
+ * -----------------------------------
+ * --i -> Platz einer Karte in der Spalte; setzt src/shell/desk-rail.js je Element
+ * --k -> Nummer eines Ring-Strichs; setzt src/shell/desk-rail-visuals.js je Element
+ *
+ * SCHRIFTGRÖSSEN EINZELNER ELEMENTE (direkt bei ihrer Regel)
+ * -----------------------------------
+ * 11px / 12px -> Typ-Pille und Uhrzeit der kleinen Karten / Zeit-Chip und Fälligkeit
+ * 13px / 14px -> Titel einer kleinen Karte / Titel einer Aufgabe
+ * 15px / 22px -> Kartentitel, Leer-Hinweis, nächster Termin / „ganztags“ statt einer Uhrzeit
+ */
+
+@media (min-width: 1280px) {
+  .desk-rail {
+    --rail-gap: 16px;
+    --rail-card-pad: 18px;
+    --rail-pill-height: 28px;
+    --rail-check-size: 20px;
+    --rail-prio-size: 6px;
+    --rail-recent-height: 150px;
+    --rail-tick-step: 12ms;
+    --rail-pulse: 1.8s;
+    display: flex;
+    flex-direction: column;
+    gap: var(--rail-gap);
+    padding: var(--desk-gutter);
+  }
+
+  /* Karten behalten ihre Höhe; ist die Spalte zu kurz, rollt sie (styles/desk.css). */
+  .desk-rail > * { flex-shrink: 0; }
+  /* Ein leerer Platz („Zuletzt geöffnet“ ohne Einträge) verschwindet ganz. */
+  .desk-rail [hidden] { display: none; }
+
+  /* Alles, was seine Teile untereinander stapelt. */
+  .rail-card, .rail-event, .rail-task-list, .rail-recent, .rail-recent-card {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .rail-event, .rail-task-title, .rail-recent-card { text-align: left; }
+
+  /* ---------- Karten: Kopf, Chip und Pillen ---------- */
+
+  .rail-card {
+    gap: 14px;
+    padding: var(--rail-card-pad);
+    border-radius: var(--desk-radius);
+    background: var(--desk-panel);
+  }
+
+  .rail-head, .rail-card-foot {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: var(--rail-pill-height);
+  }
+
+  .rail-card-foot { justify-content: space-between; }
+  .rail-title, .rail-empty, .rail-event-title { font-size: 15px; }
+
+  .rail-title {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .rail-chip, .rail-head-end { margin-left: auto; }
+  .rail-muted { font-size: var(--desk-label-size); }
+  /* Blasse Angaben neben dem eigentlichen Inhalt. */
+  .rail-muted, .rail-empty, .rail-task-day, .rail-recent-time { color: var(--muted); }
+  /* font-variant-numeric: gleich breite Ziffern — Minuten und Uhrzeiten springen nicht in der Breite */
+  .rail-chip, .rail-task-day, .rail-recent-time { font-variant-numeric: tabular-nums; }
+
+  .rail-chip, .rail-pill {
+    display: inline-flex;
+    align-items: center;
+    border-radius: 999px;
+    font-weight: 500;
+  }
+
+  .rail-chip {
+    gap: 6px;
+    height: 24px;
+    padding: 0 10px;
+    border: 0.5px solid var(--desk-edge);
+    background: var(--desk-hero-from);
+    font-size: 12px;
+  }
+
+  /* Punkt im Chip, sobald der Termin innerhalb der nächsten Stunde beginnt. */
+  .rail-chip.is-soon::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--desk-ink);
+  }
+
+  .rail-pill {
+    gap: 4px;
+    height: var(--rail-pill-height);
+    padding: 0 12px;
+    background-color: var(--tab-pill-active-bg);
+    font-size: var(--desk-label-size);
+    white-space: nowrap;
+  }
+
+  .rail-pill .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* Die Anlegen-Pille einer leeren Karte bleibt so breit wie ihr Text, statt sich zu strecken. */
+  .rail-card > .rail-pill { align-self: flex-start; }
+
+  /* ---------- Als Nächstes (Tagesleiste: styles/desk-rail-tiles.css) ---------- */
+
+  /* Der negative Rand lässt die Tönung unter der Maus über den Text hinausreichen. */
+  .rail-event {
+    gap: 8px;
+    margin: -8px;
+    padding: 8px;
+    border-radius: var(--desk-radius-sm);
+  }
+
+  .rail-event-when {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+  }
+
+  /* Die große dünne Uhrzeit teilt ihre Regel mit den Kacheln (styles/desk-rail-tiles.css). */
+  .rail-event-time.is-allday {
+    font-size: 22px;
+    letter-spacing: -0.02em;
+  }
+
+  .rail-event-title {
+    font-weight: 500;
+    line-height: 1.3;
+  }
+
+  .rail-event-title, .rail-recent-title {
+    display: -webkit-box; /* -webkit-box + line-clamp: höchstens zwei Zeilen, danach „…“ */
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    overflow-wrap: anywhere; /* overflow-wrap: sehr lange Wörter brechen, statt über den Rand zu laufen */
+  }
+
+  /* ---------- Aufgaben: schlichte Zeilen mit Haarlinie, keine Karten ---------- */
+
+  .rail-task-list {
+    margin: -6px 0;
+    list-style: none; /* list-style: Zeilen ohne Aufzählungspunkt, der Haken steht davor */
+  }
+
+  .rail-task {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 42px;
+  }
+
+  .rail-task + .rail-task { border-top: 0.5px solid var(--line); }
+
+  .rail-check {
+    position: relative; /* position: Bezug für die größere Klickfläche */
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: var(--rail-check-size);
+    height: var(--rail-check-size);
+    border: 1.5px solid var(--muted);
+    border-radius: 50%;
+    color: transparent; /* der Haken zeigt sich erst unter der Maus oder beim Abhaken */
+  }
+
+  /* Größere Klickfläche als der kleine Kreis, damit man ihn auch mit Schwung trifft. */
+  .rail-check::after {
+    content: "";
+    position: absolute; /* position: ragt rundum über den Kreis hinaus */
+    inset: -8px;
+  }
+
+  .rail-check .icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .rail-check.is-checking {
+    border-color: transparent;
+    background: var(--avatar-btn-bg);
+    color: var(--bg);
+  }
+
+  .rail-task-title {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    height: 34px;
+    margin-right: -8px;
+    padding: 0 8px;
+    border-radius: 10px;
+  }
+
+  .rail-task-text, .rail-type {
+    white-space: nowrap;
+    overflow: hidden; /* overflow + text-overflow: zu lange Namen enden mit „…“ */
+    text-overflow: ellipsis;
+  }
+
+  .rail-task-text {
+    flex: 1;
+    min-width: 0;
+    font-size: 14px;
+  }
+
+  .rail-task-day { font-size: 12px; }
+
+  .rail-prio {
+    flex: 0 0 auto;
+    width: var(--rail-prio-size);
+    height: var(--rail-prio-size);
+    border-radius: 50%;
+  }
+
+  /* ---------- Zuletzt geöffnet ---------- */
+
+  .rail-recent { gap: 12px; }
+  .rail-recent .rail-head { padding: 0 4px; }
+
+  .rail-recent-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .rail-recent-card {
+    align-items: flex-start;
+    gap: 6px;
+    min-width: 0;
+    height: var(--rail-recent-height);
+    padding: 10px;
+    border-radius: var(--desk-radius-sm);
+    background-color: var(--desk-panel);
+  }
+
+  .rail-type {
+    max-width: 100%;
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--tab-pill-active-bg);
+    color: var(--avatar-btn-bg);
+    font-weight: 500;
+  }
+
+  .rail-type, .rail-recent-time { font-size: 11px; }
+
+  .rail-recent-visual {
+    flex: 1;
+    align-self: stretch;
+    display: grid;
+    place-items: center;
+    min-height: 0;
+  }
+
+  .rail-recent-visual .entry-type {
+    width: 30px;
+    height: 30px;
+    color: var(--avatar-btn-bg);
+  }
+
+  /* Vorschau einer Zeichnung oder eines Fotos: Papier und Haarlinie kommen aus styles/rows.css. */
+  .rail-recent-visual .entry-thumb {
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+  }
+
+  .rail-recent-title {
+    align-self: stretch;
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.25;
+  }
+
+  /* ---------- Drücken und Tastatur ---------- */
+
+  /* transition: Tönung, Haken und Nachgeben gleiten statt zu springen */
+  .rail-pill, .rail-event, .rail-check, .rail-task-title, .rail-recent-card {
+    transition: background-color var(--desk-fast) var(--desk-ease), border-color var(--desk-fast) var(--desk-ease),
+      color var(--desk-fast) var(--desk-ease), opacity var(--desk-fast) var(--desk-ease),
+      transform var(--desk-fast) var(--desk-ease);
+  }
+
+  /* transform: kurzes Nachgeben wie am Handy */
+  .rail-recent-card:active, .rail-event:active { transform: scale(0.98); }
+  .rail-pill:active, .rail-check:active, .rail-task-title:active { opacity: 0.6; }
+
+  .desk-rail button:focus-visible {
+    outline: 2px solid var(--avatar-btn-bg);
+    outline-offset: 2px; /* outline-offset: der Fokus-Ring liegt mit Luft um den Knopf */
+  }
+}
+
+/* Überfahren nur mit echter Maus, damit ein Tipp auf dem Tablet nichts hängen lässt. */
+@media (min-width: 1280px) and (hover: hover) {
+  /* Gefüllte Flächen: die Tönung legt sich als Ebene darüber, statt die Farbe zu ersetzen —
+     so bleibt sie in Hell und Dunkel gleich deutlich. Leere Flächen bekommen sie als Farbe. */
+  .rail-pill:hover, .rail-recent-card:hover { background-image: var(--desk-tint); }
+  .rail-event:hover, .rail-task-title:hover { background-color: var(--desk-hover); }
+
+  .rail-check:not(.is-checking):hover {
+    border-color: var(--text);
+    color: var(--muted);
+  }
+}
+
+/* Bewegung nur, wenn im System nicht „Bewegung reduzieren“ gewählt ist. Die Namen
+   desk-rail-rise und desk-rail-tick stehen auch in src/shell/desk-rail.js (entranceMotions). */
+@media (min-width: 1280px) and (prefers-reduced-motion: no-preference) {
+  /* animation: beim ersten Zeigen tauchen die Karten nacheinander auf (Takt aus --i) … */
+  .desk-rail.is-entering [data-slot] {
+    animation: desk-rail-rise var(--desk-enter) var(--desk-ease) backwards;
+    animation-delay: calc(var(--i) * var(--desk-enter-step));
+  }
+
+  /* animation: … und danach gehen die Striche des Rings der Reihe nach an (--k je Strich). */
+  .desk-rail.is-entering .rail-ring-tick.is-on {
+    animation: desk-rail-tick var(--desk-enter) var(--desk-ease) backwards;
+    animation-delay: calc(var(--desk-enter) / 2 + var(--k) * var(--rail-tick-step));
+  }
+
+  /* transition: der Stapel fächert unter der Maus weich auf (styles/desk-rail-tiles.css). */
+  .rail-sheet { transition: transform var(--desk-fast) var(--desk-ease); }
+  /* animation: der Punkt im Zeit-Chip pulsiert ruhig, solange der Termin bald beginnt. */
+  .rail-chip.is-soon::before { animation: desk-rail-pulse var(--rail-pulse) ease-in-out infinite; }
+  /* animation: der Haken springt beim Abhaken kurz auf. */
+  .rail-check.is-checking { animation: desk-rail-pop var(--desk-fast) var(--desk-ease); }
+
+  @keyframes desk-rail-rise {
+    from {
+      opacity: 0;
+      transform: translateY(var(--desk-enter-rise));
+    }
+  }
+
+  @keyframes desk-rail-tick {
+    from { stroke: var(--level-dim); }
+  }
+
+  @keyframes desk-rail-pulse {
+    50% { opacity: 0.25; }
+  }
+
+  @keyframes desk-rail-pop {
+    from { transform: scale(0.8); }
+  }
+}

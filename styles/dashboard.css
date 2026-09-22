@@ -1,0 +1,329 @@
+/*
+ * Desktop: Kopf der Übersicht — graues Datum neben „Übersicht“, vier große
+ * Zahlen, das Aktivitätsband mit gläsernem Stufen-Chip und die zwei großen
+ * Karten „Diese Woche“ und „Serie“ (Markup: src/features/dashboard/), nur
+ * Aufbau und Aussehen in Ruhe — Überfahren, Drücken, Tastatur-Rahmen und
+ * Auftauchen: styles/dashboard-motion.css. Am Handy ist nichts davon zu sehen.
+ * Keine Schatten: Tiefe entsteht durch Tonstufen, Haarlinien und Glas.
+ * Pfad: styles/dashboard.css
+ *
+ * ANPASSBARE WERTE
+ * -----------------------------------
+ * GELESEN (styles/tokens-desk.css, tokens.css, tokens-pages.css)
+ * --desk-stat-size / --desk-hero-num-size / --desk-num-weight -> Größe der vier Zahlen,
+ *                             größte Größe der Kartenzahl, Strichstärke (dünn = edler)
+ * --desk-label-size         -> kleine Beschriftungen: Zeile unter den Zahlen, Kartentitel, Chip
+ * --desk-radius-lg / --desk-hero-from / --desk-hero-to -> Rundung und Verlauf der großen Karten
+ * --desk-sheen / --desk-edge -> Lichtfleck oben links auf den Karten, Haarlinie um Karten und Chip
+ * --desk-glass / --desk-glass-blur -> Glas des Stufen-Chips über dem Band
+ * --desk-kbd-bg             -> helle Pillen und Pfeil-Kreis in den Karten
+ * --desk-level-0 … --desk-level-4 -> Helligkeiten der Punkte (0 = nichts, 4 = viel)
+ * --title-alt / --title-alt-gap / --title-side -> graues Datum wie der graue Zweittitel; Einzug der Zahlen
+ * --text / --bg / --muted / --avatar-btn-bg -> Schrift, umgekehrte erste Pille, leise Schrift, Akzent
+ * --level-color / --level-dim -> erreichte und offene Striche der Stufen-Skala (wie oben links)
+ *
+ * IN DIESER DATEI (auf .desk-hero)
+ * --dash-gap-stats / --dash-gap-band / --dash-gap-hero -> Luft unter Zahlen, Band und ganzem Kopf
+ * --dash-stat-gap / --dash-stat-pad -> Fuge zwischen den Zahlen / Überstand ihrer Tönung (dashboard-motion.css)
+ * --dash-card-height / --dash-card-pad -> Höhe (wächst mit dem Fenster) und Innenrand der Karten
+ * --dash-num-fit / --dash-small-size -> höchster Anteil der Kartenbreite für die große Zahl / Schrift von Monaten und Legende
+ * --dash-pill / --dash-go-size -> Rundung der Pillen / Größe des Pfeil-Kreises in den Karten
+ * --dash-tone               -> Helligkeit eines Punktes; ohne Stufe „nichts“, je Stufe heller
+ *
+ * Direkt bei ihrer Regel: Pillen 12px, „XP“/„Tage“ 24px, Icons 16px, 0.25em
+ * (etwa ein Leerzeichen vor dem Datum) und die Breite 760px der @container-
+ * Abfrage (darunter Pille über der Zahl — Abfragen lesen keine CSS-Variablen).
+ */
+
+/* Am Handy weder Kopf noch Datum — auch nicht, wenn man das Fenster schmal zieht. */
+.desk-hero,
+.desk-title-date {
+  display: none;
+}
+
+/* Diese Grenze steht auch in src/ui/desk-mode.js (deskQuery). */
+@media (min-width: 1024px) {
+  .desk-title-date {
+    display: inline;
+    /* calc: davor steht ein echtes Leerzeichen — der Rand zieht dessen Breite ab, Abstand wie beim Zweittitel */
+    margin-left: calc(var(--title-alt-gap) - 0.25em);
+    color: var(--title-alt);
+    /* white-space: wird es eng, bricht der Titel am Leerzeichen davor — das Datum rückt als Ganzes nach unten */
+    white-space: nowrap;
+  }
+
+  .desk-hero {
+    --dash-gap-stats: 28px;
+    --dash-gap-band: 28px;
+    --dash-gap-hero: 40px;
+    --dash-stat-gap: 16px;
+    --dash-stat-pad: 8px;
+    --dash-card-height: clamp(240px, 24vw, 300px);
+    --dash-card-pad: 22px;
+    --dash-num-fit: 30cqi;
+    --dash-small-size: 11px;
+    --dash-pill: 999px;
+    --dash-go-size: 32px;
+    --dash-tone: var(--desk-level-0);
+    display: block;
+    margin-bottom: var(--dash-gap-hero);
+  }
+
+  .dash-stat-sub,
+  .dash-caption,
+  .dash-card-head,
+  .dash-card-sub,
+  .dash-chip {
+    font-size: var(--desk-label-size);
+    color: var(--muted);
+  }
+
+  .dash-legend,
+  .dash-months {
+    font-size: var(--dash-small-size);
+    color: var(--muted);
+  }
+
+  .dash-band-head,
+  .dash-legend,
+  .dash-card-head {
+    display: flex;
+    align-items: center;
+  }
+
+  .dash-chip-icon,
+  .dash-card-icon,
+  .dash-card-go .icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Die vier Zahlen */
+  .dash-stats {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: var(--dash-stat-gap);
+    margin-bottom: var(--dash-gap-stats);
+    padding: 0 var(--title-side);
+    /* container-type: die Zahlen fragen nach der Breite des Kopfes — mit rechter Spalte ist die Mitte schmaler */
+    container-type: inline-size;
+  }
+
+  .dash-stat {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    /* grid-template-areas: die Pille hängt oben rechts an der Zahl, die Zeile läuft unter beiden */
+    grid-template-areas: "num pill" "sub sub";
+    align-items: start;
+    justify-items: start;
+    gap: 10px 8px;
+    min-width: 0; /* darf schmaler als sein Inhalt werden, damit alle vier Spalten gleich bleiben */
+    text-align: left;
+    color: var(--text);
+  }
+
+  .dash-stat-num,
+  .dash-hero-num {
+    font-weight: var(--desk-num-weight);
+    letter-spacing: -0.05em;
+    line-height: 1;
+    /* tabular-nums: gleich breite Ziffern, damit eine Zahl beim Ändern nicht wackelt */
+    font-variant-numeric: tabular-nums;
+  }
+
+  .dash-stat-num {
+    grid-area: num;
+    font-size: var(--desk-stat-size);
+  }
+
+  .dash-stat-sub { grid-area: sub; }
+
+  .dash-pill {
+    grid-area: pill;
+    max-width: 100%; /* nie breiter als die eigene Spalte — sonst ragte sie in die Nachbarzahl */
+    margin-top: 2px;
+    padding: 3px 9px;
+    border-radius: var(--dash-pill);
+    background: var(--desk-kbd-bg);
+    color: var(--avatar-btn-bg);
+    font-size: 12px;
+    font-weight: 500;
+    line-height: 1.3;
+    /* white-space/overflow/text-overflow: „Erledigt“ bricht nie um; reicht der Platz nicht, endet es mit „…“ */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* Die erste Pille steht umgekehrt — wie „Total“ im Vorbild, nur in den eigenen zwei Tönen. */
+  .dash-pill.is-lead {
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  /* @container: ist der Kopf schmal (rechte Spalte offen, kleines Fenster), rückt die Pille über die Zahl. */
+  @container (max-width: 760px) {
+    .dash-stat {
+      grid-template-columns: minmax(0, 1fr);
+      grid-template-areas: "pill" "num" "sub";
+    }
+  }
+
+  /* Aktivitätsband */
+  .dash-band { margin-bottom: var(--dash-gap-band); }
+
+  .dash-band-head {
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+  }
+
+  .dash-legend { gap: 5px; }
+  .dash-swatch {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--dash-tone);
+  }
+
+  /* Die Helligkeit hängt an der Stufe — für Band, Serie und Legende zugleich. */
+  .desk-hero .is-l1 { --dash-tone: var(--desk-level-1); }
+  .desk-hero .is-l2 { --dash-tone: var(--desk-level-2); }
+  .desk-hero .is-l3 { --dash-tone: var(--desk-level-3); }
+  .desk-hero .is-l4 { --dash-tone: var(--desk-level-4); }
+
+  /* position: Anker für den Chip, der mitten über den Punkten schwebt */
+  .dash-band-field { position: relative; }
+
+  .dash-band-svg,
+  .dash-foot-svg {
+    display: block;
+    /* overflow: Punkte am Rand dürfen ein Haar über die Kante, statt angeschnitten zu werden */
+    overflow: visible;
+  }
+
+  .dash-chip {
+    /* position/left/top/transform: der Chip schwebt genau in der Mitte des Bandes */
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 18px 0 14px;
+    border: 0.5px solid var(--desk-edge);
+    border-radius: var(--dash-pill);
+    background-color: var(--desk-glass);
+    /* backdrop-filter: die Punkte dahinter verschwimmen — Glas statt Schatten */
+    -webkit-backdrop-filter: blur(var(--desk-glass-blur));
+    backdrop-filter: blur(var(--desk-glass-blur));
+    /* white-space: Stufe und Punkte bleiben in einer Zeile */
+    white-space: nowrap;
+  }
+
+  .dash-chip-icon { color: var(--avatar-btn-bg); }
+  .dash-chip-strong {
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .dash-months {
+    /* position: Anker für die Monatsnamen unter ihrer ersten Säule */
+    position: relative;
+    height: 16px;
+    margin-top: 6px;
+  }
+
+  .dash-month {
+    /* position/left: --at setzt dashboard-charts.js auf die Säule, mit der der Monat beginnt */
+    position: absolute;
+    top: 0;
+    left: var(--at);
+    /* white-space: „Sept.“ bleibt ein Wort */
+    white-space: nowrap;
+  }
+
+  .dash-month.is-today {
+    left: auto;
+    right: 0;
+    color: var(--text);
+  }
+
+  /* Die zwei großen Karten */
+  .dash-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .dash-card {
+    display: flex;
+    flex-direction: column;
+    min-width: 0; /* beide Karten bleiben gleich breit, auch bei langer Zahl */
+    height: var(--dash-card-height);
+    padding: var(--dash-card-pad);
+    border: 0.5px solid var(--desk-edge);
+    border-radius: var(--desk-radius-lg);
+    /* oben links ein weicher Lichtfleck, darunter der Verlauf aus den Grundfarben */
+    background:
+      radial-gradient(120% 90% at 18% 0%, var(--desk-sheen), transparent 55%),
+      linear-gradient(165deg, var(--desk-hero-from), var(--desk-hero-to));
+    color: var(--text);
+    text-align: left;
+    /* container-type: die große Zahl richtet sich nach der Kartenbreite (--dash-num-fit) */
+    container-type: inline-size;
+  }
+
+  .dash-card-head { gap: 8px; }
+
+  /* Pfeil-Kreis rechts im Kopf; die negativen Ränder halten die Kopfzeile niedrig. */
+  .dash-card-go {
+    display: grid;
+    place-items: center;
+    width: var(--dash-go-size);
+    height: var(--dash-go-size);
+    margin: -8px -8px -8px auto;
+    border-radius: 50%;
+    background: var(--desk-kbd-bg);
+    color: var(--avatar-btn-bg);
+  }
+
+  .dash-card-body {
+    flex: 1;
+    min-height: 0; /* in einer niedrigen Karte gibt die Mitte nach, nicht die Grafik unten */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .dash-hero-num {
+    display: flex;
+    align-items: baseline;
+    gap: 6px;
+    font-size: min(var(--desk-hero-num-size), var(--dash-num-fit));
+  }
+
+  .dash-hero-unit {
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: -0.02em;
+    color: var(--muted);
+  }
+
+  .dash-foot-svg { margin-top: 10px; }
+
+  /* Grafiken (dashboard-charts.js). stroke-linecap: runde Enden machen aus den fast null langen
+     Strichen einer Punktsäule Punkte und runden die Striche der Stufen-Skala ab wie oben links. */
+  .dash-dots,
+  .dash-tick {
+    stroke-linecap: round;
+  }
+
+  .dash-dots { stroke: var(--dash-tone); }
+  .dash-tick { stroke: var(--level-dim); }
+  .dash-tick.is-on { stroke: var(--level-color); }
+}

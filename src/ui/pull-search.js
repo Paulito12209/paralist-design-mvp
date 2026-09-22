@@ -18,6 +18,7 @@
  */
 
 import { dom } from "../core/dom.js";
+import { isDesk } from "./desk-mode.js";
 import { showSearch } from "./router.js";
 import { isViewActive } from "./views.js";
 
@@ -32,6 +33,9 @@ let ignoreClicksUntil = 0;
 /* ───────── Bedingung: darf ein Pull starten? ───────── */
 
 function canStartPull(target) {
+  /* Desktop-Fassung: das Suchfeld steht immer sichtbar in der Seitenleiste, und
+     Ziehen mit gedrückter Maus heißt dort Text markieren, nicht Suchen. */
+  if (isDesk()) return false;
   /* Suche ist bereits aktiv: kein erneuter Pull nötig */
   if (isViewActive("search")) return false;
   /* Auf Unterseiten gibt es keine Standard-Kopfzeile */
