@@ -37,8 +37,8 @@ import { initSearchBar } from "./shell/search-bar.js";
 import { checkForUpdate, initUpdatePrompt } from "./shell/update-prompt.js";
 import { mountSprite } from "./shell/sprite.js";
 import { closeCtxMenu, initCtxMenu } from "./ui/ctx-menu.js";
-import { initListClicks } from "./ui/list-clicks.js";
 import { isDesk, onDeskChange } from "./ui/desk-mode.js";
+import { initListClicks } from "./ui/list-clicks.js";
 import { setLongPressMenus } from "./ui/long-press.js";
 import { initModalPull } from "./ui/modal-pull.js";
 import { initModalTop } from "./ui/modal-top.js";
@@ -58,9 +58,9 @@ const lazyModules = {
   profile: () => import("./features/profile/profile.js"),
   drawing: () => import("./features/drawing/drawing.js"),
   files: () => import("./data/files.js"),
-};
   desk: () => import("./shell/desk.js"),
   dashboard: () => import("./features/dashboard/dashboard.js"),
+};
 
 /* Von den nachladbaren Bereichen sind das die, die eine eigene Ansicht haben. */
 const lazyViews = ["calendar", "tasks", "media", "search"];
@@ -119,7 +119,6 @@ function initLazyViews() {
   on(events.viewWillChange, closeCtxMenu);
 }
 
-/* Die Startseite aufbauen und die Adresse setzen. */
 /*
  * Desktop-Fassung einhängen, sobald das Fenster breit genug ist — beim Start
  * oder später beim Aufziehen. Am Handy wird davon nichts geladen. Beide
@@ -135,6 +134,7 @@ function initDeskWhenWide() {
   onDeskChange(mount);
 }
 
+/* Die Startseite aufbauen und die Adresse setzen. */
 function showStartPage() {
   renderOverview();
   renderTabs();
@@ -149,10 +149,10 @@ function start() {
   initShell();
   initFeatures();
   showStartPage();
+  initDeskWhenWide();
   initLifecycle({ onShow: checkForUpdate });
   initUpdatePrompt();
   /* Die Icons kommen nach, das Gerüst steht schon. */
-  initDeskWhenWide();
   mountSprite();
   prefetchWhenIdle(prefetchOrder);
 }
