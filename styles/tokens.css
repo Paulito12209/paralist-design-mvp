@@ -114,6 +114,7 @@
  *                              (zusätzlich zur Statusleiste). Beide Kopfzeilen sind gleich hoch,
  *                              darum steht der Seitentitel überall auf derselben Höhe.
  * --page-title-gap          -> Luft unter dem Seitentitel einer Unterseite oder eines Eintrags bis zu den Pillen
+ * --page-title-lines        -> nach so vielen Zeilen endet ein langer Seitentitel mit „…“
  * --title-side              -> Extra-Abstand für die große Überschrift
  * --overview-gap            -> Abstand zwischen Überschrift und Karten
  * --workspace-section-gap / --workspace-head-gap -> Abstand der vier Karten zu
@@ -212,6 +213,7 @@
   --content-top: 36px;
   --page-head-top: 8px;
   --page-title-gap: 18px;
+  --page-title-lines: 5;
   --title-side: 4px;
   --overview-gap: 24px;
   --workspace-section-gap: 40px;

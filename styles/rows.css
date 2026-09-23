@@ -17,6 +17,7 @@
  * --search-bar-height       -> Höhe der Kopfzeile einer Unterseite (so hoch wie die Suchleiste)
  * --content-top             -> Luft zwischen Kopfzeile und Seitentitel
  * --page-title-gap          -> Luft unter dem Seitentitel
+ * --page-title-lines        -> nach so vielen Zeilen endet ein langer Titel mit „…“
  * --safe-top                -> Platz für Notch und Statusleiste über dem Zurück-Pfeil
  * --placeholder             -> grauer Vorgabename beim Benennen eines Arbeitsbereichs
  * --muted                   -> Anzahl neben den Gruppen-Überschriften (wie in der Pille darüber)
@@ -162,6 +163,20 @@
 .page-title {
   margin: 0 0 var(--page-title-gap);
   padding: 0;
+  /* Lange Titel nach --page-title-lines Zeilen mit „…“ abschneiden */
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--page-title-lines);
+  line-clamp: var(--page-title-lines);
+  overflow: hidden;
+  overflow-wrap: anywhere; /* overflow-wrap: sehr lange Wörter umbrechen statt überstehen */
+}
+
+/* Beim Umbenennen den ganzen Titel zeigen, sonst tippt man blind */
+.page-title.is-editable:focus {
+  display: block;
+  -webkit-line-clamp: unset;
+  line-clamp: none;
 }
 
 /* Titel eines Arbeitsbereichs: direkt antippen und umbenennen, ohne Rahmen —
