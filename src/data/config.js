@@ -9,6 +9,7 @@
  * xpKinds[*].color        -> Farbe im Ring des Fortschritt-Blatts (verweist auf styles/tokens.css)
  * xpKinds[*].amount       -> wie viele XP ein Ereignis bringt
  * composerPlaceholders    -> Platzhaltertext im Eingabefeld je gewähltem Typ
+ * mediaTitlePlaceholder   -> Platzhalter eines Mediums, sobald eine Datei angehängt ist
  * proposedType            -> Typ, den das Eingabefeld ohne nähere Angabe vorschlägt
  * typeSingulars           -> Einzahl der Typen, deren Name in der Mehrzahl steht
  * resourceFilterTypes     -> welchen Typ jede Filter-Pille der Ressourcen-Seite anlegt
@@ -75,8 +76,12 @@ export const composerPlaceholders = {
   projekt: "Neues Projekt einfügen …",
   dokument: "Neue Ressource anlegen …",
   zeichnung: "Neue Zeichnung anlegen …",
-  medien: "Neues Medium anlegen …",
+  /* Ein Medium besteht aus seiner Datei — ohne sie lässt es sich nicht anlegen. */
+  medien: "Über + eine Datei anhängen …",
 };
+
+/* Sobald die Datei da ist, ist der Titel freiwillig: ohne heißt das Medium wie die Datei. */
+export const mediaTitlePlaceholder = "Eigener Titel (optional) …";
 
 /*
  * Die vier Übersichtskarten. Nur der Eingang ist ein Ablageort (parent null =

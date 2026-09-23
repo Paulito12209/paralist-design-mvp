@@ -24,11 +24,16 @@ export function logXp(kind, item, title, count = 1) {
   });
 }
 
+/** Protokolliertes speichern und die Level-Anzeige auffrischen. */
+export function commitXp() {
+  saveState();
+  emit(events.xpChanged);
+}
+
 /** Ein Ereignis protokollieren, speichern und die Level-Anzeige auffrischen. */
 export function awardXp(kind, item, title, count = 1) {
   logXp(kind, item, title, count);
-  saveState();
-  emit(events.xpChanged);
+  commitXp();
 }
 
 /**

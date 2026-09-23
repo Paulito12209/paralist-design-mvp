@@ -4,28 +4,22 @@
  * Fehlt ein Wert, fällt die Zeile weg statt leer dazustehen.
  * Pfad: src/data/details.js
  *
- * ANPASSBARE WERTE IN DIESER DATEI
- * -----------------------------------
- * singularTypes -> Typnamen in der Einzahl, wo die Liste sonst die Mehrzahl zeigt
+ * Keine anpassbaren Werte: die Typnamen in der Einzahl („Projekt“, „Medium“)
+ * stehen in src/data/config.js (typeSingulars).
  */
 
 import { linkedEntries } from "./links.js";
 import { entriesOf, isContainer, placesLabel } from "./queries.js";
 import { entryRef, workspaceRef } from "./refs.js";
 import { state } from "./state.js";
-import { types } from "./config.js";
+import { typeSingular } from "./config.js";
 import { longDate } from "../core/format.js";
-
-/* In den Listen heißt die Gruppe „Projekte“ — ein einzelnes ist ein „Projekt“. */
-const singularTypes = { projekt: "Projekt" };
 
 const createdFormat = new Intl.DateTimeFormat("de-DE", { day: "numeric", month: "long", year: "numeric" });
 
-/** Der Typname eines Eintrags in der Einzahl, z.B. „Notiz“ oder „Projekt“. */
+/** Der Typname eines Eintrags in der Einzahl, z.B. „Notiz“, „Projekt“ oder „Medium“. */
 export function entryTypeName(entry) {
-  if (singularTypes[entry.type]) return singularTypes[entry.type];
-  const type = types.find((item) => item.id === entry.type);
-  return type ? type.label : "Eintrag";
+  return typeSingular(entry.type);
 }
 
 /** Details eines Arbeitsbereichs als Liste von { label, value }. */

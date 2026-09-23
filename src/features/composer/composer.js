@@ -1,6 +1,7 @@
 /*
  * Das Eingabefeld unten: öffnet sich über der Navigation, nimmt Titel, Typ,
- * Ablageort und Anhänge und legt daraus einen Eintrag an.
+ * Ablageort und Anhänge und legt daraus einen Eintrag an. Die Typ-Wahl steht
+ * in composer-types.js, die Anhänge in attachments.js.
  * Pfad: src/features/composer/composer.js
  *
  * Keine anpassbaren visuellen Werte: Schriftgrößen, Pillen und Knöpfe stehen in
@@ -11,53 +12,36 @@
 import { emit, events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { dayKey, timeKey } from "../../core/dates.js";
-import { icon } from "../../core/html.js";
-import {
-  composerPlaceholders,
-  defaultType,
-  overviewPages,
-  typeSingular,
-  types,
-  xpItemStyle,
-  xpKinds,
-} from "../../data/config.js";
+import { overviewPages, typePlurals, typeSingular, xpKinds } from "../../data/config.js";
 import { connectEntries } from "../../data/links.js";
 import { applyEntryDefaults } from "../../data/mutations.js";
 import { findEntry, parentName } from "../../data/queries.js";
-import { entryRef, isEntryRef } from "../../data/refs.js";
+import { entryRef } from "../../data/refs.js";
 import { state, ui } from "../../data/state.js";
-import { awardXp } from "../../data/xp.js";
+import { awardXp, commitXp } from "../../data/xp.js";
 import { closeCtxMenu } from "../../ui/ctx-menu.js";
 import { openPlacePicker } from "../../ui/pickers.js";
-import { openEntry } from "../../ui/router.js";
-import { openSheet } from "../../ui/sheet.js";
+import { openEntry, openEntryOrFile } from "../../ui/router.js";
 import { hideToast, showToast } from "../../ui/toast.js";
 import { isViewActive } from "../../ui/views.js";
 import {
-  addComposerFiles,
   attachFilesTo,
-  dropComposerFile,
+  createMediaEntries,
+  initComposerAttachments,
   renderComposerAttachments,
 } from "./attachments.js";
 import { contextDefaults, pickOverrides } from "./composer-defaults.js";
 import {
+  adoptMediaType,
   chooseComposerType,
-  clearComposerPick,
   composer,
-  composerPickButtons,
   isComposerPreset,
+  releaseMediaType,
   rememberComposerPreset,
   resetComposerDraft,
 } from "./composer-state.js";
+import { initComposerTypes, renderComposerTypes } from "./composer-types.js";
 import { stopDictation } from "./dictation.js";
-
-/* Die Dateiquellen hinter dem Plus-Knopf. */
-const fileSources = [
-  { id: "photo", label: "Foto aufnehmen", icon: "camera" },
-  { id: "video", label: "Video aufnehmen", icon: "video" },
-  { id: "audio", label: "Audio hinzufügen", icon: "mic" },
-  { id: "import", label: "Importieren", icon: "import" },
-];
 
 /** Anlegen-Knopf: erst aktiv, wenn Text da ist oder ein Anhang den Titel liefern kann. */
 export function updateComposerSend() {
@@ -69,44 +53,6 @@ export function updateComposerSend() {
     return;
   }
   dom.composerSend.disabled = !dom.composerInput.value.trim() && !composer.files.length;
-}
-
-/*
- * Darf gerade ein Projekt entstehen? Steht als Ablageort schon ein Projekt
- * fest, dann nicht: ein Projekt in einem Projekt schließt src/data/config.js
- * aus (containerTypes), sonst könnte ein Kreis entstehen.
- */
-function projectAllowed() {
-  return !isEntryRef(composer.place);
-}
-
-/** Die Typ-Knöpfe unten neu zeichnen. */
-function renderComposerTypes() {
-  const allowProject = projectAllowed();
-  dom.composerTypes.innerHTML = composerPickButtons()
-    .map((pick) => {
-      const active = pick.id === composer.pick;
-      const locked = pick.id === "projekt" && !allowProject;
-      /* Der gewählte Typ hebt sich nur über die Icon-Farbe ab — je Typ wie in Kalender und Verlauf */
-      const style = active ? ` style="--type-color:${xpItemStyle(pick.typeId).color}"` : "";
-      return `
-        <button class="composer-type${active ? " is-active" : ""}" type="button" data-type="${pick.id}" aria-label="${pick.label}"${locked ? " disabled" : ""}${style}>
-          ${icon(pick.icon)}
-        </button>
-      `;
-    })
-    .join("");
-  renderComposerTypePill();
-}
-
-/** Typ-Pille neben „Eingang”: zeigt den gewählten Typ und setzt den Platzhaltertext. */
-function renderComposerTypePill() {
-  const type =
-    types.find((item) => item.id === composer.type) || types.find((item) => item.id === defaultType);
-  dom.composerTypeIcon.setAttribute("href", `#icon-${type.icon}`);
-  dom.composerTypeLabel.textContent = type.label;
-  dom.composerInput.placeholder = composerPlaceholders[type.id] || "Neuen Eintrag einfügen …";
-  dom.composerTypePill.classList.toggle("is-preset", isComposerPreset("type"));
 }
 
 /*
@@ -198,18 +144,15 @@ function applyCalendarDate(entry) {
   else entry.time = day === dayKey(new Date()) ? timeKey(Date.now()) : "09:00";
 }
 
-/** Aus dem Entwurf einen Eintrag machen. */
-export function createEntry() {
-  /* Ohne Titel reicht ein Anhang: dann heißt der Eintrag wie die erste Datei. */
-  const title = dom.composerInput.value.trim() || (composer.files[0] ? composer.files[0].title : "");
-  if (!title) return;
-
+/* Ein gewöhnlicher Eintrag; jede angehängte Datei hängt als Medium an ihm.
+   Gibt den Eintrag und danach seine Medien zurück. */
+function createPlainEntry(title, places, source) {
   const entry = {
     id: state.nextEntryId++,
     type: composer.type,
     title,
     body: "",
-    places: composer.place ? [composer.place] : [],
+    places,
     links: [],
     archived: false,
     favorite: false,
@@ -221,15 +164,37 @@ export function createEntry() {
 
   state.entries.push(entry);
   const attached = attachFilesTo(entry);
+  if (source) connectEntries(entry, source);
+  return [entry, ...attached];
+}
+
+/* „Notiz erstellt“ — bei mehreren Dateien als Medium „3 Medien erstellt“. */
+function createdTitle(entry, count) {
+  if (entry.type === "medien" && count > 1) return `${count} ${typePlurals.medien} erstellt`;
+  return `${typeSingular(entry.type)} erstellt`;
+}
+
+/** Aus dem Entwurf einen Eintrag machen — beim Typ „Medium“ nur die Dateien selbst. */
+export function createEntry() {
+  const typed = dom.composerInput.value.trim();
+  const isMedia = composer.type === "medien";
+  /* Ohne Titel reicht ein Anhang: dann heißt der Eintrag wie die erste Datei.
+     Ein Medium braucht dagegen immer eine Datei — es IST die Datei. */
+  const title = typed || (composer.files[0] ? composer.files[0].title : "");
+  if (!title || (isMedia && !composer.files.length)) return;
+
+  const places = composer.place ? [composer.place] : [];
   /* Von der Seite eines Eintrags aus Angelegtes wird mit ihm verknüpft — in
      beide Richtungen. Der Ablageort kommt davon unabhängig aus `composer.place`. */
   const source = composer.link ? findEntry(composer.link) : null;
-  if (source) connectEntries(entry, source);
-  /* Jeder Anhang wird ein eigener Medien-Eintrag und bringt dieselben Punkte
-     wie der Eintrag selbst (src/features/composer/attachments.js) — die
-     Meldung muss also mitzählen, sonst nennt sie eine andere Zahl als die
-     Stufenanzeige gleich danach. */
-  const points = xpKinds.created.amount * (1 + attached.length);
+  /* Ein Medium bekommt keinen Eintrag drumherum: sonst stünde neben dem Foto
+     „IMG_2968“ noch ein gleichnamiges Dokument, das nichts enthält. */
+  const created = isMedia ? createMediaEntries(typed, places, source) : createPlainEntry(title, places, source);
+  const entry = created[0];
+  /* Jede Datei wird ein eigener Medien-Eintrag und bringt dieselben Punkte wie
+     ein Eintrag (src/features/composer/attachments.js) — die Meldung zählt sie
+     also mit, sonst nennt sie eine andere Zahl als die Stufenanzeige danach. */
+  const points = xpKinds.created.amount * created.length;
 
   dom.composerInput.value = "";
   closeComposer();
@@ -254,60 +219,37 @@ export function createEntry() {
    */
   if (entry.type !== "zeichnung") {
     showToast({
-      title: `${typeSingular(entry.type)} erstellt`,
+      title: createdTitle(entry, created.length),
       note: `+${points} XP`,
-      action: { label: "Zur Seite", onSelect: () => openEntry(entry.id) },
+      /* Ein Medium will man ansehen — es öffnet sich als Datei, nicht als Seite. */
+      action: { label: isMedia ? "Ansehen" : "Zur Seite", onSelect: () => openEntryOrFile(entry.id) },
     });
   }
-  awardXp("created", entry.type, title);
+  /* Medien sind schon einzeln protokolliert (attachments.js) — es fehlt nur das Speichern. */
+  if (isMedia) commitXp();
+  else awardXp("created", entry.type, title);
 
   /* Eine neue Zeichnung öffnet sich gleich, damit man sofort loslegen kann. */
   if (entry.type === "zeichnung") openEntry(entry.id);
 }
 
-/* Die Typ-Pille oben öffnet die volle Liste der Typen. */
-function openTypeSheet() {
-  const allowProject = projectAllowed();
-  const sheetTypes = types.filter(
-    (type) =>
-      (type.pick || type.id === "dokument" || type.id === "zeichnung") &&
-      !(type.id === "projekt" && !allowProject)
-  );
-  openSheet(
-    "Typ wählen",
-    sheetTypes.map((type) => ({
-      label: type.label,
-      icon: type.icon,
-      active: type.id === composer.type,
-      /* gap und split gliedern die Liste: Ressourcen stehen abgesetzt unter den vier Typen */
-      gap: type.id === "termin" || type.id === "projekt",
-      split: type.id === "dokument",
-      onSelect: () => {
-        chooseComposerType(type.id);
-        renderComposerTypes();
-        renderComposerLink();
-        updateComposerSend();
-        dom.composerInput.focus();
-      },
-    }))
-  );
-}
-
-/* Ein Klick auf einen Typ-Knopf wählt ihn oder wählt ihn wieder ab. */
-function onTypeClick(event) {
-  const button = event.target.closest("[data-type]");
-  if (!button) return;
-  if (button.disabled) return;
-  const pick = composerPickButtons().find((item) => item.id === button.dataset.type);
-  if (!pick) return;
-
-  if (composer.pick === pick.id) clearComposerPick();
-  else chooseComposerType(pick.typeId, pick.id);
-
+/* Alles, was am Typ hängt, neu zeichnen: Knöpfe, Typ- und Ort-Pille, Anlegen-Knopf. */
+function renderTypeDependents() {
   renderComposerTypes();
   renderComposerLink();
   updateComposerSend();
-  dom.composerInput.focus();
+}
+
+/* Kommt eine Datei dazu, kann aus dem Entwurf ein Medium werden; geht die
+   letzte wieder, wird er, was er vorher war (composer-state.js). */
+function onFilesAdded() {
+  adoptMediaType(Boolean(dom.composerInput.value.trim()));
+  renderTypeDependents();
+}
+
+function onFileDropped() {
+  releaseMediaType();
+  renderTypeDependents();
 }
 
 /** Alle Knöpfe und Felder des Eingabefelds anmelden. */
@@ -319,8 +261,11 @@ export function initComposer() {
 
   el("composer-close").addEventListener("click", closeComposer);
   dom.composerSend.addEventListener("click", createEntry);
-  dom.composerTypes.addEventListener("click", onTypeClick);
-  dom.composerTypePill.addEventListener("click", openTypeSheet);
+  initComposerTypes(() => {
+    renderTypeDependents();
+    dom.composerInput.focus();
+  });
+  initComposerAttachments({ onAdded: onFilesAdded, onDropped: onFileDropped });
 
   dom.composerLink.addEventListener("click", () => {
     /* Der Typ des Entwurfs kommt mit: ein Projekt bekommt nur Arbeitsbereiche
@@ -337,30 +282,6 @@ export function initComposer() {
       },
       composer.type
     );
-  });
-
-  dom.composerAttach.addEventListener("click", () => {
-    openSheet(
-      "Medien hinzufügen",
-      fileSources.map((source) => ({
-        label: source.label,
-        icon: source.icon,
-        onSelect: () => el(`composer-file-${source.id}`).click(),
-      }))
-    );
-  });
-
-  fileSources.forEach((source) => {
-    const input = el(`composer-file-${source.id}`);
-    input.addEventListener("change", () => {
-      addComposerFiles(input.files, source.id, updateComposerSend);
-      input.value = "";
-    });
-  });
-
-  dom.composerAttachments.addEventListener("click", (event) => {
-    const button = event.target.closest("[data-drop-attachment]");
-    if (button) dropComposerFile(button.dataset.dropAttachment, updateComposerSend);
   });
 
   dom.composerInput.addEventListener("input", updateComposerSend);

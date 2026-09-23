@@ -246,6 +246,13 @@
   text-overflow: ellipsis;
 }
 
+/* Die Typ-Pille kürzt sich nie: Typnamen sind kurz, und der Wechsel auf
+   „Medium“ beim ersten Anhang muss lesbar bleiben. Nachgeben muss der
+   Ortsname links, der beliebig lang sein kann. */
+.composer-chips #composer-type-pill {
+  flex-shrink: 0;
+}
+
 /* Anlegen und Schließen sitzen zusammen rechts */
 .composer-end {
   display: flex;

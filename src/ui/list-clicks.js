@@ -27,7 +27,7 @@ import { saveState, state } from "../data/state.js";
 import { archiveEntry } from "../data/xp.js";
 import { cancelHold, consumeClickBlock } from "./long-press.js";
 import { openLinkPicker } from "./pickers.js";
-import { openArchive, openEntry, openTarget, showTab } from "./router.js";
+import { openArchive, openEntryOrFile, openTarget, showTab } from "./router.js";
 import { closeSwipes, isSwipedOpen } from "./swipe.js";
 import { toggleGroup } from "./groups.js";
 
@@ -178,7 +178,8 @@ function onClick(event) {
     closeSwipes();
     return;
   }
-  if (row.dataset.openEntry) openEntry(row.dataset.openEntry);
+  /* Ein Medium geht als Datei auf, nicht als Seite — man will das Foto sehen. */
+  if (row.dataset.openEntry) openEntryOrFile(row.dataset.openEntry);
   else openTarget("workspace", row.dataset.openWorkspace);
 }
 

@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "4f56f43425dd";
+export const appVersion = "dd865e98ca73";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -62,6 +62,7 @@ export const appFiles = [
   "src/features/composer/attachments.js",
   "src/features/composer/composer-defaults.js",
   "src/features/composer/composer-state.js",
+  "src/features/composer/composer-types.js",
   "src/features/composer/composer.js",
   "src/features/composer/dictation.js",
   "src/features/dashboard/dashboard-charts.js",

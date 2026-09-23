@@ -120,6 +120,21 @@ export function openEntry(id, push = true) {
   if (push) writeHistory({ view: "entry", id: entry.id, from: ui.sourceView }, `#/eintrag/${entry.id}`, false);
 }
 
+/**
+ * Einen Eintrag so öffnen, wie man ihn sehen will: ein Medium bildschirmfüllend
+ * als Datei — wie im Medien-Reiter —, alles andere als Seite. Die Seite eines
+ * Mediums (Notizen, Verknüpfungen) liegt in der Dateiansicht hinter „Zur Seite“.
+ */
+export function openEntryOrFile(id) {
+  const entry = findEntry(id);
+  if (!entry) return;
+  if (entry.type !== "medien") {
+    openEntry(entry.id);
+    return;
+  }
+  withOverlay("file", (handlers) => handlers.open(true, entry));
+}
+
 /** Zurück zu der Ansicht, aus der man gekommen ist. */
 export function restoreFrom(from) {
   if (from === "search") {
@@ -173,14 +188,22 @@ const overlayModules = { avatar: "profile", file: "viewer" };
  * Dateiansicht, welche Datei offen war.
  */
 function restoreOverlay(name, entry = null, extra = "") {
-  const openIt = () => {
-    const handlers = overlays.get(name);
-    if (handlers) handlers.open(false, entry);
+  withOverlay(name, (handlers) => {
+    handlers.open(false, entry);
     if (extra) restoreOverlay(extra);
+  });
+}
+
+/* Ein angemeldetes Blatt benutzen; sein Bereich wird vorher nachgeladen, wenn
+   er noch fehlt. Erst danach gibt es die Handgriffe zum Öffnen. */
+function withOverlay(name, run) {
+  const go = () => {
+    const handlers = overlays.get(name);
+    if (handlers) run(handlers);
   };
   const moduleName = overlayModules[name] || name;
-  if (loadedModule(moduleName)) openIt();
-  else load(moduleName).then(openIt);
+  if (loadedModule(moduleName)) go();
+  else load(moduleName).then(go);
 }
 
 window.addEventListener("popstate", (event) => {
