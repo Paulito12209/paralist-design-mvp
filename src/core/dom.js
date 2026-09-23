@@ -66,6 +66,7 @@ export const dom = {
 
   /* Unterseite (Übersichtskarte oder Arbeitsbereich) */
   get pageHead() { return el("page-head"); },
+  get pageCrumb() { return el("page-crumb"); },
   get pageTitle() { return el("page-title"); },
   get pageBody() { return el("page-body"); },
   get pageMenuBtn() { return el("page-menu"); },

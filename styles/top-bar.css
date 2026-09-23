@@ -14,6 +14,7 @@
  *                                                          verlaufen zu transparent (mit mask-image in .top-bar).
  *                                                          Anpassen: Wert in tokens.css erhöhen (z.B. 20px = intensiver)
  *                                                          oder senken (z.B. 10px = subtiler).
+ * --page-head-top                                       -> Abstand über der Suchleiste
  * --search-bar-height / --search-bar-radius             -> Suchleiste
  * --level-color / --level-dim / --level-glow            -> Striche und Zahl der Level-Anzeige
  * --icon-strong / --placeholder                         -> Icon- und Platzhalterfarbe
@@ -45,7 +46,8 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding-top: calc(8px + var(--safe-top));
+  /* gleicher Wert wie über dem Zurück-Pfeil (.page-head), damit Seitentitel überall gleich hoch stehen */
+  padding-top: calc(var(--page-head-top) + var(--safe-top));
   padding-bottom: var(--top-bar-fade);
   padding-left: 16px;
   padding-right: 16px;

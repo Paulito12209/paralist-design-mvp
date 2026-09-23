@@ -2,12 +2,14 @@
  * Die Unterseite hinter einer Übersichtskarte oder einem Arbeitsbereich:
  * Kopfzeile mit Zurück-Pfeil, darunter der große Titel und der Inhalt. Suche
  * und Optionen-Menü bleiben verborgen, bis man die Liste nach unten
- * scrollt — wie bei einer Playlist in Spotify.
+ * scrollt — wie bei einer Playlist in Spotify. Ein Arbeitsbereich zeigt
+ * dagegen wie eine Eintragsseite gleich den Ort und das Menü.
  * Pfad: src/features/overview/page.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * HEADER_REVEAL_PX -> ab wie viel Scrollweg Suche und Optionen erscheinen
+ * WORKSPACE_CRUMB  -> der graue Ort neben dem Zurück-Pfeil auf einem Arbeitsbereich
  *
  * Sonst keine anpassbaren visuellen Werte: Kopfzeile und Liste stehen in
  * styles/rows.css (Klassen .page-head, .page-body).
@@ -48,6 +50,8 @@ const titleSwitches = {
 
 /* Ab wie viel Scrollweg Suche und Optionen in der Kopfzeile erscheinen. */
 const HEADER_REVEAL_PX = 4;
+/* Arbeitsbereiche liegen in der Übersicht — dorthin führt auch der Zurück-Pfeil. */
+const WORKSPACE_CRUMB = "Übersicht";
 
 /*
  * Was eine leere Seite zeigt: Emblem in der Farbe der Karte, ein Satz dazu und
@@ -131,6 +135,11 @@ function renderPage() {
     dom.pageTitle.textContent = page.title;
   }
   dom.pageMenuBtn.hidden = collectionsWithoutMenu.includes(page.kind);
+  /* Ein Arbeitsbereich sieht aus wie eine Eintragsseite: Ort und Menü stehen
+     von Anfang an oben, nicht erst nach dem Scrollen. */
+  dom.pageCrumb.hidden = !page.isWorkspace;
+  dom.pageCrumb.textContent = page.isWorkspace ? WORKSPACE_CRUMB : "";
+  dom.pageHead.classList.toggle("is-pinned", Boolean(page.isWorkspace));
   renderPageBody();
 }
 

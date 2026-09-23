@@ -106,21 +106,22 @@
           </section>
 
           <section class="view" id="view-page" data-view="page" hidden>
-            <!-- Kopfzeile bleibt beim Scrollen oben stehen; Suche und Optionen
-                 zeigen sich erst, wenn man in der Liste nach unten scrollt -->
+            <!-- Kopfzeile bleibt beim Scrollen oben; Suche und Optionen zeigen sich erst
+                 beim Scrollen (Arbeitsbereich: Ort und Menü gleich, wie beim Eintrag) -->
             <div class="page-head" id="page-head">
               <button class="back-btn" id="back-btn" type="button" aria-label="Zurück">
                 <svg class="icon"><use href="#icon-back"></use></svg>
               </button>
+              <span class="entry-crumb page-crumb" id="page-crumb" hidden></span>
               <div class="page-head-reveal" id="page-head-reveal">
                 <button class="search page-search" id="page-search" type="button" aria-label="Suchen">
                   <svg class="icon search-icon"><use href="#icon-search"></use></svg>
                   <span class="page-search-label">Suchen</span>
                 </button>
-                <button class="head-btn" id="page-menu" type="button" aria-label="Optionen">
-                  <svg class="icon"><use href="#icon-dots"></use></svg>
-                </button>
               </div>
+              <button class="head-btn page-menu" id="page-menu" type="button" aria-label="Optionen">
+                <svg class="icon"><use href="#icon-dots"></use></svg>
+              </button>
             </div>
             <h1 class="screen-title page-title" id="page-title">Platzhalter</h1>
             <div class="page-body" id="page-body"></div>

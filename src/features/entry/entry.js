@@ -1,7 +1,7 @@
 /*
  * Die Seite eines Eintrags: Titel, zwei Pillen „Inhalt“ und „Verknüpfte
- * Einträge“ (wie auf der Seite eines Arbeitsbereichs), und das Menü oben
- * rechts. Bei einer Zeichnung steht im Inhalt die Zeichenfläche statt des
+ * Einträge“ (wie auf der Seite eines Arbeitsbereichs; waagerecht wischen
+ * wechselt zwischen ihnen), und das Menü oben rechts. Bei einer Zeichnung steht im Inhalt die Zeichenfläche statt des
  * Textes.
  *
  * Unter der zweiten Pille steht bei einem Projekt sein INHALT — was dort
@@ -15,7 +15,7 @@
  */
 
 import { emit, events, on } from "../../core/bus.js";
-import { dom } from "../../core/dom.js";
+import { dom, el } from "../../core/dom.js";
 import { load } from "../../core/lazy.js";
 import { linkedEntries } from "../../data/links.js";
 import { deleteEntry, toggleFavorite } from "../../data/mutations.js";
@@ -25,6 +25,7 @@ import { groupedListMarkup, linkedListMarkup } from "../../ui/groups.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { archiveEntry } from "../../data/xp.js";
 import { openLinkPicker } from "../../ui/pickers.js";
+import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { restoreFrom } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
 import { isViewActive } from "../../ui/views.js";
@@ -146,13 +147,23 @@ export function initEntry() {
   bindTextField(dom.entryTitle, "title");
   bindTextField(dom.entryBody, "body");
 
-  dom.entryPills.addEventListener("click", (event) => {
-    const pill = event.target.closest("[data-entry-pill]");
-    if (!pill) return;
+  const selectPill = (id) => {
     const entry = findEntry(ui.currentEntryId);
     if (!entry) return;
-    ui.entryPill = pill.dataset.entryPill;
+    ui.entryPill = id;
     renderEntryPills(entry);
+  };
+
+  dom.entryPills.addEventListener("click", (event) => {
+    const pill = event.target.closest("[data-entry-pill]");
+    if (pill) selectPill(pill.dataset.entryPill);
+  });
+
+  /* Waagerecht wischen irgendwo auf der Seite wechselt ebenfalls die Pille. */
+  initPillSwipe(el("view-entry"), {
+    order: entryPills.map((pill) => pill.id),
+    current: () => ui.entryPill,
+    select: selectPill,
   });
 
   dom.entryMenu.addEventListener("click", openEntryMenu);

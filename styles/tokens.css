@@ -110,7 +110,10 @@
  * --modal-radius            -> Rundung der oberen Kante der Blätter von unten
  * --content-side            -> Abstand der Karten und Listen zum linken und rechten Rand
  * --content-top             -> Abstand vom unteren Suchleisten-Rand bis zum Inhalt (unter dem Verlauf)
- * --page-head-top           -> Abstand über dem Zurück-Pfeil auf Unterseiten (zusätzlich zur Statusleiste)
+ * --page-head-top           -> Abstand über der Suchleiste und über dem Zurück-Pfeil auf Unterseiten
+ *                              (zusätzlich zur Statusleiste). Beide Kopfzeilen sind gleich hoch,
+ *                              darum steht der Seitentitel überall auf derselben Höhe.
+ * --page-title-gap          -> Luft unter dem Seitentitel einer Unterseite oder eines Eintrags bis zu den Pillen
  * --title-side              -> Extra-Abstand für die große Überschrift
  * --overview-gap            -> Abstand zwischen Überschrift und Karten
  * --workspace-section-gap / --workspace-head-gap -> Abstand der vier Karten zu
@@ -207,7 +210,8 @@
   --title-size: 28px;
   --content-side: 16px;
   --content-top: 36px;
-  --page-head-top: 18px;
+  --page-head-top: 8px;
+  --page-title-gap: 18px;
   --title-side: 4px;
   --overview-gap: 24px;
   --workspace-section-gap: 40px;

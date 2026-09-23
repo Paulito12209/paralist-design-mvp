@@ -14,6 +14,9 @@
  *                           -> Farben der Wisch-Knöpfe
  * --content-side            -> Abstand der Zeilen zum Rand
  * --page-head-top           -> Abstand über dem Zurück-Pfeil auf Unterseiten
+ * --search-bar-height       -> Höhe der Kopfzeile einer Unterseite (so hoch wie die Suchleiste)
+ * --content-top             -> Luft zwischen Kopfzeile und Seitentitel
+ * --page-title-gap          -> Luft unter dem Seitentitel
  * --safe-top                -> Platz für Notch und Statusleiste über dem Zurück-Pfeil
  * --placeholder             -> grauer Vorgabename beim Benennen eines Arbeitsbereichs
  * --muted                   -> Überschriften der Gruppen unter „Verknüpfte Inhalte“
@@ -80,7 +83,12 @@
   display: flex;
   align-items: center;
   gap: 2px;
-  margin: 0 0 6px -8px;
+  /* Gleich hoch wie die Suchleiste der Reiterseiten und mit derselben Luft
+     darunter: so steht der Seitentitel genau dort, wo auf der Übersicht
+     „Übersicht“ steht (styles/top-bar.css, --content-top in styles/base.css). */
+  box-sizing: content-box; /* box-sizing: height meint nur die Zeile, nicht den Platz für die Statusleiste */
+  height: var(--search-bar-height);
+  margin: 0 0 var(--content-top) -8px;
   /* oben genug Platz für Notch und Statusleiste, weil darüber nichts mehr steht */
   padding-top: calc(var(--safe-top) + var(--page-head-top));
   position: sticky; /* position: bleibt oben stehen, während die Liste darunter scrollt */
@@ -115,10 +123,26 @@
   transition: opacity 0.15s ease, transform 0.15s ease; /* transition: sanftes Ein-/Ausblenden statt Springen */
 }
 
-.page-head.is-scrolled .page-head-reveal {
+/* Das Optionen-Menü einer Sammlung erscheint zusammen mit der Suche. */
+.page-head .page-menu {
+  opacity: 0;
+  pointer-events: none; /* pointer-events: unsichtbar heißt auch nicht antippbar */
+  transition: opacity 0.15s ease; /* transition: sanftes Ein-/Ausblenden statt Springen */
+}
+
+.page-head.is-scrolled .page-head-reveal,
+.page-head.is-scrolled .page-menu,
+.page-head.is-pinned .page-menu {
   opacity: 1;
   transform: translateY(0);
   pointer-events: auto;
+}
+
+/* Arbeitsbereich: Ort neben dem Zurück-Pfeil wie auf einer Eintragsseite;
+   beim Scrollen macht er der Suche Platz. */
+.page-head.is-scrolled .page-crumb,
+.page-crumb[hidden] {
+  display: none;
 }
 
 .page-search {
@@ -135,7 +159,7 @@
 }
 
 .page-title {
-  margin: 0 0 18px;
+  margin: 0 0 var(--page-title-gap);
   padding: 0;
 }
 

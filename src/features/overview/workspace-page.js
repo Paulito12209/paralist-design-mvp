@@ -1,7 +1,8 @@
 /*
  * Die Seite eines Arbeitsbereichs: zwei Pillen oben — „Inhalt“ mit dem
  * freien Text zum Arbeitsbereich und „Verknüpfte Einträge“ mit allem, was darin
- * liegt, nach Typ gruppiert und auf-/zuklappbar. Dieselben zwei Pillen zeigt
+ * liegt, nach Typ gruppiert und auf-/zuklappbar. Waagerecht wischen wechselt
+ * zwischen den Pillen (src/ui/pill-swipe.js). Dieselben zwei Pillen zeigt
  * auch die Seite eines einzelnen Eintrags (src/features/entry/entry.js).
  * Pfad: src/features/overview/workspace-page.js
  *
@@ -14,6 +15,7 @@ import { escapeHtml } from "../../core/html.js";
 import { entriesOf, findWorkspace } from "../../data/queries.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { groupedListMarkup } from "../../ui/groups.js";
+import { initPillSwipe } from "../../ui/pill-swipe.js";
 
 /* Die beiden Pillen; die zweite trägt die Anzahl der Einträge. Kein Icon:
    es wird nie mehr als diese zwei geben, das Wort allein reicht. */
@@ -54,11 +56,25 @@ export function isWritingNotes() {
 
 /** Pillen und Inhalt anmelden. */
 export function initWorkspacePage() {
+  const isWorkspaceOpen = () => Boolean(ui.currentPage && ui.currentPage.isWorkspace);
+  const selectPill = (id) => {
+    if (!isWorkspaceOpen()) return;
+    ui.pagePill = id;
+    renderWorkspacePage(ui.currentPage);
+  };
+
   dom.pageBody.addEventListener("click", (event) => {
     const pill = event.target.closest("[data-page-pill]");
-    if (!pill || !ui.currentPage || !ui.currentPage.isWorkspace) return;
-    ui.pagePill = pill.dataset.pagePill;
-    renderWorkspacePage(ui.currentPage);
+    if (pill) selectPill(pill.dataset.pagePill);
+  });
+
+  /* Waagerecht wischen wechselt ebenfalls die Pille — nur hier, die
+     Sammlungen auf derselben Seite haben keine Pillen. */
+  initPillSwipe(el("view-page"), {
+    order: pills.map((pill) => pill.id),
+    current: () => ui.pagePill,
+    select: selectPill,
+    enabled: isWorkspaceOpen,
   });
 
   dom.pageBody.addEventListener("input", (event) => {
