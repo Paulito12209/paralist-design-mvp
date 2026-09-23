@@ -133,6 +133,17 @@ export function restoreFrom(from) {
   showHome(true);
 }
 
+/**
+ * Der Zurück-Pfeil einer Seite: genau einen Schritt zurück im Verlauf — auf die
+ * Seite, Sammlung oder den Reiter, wo man zuletzt war. Nur ohne eigenen
+ * Verlaufseintrag (Seite frisch über ihre Adresse geöffnet) geht es auf die
+ * Ansicht, aus der die Seite stammt.
+ */
+export function goBack() {
+  if (history.state) history.back();
+  else restoreFrom(ui.sourceView);
+}
+
 function writeHistory(state, url, replace) {
   if (replace) history.replaceState(state, "", url);
   else history.pushState(state, "", url);

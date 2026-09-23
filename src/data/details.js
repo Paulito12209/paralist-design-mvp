@@ -13,7 +13,7 @@ import { linkedEntries } from "./links.js";
 import { entriesOf, isContainer, placesLabel } from "./queries.js";
 import { entryRef, workspaceRef } from "./refs.js";
 import { state } from "./state.js";
-import { types } from "./config.js";
+import { typePlurals, types } from "./config.js";
 import { longDate } from "../core/format.js";
 
 /* In den Listen heißt die Gruppe „Projekte“ — ein einzelnes ist ein „Projekt“. */
@@ -26,6 +26,11 @@ export function entryTypeName(entry) {
   if (singularTypes[entry.type]) return singularTypes[entry.type];
   const type = types.find((item) => item.id === entry.type);
   return type ? type.label : "Eintrag";
+}
+
+/** Die Kategorie eines Eintrags in der Mehrzahl, z.B. „Notizen“ — steht mittig in der Kopfzeile. */
+export function entryCategoryName(entry) {
+  return typePlurals[entry.type] || "Einträge";
 }
 
 /** Details eines Arbeitsbereichs als Liste von { label, value }. */

@@ -11,9 +11,11 @@
  * --entry-body-size         -> Schriftgröße des Textes
  * --placeholder             -> Farbe der Platzhaltertexte
  * --content-side            -> Abstand zum linken und rechten Rand
+ * --page-head-pull          -> Ausgleich, damit die Kategorie oben genau mittig steht
 
  *
- * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei:
+ * .entry-crumb font-size    -> Größe der grauen Kategorie mitten in der Kopfzeile (15px)
 */
 
 /* Fläche unter einer der beiden Pillen; welche zu sehen ist, steuert
@@ -47,12 +49,23 @@
   display: none;
 }
 
-/* Editor-Seite: Titel und Text sind direkt bearbeitbar */
+/* Kategorie mittig zwischen Zurück-Pfeil und Menü (beide gleich breit). Der
+   linke Rand gleicht aus, dass die Kopfzeile nach links gerückt ist — so
+   steht sie genau in der Mitte des Bildschirms. */
 .entry-crumb {
+  flex: 1;
+  margin-left: var(--page-head-pull);
+  min-width: 0; /* min-width: sonst drückt ein langes Wort das Menü aus dem Bild */
+  text-align: center;
   font-size: 15px;
   color: var(--muted);
   font-weight: 500;
+  overflow: hidden; /* overflow: nötig für text-overflow */
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
+
+/* Editor-Seite: Titel und Text sind direkt bearbeitbar */
 
 .entry-title {
   width: 100%;

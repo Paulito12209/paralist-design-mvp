@@ -14,6 +14,7 @@
  *                           -> Farben der Wisch-Knöpfe
  * --content-side            -> Abstand der Zeilen zum Rand
  * --page-head-top           -> Abstand über dem Zurück-Pfeil auf Unterseiten
+ * --page-head-pull          -> wie weit die Kopfzeile nach links rückt (Pfeil bündig mit dem Titel)
  * --search-bar-height       -> Höhe der Kopfzeile einer Unterseite (so hoch wie die Suchleiste)
  * --content-top             -> Luft zwischen Kopfzeile und Seitentitel
  * --page-title-gap          -> Luft unter dem Seitentitel
@@ -90,7 +91,7 @@
      „Übersicht“ steht (styles/top-bar.css, --content-top in styles/base.css). */
   box-sizing: content-box; /* box-sizing: height meint nur die Zeile, nicht den Platz für die Statusleiste */
   height: var(--search-bar-height);
-  margin: 0 0 var(--content-top) -8px;
+  margin: 0 0 var(--content-top) calc(-1 * var(--page-head-pull));
   /* oben genug Platz für Notch und Statusleiste, weil darüber nichts mehr steht */
   padding-top: calc(var(--safe-top) + var(--page-head-top));
   position: sticky; /* position: bleibt oben stehen, während die Liste darunter scrollt */
@@ -140,9 +141,10 @@
   pointer-events: auto;
 }
 
-/* Arbeitsbereich: Ort neben dem Zurück-Pfeil wie auf einer Eintragsseite;
-   beim Scrollen macht er der Suche Platz. */
-.page-head.is-scrolled .page-crumb,
+/* Arbeitsbereich: Kategorie mittig wie auf einer Eintragsseite, ohne Suche —
+   erst der kleine Titel löst sie ab (styles/details.css). */
+.page-head.is-scrolled:not(.is-pinned) .page-crumb,
+.page-head.is-pinned .page-head-reveal,
 .page-crumb[hidden] {
   display: none;
 }

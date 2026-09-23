@@ -112,6 +112,7 @@
  * --content-side            -> Abstand der Karten und Listen zum linken und rechten Rand
  * --content-top             -> Abstand vom unteren Suchleisten-Rand bis zum Inhalt (unter dem Verlauf)
  * --page-head-top           -> Abstand über der Suchleiste und über dem Zurück-Pfeil auf Unterseiten
+ * --page-head-pull          -> wie weit die Kopfzeile einer Unterseite nach links rückt (Pfeil bündig mit dem Titel)
  *                              (zusätzlich zur Statusleiste). Beide Kopfzeilen sind gleich hoch,
  *                              darum steht der Seitentitel überall auf derselben Höhe.
  * --page-title-gap          -> Luft unter dem Seitentitel einer Unterseite oder eines Eintrags bis zu den Pillen
@@ -213,6 +214,7 @@
   --content-side: 16px;
   --content-top: 36px;
   --page-head-top: 8px;
+  --page-head-pull: 8px;
   --page-title-gap: 18px;
   --page-title-lines: 5;
   --title-side: 4px;

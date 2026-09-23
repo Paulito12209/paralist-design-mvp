@@ -17,10 +17,10 @@
 import { emit, events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { load } from "../../core/lazy.js";
-import { entryDetails, entryTypeName } from "../../data/details.js";
+import { entryCategoryName, entryDetails, entryTypeName } from "../../data/details.js";
 import { linkedEntries } from "../../data/links.js";
 import { deleteEntry, toggleFavorite } from "../../data/mutations.js";
-import { entriesOf, findEntry, isContainer, placesLabel } from "../../data/queries.js";
+import { entriesOf, findEntry, isContainer } from "../../data/queries.js";
 import { entryRef } from "../../data/refs.js";
 import { groupedListMarkup, linkedListMarkup } from "../../ui/groups.js";
 import { scheduleSave, ui } from "../../data/state.js";
@@ -29,7 +29,7 @@ import { openDetails } from "../../ui/details.js";
 import { bindHeadTitle, setHeadTitle } from "../../ui/head-title.js";
 import { openLinkPicker } from "../../ui/pickers.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
-import { restoreFrom } from "../../ui/router.js";
+import { goBack, restoreFrom } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
 import { isViewActive } from "../../ui/views.js";
 
@@ -74,7 +74,9 @@ function renderEntry() {
 
   dom.entryTitle.value = entry.title;
   dom.entryBody.value = entry.body || "";
-  dom.entryCrumb.textContent = placesLabel(entry);
+  /* Mittig die Kategorie, nicht der Ort: der Zurück-Pfeil führt dorthin, wo
+     man zuletzt war — nicht zwingend an den Ort des Eintrags. */
+  dom.entryCrumb.textContent = entryCategoryName(entry);
   setHeadTitle(el("entry-head"), entry.title || "Ohne Titel", entryTypeName(entry));
 
   /* Zeichnungen zeigen statt des Textes die Zeichenfläche. */
@@ -184,7 +186,7 @@ export function initEntry() {
   dom.entryMenu.addEventListener("click", openEntryMenu);
   dom.entryBack.addEventListener("click", (event) => {
     event.preventDefault();
-    history.back();
+    goBack();
   });
 
   on(events.viewOpened, (name) => {
@@ -199,8 +201,7 @@ export function initEntry() {
       dom.entryLinks.innerHTML = "";
       return;
     }
-    /* Ort und Verknüpfungen können sich im offenen Blatt gerade ändern */
-    dom.entryCrumb.textContent = placesLabel(entry);
+    /* Verknüpfungen können sich im offenen Blatt gerade ändern */
     renderLinks(entry);
     renderEntryPills(entry);
   });
