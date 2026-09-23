@@ -55,7 +55,7 @@ const titleSwitches = {
 /* Ab wie viel Scrollweg Suche und Optionen in der Kopfzeile erscheinen. */
 const HEADER_REVEAL_PX = 4;
 /* Die Kategorie, nicht der Ort: der Zurück-Pfeil führt dorthin, wo man zuletzt war. */
-const WORKSPACE_CRUMB = "Arbeitsbereiche";
+const WORKSPACE_CRUMB = "Arbeitsbereich";
 
 /*
  * Was eine leere Seite zeigt: Emblem in der Farbe der Karte, ein Satz dazu und

@@ -17,7 +17,7 @@
 import { emit, events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { load } from "../../core/lazy.js";
-import { entryCategoryName, entryDetails, entryTypeName } from "../../data/details.js";
+import { entryDetails, entryTypeName } from "../../data/details.js";
 import { linkedEntries } from "../../data/links.js";
 import { deleteEntry, toggleFavorite } from "../../data/mutations.js";
 import { entriesOf, findEntry, isContainer } from "../../data/queries.js";
@@ -76,7 +76,7 @@ function renderEntry() {
   dom.entryBody.value = entry.body || "";
   /* Mittig die Kategorie, nicht der Ort: der Zurück-Pfeil führt dorthin, wo
      man zuletzt war — nicht zwingend an den Ort des Eintrags. */
-  dom.entryCrumb.textContent = entryCategoryName(entry);
+  dom.entryCrumb.textContent = entryTypeName(entry);
   setHeadTitle(el("entry-head"), entry.title || "Ohne Titel", entryTypeName(entry));
 
   /* Zeichnungen zeigen statt des Textes die Zeichenfläche. */
