@@ -26,12 +26,16 @@
 
 /* ---------- Titelzeile mit Umschalter ---------- */
 
-/* Titel links, Bedienelemente rechts — auf einer Höhe */
+/* Titel links, Bedienelemente rechts — auf einer Höhe. Die Zeile ist nur so
+   hoch wie der Titel, damit er auf derselben Höhe steht wie auf allen anderen
+   Seiten; die höheren Knöpfe ragen oben und unten um --tasks-tools-overhang
+   darüber hinaus, und der Abstand zur Liste zählt ab ihrer Unterkante. */
 .tasks-head {
+  --tasks-tools-overhang: calc((var(--task-view-btn-size) - var(--title-size) * 1.1) / 2);
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: var(--task-tools-gap);
+  margin-bottom: calc(var(--task-tools-gap) + var(--tasks-tools-overhang));
 }
 
 .tasks-head .screen-title {
@@ -45,6 +49,7 @@
   align-items: center;
   gap: 8px;
   flex: 0 0 auto;
+  margin-block: calc(-1 * var(--tasks-tools-overhang)); /* margin-block: Knöpfe machen die Zeile nicht höher */
 }
 
 /* Runder Umschalter: Board-Icon in der Liste, Listen-Icon im Board */
