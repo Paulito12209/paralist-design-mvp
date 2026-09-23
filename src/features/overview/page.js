@@ -35,6 +35,7 @@ import { openSheet } from "../../ui/sheet.js";
 import { isViewActive } from "../../ui/views.js";
 import { archiveMarkup } from "./archive.js";
 import { isWritingNotes, renderWorkspacePage } from "./workspace-page.js";
+import { beginRenameWorkspaceTitle, initWorkspaceTitle, setupWorkspaceTitle } from "./workspace-title.js";
 import { commitStaleWorkspaceName, focusWorkspaceName } from "./workspaces.js";
 
 /* Sammlungen: dort gibt es nichts zu löschen oder zu markieren, also kein Menü. */
@@ -134,6 +135,8 @@ function renderPage() {
   } else {
     dom.pageTitle.textContent = page.title;
   }
+  /* Auf einem Arbeitsbereich ist der Titel selbst das Namensfeld. */
+  setupWorkspaceTitle(page);
   dom.pageMenuBtn.hidden = collectionsWithoutMenu.includes(page.kind);
   /* Ein Arbeitsbereich sieht aus wie eine Eintragsseite: Ort und Menü stehen
      von Anfang an oben, nicht erst nach dem Scrollen. */
@@ -159,6 +162,7 @@ function openPageMenu() {
   const workspace = page.isWorkspace ? findWorkspace(page.workspaceId) : null;
 
   if (workspace) {
+    options.push({ label: "Umbenennen", icon: "pencil", onSelect: beginRenameWorkspaceTitle });
     options.push({
       label: workspace.favorite ? "Aus Favoriten entfernen" : "Zu Favoriten",
       icon: workspace.favorite ? "star" : "star-outline",
@@ -201,6 +205,7 @@ function openPageMenu() {
 /** Seitenmenü, Suche, Zurück-Pfeil und Auffrischen anmelden. */
 export function initPage() {
   dom.pageMenuBtn.addEventListener("click", openPageMenu);
+  initWorkspaceTitle();
   /* Erst die Suchseite zeigen: dort ist die allgemeine Kopfzeile mit dem
      echten Suchfeld wieder da, und ein verstecktes Feld nimmt keinen Fokus an. */
   dom.pageSearchBtn.addEventListener("click", () => {

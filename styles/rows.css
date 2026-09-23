@@ -164,6 +164,15 @@
   padding: 0;
 }
 
+/* Titel eines Arbeitsbereichs: direkt antippen und umbenennen, ohne Rahmen —
+   nur der Cursor zeigt, dass man gerade schreibt (wie .entry-title). */
+.page-title.is-editable {
+  outline: none;
+  cursor: text;
+  user-select: text; /* user-select: den Namen markieren können */
+  -webkit-user-select: text;
+}
+
 .workspace-name-input {
   flex: 1;
   border: 0;
