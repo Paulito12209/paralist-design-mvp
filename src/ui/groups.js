@@ -59,16 +59,18 @@ function linkScope(entry) {
   return `v:${entry.id}`;
 }
 
-/** Eine Gruppe: Überschrift mit Anzahl und Pfeil, darunter ihr Inhalt. */
+/** Eine Gruppe: Überschrift mit Anzahl und Pfeil, darunter ihr Inhalt.
+    Kein Icon vor der Überschrift — jede Zeile darunter trägt schon das Icon
+    ihres Typs, doppelt wäre es nur Unruhe. Eine Null wird nicht angezeigt. */
 function groupMarkup(scope, group, body, bodyClass) {
   const key = groupKey(scope, group.type);
   const open = !ui.collapsedGroups.has(key);
+  const count = group.items.length ? `<span class="group-count">${group.items.length}</span>` : "";
   return `
     <div class="group${open ? "" : " is-collapsed"}" data-group="${key}">
       <button class="group-head" type="button" data-toggle-group="${key}" aria-expanded="${open}">
-        ${icon(group.icon, "group-icon")}
         <span class="group-label">${group.label}</span>
-        <span class="group-count">${group.items.length}</span>
+        ${count}
         ${icon("chevron", "group-chevron")}
       </button>
       <div class="group-body ${bodyClass}"${open ? "" : " hidden"}>
