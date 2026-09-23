@@ -8,6 +8,7 @@
  * -----------------------------------
  * --entry-title-size        -> Schriftgröße des Titels
  * --page-title-gap          -> Luft unter dem Titel bis zu den Pillen
+ * --page-title-lines        -> nach so vielen Zeilen endet ein langer Titel mit „…“ (tokens.css)
  * --entry-body-size         -> Schriftgröße des Textes
  * --placeholder             -> Farbe der Platzhaltertexte
  * --content-side            -> Abstand zum linken und rechten Rand
@@ -83,7 +84,25 @@
   margin-bottom: var(--page-title-gap);
 }
 
-.entry-title::placeholder {
+/* Ohne Fokus: nach --page-title-lines Zeilen mit „…“ enden (wie .page-title) */
+.entry-title:not(:focus) {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: var(--page-title-lines);
+  line-clamp: var(--page-title-lines);
+  overflow: hidden;
+}
+
+.entry-title {
+  overflow-wrap: anywhere; /* overflow-wrap: sehr lange Wörter umbrechen statt überstehen */
+  cursor: text;
+  user-select: text; /* user-select: den Titel markieren können */
+  -webkit-user-select: text;
+}
+
+/* Leerer Titel: grauer Platzhalter wie früher beim Eingabefeld */
+.entry-title:empty::before {
+  content: attr(data-placeholder);
   color: var(--chevron);
 }
 

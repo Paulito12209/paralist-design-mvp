@@ -26,6 +26,7 @@ import { groupedListMarkup, linkedListMarkup } from "../../ui/groups.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { archiveEntry } from "../../data/xp.js";
 import { openDetails } from "../../ui/details.js";
+import { initEntryTitle, showEntryTitle } from "./entry-title.js";
 import { bindHeadTitle, setHeadTitle } from "../../ui/head-title.js";
 import { openLinkPicker } from "../../ui/pickers.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
@@ -72,7 +73,7 @@ function renderEntry() {
   const entry = findEntry(ui.currentEntryId);
   if (!entry) return;
 
-  dom.entryTitle.value = entry.title;
+  showEntryTitle(entry);
   dom.entryBody.value = entry.body || "";
   /* Mittig die Kategorie, nicht der Ort: der Zurück-Pfeil führt dorthin, wo
      man zuletzt war — nicht zwingend an den Ort des Eintrags. */
@@ -155,14 +156,9 @@ function bindTextField(field, key) {
 
 /** Felder, Pillen, Menü und Zurück-Pfeil der Eintragsseite anmelden. */
 export function initEntry() {
-  bindTextField(dom.entryTitle, "title");
+  initEntryTitle();
   bindTextField(dom.entryBody, "body");
   bindHeadTitle(el("entry-head"), dom.entryTitle, () => isViewActive("entry"));
-  /* Beim Umbenennen den kleinen Titel oben mitziehen */
-  dom.entryTitle.addEventListener("input", () => {
-    const small = el("entry-head").querySelector(".head-title-main");
-    small.textContent = dom.entryTitle.value || "Ohne Titel";
-  });
 
   const selectPill = (id) => {
     const entry = findEntry(ui.currentEntryId);

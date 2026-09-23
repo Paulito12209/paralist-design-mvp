@@ -137,8 +137,8 @@
                 <svg class="icon"><use href="#icon-dots"></use></svg>
               </button>
             </div>
-            <!-- input: noetig, damit der Titel wirklich bearbeitbar ist -->
-            <input class="entry-title" id="entry-title" type="text" placeholder="Ohne Titel" aria-label="Titel" form="no-history" />
+            <!-- contenteditable: Titel bricht um und endet nach einigen Zeilen mit „…“ -->
+            <div class="entry-title" id="entry-title" contenteditable="plaintext-only" role="textbox" aria-label="Titel" data-placeholder="Ohne Titel" spellcheck="false" enterkeyhint="done"></div>
             <!-- Pillen wie auf der Seite eines Arbeitsbereichs: Inhalt und Verknüpfte Einträge -->
             <div class="tab-pills page-pills" id="entry-pills"></div>
             <div class="entry-panel" id="entry-panel-notes">
