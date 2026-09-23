@@ -21,7 +21,7 @@ import { mountNoHistoryForm } from "./core/no-history.js";
 import { loadState } from "./data/state.js";
 import { loadThumbs } from "./data/thumbs.js";
 import { loadUsage } from "./data/usage.js";
-import { initComposer, updateComposerSend } from "./features/composer/composer.js";
+import { initComposer, onComposerText } from "./features/composer/composer.js";
 import { initDictation } from "./features/composer/dictation.js";
 import { initEntry } from "./features/entry/entry.js";
 import { loadPhoto, renderProfileButton } from "./features/profile/avatar.js";
@@ -106,7 +106,7 @@ function initFeatures() {
   initWorkspacePage();
   initEntry();
   initComposer();
-  initDictation(updateComposerSend);
+  initDictation(onComposerText);
 }
 
 /* Eine nachzuladende Seite wurde geöffnet: ihr Modul holen. Es zeichnet sich selbst. */

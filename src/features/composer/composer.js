@@ -32,11 +32,10 @@ import {
 } from "./attachments.js";
 import { contextDefaults, pickOverrides } from "./composer-defaults.js";
 import {
-  adoptMediaType,
   chooseComposerType,
   composer,
+  followFileDraft,
   isComposerPreset,
-  releaseMediaType,
   rememberComposerPreset,
   resetComposerDraft,
 } from "./composer-state.js";
@@ -240,16 +239,20 @@ function renderTypeDependents() {
   updateComposerSend();
 }
 
-/* Kommt eine Datei dazu, kann aus dem Entwurf ein Medium werden; geht die
-   letzte wieder, wird er, was er vorher war (composer-state.js). */
-function onFilesAdded() {
-  adoptMediaType(Boolean(dom.composerInput.value.trim()));
+/* Hängt eine Datei dran, folgt der Typ Anhängen und Text (followFileDraft in
+   composer-state.js) — Knöpfe und Pillen müssen dann mit. */
+function onFilesChanged() {
+  followFileDraft(Boolean(dom.composerInput.value.trim()));
   renderTypeDependents();
 }
 
-function onFileDropped() {
-  releaseMediaType();
-  renderTypeDependents();
+/**
+ * Nach jeder Änderung im Textfeld, getippt oder diktiert: aus einem Medium
+ * kann mit dem ersten Buchstaben ein Dokument werden und umgekehrt.
+ */
+export function onComposerText() {
+  if (followFileDraft(Boolean(dom.composerInput.value.trim()))) renderTypeDependents();
+  else updateComposerSend();
 }
 
 /** Alle Knöpfe und Felder des Eingabefelds anmelden. */
@@ -265,7 +268,7 @@ export function initComposer() {
     renderTypeDependents();
     dom.composerInput.focus();
   });
-  initComposerAttachments({ onAdded: onFilesAdded, onDropped: onFileDropped });
+  initComposerAttachments(onFilesChanged);
 
   dom.composerLink.addEventListener("click", () => {
     /* Der Typ des Entwurfs kommt mit: ein Projekt bekommt nur Arbeitsbereiche
@@ -284,7 +287,7 @@ export function initComposer() {
     );
   });
 
-  dom.composerInput.addEventListener("input", updateComposerSend);
+  dom.composerInput.addEventListener("input", onComposerText);
   dom.composerInput.addEventListener("keydown", (event) => {
     if (event.key !== "Enter") return;
     event.preventDefault();

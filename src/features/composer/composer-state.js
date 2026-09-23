@@ -9,7 +9,7 @@
  * Keine anpassbaren visuellen Werte.
  */
 
-import { defaultType, resourcePick, resourceTypes, types } from "../../data/config.js";
+import { defaultType, fileDraftTypes, resourcePick, resourceTypes, types } from "../../data/config.js";
 
 export const composer = {
   /* Typ des Eintrags, der entstehen würde */
@@ -29,12 +29,12 @@ export const composer = {
   preset: { type: types[0].id, place: null },
   /* Anhänge des offenen Eingabefelds; erst beim Anlegen werden daraus Medien */
   files: [],
-  /* Hat man in diesem Entwurf selbst einen Typ gewählt? Dann stellt ein
-     Anhang ihn nicht mehr von sich aus um. */
+  /* Hat man in diesem Entwurf selbst einen Typ gewählt? Dann stellen weder
+     Anhang noch Text ihn mehr von sich aus um. */
   typeChosen: false,
-  /* Typ und Knopf von vorher, wenn das Eingabefeld beim ersten Anhang von
-     selbst auf „Medium“ umgestellt hat — ohne Datei springt es dorthin zurück.
-     `null` heißt: nichts von selbst umgestellt. */
+  /* Typ und Knopf von vorher, solange der Typ von selbst einer Datei folgt
+     (followFileDraft) — ohne Datei springt er dorthin zurück. `null` heißt:
+     nichts von selbst umgestellt. */
   mediaSwitch: null,
   nextFileId: 1,
   /* Angetippte Stunde im Kalender: { date, time } — der neue Termin landet dort */
@@ -79,27 +79,36 @@ export function clearComposerPick() {
 }
 
 /**
- * Die Datei selbst wird der Eintrag. Kommt ein Anhang, solange noch nichts
- * getippt und kein Typ von Hand gewählt ist, stellt sich das Eingabefeld auf
- * „Medium“ um: das Foto landet dann als EIN Medium am Ort und bei der offenen
- * Seite — statt als Notiz „IMG_2968“ mit einem gleichnamigen Foto daneben.
- * Wer zuerst tippt oder selbst einen Typ wählt, meint den Eintrag: dann hängt
- * die Datei als Medium an ihm.
- * @param hasText ob im Feld schon etwas steht.
+ * Der Typ eines Entwurfs mit Datei, solange man keinen selbst gewählt hat.
+ * Aufgerufen nach jeder Änderung an Anhängen oder Text:
+ *
+ * - Datei dran, Feld leer → Medium: die Datei selbst ist der Eintrag. Das Foto
+ *   landet als EIN Medium am Ort und bei der offenen Seite — statt als Notiz
+ *   „IMG_2968“ mit einem gleichnamigen Foto daneben.
+ * - Text dazu → Dokument, an dem die Datei als Medium hängt; Text wieder weg
+ *   → wieder Medium.
+ * - letzte Datei weg → zurück zum Vorschlag der Seite.
+ *
+ * Wer schon getippt hatte, bevor die Datei kam, meint seinen Eintrag (etwa
+ * eine Aufgabe): der Typ bleibt, die Datei hängt als Medium daran. Schlägt die
+ * Seite selbst ein Medium vor (Medien-Reiter), bleibt es eins — Text ist dort
+ * sein Titel. Welche Typen es sind, steht in src/data/config.js (fileDraftTypes).
+ * @param hasText ob im Feld etwas steht.
+ * @returns true, wenn sich der Typ geändert hat.
  */
-export function adoptMediaType(hasText) {
-  if (hasText || composer.typeChosen || composer.type === "medien") return;
-  const before = { type: composer.type, pick: composer.pick };
-  chooseComposerType("medien");
-  composer.mediaSwitch = before;
-}
-
-/** Ist die letzte Datei wieder weg, gilt der Typ von vor dem Umstellen. */
-export function releaseMediaType() {
-  const before = composer.mediaSwitch;
-  if (composer.files.length || !before) return;
-  chooseComposerType(before.type, before.pick);
-  composer.mediaSwitch = null;
+export function followFileDraft(hasText) {
+  const before = composer.type;
+  const previous = composer.mediaSwitch;
+  if (!composer.files.length) {
+    if (previous) chooseComposerType(previous.type, previous.pick);
+    composer.mediaSwitch = null;
+  } else if (previous) {
+    chooseComposerType(hasText ? fileDraftTypes.withText : fileDraftTypes.bare);
+  } else if (!hasText && !composer.typeChosen && composer.type !== fileDraftTypes.bare) {
+    composer.mediaSwitch = { type: composer.type, pick: composer.pick };
+    chooseComposerType(fileDraftTypes.bare);
+  }
+  return composer.type !== before;
 }
 
 /** Den Vorschlag der Seite festhalten, sobald das Eingabefeld aufgeht. */

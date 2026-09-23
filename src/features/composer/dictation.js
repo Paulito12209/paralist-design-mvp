@@ -55,7 +55,8 @@ function start(onChange) {
   session.start();
 }
 
-/** Den Diktat-Knopf anmelden. `onChange` frischt den Anlegen-Knopf auf. */
+/** Den Diktat-Knopf anmelden. `onChange` meldet dem Eingabefeld den neuen Text —
+    wie beim Tippen hängen Anlegen-Knopf und, mit Anhang, der Typ daran. */
 export function initDictation(onChange) {
   dom.composerMic.addEventListener("click", () => {
     if (!SpeechRecognition) {

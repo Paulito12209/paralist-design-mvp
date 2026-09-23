@@ -7,7 +7,7 @@
  * ANPASSBARE WERTE (alle in src/data/config.js)
  * -----------------------------------
  * composerPlaceholders  -> Platzhaltertext im Eingabefeld je gewähltem Typ
- * mediaTitlePlaceholder -> Platzhalter eines Mediums, sobald eine Datei angehängt ist
+ * mediaPlaceholders     -> Platzhalter eines Mediums, sobald eine Datei angehängt ist
  * xpItems[*].color      -> Icon-Farbe des gewählten Typ-Knopfs
  *
  * Größe und Farben von Knöpfen und Pille stehen in styles/composer.css.
@@ -18,7 +18,7 @@ import { icon } from "../../core/html.js";
 import {
   composerPlaceholders,
   defaultType,
-  mediaTitlePlaceholder,
+  mediaPlaceholders,
   typeSingular,
   types,
   xpItemStyle,
@@ -47,9 +47,12 @@ function projectAllowed() {
 }
 
 /* Was im leeren Feld steht. Ein Medium ohne Datei sagt, wie man zu einer
-   kommt; mit Datei, dass ein eigener Titel freiwillig ist. */
+   kommt. Mit Datei: hat das Eingabefeld von selbst umgestellt, dass Text ein
+   Dokument daraus macht — sonst, dass ein eigener Titel freiwillig ist. */
 function placeholderText(typeId) {
-  if (typeId === "medien" && composer.files.length) return mediaTitlePlaceholder;
+  if (typeId === "medien" && composer.files.length) {
+    return composer.mediaSwitch ? mediaPlaceholders.auto : mediaPlaceholders.title;
+  }
   return composerPlaceholders[typeId] || "Neuen Eintrag einfügen …";
 }
 

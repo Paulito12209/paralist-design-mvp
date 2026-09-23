@@ -9,7 +9,8 @@
  * xpKinds[*].color        -> Farbe im Ring des Fortschritt-Blatts (verweist auf styles/tokens.css)
  * xpKinds[*].amount       -> wie viele XP ein Ereignis bringt
  * composerPlaceholders    -> Platzhaltertext im Eingabefeld je gewähltem Typ
- * mediaTitlePlaceholder   -> Platzhalter eines Mediums, sobald eine Datei angehängt ist
+ * mediaPlaceholders       -> Platzhalter eines Mediums, sobald eine Datei angehängt ist
+ * fileDraftTypes          -> welcher Typ von selbst entsteht, wenn eine Datei dranhängt
  * proposedType            -> Typ, den das Eingabefeld ohne nähere Angabe vorschlägt
  * typeSingulars           -> Einzahl der Typen, deren Name in der Mehrzahl steht
  * resourceFilterTypes     -> welchen Typ jede Filter-Pille der Ressourcen-Seite anlegt
@@ -80,8 +81,23 @@ export const composerPlaceholders = {
   medien: "Über + eine Datei anhängen …",
 };
 
-/* Sobald die Datei da ist, ist der Titel freiwillig: ohne heißt das Medium wie die Datei. */
-export const mediaTitlePlaceholder = "Eigener Titel (optional) …";
+/*
+ * Platzhalter eines Mediums, sobald die Datei da ist. `title`: „Medium“ ist
+ * von Hand gewählt, Text wird sein Titel — ohne heißt es wie die Datei.
+ * `auto`: das Eingabefeld hat von selbst umgestellt, Text macht ein Dokument daraus.
+ */
+export const mediaPlaceholders = {
+  title: "Eigener Titel (optional) …",
+  auto: "Mit Text wird es ein Dokument …",
+};
+
+/*
+ * Welcher Typ von selbst entsteht, solange eine Datei dranhängt und man keinen
+ * Typ selbst gewählt hat: ohne Text ist die Datei selbst der Eintrag
+ * (`bare`), mit Text ein Dokument, an dem die Datei als Medium hängt
+ * (`withText`). Beide leuchten unter dem Ressourcen-Knopf.
+ */
+export const fileDraftTypes = { bare: "medien", withText: "dokument" };
 
 /*
  * Die vier Übersichtskarten. Nur der Eingang ist ein Ablageort (parent null =

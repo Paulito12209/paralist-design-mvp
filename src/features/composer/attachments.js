@@ -145,10 +145,11 @@ export function createMediaEntries(typed, places, source) {
 
 /**
  * Plus-Knopf, Dateifelder und Kreuze auf den Kacheln anmelden.
- * @param handlers { onAdded, onDropped } — das Eingabefeld zeichnet danach
- *   nach, was an den Anhängen hängt (Typ, Platzhalter, Anlegen-Knopf).
+ * @param onChange nach jeder hinzugekommenen oder entfernten Datei — das
+ *   Eingabefeld zeichnet dann nach, was an den Anhängen hängt (Typ,
+ *   Platzhalter, Anlegen-Knopf).
  */
-export function initComposerAttachments({ onAdded, onDropped }) {
+export function initComposerAttachments(onChange) {
   dom.composerAttach.addEventListener("click", () => {
     openSheet(
       "Medien hinzufügen",
@@ -163,13 +164,13 @@ export function initComposerAttachments({ onAdded, onDropped }) {
   fileSources.forEach((source) => {
     const input = el(`composer-file-${source.id}`);
     input.addEventListener("change", () => {
-      addComposerFiles(input.files, source.id, onAdded);
+      addComposerFiles(input.files, source.id, onChange);
       input.value = "";
     });
   });
 
   dom.composerAttachments.addEventListener("click", (event) => {
     const button = event.target.closest("[data-drop-attachment]");
-    if (button) dropComposerFile(button.dataset.dropAttachment, onDropped);
+    if (button) dropComposerFile(button.dataset.dropAttachment, onChange);
   });
 }
