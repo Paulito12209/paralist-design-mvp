@@ -1,0 +1,84 @@
+/*
+ * Blatt „Details“ und der kleine Titel in der Kopfzeile einer Detailseite.
+ * Pfad: styles/details.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * .sheet-lead font-size          -> Größe des vollen Titels oben im Blatt „Details“ (20px)
+ * .sheet-detail-label font-size  -> Größe der grauen Bezeichnung („Typ“, „Speicherort“) (13px)
+ * .sheet-detail-value font-size  -> Größe des Werts darunter (16px)
+ * .head-title-main font-size     -> Größe des kleinen Titels in der Kopfzeile (17px)
+ * .head-title-sub font-size      -> Größe der grauen Art darunter („Arbeitsbereich“) (13px)
+ * --text / --muted               -> Schrift- und Graufarbe (styles/tokens.css)
+ */
+
+/* ---------- Blatt „Details“ ---------- */
+
+/* Der volle Titel: nie gekürzt, lange Wörter brechen um */
+.sheet-lead {
+  margin: 0;
+  padding: 4px 12px 12px;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--text);
+  overflow-wrap: anywhere; /* overflow-wrap: sehr lange Wörter umbrechen statt überstehen */
+  user-select: text; /* user-select: den Titel markieren und kopieren können */
+  -webkit-user-select: text;
+}
+
+.sheet-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 8px 12px;
+}
+
+.sheet-detail-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.sheet-detail-value {
+  font-size: 16px;
+  color: var(--text);
+  overflow-wrap: anywhere; /* overflow-wrap: lange Ortsnamen umbrechen */
+}
+
+/* ---------- Kleiner Titel in der Kopfzeile ---------- */
+
+.head-title {
+  display: none;
+  flex: 1;
+  min-width: 0; /* min-width: sonst schiebt ein langer Titel das Menü aus dem Bild */
+  flex-direction: column;
+  line-height: 1.2;
+}
+
+.head-title-main,
+.head-title-sub {
+  overflow: hidden; /* overflow: nötig für text-overflow */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.head-title-main {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.head-title-sub {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Weggescrollt: kleiner Titel statt Ort und Suche */
+.page-head.is-title-shown .head-title:not([hidden]) {
+  display: flex;
+}
+
+.page-head.is-title-shown:has(.head-title:not([hidden])) .entry-crumb,
+.page-head.is-title-shown:has(.head-title:not([hidden])) .page-head-reveal {
+  display: none;
+}

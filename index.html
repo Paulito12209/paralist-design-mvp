@@ -44,7 +44,7 @@
     <link rel="stylesheet" href="styles/composer-attachments.css" />
     <link rel="stylesheet" href="styles/toast.css" />
     <link rel="stylesheet" href="styles/update.css" />
-    <link rel="stylesheet" href="styles/overlays.css" />
+    <link rel="stylesheet" href="styles/overlays.css" /><link rel="stylesheet" href="styles/details.css" />
     <link rel="stylesheet" href="styles/modal-top.css" />
     <link rel="stylesheet" href="styles/search.css" />
     <link rel="stylesheet" href="styles/progress.css" />
@@ -106,13 +106,12 @@
           </section>
 
           <section class="view" id="view-page" data-view="page" hidden>
-            <!-- Kopfzeile bleibt beim Scrollen oben; Suche und Optionen zeigen sich erst
-                 beim Scrollen (Arbeitsbereich: Ort und Menü gleich, wie beim Eintrag) -->
+            <!-- Kopfzeile bleibt oben; beim Scrollen: Suche bzw. kleiner Titel (src/ui/head-title.js) -->
             <div class="page-head" id="page-head">
               <button class="back-btn" id="back-btn" type="button" aria-label="Zurück">
                 <svg class="icon"><use href="#icon-back"></use></svg>
               </button>
-              <span class="entry-crumb page-crumb" id="page-crumb" hidden></span>
+              <span class="entry-crumb page-crumb" id="page-crumb" hidden></span><span class="head-title" hidden><span class="head-title-main"></span><span class="head-title-sub"></span></span>
               <div class="page-head-reveal" id="page-head-reveal">
                 <button class="search page-search" id="page-search" type="button" aria-label="Suchen">
                   <svg class="icon search-icon"><use href="#icon-search"></use></svg>
@@ -129,11 +128,11 @@
 
           <!-- Editor-Seite: oeffnet sich beim Antippen eines Eintrags -->
           <section class="view" id="view-entry" data-view="entry" hidden>
-            <div class="page-head">
+            <div class="page-head" id="entry-head">
               <button class="back-btn" id="entry-back" type="button" aria-label="Zurück">
                 <svg class="icon"><use href="#icon-back"></use></svg>
               </button>
-              <span class="entry-crumb" id="entry-crumb"></span>
+              <span class="entry-crumb" id="entry-crumb"></span><span class="head-title" hidden><span class="head-title-main"></span><span class="head-title-sub"></span></span>
               <button class="head-btn" id="entry-menu" type="button" aria-label="Seitenmenü">
                 <svg class="icon"><use href="#icon-dots"></use></svg>
               </button>

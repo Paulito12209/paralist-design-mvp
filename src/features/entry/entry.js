@@ -17,6 +17,7 @@
 import { emit, events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { load } from "../../core/lazy.js";
+import { entryDetails, entryTypeName } from "../../data/details.js";
 import { linkedEntries } from "../../data/links.js";
 import { deleteEntry, toggleFavorite } from "../../data/mutations.js";
 import { entriesOf, findEntry, isContainer, placesLabel } from "../../data/queries.js";
@@ -24,6 +25,8 @@ import { entryRef } from "../../data/refs.js";
 import { groupedListMarkup, linkedListMarkup } from "../../ui/groups.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { archiveEntry } from "../../data/xp.js";
+import { openDetails } from "../../ui/details.js";
+import { bindHeadTitle, setHeadTitle } from "../../ui/head-title.js";
 import { openLinkPicker } from "../../ui/pickers.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { restoreFrom } from "../../ui/router.js";
@@ -72,6 +75,7 @@ function renderEntry() {
   dom.entryTitle.value = entry.title;
   dom.entryBody.value = entry.body || "";
   dom.entryCrumb.textContent = placesLabel(entry);
+  setHeadTitle(el("entry-head"), entry.title || "Ohne Titel", entryTypeName(entry));
 
   /* Zeichnungen zeigen statt des Textes die Zeichenfläche. */
   const isDrawing = entry.type === "zeichnung";
@@ -97,6 +101,11 @@ function openEntryMenu() {
       label: "Verknüpfen",
       icon: "link",
       onSelect: () => openLinkPicker(entry),
+    },
+    {
+      label: "Details",
+      icon: "info",
+      onSelect: () => openDetails(entry.title || "Ohne Titel", entryDetails(entry)),
     },
   ];
 
@@ -146,6 +155,12 @@ function bindTextField(field, key) {
 export function initEntry() {
   bindTextField(dom.entryTitle, "title");
   bindTextField(dom.entryBody, "body");
+  bindHeadTitle(el("entry-head"), dom.entryTitle, () => isViewActive("entry"));
+  /* Beim Umbenennen den kleinen Titel oben mitziehen */
+  dom.entryTitle.addEventListener("input", () => {
+    const small = el("entry-head").querySelector(".head-title-main");
+    small.textContent = dom.entryTitle.value || "Ohne Titel";
+  });
 
   const selectPill = (id) => {
     const entry = findEntry(ui.currentEntryId);

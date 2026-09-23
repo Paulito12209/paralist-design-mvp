@@ -25,8 +25,11 @@ import {
   deleteWorkspace,
   toggleFavorite,
 } from "../../data/mutations.js";
+import { workspaceDetails } from "../../data/details.js";
 import { findWorkspace, inboxEntries, projectEntries } from "../../data/queries.js";
 import { saveState, state, ui } from "../../data/state.js";
+import { openDetails } from "../../ui/details.js";
+import { bindHeadTitle, setHeadTitle } from "../../ui/head-title.js";
 import { iconPickerAction } from "../../ui/pickers.js";
 import { restoreFrom, showSearch } from "../../ui/router.js";
 import { emptyState } from "../../ui/empty-state.js";
@@ -137,6 +140,7 @@ function renderPage() {
   }
   /* Auf einem Arbeitsbereich ist der Titel selbst das Namensfeld. */
   setupWorkspaceTitle(page);
+  setHeadTitle(dom.pageHead, page.isWorkspace ? page.title : "", "Arbeitsbereich");
   dom.pageMenuBtn.hidden = collectionsWithoutMenu.includes(page.kind);
   /* Ein Arbeitsbereich sieht aus wie eine Eintragsseite: Ort und Menü stehen
      von Anfang an oben, nicht erst nach dem Scrollen. */
@@ -163,6 +167,11 @@ function openPageMenu() {
 
   if (workspace) {
     options.push({ label: "Umbenennen", icon: "pencil", onSelect: beginRenameWorkspaceTitle });
+    options.push({
+      label: "Details",
+      icon: "info",
+      onSelect: () => openDetails(workspace.name, workspaceDetails(workspace)),
+    });
     options.push({
       label: workspace.favorite ? "Aus Favoriten entfernen" : "Zu Favoriten",
       icon: workspace.favorite ? "star" : "star-outline",
@@ -213,6 +222,7 @@ export function initPage() {
     dom.searchInput.focus();
   });
   dom.content.addEventListener("scroll", updatePageHeadScroll, { passive: true });
+  bindHeadTitle(dom.pageHead, dom.pageTitle, () => isViewActive("page"));
 
   dom.backBtn.addEventListener("click", (event) => {
     event.preventDefault();

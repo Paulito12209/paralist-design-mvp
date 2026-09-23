@@ -66,6 +66,8 @@ function commitTitle() {
   if (typed && typed !== workspace.name) {
     nameWorkspace(workspace, typed);
     ui.currentPage.title = workspace.name;
+    const small = document.querySelector("#page-head .head-title-main");
+    if (small) small.textContent = workspace.name;
   }
   dom.pageTitle.textContent = ui.currentPage.title;
 }
