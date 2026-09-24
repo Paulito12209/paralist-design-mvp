@@ -13,6 +13,7 @@
  * fileDraftTypes          -> welcher Typ von selbst entsteht, wenn eine Datei dranhängt
  * proposedType            -> Typ, den das Eingabefeld ohne nähere Angabe vorschlägt
  * typeSingulars           -> Einzahl der Typen, deren Name in der Mehrzahl steht
+ * typeArticles            -> unbestimmter Artikel je Typ („Jetzt eine Aufgabe“)
  * resourceFilterTypes     -> welchen Typ jede Filter-Pille der Ressourcen-Seite anlegt
  * typeOrder               -> Reihenfolge der Gruppen unter „Verknüpfte Einträge“
  * linkableTypes           -> welche Typen sich mit einem Eintrag verknüpfen lassen
@@ -218,6 +219,9 @@ const typeSingulars = { projekt: "Projekt", medien: "Medium" };
 export function typeSingular(id) {
   return typeSingulars[id] || typeLabel(id);
 }
+
+/** Unbestimmter Artikel je Typ, für Sätze wie „Jetzt eine Aufgabe“ oder „Wird ein Projekt“. */
+export const typeArticles = { notiz: "eine", aufgabe: "eine", termin: "ein", projekt: "ein", dokument: "ein", arbeitsbereich: "ein" };
 
 /** Icon und Farbe für einen Historien-Posten; unbekannte Posten bleiben grau. */
 export function xpItemStyle(item) {

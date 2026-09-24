@@ -16,6 +16,7 @@ import { archivedEntries, archivedWorkspaces, findWorkspace, tabWorkspaces } fro
 import { saveState, ui } from "../../data/state.js";
 import { openCtxMenu } from "../../ui/ctx-menu.js";
 import { iconPickerAction } from "../../ui/pickers.js";
+import { typeChangeAction } from "../../ui/type-menu.js";
 import { workspaceRow } from "../../ui/rows.js";
 import { isViewActive } from "../../ui/views.js";
 
@@ -112,6 +113,8 @@ export function openWorkspaceMenu(button) {
       saveState();
       emit(events.dataChanged);
     }),
+    /* Umbenennen, Icon, Typ: was der Arbeitsbereich IST, steht beieinander */
+    typeChangeAction({ workspace }),
     {
       label: workspace.favorite ? "Aus Favoriten entfernen" : "Zu Favoriten",
       icon: workspace.favorite ? "star" : "star-outline",

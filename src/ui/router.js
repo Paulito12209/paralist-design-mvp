@@ -110,8 +110,13 @@ export function openArchive() {
   writeHistory({ view: "archive", from: ui.sourceView }, "#/archiv", false);
 }
 
-/** Eine Übersichtskarte oder einen Arbeitsbereich öffnen. */
-export function openTarget(kind, id) {
+/**
+ * Eine Übersichtskarte oder einen Arbeitsbereich öffnen.
+ * @param replace `true`, wenn die neue Seite die aktuelle im Verlauf ersetzen
+ *   soll — nach dem Umwandeln eines Eintrags in einen Arbeitsbereich führt
+ *   Zurück dann dorthin, woher man kam, nicht auf eine Seite, die es nicht mehr gibt.
+ */
+export function openTarget(kind, id, replace = false) {
   if (kind === "overview") {
     const page = overviewPages[id];
     if (!page) return;
@@ -126,11 +131,16 @@ export function openTarget(kind, id) {
   if (!workspace) return;
   noteOpen("workspace", workspace.id);
   showPage({ title: workspaceLabel(workspace), parent: workspaceRef(workspace.id), isWorkspace: true, workspaceId: workspace.id });
-  writeHistory({ view: "workspace", id, from: ui.sourceView }, `#/arbeitsbereich/${id}`, false);
+  writeHistory({ view: "workspace", id, from: ui.sourceView }, `#/arbeitsbereich/${id}`, replace);
 }
 
-/** Einen Eintrag zum Bearbeiten öffnen. */
-export function openEntry(id, push = true) {
+/**
+ * Einen Eintrag zum Bearbeiten öffnen.
+ * @param push    `false`, wenn der Eintrag aus dem Verlauf zurückkommt.
+ * @param replace `true`, wenn die Seite die aktuelle im Verlauf ersetzen soll
+ *   (wie bei openTarget — nach dem Umwandeln eines Arbeitsbereichs in einen Eintrag).
+ */
+export function openEntry(id, push = true, replace = false) {
   const entry = findEntry(id);
   if (!entry) return;
   /* Nur ein echtes Öffnen zählt, nicht das Wiederkommen über Zurück. */
@@ -140,7 +150,7 @@ export function openEntry(id, push = true) {
      auf, einer aus dem Verlauf behält seine Pille. */
   if (push) ui.entryPill = "notes";
   showView("entry");
-  if (push) writeHistory({ view: "entry", id: entry.id, from: ui.sourceView }, `#/eintrag/${entry.id}`, false);
+  if (push) writeHistory({ view: "entry", id: entry.id, from: ui.sourceView }, `#/eintrag/${entry.id}`, replace);
 }
 
 /**
@@ -273,8 +283,15 @@ window.addEventListener("popstate", (event) => {
     showTab(entry.view, true);
     return;
   }
+  /* Zeigt ein Posten auf etwas, das es nicht mehr gibt (gelöscht oder in
+     einen Arbeitsbereich umgewandelt), geht es auf die Übersicht — sonst
+     bliebe die alte Seite stehen und Zurück täte sichtbar nichts. */
   if (entry.view === "entry") {
     ui.sourceView = entry.from || "home";
+    if (!findEntry(entry.id)) {
+      showHome(true);
+      return;
+    }
     openEntry(entry.id, false);
     return;
   }
@@ -292,8 +309,11 @@ window.addEventListener("popstate", (event) => {
   }
   if (entry.view === "workspace") {
     const workspace = findWorkspace(entry.id);
-    if (!workspace) return;
     ui.sourceView = entry.from || "home";
+    if (!workspace) {
+      showHome(true);
+      return;
+    }
     showPage(
       { title: workspaceLabel(workspace), parent: workspaceRef(workspace.id), isWorkspace: true, workspaceId: workspace.id },
       false

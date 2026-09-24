@@ -7,6 +7,9 @@
  * Bei einer Aufgabe steht mittig in der Kopfzeile „Aufgabe: Offen | Jetzt“;
  * ein Tipp darauf öffnet das Blatt mit Status und Dringlichkeit
  * (src/ui/task-status.js) — egal, von wo aus man die Aufgabe geöffnet hat.
+ * Bei jedem anderen Eintrag ist die Kategorie („Notiz“) eine Pille, die das
+ * Blatt „Typ ändern“ öffnet (src/ui/type-menu.js); nur eine Zeichnung und
+ * ein Medium bleiben, was sie sind.
  *
  * Unter der zweiten Pille steht bei einem Projekt sein INHALT — was dort
  * abgelegt ist. Bei jedem anderen Eintrag stehen dort die VERKNÜPFTEN
@@ -25,6 +28,7 @@
 import { events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { load } from "../../core/lazy.js";
+import { canChangeType } from "../../data/convert.js";
 import { entryTypeName } from "../../data/details.js";
 import { linkedEntries } from "../../data/links.js";
 import { entriesOf, findEntry, isContainer } from "../../data/queries.js";
@@ -38,6 +42,7 @@ import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { goBack, restoreFrom } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
 import { openTaskSheet, taskCrumbMarkup } from "../../ui/task-status.js";
+import { openTypeSheet, typeCrumbMarkup } from "../../ui/type-menu.js";
 import { isViewActive } from "../../ui/views.js";
 import { addWritePage } from "../../ui/write-tap.js";
 
@@ -76,10 +81,19 @@ function renderLinks(entry) {
 }
 
 /* Mitte der Kopfzeile: die Kategorie, bei einer Aufgabe dazu Status und
-   Dringlichkeit zum Antippen. */
+   Dringlichkeit zum Antippen — sonst die Kategorie selbst als Pille. */
 function renderCrumb(entry) {
-  if (entry.type === "aufgabe") dom.entryCrumb.innerHTML = taskCrumbMarkup(entry, entryTypeName(entry));
-  else dom.entryCrumb.textContent = entryTypeName(entry);
+  const name = entryTypeName(entry);
+  if (entry.type === "aufgabe") dom.entryCrumb.innerHTML = taskCrumbMarkup(entry, name);
+  else if (canChangeType(entry)) dom.entryCrumb.innerHTML = typeCrumbMarkup(name);
+  else dom.entryCrumb.textContent = name;
+}
+
+/* Der graue Untertitel des kleinen Kopfzeilen-Titels nennt den Typ — nach
+   einem Typwechsel muss er mitziehen, ohne den Titel zu verstecken. */
+function syncHeadSub(entry) {
+  const sub = el("entry-head").querySelector(".head-title-sub");
+  if (sub) sub.textContent = entryTypeName(entry);
 }
 
 /** Die Seite mit dem Eintrag füllen, der gerade offen ist. */
@@ -160,10 +174,13 @@ export function initEntry() {
     field: () => (ui.entryPill === "notes" && !dom.entryBody.hidden ? dom.entryBody : null),
   });
 
-  /* „Aufgabe: Offen | Jetzt“ in der Kopfzeile öffnet Status und Dringlichkeit */
+  /* „Aufgabe: Offen | Jetzt“ in der Kopfzeile öffnet Status und Dringlichkeit,
+     die Pille „Notiz“ das Blatt „Typ ändern“ */
   dom.entryCrumb.addEventListener("click", (event) => {
     const entry = findEntry(ui.currentEntryId);
-    if (entry && event.target.closest("[data-task-sheet]")) openTaskSheet(entry);
+    if (!entry) return;
+    if (event.target.closest("[data-task-sheet]")) openTaskSheet(entry);
+    else if (event.target.closest("[data-type-sheet]")) openTypeSheet({ entry });
   });
 
   dom.entryMenu.addEventListener("click", openEntryMenu);
@@ -184,8 +201,9 @@ export function initEntry() {
       dom.entryLinks.innerHTML = "";
       return;
     }
-    /* Verknüpfungen können sich im offenen Blatt gerade ändern */
+    /* Verknüpfungen können sich im offenen Blatt gerade ändern, der Typ auch */
     renderCrumb(entry);
+    syncHeadSub(entry);
     renderLinks(entry);
     renderEntryPills(entry);
   });

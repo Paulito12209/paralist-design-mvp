@@ -35,6 +35,7 @@ import { goBack, restoreFrom, showSearch } from "../../ui/router.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { entryRow, workspaceRow } from "../../ui/rows.js";
 import { openSheet } from "../../ui/sheet.js";
+import { openTypeSheet, typeChangeAction, typeCrumbMarkup } from "../../ui/type-menu.js";
 import { isViewActive } from "../../ui/views.js";
 import { archiveMarkup } from "./archive.js";
 import { isWritingNotes, renderWorkspacePage } from "./workspace-page.js";
@@ -145,7 +146,8 @@ function renderPage() {
   /* Ein Arbeitsbereich sieht aus wie eine Eintragsseite: Kategorie und Menü
      stehen von Anfang an oben, statt nach dem Scrollen der Suche zu weichen. */
   dom.pageCrumb.hidden = !page.isWorkspace;
-  dom.pageCrumb.textContent = page.isWorkspace ? WORKSPACE_CRUMB : "";
+  /* Die Kategorie ist eine Pille: ein Tipp öffnet „Typ ändern“ (src/ui/type-menu.js). */
+  dom.pageCrumb.innerHTML = page.isWorkspace ? typeCrumbMarkup(WORKSPACE_CRUMB) : "";
   dom.pageHead.classList.toggle("is-pinned", Boolean(page.isWorkspace));
   renderPageBody();
 }
@@ -187,6 +189,7 @@ function openPageMenu() {
         emit(events.dataChanged);
       })
     );
+    options.push(typeChangeAction({ workspace }));
   }
 
   options.push({
@@ -214,6 +217,11 @@ function openPageMenu() {
 /** Seitenmenü, Suche, Zurück-Pfeil und Auffrischen anmelden. */
 export function initPage() {
   dom.pageMenuBtn.addEventListener("click", openPageMenu);
+  dom.pageCrumb.addEventListener("click", (event) => {
+    const page = ui.currentPage;
+    const workspace = page && page.isWorkspace ? findWorkspace(page.workspaceId) : null;
+    if (workspace && event.target.closest("[data-type-sheet]")) openTypeSheet({ workspace });
+  });
   initWorkspaceTitle();
   /* Erst die Suchseite zeigen: dort ist die allgemeine Kopfzeile mit dem
      echten Suchfeld wieder da, und ein verstecktes Feld nimmt keinen Fokus an. */

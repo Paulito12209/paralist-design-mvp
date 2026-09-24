@@ -15,10 +15,14 @@
  * --placeholder             -> Farbe der Platzhaltertexte
  * --content-side            -> Abstand zum linken und rechten Rand
  * --page-head-pull          -> Ausgleich, damit die Kategorie oben genau mittig steht
+ * --task-crumb-gap          -> Abstand zwischen Kategorie und kleinem Pfeil in der Pille (tokens-pages.css)
+ * --tab-pill-active-bg      -> Fläche unter der Kategorie-Pille, solange man draufdrückt
+ * --chevron                 -> Farbe des kleinen Pfeils in der Pille
 
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei:
  * .entry-crumb font-size    -> Größe der grauen Kategorie mitten in der Kopfzeile (15px)
+ * .type-crumb::after inset  -> wie weit die Tippfläche der Kategorie-Pille über sie hinausgeht (10px / 6px)
  *
  * Nur für Browser ohne field-sizing (das Textfeld wächst dort nicht mit),
  * direkt bei ihrer Regel unten:
@@ -71,6 +75,50 @@
   overflow: hidden; /* overflow: nötig für text-overflow */
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Die Kategorie als Knopf: ein Tipp öffnet „Typ ändern“ (src/ui/type-menu.js).
+   Eine schmale Pille, nicht der ganze Streifen — ein Tipp in die Kopfzeile,
+   um die Tastatur zu schließen, soll nichts aus Versehen öffnen. Sieht aus
+   wie „Aufgabe: Offen | Jetzt“ (.task-crumb in styles/task-status.css). */
+.type-crumb {
+  position: relative; /* position: Anker für die größere Tippfläche darunter */
+  display: inline-flex;
+  align-items: center;
+  gap: var(--task-crumb-gap);
+  max-width: 100%;
+  padding: 6px 4px;
+  border-radius: 999px; /* border-radius: die Druckfläche ist eine Pille */
+  color: inherit;
+  font: inherit;
+}
+
+.type-crumb > span {
+  overflow: hidden; /* overflow: nötig für text-overflow */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Die Pille ist kaum höher als ihre Schrift; die unsichtbare Fläche darüber
+   bringt das Tippziel auf 48 dp, ohne dass sich das Layout ändert — wie
+   .toast-action::after in styles/toast.css. */
+.type-crumb::after {
+  content: "";
+  position: absolute;
+  inset: -10px -6px;
+}
+
+.type-crumb:active {
+  background: var(--tab-pill-active-bg);
+}
+
+/* Kleiner Pfeil nach unten: hier öffnet sich eine Auswahl */
+.type-crumb-chevron {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
+  color: var(--chevron);
+  transform: rotate(90deg); /* transform: der Pfeil der Zeilen zeigt nach rechts, hier soll er nach unten zeigen */
 }
 
 /* Editor-Seite: Titel und Text sind direkt bearbeitbar */

@@ -5,6 +5,7 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * .sheet-lead font-size          -> Größe des vollen Titels oben im Blatt „Details“ (20px)
+ * .sheet-note font-size          -> Größe eines Satzes im Blatt „Typ ändern“ (15px)
  * .sheet-detail-label font-size  -> Größe der grauen Bezeichnung („Typ“, „Speicherort“) (13px)
  * .sheet-detail-value font-size  -> Größe des Werts darunter (16px)
  * .head-title-main font-size     -> Größe des kleinen Titels in der Kopfzeile (17px)
@@ -25,6 +26,16 @@
   overflow-wrap: anywhere; /* overflow-wrap: sehr lange Wörter umbrechen statt überstehen */
   user-select: text; /* user-select: den Titel markieren und kopieren können */
   -webkit-user-select: text;
+}
+
+/* Ein Satz dazu, was gleich passiert — im Blatt „Typ ändern“ unter der Überschrift */
+.sheet-note {
+  margin: 0;
+  padding: 0 12px 10px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--muted);
+  overflow-wrap: anywhere; /* overflow-wrap: lange Titel im Satz umbrechen statt überstehen */
 }
 
 .sheet-detail {
