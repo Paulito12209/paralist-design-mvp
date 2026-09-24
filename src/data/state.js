@@ -15,6 +15,7 @@ import {
   calendarSpans,
   defaultTaskPriority,
   defaultTaskStatus,
+  isTaskDone,
   mediaFilters,
   resourceFilters,
   taskDefaults,
@@ -26,6 +27,7 @@ import {
 import { sanitizeLinks } from "./links.js";
 import { entryRef, normalizeRef, workspaceRef } from "./refs.js";
 import { seedMedia, seedXpFromExisting } from "./seed.js";
+import { archiveFinishedTasks } from "./task-archive.js";
 import { pruneThumbs } from "./thumbs.js";
 
 /** Gespeicherte Daten. Alles hier überlebt ein Neuladen der Seite. */
@@ -183,6 +185,10 @@ function migrate() {
     if (typeof entry.status !== "string") entry.status = defaultTaskStatus;
     if (typeof entry.priority !== "string") entry.priority = defaultTaskPriority;
     if (!Number.isFinite(entry.order)) entry.order = -(entry.createdAt || Date.now());
+    /* Erledigte Aufgaben hatten früher keinen Zeitpunkt des Erledigens. Sie
+       gelten als heute erledigt, damit sie nicht ohne Vorwarnung auf einen
+       Schlag im Archiv verschwinden — ab Mitternacht greift die Regel. */
+    if (isTaskDone(entry) && !Number.isFinite(entry.doneAt)) entry.doneAt = Date.now();
   });
   /* Ein Verweis auf etwas, das es nicht mehr gibt, fällt weg; ohne Ort heißt Eingang. */
   const workspaceRefs = new Set(state.workspaces.map((workspace) => workspaceRef(workspace.id)));
@@ -280,6 +286,9 @@ export function loadState() {
     mediaSeeded = true;
     needsSave = true;
   }
+
+  /* Was vor heute erledigt wurde, gehört ins Archiv (src/data/task-archive.js). */
+  if (archiveFinishedTasks(state.entries)) needsSave = true;
 
   pruneThumbs(state.entries);
   if (needsSave) saveState();

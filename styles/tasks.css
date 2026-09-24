@@ -215,7 +215,7 @@
   color: var(--chip-color, var(--muted));
 }
 
-/* Das Datum steht als letzte Angabe und verschwindet zuerst, wenn es eng wird */
+/* Das Datum steht vorn und bleibt immer ganz stehen; gekürzt wird der Ort dahinter */
 .task-chip-date {
   color: var(--muted);
 }

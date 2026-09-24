@@ -2,7 +2,9 @@
  * Die Listenansicht der Aufgaben-Seite. Die Zeilen sind dieselben wie in allen
  * übrigen Listen der App (dieselben Klassen aus styles/rows.css, dieselben
  * Wisch-Knöpfe, Antippen öffnet den Editor); dazu kommen nur der Haken-Knopf
- * links und unter dem Titel das Label mit dem Ablageort samt Chips.
+ * links und unter dem Titel die Angaben in fester Reihenfolge: Datum, Status,
+ * Ablageort. Der Ort steht zuletzt, weil er als einziger gekürzt wird, wenn
+ * es eng wird.
  * Pfad: src/features/tasks/tasks-list.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -55,7 +57,7 @@ function taskRow(entry) {
         <span class="task-main">
           <span class="task-title${done ? " is-done" : ""}">${taskTitle(entry)}</span>
           <span class="task-meta">
-            ${taskPlaceLabel(entry)}${taskStatusChip(entry)}${taskDateChip(entry)}
+            ${taskDateChip(entry)}${taskStatusChip(entry)}${taskPlaceLabel(entry)}
           </span>
         </span>
         ${icon("chevron", "chevron")}

@@ -175,6 +175,10 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   und nachsehen).
 - Menü: Favorit, Verknüpfen, Archivieren, Löschen. Eine archivierte Aufgabe
   gibt Punkte.
+- Aufgabe abhaken: sie bleibt ausgegraut stehen, auf der Aufgaben-Seite ganz
+  unten (auch in jeder Board-Spalte). Ab 00:00 Uhr des nächsten Tages liegt
+  sie im Archiv (`src/data/task-archive.js`). Zurückgeholt bleibt sie wieder
+  bis Mitternacht sichtbar.
 - Zwischen den Pillen „Inhalt“ und „Verknüpfte Einträge“ wechseln — bei jedem
   Eintragstyp (Aufgabe, Notiz, Termin, Zeichnung, Projekt). Bei einer
   Zeichnung steht unter „Inhalt“ die Zeichenfläche.

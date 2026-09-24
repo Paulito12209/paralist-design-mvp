@@ -7,13 +7,35 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * usageTickSeconds -> wie oft die Nutzungszeit fortgeschrieben wird (Sekunden)
+ * afterMidnightMs  -> wie lange nach 00:00 Uhr erledigte Aufgaben von gestern
+ *                     ins Archiv wandern (Millisekunden)
  */
 
 import { pauseNoHistoryForm, resumeNoHistoryForm } from "../core/no-history.js";
+import { sweepFinishedTasks } from "../data/mutations.js";
 import { flushSave } from "../data/state.js";
 import { flushUsage, resetUsageTick, trackUsage } from "../data/usage.js";
 
 const usageTickSeconds = 15;
+const afterMidnightMs = 1000;
+
+let midnightTimer = null;
+
+/*
+ * Erledigte Aufgaben wandern um Mitternacht ins Archiv (Regel in
+ * src/data/task-archive.js). Ein Zeitgeber auf den nächsten Tageswechsel
+ * genügt; im Hintergrund bremst der Browser ihn aber aus, deshalb wird beim
+ * Zurückkommen in die App zusätzlich aufgeräumt.
+ */
+function armMidnightSweep() {
+  clearTimeout(midnightTimer);
+  const now = new Date();
+  const next = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+  midnightTimer = setTimeout(() => {
+    sweepFinishedTasks();
+    armMidnightSweep();
+  }, next - now + afterMidnightMs);
+}
 
 /**
  * Speichern und Zeitzählung an den Lebenszyklus der Seite hängen.
@@ -22,6 +44,7 @@ const usageTickSeconds = 15;
  */
 export function initLifecycle({ onShow = () => {} } = {}) {
   setInterval(trackUsage, usageTickSeconds * 1000);
+  armMidnightSweep();
 
   document.addEventListener("visibilitychange", () => {
     /* Beim Verstecken alles sichern: danach kann die Seite jederzeit beendet werden. */
@@ -29,7 +52,10 @@ export function initLifecycle({ onShow = () => {} } = {}) {
     flushUsage();
     flushSave();
     resetUsageTick();
-    if (!document.hidden) onShow();
+    if (document.hidden) return;
+    sweepFinishedTasks();
+    armMidnightSweep();
+    onShow();
   });
 
   window.addEventListener("pagehide", () => {
