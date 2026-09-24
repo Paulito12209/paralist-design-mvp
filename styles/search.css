@@ -16,7 +16,7 @@
  * --search-combo-inset      -> Innenabstand des Gehäuses, dadurch schwebt die Suchen-Pille sichtbar darin
  * --tab-pill-active-bg      -> Fläche des Suchen-Knopfs im Gehäuse
  * --search-cancel-color     -> Rot der Schrift des Abbrechen-Knopfs
- * --search-fade             -> wie weit das Ausblenden der Liste über die Knöpfe hinauf reicht
+ * --search-fade             -> wie schnell die Liste ab der Oberkante der Knöpfe ganz verschwindet
  * --bg                      -> Farbe, in die die Liste unten ausgeblendet wird
 
  *
@@ -151,10 +151,11 @@ body.is-search .nav-shell {
 
 /* Unter den Knöpfen läuft die Liste in die Seitenfarbe aus, sonst stünde
    „Abbrechen“ ohne eigene Fläche direkt auf dem Text der Zeilen und wäre kaum
-   zu lesen. Die Fläche ist unten voll deckend und blendet über den Knöpfen
-   auf --search-fade Länge weich aus. z-index 5: über dem Inhalt (0), aber unter
-   dem Verlauf des Dunkelmodus (10, styles/navigation.css) und den Knöpfen (20),
-   so bleibt der Schimmer unten erhalten. */
+   zu lesen. Die Fläche beginnt genau an der Oberkante der Knöpfe — darüber
+   bleibt die Liste unberührt — und wird auf --search-fade Länge nach unten
+   deckend, noch bevor die Schrift von „Abbrechen“ anfängt. z-index 5: über dem
+   Inhalt (0), aber unter dem Verlauf des Dunkelmodus (10, styles/navigation.css)
+   und den Knöpfen (20), so bleibt der Schimmer unten erhalten. */
 body.is-search .device::after {
   content: "";
   position: absolute;
@@ -163,8 +164,9 @@ body.is-search .device::after {
   right: 0;
   bottom: var(--keyboard-inset);
   /* bottom: rückt mit der Tastatur nach oben, wie die Knöpfe selbst */
-  height: calc(var(--search-fade) + var(--search-pill-height) + 24px + var(--nav-bottom) + var(--safe-bottom));
-  /* 24px: der Innenabstand oben in .bottom-bar plus der Abstand unter den Knöpfen */
+  height: calc(var(--search-pill-height) + 12px + var(--nav-bottom) + var(--safe-bottom));
+  /* height: vom Geräterand bis zur Oberkante der Knöpfe; die 12px sind der
+     Abstand unter den Knöpfen (margin von .search-actions) */
   z-index: 5;
   background: linear-gradient(to bottom, transparent, var(--bg) var(--search-fade));
   pointer-events: none;

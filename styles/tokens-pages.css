@@ -75,7 +75,7 @@
  * --search-meta-size        -> Schriftgröße der kleinen Infos unter Such-Einträgen
  * --search-pill-height / --search-pill-side / --search-actions-space / --search-combo-inset -> die Knöpfe unten auf der Suche
  * --search-cancel-color     -> Rot der Schrift von „Abbrechen“ auf der Suche
- * --search-fade             -> Länge des Ausblendens über den Knöpfen unten auf der Suche
+ * --search-fade             -> Länge des Ausblendens ab der Oberkante der Knöpfe unten auf der Suche
  *
  * ZEICHNUNG
  * --draw-tool-size / --draw-color-size -> Größe der Werkzeug-Knöpfe und Farbpunkte
@@ -167,7 +167,7 @@
   --search-combo-inset: 4px;
   --search-cancel-color: #ff2323; /* reines Rot; kräftiger als --danger, das einen Stich ins Orange hat */
   --search-actions-space: 60px;
-  --search-fade: 40px; /* wie weit der Ausblend-Verlauf über die Knöpfe hinauf reicht */
+  --search-fade: 20px; /* ab der Oberkante der Knöpfe: nach so vielen Pixeln ist die Liste ganz verdeckt */
 
   /* Zeichnung: Werkzeug-Knöpfe und Farbpunkte */
   --draw-tool-size: 38px;
