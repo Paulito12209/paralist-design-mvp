@@ -8,7 +8,7 @@
  * -----------------------------------
  * mediaKinds -> welche Arten in welcher Reihenfolge untereinander stehen
  *
- * Kachelbreite, Fugen und die Schriftgröße der kleinen Überschrift stehen in
+ * Kachelgröße (80 × 80 px), Fugen und die Schriftgröße der kleinen Überschrift stehen in
  * styles/media.css (--media-strip-width, --media-strip-gap, --media-kind-size).
  */
 

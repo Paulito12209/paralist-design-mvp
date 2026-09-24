@@ -266,8 +266,8 @@ body.is-media .content {
 }
 
 /*
- * Hier ist die Kachel gerundet und hat eine eigene Fläche — sie steht frei,
- * nicht dicht an dicht im Raster. Ohne die Fläche schwebte das Icon einer
+ * Hier hat die Kachel eine eigene Fläche — sie steht frei, nicht dicht an
+ * dicht im Raster. Eckig wie überall sonst (--media-strip-radius: 0). Ohne die Fläche schwebte das Icon einer
  * Audio- oder Dokument-Kachel im Dunkelmodus im Nichts: dort ist --card
  * dasselbe Schwarz wie der Seitenhintergrund.
  */
@@ -279,7 +279,13 @@ body.is-media .content {
 .media-strip-name {
   font-size: var(--media-name-size);
   color: var(--text);
-  white-space: nowrap; /* white-space + text-overflow: ein langer Name bleibt einzeilig und endet mit „…“ */
+  line-height: 1.25;
+  /* display + -webkit-line-clamp: ein langer Name darf höchstens zwei Zeilen
+     füllen und endet dann mit „…“ — so bleibt jede Kachel gleich hoch. */
+  display: -webkit-box;
+  -webkit-box-orient: vertical; /* -webkit-box-orient: nötig, damit line-clamp greift */
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   overflow: hidden;
-  text-overflow: ellipsis;
+  overflow-wrap: anywhere; /* overflow-wrap: lange Dateinamen ohne Leerzeichen dürfen trotzdem umbrechen */
 }
