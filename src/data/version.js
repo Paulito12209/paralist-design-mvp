@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "0fa4c7e599bd";
+export const appVersion = "f67b29e0bbad";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -126,6 +126,7 @@ export const appFiles = [
   "src/ui/desk-mode.js",
   "src/ui/details.js",
   "src/ui/empty-state.js",
+  "src/ui/entry-menu.js",
   "src/ui/groups.js",
   "src/ui/head-title.js",
   "src/ui/list-clicks.js",

@@ -1,6 +1,6 @@
 /*
- * Das kleine weiße Menü, das beim gedrückt Halten eines Tabs oder
- * Arbeitsbereichs neben dem Element aufgeht.
+ * Das kleine weiße Menü, das beim gedrückt Halten eines Tabs,
+ * Arbeitsbereichs oder Eintrags neben dem Element aufgeht.
  * Pfad: src/ui/ctx-menu.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI

@@ -58,8 +58,11 @@ export function isSwipedOpen(row) {
 function onPointerDown(event) {
   const tabPill = event.target.closest("[data-tab-id]");
   const workspaceBtn = event.target.closest("[data-open-workspace]");
+  /* Nur Eintrags-Zeilen, keine Kacheln oder Kalender-Termine: die haben eigene Gesten. */
+  const entryBtn = event.target.closest(".entry-row[data-open-entry]");
   if (tabPill) startHold(event, tabPill, "tab");
   else if (workspaceBtn) startHold(event, workspaceBtn, "workspace");
+  else if (entryBtn) startHold(event, entryBtn, "entry");
 
   const body = event.target.closest(".swipe-body");
   if (!body || event.target.closest(".swipe-action")) return;
