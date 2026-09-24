@@ -25,6 +25,7 @@ import {
 import { canLink, connectEntries, disconnectEntries, dropLinksTo, isLinked } from "./links.js";
 import { hasPlace, isContainer, tabWorkspaces, taskOrder } from "./queries.js";
 import { entryRef, isEntryRef, refId, workspaceRef } from "./refs.js";
+import { archiveFinishedTasks, noteDoneTime } from "./task-archive.js";
 import { awardXp } from "./xp.js";
 import { saveState, state, ui } from "./state.js";
 import { pruneThumbs } from "./thumbs.js";
@@ -113,7 +114,15 @@ export function archiveWorkspace(id) {
 /** Aus dem Archiv zurückholen: Arbeitsbereich oder Eintrag steht wieder in seiner Liste. */
 export function restoreFromArchive(item) {
   item.archived = false;
+  /* Eine erledigte Aufgabe käme sonst beim nächsten Aufräumen sofort zurück
+     ins Archiv: sie gilt als heute erledigt und bleibt bis Mitternacht. */
+  if (item.type === "aufgabe" && isTaskDone(item)) item.doneAt = Date.now();
   commit();
+}
+
+/** Erledigte Aufgaben von gestern und früher ins Archiv legen (src/data/task-archive.js). */
+export function sweepFinishedTasks() {
+  if (archiveFinishedTasks(state.entries)) commit();
 }
 
 /** Arbeitsbereich löschen; was nur hier lag, wandert in den Eingang. */
@@ -267,6 +276,7 @@ export function applyEntryDefaults(entry) {
  * Punkte schon gab — sonst brächte Ab- und wieder Anhaken beliebig viele.
  */
 function noteDone(entry, wasDone) {
+  noteDoneTime(entry, wasDone);
   if (wasDone || !isTaskDone(entry) || entry.doneAwarded) return;
   entry.doneAwarded = true;
   awardXp("done", "aufgabe", entry.title);
