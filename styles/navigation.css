@@ -40,7 +40,9 @@
  *
  * Die Namen unter den Icons sind standardmäßig aus (dafür die Icons größer);
  * die Klasse „show-labels“ auf der Leiste blendet sie wieder ein — gesetzt von
- * src/shell/nav-bar.js nach der Wahl im Einstellungs-Blatt.
+ * src/shell/nav-bar.js nach der Wahl im Einstellungs-Blatt. Schreibt man auf
+ * der Seite selbst, tritt die ganze Leiste zurück (Klasse „is-writing“ auf
+ * body, gesetzt von src/shell/writing.js).
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
 
@@ -60,6 +62,16 @@
 .bottom-bar:has(.nav-shell.is-composing) {
   padding-left: var(--composer-side);
   padding-right: var(--composer-side);
+}
+
+/* Schreiben auf der Seite (Titel, Text, Umbenennen): die ganze Leiste tritt
+   zurück, über der Tastatur hätte die Navigation nichts zu tun. Die Klasse
+   setzt src/shell/writing.js und nimmt sie erst weg, wenn die Tastatur wieder
+   zu ist. Nur auf Touch-Geräten — dort öffnet ein Feld die Bildschirmtastatur. */
+@media (hover: none) and (pointer: coarse) {
+  body.is-writing .bottom-bar {
+    visibility: hidden; /* visibility: unsichtbar und nicht antippbar, ohne dass sich etwas verschiebt */
+  }
 }
 
 /* Beim Suchen steht in dieser Leiste nur noch die Knopfreihe der Suche

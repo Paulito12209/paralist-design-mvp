@@ -118,6 +118,9 @@
  *                              darum steht der Seitentitel überall auf derselben Höhe.
  * --page-title-gap          -> Luft unter dem Seitentitel einer Unterseite oder eines Eintrags bis zu den Pillen
  * --page-title-lines        -> nach so vielen Zeilen endet ein langer Seitentitel mit „…“
+ * --entry-end-space         -> freie Fläche unter dem Text eines Eintrags oder Arbeitsbereichs: auch am
+ *                              Ende eines langen Textes bleibt über der Navigation Platz für den Tipp,
+ *                              der dort weiterschreibt
  * --title-side              -> Extra-Abstand für die große Überschrift
  * --overview-gap            -> Abstand zwischen Überschrift und Karten
  * --workspace-section-gap / --workspace-head-gap -> Abstand der vier Karten zu
@@ -279,6 +282,7 @@
   --composer-chip-size: 13px;
   --entry-title-size: 28px;
   --entry-body-size: 16px;
+  --entry-end-space: 120px;
   --swipe-action-size: 44px;
   --swipe-action-gap: 10px;
   --danger: #ff3b30;

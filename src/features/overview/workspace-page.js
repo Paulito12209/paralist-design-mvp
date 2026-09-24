@@ -3,11 +3,14 @@
  * freien Text zum Arbeitsbereich und „Verknüpfte Einträge“ mit allem, was darin
  * liegt, nach Typ gruppiert und auf-/zuklappbar. Waagerecht wischen wechselt
  * zwischen den Pillen (src/ui/pill-swipe.js). Dieselben zwei Pillen zeigt
- * auch die Seite eines einzelnen Eintrags (src/features/entry/entry.js).
+ * auch die Seite eines einzelnen Eintrags (src/features/entry/entry.js) —
+ * und wie dort startet ein Tipp unter den Text das Schreiben, bei offener
+ * Tastatur schließt ein Tipp nur sie (src/ui/write-tap.js).
  * Pfad: src/features/overview/workspace-page.js
  *
- * Keine anpassbaren visuellen Werte: Pillen, Text und Gruppen stehen in
- * styles/rows.css (Klassen .page-pills, .workspace-body, .group-head).
+ * Keine anpassbaren visuellen Werte: Pillen und Gruppen stehen in
+ * styles/rows.css (Klassen .page-pills, .group-head), der Text in
+ * styles/entry.css (Klassen .entry-body, .workspace-body).
  */
 
 import { dom, el } from "../../core/dom.js";
@@ -16,6 +19,7 @@ import { entriesOf, findWorkspace } from "../../data/queries.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { groupedListMarkup } from "../../ui/groups.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
+import { addWritePage } from "../../ui/write-tap.js";
 
 /* Die beiden Pillen; die zweite trägt die Anzahl der Einträge. Kein Icon:
    es wird nie mehr als diese zwei geben, das Wort allein reicht. */
@@ -59,6 +63,9 @@ export function initWorkspacePage() {
   const isWorkspaceOpen = () => Boolean(ui.currentPage && ui.currentPage.isWorkspace);
   const selectPill = (id) => {
     if (!isWorkspaceOpen()) return;
+    /* Der Text wird gleich ersetzt: vorher den Cursor herausnehmen, sonst
+       bliebe die Tastatur für ein Feld offen, das es nicht mehr gibt. */
+    if (id !== "notes") el("workspace-body")?.blur();
     ui.pagePill = id;
     renderWorkspacePage(ui.currentPage);
   };
@@ -75,6 +82,14 @@ export function initWorkspacePage() {
     current: () => ui.pagePill,
     select: selectPill,
     enabled: isWorkspaceOpen,
+  });
+
+  /* Tipp unter den Text schreibt weiter, bei offener Tastatur schließt er nur
+     sie — nur auf einem Arbeitsbereich, nicht auf den Sammlungen derselben Ansicht. */
+  addWritePage({
+    view: "page",
+    isOpen: isWorkspaceOpen,
+    field: () => (ui.pagePill === "notes" ? el("workspace-body") : null),
   });
 
   dom.pageBody.addEventListener("input", (event) => {

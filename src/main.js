@@ -37,6 +37,7 @@ import { initNavBar } from "./shell/nav-bar.js";
 import { initSearchBar } from "./shell/search-bar.js";
 import { checkForUpdate, initUpdatePrompt } from "./shell/update-prompt.js";
 import { mountSprite } from "./shell/sprite.js";
+import { initWriting } from "./shell/writing.js";
 import { closeCtxMenu, initCtxMenu } from "./ui/ctx-menu.js";
 import { isDesk, onDeskChange } from "./ui/desk-mode.js";
 import { initListClicks } from "./ui/list-clicks.js";
@@ -95,6 +96,7 @@ function initShell() {
   initSearchBar();
   initNavBar();
   initKeyboardInset();
+  initWriting();
 }
 
 /* Alle Bereiche anmelden, die von Anfang an da sein müssen. */
