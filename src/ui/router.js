@@ -65,7 +65,28 @@ export function showSearch(replace = false, list = null) {
   setActiveTab("");
   ui.sourceView = "search";
   const url = list === "searches" ? "#/suchen/gesucht" : list === "most" ? "#/suchen/haeufig" : "#/suchen";
-  writeHistory({ view: "search", list }, url, replace || location.hash === url);
+  const keep = replace || location.hash === url;
+  writeHistory({ view: "search", list, depth: searchDepth() + (keep ? 0 : 1) }, url, keep);
+}
+
+/* Wie viele Verlaufsschritte die Suche schon über der Seite liegt, von der aus
+   sie geöffnet wurde. Jede Unterliste zählt einen weiter; aus dem Verlauf
+   wiederhergestellt bringt der Eintrag seine Zahl selbst mit. */
+function searchDepth() {
+  return history.state?.view === "search" ? history.state.depth || 0 : 0;
+}
+
+/**
+ * Suche verlassen: genau dorthin zurück, wo sie geöffnet wurde — Kalender,
+ * Aufgaben, eine Seite oder die Übersicht —, auch über geöffnete Unterlisten
+ * hinweg. Nur wenn die Suche direkt über ihre Adresse kam, gibt es kein
+ * Davor; dann geht es auf die Übersicht.
+ */
+export function closeSearch() {
+  dom.searchInput.blur();
+  const depth = searchDepth();
+  if (depth > 0) history.go(-depth);
+  else showHome();
 }
 
 /**
