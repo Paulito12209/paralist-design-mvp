@@ -4,16 +4,18 @@
  * Pfad: src/ui/rows.js
  *
  * Keine anpassbaren visuellen Werte: Höhe, Farben und Abstände stehen in
- * styles/rows.css (Klassen .workspace-row, .swipe, .swipe-action).
+ * styles/rows.css (Klassen .workspace-row, .swipe, .swipe-action), der Haken
+ * vor einer Aufgabe in styles/task-status.css.
  */
 
 import { escapeHtml, icon } from "../core/html.js";
 import { sameId } from "../core/ids.js";
 import { noHistoryForm } from "../core/no-history.js";
-import { typeIcon } from "../data/config.js";
+import { isTaskDone, typeIcon } from "../data/config.js";
 import { mediaKindOf, workspaceIcon, workspaceLabel } from "../data/queries.js";
 import { ui } from "../data/state.js";
 import { thumbOf } from "../data/thumbs.js";
+import { taskCheck } from "./task-status.js";
 
 /** Eine Zeile mit Wisch-Knöpfen; die Knöpfe liegen hinter der Zeile. */
 export function swipeRow(dataAttr, actionsLeft, actionsRight, rowHtml) {
@@ -85,15 +87,21 @@ export function entryActions(entry) {
  */
 export function entryRow(entry, prefix = "") {
   const actions = entryActions(entry);
+  /* Eine Aufgabe trägt statt ihres Typ-Icons den runden Haken — so lässt sie
+     sich in jeder Liste abhaken, nicht nur auf der Aufgaben-Seite. Er steht
+     neben der Zeile statt darin, damit ein Tipp darauf nicht die Seite öffnet. */
+  const task = entry.type === "aufgabe";
+  const done = task && isTaskDone(entry);
   return swipeRow(
-    `data-entry="${entry.id}"`,
+    `data-entry="${entry.id}"${task ? " data-has-check" : ""}`,
     actions.left,
     actions.right,
     `
+      ${task ? taskCheck(entry) : ""}
       <button class="workspace-row entry-row" type="button" data-open-entry="${entry.id}">
-        ${entryGlyph(entry)}
+        ${task ? "" : entryGlyph(entry)}
         ${prefix}
-        <span>${escapeHtml(entry.title)}</span>
+        <span${done ? ' class="is-done"' : ""}>${escapeHtml(entry.title)}</span>
         ${icon("chevron", "chevron")}
       </button>
     `

@@ -18,7 +18,8 @@ import { entryActions, swipeRow } from "../../ui/rows.js";
 import { isTaskDone } from "../../data/config.js";
 import { taskEntries, visibleTasks } from "../../data/queries.js";
 import { icon } from "../../core/html.js";
-import { taskCheck, taskDateChip, taskPlaceLabel, taskStatusChip, taskTitle } from "./tasks-parts.js";
+import { taskDateChip, taskPlaceLabel, taskStatusChip, taskTitle } from "./tasks-parts.js";
+import { taskCheck } from "../../ui/task-status.js";
 
 /* Noch gar keine Aufgabe: dann lädt der Platzhalter zum Anlegen ein. */
 const emptyAll = {

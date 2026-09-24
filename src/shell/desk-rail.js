@@ -26,10 +26,9 @@ import { emit, events } from "../core/bus.js";
 import { dayKey, pad2 } from "../core/dates.js";
 import { dom } from "../core/dom.js";
 import { load } from "../core/lazy.js";
-import { toggleTaskDone } from "../data/mutations.js";
-import { findEntry } from "../data/queries.js";
 import { ui } from "../data/state.js";
 import { openEntry, openTarget, showSearch, showTab } from "../ui/router.js";
+import { toggleTaskFromCheck } from "../ui/task-status.js";
 import { isViewActive } from "../ui/views.js";
 import { inboxTile, levelTile, nextCard, recentSection, tasksCard } from "./desk-rail-cards.js";
 
@@ -138,8 +137,8 @@ function checkTask(button) {
   button.classList.add("is-checking");
   setTimeout(() => {
     checking.delete(id);
-    const entry = findEntry(id);
-    if (entry) toggleTaskDone(entry);
+    /* Derselbe Weg wie der Haken in den Listen: mit Meldung und „Rückgängig“ */
+    toggleTaskFromCheck(id);
   }, checkDelay);
 }
 

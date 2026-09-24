@@ -1,7 +1,8 @@
 /*
  * Die kleinen Bausteine einer Aufgabe, die Liste und Board gemeinsam nutzen:
- * der runde Haken-Knopf, das Label mit dem Ablageort und die Chips für Status,
- * Dringlichkeit und Datum.
+ * das Label mit dem Ablageort und die Chips für Status, Dringlichkeit und
+ * Datum. Der runde Haken-Knopf steht in src/ui/task-status.js, weil er in
+ * jeder Liste der App vorkommt, nicht nur hier.
  * Pfad: src/features/tasks/tasks-parts.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -16,7 +17,7 @@
 
 import { escapeHtml, icon } from "../../core/html.js";
 import { shortDay } from "../../core/format.js";
-import { isTaskDone, taskGroupings, taskPriorityOf, taskStatusOf } from "../../data/config.js";
+import { taskGroupings, taskPriorityOf, taskStatusOf } from "../../data/config.js";
 import { entryDay, mainPlace, parentIcon, placesLabel } from "../../data/queries.js";
 
 const untitledTask = "Ohne Titel";
@@ -35,20 +36,6 @@ const priorityFieldIcon = priorityGroup ? priorityGroup.icon : "flame";
 /** Titel einer Aufgabe, abgesichert für die Ausgabe. */
 export function taskTitle(entry) {
   return escapeHtml(entry.title || untitledTask);
-}
-
-/**
- * Der runde Haken-Knopf. Er sitzt als eigener Knopf neben der Zeile, damit ein
- * Tipp darauf die Aufgabe abhakt und nicht den Editor öffnet.
- */
-export function taskCheck(entry) {
-  const done = isTaskDone(entry);
-  return `
-    <button class="task-check${done ? " is-done" : ""}" type="button" data-task-done="${entry.id}"
-      aria-pressed="${done}" aria-label="${done ? "Wieder öffnen" : "Erledigt"}">
-      ${icon("check", "task-check-icon")}
-    </button>
-  `;
 }
 
 /** Wozu die Aufgabe gehört: Projekt, Arbeitsbereich oder „Eingang”. */
