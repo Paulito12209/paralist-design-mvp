@@ -20,7 +20,7 @@ import { dom, el } from "../core/dom.js";
 import { load } from "../core/lazy.js";
 import { noteSearch } from "../data/opens.js";
 import { ui } from "../data/state.js";
-import { showHome, showSearch } from "../ui/router.js";
+import { closeSearch, showSearch } from "../ui/router.js";
 import { isViewActive } from "../ui/views.js";
 import { initSearchVoice } from "./search-voice.js";
 
@@ -52,12 +52,13 @@ export function initSearchBar() {
      wurde, und holt sie mit dem Cursor im Suchfeld zurück. */
   dom.searchPill.addEventListener("click", () => dom.searchInput.focus());
 
-  /* Abbrechen: leert die Suche und geht zurück auf die Übersicht. */
+  /* Abbrechen: leert die Suche und geht zurück auf die Seite, von der aus sie
+     geöffnet wurde (Kalender bleibt Kalender), nicht pauschal zur Übersicht. */
   el("search-close").addEventListener("click", () => {
     dom.searchInput.value = "";
     ui.searchQuery = "";
     ui.searchList = null;
-    showHome();
+    closeSearch();
   });
 
   initSearchVoice(el("search-voice"));

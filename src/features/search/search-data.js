@@ -57,8 +57,8 @@ export function resolveOpen(open) {
     const workspace = findWorkspace(open.id);
     return workspace ? itemOfWorkspace(workspace) : null;
   }
-  const page = overviewPages[open.id];
-  return page ? itemOfPage(open.id, page) : null;
+  /* Alles andere (früher auch Sammlungen) gehört nicht in die Merklisten. */
+  return null;
 }
 
 /** Alle Merkposten, die es noch gibt, als fertige Zeilen-Bausteine. */

@@ -12,7 +12,11 @@ import { saveState, state } from "./state.js";
 
 const maxRecentSearches = 8;
 
-/** Merkt, dass etwas geöffnet wurde. `kind` ist "entry", "workspace" oder "overview". */
+/**
+ * Merkt, dass etwas geöffnet wurde. `kind` ist "entry" (Aufgabe, Notiz,
+ * Projekt, …) oder "workspace". Sammlungen und die Reiter unten (Kalender,
+ * Aufgaben, Medien) werden bewusst nicht gezählt — sie sind nur Wege dorthin.
+ */
 export function noteOpen(kind, id) {
   const key = `${kind}:${id}`;
   const found = state.opens.find((item) => item.key === key);

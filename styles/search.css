@@ -16,6 +16,8 @@
  * --search-combo-inset      -> Innenabstand des Gehäuses, dadurch schwebt die Suchen-Pille sichtbar darin
  * --tab-pill-active-bg      -> Fläche des Suchen-Knopfs im Gehäuse
  * --search-cancel-color     -> Rot der Schrift des Abbrechen-Knopfs
+ * --search-fade             -> wie schnell die Liste ab der Oberkante der Knöpfe ganz verschwindet
+ * --bg                      -> Farbe, in die die Liste unten ausgeblendet wird
 
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
@@ -145,6 +147,30 @@ body.is-search .content {
    drei Knöpfe der Suche, damit die Seite so ruhig bleibt wie das Suchfeld oben. */
 body.is-search .nav-shell {
   display: none;
+}
+
+/* Unter den Knöpfen läuft die Liste in die Seitenfarbe aus, sonst stünde
+   „Abbrechen“ ohne eigene Fläche direkt auf dem Text der Zeilen und wäre kaum
+   zu lesen. Die Fläche beginnt genau an der Oberkante der Knöpfe — darüber
+   bleibt die Liste unberührt — und wird auf --search-fade Länge nach unten
+   deckend, noch bevor die Schrift von „Abbrechen“ anfängt. z-index 5: über dem
+   Inhalt (0), aber unter dem Verlauf des Dunkelmodus (10, styles/navigation.css)
+   und den Knöpfen (20), so bleibt der Schimmer unten erhalten. */
+body.is-search .device::after {
+  content: "";
+  position: absolute;
+  /* position: liegt fest unten im Gerät, die Liste scrollt darunter durch */
+  left: 0;
+  right: 0;
+  bottom: var(--keyboard-inset);
+  /* bottom: rückt mit der Tastatur nach oben, wie die Knöpfe selbst */
+  height: calc(var(--search-pill-height) + 12px + var(--nav-bottom) + var(--safe-bottom));
+  /* height: vom Geräterand bis zur Oberkante der Knöpfe; die 12px sind der
+     Abstand unter den Knöpfen (margin von .search-actions) */
+  z-index: 5;
+  background: linear-gradient(to bottom, transparent, var(--bg) var(--search-fade));
+  pointer-events: none;
+  /* pointer-events: Tippen soll durch die Fläche hindurch die Zeilen treffen */
 }
 
 /* Die Knöpfe unten: mittig das Gehäuse mit Mikrofon und Suchen, rechts daneben
