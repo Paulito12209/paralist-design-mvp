@@ -28,6 +28,9 @@ export const events = {
   createRequested: "create:requested",
   /* Ein Blatt von unten (Fortschritt, Profil) geht auf: das Eingabefeld schließt. */
   overlayOpened: "overlay:opened",
+  /* Die Bildschirmtastatur ist aufgegangen: schreibt man auf der Seite, bleibt
+     die untere Leiste weg (src/shell/writing.js). */
+  keyboardOpened: "keyboard:opened",
   /* Die Bildschirmtastatur ist zu — auch wenn sie weggewischt statt mit
      einem Tipp geschlossen wurde und das Feld deshalb noch fokussiert ist. */
   keyboardClosed: "keyboard:closed",

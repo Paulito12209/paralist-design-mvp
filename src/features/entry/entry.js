@@ -12,6 +12,10 @@
  * abgelegt ist. Bei jedem anderen Eintrag stehen dort die VERKNÜPFTEN
  * Einträge: die Verbindung gilt auf beiden Seiten, keiner der beiden ist dem
  * anderen untergeordnet (src/data/links.js).
+ *
+ * Unter „Inhalt“ startet ein Tipp in die freie Fläche unter dem Text das
+ * Schreiben am Textende; bei offener Tastatur schließt ein Tipp nur sie
+ * (src/ui/write-tap.js).
  * Pfad: src/features/entry/entry.js
  *
  * Keine anpassbaren visuellen Werte: Schriftgrößen stehen in styles/entry.css
@@ -39,6 +43,7 @@ import { goBack, restoreFrom } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
 import { openTaskSheet, taskCrumbMarkup, toggleTaskFromCheck } from "../../ui/task-status.js";
 import { isViewActive } from "../../ui/views.js";
+import { addWritePage } from "../../ui/write-tap.js";
 
 /* Die beiden Pillen; die zweite trägt die Anzahl dessen, was darunter steht.
    Kein Icon: es wird nie mehr als diese zwei geben, das Wort allein reicht. */
@@ -186,6 +191,9 @@ export function initEntry() {
   const selectPill = (id) => {
     const entry = findEntry(ui.currentEntryId);
     if (!entry) return;
+    /* Der Text verschwindet gleich: vorher den Cursor herausnehmen, sonst
+       bliebe die Tastatur für ein unsichtbares Feld offen. */
+    if (id !== "notes") dom.entryBody.blur();
     ui.entryPill = id;
     renderEntryPills(entry);
   };
@@ -200,6 +208,13 @@ export function initEntry() {
     order: entryPills.map((pill) => pill.id),
     current: () => ui.entryPill,
     select: selectPill,
+  });
+
+  /* Ein Tipp in die freie Fläche unter dem Text schreibt weiter; bei offener
+     Tastatur schließt ein Tipp nur sie. Eine Zeichnung hat kein Textfeld. */
+  addWritePage({
+    view: "entry",
+    field: () => (ui.entryPill === "notes" && !dom.entryBody.hidden ? dom.entryBody : null),
   });
 
   /* „Aufgabe: Offen | Jetzt“ in der Kopfzeile öffnet Status und Dringlichkeit */

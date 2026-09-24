@@ -43,9 +43,9 @@ CLAUDE.md                   Kurzregeln für die Arbeit am Projekt
 | --- | --- | --- |
 | `src/core/` | Werkzeuge ohne App-Wissen: DOM-Zugriff, Datum, Formate, Speicher, Nachrichten, Nachladen | nichts über die App wissen |
 | `src/data/` | Zustand, Abfragen, Änderungen, Punkte, Nutzungszeit, Beispieldaten | das DOM anfassen |
-| `src/ui/` | wiederverwendete Bausteine: Zeilen, Blätter, Menüs, Wischen, Diagramm-Gerüst, Router | einzelne Seiten kennen |
+| `src/ui/` | wiederverwendete Bausteine: Zeilen, Blätter, Menüs, Wischen, Tippen zum Schreiben, Diagramm-Gerüst, Router | einzelne Seiten kennen |
 | `src/features/` | je Seite ein Ordner: `overview`, `calendar`, `tasks`, `media`, `resources`, `composer`, `entry`, `drawing`, `progress`, `profile`, `search` | sich gegenseitig importieren (stattdessen `core/bus.js`) |
-| `src/shell/` | Kopfzeile, Navigationsleiste, Suchfeld, Tastatur-Höhe, Icon-Sammlung | — |
+| `src/shell/` | Kopfzeile, Navigationsleiste, Suchfeld, Tastatur-Höhe, Schreiben auf der Seite (Leiste weicht), Icon-Sammlung | — |
 
 Importe zeigen immer nur in eine Richtung:
 `main.js → shell|features → ui → data → core`. Zwei Seiten importieren sich
@@ -182,6 +182,13 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 - Zwischen den Pillen „Inhalt“ und „Verknüpfte Einträge“ wechseln — bei jedem
   Eintragstyp (Aufgabe, Notiz, Termin, Zeichnung, Projekt). Bei einer
   Zeichnung steht unter „Inhalt“ die Zeichenfläche.
+- Unter „Inhalt“ in die freie Fläche unter dem Text tippen, auch ganz unten
+  über der Navigation: die Tastatur geht auf, der Cursor steht am Textende,
+  die Navigation verschwindet. Waagerecht wischen wechselt dort nur die Pille,
+  senkrecht ziehen scrollt nur. Dasselbe auf der Seite eines Arbeitsbereichs.
+- Bei offener Tastatur irgendwo auf die Seite tippen, auch mitten in einen
+  langen Text: nur die Tastatur geht zu, der Cursor springt nicht, die
+  Navigation kommt zurück. Zurück-Pfeil und Menü wirken sofort.
 
 **Kalender**
 - Raster und Liste umschalten, Zeitraum 1 W / 2 W / 1 M, „Heute“, Monatsmenü.

@@ -87,6 +87,10 @@ export const ui = {
   /* true, solange die Bildschirmtastatur im Suchfeld offen ist: dann bleibt die
      Navigation stehen und ein Tippen in der Liste schließt nur die Tastatur */
   searchTyping: false,
+  /* true, solange die Bildschirmtastatur einen Teil des Fensters verdeckt —
+     gesetzt von src/shell/keyboard-inset.js. Dann schließt ein Tipp auf die
+     Seite eines Eintrags oder Arbeitsbereichs nur die Tastatur (src/ui/write-tap.js). */
+  keyboardOpen: false,
   /* Fortschritt-Blatt: Zeitraum der Kurve und wie viele Historien-Zeilen sichtbar sind */
   progressRange: 30,
   historyLimit: 20,

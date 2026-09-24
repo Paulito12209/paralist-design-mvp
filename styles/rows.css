@@ -336,11 +336,6 @@
   margin-bottom: 18px;
 }
 
-/* Inhalt eines Arbeitsbereichs: wie der Text eines Eintrags, nur nicht ganz so hoch */
-.workspace-body {
-  min-height: 240px;
-}
-
 /* Eine Gruppe unter „Verknüpfte Inhalte“: Überschrift zum Auf-/Zuklappen, darunter die Zeilen */
 .group {
   margin-bottom: 18px;

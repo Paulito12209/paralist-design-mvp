@@ -42,6 +42,16 @@ export function focusAtEnd(input) {
   input.setSelectionRange(end, end);
 }
 
+/* Eingabearten, bei denen am Handy die Bildschirmtastatur aufgeht. */
+const TEXT_INPUT_TYPES = ["text", "search", "email", "url", "tel", "password", "number"];
+
+/** Öffnet ein Fokus auf `node` die Bildschirmtastatur (Textfeld oder bearbeitbarer Text)? */
+export function isTextField(node) {
+  if (!(node instanceof HTMLElement)) return false;
+  if (node.isContentEditable || node.tagName === "TEXTAREA") return true;
+  return node.tagName === "INPUT" && TEXT_INPUT_TYPES.includes(node.type);
+}
+
 /** Alle Elemente, die zum Selektor passen, als echte Liste. */
 export function qa(selector) {
   return Array.from(document.querySelectorAll(selector));

@@ -1,7 +1,8 @@
 /*
  * Seite eines Eintrags: Titel, die Pillen „Inhalt“/„Verknüpfte Einträge“
  * (Klasse .page-pills aus styles/rows.css) mit ihren beiden Flächen, und der
- * Knopf oben rechts.
+ * Knopf oben rechts. Das Textfeld (.entry-body) trägt auch der Inhalt eines
+ * Arbeitsbereichs (.workspace-body).
  * Pfad: styles/entry.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens.css)
@@ -10,6 +11,7 @@
  * --page-title-gap          -> Luft unter dem Titel bis zu den Pillen
  * --page-title-lines        -> nach so vielen Zeilen endet ein langer Titel mit „…“ (tokens.css)
  * --entry-body-size         -> Schriftgröße des Textes
+ * --entry-end-space         -> freie Fläche unter dem Text, auch am Ende eines langen Textes
  * --placeholder             -> Farbe der Platzhaltertexte
  * --content-side            -> Abstand zum linken und rechten Rand
  * --page-head-pull          -> Ausgleich, damit die Kategorie oben genau mittig steht
@@ -17,6 +19,11 @@
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei:
  * .entry-crumb font-size    -> Größe der grauen Kategorie mitten in der Kopfzeile (15px)
+ *
+ * Nur für Browser ohne field-sizing (das Textfeld wächst dort nicht mit),
+ * direkt bei ihrer Regel unten:
+ * .entry-body min-height     -> Höhe der Textfläche eines Eintrags (320px)
+ * .workspace-body min-height -> Höhe der Textfläche eines Arbeitsbereichs (240px)
 */
 
 /* Fläche unter einer der beiden Pillen; welche zu sehen ist, steuert
@@ -108,7 +115,14 @@
 
 .entry-body {
   width: 100%;
-  min-height: 320px;
+  /* field-sizing: das Feld ist so hoch wie sein Text (leer: eine Zeile) und
+     wächst beim Schreiben mit — lange Texte scrollen mit der Seite statt in
+     einem Kasten. Die freie Fläche darunter startet per Tipp das Schreiben
+     am Textende (src/ui/write-tap.js). */
+  field-sizing: content;
+  /* margin-bottom: auch am Ende eines langen Textes bleibt über der
+     Navigation genug freie Fläche für diesen Tipp */
+  margin-bottom: var(--entry-end-space);
   border: 0;
   outline: none;
   background: transparent;
@@ -121,6 +135,19 @@
 
 .entry-body::placeholder {
   color: var(--chevron);
+}
+
+/* Browser ohne field-sizing ließen das Feld nur zwei Zeilen hoch: dort bleibt
+   es eine feste Fläche, in der der Text scrollt. */
+@supports not (field-sizing: content) {
+  .entry-body {
+    min-height: 320px;
+  }
+
+  /* Inhalt eines Arbeitsbereichs: nicht ganz so hoch */
+  .workspace-body {
+    min-height: 240px;
+  }
 }
 
 /* Inhalt eines Projekts bzw. die verknüpften Einträge. Der Abstand nach oben
