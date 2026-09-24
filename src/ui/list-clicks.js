@@ -25,6 +25,7 @@ import {
 import { findEntry, findWorkspace } from "../data/queries.js";
 import { saveState, state } from "../data/state.js";
 import { archiveEntry } from "../data/xp.js";
+import { openEntryCtxMenu } from "./entry-menu.js";
 import { cancelHold, consumeClickBlock } from "./long-press.js";
 import { openLinkPicker } from "./pickers.js";
 import { openArchive, openEntryOrFile, openTarget, showTab } from "./router.js";
@@ -229,6 +230,13 @@ export function initListClicks(handlers) {
       event.preventDefault();
       cancelHold();
       menus.openWorkspaceMenu(workspaceBtn);
+      return;
+    }
+    const entryBtn = event.target.closest(".entry-row[data-open-entry]");
+    if (entryBtn) {
+      event.preventDefault();
+      cancelHold();
+      openEntryCtxMenu(entryBtn);
     }
   });
 }

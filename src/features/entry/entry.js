@@ -22,26 +22,22 @@
  * (--entry-title-size, --entry-body-size).
  */
 
-import { emit, events, on } from "../../core/bus.js";
+import { events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { load } from "../../core/lazy.js";
-import { entryDetails, entryTypeName } from "../../data/details.js";
+import { entryTypeName } from "../../data/details.js";
 import { linkedEntries } from "../../data/links.js";
-import { deleteEntry, toggleFavorite } from "../../data/mutations.js";
-import { isTaskDone } from "../../data/config.js";
 import { entriesOf, findEntry, isContainer } from "../../data/queries.js";
 import { entryRef } from "../../data/refs.js";
 import { groupedListMarkup, linkedListMarkup } from "../../ui/groups.js";
 import { scheduleSave, ui } from "../../data/state.js";
-import { archiveEntry } from "../../data/xp.js";
-import { openDetails } from "../../ui/details.js";
+import { entryMenuOptions } from "../../ui/entry-menu.js";
 import { initEntryTitle, showEntryTitle } from "./entry-title.js";
 import { bindHeadTitle, setHeadTitle } from "../../ui/head-title.js";
-import { openLinkPicker } from "../../ui/pickers.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { goBack, restoreFrom } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
-import { openTaskSheet, taskCrumbMarkup, toggleTaskFromCheck } from "../../ui/task-status.js";
+import { openTaskSheet, taskCrumbMarkup } from "../../ui/task-status.js";
 import { isViewActive } from "../../ui/views.js";
 import { addWritePage } from "../../ui/write-tap.js";
 
@@ -107,68 +103,15 @@ function renderEntry() {
   renderEntryPills(entry);
 }
 
-/* Das Menü oben rechts auf der Eintragsseite. */
+/* Das Menü oben rechts auf der Eintragsseite — dieselben Aktionen wie beim
+   gedrückt Halten einer Zeile (src/ui/entry-menu.js), hier als Blatt. */
 function openEntryMenu() {
   const entry = findEntry(ui.currentEntryId);
   if (!entry) return;
-
-  const options = [];
-  /* Bei einer Aufgabe steht das Abhaken ganz oben — es ist das Häufigste. */
-  if (entry.type === "aufgabe") {
-    const done = isTaskDone(entry);
-    options.push({
-      label: done ? "Wieder öffnen" : "Als erledigt markieren",
-      icon: done ? "circle" : "check-circle",
-      onSelect: () => toggleTaskFromCheck(entry.id),
-    });
-  }
-  options.push(
-    {
-      label: entry.favorite ? "Aus Favoriten entfernen" : "Zu Favoriten",
-      icon: entry.favorite ? "star" : "star-outline",
-      onSelect: () => toggleFavorite(entry),
-    },
-    {
-      label: "Verknüpfen",
-      icon: "link",
-      onSelect: () => openLinkPicker(entry),
-    },
-    {
-      label: "Details",
-      icon: "info",
-      onSelect: () => openDetails(entry.title || "Ohne Titel", entryDetails(entry)),
-    }
-  );
-
-  if (entry.type === "zeichnung") {
-    options.push({
-      label: "Zeichnung leeren",
-      icon: "eraser",
-      onSelect: () => load("drawing").then((module) => module.clearDrawing()),
-    });
-  }
-
-  options.push(
-    {
-      label: "Archivieren",
-      icon: "archive",
-      onSelect: () => {
-        archiveEntry(entry);
-        emit(events.dataChanged);
-        restoreFrom(ui.sourceView);
-      },
-    },
-    {
-      label: "Eintrag löschen",
-      icon: "trash",
-      danger: true,
-      onSelect: () => {
-        deleteEntry(entry.id);
-        restoreFrom(ui.sourceView);
-      },
-    }
-  );
-
+  const options = entryMenuOptions(entry, {
+    onPage: true,
+    afterRemove: () => restoreFrom(ui.sourceView),
+  });
   openSheet(entry.title || "Eintrag", options);
 }
 

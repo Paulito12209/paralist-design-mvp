@@ -1,6 +1,6 @@
 /*
- * Gedrückt halten: nach kurzer Zeit öffnet sich das Kontextmenü eines Tabs
- * oder Arbeitsbereichs. Der Klick danach wird unterdrückt, damit die Seite
+ * Gedrückt halten: nach kurzer Zeit öffnet sich das Kontextmenü eines Tabs,
+ * Arbeitsbereichs oder Eintrags. Der Klick danach wird unterdrückt, damit die Seite
  * nicht zusätzlich aufgeht.
  * Pfad: src/ui/long-press.js
  *
@@ -17,10 +17,10 @@ const clickBlockMs = 400;
 
 let hold = null;
 let blockClick = false;
-/* Wird beim Start gesetzt: { tab, workspace } — je Art die Funktion, die das Menü öffnet. */
+/* Wird beim Start gesetzt: { tab, workspace, entry } — je Art die Funktion, die das Menü öffnet. */
 let openers = {};
 
-/** Die beiden Menü-Öffner hinterlegen. */
+/** Die Menü-Öffner hinterlegen. */
 export function setLongPressMenus(handlers) {
   openers = handlers;
 }
@@ -32,7 +32,7 @@ export function cancelHold() {
   hold = null;
 }
 
-/** Halten beginnen. `kind` ist "tab" oder "workspace". */
+/** Halten beginnen. `kind` ist "tab", "workspace" oder "entry". */
 export function startHold(event, target, kind) {
   cancelHold();
   hold = {

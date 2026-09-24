@@ -40,6 +40,7 @@ import { mountSprite } from "./shell/sprite.js";
 import { initWriting } from "./shell/writing.js";
 import { closeCtxMenu, initCtxMenu } from "./ui/ctx-menu.js";
 import { isDesk, onDeskChange } from "./ui/desk-mode.js";
+import { openEntryCtxMenu } from "./ui/entry-menu.js";
 import { initListClicks } from "./ui/list-clicks.js";
 import { setLongPressMenus } from "./ui/long-press.js";
 import { initModalPull } from "./ui/modal-pull.js";
@@ -88,7 +89,7 @@ function initShell() {
   initModalPull();
   initModalTop();
   initPullSearch();
-  setLongPressMenus({ tab: openTabMenu, workspace: openWorkspaceMenu });
+  setLongPressMenus({ tab: openTabMenu, workspace: openWorkspaceMenu, entry: openEntryCtxMenu });
   initSwipe();
   initListClicks({ openTabMenu, openWorkspaceMenu, beginRenameTab, finishWorkspaceName: commitWorkspaceName });
 
