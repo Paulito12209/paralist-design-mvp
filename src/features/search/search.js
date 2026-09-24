@@ -1,12 +1,15 @@
 /*
- * Die Suchseite. Ohne Eingabe zeigt sie die Merklisten (zuletzt gesucht, am
- * häufigsten geöffnet, zuletzt geöffnet), mit Eingabe die Treffer.
+ * Die Suchseite. Ohne Eingabe zeigt sie zwei Pillen: „Zuletzt“ (letzter
+ * Suchbegriff und zuletzt geöffnet) und „Am häufigsten“ (meistgeöffnet);
+ * mit Eingabe die Treffer.
  * Wird erst beim ersten Öffnen nachgeladen.
  * Pfad: src/features/search/search.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * topOpenedCount / recentOpenedCount -> wie viele Zeilen die Übersicht zeigt
+ * mostOpenedCount   -> wie viele Zeilen die Pille „Am häufigsten“ zeigt
+ * recentOpenedCount -> wie viele geöffnete Seiten die Pille „Zuletzt“ zeigt
+ * searchTabs        -> Beschriftung der beiden Pillen unter der Überschrift
  * emptySearches / emptyOpened / emptyHits -> die drei Platzhalter der Seite
  *
  * Schriftgrößen stehen in styles/search.css (--search-meta-size), der
@@ -20,11 +23,12 @@ import { escapeHtml, icon } from "../../core/html.js";
 import { noteSearch } from "../../data/opens.js";
 import { state, ui } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
+import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { showSearch } from "../../ui/router.js";
 import { isViewActive } from "../../ui/views.js";
 import { knownOpens, mostOpened, searchHits } from "./search-data.js";
 
-const topOpenedCount = 3;
+const mostOpenedCount = 15;
 const recentOpenedCount = 15;
 
 /* Die drei Platzhalter. Angelegt wird hier nichts, deshalb ohne Pille. */
@@ -154,28 +158,33 @@ function recentGroups() {
   return groups;
 }
 
-/* Die Übersicht: nur die Spitze jeder Liste, der Pfeil rechts führt auf die volle Liste. */
-function renderOverviewLists() {
-  const latestSearch = state.recentSearches[0];
-  const most = mostOpened()
-    .slice(0, topOpenedCount)
-    .map(({ open, item }) => resultRow(item, `${item.label} · ${open.count}× geöffnet`))
-    .join("");
-  const groups = recentGroups();
+/* Die beiden Pillen unter der Überschrift; wie auf der Seite eines Eintrags. */
+const searchTabs = [
+  { id: "recent", label: "Zuletzt" },
+  { id: "most", label: "Am häufigsten" },
+];
 
-  dom.searchResults.innerHTML = `
-    <h1 class="screen-title">Suchen</h1>
+function tabsMarkup() {
+  return `<div class="tab-pills page-pills">${searchTabs
+    .map(
+      (tab) =>
+        `<button class="tab-pill${tab.id === ui.searchTab ? " is-active" : ""}" type="button" data-search-tab="${tab.id}">${tab.label}</button>`
+    )
+    .join("")}</div>`;
+}
+
+/* Pille „Zuletzt“: oben der letzte Suchbegriff — der Pfeil nach oben rechts
+   öffnet alle —, darunter die zuletzt geöffneten Seiten nach Tagen. */
+function recentTabMarkup() {
+  const latestSearch = state.recentSearches[0];
+  const groups = recentGroups();
+  return `
     <div class="section-head">
-      <h2>Zuletzt gesucht</h2>
-      <button class="section-more" type="button" data-search-list="searches" aria-label="Alle anzeigen">${icon("chevron", "chevron")}</button>
+      <h2>Gesucht</h2>
+      <button class="section-more" type="button" data-search-list="searches" aria-label="Alle anzeigen">${icon("arrow-up-right", "chevron")}</button>
     </div>
     ${latestSearch ? `<div class="workspace-list">${queryRow(latestSearch)}</div>` : emptyState({ ...emptySearches, compact: true, art: false })}
-    <div class="section-head">
-      <h2>Am häufigsten geöffnet</h2>
-      <button class="section-more" type="button" data-search-list="most" aria-label="Alle anzeigen">${icon("chevron", "chevron")}</button>
-    </div>
-    ${most ? `<div class="workspace-list">${most}</div>` : emptyState({ ...emptyOpened, compact: true, art: false })}
-    <div class="section-head"><h2>Zuletzt geöffnet</h2></div>
+    <div class="section-head"><h2>Geöffnet</h2></div>
     ${
       groups.length
         ? groups
@@ -187,6 +196,33 @@ function renderOverviewLists() {
         : emptyState({ ...emptyOpened, compact: true, art: false })
     }
   `;
+}
+
+/* Pille „Am häufigsten“: die meistgeöffneten Seiten mit ihrer Anzahl. */
+function mostTabMarkup() {
+  const rows = mostOpened()
+    .slice(0, mostOpenedCount)
+    .map(({ open, item }) => resultRow(item, `${item.label} · ${open.count}× geöffnet`))
+    .join("");
+  return `
+    <div class="section-head"><h2>Geöffnet</h2></div>
+    ${rows ? `<div class="workspace-list">${rows}</div>` : emptyState({ ...emptyOpened, compact: true, art: false })}
+  `;
+}
+
+/* Die Übersicht ohne Eingabe: Überschrift, Pillen, darunter die gewählte Liste. */
+function renderOverviewLists() {
+  dom.searchResults.innerHTML =
+    `<h1 class="screen-title">Suchen</h1>` +
+    tabsMarkup() +
+    (ui.searchTab === "most" ? mostTabMarkup() : recentTabMarkup());
+}
+
+/** Pille wählen und die Übersicht neu zeichnen. */
+function selectTab(id) {
+  if (ui.searchTab === id) return;
+  ui.searchTab = id;
+  renderOverviewLists();
 }
 
 /** Die Suchseite passend zum Zustand zeichnen. */
@@ -228,6 +264,12 @@ function onViewClick(event) {
     return;
   }
 
+  const tab = event.target.closest("[data-search-tab]");
+  if (tab) {
+    selectTab(tab.dataset.searchTab);
+    return;
+  }
+
   const more = event.target.closest("[data-search-list]");
   if (more) {
     showSearch(false, more.dataset.searchList);
@@ -258,6 +300,14 @@ function onViewClick(event) {
 function init() {
   el("view-search").addEventListener("mousedown", onViewPointerDown);
   el("view-search").addEventListener("click", onViewClick);
+
+  /* Waagerecht wischen wechselt die Pille — nur auf der Übersicht, wo es Pillen gibt. */
+  initPillSwipe(el("view-search"), {
+    order: searchTabs.map((tab) => tab.id),
+    current: () => ui.searchTab,
+    select: selectTab,
+    enabled: () => !ui.searchQuery && !ui.searchList,
+  });
 
   on(events.viewOpened, (name) => {
     if (name === "search") renderSearch();

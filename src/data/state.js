@@ -82,6 +82,8 @@ export const ui = {
   /* Suchseite: getippter Begriff und welche Unterliste offen ist (null = Übersicht) */
   searchQuery: "",
   searchList: null,
+  /* Gewählte Pille der Suchübersicht: "recent" (Zuletzt) oder "most" (Am häufigsten) */
+  searchTab: "recent",
   /* true, solange die Bildschirmtastatur im Suchfeld offen ist: dann bleibt die
      Navigation stehen und ein Tippen in der Liste schließt nur die Tastatur */
   searchTyping: false,
