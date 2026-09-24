@@ -151,7 +151,7 @@ function pickValid(value, allowed, fallback) {
 
 /* Ältere Speicherstände auf die heutige Form bringen. Gibt zurück, ob sich etwas geändert hat. */
 function migrate() {
-  const before = JSON.stringify({ workspaces: state.workspaces, entries: state.entries, tabs: state.tabs });
+  const before = JSON.stringify({ workspaces: state.workspaces, entries: state.entries, tabs: state.tabs, opens: state.opens });
   /* Der erste Tab hieß früher „Privat“. */
   state.tabs.forEach((tab) => {
     if (tab.name === "Privat") tab.name = "Meine";
@@ -208,7 +208,10 @@ function migrate() {
   state.workspaces.forEach((workspace) => {
     if (!tabIds.includes(String(workspace.tab))) workspace.tab = state.tabs[0].id;
   });
-  return JSON.stringify({ workspaces: state.workspaces, entries: state.entries, tabs: state.tabs }) !== before;
+  /* Früher zählte die Suche auch Sammlungen (Eingang, Favoriten, Projekte,
+     Ressourcen) als „geöffnet“. Das ist weggefallen, die alten Posten auch. */
+  state.opens = state.opens.filter((open) => open.kind === "entry" || open.kind === "workspace");
+  return JSON.stringify({ workspaces: state.workspaces, entries: state.entries, tabs: state.tabs, opens: state.opens }) !== before;
 }
 
 /* Gespeicherte Auswahl der drei Seiten prüfen, damit kein alter Wert die Seite lahmlegt. */

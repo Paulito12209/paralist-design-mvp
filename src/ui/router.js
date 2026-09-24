@@ -115,7 +115,8 @@ export function openTarget(kind, id) {
   if (kind === "overview") {
     const page = overviewPages[id];
     if (!page) return;
-    noteOpen("overview", id);
+    /* Sammlungen (Eingang, Favoriten, …) zählen nicht als „geöffnet“: sie sind
+       Wegweiser wie die Reiter unten, die Suche merkt sich nur Inhalte. */
     showPage({ title: page.title, parent: page.parent, kind: page.kind });
     writeHistory({ view: "overview", id, from: ui.sourceView }, `#/uebersicht/${id}`, false);
     return;
@@ -132,7 +133,8 @@ export function openTarget(kind, id) {
 export function openEntry(id, push = true) {
   const entry = findEntry(id);
   if (!entry) return;
-  noteOpen("entry", entry.id);
+  /* Nur ein echtes Öffnen zählt, nicht das Wiederkommen über Zurück. */
+  if (push) noteOpen("entry", entry.id);
   ui.currentEntryId = entry.id;
   /* Wie bei einer Unterseite: ein frisch geöffneter Eintrag geht beim Inhalt
      auf, einer aus dem Verlauf behält seine Pille. */
