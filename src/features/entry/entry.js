@@ -4,9 +4,9 @@
  * wechselt zwischen ihnen), und das Menü oben rechts. Bei einer Zeichnung steht im Inhalt die Zeichenfläche statt des
  * Textes.
  *
- * Bei einer Aufgabe stehen unter dem Titel der runde Haken und die Pillen
- * „Status“ und „Dringlichkeit“ (src/ui/task-status.js) — so lässt sich der
- * Stand ändern, egal von wo aus man die Aufgabe geöffnet hat.
+ * Bei einer Aufgabe steht mittig in der Kopfzeile „Aufgabe: Offen | Jetzt“;
+ * ein Tipp darauf öffnet das Blatt mit Status und Dringlichkeit
+ * (src/ui/task-status.js) — egal, von wo aus man die Aufgabe geöffnet hat.
  *
  * Unter der zweiten Pille steht bei einem Projekt sein INHALT — was dort
  * abgelegt ist. Bei jedem anderen Eintrag stehen dort die VERKNÜPFTEN
@@ -37,7 +37,7 @@ import { openLinkPicker } from "../../ui/pickers.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { goBack, restoreFrom } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
-import { openTaskFieldSheet, taskFieldsMarkup, toggleTaskFromCheck } from "../../ui/task-status.js";
+import { openTaskSheet, taskCrumbMarkup, toggleTaskFromCheck } from "../../ui/task-status.js";
 import { isViewActive } from "../../ui/views.js";
 
 /* Die beiden Pillen; die zweite trägt die Anzahl dessen, was darunter steht.
@@ -74,12 +74,11 @@ function renderLinks(entry) {
     : linkedListMarkup(entry);
 }
 
-/* Haken, Status und Dringlichkeit — nur bei einer Aufgabe. */
-function renderTaskFields(entry) {
-  const box = el("entry-task-fields");
-  const task = entry.type === "aufgabe";
-  box.hidden = !task;
-  box.innerHTML = task ? taskFieldsMarkup(entry) : "";
+/* Mitte der Kopfzeile: die Kategorie, bei einer Aufgabe dazu Status und
+   Dringlichkeit zum Antippen. */
+function renderCrumb(entry) {
+  if (entry.type === "aufgabe") dom.entryCrumb.innerHTML = taskCrumbMarkup(entry, entryTypeName(entry));
+  else dom.entryCrumb.textContent = entryTypeName(entry);
 }
 
 /** Die Seite mit dem Eintrag füllen, der gerade offen ist. */
@@ -91,7 +90,7 @@ function renderEntry() {
   dom.entryBody.value = entry.body || "";
   /* Mittig die Kategorie, nicht der Ort: der Zurück-Pfeil führt dorthin, wo
      man zuletzt war — nicht zwingend an den Ort des Eintrags. */
-  dom.entryCrumb.textContent = entryTypeName(entry);
+  renderCrumb(entry);
   setHeadTitle(el("entry-head"), entry.title || "Ohne Titel", entryTypeName(entry));
 
   /* Zeichnungen zeigen statt des Textes die Zeichenfläche. */
@@ -99,7 +98,6 @@ function renderEntry() {
   dom.entryBody.hidden = isDrawing;
   dom.drawPad.hidden = !isDrawing;
   if (isDrawing) load("drawing").then((module) => module.openDrawing(entry));
-  renderTaskFields(entry);
   renderLinks(entry);
   renderEntryPills(entry);
 }
@@ -204,11 +202,10 @@ export function initEntry() {
     select: selectPill,
   });
 
-  /* Die Status-Pillen; den Haken daneben fängt src/ui/list-clicks.js, wie in jeder Liste. */
-  el("entry-task-fields").addEventListener("click", (event) => {
-    const pill = event.target.closest("[data-task-field]");
+  /* „Aufgabe: Offen | Jetzt“ in der Kopfzeile öffnet Status und Dringlichkeit */
+  dom.entryCrumb.addEventListener("click", (event) => {
     const entry = findEntry(ui.currentEntryId);
-    if (pill && entry) openTaskFieldSheet(entry, pill.dataset.taskField);
+    if (entry && event.target.closest("[data-task-sheet]")) openTaskSheet(entry);
   });
 
   dom.entryMenu.addEventListener("click", openEntryMenu);
@@ -230,7 +227,7 @@ export function initEntry() {
       return;
     }
     /* Verknüpfungen können sich im offenen Blatt gerade ändern */
-    renderTaskFields(entry);
+    renderCrumb(entry);
     renderLinks(entry);
     renderEntryPills(entry);
   });
