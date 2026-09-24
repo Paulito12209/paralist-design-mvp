@@ -54,9 +54,9 @@
  *
  * MEDIEN UND DATEIANSICHT
  * --media-gap               -> Fuge zwischen den Medien-Kacheln
- * --media-strip-width       -> Breite einer Kachel in der Reihe unter „Verknüpfte Einträge“
+ * --media-strip-width       -> Kantenlänge einer Kachel in der Reihe unter „Verknüpfte Einträge“ (quadratisch, 80 px)
  * --media-strip-gap         -> Fuge zwischen diesen Kacheln
- * --media-strip-radius      -> Rundung dieser Kacheln
+ * --media-strip-radius      -> Rundung dieser Kacheln (0 = eckig wie überall sonst)
  * --media-strip-bg          -> Fläche dieser Kacheln, solange kein Bild darauf liegt
  * --media-kind-size         -> Schriftgröße der kleinen Überschriften Bilder/Videos/Audio/Dokumente
  * --media-month-size        -> Schriftgröße der Monatsüberschrift auf der Medien-Seite
@@ -140,9 +140,9 @@
 
   /* Medien und Dateiansicht: Kacheln, Schilder und die Knöpfe über der Navigation */
   --media-gap: 3px;
-  --media-strip-width: 104px;
+  --media-strip-width: 80px;
   --media-strip-gap: 10px;
-  --media-strip-radius: 14px;
+  --media-strip-radius: 0;
   --media-strip-bg: rgba(60, 60, 67, 0.09);
   --media-kind-size: 13px;
   --media-month-size: 19px;
