@@ -1,19 +1,18 @@
 /*
  * Status einer Aufgabe außerhalb der Aufgaben-Seite: der runde Haken vor einer
  * Aufgabe in jeder Liste (Projekt, Arbeitsbereich, verknüpfte Einträge,
- * Kalender) und unter dem Titel der Aufgabenseite der Haken mit den Pillen
- * „Status“ und „Dringlichkeit“. Der Haken selbst sieht aus wie auf der
- * Aufgaben-Seite (styles/tasks.css, Klasse .task-check).
+ * Kalender) und mittig in der Kopfzeile der Aufgabenseite „Aufgabe: Offen |
+ * Jetzt“ zum Antippen. Der Haken selbst sieht aus wie auf der Aufgaben-Seite
+ * (styles/tasks.css, Klasse .task-check).
  * Pfad: styles/task-status.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens-pages.css bzw. styles/tokens.css)
  * -----------------------------------
- * --task-field-size     -> Schriftgröße der Pillen „Status“ und „Dringlichkeit“
- * --task-field-gap      -> Abstand zwischen Haken und Pillen
- * --tab-pill-active-bg  -> Fläche der Pillen
- * --page-title-gap      -> Luft unter der Zeile bis zu „Inhalt“/„Verknüpfte Einträge“
+ * --task-crumb-gap      -> Abstand zwischen „Aufgabe:“, Status, Trennstrich und Dringlichkeit
+ * --tab-pill-active-bg  -> Fläche unter dem Schriftzug, solange man draufdrückt
  * --cal-accent          -> Ring des Hakens, solange eine Aufgabe „In Arbeit“ ist
- * --muted / --chevron   -> Farbe eines erledigten Titels und des kleinen Pfeils
+ * --muted               -> Farbe eines erledigten Titels
+ * --chevron             -> Farbe von Trennstrich und kleinem Pfeil
 */
 
 /* ---------- Haken in allgemeinen Listen ---------- */
@@ -37,55 +36,46 @@
   box-shadow: inset 0 0 0 2px var(--cal-accent); /* box-shadow statt border: Größe bleibt gleich */
 }
 
-/* ---------- Aufgabenseite: Haken, Status, Dringlichkeit ---------- */
+/* ---------- Kopfzeile der Aufgabenseite: „Aufgabe: Offen | Jetzt“ ---------- */
 
-.task-fields {
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap; /* flex-wrap: bei sehr schmalen Fenstern rutscht eine Pille in die nächste Zeile */
-  gap: var(--task-field-gap);
-  margin-bottom: var(--page-title-gap);
-}
-
-/* Ohne diese Zeile würde display: flex oben das hidden-Attribut überstimmen */
-.task-fields[hidden] {
-  display: none;
-}
-
-/* Der Haken ist hier etwas größer als in einer Zeile: er ist die Hauptaktion der Seite */
-.task-fields .task-check {
-  width: calc(var(--task-check-size) + 8px);
-  height: calc(var(--task-check-size) + 8px);
-}
-
-.task-field {
+/* Der ganze Schriftzug ist ein Knopf; er erbt Größe und Grau von .entry-crumb
+   (styles/entry.css) und bleibt so mittig und bei Platzmangel gekürzt. */
+.task-crumb {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 7px 10px 7px 12px;
-  border-radius: 999px; /* border-radius: macht aus dem Knopf eine Pille */
+  gap: var(--task-crumb-gap);
+  max-width: 100%;
+  padding: 6px 4px;
+  border-radius: 999px; /* border-radius: die Druckfläche ist eine Pille */
+  color: inherit;
+  font: inherit;
+}
+
+.task-crumb:active {
   background: var(--tab-pill-active-bg);
-  color: var(--text);
-  font-size: var(--task-field-size);
+}
+
+/* Status und Dringlichkeit in der Farbe ihrer Stufe — Farbe kommt als
+   --chip-color aus src/ui/task-status.js */
+.task-crumb-value {
+  color: var(--chip-color, var(--text));
   font-weight: 600;
   white-space: nowrap;
 }
 
-.task-field:active {
-  opacity: 0.6;
+/* Senkrechter Trennstrich zwischen Status und Dringlichkeit */
+.task-crumb-bar {
+  width: 1px;
+  height: 0.9em;
+  background: var(--chevron);
+  flex: 0 0 auto;
 }
 
-/* Icon in der Farbe der gewählten Stufe — Farbe kommt als --chip-color aus src/ui/task-status.js */
-.task-field-icon {
-  width: 16px;
-  height: 16px;
-  color: var(--chip-color, var(--muted));
-}
-
-/* Kleiner Pfeil nach unten: die Pille öffnet eine Auswahl */
-.task-field-chevron {
-  width: 12px;
-  height: 12px;
+/* Kleiner Pfeil nach unten: hier öffnet sich eine Auswahl */
+.task-crumb-chevron {
+  width: 10px;
+  height: 10px;
+  flex: 0 0 auto;
   color: var(--chevron);
   transform: rotate(90deg); /* transform: der Pfeil der Zeilen zeigt nach rechts, hier soll er nach unten zeigen */
 }
