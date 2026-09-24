@@ -30,6 +30,7 @@ import { openLinkPicker } from "./pickers.js";
 import { openArchive, openEntryOrFile, openTarget, showTab } from "./router.js";
 import { closeSwipes, isSwipedOpen } from "./swipe.js";
 import { toggleGroup } from "./groups.js";
+import { toggleTaskFromCheck } from "./task-status.js";
 
 /*
  * Umbenennen und die beiden Kontextmenüs gehören zu den Seiten, nicht hierher.
@@ -111,6 +112,15 @@ function onClick(event) {
   const action = event.target.closest(".swipe-action");
   if (action) {
     handleSwipeAction(action);
+    return;
+  }
+
+  /* Der runde Haken vor einer Aufgabe — in jeder Liste und auf der Seite der
+     Aufgabe selbst. Eine aufgewischte Zeile schiebt sich dabei erst zu. */
+  const check = event.target.closest("[data-task-done]");
+  if (check) {
+    if (isSwipedOpen(check)) closeSwipes();
+    else toggleTaskFromCheck(check.dataset.taskDone);
     return;
   }
 

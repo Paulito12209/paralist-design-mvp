@@ -4,6 +4,10 @@
  * wechselt zwischen ihnen), und das Menü oben rechts. Bei einer Zeichnung steht im Inhalt die Zeichenfläche statt des
  * Textes.
  *
+ * Bei einer Aufgabe stehen unter dem Titel der runde Haken und die Pillen
+ * „Status“ und „Dringlichkeit“ (src/ui/task-status.js) — so lässt sich der
+ * Stand ändern, egal von wo aus man die Aufgabe geöffnet hat.
+ *
  * Unter der zweiten Pille steht bei einem Projekt sein INHALT — was dort
  * abgelegt ist. Bei jedem anderen Eintrag stehen dort die VERKNÜPFTEN
  * Einträge: die Verbindung gilt auf beiden Seiten, keiner der beiden ist dem
@@ -20,6 +24,7 @@ import { load } from "../../core/lazy.js";
 import { entryDetails, entryTypeName } from "../../data/details.js";
 import { linkedEntries } from "../../data/links.js";
 import { deleteEntry, toggleFavorite } from "../../data/mutations.js";
+import { isTaskDone } from "../../data/config.js";
 import { entriesOf, findEntry, isContainer } from "../../data/queries.js";
 import { entryRef } from "../../data/refs.js";
 import { groupedListMarkup, linkedListMarkup } from "../../ui/groups.js";
@@ -32,6 +37,7 @@ import { openLinkPicker } from "../../ui/pickers.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { goBack, restoreFrom } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
+import { openTaskFieldSheet, taskFieldsMarkup, toggleTaskFromCheck } from "../../ui/task-status.js";
 import { isViewActive } from "../../ui/views.js";
 
 /* Die beiden Pillen; die zweite trägt die Anzahl dessen, was darunter steht.
@@ -68,6 +74,14 @@ function renderLinks(entry) {
     : linkedListMarkup(entry);
 }
 
+/* Haken, Status und Dringlichkeit — nur bei einer Aufgabe. */
+function renderTaskFields(entry) {
+  const box = el("entry-task-fields");
+  const task = entry.type === "aufgabe";
+  box.hidden = !task;
+  box.innerHTML = task ? taskFieldsMarkup(entry) : "";
+}
+
 /** Die Seite mit dem Eintrag füllen, der gerade offen ist. */
 function renderEntry() {
   const entry = findEntry(ui.currentEntryId);
@@ -85,6 +99,7 @@ function renderEntry() {
   dom.entryBody.hidden = isDrawing;
   dom.drawPad.hidden = !isDrawing;
   if (isDrawing) load("drawing").then((module) => module.openDrawing(entry));
+  renderTaskFields(entry);
   renderLinks(entry);
   renderEntryPills(entry);
 }
@@ -94,7 +109,17 @@ function openEntryMenu() {
   const entry = findEntry(ui.currentEntryId);
   if (!entry) return;
 
-  const options = [
+  const options = [];
+  /* Bei einer Aufgabe steht das Abhaken ganz oben — es ist das Häufigste. */
+  if (entry.type === "aufgabe") {
+    const done = isTaskDone(entry);
+    options.push({
+      label: done ? "Wieder öffnen" : "Als erledigt markieren",
+      icon: done ? "circle" : "check-circle",
+      onSelect: () => toggleTaskFromCheck(entry.id),
+    });
+  }
+  options.push(
     {
       label: entry.favorite ? "Aus Favoriten entfernen" : "Zu Favoriten",
       icon: entry.favorite ? "star" : "star-outline",
@@ -109,8 +134,8 @@ function openEntryMenu() {
       label: "Details",
       icon: "info",
       onSelect: () => openDetails(entry.title || "Ohne Titel", entryDetails(entry)),
-    },
-  ];
+    }
+  );
 
   if (entry.type === "zeichnung") {
     options.push({
@@ -179,6 +204,13 @@ export function initEntry() {
     select: selectPill,
   });
 
+  /* Die Status-Pillen; den Haken daneben fängt src/ui/list-clicks.js, wie in jeder Liste. */
+  el("entry-task-fields").addEventListener("click", (event) => {
+    const pill = event.target.closest("[data-task-field]");
+    const entry = findEntry(ui.currentEntryId);
+    if (pill && entry) openTaskFieldSheet(entry, pill.dataset.taskField);
+  });
+
   dom.entryMenu.addEventListener("click", openEntryMenu);
   dom.entryBack.addEventListener("click", (event) => {
     event.preventDefault();
@@ -198,6 +230,7 @@ export function initEntry() {
       return;
     }
     /* Verknüpfungen können sich im offenen Blatt gerade ändern */
+    renderTaskFields(entry);
     renderLinks(entry);
     renderEntryPills(entry);
   });

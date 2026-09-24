@@ -51,7 +51,8 @@ function ensureHost() {
  * @param options.note   Kleiner Zusatz daneben, z.B. „+1 XP“; leer lässt ihn weg.
  * @param options.accent Farbe des Icons, am besten eine Variable aus
  *                       styles/tokens.css. Ohne Angabe das Grün des Hakens.
- * @param options.action { label, onSelect } für den Knopf rechts; ohne Angabe keiner.
+ * @param options.action { label, onSelect, icon } für den Knopf rechts; ohne Angabe keiner.
+ *                       `icon` ist optional, ohne Angabe der Pfeil nach oben („öffnen“).
  */
 export function showToast({ icon: iconName = "check-circle", title, note = "", accent = "", action = null }) {
   const element = ensureHost();
@@ -65,7 +66,7 @@ export function showToast({ icon: iconName = "check-circle", title, note = "", a
       ${note ? `<span class="toast-note">${escapeHtml(note)}</span>` : ""}
       ${
         action
-          ? `<button class="toast-action" type="button">${escapeHtml(action.label)}${icon("arrow-up", "toast-action-icon")}</button>`
+          ? `<button class="toast-action" type="button">${escapeHtml(action.label)}${icon(action.icon || "arrow-up", "toast-action-icon")}</button>`
           : ""
       }
     </div>

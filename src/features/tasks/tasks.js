@@ -13,8 +13,6 @@
 
 import { emit, events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
-import { toggleTaskDone } from "../../data/mutations.js";
-import { findEntry } from "../../data/queries.js";
 import { state, ui } from "../../data/state.js";
 import { openEntry } from "../../ui/router.js";
 import { isViewActive } from "../../ui/views.js";
@@ -39,19 +37,13 @@ export function renderTasks() {
   if (next) next.scrollLeft = left;
 }
 
-/* Klicks im Inhalt: Haken-Knopf, Knopf am Spaltenende, Zeile im Board öffnen. */
+/* Klicks im Inhalt: Knopf am Spaltenende, Zeile im Board öffnen. Den
+   Haken-Knopf fängt src/ui/list-clicks.js — er gilt in jeder Liste gleich. */
 function onBodyClick(event) {
   /* Nach dem Ablegen einer Zeile kommt noch ein Klick — der öffnet nichts. */
   if (consumeDragClick()) {
     event.preventDefault();
     event.stopPropagation();
-    return;
-  }
-
-  const check = event.target.closest("[data-task-done]");
-  if (check) {
-    const entry = findEntry(check.dataset.taskDone);
-    if (entry) toggleTaskDone(entry);
     return;
   }
 

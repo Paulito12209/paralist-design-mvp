@@ -20,7 +20,8 @@
 import { icon } from "../../core/html.js";
 import { isTaskDone } from "../../data/config.js";
 import { taskColumns } from "../../data/queries.js";
-import { taskCheck, taskDateChip, taskPriorityChip, taskStatusChip, taskTitle } from "./tasks-parts.js";
+import { taskDateChip, taskPriorityChip, taskStatusChip, taskTitle } from "./tasks-parts.js";
+import { taskCheck } from "../../ui/task-status.js";
 
 const addLabel = "Aufgabe hinzufügen";
 const emptyNote = "Nichts hier";
