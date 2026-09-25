@@ -27,6 +27,7 @@ import { state } from "../data/state.js";
 import { archiveEntry } from "../data/xp.js";
 import { openEntryCtxMenu } from "./entry-menu.js";
 import { cancelHold, consumeClickBlock } from "./long-press.js";
+import { openMoveWorkspaceMenu } from "./move-menu.js";
 import { openLinkPicker } from "./pickers.js";
 import { openArchive, openEntryOrFile, openTarget, showTab } from "./router.js";
 import { closeSwipes, isSwipedOpen } from "./swipe.js";
@@ -48,7 +49,7 @@ let menus = {
 
 /* Die Knöpfe einer Arbeitsbereichs-Zeile. Sie stehen getrennt, weil ein
    Arbeitsbereich kein Eintrag ist und deshalb nicht in findEntry() auftaucht. */
-function handleWorkspaceAction(kind, id) {
+function handleWorkspaceAction(kind, id, button) {
   if (kind === "delete-workspace") {
     deleteWorkspace(id);
     return true;
@@ -57,23 +58,25 @@ function handleWorkspaceAction(kind, id) {
     archiveWorkspace(id);
     return true;
   }
-  if (kind === "favorite-workspace" || kind === "restore-workspace") {
+  if (kind === "favorite-workspace" || kind === "restore-workspace" || kind === "move-workspace") {
     const workspace = findWorkspace(id);
     if (!workspace) return true;
-    if (kind === "favorite-workspace") toggleFavorite(workspace);
+    if (kind === "move-workspace") openMoveWorkspaceMenu(button, workspace);
+    else if (kind === "favorite-workspace") toggleFavorite(workspace);
     else restoreFromArchive(workspace);
     return true;
   }
   return false;
 }
 
-/* Der Wisch-Knopf einer Zeile — links Favorit und Verknüpfen, rechts Archivieren
+/* Der Wisch-Knopf einer Zeile — links Favorit und Verknüpfen (beim
+   Arbeitsbereich: in einen anderen Tab), rechts Archivieren
    und Löschen. Welcher es ist, sagt data-swipe, nicht die Seite. */
 function handleSwipeAction(action) {
   const kind = action.dataset.swipe;
   const wrap = action.closest(".swipe");
 
-  if (handleWorkspaceAction(kind, wrap.dataset.workspace)) return;
+  if (handleWorkspaceAction(kind, wrap.dataset.workspace, action)) return;
 
   const entry = findEntry(wrap.dataset.entry);
   if (!entry) return;

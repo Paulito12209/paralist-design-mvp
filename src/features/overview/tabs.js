@@ -15,6 +15,7 @@ import { escapeHtml, icon } from "../../core/html.js";
 import { sameId } from "../../core/ids.js";
 import { noHistoryForm } from "../../core/no-history.js";
 import { deleteTab, selectTab } from "../../data/mutations.js";
+import { tabLabel } from "../../data/queries.js";
 import { saveState, state, ui } from "../../data/state.js";
 import { awardXp } from "../../data/xp.js";
 import { openCtxMenu } from "../../ui/ctx-menu.js";
@@ -35,7 +36,7 @@ function pillMarkup(tab) {
   }
 
   const active = sameId(tab.id, state.activeTabId) ? " is-active" : "";
-  const label = tab.name || tab.placeholder || "Tab";
+  const label = tabLabel(tab);
   return `
     <button class="tab-pill${active}" type="button" data-tab-id="${tab.id}">
       ${glyph}${escapeHtml(label)}

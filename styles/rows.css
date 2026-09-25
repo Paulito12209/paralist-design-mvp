@@ -10,7 +10,8 @@
  * --chevron                 -> Pfeil rechts in der Zeile
  * --swipe-action-size       -> Größe der runden Wisch-Knöpfe
  * --swipe-action-gap        -> Abstand zwischen den Knöpfen und zum Rand
- * --danger / --archive-color / --link-color / --star-color / --restore-color
+ * --danger / --archive-color / --link-color / --star-color / --restore-color /
+ * --move-color
  *                           -> Farben der Wisch-Knöpfe
  * --content-side            -> Abstand der Zeilen zum Rand
  * --page-head-top           -> Abstand über dem Zurück-Pfeil auf Unterseiten
@@ -278,6 +279,10 @@
 
 .swipe-action-link {
   background: var(--link-color);
+}
+
+.swipe-action-move {
+  background: var(--move-color);
 }
 
 .swipe-action-favorite {
