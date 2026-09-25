@@ -42,7 +42,7 @@ import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { goBack, restoreFrom } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
 import { openTaskSheet, taskCrumbMarkup } from "../../ui/task-status.js";
-import { openTypeSheet, typeCrumbMarkup } from "../../ui/type-menu.js";
+import { openTypeChangeSheet, typeCrumbMarkup } from "../../ui/type-menu.js";
 import { isViewActive } from "../../ui/views.js";
 import { addWritePage } from "../../ui/write-tap.js";
 
@@ -180,7 +180,7 @@ export function initEntry() {
     const entry = findEntry(ui.currentEntryId);
     if (!entry) return;
     if (event.target.closest("[data-task-sheet]")) openTaskSheet(entry);
-    else if (event.target.closest("[data-type-sheet]")) openTypeSheet({ entry });
+    else if (event.target.closest("[data-type-sheet]")) openTypeChangeSheet({ entry });
   });
 
   dom.entryMenu.addEventListener("click", openEntryMenu);

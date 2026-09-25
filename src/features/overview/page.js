@@ -35,7 +35,7 @@ import { goBack, restoreFrom, showSearch } from "../../ui/router.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { entryRow, workspaceRow } from "../../ui/rows.js";
 import { openSheet } from "../../ui/sheet.js";
-import { openTypeSheet, typeChangeAction, typeCrumbMarkup } from "../../ui/type-menu.js";
+import { openTypeChangeSheet, typeChangeAction, typeCrumbMarkup } from "../../ui/type-menu.js";
 import { isViewActive } from "../../ui/views.js";
 import { archiveMarkup } from "./archive.js";
 import { isWritingNotes, renderWorkspacePage } from "./workspace-page.js";
@@ -220,7 +220,7 @@ export function initPage() {
   dom.pageCrumb.addEventListener("click", (event) => {
     const page = ui.currentPage;
     const workspace = page && page.isWorkspace ? findWorkspace(page.workspaceId) : null;
-    if (workspace && event.target.closest("[data-type-sheet]")) openTypeSheet({ workspace });
+    if (workspace && event.target.closest("[data-type-sheet]")) openTypeChangeSheet({ workspace });
   });
   initWorkspaceTitle();
   /* Erst die Suchseite zeigen: dort ist die allgemeine Kopfzeile mit dem

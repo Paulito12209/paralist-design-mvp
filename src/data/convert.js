@@ -24,6 +24,7 @@ import { nextId } from "../core/ids.js";
 import { defaultTaskPriority, defaultTaskStatus, workspaceDefaultName } from "./config.js";
 import { connectEntries, disconnectEntries, dropLinksTo } from "./links.js";
 import { commit, liftChildren } from "./mutations.js";
+import { moveOpen } from "./opens.js";
 import { findEntry, findWorkspace, hasPlace, isContainer, workspaceLabel } from "./queries.js";
 import { entryRef, isEntryRef, isWorkspaceRef, refId, workspaceRef } from "./refs.js";
 import { state } from "./state.js";
@@ -139,15 +140,6 @@ function contentsIntoLinks(entry, ref, fallback) {
   const contents = entriesAt(ref);
   liftChildren(ref, fallback);
   contents.forEach((item) => connectEntries(entry, item));
-}
-
-/* Der Merkposten der Suche („zuletzt geöffnet“) wandert mit auf das neue Ding. */
-function moveOpen(fromKey, kind, id) {
-  const open = state.opens.find((item) => item.key === fromKey);
-  if (!open) return;
-  open.key = `${kind}:${id}`;
-  open.kind = kind;
-  open.id = String(id);
 }
 
 /* Der Orts-Filter der Aufgaben-Seite folgt dem Ort — oder fällt auf „alle“ zurück. */

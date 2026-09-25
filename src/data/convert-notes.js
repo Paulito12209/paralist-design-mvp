@@ -13,13 +13,14 @@
  * src/data/config.js.
  */
 
-import { overviewPages, typeArticles, typeSingular } from "./config.js";
+import { overviewPages, typeArticles, typeSingular, xpItemStyle } from "./config.js";
 import { workspaceKind, workspaceTabFor } from "./convert.js";
 import { findEntry, hasPlace, isContainer, parentName, placesLabel } from "./queries.js";
 import { entryRef, isEntryRef, refId, workspaceRef } from "./refs.js";
 import { state } from "./state.js";
 
-const workspaceName = "Arbeitsbereich";
+/* Der Name des Arbeitsbereichs steht wie sein Icon in xpItems (src/data/config.js). */
+const workspaceName = xpItemStyle(workspaceKind).label;
 
 /* „Der Eintrag“ / „Die 3 Einträge“ — die Einzahl bringt ihren Artikel selbst mit. */
 function theEntries(n, one = "Der Eintrag", many = "Einträge") {
@@ -69,7 +70,8 @@ function toProjectNotes(entry) {
   if (links) {
     notes.push(`${theEntries(links, "Der verknüpfte Eintrag", "verknüpften Einträge")} ${links === 1 ? "liegt" : "liegen"} dann im Projekt.`);
   }
-  return notes;
+  /* Nur die Aufgabe verliert hier etwas; ein Termin behält Tag und Uhrzeit. */
+  return entry.type === "aufgabe" ? notes.concat(lostFieldsNotes(entry)) : notes;
 }
 
 /* Ein Projekt wird etwas anderes. */

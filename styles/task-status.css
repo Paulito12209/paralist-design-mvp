@@ -2,7 +2,9 @@
  * Status einer Aufgabe außerhalb der Aufgaben-Seite: der runde Haken vor einer
  * Aufgabe in jeder Liste (Projekt, Arbeitsbereich, verknüpfte Einträge,
  * Kalender) und mittig in der Kopfzeile der Aufgabenseite „Aufgabe: Offen |
- * Jetzt“ zum Antippen. Der Haken selbst sieht aus wie auf der Aufgaben-Seite
+ * Jetzt“ zum Antippen. Dieselbe Pille trägt auf jeder anderen Eintragsseite
+ * die Kategorie („Notiz“, .type-crumb aus src/ui/type-menu.js) — der Stil
+ * steht darum nur hier. Der Haken selbst sieht aus wie auf der Aufgaben-Seite
  * (styles/tasks.css, Klasse .task-check).
  * Pfad: styles/task-status.css
  *
@@ -39,8 +41,10 @@
 /* ---------- Kopfzeile der Aufgabenseite: „Aufgabe: Offen | Jetzt“ ---------- */
 
 /* Der ganze Schriftzug ist ein Knopf; er erbt Größe und Grau von .entry-crumb
-   (styles/entry.css) und bleibt so mittig und bei Platzmangel gekürzt. */
-.task-crumb {
+   (styles/entry.css) und bleibt so mittig und bei Platzmangel gekürzt.
+   .type-crumb ist dieselbe Pille mit dem Typnamen statt Status und Dringlichkeit. */
+.task-crumb,
+.type-crumb {
   display: inline-flex;
   align-items: center;
   gap: var(--task-crumb-gap);
@@ -51,7 +55,8 @@
   font: inherit;
 }
 
-.task-crumb:active {
+.task-crumb:active,
+.type-crumb:active {
   background: var(--tab-pill-active-bg);
 }
 
@@ -72,7 +77,8 @@
 }
 
 /* Kleiner Pfeil nach unten: hier öffnet sich eine Auswahl */
-.task-crumb-chevron {
+.task-crumb-chevron,
+.type-crumb-chevron {
   width: 10px;
   height: 10px;
   flex: 0 0 auto;

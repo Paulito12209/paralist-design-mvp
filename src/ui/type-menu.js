@@ -14,7 +14,7 @@
  * menuLabel / sheetTitle        -> Menüpunkt und Überschrift des Blatts
  * confirmLabel / cancelLabel    -> die beiden Knöpfe unter den Sätzen
  * undoLabel                     -> der Knopf in der Meldung nach einem sofortigen Wechsel
- * openEntryLabel / openWorkspaceLabel -> der Knopf in der Meldung, wenn man aus einer Liste kam
+ * openLabel                     -> der Knopf in der Meldung, wenn man aus einer Liste kam
  *
  * Aussehen: Blatt in styles/overlays.css und styles/details.css (.sheet-note),
  * Meldung in styles/toast.css, die Kategorie als Knopf in styles/entry.css.
@@ -46,11 +46,10 @@ const sheetTitle = "Typ ändern";
 const confirmLabel = "Umwandeln";
 const cancelLabel = "Abbrechen";
 const undoLabel = "Rückgängig";
-const openEntryLabel = "Zur Seite";
-const openWorkspaceLabel = "Öffnen";
+const openLabel = "Zur Seite";
 
-/* Der Arbeitsbereich ist kein Eintragstyp — sein Icon kommt aus xpItems. */
-const workspaceName = "Arbeitsbereich";
+/* Der Arbeitsbereich ist kein Eintragstyp — Name und Icon kommen aus xpItems (src/data/config.js). */
+const workspaceName = xpItemStyle(workspaceKind).label;
 
 /* Ein „subject“ ist { entry } oder { workspace }: dasselbe Blatt für beide. */
 function currentKind(subject) {
@@ -124,7 +123,7 @@ function becomeWorkspace(entry) {
   const workspace = entryToWorkspace(entry);
   if (!workspace) return;
   if (onPage) openTarget("workspace", workspace.id, true);
-  announce(workspaceKind, "", onPage ? null : { label: openWorkspaceLabel, onSelect: () => openTarget("workspace", workspace.id) });
+  announce(workspaceKind, "", onPage ? null : { label: openLabel, onSelect: () => openTarget("workspace", workspace.id) });
 }
 
 /* Aus dem Arbeitsbereich wird ein Eintrag; seine Seite wird durch die neue ersetzt. */
@@ -132,11 +131,11 @@ function becomeEntry(workspace, type) {
   const onPage = isWorkspacePageOf(workspace);
   const entry = workspaceToEntry(workspace, type);
   if (!entry) return;
-  /* Die Desktop-Seitenleiste kann beim Speichern schon zurückgesprungen sein
-     (src/shell/desk-nav.js) — dann ist die Seite nicht mehr offen. */
-  const stillOnPage = onPage && isViewActive("page");
-  if (stillOnPage) openEntry(entry.id, true, true);
-  announce(type, noteFor(entry, false), stillOnPage ? null : { label: openEntryLabel, onSelect: () => openEntry(entry.id) });
+  /* Auch wenn die Desktop-Seitenleiste beim Speichern schon zurückgesprungen
+     ist (src/shell/desk-nav.js): war die Seite offen, soll die neue offen
+     sein — der Verlauf steht danach genauso da wie am Handy. */
+  if (onPage) openEntry(entry.id, true, true);
+  announce(type, noteFor(entry, false), onPage ? null : { label: openLabel, onSelect: () => openEntry(entry.id) });
 }
 
 function perform(subject, target, undoable) {
@@ -172,7 +171,7 @@ function pick(subject, target) {
  * Arbeitsbereich steht abgesetzt darunter — er ist die Ebene über den Einträgen.
  * @param subject { entry } oder { workspace }
  */
-export function openTypeSheet(subject) {
+export function openTypeChangeSheet(subject) {
   const current = currentKind(subject);
   const options = convertibleTypes.map((type) => ({
     label: typeSingular(type),
@@ -198,7 +197,7 @@ export function openTypeSheet(subject) {
  */
 export function typeChangeAction(subject) {
   if (subject.entry && !canChangeType(subject.entry)) return null;
-  return { label: menuLabel, icon: "convert", onSelect: () => openTypeSheet(subject) };
+  return { label: menuLabel, icon: "convert", onSelect: () => openTypeChangeSheet(subject) };
 }
 
 /**
