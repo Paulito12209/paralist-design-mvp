@@ -77,6 +77,7 @@
  * --danger                  -> Rot für Löschen
  * --archive-color           -> Grau des Archivieren-Knopfes hinter einer Zeile
  * --link-color              -> Blau für Verknüpfen
+ * --move-color              -> Violett für „Arbeitsbereich in anderen Tab verschieben“
  * --star-color              -> Goldfarbe für den Favoriten-Stern auf der Karte (im Dunkeln heller, siehe tokens-dark.css)
  * --avatar-btn-bg           -> Akzent-Grauton: Profil-Icon, Kartenzähler, Abschnitts-Überschriften,
  *                              Such-Icon, „Suchen“, Ordner-Plus, Plus der Tab-Pille, inaktive
@@ -289,6 +290,7 @@
   --archive-color: #6e6e73;
   --restore-color: #34c759;
   --link-color: #007aff;
+  --move-color: #5856d6;
   --tab-pill-size: 15px;
   --tab-pill-active-bg: rgba(60, 60, 67, 0.09);
   --tab-active-bg: var(--avatar-btn-bg); /* Zähler-Akzentfarbe, wechselt automatisch mit dem Modus */

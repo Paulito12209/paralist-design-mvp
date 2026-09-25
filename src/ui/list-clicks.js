@@ -18,18 +18,21 @@ import {
   archiveWorkspace,
   deleteEntry,
   deleteWorkspace,
+  moveWorkspaceToTab,
   restoreFromArchive,
   selectTab,
   toggleFavorite,
 } from "../data/mutations.js";
-import { findEntry, findWorkspace } from "../data/queries.js";
+import { findEntry, findWorkspace, tabLabel } from "../data/queries.js";
 import { saveState, state } from "../data/state.js";
 import { archiveEntry } from "../data/xp.js";
+import { openCtxMenu } from "./ctx-menu.js";
 import { openEntryCtxMenu } from "./entry-menu.js";
 import { cancelHold, consumeClickBlock } from "./long-press.js";
 import { openLinkPicker } from "./pickers.js";
 import { openArchive, openEntryOrFile, openTarget, showTab } from "./router.js";
 import { closeSwipes, isSwipedOpen } from "./swipe.js";
+import { showToast } from "./toast.js";
 import { toggleGroup } from "./groups.js";
 import { toggleTaskFromCheck } from "./task-status.js";
 
@@ -46,9 +49,33 @@ let menus = {
   finishWorkspaceName: () => {},
 };
 
+/* Auswahl der Tabs neben dem Verschieben-Knopf. Der eigene Tab trägt den
+   Haken, damit man sieht, wo der Arbeitsbereich gerade liegt. Danach ist er
+   aus der Liste verschwunden — die Meldung sagt wohin und springt auf Wunsch mit. */
+function openMoveWorkspaceMenu(anchor, workspace) {
+  openCtxMenu(
+    anchor,
+    state.tabs.map((tab) => ({
+      label: tabLabel(tab),
+      icon: "folder",
+      active: sameId(tab.id, workspace.tab),
+      onSelect: () => {
+        if (sameId(tab.id, workspace.tab)) return;
+        moveWorkspaceToTab(workspace, tab.id);
+        showToast({
+          icon: "folder-move",
+          title: `Nach „${tabLabel(tab)}“ verschoben`,
+          accent: "var(--move-color)",
+          action: { label: "Zeigen", onSelect: () => selectTab(tab.id) },
+        });
+      },
+    }))
+  );
+}
+
 /* Die Knöpfe einer Arbeitsbereichs-Zeile. Sie stehen getrennt, weil ein
    Arbeitsbereich kein Eintrag ist und deshalb nicht in findEntry() auftaucht. */
-function handleWorkspaceAction(kind, id) {
+function handleWorkspaceAction(kind, id, button) {
   if (kind === "delete-workspace") {
     deleteWorkspace(id);
     return true;
@@ -57,23 +84,25 @@ function handleWorkspaceAction(kind, id) {
     archiveWorkspace(id);
     return true;
   }
-  if (kind === "favorite-workspace" || kind === "restore-workspace") {
+  if (kind === "favorite-workspace" || kind === "restore-workspace" || kind === "move-workspace") {
     const workspace = findWorkspace(id);
     if (!workspace) return true;
-    if (kind === "favorite-workspace") toggleFavorite(workspace);
+    if (kind === "move-workspace") openMoveWorkspaceMenu(button, workspace);
+    else if (kind === "favorite-workspace") toggleFavorite(workspace);
     else restoreFromArchive(workspace);
     return true;
   }
   return false;
 }
 
-/* Der Wisch-Knopf einer Zeile — links Favorit und Verknüpfen, rechts Archivieren
+/* Der Wisch-Knopf einer Zeile — links Favorit und Verknüpfen (beim
+   Arbeitsbereich: in einen anderen Tab), rechts Archivieren
    und Löschen. Welcher es ist, sagt data-swipe, nicht die Seite. */
 function handleSwipeAction(action) {
   const kind = action.dataset.swipe;
   const wrap = action.closest(".swipe");
 
-  if (handleWorkspaceAction(kind, wrap.dataset.workspace)) return;
+  if (handleWorkspaceAction(kind, wrap.dataset.workspace, action)) return;
 
   const entry = findEntry(wrap.dataset.entry);
   if (!entry) return;

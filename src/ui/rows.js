@@ -13,7 +13,7 @@ import { sameId } from "../core/ids.js";
 import { noHistoryForm } from "../core/no-history.js";
 import { isTaskDone, typeIcon } from "../data/config.js";
 import { mediaKindOf, workspaceIcon, workspaceLabel } from "../data/queries.js";
-import { ui } from "../data/state.js";
+import { state, ui } from "../data/state.js";
 import { thumbOf } from "../data/thumbs.js";
 import { taskCheck } from "./task-status.js";
 
@@ -126,11 +126,14 @@ export function workspaceRow(workspace, canEdit = false) {
   }
 
   /* Dieselbe Aufteilung wie bei einem Eintrag: links bleibt der Arbeitsbereich
-     in der Liste (Favorit), rechts geht er heraus — Archivieren grau neben dem
-     roten Löschen. */
+     erhalten (Favorit, in einen anderen Tab), rechts geht er heraus —
+     Archivieren grau neben dem roten Löschen. Verschieben gibt es nur, wenn
+     es mehr als einen Tab gibt; sonst gäbe es kein Ziel. */
+  const left = [swipeAction("favorite-workspace", "Favorit", workspace.favorite ? "star" : "star-outline", "favorite")];
+  if (state.tabs.length > 1) left.push(swipeAction("move-workspace", "In anderen Tab verschieben", "folder-move", "move"));
   return swipeRow(
     `data-workspace="${workspace.id}"`,
-    [swipeAction("favorite-workspace", "Favorit", workspace.favorite ? "star" : "star-outline", "favorite")],
+    left,
     [
       swipeAction("archive-workspace", "Archivieren", "archive", "archive"),
       swipeAction("delete-workspace", "Löschen", "trash", "delete"),

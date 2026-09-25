@@ -155,6 +155,13 @@ export function deleteTab(id) {
   commit();
 }
 
+/** Einen Arbeitsbereich mitsamt seinen Einträgen unter einen anderen Tab legen. */
+export function moveWorkspaceToTab(workspace, tabId) {
+  if (sameId(workspace.tab, tabId)) return;
+  workspace.tab = tabId;
+  commit();
+}
+
 /** Einen Eintrag oder Arbeitsbereich als Favorit markieren oder die Markierung wegnehmen. */
 export function toggleFavorite(item) {
   item.favorite = !item.favorite;

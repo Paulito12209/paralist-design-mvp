@@ -44,6 +44,11 @@ export function workspaceLabel(workspace) {
   return workspace.name || workspace.placeholder || "Arbeitsbereich";
 }
 
+/** Anzeigename eines Tabs; leer heißt: der Vorgabename gilt. */
+export function tabLabel(tab) {
+  return tab.name || tab.placeholder || "Tab";
+}
+
 /** Kann dieser Eintrag selbst Einträge aufnehmen? */
 export function isContainer(entry) {
   return Boolean(entry && containerTypes.includes(entry.type));
