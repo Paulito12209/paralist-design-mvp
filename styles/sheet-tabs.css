@@ -15,7 +15,6 @@
  * --line              -> Farbe der Trennlinie unter dem Namen
  * --link-color        -> Farbe des Hakens an der gewählten Option
  * --text              -> Farbe des Namens oben
- * --bg                -> Fläche der aktiven Pille (wie die gewählte Option)
  *
  * Direkt bei ihrer Regel:
  * .sheet.has-tabs .sheet-title font-size -> Größe des Namens oben (17px)
@@ -60,18 +59,14 @@
   white-space: nowrap;
 }
 
-/* Die Pillen stehen bündig mit den Optionen darunter; die Leiste aus
+/* Die Pillen sehen aus wie auf einer Seite (styles/overview.css): das Blatt
+   hat die Seitenfarbe, die aktive Pille das Silber der Karten.
+   Die Pillen stehen bündig mit den Optionen darunter; die Leiste aus
    styles/overview.css reicht sonst um den Seitenrand über den Inhalt hinaus. */
 .sheet-tabs {
   margin: 10px -8px 6px;
   padding: 0 8px;
   scroll-padding-inline: 8px; /* scroll-padding: eine ins Bild gerollte Pille hält Abstand zum Rand */
-}
-
-/* Die aktive Pille hat sonst die Kartenfarbe — auf dem Blatt (selbst eine
-   Karte) wäre sie unsichtbar. Darum dieselbe Fläche wie eine gewählte Option. */
-.sheet-tabs .tab-pill.is-active {
-  background: var(--bg);
 }
 
 /* Gleiche Höhe für Status und Dringlichkeit: das Blatt steht beim Wechseln

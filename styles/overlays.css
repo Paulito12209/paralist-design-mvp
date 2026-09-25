@@ -11,9 +11,11 @@
  * --sheet-heading-size      -> Schriftgröße der Abschnitts-Überschrift
  * --modal-radius            -> Rundung der oberen Kante der Blätter
  * --composer-radius         -> Rundung des Auswahl-Blatts
- * --card / --line / --danger -> Flächen, Trennlinien und rote Einträge
+ * --bg                      -> Fläche des Auswahl-Blatts (wie eine Seite)
+ * --card                    -> gewählte und gedrückte Option im Blatt (Silber), sonst Flächen
+ * --line / --danger         -> Trennlinien und rote Einträge
  * --modal-dismiss-pull      -> wie weit man ziehen muss, damit ein Blatt schließt
- * --bg                      -> Fläche der beiden Knöpfe unten nebeneinander (.sheet-pair)
+ * --card                    -> auch die Fläche der beiden Knöpfe unten nebeneinander (.sheet-pair)
  * --modal-dim               -> wird beim Ziehen von src/ui/modal-pull.js gesetzt
  
  *
@@ -39,8 +41,10 @@
   display: none;
 }
 
+/* Das Blatt hat die Farbe einer Seite (fast weiß), eine gewählte oder
+   gedrückte Option das Silber der Karten — wie eine aktive Pille auf der Seite. */
 .sheet {
-  background: var(--card);
+  background: var(--bg);
   border-radius: var(--composer-radius); /* border-radius: rundet das Blatt wie die übrigen Karten */
   padding: 8px;
   padding-bottom: calc(8px + var(--safe-bottom));
@@ -100,7 +104,7 @@
 }
 
 .sheet-option.is-active {
-  background: var(--bg);
+  background: var(--card);
 }
 
 .sheet-option.is-danger,
@@ -148,7 +152,7 @@
   justify-content: center;
   gap: 6px;
   min-height: 72px;
-  background: var(--bg);
+  background: var(--card);
   font-size: 15px;
   text-align: center;
 }
@@ -158,7 +162,7 @@
 }
 
 .sheet-option:active {
-  background: var(--bg);
+  background: var(--card);
 }
 
 /* Unsichtbare Fläche über dem Gerät, damit ein Tipp neben dem Menü es schließt */
