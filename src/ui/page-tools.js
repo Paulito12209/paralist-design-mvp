@@ -9,6 +9,10 @@
  * - unter „Verknüpfte Einträge“ Filter und Plus. Was das Plus tut, weiß die
  *   jeweilige Seite; der Filter zeigt „Alle“ oder genau einen Typ.
  *
+ * Denselben Kopier-Weg hat der kleine Titel in der Kopfzeile, der nach dem
+ * Hochrollen erscheint: Gedrückthalten fragt „Seite“ oder „Titel“
+ * (src/ui/head-title.js). COPY_HOLD nennt beide Stellen.
+ *
  * Wird es eng, kürzt die zweite Pille ihr Wort mit „…“ — die Knöpfe hier
  * bleiben immer ganz sichtbar (styles/entry.css, Klasse .page-pills-row).
  * Pfad: src/ui/page-tools.js
@@ -30,6 +34,11 @@ import { cancelHold } from "./long-press.js";
 
 /* Lang genug, um den Haken zu sehen, kurz genug für ein zweites Kopieren. */
 const COPIED_MS = 1500;
+
+/** Wo Gedrückthalten die Auswahl „Seite“/„Titel“ öffnet: der Kopier-Knopf
+    und der kleine Titel in der Kopfzeile. Auf einer Sammlung ohne Quelle
+    (z.B. „Projekte“) geht nichts auf. */
+export const COPY_HOLD = "[data-copy-page], .head-title";
 
 /* Gewählter Typ, nur für die Seite, auf der er gesetzt wurde (`key`, z.B.
    „e:12“ oder „w:3“). Jedes Öffnen einer Seite beginnt wieder mit „Alle“ —
@@ -143,8 +152,8 @@ export function initPageTools() {
      ebenfalls „contextmenu“ auslöst. Der Halte-Timer wird verworfen, sonst
      ginge die Auswahl beim Loslassen ein zweites Mal auf. */
   dom.content.addEventListener("contextmenu", (event) => {
-    const button = event.target.closest("[data-copy-page]");
-    if (!button) return;
+    const button = event.target.closest(COPY_HOLD);
+    if (!button || !sourceFor(button)) return;
     event.preventDefault();
     cancelHold();
     openCopyChoice(button);

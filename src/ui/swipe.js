@@ -19,6 +19,7 @@ import {
   startHold,
   trackHold,
 } from "./long-press.js";
+import { COPY_HOLD } from "./page-tools.js";
 
 const axisSlack = 6;
 
@@ -60,8 +61,8 @@ function onPointerDown(event) {
   const workspaceBtn = event.target.closest("[data-open-workspace]");
   /* Nur Eintrags-Zeilen, keine Kacheln oder Kalender-Termine: die haben eigene Gesten. */
   const entryBtn = event.target.closest(".entry-row[data-open-entry]");
-  /* Der Kopier-Knopf einer Eintragsseite: halten fragt „Seite“ oder „Titel“. */
-  const copyBtn = event.target.closest("[data-copy-page]");
+  /* Kopier-Knopf und kleiner Kopfzeilen-Titel: halten fragt „Seite“ oder „Titel“. */
+  const copyBtn = event.target.closest(COPY_HOLD);
   if (copyBtn) startHold(event, copyBtn, "copy");
   else if (tabPill) startHold(event, tabPill, "tab");
   else if (workspaceBtn) startHold(event, workspaceBtn, "workspace");

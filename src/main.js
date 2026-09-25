@@ -44,6 +44,7 @@ import { openEntryCtxMenu } from "./ui/entry-menu.js";
 import { initListClicks } from "./ui/list-clicks.js";
 import { setLongPressMenus } from "./ui/long-press.js";
 import { initPageTools, openCopyChoice } from "./ui/page-tools.js";
+import { initHeadTitle } from "./ui/head-title.js";
 import { initModalPull } from "./ui/modal-pull.js";
 import { initModalTop } from "./ui/modal-top.js";
 import { initPillTapReveal } from "./ui/pill-swipe.js";
@@ -95,6 +96,7 @@ function initShell() {
   setLongPressMenus({ tab: openTabMenu, workspace: openWorkspaceMenu, entry: openEntryCtxMenu, copy: openCopyChoice });
   initSwipe();
   initPageTools();
+  initHeadTitle();
   initListClicks({ openTabMenu, openWorkspaceMenu, beginRenameTab, finishWorkspaceName: commitWorkspaceName });
 
   initLevelGauge();

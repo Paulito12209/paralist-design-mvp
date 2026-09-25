@@ -58,12 +58,23 @@
 
 /* ---------- Kleiner Titel in der Kopfzeile ---------- */
 
+/* Antippen rollt nach oben, Gedrückthalten fragt nach dem Kopieren
+   (src/ui/head-title.js) — dabei soll nichts markiert werden. */
 .head-title {
   display: none;
   flex: 1;
   min-width: 0; /* min-width: sonst schiebt ein langer Titel das Menü aus dem Bild */
   flex-direction: column;
+  justify-content: center;
+  align-self: stretch; /* align-self: die ganze Höhe der Kopfzeile ist Tippfläche, nicht nur die zwei Zeilen */
   line-height: 1.2;
+  cursor: pointer;
+  user-select: none; /* user-select: Halten soll den Titel nicht markieren */
+  -webkit-touch-callout: none; /* -webkit-touch-callout: kein iPhone-Menü über unserer Auswahl */
+}
+
+.head-title:active {
+  opacity: 0.55;
 }
 
 .head-title-main,
