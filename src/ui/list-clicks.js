@@ -23,7 +23,7 @@ import {
   toggleFavorite,
 } from "../data/mutations.js";
 import { findEntry, findWorkspace } from "../data/queries.js";
-import { saveState, state } from "../data/state.js";
+import { state } from "../data/state.js";
 import { archiveEntry } from "../data/xp.js";
 import { openEntryCtxMenu } from "./entry-menu.js";
 import { cancelHold, consumeClickBlock } from "./long-press.js";
@@ -168,9 +168,8 @@ function onClick(event) {
 
   const resourcePill = event.target.closest("[data-resource-filter]");
   if (resourcePill) {
-    state.prefs.resources.filter = resourcePill.dataset.resourceFilter;
-    saveState();
-    load("resources").then((module) => module.renderResources());
+    const id = resourcePill.dataset.resourceFilter;
+    load("resources").then((module) => module.selectResourceFilter(id));
     return;
   }
 

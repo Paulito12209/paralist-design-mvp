@@ -31,6 +31,7 @@
  * styles/toast.css           -> kurze Meldung über der Navigation nach dem Anlegen
  * styles/update.css          -> Fenster „Neue Version verfügbar“ mit Später und Aktualisieren
  * styles/overlays.css        -> Auswahl-Blatt, kleines Menü, Blätter von unten
+ * styles/sheet-tabs.css      -> Auswahl-Blatt mit Tabs (Aufgabe): Kopf mit Icon, Trennlinie, Pillen, Haken, Hereingleiten
  * styles/details.css         -> Blatt „Details“ und kleiner Titel in der Kopfzeile einer Detailseite
  * styles/modal-top.css       -> runder Pfeil in einem Blatt, der nach oben rollt
  * styles/search.css          -> Suchseite
@@ -40,7 +41,7 @@
  * styles/support.css         -> Einstellungs-Blatt: Feedback-Formular und Danksagungen
  * styles/tasks.css           -> Aufgaben-Seite: Bedienzeile und Liste
  * styles/tasks-board.css     -> Aufgaben-Seite: die Spalten des Kanban-Boards
- * styles/task-status.css     -> Haken vor Aufgaben in jeder Liste, „Aufgabe: Offen | Jetzt“ auf der Aufgabenseite
+ * styles/task-status.css     -> Haken vor Aufgaben in jeder Liste, „Aufgabe“ über „Offen · Jetzt“ auf der Aufgabenseite
  * styles/calendar.css        -> Kalender: Monat, Wochenstreifen, Bedienzeile
  * styles/calendar-panel.css  -> Kalender: graue Fläche mit Stundenraster und Liste
  * styles/media.css           -> Medien- und Ressourcen-Seite
@@ -99,6 +100,8 @@
  *
  * SCHRIFTGRÖSSEN
  * --title-size              -> Schriftgröße der großen Überschrift „Übersicht“
+ * --title-weight            -> Strichstärke aller großen Seitentitel (Übersicht, Unterseiten, Eintrag;
+ *                              700 = fett, 600 = halbfett)
  * --tab-label-size          -> Schriftgröße der Wörter unter den Navigations-Icons (sie stehen mit im
                                Kreis, darum wird der Name ab etwa 11px breiter als der Kreis)
  * --tab-pill-size           -> Schriftgröße der Tab-Pillen über den Arbeitsbereichen
@@ -160,6 +163,8 @@
  * --tab-add-bg              -> Fläche hinter dem Plus-Knopf (jetzt transparent, Striche allein)
  * --tab-pills-btn-gap       -> Abstand zwischen Trennlinie und Plus-Knopf
  * --tab-pills-fade          -> Breite des Ausblendens links von der Trennlinie
+ * --tab-pills-tools-width   -> Breite von Ausblenden, Linie und Plus-Knopf rechts über den
+ *                              Tabs der Übersicht; so weit bleibt der letzte Tab davon weg
  * --composer-radius         -> Rundung des Eingabe-Containers
  * --composer-side           -> seitlicher Abstand, solange das Eingabefeld offen ist
  * --composer-btn-size       -> Größe der runden Knöpfe und Höhe der Pillen im Eingabefeld
@@ -187,6 +192,9 @@
  * --ctx-radius              -> Rundung des kleinen Menüs beim gedrückt Halten
  * --sheet-options-max       -> ab welcher Höhe die Liste im Auswahl-Blatt scrollt
  * --sheet-heading-size      -> Schriftgröße der Abschnitts-Überschrift im Auswahl-Blatt
+ * --sheet-tabs-min-h        -> Mindesthöhe der Liste in einem Blatt mit Tabs (hält die Höhe beim Wechseln ruhig)
+ * --sheet-slide             -> aus welcher Entfernung die Liste nach einem Tab-Wechsel hereingleitet
+ * --sheet-slide-time        -> wie lange das Hereingleiten dauert
  * --modal-dismiss-pull      -> Wie weit man ein Blatt ziehen muss, damit es schließt
  *
  * Dunkelmodus: dieselben Werte werden weiter unten noch einmal gesetzt —
@@ -215,9 +223,10 @@
   --avatar-gradient-to: #4d72ad;
   --modal-radius: 28px;
   --radius-lg: 18px;
-  --title-size: 28px;
+  --title-size: 24px;
+  --title-weight: 600;
   --content-side: 16px;
-  --content-top: 36px;
+  --content-top: 32px;
   --page-head-top: 8px;
   --page-head-pull: 8px;
   --page-title-gap: 18px;
@@ -281,7 +290,7 @@
   --composer-mic-border: #48484a;
   --composer-input-size: 16px;
   --composer-chip-size: 13px;
-  --entry-title-size: 28px;
+  --entry-title-size: 24px;
   --entry-body-size: 16px;
   --entry-end-space: 120px;
   --swipe-action-size: 44px;
@@ -297,6 +306,7 @@
   --tab-add-bg: transparent; /* ohne Füllung: das Kreuz aus Strichen ist der ganze Knopf */
   --tab-pills-btn-gap: 8px;
   --tab-pills-fade: 16px;
+  --tab-pills-tools-width: calc(var(--content-side) + var(--tab-pills-fade) + 1px + var(--tab-pills-btn-gap) + 32px);
   --star-color: #c99a00; /* dunkleres Gold, damit der Stern auf der hellen Karte Kontrast hat */
   --avatar-btn-bg: #111318;
   --nav-bg: #ffffff;
@@ -312,6 +322,9 @@
   --ctx-radius: 16px;
   --sheet-options-max: 52vh;
   --sheet-heading-size: 12px;
+  --sheet-tabs-min-h: 200px;
+  --sheet-slide: 28px;
+  --sheet-slide-time: 0.2s;
   --icon-strong: #3a3a3c;
   --placeholder: #aeaeb2;
   --chevron: #c7c7cc;

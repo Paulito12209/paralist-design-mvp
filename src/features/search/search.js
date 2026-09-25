@@ -1,15 +1,17 @@
 /*
- * Die Suchseite. Ohne Eingabe zeigt sie zwei Pillen: „Zuletzt“ (letzter
- * Suchbegriff und zuletzt geöffnet) und „Am häufigsten“ (meistgeöffnet);
- * mit Eingabe die Treffer.
+ * Die Suchseite. Ohne Eingabe zeigt sie drei Pillen: „Zuletzt geöffnet“
+ * (Startpille, nach Tagen), „Am häufigsten“ (meistgeöffnet) und „Zuletzt
+ * gesucht“ (die gemerkten Begriffe); mit Eingabe die Treffer. Die Zeilen
+ * lassen sich auch bei offener Tastatur direkt antippen — ob getippt oder
+ * gescrollt wurde, entscheidet src/features/search/search-tap.js.
  * Wird erst beim ersten Öffnen nachgeladen.
  * Pfad: src/features/search/search.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * mostOpenedCount   -> wie viele Zeilen die Pille „Am häufigsten“ zeigt
- * recentOpenedCount -> wie viele geöffnete Seiten die Pille „Zuletzt“ zeigt
- * searchTabs        -> Beschriftung der beiden Pillen unter der Überschrift
+ * recentOpenedCount -> wie viele geöffnete Seiten die Pille „Zuletzt geöffnet“ zeigt
+ * searchTabs        -> Beschriftung und Reihenfolge der drei Pillen unter der Überschrift
  * emptySearches / emptyOpened / emptyHits -> die drei Platzhalter der Seite
  *
  * Schriftgrößen stehen in styles/search.css (--search-meta-size), der
@@ -24,9 +26,9 @@ import { noteSearch } from "../../data/opens.js";
 import { state, ui } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
-import { showSearch } from "../../ui/router.js";
 import { isViewActive } from "../../ui/views.js";
 import { knownOpens, mostOpened, searchHits } from "./search-data.js";
+import { initSearchTap } from "./search-tap.js";
 
 const mostOpenedCount = 15;
 const recentOpenedCount = 15;
@@ -92,40 +94,6 @@ function queryRow(query) {
   `;
 }
 
-/* Kopfzeile der Unterseiten: Zurück-Pfeil und Titel in einer Zeile. Anders als
-   bei einem Arbeitsbereich steht die Suchleiste oben ja schon fest (nicht
-   is-subpage), darum keine eigene Kopfzeile mit Sicherheitsabstand nach oben —
-   nur eine normale Zeile im Textfluss, siehe .search-page-head in search.css. */
-function listHead(title) {
-  return `
-    <div class="search-page-head">
-      <button class="back-btn" type="button" data-search-back aria-label="Zurück">${icon("back")}</button>
-      <h1 class="screen-title">${escapeHtml(title)}</h1>
-    </div>
-  `;
-}
-
-/* Eigene Seite: entweder alles Gesuchte oder alles Geöffnete. */
-function renderSubList() {
-  if (ui.searchList === "searches") {
-    dom.searchResults.innerHTML =
-      listHead("Zuletzt gesucht") +
-      (state.recentSearches.length
-        ? `<div class="workspace-list">${state.recentSearches.map(queryRow).join("")}</div>`
-        : emptyState(emptySearches));
-    return;
-  }
-
-  const rows = mostOpened();
-  dom.searchResults.innerHTML =
-    listHead("Am häufigsten geöffnet") +
-    (rows.length
-      ? `<div class="workspace-list">${rows
-          .map(({ open, item }) => resultRow(item, `${item.label} · ${open.count}× geöffnet`))
-          .join("")}</div>`
-      : emptyState(emptyOpened));
-}
-
 /* Treffer zum eingegebenen Begriff. */
 function renderHits() {
   const hits = searchHits(ui.searchQuery);
@@ -158,10 +126,12 @@ function recentGroups() {
   return groups;
 }
 
-/* Die beiden Pillen unter der Überschrift; wie auf der Seite eines Eintrags. */
+/* Die drei Pillen unter der Überschrift; wie auf der Seite eines Eintrags.
+   Die erste ist die, auf der man beim Öffnen der Suche landet. */
 const searchTabs = [
-  { id: "recent", label: "Zuletzt" },
+  { id: "recent", label: "Zuletzt geöffnet" },
   { id: "most", label: "Am häufigsten" },
+  { id: "searched", label: "Zuletzt gesucht" },
 ];
 
 function tabsMarkup() {
@@ -173,29 +143,16 @@ function tabsMarkup() {
     .join("")}</div>`;
 }
 
-/* Pille „Zuletzt“: oben der letzte Suchbegriff — der Pfeil nach oben rechts
-   öffnet alle —, darunter die zuletzt geöffneten Seiten nach Tagen. */
+/* Pille „Zuletzt geöffnet“: die zuletzt geöffneten Seiten nach Tagen. */
 function recentTabMarkup() {
-  const latestSearch = state.recentSearches[0];
   const groups = recentGroups();
-  return `
-    <div class="section-head">
-      <h2>Gesucht</h2>
-      <button class="section-more" type="button" data-search-list="searches" aria-label="Alle anzeigen">${icon("arrow-up-right", "chevron")}</button>
-    </div>
-    ${latestSearch ? `<div class="workspace-list">${queryRow(latestSearch)}</div>` : emptyState({ ...emptySearches, compact: true, art: false })}
-    <div class="section-head"><h2>Geöffnet</h2></div>
-    ${
-      groups.length
-        ? groups
-            .map(
-              (group) =>
-                `<h3 class="date-label">${escapeHtml(group.heading)}</h3><div class="workspace-list">${group.rows.join("")}</div>`
-            )
-            .join("")
-        : emptyState({ ...emptyOpened, compact: true, art: false })
-    }
-  `;
+  if (!groups.length) return emptyState(emptyOpened);
+  return groups
+    .map(
+      (group) =>
+        `<h3 class="date-label">${escapeHtml(group.heading)}</h3><div class="workspace-list">${group.rows.join("")}</div>`
+    )
+    .join("");
 }
 
 /* Pille „Am häufigsten“: die meistgeöffneten Seiten mit ihrer Anzahl. */
@@ -204,18 +161,22 @@ function mostTabMarkup() {
     .slice(0, mostOpenedCount)
     .map(({ open, item }) => resultRow(item, `${item.label} · ${open.count}× geöffnet`))
     .join("");
-  return `
-    <div class="section-head"><h2>Geöffnet</h2></div>
-    ${rows ? `<div class="workspace-list">${rows}</div>` : emptyState({ ...emptyOpened, compact: true, art: false })}
-  `;
+  return rows ? `<div class="workspace-list">${rows}</div>` : emptyState(emptyOpened);
 }
+
+/* Pille „Zuletzt gesucht“: alle gemerkten Suchbegriffe, der neueste oben. */
+function searchedTabMarkup() {
+  return state.recentSearches.length
+    ? `<div class="workspace-list">${state.recentSearches.map(queryRow).join("")}</div>`
+    : emptyState(emptySearches);
+}
+
+const tabMarkup = { recent: recentTabMarkup, most: mostTabMarkup, searched: searchedTabMarkup };
 
 /* Die Übersicht ohne Eingabe: Überschrift, Pillen, darunter die gewählte Liste. */
 function renderOverviewLists() {
-  dom.searchResults.innerHTML =
-    `<h1 class="screen-title">Suchen</h1>` +
-    tabsMarkup() +
-    (ui.searchTab === "most" ? mostTabMarkup() : recentTabMarkup());
+  const markup = tabMarkup[ui.searchTab] || recentTabMarkup;
+  dom.searchResults.innerHTML = `<h1 class="screen-title">Suchen</h1>` + tabsMarkup() + markup();
 }
 
 /** Pille wählen und die Übersicht neu zeichnen. */
@@ -231,52 +192,20 @@ export function renderSearch() {
     renderHits();
     return;
   }
+  /* Ältere Verlaufseinträge (#/suchen/gesucht, #/suchen/haeufig) zeigen
+     heute einfach die passende Pille. */
   if (ui.searchList) {
-    renderSubList();
-    return;
+    ui.searchTab = ui.searchList === "searches" ? "searched" : "most";
+    ui.searchList = null;
   }
   renderOverviewLists();
 }
 
-/* Wird verbraucht, sobald der folgende Klick nur die Tastatur zugemacht hat. */
-let suppressNextClick = false;
-
-/*
- * Solange die Tastatur offen ist, schließt ein Tippen in der Liste sie nur —
- * ohne den angetippten Eintrag zu öffnen. Das muss schon bei `mousedown`
- * passieren: sonst holt sich der angetippte Knopf zuerst selbst den Fokus,
- * das Suchfeld verliert ihn dadurch von allein, und der Klick käme mit
- * bereits zugeklappter Tastatur an — die Zeile würde also doch aufgehen.
- */
-function onViewPointerDown(event) {
-  if (!ui.searchTyping) return;
-  event.preventDefault();
-  suppressNextClick = true;
-  dom.searchInput.blur();
-}
-
 /* Klicks auf der Suchseite, die nicht schon list-clicks.js erledigt. */
 function onViewClick(event) {
-  if (suppressNextClick) {
-    suppressNextClick = false;
-    event.preventDefault();
-    event.stopPropagation();
-    return;
-  }
-
   const tab = event.target.closest("[data-search-tab]");
   if (tab) {
     selectTab(tab.dataset.searchTab);
-    return;
-  }
-
-  const more = event.target.closest("[data-search-list]");
-  if (more) {
-    showSearch(false, more.dataset.searchList);
-    return;
-  }
-  if (event.target.closest("[data-search-back]")) {
-    history.back();
     return;
   }
 
@@ -284,7 +213,6 @@ function onViewClick(event) {
   if (query) {
     dom.searchInput.value = query.dataset.searchQuery;
     ui.searchQuery = dom.searchInput.value;
-    ui.searchList = null;
     renderSearch();
     return;
   }
@@ -298,7 +226,8 @@ function onViewClick(event) {
 
 /* Beim Laden des Moduls einmal alles anmelden. */
 function init() {
-  el("view-search").addEventListener("mousedown", onViewPointerDown);
+  /* Tippen oder Scrollen unterscheiden, auch bei offener Tastatur */
+  initSearchTap(el("view-search"));
   el("view-search").addEventListener("click", onViewClick);
 
   /* Waagerecht wischen wechselt die Pille — nur auf der Übersicht, wo es Pillen gibt. */

@@ -13,6 +13,7 @@
  * --tab-pill-size                   -> Schriftgröße der Tab-Pillen
  * --tab-pills-btn-gap               -> Abstand zwischen Trennlinie und Plus-Knopf
  * --tab-pills-fade                  -> Breite des Ausblendens links der Trennlinie
+ * --tab-pills-tools-width           -> Platz rechts für Ausblenden, Linie und Plus-Knopf
  * --content-side                    -> Abstand des Inhalts zum Rand; so weit brechen
                                         die Pillen nach beiden Seiten aus
  * --icon-folder-plus-width / -height -> Größe des Ordner-Plus-Icons
@@ -172,6 +173,7 @@
   overflow-x: auto;
   /* overflow: mehr Pillen, als nebeneinander passen, schiebt man seitlich */
   overscroll-behavior-x: contain; /* am Ende der Pillen wird nicht die Seite darunter mitgezogen */
+  scroll-padding-inline: var(--content-side); /* rollt das Wischen eine Pille ins Bild, hält sie so viel Abstand zum Rand */
   scrollbar-width: none;
 }
 
@@ -181,7 +183,8 @@
   flex: 1;
   min-width: 0;
   /* Platz rechts, damit der letzte Tab vor Linie und Button sichtbar bleiben kann */
-  padding-right: calc(var(--content-side) + var(--tab-pills-fade) + 1px + var(--tab-pills-btn-gap) + 32px);
+  padding-right: var(--tab-pills-tools-width);
+  scroll-padding-right: var(--tab-pills-tools-width); /* ins Bild gerollte Tabs bleiben links von Linie und Knopf */
 }
 
 /* Rechts fest: erst Fade, dann Linie, dann Plus */

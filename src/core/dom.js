@@ -124,6 +124,7 @@ export const dom = {
   get sheet() { return el("sheet"); },
   get sheetTitle() { return el("sheet-title"); },
   get sheetOptions() { return el("sheet-options"); },
+  get sheetTabs() { return el("sheet-tabs"); },
   get ctxMenu() { return el("ctx-menu"); },
   get ctxCard() { return el("ctx-card"); },
 

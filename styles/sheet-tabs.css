@@ -1,0 +1,125 @@
+/*
+ * Auswahl-Blatt mit Tabs — das Blatt einer Aufgabe: oben das Icon der
+ * Kategorie und der Name, darunter eine Trennlinie über die ganze Breite des
+ * Blatts, dann die Pillen Status | Dringlichkeit | Typ und die Liste. Dazu
+ * der Haken rechts an jeder gewählten Option (in jedem Auswahl-Blatt) und das
+ * Hereingleiten der Liste nach einem Tab-Wechsel. Gebaut in src/ui/sheet.js.
+ * Pfad: styles/sheet-tabs.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --sheet-tabs-min-h  -> Mindesthöhe der Liste; Status und Dringlichkeit sind
+ *                        dadurch gleich hoch und das Blatt springt beim Wischen nicht
+ * --sheet-slide       -> aus welcher Entfernung die Liste hereingleitet
+ * --sheet-slide-time  -> wie lange das Hereingleiten dauert
+ * --line              -> Farbe der Trennlinie unter dem Namen
+ * --link-color        -> Farbe des Hakens an der gewählten Option
+ * --text              -> Farbe des Namens oben
+ *
+ * Direkt bei ihrer Regel:
+ * .sheet.has-tabs .sheet-title font-size -> Größe des Namens oben (17px)
+ * .sheet-title-icon .icon width/height   -> Größe des Kategorie-Icons (22px)
+ * .sheet-check width/height              -> Größe des Hakens (20px)
+ */
+
+/* Pillen-Leiste im Blatt; ohne Tabs verborgen. display ist sonst flex und
+   würde das hidden-Attribut überstimmen. */
+.sheet-tabs[hidden] {
+  display: none;
+}
+
+/* Kopf: Icon und Name in einer Zeile, groß und hell wie ein Seitentitel.
+   Die Linie darunter reicht über den Innenabstand des Blatts (8px) hinaus
+   bis an beide Kanten. */
+.sheet.has-tabs .sheet-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 0 -8px;
+  padding: 10px 20px 14px;
+  border-bottom: 1px solid var(--line); /* border-bottom: die Trennlinie durch das ganze Blatt */
+  font-size: 17px;
+  color: var(--text);
+}
+
+.sheet-title-icon {
+  display: flex;
+  flex: 0 0 auto;
+}
+
+.sheet-title-icon .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.sheet-title-text {
+  min-width: 0;
+  overflow: hidden; /* overflow: nötig für text-overflow */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Die Pillen sehen aus wie auf einer Seite (styles/overview.css): das Blatt
+   hat die Seitenfarbe, die aktive Pille das Silber der Karten.
+   Die Pillen stehen bündig mit den Optionen darunter; die Leiste aus
+   styles/overview.css reicht sonst um den Seitenrand über den Inhalt hinaus. */
+.sheet-tabs {
+  margin: 10px -8px 6px;
+  padding: 0 8px;
+  scroll-padding-inline: 8px; /* scroll-padding: eine ins Bild gerollte Pille hält Abstand zum Rand */
+}
+
+/* Gleiche Höhe für Status und Dringlichkeit: das Blatt steht beim Wechseln
+   still, statt oben auf und ab zu springen. Nur „Typ“ ist länger und scrollt. */
+.sheet.has-tabs .sheet-options {
+  min-height: var(--sheet-tabs-min-h);
+}
+
+/* Der Name einer Option nimmt den Platz ein, der Haken steht ganz rechts */
+.sheet-option-label {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Nebeneinander stehende Knöpfe (Archivieren | Löschen) haben das Wort unter
+   dem Icon — dort darf es nicht in die Höhe wachsen, sonst rutscht es nach oben. */
+.sheet-option.is-pair .sheet-option-label {
+  flex: 0 0 auto;
+}
+
+.sheet-option .sheet-check {
+  width: 20px;
+  height: 20px;
+  color: var(--link-color);
+}
+
+.sheet-option.is-active {
+  font-weight: 600;
+}
+
+/* Nach einem Tab-Wechsel gleitet die Liste aus der Richtung herein, in der
+   der neue Tab liegt — so passt die Bewegung zum Wischen des Fingers. */
+@media (prefers-reduced-motion: no-preference) {
+  .sheet-options.is-slide-next {
+    animation: sheet-slide-next var(--sheet-slide-time) ease-out;
+  }
+
+  .sheet-options.is-slide-prev {
+    animation: sheet-slide-prev var(--sheet-slide-time) ease-out;
+  }
+}
+
+/* @keyframes: Anfang der Bewegung; das Ende ist die normale Lage */
+@keyframes sheet-slide-next {
+  from {
+    opacity: 0;
+    transform: translateX(var(--sheet-slide)); /* transform: bewegt ohne neues Layout */
+  }
+}
+
+@keyframes sheet-slide-prev {
+  from {
+    opacity: 0;
+    transform: translateX(calc(-1 * var(--sheet-slide)));
+  }
+}

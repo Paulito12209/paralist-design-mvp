@@ -8,6 +8,7 @@
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
  * --entry-title-size        -> Schriftgröße des Titels
+ * --title-weight            -> Strichstärke des Titels (wie alle Seitentitel)
  * --page-title-gap          -> Luft unter dem Titel bis zu den Pillen
  * --page-title-lines        -> nach so vielen Zeilen endet ein langer Titel mit „…“ (tokens.css)
  * --entry-body-size         -> Schriftgröße des Textes
@@ -77,7 +78,7 @@
 /* Die Kategorie als Knopf: ein Tipp öffnet „Typ ändern“ (src/ui/type-menu.js).
    Eine schmale Pille, nicht der ganze Streifen — ein Tipp in die Kopfzeile,
    um die Tastatur zu schließen, soll nichts aus Versehen öffnen. Die Pille
-   selbst ist dieselbe wie „Aufgabe: Offen | Jetzt“ (styles/task-status.css);
+   selbst ist dieselbe wie „Aufgabe“ über „Offen · Jetzt“ (styles/task-status.css);
    hier steht nur, was dazukommt. */
 .type-crumb {
   position: relative; /* position: Anker für die größere Tippfläche darunter */
@@ -85,7 +86,8 @@
 
 /* Der Streifen schneidet sonst die Tippfläche oben und unten ab (overflow: hidden
    für das „…“ eines langen Wortes) — die Pille kürzt ihr Wort selbst. */
-.entry-crumb:has(> .type-crumb) {
+.entry-crumb:has(> .type-crumb),
+.entry-crumb:has(> .task-crumb) {
   overflow: visible;
 }
 
@@ -116,7 +118,7 @@
   /* Zeilenhöhe, Laufweite und Abstand wie .page-title (styles/rows.css):
      der Titel steht so auf derselben Höhe wie auf allen anderen Seiten */
   line-height: 1.1;
-  font-weight: 700;
+  font-weight: var(--title-weight);
   letter-spacing: -0.04em;
   padding: 0;
   margin-bottom: var(--page-title-gap);

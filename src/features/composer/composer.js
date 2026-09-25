@@ -12,10 +12,10 @@
 import { emit, events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { dayKey, timeKey } from "../../core/dates.js";
-import { overviewPages, typePlurals, typeSingular, xpKinds } from "../../data/config.js";
+import { overviewPages, typeIcon, typePlurals, typeSingular, xpKinds } from "../../data/config.js";
 import { connectEntries } from "../../data/links.js";
 import { applyEntryDefaults } from "../../data/mutations.js";
-import { findEntry, parentName } from "../../data/queries.js";
+import { findEntry, mainPlace, parentName } from "../../data/queries.js";
 import { entryRef } from "../../data/refs.js";
 import { state, ui } from "../../data/state.js";
 import { awardXp, commitXp } from "../../data/xp.js";
@@ -54,15 +54,45 @@ export function updateComposerSend() {
   dom.composerSend.disabled = !dom.composerInput.value.trim() && !composer.files.length;
 }
 
+/* Titel eines Eintrags für Pille und Blatt; ohne Titel sein Typ. */
+function entryLabel(entry) {
+  return entry.title || typeSingular(entry.type);
+}
+
 /*
- * Name in der Ablageort-Pille. Ein Medium ohne gewählten Ort landet nicht im
- * Eingang, sondern bei den Ressourcen — `inboxEntries` in
+ * Name in der Ablageort-Pille. Kommt man von der Seite eines Eintrags, steht
+ * dort dieser Eintrag: das Neue — etwa ein Foto — gehört zu ihm und erscheint
+ * unter seinen „Verknüpften Einträgen“. Ein Medium ohne gewählten Ort landet
+ * sonst nicht im Eingang, sondern bei den Ressourcen — `inboxEntries` in
  * src/data/queries.js siebt Medien aus. Die Pille sagt dann auch das, statt
  * einen Ort zu versprechen, an dem der Eintrag nie auftaucht.
  */
 function composerPlaceName() {
+  const linked = composer.link ? findEntry(composer.link) : null;
+  if (linked) return entryLabel(linked);
   if (!composer.place && composer.type === "medien") return overviewPages[4].title;
   return parentName(composer.place);
+}
+
+/*
+ * Die Option ganz oben im Blatt „Ablegen in“: der Eintrag, von dessen Seite
+ * aus das Eingabefeld aufging. Ihn wählen heißt: verknüpfen und an seinen Ort
+ * legen — so wie beim Öffnen vorgeschlagen. Einen anderen Ort wählen hebt die
+ * Verknüpfung auf; das Neue liegt dann nur dort.
+ */
+function originOption(refresh) {
+  const origin = composer.origin ? findEntry(composer.origin) : null;
+  if (!origin) return null;
+  return {
+    label: entryLabel(origin),
+    icon: typeIcon(origin.type),
+    active: composer.link === origin.id,
+    onSelect: () => {
+      composer.link = origin.id;
+      composer.place = mainPlace(origin);
+      refresh();
+    },
+  };
 }
 
 /** Die Pille mit dem Ablageort auffrischen. */
@@ -87,6 +117,7 @@ export function openComposer(overrides = {}) {
   chooseComposerType(start.type, start.pick);
   composer.place = start.place;
   composer.link = start.link || null;
+  composer.origin = composer.link;
   rememberComposerPreset();
   dom.navShell.classList.add("is-composing");
   dom.tabBar.hidden = true;
@@ -271,6 +302,12 @@ export function initComposer() {
   initComposerAttachments(onFilesChanged);
 
   dom.composerLink.addEventListener("click", () => {
+    const refresh = () => {
+      /* Der neue Ort kann den Projekt-Knopf sperren, darum beide neu zeichnen. */
+      renderComposerTypes();
+      renderComposerLink();
+      dom.composerInput.focus();
+    };
     /* Der Typ des Entwurfs kommt mit: ein Projekt bekommt nur Arbeitsbereiche
        angeboten, nie ein anderes Projekt. */
     openPlacePicker(
@@ -278,12 +315,11 @@ export function initComposer() {
       composer.place,
       (place) => {
         composer.place = place;
-        /* Der neue Ort kann den Projekt-Knopf sperren, darum beide neu zeichnen. */
-        renderComposerTypes();
-        renderComposerLink();
-        dom.composerInput.focus();
+        composer.link = null;
+        refresh();
       },
-      composer.type
+      composer.type,
+      originOption(refresh)
     );
   });
 

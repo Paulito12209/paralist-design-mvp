@@ -1,6 +1,8 @@
 /*
  * Die Ressourcen-Seite hinter der Übersichtskarte: Filter-Pillen wie auf der
- * Medien-Seite, darunter Listen je Monat statt Kacheln.
+ * Medien-Seite, darunter Listen je Monat statt Kacheln. Waagerecht wischen
+ * wechselt die Pille (src/ui/pill-swipe.js). Wird erst beim ersten Öffnen
+ * nachgeladen.
  * Pfad: src/features/resources/resources.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -13,14 +15,16 @@
  * styles/empty-state.css.
  */
 
-import { dom } from "../../core/dom.js";
+import { dom, el } from "../../core/dom.js";
 import { groupByMonth } from "../../core/format.js";
 import { icon } from "../../core/html.js";
 import { resourceFilters } from "../../data/config.js";
 import { resourceEntries } from "../../data/queries.js";
-import { state } from "../../data/state.js";
+import { saveState, state, ui } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
+import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { entryRow } from "../../ui/rows.js";
+import { isViewActive } from "../../ui/views.js";
 
 /* Platzhalter je Filter-Pille: Icon und Farbe passen zu dem, was fehlt. */
 const emptyArt = {
@@ -102,5 +106,25 @@ export function renderResources() {
         action: { label: emptyLabels[active] || emptyLabels.all },
       });
 
+  /* Die Leiste wird mit ersetzt: ihre Rollstellung mitnehmen, sonst springt sie
+     bei jedem Wechsel an den Anfang zurück. */
+  const scrolled = dom.pageBody.querySelector(".resource-filters")?.scrollLeft || 0;
   dom.pageBody.innerHTML = `<div class="tab-pills resource-filters">${pills}</div>${body}`;
+  dom.pageBody.querySelector(".resource-filters").scrollLeft = scrolled;
 }
+
+/** Eine Filter-Pille wählen — per Tipp (src/ui/list-clicks.js) oder Wischen. */
+export function selectResourceFilter(id) {
+  state.prefs.resources.filter = id;
+  saveState();
+  renderResources();
+}
+
+/* Beim Laden des Moduls einmal anmelden. Die Ansicht teilen sich alle
+   Unterseiten der Übersicht: Wischen gilt nur, solange die Ressourcen offen sind. */
+initPillSwipe(el("view-page"), {
+  order: resourceFilters.map((filter) => filter.id),
+  current: () => state.prefs.resources.filter,
+  select: selectResourceFilter,
+  enabled: () => isViewActive("page") && ui.currentPage?.kind === "resources",
+});

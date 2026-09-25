@@ -4,7 +4,7 @@
  *
  * - der runde Haken-Knopf, der in JEDER Liste vor einer Aufgabe steht (Projekt,
  *   Arbeitsbereich, verknüpfte Einträge, Kalender, Aufgaben-Seite),
- * - auf der Seite der Aufgabe mittig in der Kopfzeile „Aufgabe: Offen | Jetzt“;
+ * - auf der Seite der Aufgabe mittig in der Kopfzeile „Aufgabe“, darunter „Offen · Jetzt“;
  *   ein Tipp darauf öffnet von unten das Blatt mit Status und Dringlichkeit,
  * - die kurze Meldung „Erledigt“ mit „Rückgängig“ — ein Tipp auf den
  *   Haken lässt die Zeile oft verschwinden (Filter „Erledigte ausblenden“), und
@@ -15,8 +15,9 @@
  * -----------------------------------
  * doneTitle   -> Text der Meldung nach dem Abhaken
  * undoLabel   -> Beschriftung des Knopfes in der Meldung
- * statusTitle -> Abschnitts-Überschrift „Status“ im Blatt
- * prioTitle   -> Abschnitts-Überschrift „Dringlichkeit“ im Blatt
+ * statusTitle -> Beschriftung des Tabs „Status“ im Blatt
+ * prioTitle   -> Beschriftung des Tabs „Dringlichkeit“ im Blatt
+ * typeTitle   -> Beschriftung des Tabs „Typ“ im Blatt
  *
  * Aussehen steht in styles/tasks.css (Haken) und styles/task-status.css
  * (Kopfzeile der Aufgabenseite, Haken in allgemeinen Listen).
@@ -30,26 +31,29 @@ import {
   taskPriorityOf,
   taskStatuses,
   taskStatusOf,
+  typeIcon,
+  xpItemStyle,
   xpKinds,
 } from "../data/config.js";
 import { setTaskPriority, setTaskStatus, toggleTaskDone } from "../data/mutations.js";
 import { findEntry } from "../data/queries.js";
 import { openSheet } from "./sheet.js";
 import { showToast } from "./toast.js";
-import { typeChangeAction } from "./type-menu.js";
+import { typeChangeOptions } from "./type-menu.js";
 
 const doneTitle = "Erledigt";
 const undoLabel = "Rückgängig";
 const statusTitle = "Status";
 const prioTitle = "Dringlichkeit";
+const typeTitle = "Typ";
 
 /*
  * Die beiden Felder, die sich im Blatt der Aufgabe wählen lassen. Die
  * Reihenfolge hier ist die Reihenfolge im Blatt und in der Kopfzeile.
  */
 const taskFields = {
-  status: { title: statusTitle, list: taskStatuses, of: taskStatusOf, set: setTaskStatus },
-  priority: { title: prioTitle, list: taskPriorities, of: taskPriorityOf, set: setTaskPriority },
+  status: { list: taskStatuses, of: taskStatusOf, set: setTaskStatus },
+  priority: { list: taskPriorities, of: taskPriorityOf, set: setTaskPriority },
 };
 
 /**
@@ -71,9 +75,10 @@ export function taskCheck(entry) {
 }
 
 /**
- * Mitte der Kopfzeile einer Aufgabe: „Aufgabe: Offen | Jetzt“ mit kleinem
- * Pfeil. Die beiden Werte stehen in ihrer Farbe — so sieht man, dass sie
- * antippbar sind, und liest den Stand ab, ohne etwas zu öffnen.
+ * Mitte der Kopfzeile einer Aufgabe, zweizeilig: oben die Kategorie
+ * „Aufgabe“ mit kleinem Pfeil, darunter „Offen · Jetzt“ — Status und rechts
+ * daneben die Dringlichkeit, je in ihrer Farbe. So liest man den Stand ab,
+ * ohne etwas zu öffnen; ein Tipp irgendwo darauf öffnet das Blatt.
  */
 export function taskCrumbMarkup(entry, typeName) {
   const value = (field) => {
@@ -85,21 +90,24 @@ export function taskCrumbMarkup(entry, typeName) {
   return `
     <button class="task-crumb" type="button" data-task-sheet
       aria-label="${escapeHtml(typeName)}, Status ${escapeHtml(status)}, Dringlichkeit ${escapeHtml(prio)}. Ändern">
-      <span class="task-crumb-type">${escapeHtml(typeName)}:</span>
-      ${value("status")}<span class="task-crumb-bar" aria-hidden="true"></span>${value("priority")}
-      ${icon("chevron", "task-crumb-chevron")}
+      <span class="task-crumb-top">
+        <span class="task-crumb-type">${escapeHtml(typeName)}</span>
+        ${icon("chevron", "task-crumb-chevron")}
+      </span>
+      <span class="task-crumb-sub">
+        ${value("status")}<span class="task-crumb-dot" aria-hidden="true">·</span>${value("priority")}
+      </span>
     </button>
   `;
 }
 
 /* Die Optionen eines Feldes im Blatt; die gewählte Stufe ist markiert. Das
    Blatt bleibt offen (`stay`), damit man Status und Dringlichkeit in einem
-   Zug setzen kann, und zeichnet sich nach jeder Wahl neu. */
+   Zug setzen kann, und zeichnet sich nach jeder Wahl im selben Tab neu. */
 function fieldOptions(entry, field) {
   const spec = taskFields[field];
   const current = spec.of(entry[field]).id;
   return [
-    { heading: true, label: spec.title },
     ...spec.list.map((item) => ({
       label: item.label,
       icon: item.icon,
@@ -111,23 +119,41 @@ function fieldOptions(entry, field) {
         const before = entry[field];
         spec.set(entry, item.id);
         if (field === "status" && !wasDone && isTaskDone(entry)) announceDone(entry, before, firstTime);
-        openTaskSheet(entry);
+        openTaskSheet(entry, field);
       },
     })),
   ];
 }
 
-/**
- * Blatt von unten mit Status und Dringlichkeit einer Aufgabe. Ganz unten,
- * abgesetzt, „Typ ändern“: die Kopfzeile einer Aufgabe öffnet dieses Blatt,
- * bei jedem anderen Eintrag öffnet sie das Typ-Blatt direkt (src/ui/type-menu.js).
+/*
+ * Die Tabs des Blatts: Status, Dringlichkeit und die Typen zum Umwandeln
+ * (src/ui/type-menu.js). Ein Tipp auf einen Typ schließt das Blatt — die
+ * Aufgabe ist danach keine mehr, oder es folgt die Rückfrage.
  */
-export function openTaskSheet(entry) {
-  openSheet(entry.title || "Aufgabe", [
-    ...fieldOptions(entry, "status"),
-    ...fieldOptions(entry, "priority"),
-    { ...typeChangeAction({ entry }), split: true },
-  ]);
+const sheetTabs = [
+  { id: "status", label: statusTitle, options: (entry) => fieldOptions(entry, "status") },
+  { id: "priority", label: prioTitle, options: (entry) => fieldOptions(entry, "priority") },
+  { id: "type", label: typeTitle, options: (entry) => typeChangeOptions({ entry }) },
+];
+
+/**
+ * Blatt von unten für eine Aufgabe: oben ihr Name mit dem Icon der Kategorie,
+ * darunter die Tabs Status | Dringlichkeit | Typ — antippen oder waagerecht
+ * wischen wechselt. Die Kopfzeile einer Aufgabe öffnet es immer bei „Status“;
+ * bei jedem anderen Eintrag öffnet sie das Typ-Blatt direkt.
+ */
+export function openTaskSheet(entry, tab = sheetTabs[0].id) {
+  const current = sheetTabs.find((item) => item.id === tab) || sheetTabs[0];
+  openSheet(entry.title || "Aufgabe", current.options(entry), {
+    icon: typeIcon(entry.type),
+    iconColor: xpItemStyle(entry.type).color,
+    tabs: sheetTabs,
+    tab: current.id,
+    onTab: (id) => {
+      const fresh = findEntry(entry.id);
+      if (fresh) openTaskSheet(fresh, id);
+    },
+  });
 }
 
 /* Meldung nach dem Abhaken; „Rückgängig“ stellt den Status von vorher wieder

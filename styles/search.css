@@ -12,7 +12,6 @@
  * --search-pill-height      -> Höhe aller drei Knöpfe unten rechts
  * --search-pill-side        -> Platz links und rechts vom Wort „Suchen“
  * --search-actions-space    -> Zusätzlicher Platz am Seitenende, solange die Knöpfe zu sehen sind
- * --overview-gap            -> Abstand unter der Kopfzeile „Zuletzt gesucht“/„Am häufigsten geöffnet“
  * --search-combo-inset      -> Innenabstand des Gehäuses, dadurch schwebt die Suchen-Pille sichtbar darin
  * --tab-pill-active-bg      -> Fläche des Suchen-Knopfs im Gehäuse
  * --search-cancel-color     -> Rot der Schrift des Abbrechen-Knopfs
@@ -22,26 +21,6 @@
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
-
-/* Kopfzeile „Zuletzt gesucht“/„Am häufigsten geöffnet“: anders als bei einem
-   Arbeitsbereich steht die Suchleiste hier schon fest oben (kein is-subpage),
-   darum eine normale Zeile im Textfluss statt der sticky .page-head aus
-   styles/rows.css — die würde den Sicherheitsabstand der Statusleiste ein
-   zweites Mal dazurechnen. Zurück-Pfeil und Überschrift bekommen dieselbe
-   Zeilenhöhe, damit sie auf gleicher Höhe stehen statt gegeneinander versetzt. */
-.search-page-head {
-  display: flex;
-  align-items: center;
-  gap: 2px;
-  margin: 0 0 var(--overview-gap) -8px;
-}
-
-.search-page-head .screen-title {
-  margin: 0;
-  padding: 0;
-  line-height: 36px;
-  /* line-height: gleiche Höhe wie .back-btn, dadurch auf gleicher Mitte */
-}
 
 .search-row {
   display: flex;
@@ -94,7 +73,7 @@
 }
 
 /* Suchen: die Abschnittsueberschriften stehen gross und duenn, die Tagesmarken
-   klein und kraeftig - so verwechselt man „Zuletzt geoeffnet“ und „Heute“ nicht */
+   klein und kraeftig - so verwechselt man „Ergebnisse“ und „Heute“ nicht */
 #view-search .section-head h2 {
   font-size: 17px;
   font-weight: 300;
@@ -106,25 +85,6 @@
   font-weight: 600;
   letter-spacing: 0.02em;
   margin: 10px 2px 0;
-}
-
-/* Pfeil rechts in der Abschnittszeile: führt auf die volle Liste */
-.section-more {
-  margin-left: auto;
-  width: 32px;
-  height: 32px;
-  display: grid;
-  place-items: center;
-}
-
-.section-more .chevron {
-  width: 16px;
-  height: 16px;
-  color: var(--chevron);
-}
-
-.section-more:active {
-  opacity: 0.55;
 }
 
 .search-row-query {

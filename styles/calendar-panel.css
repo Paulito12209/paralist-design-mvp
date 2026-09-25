@@ -11,6 +11,13 @@
  * --cal-now-label           -> Schriftfarbe in ihrer Uhrzeit-Pille
  * --cal-accent              -> gewählte Spalte in der Liste
  * --event-color             -> wird je Termin aus src/data/config.js gesetzt
+ *
+ * DIREKT IN DIESER DATEI (Tabs der Liste, .cal-seg-btn)
+ * -----------------------------------
+ * font-size 18px / padding 14px        -> Tabs auf breiten Zeilen
+ * @container max-width 400px: 17px/8px -> kleinere Tabs auf Handy-Breite, damit
+ *                                         drei Tabs mit Zähler nebeneinanderpassen
+ * @container max-width 340px: 16px/7px -> noch kleiner auf sehr schmalen Zeilen
 
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
@@ -54,19 +61,52 @@
   display: none;
 }
 
-/* Drei Spalten in der Liste: Aufgaben, Termine, Projekte */
+/*
+ * Drei Spalten in der Liste: Aufgaben, Termine, Projekte (Reihenfolge aus
+ * calendarSegments in src/data/config.js).
+ * Raster statt space-between: mit Flex hängt die Lage der Mitte davon ab, wie
+ * breit die Nachbarn sind — ein Zähler an nur einem Tab schob „Termine“ aus
+ * der Mitte. Zwei gleich breite 1fr-Spalten links und rechts halten die
+ * mittlere Spalte immer genau zentriert (gleiches Muster wie .cal-controls
+ * in styles/calendar.css).
+ * minmax(0, 1fr): die Aussenspalten dürfen schmaler werden als ihr Inhalt,
+ * sonst würde ein breiter Aussen-Tab die Spalten ungleich machen und die
+ * Mitte doch wieder verschieben.
+ * container-type: die Tabs richten ihre Größe nach der Breite dieser Zeile
+ * (Abfragen unten), nicht nach dem Fenster — im Desktop-Rahmen ist die Zeile
+ * schmaler als das Browserfenster.
+ */
 .cal-seg {
-  display: flex;
-  justify-content: space-between;
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   margin-bottom: 8px;
 }
 
+/* grid-column fest vergeben: jeder Tab bleibt in seiner Spalte, auch wenn
+   einmal einer fehlen sollte; Aussen-Tabs hängen an ihrer Kante. */
+.cal-seg-btn:nth-child(1) {
+  grid-column: 1;
+  justify-self: start;
+}
+
+.cal-seg-btn:nth-child(2) {
+  grid-column: 2;
+  justify-self: center;
+}
+
+.cal-seg-btn:nth-child(3) {
+  grid-column: 3;
+  justify-self: end;
+}
+
 .cal-seg-btn {
+  white-space: nowrap; /* white-space: Beschriftung und Zähler nie auf zwei Zeilen */
   display: flex;
   align-items: center;
   gap: 6px; /* gap: Abstand zwischen Beschriftung und Zähler, wie bei .tab-pill */
-  padding: 10px 14px; /* schmaler als andere Pillen, damit die drei mit Zähler bei 375px nebeneinanderpassen */
+  padding: 10px 14px; /* breite Zeilen; auf Handy-Breite siehe @container unten */
   border-radius: 999px;
   font-size: 18px;
   font-weight: 600;
@@ -80,6 +120,30 @@
 
 .cal-seg-btn:active {
   opacity: 0.55;
+}
+
+/*
+ * Schmale Zeile (Handy): Damit „Termine“ exakt mittig bleibt, muss die Zeile
+ * mindestens 2 × breitester Aussen-Tab + mittlerer Tab breit sein. Mit
+ * zweistelligen Zählern an allen drei Tabs reicht das bei 18px Schrift und
+ * 14px Rand erst ab gut 390px Zeilenbreite. Darunter werden Schrift und
+ * Innenrand kleiner, statt dass sich die Tabs überlappen.
+ * @container: misst die Breite von .cal-seg (siehe container-type oben).
+ */
+@container (max-width: 400px) {
+  .cal-seg-btn {
+    gap: 4px;
+    padding: 10px 8px;
+    font-size: 17px;
+  }
+}
+
+/* Sehr schmale Zeile (360-px-Handys, Desktop-Rahmen): noch eine Stufe kleiner */
+@container (max-width: 340px) {
+  .cal-seg-btn {
+    padding: 10px 7px;
+    font-size: 16px;
+  }
 }
 
 /* Leerer Tag */

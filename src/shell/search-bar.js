@@ -5,9 +5,9 @@
  *
  * Auf der Suche tritt die untere Navigation zurück (styles/search.css); an
  * ihrer Stelle stehen drei Knöpfe: Mikrofon, die Suchen-Pille und Abbrechen.
- * Solange die Tastatur offen ist (ui.searchTyping), sind sie weg und ein
- * Tippen in der Liste schließt nur die Tastatur
- * (src/features/search/search.js).
+ * Solange die Tastatur offen ist (ui.searchTyping), sind sie weg; die Zeilen
+ * darüber lassen sich trotzdem direkt antippen
+ * (src/features/search/search-tap.js).
  * Pfad: src/shell/search-bar.js
  *
  * Keine anpassbaren visuellen Werte: Höhe und Rundung stehen in
