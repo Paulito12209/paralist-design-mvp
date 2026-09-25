@@ -15,7 +15,8 @@
  * --radius-xl                -> Rundung des Absenden-Knopfs, der Namens-Plaketten
  *                               und des Films auf der Danksagungs-Seite
  *
- * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei
+ * (z.B. .fb-title 24px -> Überschrift der Danke-Seite).
 */
 
 /* ---------- Feedback: Kopf ---------- */
@@ -28,7 +29,7 @@
 /* Nur noch die Überschrift der Danke-Seite — den Namen der Seite selbst sagt
    die Zeile neben dem Zurück-Pfeil (src/features/profile/settings-cards.js). */
 .fb-title {
-  font-size: 28px;
+  font-size: 24px;
   font-weight: 700;
   letter-spacing: -0.03em;
   padding: 0 4px;
