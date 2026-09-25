@@ -29,6 +29,28 @@ export function noteOpen(kind, id) {
   saveState();
 }
 
+/**
+ * Ein Merkposten wandert auf ein anderes Ding — wenn aus einem Eintrag ein
+ * Arbeitsbereich wird oder umgekehrt (src/data/convert.js). Gab es unter dem
+ * neuen Schlüssel schon einen Posten (Nummern gelöschter Arbeitsbereiche
+ * werden neu vergeben), werden beide zu einem zusammengelegt — sonst stünde
+ * dasselbe Ding zweimal unter „Zuletzt geöffnet“.
+ */
+export function moveOpen(fromKey, kind, id) {
+  const open = state.opens.find((item) => item.key === fromKey);
+  if (!open) return;
+  const toKey = `${kind}:${id}`;
+  const stale = state.opens.find((item) => item.key === toKey);
+  if (stale) {
+    open.count += stale.count;
+    open.ts = Math.max(open.ts, stale.ts);
+    state.opens = state.opens.filter((item) => item !== stale);
+  }
+  open.key = toKey;
+  open.kind = kind;
+  open.id = String(id);
+}
+
 /** Merkt einen Suchbegriff; der neueste steht vorn, Wiederholungen rutschen nach oben. */
 export function noteSearch(query) {
   const text = String(query || "").trim();

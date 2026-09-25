@@ -110,6 +110,13 @@ Tab
 - **Die Karten Projekte, Favoriten und Ressourcen sind Sammlungen**, keine
   Orte: sie zeigen alle Projekte, alles Markierte, alle Dokumente, Zeichnungen
   und Medien — egal, wo sie liegen. Nur der Eingang ist ein Ort.
+- **Der Typ lässt sich nachträglich ändern** (`src/data/convert.js`): aus einer
+  Notiz wird eine Aufgabe, aus einer Aufgabe ein Projekt, aus einem Eintrag ein
+  Arbeitsbereich — und zurück. Die Regel dabei: was zu einem Ding gehört,
+  gehört danach zum neuen Ding. Ein Projekt und ein Arbeitsbereich nehmen auf,
+  alles andere verknüpft; beim Wechsel wird darum aus Verknüpfungen Inhalt und
+  aus Inhalt Verknüpfungen. Nur Zeichnung und Medium bleiben, was sie sind —
+  ihr Inhalt ist die Zeichenfläche bzw. die Datei.
 - Arbeitsbereiche und Projekte haben einen freien Text (`body`) und zeigen
   ihre Einträge unter **Verknüpfte Einträge**, nach Typ gruppiert in der
   Reihenfolge aus `typeOrder`. Jede Unterseite — Arbeitsbereich, Übersichts-
@@ -160,6 +167,12 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   geht auf und die Seite darunter öffnet sich **nicht**.
 - Zeile nach links wischen (Archivieren, Löschen) und nach rechts (Favorit,
   Verknüpfen). Eine aufgewischte Zeile schiebt sich beim Antippen erst zu.
+- Arbeitsbereich umwandeln — über das Menü der Zeile, das Seitenmenü oder die
+  Pille „Arbeitsbereich“ oben auf seiner Seite: „Typ ändern“ → Projekt. Das
+  Blatt sagt vorher, dass sein Inhalt ins Projekt zieht und das Projekt im
+  Eingang liegt; auf seiner Seite wechselt die Ansicht auf den neuen Eintrag,
+  Zurück-Pfeil und Browser-Zurück führen dorthin, woher man kam. Aus einer
+  Liste heraus bietet die Meldung unten „Zur Seite“.
 
 **Anlegen**
 - Jeden Typ einmal anlegen; der aktive Knopf lässt sich abwählen, dann entsteht
@@ -173,8 +186,19 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 **Eintrag**
 - Titel und Text tippen — nach kurzer Pause ist es gespeichert (Seite neu laden
   und nachsehen).
-- Menü: Favorit, Verknüpfen, Archivieren, Löschen. Eine archivierte Aufgabe
-  gibt Punkte.
+- Menü: Favorit, Verknüpfen, Typ ändern, Details, Archivieren, Löschen. Eine
+  archivierte Aufgabe gibt Punkte.
+- Typ ändern — drei Wege: das Menü, die graue Pille mit dem Typ mitten in der
+  Kopfzeile (bei einer Aufgabe steht „Typ ändern“ unten im Blatt mit Status
+  und Dringlichkeit) und das Menü beim gedrückt Halten einer Zeile. Notiz →
+  Aufgabe wechselt sofort; die Meldung unten bietet „Rückgängig“, und das
+  bringt auch Status, Dringlichkeit und Datum zurück, nicht aber Getipptes.
+  Notiz → Termin bekommt heute und die aktuelle Uhrzeit (die Uhrzeit steht
+  klein in der Meldung). Notiz mit Verknüpfungen → Projekt, Projekt mit Inhalt → Notiz
+  und Eintrag → Arbeitsbereich zeigen erst in Sätzen, was mit Inhalt,
+  Verknüpfungen und Ort passiert, dann „Umwandeln“ oder „Abbrechen“. Nach
+  Eintrag → Arbeitsbereich steht die Seite des Arbeitsbereichs offen; Zurück
+  führt dorthin, woher man kam. Zeichnung und Medium haben die Option nicht.
 - Aufgabe abhaken: sie bleibt ausgegraut stehen, auf der Aufgaben-Seite ganz
   unten (auch in jeder Board-Spalte). Ab 00:00 Uhr des nächsten Tages liegt
   sie im Archiv (`src/data/task-archive.js`). Zurückgeholt bleibt sie wieder

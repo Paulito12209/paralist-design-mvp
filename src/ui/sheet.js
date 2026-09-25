@@ -7,7 +7,9 @@
  * `heading` (keine Option, sondern eine Überschrift, die die Liste in
  * Abschnitte teilt — „Verknüpfen mit“ trennt damit Ablageorte und Einträge).
  * Für „Details“ gibt es zwei reine Anzeige-Zeilen: `lead` (der volle Titel,
- * groß und ungekürzt) und `detail` (Bezeichnung oben, Wert darunter).
+ * groß und ungekürzt) und `detail` (Bezeichnung oben, Wert darunter); „Typ
+ * ändern“ nutzt dazu `note` (ein Satz in normaler Schrift, z.B. was beim
+ * Umwandeln mit den verknüpften Einträgen passiert).
  * Pfad: src/ui/sheet.js
  *
  * Keine anpassbaren visuellen Werte: Aussehen und Abstände stehen in
@@ -29,6 +31,7 @@ function optionMarkup(option, index) {
      antippen und rutscht im Klick-Empfänger unten auch nie dazwischen. */
   if (option.heading) return `<p class="sheet-heading">${escapeHtml(option.label)}</p>`;
   if (option.lead) return `<p class="sheet-lead">${escapeHtml(option.label)}</p>`;
+  if (option.note) return `<p class="sheet-note">${escapeHtml(option.label)}</p>`;
   if (option.detail) {
     return `<div class="sheet-detail"><span class="sheet-detail-label">${escapeHtml(option.label)}</span><span class="sheet-detail-value">${escapeHtml(option.value)}</span></div>`;
   }

@@ -21,6 +21,7 @@ import { openCtxMenu } from "./ctx-menu.js";
 import { openDetails } from "./details.js";
 import { openLinkPicker } from "./pickers.js";
 import { toggleTaskFromCheck } from "./task-status.js";
+import { typeChangeAction } from "./type-menu.js";
 
 /**
  * Alle Aktionen eines Eintrags in der Reihenfolge des Menüs.
@@ -50,7 +51,13 @@ export function entryMenuOptions(entry, { onPage = false, afterRemove = () => {}
       label: "Verknüpfen",
       icon: "link",
       onSelect: () => openLinkPicker(entry),
-    },
+    }
+  );
+  /* „Typ ändern“ steht bei den Dingen, die den Eintrag umbauen (Verknüpfen),
+     nicht bei den Aktionen, die ihn wegräumen. Fehlt bei Zeichnung und Medium. */
+  const typeChange = typeChangeAction({ entry });
+  if (typeChange) options.push(typeChange);
+  options.push(
     {
       label: "Details",
       icon: "info",

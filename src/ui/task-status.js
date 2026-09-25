@@ -36,6 +36,7 @@ import { setTaskPriority, setTaskStatus, toggleTaskDone } from "../data/mutation
 import { findEntry } from "../data/queries.js";
 import { openSheet } from "./sheet.js";
 import { showToast } from "./toast.js";
+import { typeChangeAction } from "./type-menu.js";
 
 const doneTitle = "Erledigt";
 const undoLabel = "Rückgängig";
@@ -116,9 +117,17 @@ function fieldOptions(entry, field) {
   ];
 }
 
-/** Blatt von unten mit Status und Dringlichkeit einer Aufgabe. */
+/**
+ * Blatt von unten mit Status und Dringlichkeit einer Aufgabe. Ganz unten,
+ * abgesetzt, „Typ ändern“: die Kopfzeile einer Aufgabe öffnet dieses Blatt,
+ * bei jedem anderen Eintrag öffnet sie das Typ-Blatt direkt (src/ui/type-menu.js).
+ */
 export function openTaskSheet(entry) {
-  openSheet(entry.title || "Aufgabe", [...fieldOptions(entry, "status"), ...fieldOptions(entry, "priority")]);
+  openSheet(entry.title || "Aufgabe", [
+    ...fieldOptions(entry, "status"),
+    ...fieldOptions(entry, "priority"),
+    { ...typeChangeAction({ entry }), split: true },
+  ]);
 }
 
 /* Meldung nach dem Abhaken; „Rückgängig“ stellt den Status von vorher wieder

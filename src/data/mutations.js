@@ -30,8 +30,8 @@ import { awardXp } from "./xp.js";
 import { saveState, state, ui } from "./state.js";
 import { pruneThumbs } from "./thumbs.js";
 
-/* Nach jeder Änderung: speichern, Vorschaubilder aufräumen, Listen auffrischen. */
-function commit({ prunedEntries = false } = {}) {
+/** Nach jeder Änderung: speichern, Vorschaubilder aufräumen, Listen auffrischen. */
+export function commit({ prunedEntries = false } = {}) {
   saveState();
   if (prunedEntries) {
     pruneThumbs(state.entries);
@@ -42,12 +42,13 @@ function commit({ prunedEntries = false } = {}) {
   emit(events.dataChanged);
 }
 
-/*
+/**
  * Ein Ablageort verschwindet: er wird aus allen Einträgen gestrichen, und wer
  * dadurch heimatlos würde, bekommt die Orte in `targets` (leer = Eingang).
- * Was noch woanders liegt, bleibt einfach dort.
+ * Was noch woanders liegt, bleibt einfach dort. Auch src/data/convert.js
+ * braucht das, wenn aus einem Projekt etwas anderes wird.
  */
-function liftChildren(ref, targets = []) {
+export function liftChildren(ref, targets = []) {
   state.entries.forEach((entry) => {
     if (!hasPlace(entry, ref)) return;
     entry.places = entry.places.filter((place) => place !== ref);

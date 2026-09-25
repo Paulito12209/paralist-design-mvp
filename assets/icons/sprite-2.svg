@@ -136,4 +136,11 @@
   <symbol id="icon-arrow-up-right" viewBox="0 0 24 24" fill="none">
     <path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
   </symbol>
+  <!-- svg/symbol: zwei Pfeile, die einen Kreis bilden — Menüpunkt „Typ ändern“ -->
+  <symbol id="icon-convert" viewBox="0 0 24 24" fill="none">
+    <path d="m16.5 2.5 4 4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M3.5 12v-1.5a4 4 0 0 1 4-4h13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="m7.5 21.5-4-4 4-4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M20.5 12v1.5a4 4 0 0 1-4 4h-13" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+  </symbol>
 </svg>
