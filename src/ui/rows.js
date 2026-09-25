@@ -13,8 +13,9 @@ import { sameId } from "../core/ids.js";
 import { noHistoryForm } from "../core/no-history.js";
 import { isTaskDone, typeIcon } from "../data/config.js";
 import { mediaKindOf, workspaceIcon, workspaceLabel } from "../data/queries.js";
-import { state, ui } from "../data/state.js";
+import { ui } from "../data/state.js";
 import { thumbOf } from "../data/thumbs.js";
+import { canMoveWorkspace } from "./move-menu.js";
 import { taskCheck } from "./task-status.js";
 
 /** Eine Zeile mit Wisch-Knöpfen; die Knöpfe liegen hinter der Zeile. */
@@ -130,7 +131,7 @@ export function workspaceRow(workspace, canEdit = false) {
      Archivieren grau neben dem roten Löschen. Verschieben gibt es nur, wenn
      es mehr als einen Tab gibt; sonst gäbe es kein Ziel. */
   const left = [swipeAction("favorite-workspace", "Favorit", workspace.favorite ? "star" : "star-outline", "favorite")];
-  if (state.tabs.length > 1) left.push(swipeAction("move-workspace", "In anderen Tab verschieben", "folder-move", "move"));
+  if (canMoveWorkspace()) left.push(swipeAction("move-workspace", "In anderen Tab verschieben", "folder-move", "move"));
   return swipeRow(
     `data-workspace="${workspace.id}"`,
     left,

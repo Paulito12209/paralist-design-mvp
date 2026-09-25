@@ -1,6 +1,6 @@
 /*
  * Die Liste der Arbeitsbereiche unter den Tab-Pillen: anlegen, umbenennen,
- * Icon geben, zu Favoriten, löschen.
+ * Icon geben, in einen anderen Tab legen, zu Favoriten, löschen.
  * Pfad: src/features/overview/workspaces.js
  *
  * Keine anpassbaren visuellen Werte: Zeilenhöhe und Trennlinien stehen in
@@ -15,6 +15,7 @@ import { archiveWorkspace, deleteWorkspace, nameWorkspace, toggleFavorite } from
 import { archivedEntries, archivedWorkspaces, findWorkspace, tabWorkspaces } from "../../data/queries.js";
 import { saveState, ui } from "../../data/state.js";
 import { openCtxMenu } from "../../ui/ctx-menu.js";
+import { moveWorkspaceAction } from "../../ui/move-menu.js";
 import { iconPickerAction } from "../../ui/pickers.js";
 import { typeChangeAction } from "../../ui/type-menu.js";
 import { workspaceRow } from "../../ui/rows.js";
@@ -113,8 +114,10 @@ export function openWorkspaceMenu(button) {
       saveState();
       emit(events.dataChanged);
     }),
-    /* Umbenennen, Icon, Typ: was der Arbeitsbereich IST, steht beieinander */
+    /* Umbenennen, Icon, Typ: was der Arbeitsbereich IST, steht beieinander;
+       dahinter, wo er liegt — der Punkt fehlt, solange es nur einen Tab gibt */
     typeChangeAction({ workspace }),
+    ...[moveWorkspaceAction(button, workspace)].filter(Boolean),
     {
       label: workspace.favorite ? "Aus Favoriten entfernen" : "Zu Favoriten",
       icon: workspace.favorite ? "star" : "star-outline",

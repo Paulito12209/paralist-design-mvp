@@ -18,21 +18,19 @@ import {
   archiveWorkspace,
   deleteEntry,
   deleteWorkspace,
-  moveWorkspaceToTab,
   restoreFromArchive,
   selectTab,
   toggleFavorite,
 } from "../data/mutations.js";
-import { findEntry, findWorkspace, tabLabel } from "../data/queries.js";
+import { findEntry, findWorkspace } from "../data/queries.js";
 import { saveState, state } from "../data/state.js";
 import { archiveEntry } from "../data/xp.js";
-import { openCtxMenu } from "./ctx-menu.js";
 import { openEntryCtxMenu } from "./entry-menu.js";
 import { cancelHold, consumeClickBlock } from "./long-press.js";
+import { openMoveWorkspaceMenu } from "./move-menu.js";
 import { openLinkPicker } from "./pickers.js";
 import { openArchive, openEntryOrFile, openTarget, showTab } from "./router.js";
 import { closeSwipes, isSwipedOpen } from "./swipe.js";
-import { showToast } from "./toast.js";
 import { toggleGroup } from "./groups.js";
 import { toggleTaskFromCheck } from "./task-status.js";
 
@@ -48,30 +46,6 @@ let menus = {
   /* übernimmt ein noch offenes Namensfeld eines Arbeitsbereichs */
   finishWorkspaceName: () => {},
 };
-
-/* Auswahl der Tabs neben dem Verschieben-Knopf. Der eigene Tab trägt den
-   Haken, damit man sieht, wo der Arbeitsbereich gerade liegt. Danach ist er
-   aus der Liste verschwunden — die Meldung sagt wohin und springt auf Wunsch mit. */
-function openMoveWorkspaceMenu(anchor, workspace) {
-  openCtxMenu(
-    anchor,
-    state.tabs.map((tab) => ({
-      label: tabLabel(tab),
-      icon: "folder",
-      active: sameId(tab.id, workspace.tab),
-      onSelect: () => {
-        if (sameId(tab.id, workspace.tab)) return;
-        moveWorkspaceToTab(workspace, tab.id);
-        showToast({
-          icon: "folder-move",
-          title: `Nach „${tabLabel(tab)}“ verschoben`,
-          accent: "var(--move-color)",
-          action: { label: "Zeigen", onSelect: () => selectTab(tab.id) },
-        });
-      },
-    }))
-  );
-}
 
 /* Die Knöpfe einer Arbeitsbereichs-Zeile. Sie stehen getrennt, weil ein
    Arbeitsbereich kein Eintrag ist und deshalb nicht in findEntry() auftaucht. */
