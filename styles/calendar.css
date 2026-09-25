@@ -18,7 +18,7 @@
  * --content-top             -> um so viel wird der einrastende Kopf nach oben verlängert
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei
- * (Rollen-Zeilen 20px, „Fertig“ 17px).
+ * (Tageszahlen 18px, Rollen-Zeilen 20px, „Fertig“ 17px).
 */
 
 /* ---------- Kalender ---------- */
@@ -171,7 +171,7 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 500;
   letter-spacing: -0.02em;
 }
