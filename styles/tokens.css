@@ -216,9 +216,9 @@
   --avatar-gradient-to: #4d72ad;
   --modal-radius: 28px;
   --radius-lg: 18px;
-  --title-size: 28px;
+  --title-size: 24px;
   --content-side: 16px;
-  --content-top: 4px;
+  --content-top: 32px;
   --page-head-top: 8px;
   --page-head-pull: 8px;
   --page-title-gap: 18px;
@@ -282,7 +282,7 @@
   --composer-mic-border: #48484a;
   --composer-input-size: 16px;
   --composer-chip-size: 13px;
-  --entry-title-size: 28px;
+  --entry-title-size: 24px;
   --entry-body-size: 16px;
   --entry-end-space: 120px;
   --swipe-action-size: 44px;
