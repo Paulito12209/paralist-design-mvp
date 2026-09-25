@@ -18,7 +18,7 @@
  * --content-top             -> um so viel wird der einrastende Kopf nach oben verlängert
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei
- * (Tageszahlen 18px, Rollen-Zeilen 20px, „Fertig“ 17px).
+ * (Monat und Jahr 20px, Tageszahlen 18px, Rollen-Zeilen 20px, „Fertig“ 17px).
 */
 
 /* ---------- Kalender ---------- */
@@ -65,7 +65,7 @@
   gap: 6px;
   padding: 0 var(--title-side);
   margin-bottom: 18px;
-  font-size: 22px;
+  font-size: 20px;
   font-weight: 500;
   letter-spacing: -0.02em;
   color: var(--text);
@@ -251,8 +251,7 @@
 .cal-round,
 .cal-pill {
   height: 44px;
-  background: var(--card);
-  box-shadow: var(--shadow);
+  background: var(--card); /* ohne Schatten: Ansicht- und Zeitraum-Knopf liegen flach auf der Seite */
   display: grid;
   place-items: center;
   color: var(--text);
