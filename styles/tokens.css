@@ -31,6 +31,7 @@
  * styles/toast.css           -> kurze Meldung über der Navigation nach dem Anlegen
  * styles/update.css          -> Fenster „Neue Version verfügbar“ mit Später und Aktualisieren
  * styles/overlays.css        -> Auswahl-Blatt, kleines Menü, Blätter von unten
+ * styles/sheet-tabs.css      -> Auswahl-Blatt mit Tabs (Aufgabe): Kopf mit Icon, Trennlinie, Pillen, Haken, Hereingleiten
  * styles/details.css         -> Blatt „Details“ und kleiner Titel in der Kopfzeile einer Detailseite
  * styles/modal-top.css       -> runder Pfeil in einem Blatt, der nach oben rollt
  * styles/search.css          -> Suchseite
@@ -190,6 +191,9 @@
  * --ctx-radius              -> Rundung des kleinen Menüs beim gedrückt Halten
  * --sheet-options-max       -> ab welcher Höhe die Liste im Auswahl-Blatt scrollt
  * --sheet-heading-size      -> Schriftgröße der Abschnitts-Überschrift im Auswahl-Blatt
+ * --sheet-tabs-min-h        -> Mindesthöhe der Liste in einem Blatt mit Tabs (hält die Höhe beim Wechseln ruhig)
+ * --sheet-slide             -> aus welcher Entfernung die Liste nach einem Tab-Wechsel hereingleitet
+ * --sheet-slide-time        -> wie lange das Hereingleiten dauert
  * --modal-dismiss-pull      -> Wie weit man ein Blatt ziehen muss, damit es schließt
  *
  * Dunkelmodus: dieselben Werte werden weiter unten noch einmal gesetzt —
@@ -316,6 +320,9 @@
   --ctx-radius: 16px;
   --sheet-options-max: 52vh;
   --sheet-heading-size: 12px;
+  --sheet-tabs-min-h: 200px;
+  --sheet-slide: 28px;
+  --sheet-slide-time: 0.2s;
   --icon-strong: #3a3a3c;
   --placeholder: #aeaeb2;
   --chevron: #c7c7cc;
