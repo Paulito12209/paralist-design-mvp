@@ -4,7 +4,7 @@
  * wechselt zwischen ihnen), und das Menü oben rechts. Bei einer Zeichnung steht im Inhalt die Zeichenfläche statt des
  * Textes.
  *
- * Bei einer Aufgabe steht mittig in der Kopfzeile „Aufgabe: Offen | Jetzt“;
+ * Bei einer Aufgabe steht mittig in der Kopfzeile „Aufgabe“, darunter „Offen · Jetzt“;
  * ein Tipp darauf öffnet das Blatt mit Status und Dringlichkeit
  * (src/ui/task-status.js) — egal, von wo aus man die Aufgabe geöffnet hat.
  * Bei jedem anderen Eintrag ist die Kategorie („Notiz“) eine Pille, die das
@@ -174,7 +174,7 @@ export function initEntry() {
     field: () => (ui.entryPill === "notes" && !dom.entryBody.hidden ? dom.entryBody : null),
   });
 
-  /* „Aufgabe: Offen | Jetzt“ in der Kopfzeile öffnet Status und Dringlichkeit,
+  /* „Aufgabe“ mit „Offen · Jetzt“ in der Kopfzeile öffnet Status und Dringlichkeit,
      die Pille „Notiz“ das Blatt „Typ ändern“ */
   dom.entryCrumb.addEventListener("click", (event) => {
     const entry = findEntry(ui.currentEntryId);

@@ -38,7 +38,7 @@
  * --task-meta-size          -> Schriftgröße des Ortes unter einer Aufgabe
  * --task-chip-size          -> Schriftgröße der Status- und Datums-Chips
  * --task-check-size         -> Größe des runden Haken-Knopfes an einer Aufgabe
- * --task-crumb-gap          -> Abstand in „Aufgabe: Offen | Jetzt“ oben auf der Aufgabenseite
+ * --task-crumb-gap          -> Abstand zwischen Status, Punkt und Dringlichkeit oben auf der Aufgabenseite
  * --task-tools-gap          -> Abstand zwischen Bedienzeile und Inhalt der Aufgaben-Seite
  * --task-view-btn-size      -> Durchmesser des runden Umschalters Liste ↔ Board
  * --task-pill-anim          -> wie lange die Pille „Gruppieren“ aus dem Umschalter herausfährt

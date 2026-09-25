@@ -4,7 +4,7 @@
  *
  * - der runde Haken-Knopf, der in JEDER Liste vor einer Aufgabe steht (Projekt,
  *   Arbeitsbereich, verknüpfte Einträge, Kalender, Aufgaben-Seite),
- * - auf der Seite der Aufgabe mittig in der Kopfzeile „Aufgabe: Offen | Jetzt“;
+ * - auf der Seite der Aufgabe mittig in der Kopfzeile „Aufgabe“, darunter „Offen · Jetzt“;
  *   ein Tipp darauf öffnet von unten das Blatt mit Status und Dringlichkeit,
  * - die kurze Meldung „Erledigt“ mit „Rückgängig“ — ein Tipp auf den
  *   Haken lässt die Zeile oft verschwinden (Filter „Erledigte ausblenden“), und
@@ -71,9 +71,10 @@ export function taskCheck(entry) {
 }
 
 /**
- * Mitte der Kopfzeile einer Aufgabe: „Aufgabe: Offen | Jetzt“ mit kleinem
- * Pfeil. Die beiden Werte stehen in ihrer Farbe — so sieht man, dass sie
- * antippbar sind, und liest den Stand ab, ohne etwas zu öffnen.
+ * Mitte der Kopfzeile einer Aufgabe, zweizeilig: oben die Kategorie
+ * „Aufgabe“ mit kleinem Pfeil, darunter „Offen · Jetzt“ — Status und rechts
+ * daneben die Dringlichkeit, je in ihrer Farbe. So liest man den Stand ab,
+ * ohne etwas zu öffnen; ein Tipp irgendwo darauf öffnet das Blatt.
  */
 export function taskCrumbMarkup(entry, typeName) {
   const value = (field) => {
@@ -85,9 +86,13 @@ export function taskCrumbMarkup(entry, typeName) {
   return `
     <button class="task-crumb" type="button" data-task-sheet
       aria-label="${escapeHtml(typeName)}, Status ${escapeHtml(status)}, Dringlichkeit ${escapeHtml(prio)}. Ändern">
-      <span class="task-crumb-type">${escapeHtml(typeName)}:</span>
-      ${value("status")}<span class="task-crumb-bar" aria-hidden="true"></span>${value("priority")}
-      ${icon("chevron", "task-crumb-chevron")}
+      <span class="task-crumb-top">
+        <span class="task-crumb-type">${escapeHtml(typeName)}</span>
+        ${icon("chevron", "task-crumb-chevron")}
+      </span>
+      <span class="task-crumb-sub">
+        ${value("status")}<span class="task-crumb-dot" aria-hidden="true">·</span>${value("priority")}
+      </span>
     </button>
   `;
 }

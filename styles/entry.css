@@ -78,7 +78,7 @@
 /* Die Kategorie als Knopf: ein Tipp öffnet „Typ ändern“ (src/ui/type-menu.js).
    Eine schmale Pille, nicht der ganze Streifen — ein Tipp in die Kopfzeile,
    um die Tastatur zu schließen, soll nichts aus Versehen öffnen. Die Pille
-   selbst ist dieselbe wie „Aufgabe: Offen | Jetzt“ (styles/task-status.css);
+   selbst ist dieselbe wie „Aufgabe“ über „Offen · Jetzt“ (styles/task-status.css);
    hier steht nur, was dazukommt. */
 .type-crumb {
   position: relative; /* position: Anker für die größere Tippfläche darunter */
@@ -86,7 +86,8 @@
 
 /* Der Streifen schneidet sonst die Tippfläche oben und unten ab (overflow: hidden
    für das „…“ eines langen Wortes) — die Pille kürzt ihr Wort selbst. */
-.entry-crumb:has(> .type-crumb) {
+.entry-crumb:has(> .type-crumb),
+.entry-crumb:has(> .task-crumb) {
   overflow: visible;
 }
 
