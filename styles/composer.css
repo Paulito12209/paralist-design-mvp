@@ -32,7 +32,7 @@
   display: none;
 }
 
-/* Verknüpfen-Knopf oben links: wählt Arbeitsbereich oder Projekt */
+/* Verknüpfen-Knopf oben links: wählt den Eintrag, von dessen Seite man kommt, oder Arbeitsbereich bzw. Projekt */
 .composer-link {
   align-self: flex-start;
   display: flex;

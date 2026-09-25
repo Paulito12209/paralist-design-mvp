@@ -23,10 +23,15 @@ export const composer = {
      Verknüpfung. Nicht mit `place` verwechseln: der sagt, WO der neue Eintrag
      liegt, das hier, WOMIT er verbunden ist. */
   link: null,
+  /* Der Eintrag, von dessen Seite aus das Eingabefeld aufging — auch dann
+     noch, wenn man im Blatt „Ablegen in“ einen anderen Ort gewählt und damit
+     `link` geleert hat. So steht er dort weiter oben zur Wahl und man kann
+     zu ihm zurück. `null`, wenn man nicht von einer Eintragsseite kommt. */
+  origin: null,
   /* Was die Seite beim Öffnen vorgeschlagen hat. Steht in einer Pille noch
      genau das, bleibt sie nur angedeutet; weicht sie ab, füllt sie sich —
      so sieht man auf einen Blick, wo man selbst eingegriffen hat. */
-  preset: { type: types[0].id, place: null },
+  preset: { type: types[0].id, place: null, link: null },
   /* Anhänge des offenen Eingabefelds; erst beim Anlegen werden daraus Medien */
   files: [],
   /* Hat man in diesem Entwurf selbst einen Typ gewählt? Dann stellen weder
@@ -113,7 +118,7 @@ export function followFileDraft(hasText) {
 
 /** Den Vorschlag der Seite festhalten, sobald das Eingabefeld aufgeht. */
 export function rememberComposerPreset() {
-  composer.preset = { type: composer.type, place: composer.place };
+  composer.preset = { type: composer.type, place: composer.place, link: composer.link };
   /* Ein frischer Vorschlag: noch hat niemand selbst gewählt. */
   composer.typeChosen = false;
   composer.mediaSwitch = null;
@@ -124,6 +129,8 @@ export function rememberComposerPreset() {
  * @param field "type" für die Typ-Pille, "place" für die Ablageort-Pille.
  */
 export function isComposerPreset(field) {
+  /* Die Ablageort-Pille zeigt Ort UND Verknüpfung — beide müssen noch stimmen. */
+  if (field === "place" && composer.link !== composer.preset.link) return false;
   return composer[field] === composer.preset[field];
 }
 
@@ -132,4 +139,5 @@ export function resetComposerDraft() {
   composer.files = [];
   composer.slot = null;
   composer.link = null;
+  composer.origin = null;
 }
