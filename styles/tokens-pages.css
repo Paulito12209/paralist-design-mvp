@@ -26,7 +26,8 @@
  * --cal-now-label           -> Schriftfarbe in der Uhrzeit-Pille der Jetzt-Linie
  * --cal-accent              -> Blau des gewählten Tages und des „Heute“-Knopfes
  * --cal-now                 -> Farbe der Jetzt-Linie im Stundenraster
- * --cal-day-ring            -> Kreis hinter Tagen, an denen etwas eingetragen ist
+ * --cal-ring-w              -> Breite des Rings um Tage mit Einträgen und Durchmesser der Kugel darauf
+ * --cal-ring-mix            -> wie deckend der Ring in der Eintragsfarbe ist (20% zart, 100% voll)
  * --cal-row-h / --cal-hour-h -> Höhe einer Wochenzeile und einer Stunde
  * --date-wheel-h / --date-wheel-item-h -> Höhe einer Rolle und einer Zeile im Blatt „Monat und Jahr“
  *
@@ -111,7 +112,8 @@
   --cal-now-label: #0b1a2a;
   --cal-accent: #007aff;
   --cal-now: #32ade6;
-  --cal-day-ring: rgba(60, 60, 67, 0.08);
+  --cal-ring-w: 6px;
+  --cal-ring-mix: 20%;
   --cal-row-h: 52px;
   --cal-hour-h: 56px;
   --date-wheel-h: 220px;
