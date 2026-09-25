@@ -82,10 +82,11 @@ export const ui = {
   /* Suchseite: getippter Begriff und welche Unterliste offen ist (null = Übersicht) */
   searchQuery: "",
   searchList: null,
-  /* Gewählte Pille der Suchübersicht: "recent" (Zuletzt) oder "most" (Am häufigsten) */
+  /* Gewählte Pille der Suchübersicht: "recent" (Zuletzt geöffnet), "most"
+     (Am häufigsten) oder "searched" (Zuletzt gesucht) */
   searchTab: "recent",
   /* true, solange die Bildschirmtastatur im Suchfeld offen ist: dann bleibt die
-     Navigation stehen und ein Tippen in der Liste schließt nur die Tastatur */
+     Navigation stehen; ein Tipp auf eine Zeile öffnet sie und schließt die Tastatur */
   searchTyping: false,
   /* true, solange die Bildschirmtastatur einen Teil des Fensters verdeckt —
      gesetzt von src/shell/keyboard-inset.js. Dann schließt ein Tipp auf die
