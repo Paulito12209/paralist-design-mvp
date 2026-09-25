@@ -1,7 +1,10 @@
 /*
  * Waagerecht wischen wechselt die Pille: nach links wischen zeigt die nächste
  * („Verknüpfte Einträge“), nach rechts die vorige („Inhalt“). Genutzt auf der
- * Seite eines Eintrags und eines Arbeitsbereichs.
+ * Seite eines Eintrags und eines Arbeitsbereichs, in der Suche, auf der
+ * Übersicht für die Tabs der Arbeitsbereiche, auf Medien und Ressourcen.
+ * Nach dem Wechsel rollt eine seitlich laufende Pillen-Leiste (.tab-pills) so,
+ * dass die neue Pille sichtbar ist.
  * Pfad: src/ui/pill-swipe.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -29,7 +32,8 @@ function hasSelection() {
 
 /**
  * Wischen auf `area` anmelden.
- * order   -> die Pillen-IDs von links nach rechts
+ * order   -> die Pillen-IDs von links nach rechts — oder eine Funktion, die sie
+ *            liefert, wenn sich die Pillen ändern können (Tabs anlegen, löschen)
  * current -> liefert die gerade aktive ID
  * select  -> zeigt die gewählte ID (Pillen und Fläche neu zeichnen)
  * enabled -> optional: nur wischen, wenn die Seite gerade Pillen hat
@@ -62,8 +66,13 @@ export function initPillSwipe(area, { order, current, select, enabled = () => tr
       start = null;
       if (Math.abs(dx) < SWIPE_MIN_PX || Math.abs(dx) < AXIS_RATIO * Math.abs(dy)) return;
       if (hasSelection()) return;
-      const next = order.indexOf(current()) + (dx < 0 ? 1 : -1);
-      if (next >= 0 && next < order.length) select(order[next]);
+      const ids = typeof order === "function" ? order() : order;
+      const next = ids.indexOf(current()) + (dx < 0 ? 1 : -1);
+      if (next < 0 || next >= ids.length) return;
+      select(ids[next]);
+      /* Bei vielen Pillen läuft die Leiste aus dem Bild: die neue Pille sonst unsichtbar */
+      area.querySelector(".tab-pills .is-active")
+        ?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
     },
     { passive: true }
   );

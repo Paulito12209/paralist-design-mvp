@@ -1,5 +1,6 @@
 /*
  * Die Medien-Seite: Filter-Pillen oben, darunter das Kachelraster nach Monaten.
+ * Waagerecht wischen wechselt die Pille (src/ui/pill-swipe.js).
  * Wird erst beim ersten Öffnen nachgeladen.
  * Pfad: src/features/media/media.js
  *
@@ -13,7 +14,7 @@
  */
 
 import { events, on } from "../../core/bus.js";
-import { dom } from "../../core/dom.js";
+import { dom, el } from "../../core/dom.js";
 import { load } from "../../core/lazy.js";
 import { groupByMonth } from "../../core/format.js";
 import { icon } from "../../core/html.js";
@@ -22,6 +23,7 @@ import { findEntry, mediaEntries, mediaKindOf } from "../../data/queries.js";
 import { saveState, state } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { mediaCell } from "../../ui/media-cell.js";
+import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { isViewActive } from "../../ui/views.js";
 import { bindMediaPicks, initMediaImport } from "./media-import.js";
 
@@ -126,14 +128,24 @@ export function renderMedia() {
   renderGrid();
 }
 
+/* Eine Filter-Pille wählen — per Tipp oder Wischen. */
+function selectFilter(id) {
+  state.prefs.media.filter = id;
+  saveState();
+  renderMedia();
+}
+
 /* Beim Laden des Moduls einmal alles anmelden. */
 function init() {
   dom.mediaFilters.addEventListener("click", (event) => {
     const pill = event.target.closest("[data-media-filter]");
-    if (!pill) return;
-    state.prefs.media.filter = pill.dataset.mediaFilter;
-    saveState();
-    renderMedia();
+    if (pill) selectFilter(pill.dataset.mediaFilter);
+  });
+
+  initPillSwipe(el("view-media"), {
+    order: mediaFilters.map((filter) => filter.id),
+    current: () => state.prefs.media.filter,
+    select: selectFilter,
   });
 
   /* true: vor der allgemeinen Listen-Behandlung, die sonst die Eintragsseite öffnet */

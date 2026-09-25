@@ -1,7 +1,8 @@
 /*
  * Die Tab-Pillen über den Arbeitsbereichen: wählen, umbenennen, Icon geben,
  * löschen. Der aktive Tab ist gefüllt, ein neuer Tab startet gleich im
- * Eingabefeld.
+ * Eingabefeld. Waagerecht über die Übersicht wischen wechselt zum
+ * nächsten oder vorigen Tab (src/ui/pill-swipe.js).
  * Pfad: src/features/overview/tabs.js
  *
  * Keine anpassbaren visuellen Werte: Schriftgröße und Hintergrund der Pillen
@@ -13,11 +14,12 @@ import { dom, el, focusAtEnd } from "../../core/dom.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { sameId } from "../../core/ids.js";
 import { noHistoryForm } from "../../core/no-history.js";
-import { deleteTab } from "../../data/mutations.js";
+import { deleteTab, selectTab } from "../../data/mutations.js";
 import { saveState, state, ui } from "../../data/state.js";
 import { awardXp } from "../../data/xp.js";
 import { openCtxMenu } from "../../ui/ctx-menu.js";
 import { iconPickerAction } from "../../ui/pickers.js";
+import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { isViewActive } from "../../ui/views.js";
 
 function pillMarkup(tab) {
@@ -130,7 +132,7 @@ export function openTabMenu(pill) {
   openCtxMenu(pill, options);
 }
 
-/** Tastatur und Fokus im Umbenennen-Feld sowie das Auffrischen anmelden. */
+/** Tastatur und Fokus im Umbenennen-Feld, Wischen sowie das Auffrischen anmelden. */
 export function initTabs() {
   const pills = dom.workspaceTabs;
 
@@ -152,6 +154,14 @@ export function initTabs() {
     },
     true
   );
+
+  /* Nicht während ein Tab umbenannt wird: dann gehört das Wischen dem Textfeld. */
+  initPillSwipe(el("view-home"), {
+    order: () => state.tabs.map((tab) => tab.id),
+    current: () => state.activeTabId,
+    select: selectTab,
+    enabled: () => ui.editingTabId == null,
+  });
 
   on(events.dataChanged, () => {
     if (isViewActive("home")) renderTabs();
