@@ -21,17 +21,21 @@ import { openSheet } from "./sheet.js";
  * Antippen.
  * @param draftType Typ des Entwurfs. Ein Projekt bekommt so nur
  *   Arbeitsbereiche angeboten — ein Projekt in einem Projekt gibt es nicht.
+ * @param lead optional eine Option ganz oben, abgesetzt über den Orten — das
+ *   Eingabefeld bietet dort den Eintrag an, von dessen Seite es kommt. Ist
+ *   sie gewählt (`active`), leuchtet darunter kein Ort: gewählt ist dann der
+ *   Eintrag, nicht sein Ort.
  */
-export function openPlacePicker(title, current, onPick, draftType = null) {
-  openSheet(
-    title,
-    placeOptionsFor(draftType ? { type: draftType } : null).map((option) => ({
-      label: option.label,
-      icon: option.icon,
-      active: sameParent(current, option.ref),
-      onSelect: () => onPick(option.ref),
-    }))
-  );
+export function openPlacePicker(title, current, onPick, draftType = null, lead = null) {
+  const places = placeOptionsFor(draftType ? { type: draftType } : null).map((option, index) => ({
+    label: option.label,
+    icon: option.icon,
+    active: !lead?.active && sameParent(current, option.ref),
+    /* Trennlinie zwischen dem Eintrag oben und den Orten */
+    split: Boolean(lead) && index === 0,
+    onSelect: () => onPick(option.ref),
+  }));
+  openSheet(title, lead ? [lead, ...places] : places);
 }
 
 /* Die Ablageorte im oberen Abschnitt: „Eingang” nimmt alle Orte weg. */
