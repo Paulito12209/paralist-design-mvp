@@ -6,7 +6,8 @@
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
  * --cal-accent              -> Blau des gewählten Tages und des „Heute“-Knopfes
- * --cal-day-ring            -> Kreis hinter Tagen mit Einträgen
+ * --cal-ring-w              -> Breite des Rings um Tage mit Einträgen = Durchmesser der Kugel
+ * --cal-ring-mix            -> Deckkraft des Rings in der Farbe des Eintrags (20% = zart)
  * --cal-row-h               -> Höhe einer Wochenzeile
  * --date-wheel-h            -> Höhe der drei Rollen im Blatt „Monat und Jahr“
  * --date-wheel-item-h       -> Höhe einer Zeile in diesen Rollen
@@ -96,7 +97,8 @@
 .cal-week-head,
 .cal-week {
   display: grid;
-  grid-template-columns: 34px repeat(7, 1fr);
+  /* minmax(0, 1fr): Spalten dürfen schmaler als der Kreis werden, sonst ragt bei 375 px der Sonntag hinaus */
+  grid-template-columns: 34px repeat(7, minmax(0, 1fr));
   align-items: center;
 }
 
@@ -164,8 +166,8 @@
 }
 
 .cal-day-num {
-  width: 44px;
-  height: 44px;
+  width: min(44px, 100%); /* min(): in schmalen Spalten schrumpft der Kreis mit */
+  aspect-ratio: 1; /* aspect-ratio: bleibt dabei ein Kreis statt eines Ovals */
   display: grid;
   place-items: center;
   border-radius: 50%;
@@ -174,10 +176,26 @@
   letter-spacing: -0.02em;
 }
 
-/* Tage mit Einträgen bekommen einen zarten Kreis, gewählte Tage Blau, fremde Monate Grau */
+/* Tage mit Einträgen: Ring wie ein Aktivitätsring der Apple Watch in der
+   Eintragsfarbe (--day-color, gesetzt von calendar-strip.js am Knopf) */
 .cal-day.has-items .cal-day-num {
-  background: var(--cal-day-ring);
-  box-shadow: inset 0 0 0 1px var(--line);
+  position: relative; /* position: Bezugsrahmen für die Kugel unten auf dem Ring */
+  /* box-shadow inset: zeichnet den Ring innen, ohne die 44 px zu vergrößern.
+     color-mix: dieselbe Farbe mit nur --cal-ring-mix Deckkraft */
+  box-shadow: inset 0 0 0 var(--cal-ring-w) color-mix(in srgb, var(--day-color) var(--cal-ring-mix), transparent);
+}
+
+/* Die Kugel: sitzt unten mittig auf dem Ring, genau so breit wie er, voll deckend */
+.cal-day.has-items .cal-day-num::after {
+  content: "";
+  position: absolute; /* position: liegt auf dem Ring statt im Zahlenfluss */
+  bottom: 0;
+  left: 50%;
+  width: var(--cal-ring-w);
+  height: var(--cal-ring-w);
+  border-radius: 50%;
+  background: var(--day-color);
+  transform: translateX(-50%); /* transform: genau mittig unter der Zahl */
 }
 
 .cal-day.is-today .cal-day-num {
@@ -196,16 +214,6 @@
 
 .cal-day:active .cal-day-num {
   opacity: 0.55;
-}
-
-/* Kleiner Punkt unter Tagen mit Einträgen, in der Farbe des ersten Eintrags */
-.cal-day-dot {
-  position: absolute;
-  bottom: 1px;
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--cal-accent);
 }
 
 /*

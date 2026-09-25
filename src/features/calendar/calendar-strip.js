@@ -4,7 +4,8 @@
  * Pfad: src/features/calendar/calendar-strip.js
  *
  * Keine anpassbaren visuellen Werte: Farben und Größen stehen in
- * styles/calendar.css (--cal-accent, --cal-day-ring, --cal-row-h).
+ * styles/calendar.css (--cal-accent, --cal-ring-w, --cal-ring-mix, --cal-row-h).
+ * Hier wird nur die Farbe des Rings als --day-color an den Tag gehängt.
  */
 
 import { addDays, dayKey, isoWeek, parseDay, startOfWeek } from "../../core/dates.js";
@@ -47,12 +48,13 @@ function weekMarkup(monday, extra = "") {
     if (items.length) classes.push("has-items");
     if (state.prefs.calendar.span === 0 && day.getMonth() !== month) classes.push("is-other");
 
-    /* Der Punkt hat die Farbe des ersten Termins, sonst die des ersten Eintrags. */
+    /* Ring und Kugel haben die Farbe des ersten Termins, sonst die des ersten Eintrags. */
     const marker = items.find((item) => item.type === "termin") || items[0];
     html += `
-      <button class="${classes.join(" ")}" type="button" data-day="${key}" aria-label="${longDate(key)}">
+      <button class="${classes.join(" ")}" type="button" data-day="${key}" aria-label="${longDate(key)}"${
+        items.length ? ` style="--day-color:${entryColor(marker)}"` : ""
+      }>
         <span class="cal-day-num">${day.getDate()}</span>
-        ${items.length ? `<span class="cal-day-dot" style="background:${entryColor(marker)}"></span>` : ""}
       </button>`;
   }
 
