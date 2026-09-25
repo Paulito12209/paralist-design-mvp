@@ -24,7 +24,6 @@ import { loadUsage } from "./data/usage.js";
 import { initComposer, onComposerText } from "./features/composer/composer.js";
 import { initDictation } from "./features/composer/dictation.js";
 import { initEntry } from "./features/entry/entry.js";
-import { openCopyChoice } from "./features/entry/entry-tools.js";
 import { loadPhoto, renderProfileButton } from "./features/profile/avatar.js";
 import { initOverview, renderOverview } from "./features/overview/overview.js";
 import { initPage } from "./features/overview/page.js";
@@ -44,6 +43,7 @@ import { isDesk, onDeskChange } from "./ui/desk-mode.js";
 import { openEntryCtxMenu } from "./ui/entry-menu.js";
 import { initListClicks } from "./ui/list-clicks.js";
 import { setLongPressMenus } from "./ui/long-press.js";
+import { initPageTools, openCopyChoice } from "./ui/page-tools.js";
 import { initModalPull } from "./ui/modal-pull.js";
 import { initModalTop } from "./ui/modal-top.js";
 import { initPillTapReveal } from "./ui/pill-swipe.js";
@@ -94,6 +94,7 @@ function initShell() {
   initPillTapReveal();
   setLongPressMenus({ tab: openTabMenu, workspace: openWorkspaceMenu, entry: openEntryCtxMenu, copy: openCopyChoice });
   initSwipe();
+  initPageTools();
   initListClicks({ openTabMenu, openWorkspaceMenu, beginRenameTab, finishWorkspaceName: commitWorkspaceName });
 
   initLevelGauge();

@@ -40,7 +40,7 @@ import { groupedListMarkup, linkedListMarkup } from "../../ui/groups.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { entryMenuOptions } from "../../ui/entry-menu.js";
 import { initEntryTitle, showEntryTitle } from "./entry-title.js";
-import { initEntryTools, linkFilterFor, renderEntryTools, resetLinkFilter } from "./entry-tools.js";
+import { initEntryTools, linkFilterFor, renderEntryTools } from "./entry-tools.js";
 import { bindHeadTitle, setHeadTitle } from "../../ui/head-title.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { goBack, restoreFrom } from "../../ui/router.js";
@@ -205,9 +205,7 @@ export function initEntry() {
   });
 
   on(events.viewOpened, (name) => {
-    if (name !== "entry") return;
-    resetLinkFilter();
-    renderEntry();
+    if (name === "entry") renderEntry();
   });
 
   /* Inhalt und Verknüpfungen können sich ändern, während die Seite offen ist. */

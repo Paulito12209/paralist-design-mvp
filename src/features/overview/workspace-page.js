@@ -6,18 +6,31 @@
  * auch die Seite eines einzelnen Eintrags (src/features/entry/entry.js) —
  * und wie dort startet ein Tipp unter den Text das Schreiben, bei offener
  * Tastatur schließt ein Tipp nur sie (src/ui/write-tap.js).
+ *
+ * Rechts neben den Pillen stehen dieselben Knöpfe wie auf einer Eintragsseite
+ * (src/ui/page-tools.js): Kopieren unter „Inhalt“ — Name als Überschrift und
+ * Text —, Filter und Plus unter „Verknüpfte Einträge“.
  * Pfad: src/features/overview/workspace-page.js
  *
  * Keine anpassbaren visuellen Werte: Pillen und Gruppen stehen in
- * styles/rows.css (Klassen .page-pills, .group-head), der Text in
- * styles/entry.css (Klassen .entry-body, .workspace-body).
+ * styles/rows.css (Klassen .page-pills, .group-head), der Text und die
+ * Knöpfe neben den Pillen in styles/entry.css (Klassen .entry-body,
+ * .workspace-body, .page-pills-row).
  */
 
+import { emit, events } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { escapeHtml } from "../../core/html.js";
-import { entriesOf, findWorkspace } from "../../data/queries.js";
+import { entriesOf, findWorkspace, groupedEntriesOf, workspaceLabel } from "../../data/queries.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { groupedListMarkup } from "../../ui/groups.js";
+import {
+  activeFilter,
+  openFilterMenu,
+  pageToolsMarkup,
+  pillsRowMarkup,
+  registerCopySource,
+} from "../../ui/page-tools.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { addWritePage } from "../../ui/write-tap.js";
 
@@ -28,15 +41,28 @@ const pills = [
   { id: "links", label: "Verknüpfte Einträge" },
 ];
 
+/* Das Wort steht in einem eigenen span: wird es eng, kürzt nur das Wort mit
+   „…“, die Zahl dahinter bleibt ganz (styles/entry.css). */
 function pillsMarkup(active, count) {
   return `<div class="tab-pills page-pills">${pills
     .map(
       (pill) => `
         <button class="tab-pill${pill.id === active ? " is-active" : ""}" type="button" data-page-pill="${pill.id}">
-          ${pill.label}${pill.id === "links" && count ? `<span class="media-count">${count}</span>` : ""}
+          <span class="tab-pill-label">${pill.label}</span>${pill.id === "links" && count ? `<span class="media-count">${count}</span>` : ""}
         </button>`
     )
     .join("")}</div>`;
+}
+
+/* Schlüssel dieser Seite für den Filter — getrennt von den Eintragsseiten. */
+function filterKey(page) {
+  return `w:${page.workspaceId}`;
+}
+
+/* Der offene Arbeitsbereich — nur, wenn die Ansicht gerade einen zeigt. */
+function openWorkspace() {
+  const page = ui.currentPage;
+  return page && page.isWorkspace ? findWorkspace(page.workspaceId) : null;
 }
 
 /* Der Inhalt: freier Text, wird kurz nach dem Tippen gespeichert. */
@@ -49,8 +75,11 @@ export function renderWorkspacePage(page) {
   const workspace = findWorkspace(page.workspaceId);
   if (!workspace) return;
   const count = entriesOf(page.parent).length;
-  const body = ui.pagePill === "links" ? groupedListMarkup(page.parent) : notesMarkup(workspace);
-  dom.pageBody.innerHTML = pillsMarkup(ui.pagePill, count) + body;
+  const groups = groupedEntriesOf(page.parent);
+  const type = activeFilter(filterKey(page), groups);
+  const body = ui.pagePill === "links" ? groupedListMarkup(page.parent, type) : notesMarkup(workspace);
+  const tools = pageToolsMarkup(ui.pagePill, filterKey(page), groups);
+  dom.pageBody.innerHTML = pillsRowMarkup(pillsMarkup(ui.pagePill, count), tools) + body;
 }
 
 /** Tippt jemand gerade im Inhalt? Dann darf die Seite nicht neu gezeichnet werden. */
@@ -70,9 +99,28 @@ export function initWorkspacePage() {
     renderWorkspacePage(ui.currentPage);
   };
 
+  /* Kopiert wird der Name als Überschrift und der Text darunter. */
+  registerCopySource("page", () => {
+    const workspace = openWorkspace();
+    return workspace ? { title: workspaceLabel(workspace), body: workspace.body } : null;
+  });
+
   dom.pageBody.addEventListener("click", (event) => {
     const pill = event.target.closest("[data-page-pill]");
-    if (pill) selectPill(pill.dataset.pagePill);
+    if (pill) {
+      selectPill(pill.dataset.pagePill);
+      return;
+    }
+    const page = ui.currentPage;
+    if (!isWorkspaceOpen()) return;
+    const filterBtn = event.target.closest("[data-link-filter]");
+    if (filterBtn) {
+      openFilterMenu(filterBtn, filterKey(page), groupedEntriesOf(page.parent), () => renderWorkspacePage(ui.currentPage));
+      return;
+    }
+    /* Das Plus legt einen Eintrag in diesem Arbeitsbereich an — wie die
+       Pille im Platzhalter der leeren Liste. */
+    if (event.target.closest("[data-link-add]")) emit(events.createRequested);
   });
 
   /* Waagerecht wischen wechselt ebenfalls die Pille — nur hier, die

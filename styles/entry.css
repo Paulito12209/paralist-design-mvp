@@ -194,7 +194,9 @@
   margin-top: 0;
 }
 
-/* ---------- Pillen mit Knöpfen rechts daneben ---------- */
+/* ---------- Pillen mit Knöpfen rechts daneben ----------
+   Gilt für die Seite eines Eintrags und die eines Arbeitsbereichs
+   (src/ui/page-tools.js). */
 
 /* Links die Pillen, rechts die Knöpfe der gewählten Pille. Den Abstand nach
    unten trägt die Zeile, nicht mehr die Pillen allein. */

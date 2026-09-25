@@ -1,7 +1,8 @@
 /*
- * Einen Eintrag kopieren — ganze Seite als Markdown oder nur den Titel —
- * und kurz melden, was in der Zwischenablage liegt. Benutzt vom Kopier-Knopf
- * auf der Eintragsseite und vom Aktionsmenü eines Eintrags.
+ * Eine Seite kopieren — ganz als Markdown oder nur den Titel — und kurz
+ * melden, was in der Zwischenablage liegt. Benutzt vom Kopier-Knopf neben
+ * den Pillen (Eintrag und Arbeitsbereich, src/ui/page-tools.js) und vom
+ * Aktionsmenü eines Eintrags. Kopiert wird alles mit { title, body, type }.
  * Pfad: src/ui/copy-page.js
  *
  * Keine anpassbaren visuellen Werte: die Meldung sieht aus wie in
