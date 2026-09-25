@@ -98,6 +98,8 @@
  *
  * SCHRIFTGRÖSSEN
  * --title-size              -> Schriftgröße der großen Überschrift „Übersicht“
+ * --title-weight            -> Strichstärke aller großen Seitentitel (Übersicht, Unterseiten, Eintrag;
+ *                              700 = fett, 600 = halbfett)
  * --tab-label-size          -> Schriftgröße der Wörter unter den Navigations-Icons (sie stehen mit im
                                Kreis, darum wird der Name ab etwa 11px breiter als der Kreis)
  * --tab-pill-size           -> Schriftgröße der Tab-Pillen über den Arbeitsbereichen
@@ -217,6 +219,7 @@
   --modal-radius: 28px;
   --radius-lg: 18px;
   --title-size: 24px;
+  --title-weight: 600;
   --content-side: 16px;
   --content-top: 32px;
   --page-head-top: 8px;

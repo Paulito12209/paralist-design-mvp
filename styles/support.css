@@ -12,6 +12,7 @@
  * --card / --line            -> Fläche und Trennlinien der Felder
  * --add                      -> Blau des Absenden-Knopfs und des Hakens
  * --muted / --placeholder    -> Nebenzeilen und Platzhaltertexte
+ * --title-weight             -> Strichstärke der Überschrift der Danke-Seite
  * --radius-xl                -> Rundung des Absenden-Knopfs, der Namens-Plaketten
  *                               und des Films auf der Danksagungs-Seite
  *
@@ -30,7 +31,7 @@
    die Zeile neben dem Zurück-Pfeil (src/features/profile/settings-cards.js). */
 .fb-title {
   font-size: 24px;
-  font-weight: 700;
+  font-weight: var(--title-weight);
   letter-spacing: -0.03em;
   padding: 0 4px;
 }
