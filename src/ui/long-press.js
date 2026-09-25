@@ -17,7 +17,7 @@ const clickBlockMs = 400;
 
 let hold = null;
 let blockClick = false;
-/* Wird beim Start gesetzt: { tab, workspace, entry } — je Art die Funktion, die das Menü öffnet. */
+/* Wird beim Start gesetzt: { tab, workspace, entry, copy } — je Art die Funktion, die das Menü öffnet. */
 let openers = {};
 
 /** Die Menü-Öffner hinterlegen. */
@@ -32,7 +32,7 @@ export function cancelHold() {
   hold = null;
 }
 
-/** Halten beginnen. `kind` ist "tab", "workspace" oder "entry". */
+/** Halten beginnen. `kind` ist "tab", "workspace", "entry" oder "copy" (Kopier-Knopf einer Eintragsseite). */
 export function startHold(event, target, kind) {
   cancelHold();
   hold = {

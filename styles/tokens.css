@@ -165,6 +165,10 @@
  * --tab-pills-fade          -> Breite des Ausblendens links von der Trennlinie
  * --tab-pills-tools-width   -> Breite von Ausblenden, Linie und Plus-Knopf rechts über den
  *                              Tabs der Übersicht; so weit bleibt der letzte Tab davon weg
+ * --page-tool-size          -> Größe der runden Knöpfe rechts neben den Pillen einer
+ *                              Eintragsseite (Kopieren, Filter, Plus)
+ * --page-tool-icon          -> Größe des Symbols darin
+ * --page-tool-gap           -> Abstand zwischen den Pillen und diesen Knöpfen
  * --composer-radius         -> Rundung des Eingabe-Containers
  * --composer-side           -> seitlicher Abstand, solange das Eingabefeld offen ist
  * --composer-btn-size       -> Größe der runden Knöpfe und Höhe der Pillen im Eingabefeld
@@ -307,6 +311,9 @@
   --tab-pills-btn-gap: 8px;
   --tab-pills-fade: 16px;
   --tab-pills-tools-width: calc(var(--content-side) + var(--tab-pills-fade) + 1px + var(--tab-pills-btn-gap) + 32px);
+  --page-tool-size: 36px;
+  --page-tool-icon: 20px;
+  --page-tool-gap: 4px;
   --star-color: #c99a00; /* dunkleres Gold, damit der Stern auf der hellen Karte Kontrast hat */
   --avatar-btn-bg: #111318;
   --nav-bg: #ffffff;

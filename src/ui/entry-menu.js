@@ -17,6 +17,7 @@ import { isTaskDone } from "../data/config.js";
 import { deleteEntry, toggleFavorite } from "../data/mutations.js";
 import { findEntry } from "../data/queries.js";
 import { archiveEntry } from "../data/xp.js";
+import { copyOptions } from "./copy-page.js";
 import { openCtxMenu } from "./ctx-menu.js";
 import { openDetails } from "./details.js";
 import { openLinkPicker } from "./pickers.js";
@@ -62,7 +63,11 @@ export function entryMenuOptions(entry, { onPage = false, afterRemove = () => {}
       label: "Details",
       icon: "info",
       onSelect: () => openDetails(entry.title || "Ohne Titel", entryDetails(entry)),
-    }
+    },
+    /* Auch hier, nicht nur hinter dem Kopier-Knopf der Seite: wer das
+       Gedrückthalten dort nicht kennt, findet beide Wege im Menü — und aus
+       einer Liste kopiert man, ohne die Seite zu öffnen. */
+    ...copyOptions(entry)
   );
 
   if (onPage && entry.type === "zeichnung") {

@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "fecf857fd518";
+export const appVersion = "2a1622585bfc";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -27,6 +27,7 @@ export const appFiles = [
   "manifest.webmanifest",
   "src/core/blobs.js",
   "src/core/bus.js",
+  "src/core/clipboard.js",
   "src/core/css-vars.js",
   "src/core/dates.js",
   "src/core/dom.js",
@@ -46,6 +47,7 @@ export const appFiles = [
   "src/data/mutations.js",
   "src/data/nav-labels.js",
   "src/data/opens.js",
+  "src/data/page-text.js",
   "src/data/queries.js",
   "src/data/refs.js",
   "src/data/seed.js",
@@ -74,6 +76,7 @@ export const appFiles = [
   "src/features/drawing/drawing-tools.js",
   "src/features/drawing/drawing.js",
   "src/features/entry/entry-title.js",
+  "src/features/entry/entry-tools.js",
   "src/features/entry/entry.js",
   "src/features/media/media-import.js",
   "src/features/media/media.js",
@@ -125,6 +128,7 @@ export const appFiles = [
   "src/shell/update-prompt.js",
   "src/shell/writing.js",
   "src/ui/chart.js",
+  "src/ui/copy-page.js",
   "src/ui/ctx-menu.js",
   "src/ui/desk-mode.js",
   "src/ui/details.js",

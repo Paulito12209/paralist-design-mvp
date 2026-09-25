@@ -19,6 +19,9 @@
  * Unter „Inhalt“ startet ein Tipp in die freie Fläche unter dem Text das
  * Schreiben am Textende; bei offener Tastatur schließt ein Tipp nur sie
  * (src/ui/write-tap.js).
+ *
+ * Rechts neben den Pillen stehen je nach Pille andere Knöpfe: Kopieren unter
+ * „Inhalt“, Filter und Plus unter „Verknüpfte Einträge“ (entry-tools.js).
  * Pfad: src/features/entry/entry.js
  *
  * Keine anpassbaren visuellen Werte: Schriftgrößen stehen in styles/entry.css
@@ -37,6 +40,7 @@ import { groupedListMarkup, linkedListMarkup } from "../../ui/groups.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { entryMenuOptions } from "../../ui/entry-menu.js";
 import { initEntryTitle, showEntryTitle } from "./entry-title.js";
+import { initEntryTools, linkFilterFor, renderEntryTools, resetLinkFilter } from "./entry-tools.js";
 import { bindHeadTitle, setHeadTitle } from "../../ui/head-title.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { goBack, restoreFrom } from "../../ui/router.js";
@@ -58,26 +62,31 @@ function entryLinksCount(entry) {
   return isContainer(entry) ? entriesOf(entryRef(entry.id)).length : linkedEntries(entry).length;
 }
 
-/** Pillen neu zeichnen und die passende Fläche darunter zeigen. */
+/** Pillen neu zeichnen und die passende Fläche darunter zeigen.
+    Das Wort steht in einem eigenen span: wird es eng, kürzt nur das Wort
+    mit „…“, die Zahl dahinter bleibt ganz (styles/entry.css). */
 function renderEntryPills(entry) {
   const count = entryLinksCount(entry);
   dom.entryPills.innerHTML = entryPills
     .map(
       (pill) => `
         <button class="tab-pill${pill.id === ui.entryPill ? " is-active" : ""}" type="button" data-entry-pill="${pill.id}">
-          ${pill.label}${pill.id === "links" && count ? `<span class="media-count">${count}</span>` : ""}
+          <span class="tab-pill-label">${pill.label}</span>${pill.id === "links" && count ? `<span class="media-count">${count}</span>` : ""}
         </button>`
     )
     .join("");
   dom.entryPanelNotes.hidden = ui.entryPill !== "notes";
   dom.entryPanelLinks.hidden = ui.entryPill !== "links";
+  renderEntryTools(entry);
 }
 
-/* Ein Projekt zeigt, was darin liegt; jeder andere Eintrag, womit er verknüpft ist. */
+/* Ein Projekt zeigt, was darin liegt; jeder andere Eintrag, womit er verknüpft ist.
+   Ein gesetzter Filter lässt nur die Gruppe eines Typs stehen. */
 function renderLinks(entry) {
+  const type = linkFilterFor(entry);
   dom.entryLinks.innerHTML = isContainer(entry)
-    ? groupedListMarkup(entryRef(entry.id))
-    : linkedListMarkup(entry);
+    ? groupedListMarkup(entryRef(entry.id), type)
+    : linkedListMarkup(entry, type);
 }
 
 /* Mitte der Kopfzeile: die Kategorie, bei einer Aufgabe dazu Status und
@@ -143,6 +152,12 @@ function bindTextField(field, key) {
 export function initEntry() {
   initEntryTitle();
   bindTextField(dom.entryBody, "body");
+  initEntryTools({
+    rerender: (entry) => {
+      renderLinks(entry);
+      renderEntryTools(entry);
+    },
+  });
   bindHeadTitle(el("entry-head"), dom.entryTitle, () => isViewActive("entry"));
 
   const selectPill = (id) => {
@@ -190,7 +205,9 @@ export function initEntry() {
   });
 
   on(events.viewOpened, (name) => {
-    if (name === "entry") renderEntry();
+    if (name !== "entry") return;
+    resetLinkFilter();
+    renderEntry();
   });
 
   /* Inhalt und Verknüpfungen können sich ändern, während die Seite offen ist. */

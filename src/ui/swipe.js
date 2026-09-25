@@ -60,7 +60,10 @@ function onPointerDown(event) {
   const workspaceBtn = event.target.closest("[data-open-workspace]");
   /* Nur Eintrags-Zeilen, keine Kacheln oder Kalender-Termine: die haben eigene Gesten. */
   const entryBtn = event.target.closest(".entry-row[data-open-entry]");
-  if (tabPill) startHold(event, tabPill, "tab");
+  /* Der Kopier-Knopf einer Eintragsseite: halten fragt „Seite“ oder „Titel“. */
+  const copyBtn = event.target.closest("[data-copy-page]");
+  if (copyBtn) startHold(event, copyBtn, "copy");
+  else if (tabPill) startHold(event, tabPill, "tab");
   else if (workspaceBtn) startHold(event, workspaceBtn, "workspace");
   else if (entryBtn) startHold(event, entryBtn, "entry");
 

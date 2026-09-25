@@ -86,6 +86,7 @@ export const dom = {
   /* Eintrag bearbeiten */
   get entryTitle() { return el("entry-title"); },
   get entryPills() { return el("entry-pills"); },
+  get entryTools() { return el("entry-tools"); },
   get entryPanelNotes() { return el("entry-panel-notes"); },
   get entryPanelLinks() { return el("entry-panel-links"); },
   get entryBody() { return el("entry-body"); },

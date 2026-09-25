@@ -99,18 +99,24 @@ function groupsMarkup(scope, groups) {
     .join("");
 }
 
-/** Was an einem Ablageort liegt; leer, wenn dort nichts liegt. */
-export function groupedListMarkup(ref) {
+/* Der Filter der Eintragsseite zeigt nur eine Gruppe; ohne Typ bleiben alle. */
+function onlyGroup(groups, type) {
+  return type ? groups.filter((group) => group.type === type) : groups;
+}
+
+/** Was an einem Ablageort liegt; leer, wenn dort nichts liegt.
+    `type` beschränkt die Liste auf eine Gruppe (Filter der Eintragsseite). */
+export function groupedListMarkup(ref, type = "") {
   const groups = groupedEntriesOf(ref);
   if (!groups.length) return emptyState(emptyPlace);
-  return groupsMarkup(ref, groups);
+  return groupsMarkup(ref, onlyGroup(groups, type));
 }
 
 /** Womit ein Eintrag verknüpft ist; leer, solange das nichts ist. */
-export function linkedListMarkup(entry) {
+export function linkedListMarkup(entry, type = "") {
   const groups = groupedLinks(entry);
   if (!groups.length) return emptyState(emptyLinks);
-  return groupsMarkup(linkScope(entry), groups);
+  return groupsMarkup(linkScope(entry), onlyGroup(groups, type));
 }
 
 /** Eine Gruppe auf- oder zuklappen, ohne die Seite neu zu zeichnen. */

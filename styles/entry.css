@@ -16,6 +16,11 @@
  * --placeholder             -> Farbe der Platzhaltertexte
  * --content-side            -> Abstand zum linken und rechten Rand
  * --page-head-pull          -> Ausgleich, damit die Kategorie oben genau mittig steht
+ * --page-tool-size          -> Größe der Knöpfe rechts neben den Pillen (Kopieren, Filter, Plus)
+ * --page-tool-icon          -> Größe des Symbols darin
+ * --page-tool-gap           -> Abstand zwischen Pillen und Knöpfen
+ * --link-color              -> Farbe des Filters, solange er nur einen Typ zeigt
+ * --xp-done                 -> Farbe des Hakens nach dem Kopieren
 
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei:
@@ -187,4 +192,90 @@
    kommt von den Pillen darüber, damit die erste Gruppe nicht doppelt Luft hat. */
 .entry-links {
   margin-top: 0;
+}
+
+/* ---------- Pillen mit Knöpfen rechts daneben ---------- */
+
+/* Links die Pillen, rechts die Knöpfe der gewählten Pille. Den Abstand nach
+   unten trägt die Zeile, nicht mehr die Pillen allein. */
+.page-pills-row {
+  display: flex;
+  align-items: center;
+  gap: var(--page-tool-gap);
+  margin-bottom: 18px;
+}
+
+/* Die Pillen laufen hier nicht über den rechten Rand hinaus: dort stehen die
+   Knöpfe. Statt seitlich zu schieben, kürzt die zweite Pille ihr Wort. */
+.page-pills-row .page-pills {
+  flex: 1;
+  min-width: 0;
+  margin-bottom: 0;
+  margin-right: 0;
+  padding-right: 0;
+  overflow: hidden; /* overflow: nichts schiebt sich seitlich, die Pille kürzt sich stattdessen */
+}
+
+/* Die Pille darf schrumpfen — aber nur ihr Wort, nicht die Zahl dahinter */
+.page-pills-row .tab-pill {
+  flex: 0 1 auto;
+  min-width: 0;
+}
+
+/* „Inhalt“ ist kurz und bleibt immer ganz */
+.page-pills-row .tab-pill:first-child {
+  flex-shrink: 0;
+}
+
+.page-pills-row .tab-pill-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis; /* text-overflow: zu langes Wort endet mit „…“ */
+}
+
+.page-pills-row .media-count {
+  flex: 0 0 auto;
+}
+
+.page-tools {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  /* margin: das Symbol, nicht der unsichtbare Kreis darum, schließt mit dem Inhalt ab */
+  margin-right: calc((var(--page-tool-icon) - var(--page-tool-size)) / 2);
+}
+
+.page-tool {
+  width: var(--page-tool-size);
+  height: var(--page-tool-size);
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--muted);
+  -webkit-touch-callout: none; /* -webkit-touch-callout: beim Halten kein iPhone-Menü über unserer Auswahl */
+  user-select: none; /* user-select: Halten soll nichts markieren */
+}
+
+.page-tool .icon {
+  width: var(--page-tool-icon);
+  height: var(--page-tool-icon);
+}
+
+.page-tool:active {
+  opacity: 0.55;
+}
+
+/* Der Filter zeigt gerade nur einen Typ */
+.page-tool.is-active {
+  color: var(--link-color);
+}
+
+/* Kurz nach dem Kopieren: grüner Haken statt der zwei Blätter */
+.page-tool.is-done {
+  color: var(--xp-done);
+}
+
+/* Nur eine Gruppe — Filtern hätte keine Wirkung */
+.page-tool:disabled {
+  opacity: 0.35;
 }

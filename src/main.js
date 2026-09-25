@@ -24,6 +24,7 @@ import { loadUsage } from "./data/usage.js";
 import { initComposer, onComposerText } from "./features/composer/composer.js";
 import { initDictation } from "./features/composer/dictation.js";
 import { initEntry } from "./features/entry/entry.js";
+import { openCopyChoice } from "./features/entry/entry-tools.js";
 import { loadPhoto, renderProfileButton } from "./features/profile/avatar.js";
 import { initOverview, renderOverview } from "./features/overview/overview.js";
 import { initPage } from "./features/overview/page.js";
@@ -91,7 +92,7 @@ function initShell() {
   initModalTop();
   initPullSearch();
   initPillTapReveal();
-  setLongPressMenus({ tab: openTabMenu, workspace: openWorkspaceMenu, entry: openEntryCtxMenu });
+  setLongPressMenus({ tab: openTabMenu, workspace: openWorkspaceMenu, entry: openEntryCtxMenu, copy: openCopyChoice });
   initSwipe();
   initListClicks({ openTabMenu, openWorkspaceMenu, beginRenameTab, finishWorkspaceName: commitWorkspaceName });
 
