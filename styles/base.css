@@ -7,6 +7,7 @@
  * --bg / --card / --text    -> Grundfarben der Seite
  * --stage-bg                -> Fläche rund um das Gerätefenster am Desktop
  * --title-size              -> Schriftgröße der großen Überschrift
+ * --title-weight            -> Strichstärke der großen Überschrift
  * --content-side            -> Abstand des Inhalts zum linken und rechten Rand
  * --content-top             -> Abstand unter der Suchleiste bis zum ersten Inhalt
  * --title-side              -> Extra-Abstand der großen Überschrift
@@ -145,7 +146,7 @@ body.is-subpage .content {
   font-size: var(--title-size);
   line-height: 1.1;
   letter-spacing: -0.04em;
-  font-weight: 700;
+  font-weight: var(--title-weight);
   margin: 0 0 var(--overview-gap);
   padding: 0 var(--title-side);
 }
