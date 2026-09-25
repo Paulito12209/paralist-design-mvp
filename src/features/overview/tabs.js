@@ -19,7 +19,7 @@ import { saveState, state, ui } from "../../data/state.js";
 import { awardXp } from "../../data/xp.js";
 import { openCtxMenu } from "../../ui/ctx-menu.js";
 import { iconPickerAction } from "../../ui/pickers.js";
-import { initPillSwipe } from "../../ui/pill-swipe.js";
+import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
 import { isViewActive } from "../../ui/views.js";
 
 function pillMarkup(tab) {
@@ -101,6 +101,8 @@ export function commitTabName() {
      Namen zeigt auch die Seitenleiste der Desktop-Fassung. Die Pillen zeichnet
      der Zuhörer in initTabs() neu — wie beim Umbenennen eines Arbeitsbereichs. */
   emit(events.dataChanged);
+  /* Als fertige Pille ist der Tab breiter als das Eingabefeld: ganz ins Bild holen */
+  revealActive(el("view-home"));
 }
 
 /** Umbenennen einer Pille starten. */
@@ -137,7 +139,10 @@ export function initTabs() {
   const pills = dom.workspaceTabs;
 
   pills.addEventListener("input", (event) => {
-    if (event.target.id === "tab-name-input") fitTabNameInput(event.target);
+    if (event.target.id !== "tab-name-input") return;
+    fitTabNameInput(event.target);
+    /* Der Tab wächst beim Tippen: sonst verschwände sein Ende unter Linie und Plus-Knopf */
+    revealActive(el("view-home"));
   });
 
   pills.addEventListener("keydown", (event) => {

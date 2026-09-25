@@ -106,7 +106,11 @@ export function renderResources() {
         action: { label: emptyLabels[active] || emptyLabels.all },
       });
 
+  /* Die Leiste wird mit ersetzt: ihre Rollstellung mitnehmen, sonst springt sie
+     bei jedem Wechsel an den Anfang zurück. */
+  const scrolled = dom.pageBody.querySelector(".resource-filters")?.scrollLeft || 0;
   dom.pageBody.innerHTML = `<div class="tab-pills resource-filters">${pills}</div>${body}`;
+  dom.pageBody.querySelector(".resource-filters").scrollLeft = scrolled;
 }
 
 /** Eine Filter-Pille wählen — per Tipp (src/ui/list-clicks.js) oder Wischen. */
