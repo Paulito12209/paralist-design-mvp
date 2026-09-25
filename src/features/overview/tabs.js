@@ -132,14 +132,6 @@ export function openTabMenu(pill) {
   openCtxMenu(pill, options);
 }
 
-/** Per Wischen gewählten Tab zeigen und seine Pille in die sichtbare Leiste holen. */
-function swipeToTab(id) {
-  selectTab(id);
-  /* Bei vielen Tabs läuft die Leiste seitlich aus dem Bild: die neue Pille sonst unsichtbar */
-  dom.workspaceTabs.querySelector(".tab-pill.is-active")
-    ?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
-}
-
 /** Tastatur und Fokus im Umbenennen-Feld, Wischen sowie das Auffrischen anmelden. */
 export function initTabs() {
   const pills = dom.workspaceTabs;
@@ -167,7 +159,7 @@ export function initTabs() {
   initPillSwipe(el("view-home"), {
     order: () => state.tabs.map((tab) => tab.id),
     current: () => state.activeTabId,
-    select: swipeToTab,
+    select: selectTab,
     enabled: () => ui.editingTabId == null,
   });
 

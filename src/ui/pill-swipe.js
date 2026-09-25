@@ -1,8 +1,10 @@
 /*
  * Waagerecht wischen wechselt die Pille: nach links wischen zeigt die nächste
  * („Verknüpfte Einträge“), nach rechts die vorige („Inhalt“). Genutzt auf der
- * Seite eines Eintrags und eines Arbeitsbereichs, in der Suche und auf der
- * Übersicht für die Tabs der Arbeitsbereiche.
+ * Seite eines Eintrags und eines Arbeitsbereichs, in der Suche, auf der
+ * Übersicht für die Tabs der Arbeitsbereiche, auf Medien und Ressourcen.
+ * Nach dem Wechsel rollt eine seitlich laufende Pillen-Leiste (.tab-pills) so,
+ * dass die neue Pille sichtbar ist.
  * Pfad: src/ui/pill-swipe.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -66,7 +68,11 @@ export function initPillSwipe(area, { order, current, select, enabled = () => tr
       if (hasSelection()) return;
       const ids = typeof order === "function" ? order() : order;
       const next = ids.indexOf(current()) + (dx < 0 ? 1 : -1);
-      if (next >= 0 && next < ids.length) select(ids[next]);
+      if (next < 0 || next >= ids.length) return;
+      select(ids[next]);
+      /* Bei vielen Pillen läuft die Leiste aus dem Bild: die neue Pille sonst unsichtbar */
+      area.querySelector(".tab-pills .is-active")
+        ?.scrollIntoView({ block: "nearest", inline: "nearest", behavior: "smooth" });
     },
     { passive: true }
   );
