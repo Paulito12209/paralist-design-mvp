@@ -1,6 +1,8 @@
 /*
  * Die Kalenderseite. Wird erst beim ersten Öffnen nachgeladen und setzt dann
- * Streifen, Fläche, Knöpfe und Gesten zusammen.
+ * Streifen, Fläche, Knöpfe und Gesten zusammen. In der Listenansicht wechselt
+ * waagerechtes Wischen unter dem Streifen zwischen Aufgaben, Termine und
+ * Projekte (src/ui/pill-swipe.js).
  * Pfad: src/features/calendar/calendar.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -12,8 +14,9 @@
 
 import { emit, events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
-import { calendarSpans } from "../../data/config.js";
+import { calendarSegments, calendarSpans } from "../../data/config.js";
 import { state, ui } from "../../data/state.js";
+import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { openSheet } from "../../ui/sheet.js";
 import { isViewActive } from "../../ui/views.js";
 import { openDatePicker } from "./calendar-date-picker.js";
@@ -154,6 +157,14 @@ function init() {
   dom.calTodayBtn.addEventListener("click", goToday);
   dom.calSpanBtn.addEventListener("click", openSpanSheet);
   dom.calPanel.addEventListener("click", onPanelClick);
+  /* Nur auf der Fläche unter dem Streifen: dort blättert waagerechtes Wischen
+     schon Wochen um. Das Stundenraster hat keine Tabs. */
+  initPillSwipe(dom.calPanel, {
+    order: calendarSegments.map((item) => item.id),
+    current: () => state.prefs.calendar.seg,
+    select: setSegment,
+    enabled: () => state.prefs.calendar.mode !== "grid",
+  });
   dom.content.addEventListener("scroll", onScroll, { passive: true });
   dom.calPanel.addEventListener("scroll", onScroll, { passive: true });
   /* Dreht sich das Gerät oder ändert sich die Fensterhöhe, passt die Höhe des
