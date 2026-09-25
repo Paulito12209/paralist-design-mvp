@@ -18,7 +18,7 @@
  * --content-top             -> um so viel wird der einrastende Kopf nach oben verlängert
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei
- * (Tageszahlen 18px, Rollen-Zeilen 20px, „Fertig“ 17px).
+ * (Monat und Jahr 18px, Tageszahlen 18px, Rollen-Zeilen 20px, „Fertig“ 17px).
 */
 
 /* ---------- Kalender ---------- */
@@ -65,7 +65,7 @@
   gap: 6px;
   padding: 0 var(--title-side);
   margin-bottom: 18px;
-  font-size: 22px;
+  font-size: 18px;
   font-weight: 500;
   letter-spacing: -0.02em;
   color: var(--text);
@@ -88,7 +88,7 @@
 .cal-strip {
   position: relative; /* position: die halb sichtbaren Nachbarwochen richten sich hieran aus */
   overflow: hidden; /* overflow: beim Ziehen bleiben die Wochen unter Titel und über der Fläche verborgen */
-  padding-bottom: 12px; /* Platz für den Schatten der Knöpfe, sonst wird er abgeschnitten */
+  padding-bottom: 12px; /* Luft zwischen den Knöpfen und der Trennlinie darunter */
   touch-action: none; /* touch-action: senkrecht ziehen blättert die Wochen, waagerecht den ganzen Zeitraum */
   user-select: none;
   -webkit-user-select: none;
@@ -251,8 +251,7 @@
 .cal-round,
 .cal-pill {
   height: 44px;
-  background: var(--card);
-  box-shadow: var(--shadow);
+  background: var(--card); /* ohne Schatten: alle drei Knöpfe liegen flach auf der Seite */
   display: grid;
   place-items: center;
   color: var(--text);
@@ -291,7 +290,6 @@
    Schrift im Blau der Jetzt-Linie. */
 .cal-today.is-on {
   background: var(--card);
-  box-shadow: var(--shadow);
   color: var(--cal-accent);
 }
 
