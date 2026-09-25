@@ -5,8 +5,8 @@
  * Arbeitsbereich), steht vorher in Sätzen da, was passiert, und erst
  * „Umwandeln“ tut es (src/data/convert.js, src/data/convert-notes.js).
  * Geöffnet wird das Blatt aus dem Menü eines Eintrags oder Arbeitsbereichs,
- * über die graue Kategorie mitten in der Kopfzeile und bei einer Aufgabe
- * unten im Blatt mit Status und Dringlichkeit.
+ * und über die graue Kategorie mitten in der Kopfzeile; bei einer Aufgabe
+ * stehen dieselben Typen im Tab „Typ“ neben Status und Dringlichkeit.
  * Pfad: src/ui/type-menu.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -166,12 +166,13 @@ function pick(subject, target) {
 }
 
 /**
- * Das Blatt mit allen Typen, gegliedert wie „Typ wählen“ im Eingabefeld
+ * Alle Typen als Optionen, gegliedert wie „Typ wählen“ im Eingabefeld
  * (src/features/composer/composer-types.js): der aktuelle ist markiert, der
  * Arbeitsbereich steht abgesetzt darunter — er ist die Ebene über den Einträgen.
+ * Auch der Tab „Typ“ im Blatt einer Aufgabe (src/ui/task-status.js) nutzt sie.
  * @param subject { entry } oder { workspace }
  */
-export function openTypeChangeSheet(subject) {
+export function typeChangeOptions(subject) {
   const current = currentKind(subject);
   const options = convertibleTypes.map((type) => ({
     label: typeSingular(type),
@@ -188,7 +189,12 @@ export function openTypeChangeSheet(subject) {
     split: true,
     onSelect: () => pick(subject, workspaceKind),
   });
-  openSheet(sheetTitle, options);
+  return options;
+}
+
+/** Das Blatt „Typ ändern“ mit allen Typen öffnen. */
+export function openTypeChangeSheet(subject) {
+  openSheet(sheetTitle, typeChangeOptions(subject));
 }
 
 /**
@@ -203,7 +209,7 @@ export function typeChangeAction(subject) {
 /**
  * Die graue Kategorie mitten in der Kopfzeile als schmale Pille: ein Tipp
  * darauf öffnet „Typ ändern“. Der kleine Pfeil sagt, dass sich hier etwas
- * wählen lässt — wie bei „Aufgabe: Offen | Jetzt“ (src/ui/task-status.js).
+ * wählen lässt — wie bei „Aufgabe“ über „Offen · Jetzt“ (src/ui/task-status.js).
  */
 export function typeCrumbMarkup(label) {
   return `

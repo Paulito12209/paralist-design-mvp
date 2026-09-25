@@ -108,10 +108,22 @@
   color: var(--danger);
 }
 
+/* Trennlinie vor Dokument/Zeichnung bzw. „Icon entfernen“: eine gerade Linie
+   in der Lücke über der Option. Kein border-top — die Option ist abgerundet,
+   und ein Rand dort bog sich an beiden Enden mit nach unten. */
 .sheet-option.is-split {
-  margin-top: 8px;
-  /* border-top: Trennlinie vor Dokument/Zeichnung bzw. „Icon entfernen“ */
-  border-top: 1px solid var(--line);
+  position: relative; /* position: Anker für die Linie darüber */
+  margin-top: 9px;
+}
+
+.sheet-option.is-split::before {
+  content: "";
+  position: absolute; /* position: sitzt mittig in der Lücke, außerhalb der Rundung */
+  top: -5px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: var(--line);
 }
 
 .sheet-option.is-gap {
