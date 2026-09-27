@@ -1,13 +1,26 @@
 /*
- * Zeilen zur Seite wischen, damit die runden Knöpfe dahinter zum Vorschein
+ * Zeilen zur Seite ziehen, damit die runden Knöpfe dahinter zum Vorschein
  * kommen. Wie weit eine Zeile aufgeht, hängt davon ab, wie viele Knöpfe sie hat.
+ *
+ * Damit sich das nicht mit dem Tab-Wechsel beißt (src/ui/pill-swipe.js), gilt:
+ * - kurz wischen            -> nächster oder voriger Tab, die Zeile bleibt stehen
+ * - gedrückt halten, ziehen -> nach grabDelay färbt sich die Zeile, das Handy
+ *                              tickt kurz; ab dann hängt sie am Finger und rastet
+ *                              beim Loslassen offen oder zu ein
+ * - halten, loslassen       -> Kontextmenü wie bisher (src/ui/long-press.js)
+ * Eine schon offene Zeile ist sofort angefasst: kurz wischen schiebt sie zu.
  * Pfad: src/ui/swipe.js
  *
  * ANPASSBARE WERTE
  * -----------------------------------
  * --swipe-action-size, --swipe-action-gap (styles/tokens.css)
  *                -> Größe der runden Knöpfe und ihr Abstand
+ * --swipe-grab-bg (styles/tokens.css) -> Farbe der angefassten Zeile
  * axisSlack      -> ab wie vielen Pixeln entschieden wird, ob waagerecht oder senkrecht gewischt wird
+ * grabDelay      -> wie lange man halten muss, bis die Zeile am Finger hängt (Millisekunden);
+ *                   kürzer als das Menü in long-press.js, damit man vorher ziehen kann
+ * grabSlack      -> wie weit der Finger beim Halten wackeln darf, ohne dass es als Wischen gilt
+ * grabBuzzMs     -> Länge des kurzen Vibrierens beim Anfassen (0 = aus)
  */
 
 import { cssNumber } from "../core/css-vars.js";
@@ -22,8 +35,35 @@ import {
 import { COPY_HOLD } from "./page-tools.js";
 
 const axisSlack = 6;
+const grabDelay = 280;
+const grabSlack = 8;
+const grabBuzzMs = 10;
 
 let drag = null;
+/* Hat die laufende Berührung eine Zeile angefasst? Dann darf sie keinen Tab
+   wechseln. Bleibt bis zur nächsten Berührung stehen, weil pill-swipe erst bei
+   touchend fragt — und das kann nach pointerup kommen. */
+let rowGesture = false;
+
+/** Gehörte die letzte Berührung einer Zeile (halten und ziehen)? */
+export function isRowGesture() {
+  return rowGesture;
+}
+
+/* Die Zeile hängt ab jetzt am Finger: einfärben und kurz vibrieren. */
+function grab(current) {
+  if (drag !== current) return;
+  current.grabbed = true;
+  rowGesture = true;
+  current.body.classList.add("is-grabbed");
+  if (grabBuzzMs && navigator.vibrate) navigator.vibrate(grabBuzzMs);
+}
+
+/* Anfassen beenden: Farbe weg, Zeit-Schalter aus. */
+function release(current) {
+  clearTimeout(current.timer);
+  current.body.classList.remove("is-grabbed", "is-sliding");
+}
 
 /* Wie weit die Zeile nach links und rechts aufgeht. */
 function limitsOf(body) {
@@ -68,18 +108,35 @@ function onPointerDown(event) {
   else if (workspaceBtn) startHold(event, workspaceBtn, "workspace");
   else if (entryBtn) startHold(event, entryBtn, "entry");
 
+  rowGesture = false;
+  if (drag) release(drag);
+  drag = null;
   const body = event.target.closest(".swipe-body");
   if (!body || event.target.closest(".swipe-action")) return;
+  /* Nur der Finger (bzw. die linke Maustaste) zieht Zeilen, keine zweite Berührung */
+  if (!event.isPrimary || event.button > 0) return;
+  const start = Number(body.dataset.x || 0);
   drag = {
     body,
     pointerId: event.pointerId,
     startX: event.clientX,
     startY: event.clientY,
-    start: Number(body.dataset.x || 0),
+    start,
     axis: null,
+    grabbed: false,
+    timer: 0,
     /* Wie weit die Zeile darf, einmal beim Aufsetzen gezählt — nicht bei jeder Bewegung */
     limits: limitsOf(body),
   };
+  /* Offene Zeile: gleich angefasst, damit ein kurzes Wischen sie wieder zuschiebt
+     (ohne Farbe und Vibrieren — sie ist ja schon sichtbar „in Arbeit“). */
+  if (start !== 0) {
+    drag.grabbed = true;
+    rowGesture = true;
+    return;
+  }
+  const current = drag;
+  current.timer = setTimeout(() => grab(current), grabDelay);
 }
 
 function onPointerMove(event) {
@@ -89,6 +146,15 @@ function onPointerMove(event) {
   const dx = event.clientX - drag.startX;
   const dy = event.clientY - drag.startY;
 
+  /* Vor dem Anfassen bewegt: das ist Wischen (Tab) oder Scrollen, nicht die Zeile */
+  if (!drag.grabbed) {
+    if (Math.hypot(dx, dy) > grabSlack) {
+      release(drag);
+      drag = null;
+    }
+    return;
+  }
+
   if (!drag.axis) {
     if (Math.abs(dx) < axisSlack && Math.abs(dy) < axisSlack) return;
     drag.axis = Math.abs(dx) > Math.abs(dy) ? "x" : "y";
@@ -97,6 +163,12 @@ function onPointerMove(event) {
       drag.body.classList.add("is-sliding");
       closeSwipes(drag.body);
     }
+  }
+  /* Angefasst, aber senkrecht gezogen: die Seite scrollt — Zeile loslassen */
+  if (drag.axis === "y") {
+    release(drag);
+    drag = null;
+    return;
   }
   if (drag.axis !== "x") return;
 
@@ -109,8 +181,8 @@ function endDrag() {
   if (finishHold()) {
     if (drag) {
       const { body } = drag;
+      release(drag);
       drag = null;
-      body.classList.remove("is-sliding");
       setOffset(body, 0);
     }
     return;
@@ -118,8 +190,8 @@ function endDrag() {
 
   if (!drag) return;
   const { body, limits } = drag;
+  release(drag);
   drag = null;
-  body.classList.remove("is-sliding");
 
   const x = Number(body.dataset.x || 0);
   if (limits.right && x <= -limits.right / 2) setOffset(body, -limits.right);

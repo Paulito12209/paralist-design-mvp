@@ -22,7 +22,8 @@
  * styles/base.css            -> Grundgerüst: Seite, Gerätefenster, Inhaltsbereich, Icons
  * styles/top-bar.css         -> Kopfzeile: Level-Anzeige, Suchleiste, Profil-Knopf
  * styles/overview.css        -> Startseite: die vier Karten und die Tab-Pillen
- * styles/rows.css            -> Listenzeilen, Wisch-Knöpfe, Kopfzeile einer Unterseite
+ * styles/rows.css            -> Listenzeilen, Kopfzeile einer Unterseite
+ * styles/swipe-rows.css      -> Wisch-Zeile: Knöpfe dahinter, Einfärben nach dem Halten
  * styles/empty-state.css     -> Platzhalter für leere Listen (eigene Werte, siehe dort)
  * styles/entry.css           -> Seite eines Eintrags: Titel, Text, verknüpfte Einträge
  * styles/navigation.css      -> untere Navigationsleiste
@@ -191,6 +192,8 @@
  * --composer-close-slide    -> aus welcher Entfernung der Schließen-Knopf dabei heranrückt
  * --composer-close-anim     -> wie lange dieses Heranrücken und Drehen dauert
  * --swipe-action-size / --swipe-action-gap -> Größe und Abstand der Wisch-Knöpfe
+ * --swipe-grab-bg           -> Farbe einer Zeile, die nach dem Halten angefasst ist (Wischen zeigt die Knöpfe)
+ * --swipe-grab-anim         -> wie schnell diese Farbe auftaucht
  * --restore-color          -> Knopf „Zurückholen“ im Archiv
  * --archive-link-top       -> Abstand der Pille „Zum Archiv“ zur Liste darüber
  * --ctx-radius              -> Rundung des kleinen Menüs beim gedrückt Halten
@@ -299,6 +302,9 @@
   --entry-end-space: 120px;
   --swipe-action-size: 44px;
   --swipe-action-gap: 10px;
+  /* color-mix: ein Hauch Textfarbe über dem Hintergrund — passt so von selbst zu Hell und Dunkel */
+  --swipe-grab-bg: color-mix(in srgb, var(--text) 7%, var(--bg));
+  --swipe-grab-anim: 0.15s;
   --danger: #ff3b30;
   --archive-color: #6e6e73;
   --restore-color: #34c759;

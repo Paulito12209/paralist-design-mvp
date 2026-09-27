@@ -1,0 +1,136 @@
+/*
+ * Wisch-Zeile: runde Knöpfe (Archiv, Löschen, …) liegen hinter der Zeile und
+ * kommen zum Vorschein, wenn man die Zeile gedrückt hält und dann zur Seite
+ * zieht (src/ui/swipe.js). Kurzes Wischen ohne Halten wechselt stattdessen den
+ * Tab (src/ui/pill-swipe.js).
+ * Pfad: styles/swipe-rows.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --swipe-action-size       -> Größe der runden Wisch-Knöpfe
+ * --swipe-action-gap        -> Abstand zwischen den Knöpfen und zum Rand
+ * --swipe-grab-bg           -> Farbe der Zeile, sobald sie nach dem Halten „angefasst“ ist
+ * --swipe-grab-anim         -> wie schnell diese Farbe auftaucht
+ * --danger / --archive-color / --link-color / --star-color / --restore-color /
+ * --move-color
+ *                           -> Farben der Wisch-Knöpfe
+ * --content-side            -> Abstand der Zeilen zum Rand
+ * --line                    -> Trennlinie zwischen den Zeilen
+ */
+
+/* Wisch-Zeile: die Knöpfe liegen hinter der Zeile und kommen beim Ziehen zum Vorschein.
+   Sie reicht über den Seitenrand hinaus bis an den Geräterand — sonst bliebe beim
+   Wischen links (oder rechts) ein Streifen Hintergrund neben der Zeile stehen. */
+.swipe {
+  position: relative; /* position: nötig, damit die Knöpfe hinter der Zeile liegen können */
+  overflow: hidden; /* overflow: schneidet die Knöpfe ab, solange nicht gewischt wird */
+  margin-left: calc(-1 * var(--content-side));
+  margin-right: calc(-1 * var(--content-side));
+}
+
+/* Die Trennlinie gehört zur Zeile, nicht zum verschobenen Inhalt: sie bleibt
+   beim Wischen stehen und behält den Abstand zum Rand, den die Liste sonst hat. */
+.swipe::after {
+  content: "";
+  position: absolute; /* position: legt die Linie unabhängig von der wandernden Zeile an den unteren Rand */
+  left: var(--content-side);
+  right: var(--content-side);
+  bottom: 0;
+  height: 0.5px;
+  background: var(--line);
+  z-index: 1; /* z-index: über der Zeile, sonst deckt deren Hintergrund die Linie ab */
+  pointer-events: none; /* pointer-events: die Linie soll keine Tipper abfangen */
+}
+
+/* In der Wisch-Zeile zeichnet .swipe::after die Linie — sonst stünde sie doppelt. */
+.swipe .workspace-row {
+  border-bottom: 0;
+}
+
+.swipe-actions {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--swipe-action-gap);
+  padding: 0 var(--swipe-action-gap);
+}
+
+.swipe-actions-left {
+  left: 0;
+}
+
+.swipe-actions-right {
+  right: 0;
+}
+
+/* Runde, farbige Knöpfe, die beim Wischen hinter der Zeile auftauchen */
+.swipe-action {
+  width: var(--swipe-action-size);
+  height: var(--swipe-action-size);
+  border-radius: 50%; /* border-radius: macht die Knöpfe zu Kreisen */
+  display: grid;
+  place-items: center;
+  color: var(--card);
+  flex: 0 0 auto;
+}
+
+.swipe-action .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.swipe-action-delete {
+  background: var(--danger);
+}
+
+.swipe-action-archive {
+  background: var(--archive-color);
+}
+
+.swipe-action-restore {
+  background: var(--restore-color);
+}
+
+.swipe-action-link {
+  background: var(--link-color);
+}
+
+.swipe-action-move {
+  background: var(--move-color);
+}
+
+.swipe-action-favorite {
+  background: var(--star-color);
+}
+
+.swipe-action:active {
+  opacity: 0.75;
+}
+
+/* Die Zeile selbst wird beim Ziehen zur Seite geschoben. Der Seitenabstand, den
+   die Liste sonst hätte, steht hier: so wandert er beim Wischen mit. */
+.swipe-body {
+  position: relative; /* position: hält die Zeile über den Knöpfen */
+  padding-left: var(--content-side);
+  padding-right: var(--content-side);
+  background: var(--bg);
+  transform: translateX(0); /* transform: verschiebt die Zeile beim Wischen */
+  touch-action: pan-y; /* touch-action: senkrechtes Scrollen bleibt möglich, waagerechtes Wischen gehört uns */
+}
+
+.swipe-body.is-sliding {
+  transition: none; /* transition: beim Ziehen soll die Zeile direkt am Finger hängen */
+}
+
+.swipe-body:not(.is-sliding) {
+  /* transition: sanftes Einrasten nach dem Loslassen, weiches Einfärben beim Anfassen */
+  transition: transform 0.22s ease, background var(--swipe-grab-anim) ease;
+}
+
+/* Angefasst: nach dem Halten färbt sich die Zeile leicht ein — das Zeichen,
+   dass sie jetzt am Finger hängt und sich zur Seite ziehen lässt. */
+.swipe-body.is-grabbed {
+  background: var(--swipe-grab-bg);
+}
