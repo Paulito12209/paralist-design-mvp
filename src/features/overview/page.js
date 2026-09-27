@@ -41,16 +41,14 @@ import { openSheet } from "../../ui/sheet.js";
 import { openTypeChangeSheet, typeChangeAction, typeCrumbMarkup } from "../../ui/type-menu.js";
 import { isViewActive } from "../../ui/views.js";
 import { initArchive, renderArchive } from "./archive.js";
+import { pageHeroOptions, renderPageHero } from "./page-hero.js";
 import { initWorkspaceCollection, renderWorkspaceCollection } from "./workspace-collection.js";
 import { isWritingNotes, renderWorkspacePage } from "./workspace-page.js";
 import { beginRenameWorkspaceTitle, initWorkspaceTitle, setupWorkspaceTitle } from "./workspace-title.js";
 import { commitStaleWorkspaceName, focusWorkspaceName } from "./workspaces.js";
 
-/* Sammlungen: dort gibt es nichts zu löschen oder zu markieren, also kein Menü. */
-const collectionsWithoutMenu = ["resources", "projects", "archive", "workspaces", "bookmarks"];
-
-/* Seiten, die ihren Titel selbst unter einem großen Icon zeichnen (Lesezeichen). */
-const ownTitlePages = ["bookmarks"];
+/* Sammlungen, in denen es nichts zu löschen gibt: ihr Menü bietet nur die Wahl des Kopfes. */
+const collectionsWithoutDelete = ["resources", "projects", "archive", "workspaces", "bookmarks"];
 
 /*
  * Seiten, die neben ihrem Titel noch einen grauen Zweittitel zeigen: ein Tippen
@@ -156,11 +154,13 @@ function renderPage() {
   } else {
     dom.pageTitle.textContent = page.title;
   }
-  dom.pageTitle.hidden = ownTitlePages.includes(page.kind);
   /* Auf einem Arbeitsbereich ist der Titel selbst das Namensfeld. */
   setupWorkspaceTitle(page);
   setHeadTitle(dom.pageHead, page.isWorkspace ? page.title : "", "Arbeitsbereich");
-  dom.pageMenuBtn.hidden = collectionsWithoutMenu.includes(page.kind);
+  /* Jede Sammlung hat oben rechts ihr Menü, mindestens für die Wahl des Kopfes */
+  dom.pageMenuBtn.hidden = false;
+  dom.pageHead.classList.toggle("is-menu-shown", !page.isWorkspace);
+  renderPageHero(page);
   /* Ein Arbeitsbereich sieht aus wie eine Eintragsseite: Kategorie und Menü
      stehen von Anfang an oben, statt nach dem Scrollen der Suche zu weichen. */
   dom.pageCrumb.hidden = !page.isWorkspace;
@@ -177,14 +177,16 @@ function openPageMenu() {
   const page = ui.currentPage;
   if (!page) return;
 
+  const heroOptions = pageHeroOptions(page, () => renderPageHero(ui.currentPage));
   if (page.kind === "favorites") {
     openSheet(page.title, [
+      ...heroOptions,
       { label: "Alle Favoriten entfernen", icon: "star-outline", onSelect: clearFavorites },
     ]);
     return;
   }
 
-  const options = [];
+  const options = [...heroOptions];
   const workspace = page.isWorkspace ? findWorkspace(page.workspaceId) : null;
 
   if (workspace) {
@@ -218,12 +220,14 @@ function openPageMenu() {
     options.push(typeChangeAction({ workspace }));
   }
 
-  options.push({
-    label: "Alle Einträge löschen",
-    icon: "trash",
-    danger: true,
-    onSelect: () => deleteEntriesOf(page.parent),
-  });
+  if (!collectionsWithoutDelete.includes(page.kind)) {
+    options.push({
+      label: "Alle Einträge löschen",
+      icon: "trash",
+      danger: true,
+      onSelect: () => deleteEntriesOf(page.parent),
+    });
+  }
 
   if (workspace) {
     options.push({

@@ -1,11 +1,11 @@
 /*
- * Die Lesezeichen-Seite hinter der Karte auf der Startseite. Aufgebaut wie
- * eine iOS-Infoseite: oben mittig ein großes Icon, darunter Titel und ein
- * Satz, dann Pillen wie auf der Medien-Seite (Web-Lesezeichen, Videos,
- * Standorte) und die Liste — links eine große Kachel, rechts Name, Website
- * und in welchem Eintrag das Lesezeichen steht. Bewusst ohne Farbverlauf
- * hinter dem Kopf. Waagerecht wischen wechselt die Pille. Wird erst beim
- * ersten Öffnen nachgeladen.
+ * Die Lesezeichen-Seite hinter der Karte auf der Startseite: Pillen wie auf
+ * der Medien-Seite (Zuletzt erstellt, Web-Lesezeichen, Videos, Standorte)
+ * und die Liste — links eine große Kachel, rechts Name, Website und in
+ * welchem Eintrag das Lesezeichen steht. Den großen Kopf mit Icon und Satz
+ * schaltet man wie bei jeder Sammlung im Menü oben rechts ein
+ * (src/features/overview/page-hero.js). Waagerecht wischen wechselt die
+ * Pille. Wird erst beim ersten Öffnen nachgeladen.
  * Pfad: src/features/bookmarks/bookmarks.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -13,8 +13,7 @@
  * emptyArt[*]  -> Icon und Texte des Platzhalters je Pille
  * EMPTY_ACTION -> Beschriftung der Pille, mit der man ein Lesezeichen anlegt
  *
- * Welche Pillen es gibt: src/data/bookmarks.js (bookmarkPills). Titel und
- * Satz im Kopf: src/data/collections.js (bookmarksPage). Größen und die
+ * Welche Pillen es gibt: src/data/bookmarks.js (bookmarkPills). Größen und die
  * Lila-Farbe: styles/bookmarks.css und --bookmark-color in styles/tokens-pages.css.
  */
 
@@ -22,7 +21,6 @@ import { dom, el } from "../../core/dom.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { colorFromText, faviconUrl } from "../../core/link-preview.js";
 import { BOOKMARK_TYPE, bookmarkCounts, bookmarkItems, bookmarkPills, validBookmarkPill } from "../../data/bookmarks.js";
-import { bookmarksPage } from "../../data/collections.js";
 import { typeIcon, typeSingular } from "../../data/config.js";
 import { hostOf, youtubeId, youtubeThumb } from "../../data/link-kinds.js";
 import { placesLabel } from "../../data/queries.js";
@@ -34,6 +32,7 @@ import { isViewActive } from "../../ui/views.js";
 
 /* Platzhalter je Pille; alle im Lila der Lesezeichen. */
 const emptyArt = {
+  recent: { icon: "bookmark", title: "Noch keine Lesezeichen", text: "Websites, Videos und Orte aus deinen Einträgen sammeln sich hier." },
   web: { icon: "bookmark", title: "Noch keine Web-Lesezeichen", text: "Füg einen Link als Lesezeichen hinzu oder tippe im Inhalt eines Eintrags „/“ und wähle „Web-Lesezeichen“." },
   video: { icon: "video", title: "Noch keine Videos", text: "YouTube-Links aus deinen Einträgen sammeln sich hier." },
   place: { icon: "pin", title: "Noch keine Standorte", text: "Orte aus Google Maps, die du in Einträgen gespeichert hast, stehen hier." },
@@ -44,16 +43,6 @@ const EMPTY_ACTION = "Lesezeichen anlegen";
 const isBookmarksOpen = () => isViewActive("page") && ui.currentPage?.kind === "bookmarks";
 
 const activePill = () => validBookmarkPill(ui.currentPage?.pill);
-
-/* Kopf wie auf einer iOS-Infoseite: großes Icon mittig, Titel und Satz linksbündig. */
-function heroMarkup() {
-  return `
-    <header class="bookmark-hero">
-      ${icon("bookmark", "bookmark-hero-icon")}
-      <h1 class="bookmark-hero-title">${escapeHtml(bookmarksPage.title)}</h1>
-      <p class="bookmark-hero-intro">${escapeHtml(bookmarksPage.intro)}</p>
-    </header>`;
-}
 
 function pillsMarkup(active) {
   const counts = bookmarkCounts();
@@ -126,7 +115,7 @@ export function renderBookmarks() {
 
   /* Die Leiste wird mit ersetzt: ihre Rollstellung mitnehmen */
   const scrolled = dom.pageBody.querySelector(".bookmark-pills")?.scrollLeft || 0;
-  dom.pageBody.innerHTML = heroMarkup() + pillsMarkup(pill) + list;
+  dom.pageBody.innerHTML = pillsMarkup(pill) + list;
   dom.pageBody.querySelector(".bookmark-pills").scrollLeft = scrolled;
 }
 

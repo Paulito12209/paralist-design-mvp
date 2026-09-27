@@ -1,6 +1,7 @@
 /*
  * Die zweite Kartenseite der Übersicht und die Sammlungen, die nicht an einer
- * der ersten vier Karten hängen: Lesezeichen, Archiv und Arbeitsbereiche. Die ersten vier
+ * der ersten vier Karten hängen: Lesezeichen, Archiv und Arbeitsbereiche —
+ * dazu der große Kopf, den jede Sammlung zeigen kann. Die ersten vier
  * Karten stehen in src/data/config.js (overviewPages).
  * Pfad: src/data/collections.js
  *
@@ -11,7 +12,8 @@
  * SOON_LABEL     -> Beschriftung des Schildchens oben rechts auf einer solchen Karte
  * archivePills   -> die Pillen oben im Archiv, von links nach rechts
  * workspacesPage -> Titel der Sammlung hinter dem Pfeil neben „Arbeitsbereiche“
- * bookmarksPage  -> Titel und Satz darunter auf der Lesezeichen-Seite
+ * bookmarksPage  -> Titel der Lesezeichen-Seite
+ * collectionHeads -> großer Kopf je Sammlung: Icon, seine Farbe und der Satz unter dem Titel
  *
  * Aussehen der Karten: styles/overview-more.css.
  */
@@ -46,10 +48,22 @@ export const archivePills = [
 /* Sammlung hinter dem Pfeil neben „Arbeitsbereiche“: alle Arbeitsbereiche, je Tab eine Pille. */
 export const workspacesPage = { title: "Arbeitsbereiche", kind: "workspaces" };
 
-/* Die Lesezeichen-Seite: ihr Titel steht wie auf einer iOS-Infoseite unter
-   einem großen Icon, der Satz darunter sagt, woher die Lesezeichen kommen. */
-export const bookmarksPage = {
-  title: "Lesezeichen",
-  kind: "bookmarks",
-  intro: "Websites, Videos und Orte aus all deinen Einträgen — an einem Ort gesammelt.",
+/* Die Lesezeichen-Seite: Web-Lesezeichen, Videos und Orte aus allen Einträgen. */
+export const bookmarksPage = { title: "Lesezeichen", kind: "bookmarks" };
+
+/*
+ * Der große Kopf einer Sammlung, wenn man ihn im Menü oben rechts einschaltet:
+ * Icon mittig, darunter Titel und ein Satz — wie auf einer iOS-Infoseite.
+ * Schlüssel ist die Art der Sammlung, der Eingang heißt „inbox“. Der Satz
+ * endet nach drei Zeilen mit „…“ — so kurz wie möglich halten, damit er
+ * auch auf kleinen Geräten nie an diese Grenze stößt.
+ */
+export const collectionHeads = {
+  inbox: { icon: "inbox", color: "var(--inbox-icon-color)", intro: "Alles, was noch keinen Ort hat." },
+  favorites: { icon: "star", color: "var(--star-color)", intro: "Alles, was du markiert hast." },
+  projects: { icon: "rocket", color: "var(--project-icon-color)", intro: "Aufgaben, Notizen und Termine je Vorhaben." },
+  resources: { icon: "cube", color: "var(--resource-icon-color)", intro: "Notizen, Dokumente, Zeichnungen und Medien." },
+  archive: { icon: "archive", color: "var(--archive-color)", intro: "Weggelegtes, jederzeit zurückholbar." },
+  workspaces: { icon: "layers", color: "var(--prio-next)", intro: "Alle Arbeitsbereiche nach Tabs." },
+  bookmarks: { icon: "bookmark", color: "var(--bookmark-color)", intro: "Websites, Videos und Orte aus deinen Einträgen." },
 };

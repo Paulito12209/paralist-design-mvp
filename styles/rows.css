@@ -144,7 +144,8 @@
   transition: opacity 0.15s ease, transform 0.15s ease; /* transition: sanftes Ein-/Ausblenden statt Springen */
 }
 
-/* Das Optionen-Menü einer Sammlung erscheint zusammen mit der Suche. */
+/* Das Optionen-Menü erscheint zusammen mit der Suche — auf einer Sammlung
+   (is-menu-shown) steht es von Anfang an oben rechts. */
 .page-head .page-menu {
   opacity: 0;
   pointer-events: none; /* pointer-events: unsichtbar heißt auch nicht antippbar */
@@ -153,6 +154,7 @@
 
 .page-head.is-scrolled .page-head-reveal,
 .page-head.is-scrolled .page-menu,
+.page-head.is-menu-shown .page-menu,
 .page-head.is-pinned .page-menu {
   opacity: 1;
   transform: translateY(0);

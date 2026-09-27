@@ -51,6 +51,8 @@ export const state = {
     resources: { filter: "all" },
     /* Aufgaben-Seite: Ansicht, Gruppierung der Spalten, Sortierung und die Filter */
     tasks: { ...taskDefaults },
+    /* Welche Sammlung ihren großen Kopf zeigt, z.B. { bookmarks: true }; fehlt = einfacher Titel */
+    pageHeads: {},
   },
 };
 
@@ -120,6 +122,7 @@ function snapshot() {
     media: state.prefs.media,
     resources: state.prefs.resources,
     tasks: state.prefs.tasks,
+    pageHeads: state.prefs.pageHeads,
     mediaSeeded,
   };
 }
@@ -238,6 +241,9 @@ function adoptPrefs(saved) {
   }
   if (saved.tasks && typeof saved.tasks === "object") {
     state.prefs.tasks = { ...state.prefs.tasks, ...saved.tasks };
+  }
+  if (saved.pageHeads && typeof saved.pageHeads === "object") {
+    state.prefs.pageHeads = Object.fromEntries(Object.entries(saved.pageHeads).filter(([, on]) => on === true));
   }
   const calendar = state.prefs.calendar;
   calendar.span = pickValid(Number(calendar.span), calendarSpans.map((span) => span.id), 1);

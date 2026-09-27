@@ -1,0 +1,54 @@
+/*
+ * Der große Kopf einer Sammlung: oben mittig ein großes Icon in der Farbe der
+ * Sammlung, darunter der gewohnte Titel und ein grauer Satz von höchstens
+ * drei Zeilen — wie auf einer iOS-Infoseite, bewusst ohne Farbverlauf.
+ * Eingeschaltet wird er im Menü oben rechts (src/features/overview/page-hero.js);
+ * ohne ihn sieht die Seite aus wie immer.
+ * Pfad: styles/page-hero.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (direkt bei ihrer Regel)
+ * -----------------------------------
+ * .page-hero-icon width   -> Größe des großen Icons (72px)
+ * .page-hero-icon margin  -> Luft über und unter dem Icon (8px / 28px)
+ * .page-intro font-size   -> grauer Satz unter dem Titel (20px)
+ * .page-intro line-clamp  -> nach so vielen Zeilen endet der Satz mit „…“ (3)
+ *
+ * Die Farbe des Icons kommt je Sammlung aus src/data/collections.js
+ * (collectionHeads) und steht als --hero-color am Element; der Satz nutzt
+ * --muted, die Abstände --title-side und --page-title-gap.
+ */
+
+.page-hero-icon {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 28px;
+  color: var(--hero-color);
+}
+
+.page-hero-icon .icon {
+  width: 72px;
+  height: 72px;
+}
+
+.page-hero-icon[hidden],
+.page-intro[hidden] {
+  display: none;
+}
+
+/* Mit Kopf rückt der Satz dicht an den Titel, die Luft kommt erst danach */
+.has-hero .page-title {
+  margin-bottom: 4px;
+}
+
+.page-intro {
+  margin: 0 0 var(--page-title-gap);
+  padding: 0 var(--title-side);
+  font-size: 20px;
+  line-height: 1.3;
+  color: var(--muted);
+  overflow: hidden;
+  display: -webkit-box; /* -webkit-box mit line-clamp: ein zu langer Satz endet nach drei Zeilen mit „…“ */
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}

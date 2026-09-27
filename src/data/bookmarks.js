@@ -7,19 +7,21 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * bookmarkPills -> die drei Pillen oben auf der Seite: Name, Icon und welche
- *                  Karten-Art darunter steht, von links nach rechts
+ * bookmarkPills -> die Pillen oben auf der Seite: Name, Icon und welche
+ *                  Karten-Art darunter steht (`kind: null` = alle), von links nach rechts
  * BOOKMARK_TYPE -> der Eintragstyp, der selbst ein Lesezeichen ist
  */
 
 import { hostOf, isShortMapsLink, normalizeUrl, placeFromUrl, youtubeId } from "./link-kinds.js";
-import { blockLine, makeBlock, parseBlocks } from "./note-blocks.js";
+import { blockLine, embedKinds, makeBlock, parseBlocks } from "./note-blocks.js";
 import { state } from "./state.js";
 
 export const BOOKMARK_TYPE = "lesezeichen";
 
-/* `kind` ist die Karten-Art im Inhalt eines Eintrags (src/data/note-blocks.js). */
+/* `kind` ist die Karten-Art im Inhalt eines Eintrags (src/data/note-blocks.js).
+   „Zuletzt erstellt“ zeigt wie auf der Medien-Seite alles, neueste zuerst. */
 export const bookmarkPills = [
+  { id: "recent", label: "Zuletzt erstellt", icon: "history", kind: null },
   { id: "web", label: "Web-Lesezeichen", icon: "bookmark", kind: "link" },
   { id: "video", label: "Videos", icon: "video", kind: "video" },
   { id: "place", label: "Standorte", icon: "pin", kind: "place" },
@@ -45,20 +47,22 @@ export function embedKindOf(url) {
 }
 
 /**
- * Alle Lesezeichen einer Karten-Art, neueste Einträge zuerst. Jedes bringt
- * mit, in welchem Eintrag es steht — die Seite nennt ihn unter dem Namen.
- * Ein eigener Lesezeichen-Eintrag ohne Link steht unter „Web-Lesezeichen“,
- * damit er nicht verschwindet, solange man den Link noch nicht eingefügt hat.
+ * Alle Lesezeichen einer Karten-Art (`null` = alle Arten), neueste Einträge
+ * zuerst. Jedes bringt mit, in welchem Eintrag es steht — die Seite nennt ihn
+ * unter dem Namen. Ein eigener Lesezeichen-Eintrag ohne Link steht unter
+ * „Web-Lesezeichen“ (und „Zuletzt erstellt“), damit er nicht verschwindet,
+ * solange man den Link noch nicht eingefügt hat.
  */
 export function bookmarkItems(kind) {
   const items = [];
   const entries = state.entries
     .filter((entry) => !entry.archived)
     .sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+  const fits = (block) => block.url && embedKinds.includes(block.kind) && (!kind || block.kind === kind);
   entries.forEach((entry) => {
-    const embeds = parseBlocks(entry.body).filter((block) => block.kind === kind && block.url);
-    embeds.forEach((block, index) => items.push({ key: `${entry.id}-${index}`, entry, block }));
-    const bare = entry.type === BOOKMARK_TYPE && kind === "link" && !parseBlocks(entry.body).some((block) => block.url);
+    const blocks = parseBlocks(entry.body);
+    blocks.filter(fits).forEach((block, index) => items.push({ key: `${entry.id}-${index}`, entry, block }));
+    const bare = entry.type === BOOKMARK_TYPE && (!kind || kind === "link") && !blocks.some((block) => block.url);
     if (bare) items.push({ key: `${entry.id}-bare`, entry, block: makeBlock("link") });
   });
   return items;
@@ -71,7 +75,7 @@ export function bookmarkCounts() {
 
 /** Alle Lesezeichen zusammen — die Zahl auf der Karte der Startseite. */
 export function bookmarkTotal() {
-  return Object.values(bookmarkCounts()).reduce((sum, count) => sum + count, 0);
+  return bookmarkItems(null).length;
 }
 
 /**

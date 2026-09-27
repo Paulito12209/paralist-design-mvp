@@ -1,61 +1,22 @@
 /*
- * Lesezeichen-Seite: oben mittig ein großes Icon, darunter Titel und Satz
- * wie auf einer iOS-Infoseite — ohne Farbverlauf dahinter —, dann die Pillen
- * und die Zeilen mit großer Kachel links, Text rechts und Pfeil am Ende.
+ * Lesezeichen-Seite: die Pillen und die Zeilen mit großer Kachel links, Text
+ * rechts und Pfeil am Ende. Den großen Kopf mit Icon zeichnet
+ * styles/page-hero.css für alle Sammlungen.
  * Gebaut wird die Seite in src/features/bookmarks/bookmarks.js.
  * Pfad: styles/bookmarks.css
  *
  * ANPASSBARE WERTE (in styles/tokens-pages.css)
  * -----------------------------------
- * --bookmark-color  -> Lila des großen Icons und der Kachel ohne Bild
+ * --bookmark-color  -> Lila der Kachel ohne Bild
  * --bookmark-thumb  -> Kantenlänge der Kachel links in einer Zeile
  *
  * Direkt bei ihrer Regel:
- * .bookmark-hero-icon width    -> Größe des großen Icons oben (72px)
- * .bookmark-hero-title size    -> Titel unter dem Icon (28px, fett)
- * .bookmark-hero-intro size    -> grauer Satz darunter (20px)
  * .bookmark-title font-size    -> Name in einer Zeile (17px, halbfett)
  * .bookmark-site / -source     -> Website und Herkunft darunter (14px, grau)
  *
  * Weitere Farben: --text, --muted, --line, --icon-soft, --overview-card-bg,
  * --embed-tint (styles/tokens.css und styles/tokens-pages.css).
  */
-
-/* Die Seite zeichnet ihren Titel selbst unter dem großen Icon */
-.page-title[hidden] {
-  display: none;
-}
-
-/* ---------- Kopf ---------- */
-
-.bookmark-hero {
-  display: flex;
-  flex-direction: column;
-  padding: 8px var(--title-side) 20px;
-}
-
-.bookmark-hero-icon {
-  align-self: center; /* align-self: nur das Icon steht mittig, Titel und Satz bleiben links */
-  width: 72px;
-  height: 72px;
-  margin: 8px 0 28px;
-  color: var(--bookmark-color);
-}
-
-.bookmark-hero-title {
-  margin: 0;
-  font-size: 28px;
-  font-weight: 700;
-  line-height: 1.15;
-  letter-spacing: -0.02em;
-}
-
-.bookmark-hero-intro {
-  margin: 4px 0 0;
-  font-size: 20px;
-  line-height: 1.3;
-  color: var(--muted);
-}
 
 .bookmark-pills {
   margin-bottom: 8px;
