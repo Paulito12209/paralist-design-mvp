@@ -25,6 +25,9 @@
  *
  * Rechts neben den Pillen stehen je nach Pille andere Knöpfe: Kopieren unter
  * „Inhalt“, Filter und Plus unter „Verknüpfte Einträge“ (entry-tools.js).
+ *
+ * Über dem Titel können ein Farbverlauf in der Farbe der Kategorie und ein
+ * eigenes Icon stehen, beides aus dem Menü oben rechts (entry-cover.js).
  * Pfad: src/features/entry/entry.js
  *
  * Keine anpassbaren visuellen Werte: Schriftgrößen stehen in styles/entry.css
@@ -42,6 +45,7 @@ import { entryRef } from "../../data/refs.js";
 import { groupedListMarkup, linkedListMarkup } from "../../ui/groups.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { entryMenuOptions } from "../../ui/entry-menu.js";
+import { initEntryCover, renderEntryCover } from "./entry-cover.js";
 import { initEntryTitle, showEntryTitle } from "./entry-title.js";
 import { initEntryTools, linkFilterFor, renderEntryTools } from "./entry-tools.js";
 import { bindHeadTitle, setHeadTitle } from "../../ui/head-title.js";
@@ -117,6 +121,7 @@ function renderEntry() {
   const entry = findEntry(ui.currentEntryId);
   if (!entry) return;
 
+  renderEntryCover(entry);
   showEntryTitle(entry);
   bodyEditor.setText(entry.body || "");
   /* Mittig die Kategorie, nicht der Ort: der Zurück-Pfeil führt dorthin, wo
@@ -155,6 +160,7 @@ function saveBody(text) {
 
 /** Felder, Pillen, Menü und Zurück-Pfeil der Eintragsseite anmelden. */
 export function initEntry() {
+  initEntryCover();
   initEntryTitle();
   bodyEditor = createBlockEditor(dom.entryBody, { onChange: saveBody });
   initEntryTools({
@@ -222,7 +228,9 @@ export function initEntry() {
       dom.entryLinks.innerHTML = "";
       return;
     }
-    /* Verknüpfungen können sich im offenen Blatt gerade ändern, der Typ auch */
+    /* Verknüpfungen können sich im offenen Blatt gerade ändern, der Typ auch —
+       und mit ihm die Farbe des Covers */
+    renderEntryCover(entry);
     renderCrumb(entry);
     syncHeadSub(entry);
     renderLinks(entry);

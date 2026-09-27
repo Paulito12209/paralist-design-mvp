@@ -9,7 +9,8 @@
 
 import { dom } from "../core/dom.js";
 import { sameParent } from "../core/ids.js";
-import { presetIcons, typeIcon, typeLabel } from "../data/config.js";
+import { typeIcon, typeLabel } from "../data/config.js";
+import { iconGroups } from "../data/icon-sets.js";
 import { canLink, isLinked, linkOptionsFor } from "../data/links.js";
 import { clearPlaces, togglePlace, toggleLink } from "../data/mutations.js";
 import { hasPlace, placeOptionsFor } from "../data/queries.js";
@@ -104,14 +105,22 @@ export function openLinkPicker(entry) {
   render();
 }
 
-/** „Icon wählen“ für Tabs und Arbeitsbereiche. Ein leerer Name entfernt das Icon. */
+/**
+ * „Icon wählen“ für Einträge, Tabs und Arbeitsbereiche: die Gruppen aus
+ * src/data/icon-sets.js als Kachel-Raster mit Überschrift; das gewählte Icon
+ * ist hervorgehoben. Ein leerer Name entfernt das Icon.
+ */
 export function openIconPicker(current, onPick) {
-  const options = presetIcons.map((item) => ({
-    label: item.label,
-    icon: item.id,
-    active: current === item.id,
-    onSelect: () => onPick(item.id),
-  }));
+  const options = iconGroups.flatMap((group) => [
+    { heading: true, label: group.label },
+    ...group.icons.map((item) => ({
+      label: item.label,
+      icon: item.id,
+      tile: true,
+      active: current === item.id,
+      onSelect: () => onPick(item.id),
+    })),
+  ]);
   if (current) {
     options.push({ label: "Icon entfernen", icon: "close", split: true, onSelect: () => onPick("") });
   }

@@ -174,6 +174,10 @@ function migrate() {
   });
   state.entries.forEach((entry) => {
     if (typeof entry.favorite !== "boolean") entry.favorite = false;
+    /* Cover (Farbverlauf oben) und eigenes Icon kamen später dazu: ohne
+       Angabe hat ein Eintrag keins von beiden. */
+    if (typeof entry.cover !== "boolean") entry.cover = false;
+    if (typeof entry.icon !== "string") entry.icon = "";
     /* Früher hatte ein Eintrag EINEN Ablageort `parent` — als nackte Nummer,
        als „o3“/„o4“ für zwei Karten oder als Verweis. Heute ist es die Liste
        `places`; alles wird darauf gebracht und auf Verweise aus refs.js normiert. */

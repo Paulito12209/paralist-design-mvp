@@ -90,6 +90,20 @@ export function addWorkspace() {
   return workspace;
 }
 
+/** Den Farbverlauf oben auf der Seite eines Eintrags ein- oder ausschalten. */
+export function setEntryCover(entry, on) {
+  entry.cover = Boolean(on);
+  saveState();
+  emit(events.dataChanged);
+}
+
+/** Einem Eintrag ein eigenes Icon geben; ein leerer Name nimmt es weg. */
+export function setEntryIcon(entry, name) {
+  entry.icon = String(name || "");
+  saveState();
+  emit(events.dataChanged);
+}
+
 /** Den Namen eines Arbeitsbereichs übernehmen; leer heißt Vorgabename. */
 export function nameWorkspace(workspace, typed) {
   workspace.name = String(typed || "").trim() || workspace.placeholder || workspaceDefaultName;

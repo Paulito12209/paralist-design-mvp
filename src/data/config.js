@@ -156,13 +156,6 @@ export const typePlurals = {
 /** Vorgabename eines neuen Arbeitsbereichs; ab dem zweiten mit Nummer. */
 export const workspaceDefaultName = "Arbeitsbereich";
 
-/** Icons, die man einem Tab oder Arbeitsbereich geben kann. */
-export const presetIcons = [
-  { id: "smile", label: "Privat" },
-  { id: "briefcase", label: "Arbeit" },
-  { id: "academic", label: "Schule / Uni" },
-];
-
 /** XP-Arten: bestimmen Farbe, Icon und Punkte je Ereignis. */
 export const xpKinds = {
   created: { label: "Angelegt", icon: "plus-circle", color: "var(--xp-created)", amount: 1 },

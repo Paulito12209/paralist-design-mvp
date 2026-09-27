@@ -56,6 +56,7 @@
     --media-doc-color: #0a84ff;
     --support-choice-active-bg: rgba(10, 132, 255, 0.18);
     --credits-chip-bg: rgba(255, 255, 255, 0.1);
+    --entry-cover-mix: 75%;
   }
 }
 
@@ -106,4 +107,5 @@
   --media-doc-color: #0a84ff;
   --support-choice-active-bg: rgba(10, 132, 255, 0.18);
   --credits-chip-bg: rgba(255, 255, 255, 0.1);
+  --entry-cover-mix: 75%;
 }

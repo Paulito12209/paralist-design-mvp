@@ -27,6 +27,7 @@
  * styles/swipe-rows.css      -> Wisch-Zeile: Knöpfe dahinter, Einfärben nach dem Halten
  * styles/empty-state.css     -> Platzhalter für leere Listen (eigene Werte, siehe dort)
  * styles/entry.css           -> Seite eines Eintrags: Titel, Text, verknüpfte Einträge
+ * styles/entry-cover.css     -> Seite eines Eintrags: Farbverlauf oben (Cover) und eigenes Icon über dem Titel
  * styles/blocks.css          -> Inhalt eines Eintrags: Stichpunkte, Zahlen, runde Checkboxen, Trennlinie
  * styles/embeds.css          -> Inhalt eines Eintrags: Karten für Standort, Video und Web-Lesezeichen
  * styles/slash-menu.css      -> Inhalt eines Eintrags: das „/“-Menü mit Gruppen und Kacheln
@@ -37,6 +38,7 @@
  * styles/update.css          -> Fenster „Neue Version verfügbar“ mit Später und Aktualisieren
  * styles/overlays.css        -> Auswahl-Blatt, kleines Menü, Blätter von unten
  * styles/sheet-tabs.css      -> Auswahl-Blatt mit Tabs (Aufgabe): Kopf mit Icon, Trennlinie, Pillen, Haken, Hereingleiten
+ * styles/sheet-tiles.css     -> Auswahl-Blatt: Raster aus Icon-Kacheln („Icon wählen“)
  * styles/details.css         -> Blatt „Details“ und kleiner Titel in der Kopfzeile einer Detailseite
  * styles/modal-top.css       -> runder Pfeil in einem Blatt, der nach oben rollt
  * styles/search.css          -> Suchseite
@@ -220,6 +222,7 @@
  * --sheet-tabs-min-h        -> Mindesthöhe der Liste in einem Blatt mit Tabs (hält die Höhe beim Wechseln ruhig)
  * --sheet-slide             -> aus welcher Entfernung die Liste nach einem Tab-Wechsel hereingleitet
  * --sheet-slide-time        -> wie lange das Hereingleiten dauert
+ * --sheet-tile-size / --sheet-tile-icon -> Kachel und Icon im Raster „Icon wählen“
  * --modal-dismiss-pull      -> Wie weit man ein Blatt ziehen muss, damit es schließt
  *
  * Dunkelmodus: dieselben Werte werden weiter unten noch einmal gesetzt —
@@ -359,6 +362,8 @@
   --sheet-tabs-min-h: 200px;
   --sheet-slide: 28px;
   --sheet-slide-time: 0.2s;
+  --sheet-tile-size: 52px;
+  --sheet-tile-icon: 24px;
   --icon-strong: #3a3a3c;
   --placeholder: #aeaeb2;
   --chevron: #c7c7cc;

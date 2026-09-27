@@ -57,7 +57,8 @@ export function entryGlyph(entry) {
     const kindIcons = { image: "image", video: "video", audio: "wave", doc: "doc" };
     return icon(kindIcons[kind] || "doc", "entry-type");
   }
-  return icon(typeIcon(entry.type), "entry-type");
+  /* Ein selbst gewähltes Icon (Seite des Eintrags, Menü) steht vor dem Icon des Typs */
+  return icon(entry.icon || typeIcon(entry.type), "entry-type");
 }
 
 /**

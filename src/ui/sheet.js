@@ -3,7 +3,10 @@
  * Jede Option ist { label, icon, onSelect } plus optional active/danger/split/gap,
  * `stay` (das Blatt bleibt nach dem Antippen offen, z.B. zum An-/Abwählen),
  * `pair` (die Option rutscht ganz nach unten in eine Zeile neben die andere
- * `pair`-Option — so stehen Archivieren und Löschen nebeneinander) und
+ * `pair`-Option — so stehen Archivieren und Löschen nebeneinander),
+ * `tile` (nur Icon, quadratisch; aufeinanderfolgende Kacheln stehen in
+ * einem Raster nebeneinander — so zeigt „Icon wählen“ viele Icons auf wenig
+ * Platz, der Name steht als Tooltip) und
  * `heading` (keine Option, sondern eine Überschrift, die die Liste in
  * Abschnitte teilt — „Verknüpfen mit“ trennt damit Ablageorte und Einträge).
  * Für „Details“ gibt es zwei reine Anzeige-Zeilen: `lead` (der volle Titel,
@@ -22,8 +25,9 @@
  * Pfad: src/ui/sheet.js
  *
  * Keine anpassbaren visuellen Werte: Aussehen und Abstände stehen in
- * styles/overlays.css (Klassen .sheet, .sheet-option) und
- * styles/sheet-tabs.css (Kopf, Tabs, Haken, Hereingleiten).
+ * styles/overlays.css (Klassen .sheet, .sheet-option),
+ * styles/sheet-tabs.css (Kopf, Tabs, Haken, Hereingleiten) und
+ * styles/sheet-tiles.css (das Raster der Kacheln).
  */
 
 import { events, on } from "../core/bus.js";
@@ -49,6 +53,13 @@ function optionMarkup(option, index) {
     return `<div class="sheet-detail"><span class="sheet-detail-label">${escapeHtml(option.label)}</span><span class="sheet-detail-value">${escapeHtml(option.value)}</span></div>`;
   }
 
+  if (option.tile) {
+    return `
+    <button class="sheet-tile${option.active ? " is-active" : ""}" type="button" data-sheet="${index}" title="${escapeHtml(option.label)}" aria-label="${escapeHtml(option.label)}"${option.active ? ' aria-current="true"' : ""}>
+      ${icon(option.icon)}
+    </button>`;
+  }
+
   const classes = ["sheet-option"];
   if (option.active) classes.push("is-active");
   if (option.danger) classes.push("is-danger");
@@ -66,11 +77,29 @@ function optionMarkup(option, index) {
   `;
 }
 
-/* Erst die gewöhnlichen Optionen untereinander, darunter die `pair`-Optionen
-   gemeinsam in einer Zeile. */
+/* Aufeinanderfolgende Kacheln in ein gemeinsames Raster packen; alles
+   andere bleibt, wie es ist. */
+function withTileGrids(options, marks) {
+  let out = "";
+  let grid = "";
+  options.forEach((option, index) => {
+    if (option.pair) return;
+    if (option.tile) {
+      grid += marks[index];
+      return;
+    }
+    if (grid) out += `<div class="sheet-tiles">${grid}</div>`;
+    grid = "";
+    out += marks[index];
+  });
+  return grid ? `${out}<div class="sheet-tiles">${grid}</div>` : out;
+}
+
+/* Erst die gewöhnlichen Optionen untereinander (Kacheln als Raster),
+   darunter die `pair`-Optionen gemeinsam in einer Zeile. */
 function sheetMarkup(options) {
   const marks = options.map(optionMarkup);
-  const rest = options.map((option, index) => (option.pair ? "" : marks[index])).join("");
+  const rest = withTileGrids(options, marks);
   const paired = options.map((option, index) => (option.pair ? marks[index] : "")).join("");
   return paired ? `${rest}<div class="sheet-pair">${paired}</div>` : rest;
 }

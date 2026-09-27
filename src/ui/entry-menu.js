@@ -14,19 +14,20 @@ import { emit, events } from "../core/bus.js";
 import { load } from "../core/lazy.js";
 import { entryDetails } from "../data/details.js";
 import { isTaskDone } from "../data/config.js";
-import { deleteEntry, toggleFavorite } from "../data/mutations.js";
+import { deleteEntry, setEntryCover, setEntryIcon, toggleFavorite } from "../data/mutations.js";
 import { findEntry } from "../data/queries.js";
 import { archiveEntry } from "../data/xp.js";
 import { copyOptions } from "./copy-page.js";
 import { openCtxMenu } from "./ctx-menu.js";
 import { openDetails } from "./details.js";
-import { openLinkPicker } from "./pickers.js";
+import { iconPickerAction, openLinkPicker } from "./pickers.js";
 import { toggleTaskFromCheck } from "./task-status.js";
 import { typeChangeAction } from "./type-menu.js";
 
 /**
  * Alle Aktionen eines Eintrags in der Reihenfolge des Menüs.
- * @param onPage true auf der Eintragsseite: nur dort gibt es „Zeichnung
+ * @param onPage true auf der Eintragsseite: nur dort gibt es Cover und Icon
+ *   (wie in Notion — beides wirkt oben auf der Seite) und „Zeichnung
  *   leeren“, weil nur dort die Zeichenfläche offen ist.
  * @param afterRemove läuft nach Archivieren und Löschen — die Eintragsseite
  *   kehrt dann zurück, in einer Liste verschwindet nur die Zeile.
@@ -58,6 +59,19 @@ export function entryMenuOptions(entry, { onPage = false, afterRemove = () => {}
      nicht bei den Aktionen, die ihn wegräumen. Fehlt bei Zeichnung und Medium. */
   const typeChange = typeChangeAction({ entry });
   if (typeChange) options.push(typeChange);
+  /* Cover und Icon gestalten die Seite selbst: darum nur dort, gleich nach
+     dem, was den Eintrag umbaut. Das Cover ist ein Farbverlauf in der Farbe
+     der Kategorie — ein Schalter, keine Auswahl. */
+  if (onPage) {
+    options.push(
+      {
+        label: entry.cover ? "Cover entfernen" : "Cover hinzufügen",
+        icon: "image",
+        onSelect: () => setEntryCover(entry, !entry.cover),
+      },
+      iconPickerAction(entry.icon, (name) => setEntryIcon(entry, name))
+    );
+  }
   options.push(
     {
       label: "Details",

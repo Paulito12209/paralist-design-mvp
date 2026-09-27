@@ -1,0 +1,46 @@
+/*
+ * Auswahl-Blatt: das Raster aus Kacheln (Option `tile` in src/ui/sheet.js).
+ * „Icon wählen“ zeigt so viele Icons auf wenig Platz; die gewählte Kachel
+ * ist blau hervorgehoben, der Name steht als Tooltip.
+ * Pfad: styles/sheet-tiles.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --sheet-tile-size         -> Kantenlänge einer Kachel (bestimmt, wie viele nebeneinander passen)
+ * --sheet-tile-icon         -> Größe des Icons in der Kachel
+ * --radius-lg               -> Rundung der gedrückten und der gewählten Kachel
+ * --card                    -> Fläche hinter der gewählten Kachel
+ * --link-color              -> Farbe des gewählten Icons
+ * --icon-strong             -> Farbe der übrigen Icons
+ */
+
+/* So viele Kacheln nebeneinander, wie in die Breite passen; der Rest der
+   Breite verteilt sich gleichmäßig auf die Lücken. */
+.sheet-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--sheet-tile-size), 1fr));
+  gap: 2px;
+  padding: 0 4px 6px;
+}
+
+.sheet-tile {
+  display: grid;
+  place-items: center;
+  height: var(--sheet-tile-size);
+  border-radius: var(--radius-lg); /* border-radius: rundet die Kachel beim Antippen und in der Auswahl */
+  color: var(--icon-strong);
+}
+
+.sheet-tile .icon {
+  width: var(--sheet-tile-icon);
+  height: var(--sheet-tile-icon);
+}
+
+.sheet-tile:active {
+  opacity: 0.55;
+}
+
+.sheet-tile.is-active {
+  background: var(--card);
+  color: var(--link-color);
+}

@@ -186,8 +186,17 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 **Eintrag**
 - Titel und Text tippen — nach kurzer Pause ist es gespeichert (Seite neu laden
   und nachsehen).
-- Menü: Favorit, Verknüpfen, Typ ändern, Details, Archivieren, Löschen. Eine
-  archivierte Aufgabe gibt Punkte.
+- Menü: Favorit, Verknüpfen, Typ ändern, Cover, Icon, Details, Archivieren,
+  Löschen. Eine archivierte Aufgabe gibt Punkte.
+- Cover und Icon (wie in Notion): „Cover hinzufügen“ legt einen Farbverlauf in
+  der Farbe der Kategorie hinter Kopfzeile und Titel — hell und dunkel ansehen,
+  Typ ändern wechselt die Farbe mit, „Cover entfernen“ nimmt ihn weg. Beim
+  Herunterscrollen bekommt die Kopfzeile mit dem kleinen Titel ihren
+  Hintergrund zurück. „Icon hinzufügen“ öffnet das Kachel-Raster (Bereiche und
+  Sammlungen, Kategorien, Weitere); das Icon steht danach groß über dem Titel
+  und in jeder Listenzeile statt des Typ-Icons. Ein Tipp auf das Icon öffnet
+  dasselbe Raster mit dem gewählten Icon markiert und „Icon entfernen“ unten.
+  Dasselbe Raster nutzen Tab und Arbeitsbereich.
 - Typ ändern — drei Wege: das Menü, die graue Pille mit dem Typ mitten in der
   Kopfzeile (bei einer Aufgabe steht „Typ ändern“ unten im Blatt mit Status
   und Dringlichkeit) und das Menü beim gedrückt Halten einer Zeile. Notiz →

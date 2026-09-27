@@ -1,0 +1,81 @@
+/*
+ * Seite eines Eintrags: das Cover (Farbverlauf in der Farbe der Kategorie,
+ * der hinter Kopfzeile und Titel nach oben hin kräftiger wird — wie der
+ * Kopf einer Seite „Neue Funktionen“ in iOS) und das eigene Icon über dem
+ * Titel. Beides schaltet man im Menü oben rechts ein
+ * (src/features/entry/entry-cover.js). Die Farbe kommt als --entry-accent
+ * vom Skript, weil sie sich mit dem Typ des Eintrags ändert.
+ * Pfad: styles/entry-cover.css
+ *
+ * ANPASSBARE WERTE (in styles/tokens-pages.css, im Dunkeln styles/tokens-dark.css)
+ * -----------------------------------
+ * --entry-cover-h           -> wie weit der Verlauf von oben nach unten reicht
+ * --entry-cover-mix         -> wie kräftig die Farbe ganz oben ist (100% = volle Kategoriefarbe)
+ * --entry-icon-glyph        -> Größe des Icons über dem Titel
+ * --entry-icon-gap          -> Luft zwischen Icon und Titel
+ * --content-side            -> der Verlauf reicht um diesen Rand nach links und rechts hinaus (styles/tokens.css)
+ * --head-btn-size           -> Tippfläche des Icons ist so groß wie ein Kopfzeilen-Knopf (styles/tokens.css)
+ */
+
+/* Der Verlauf liegt HINTER Kopfzeile und Titel: die Seite bildet dafür ihren
+   eigenen Stapel, in dem das Cover ganz unten liegt. */
+#view-entry {
+  position: relative; /* position: Anker für das Cover */
+  z-index: 0; /* z-index: eigener Stapel, damit z-index: -1 des Covers nicht unter die Seite fällt */
+}
+
+.entry-cover {
+  position: absolute; /* position: liegt hinter dem Inhalt, nimmt keinen Platz */
+  top: 0;
+  /* bis an die Bildschirmränder, nicht nur bis zum Inhaltsrand */
+  left: calc(-1 * var(--content-side));
+  right: calc(-1 * var(--content-side));
+  height: var(--entry-cover-h);
+  z-index: -1; /* z-index: hinter Kopfzeile, Icon und Titel */
+  pointer-events: none; /* pointer-events: nur Farbe, nichts zum Antippen */
+  /* Drei Stufen statt zwei: die Farbe hält oben etwas länger und läuft dann
+     weich in den Hintergrund aus — ohne die Stufe in der Mitte wirkte der
+     Verlauf wie ein hartes Band. */
+  background: linear-gradient(
+    to bottom,
+    color-mix(in srgb, var(--entry-accent) var(--entry-cover-mix), var(--bg)) 0%,
+    color-mix(in srgb, var(--entry-accent) calc(var(--entry-cover-mix) * 0.45), var(--bg)) 50%,
+    var(--bg) 100%
+  );
+}
+
+.entry-cover[hidden] {
+  display: none;
+}
+
+/* Mit Cover ist die feststehende Kopfzeile durchsichtig, solange der große
+   Titel zu sehen ist — sonst schnitte ihr Hintergrund den Verlauf ab. Erst
+   der kleine Titel bringt den Hintergrund zurück (src/ui/head-title.js). */
+#view-entry.has-cover .page-head:not(.is-title-shown) {
+  background: transparent;
+}
+
+/* Das Icon über dem Titel, in der Farbe der Kategorie; ein Tipp öffnet den
+   Icon-Wähler. Die Tippfläche ist größer als das Icon, wie bei jedem Knopf. */
+.entry-icon {
+  display: grid;
+  place-items: center;
+  min-width: var(--head-btn-size);
+  height: var(--head-btn-size);
+  /* margin-left: das Icon selbst, nicht seine Tippfläche, steht bündig mit dem Titel */
+  margin: 0 0 var(--entry-icon-gap) calc((var(--entry-icon-glyph) - var(--head-btn-size)) / 2);
+  color: var(--entry-accent);
+}
+
+.entry-icon .icon {
+  width: var(--entry-icon-glyph);
+  height: var(--entry-icon-glyph);
+}
+
+.entry-icon:active {
+  opacity: 0.55;
+}
+
+.entry-icon[hidden] {
+  display: none;
+}
