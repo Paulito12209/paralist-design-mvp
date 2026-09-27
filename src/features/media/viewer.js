@@ -28,6 +28,9 @@ import { releaseStage, renderStage } from "./viewer-stage.js";
 /* Welche Datei gerade offen ist. 0 heißt: die Ansicht ist zu. */
 let openId = 0;
 
+/* Die IDs, durch die man blättern kann — die Reihe, aus der geöffnet wurde. */
+let sequence = [];
+
 /* Das Schließen ist angestoßen, der Verlaufsschritt zurück aber noch nicht
    angekommen. Ohne diese Merkung ginge die App beim Löschen zwei Schritte
    zurück — einmal, weil der Eintrag verschwindet, einmal durch das Menü. */
@@ -97,12 +100,14 @@ function close() {
  * Eine Datei öffnen.
  * @param entryOrState der Eintrag, oder beim Browser-Zurück der Verlaufseintrag.
  * @param push false, wenn der Verlauf schon stimmt (Browser-Zurück).
+ * @param list die IDs der Reihe zum Blättern; beim Browser-Zurück steht sie im Verlaufseintrag.
  */
-function open(push = true, entryOrState = null) {
+function open(push = true, entryOrState = null, list = null) {
   const entry = entryOrState && entryOrState.id !== undefined ? findEntry(entryOrState.id) : entryOrState;
   if (!entry) return;
 
   openId = entry.id;
+  sequence = list || (entryOrState && entryOrState.list) || [String(entry.id)];
   closing = false;
   mount();
   clearModalPull(dom.mediaViewer);
@@ -110,7 +115,7 @@ function open(push = true, entryOrState = null) {
 
   show(entry);
 
-  if (push) history.pushState({ view: "file", id: entry.id, from: ui.sourceView }, "", `#/datei/${entry.id}`);
+  if (push) history.pushState({ view: "file", id: entry.id, list: sequence, from: ui.sourceView }, "", `#/datei/${entry.id}`);
 }
 
 /* Name, Datei und Pfeile für `entry` zeichnen — beim Öffnen und beim Blättern. */
@@ -119,22 +124,22 @@ function show(entry) {
   title.value = entry.title || "";
   stage.dataset.entryId = String(entry.id);
   renderStage(stage, entry);
-  updateNav(dom.mediaViewer, entry.id);
+  updateNav(dom.mediaViewer, sequence, entry.id);
 }
 
 /* Zur vorigen (−1) oder nächsten (1) Datei. Der Verlaufseintrag wird ersetzt
    statt ergänzt: Zurück schließt die Ansicht, statt durch alle Bilder zu gehen. */
 function step(direction) {
-  const next = openId ? findEntry(neighborId(openId, direction)) : null;
+  const next = openId ? findEntry(neighborId(sequence, openId, direction)) : null;
   if (!next || closing) return;
   openId = next.id;
   show(next);
   history.replaceState({ ...history.state, id: next.id }, "", `#/datei/${next.id}`);
 }
 
-/** Von der Medien-Seite aus aufgerufen. */
-export function openViewer(entry) {
-  open(true, entry);
+/** Von der Medien-Seite aus aufgerufen, mit allen Kacheln der gewählten Pille als Reihe. */
+export function openViewer(entry, list) {
+  open(true, entry, list);
 }
 
 /* Der Eintrag, der gerade zu sehen ist — oder null, wenn er inzwischen weg ist. */
