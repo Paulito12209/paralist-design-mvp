@@ -38,7 +38,7 @@
     <link rel="stylesheet" href="styles/overview.css" /><link rel="stylesheet" href="styles/overview-more.css" />
     <link rel="stylesheet" href="styles/rows.css" /><link rel="stylesheet" href="styles/swipe-rows.css" />
     <link rel="stylesheet" href="styles/empty-state.css" />
-    <link rel="stylesheet" href="styles/entry.css" /><link rel="stylesheet" href="styles/entry-cover.css" /><link rel="stylesheet" href="styles/blocks.css" /><link rel="stylesheet" href="styles/embeds.css" /><link rel="stylesheet" href="styles/slash-menu.css" />
+    <link rel="stylesheet" href="styles/entry.css" /><link rel="stylesheet" href="styles/page-cover.css" /><link rel="stylesheet" href="styles/blocks.css" /><link rel="stylesheet" href="styles/embeds.css" /><link rel="stylesheet" href="styles/slash-menu.css" />
     <link rel="stylesheet" href="styles/navigation.css" />
     <link rel="stylesheet" href="styles/composer.css" />
     <link rel="stylesheet" href="styles/composer-attachments.css" />
@@ -137,8 +137,8 @@
                 <svg class="icon"><use href="#icon-dots"></use></svg>
               </button>
             </div>
-            <!-- Farbverlauf in der Farbe der Kategorie (Menü: „Cover hinzufügen“) und das selbst gewählte Icon über dem Titel, ein Tipp darauf wechselt es (src/features/entry/entry-cover.js); der Titel ist contenteditable, damit er umbricht und nach einigen Zeilen mit „…“ endet -->
-            <div class="entry-cover" id="entry-cover" hidden></div><button class="entry-icon" id="entry-icon" type="button" aria-label="Icon ändern" hidden></button><div class="entry-title" id="entry-title" contenteditable="plaintext-only" role="textbox" aria-label="Titel" data-placeholder="Ohne Titel" spellcheck="false" enterkeyhint="done"></div>
+            <!-- Das selbst gewählte Icon über dem Titel, ein Tipp darauf wechselt es (src/features/entry/entry-cover.js; das Cover legt src/ui/page-cover.js selbst an); der Titel ist contenteditable, damit er umbricht und nach einigen Zeilen mit „…“ endet -->
+            <button class="entry-icon" id="entry-icon" type="button" aria-label="Icon ändern" hidden></button><div class="entry-title" id="entry-title" contenteditable="plaintext-only" role="textbox" aria-label="Titel" data-placeholder="Ohne Titel" spellcheck="false" enterkeyhint="done"></div>
             <!-- Pillen wie auf der Seite eines Arbeitsbereichs, rechts die Knöpfe der gewählten Pille (Kopieren bzw. Filter und Plus) -->
             <div class="page-pills-row"><div class="tab-pills page-pills" id="entry-pills"></div><div class="page-tools" id="entry-tools"></div></div>
             <div class="entry-panel" id="entry-panel-notes">

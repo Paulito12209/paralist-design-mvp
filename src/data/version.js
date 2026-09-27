@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "cc07503ea9f5";
+export const appVersion = "322b25dbdab7";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -165,6 +165,7 @@ export const appFiles = [
   "src/ui/modal-pull.js",
   "src/ui/modal-top.js",
   "src/ui/move-menu.js",
+  "src/ui/page-cover.js",
   "src/ui/page-tools.js",
   "src/ui/pickers.js",
   "src/ui/pill-swipe.js",
@@ -201,7 +202,6 @@ export const appFiles = [
   "styles/drawing.css",
   "styles/embeds.css",
   "styles/empty-state.css",
-  "styles/entry-cover.css",
   "styles/entry.css",
   "styles/media.css",
   "styles/milestones.css",
@@ -210,6 +210,7 @@ export const appFiles = [
   "styles/overlays.css",
   "styles/overview-more.css",
   "styles/overview.css",
+  "styles/page-cover.css",
   "styles/profile.css",
   "styles/progress.css",
   "styles/rows.css",

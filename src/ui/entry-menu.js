@@ -14,7 +14,7 @@ import { emit, events } from "../core/bus.js";
 import { load } from "../core/lazy.js";
 import { entryDetails } from "../data/details.js";
 import { isTaskDone } from "../data/config.js";
-import { deleteEntry, setEntryCover, setEntryIcon, toggleFavorite } from "../data/mutations.js";
+import { deleteEntry, setCover, setEntryIcon, toggleFavorite } from "../data/mutations.js";
 import { findEntry } from "../data/queries.js";
 import { archiveEntry } from "../data/xp.js";
 import { copyOptions } from "./copy-page.js";
@@ -67,7 +67,7 @@ export function entryMenuOptions(entry, { onPage = false, afterRemove = () => {}
       {
         label: entry.cover ? "Cover entfernen" : "Cover hinzufügen",
         icon: "image",
-        onSelect: () => setEntryCover(entry, !entry.cover),
+        onSelect: () => setCover(entry, !entry.cover),
       },
       iconPickerAction(entry.icon, (name) => setEntryIcon(entry, name))
     );

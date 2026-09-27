@@ -3,7 +3,8 @@
  * Kopfzeile mit Zurück-Pfeil, darunter der große Titel und der Inhalt. Suche
  * und Optionen-Menü bleiben verborgen, bis man die Liste nach unten
  * scrollt — wie bei einer Playlist in Spotify. Ein Arbeitsbereich zeigt
- * dagegen wie eine Eintragsseite gleich mittig seine Kategorie und das Menü.
+ * dagegen wie eine Eintragsseite gleich mittig seine Kategorie und das Menü —
+ * und kann wie sie ein Cover in seiner Farbe bekommen (src/ui/page-cover.js).
  * Pfad: src/features/overview/page.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -16,20 +17,22 @@
  */
 
 import { emit, events, on } from "../../core/bus.js";
-import { dom } from "../../core/dom.js";
+import { dom, el } from "../../core/dom.js";
 import { escapeHtml } from "../../core/html.js";
 import { load } from "../../core/lazy.js";
 import {
   clearFavorites,
   deleteEntriesOf,
   deleteWorkspace,
+  setCover,
   toggleFavorite,
 } from "../../data/mutations.js";
 import { workspaceDetails } from "../../data/details.js";
-import { findWorkspace, inboxEntries, projectEntries } from "../../data/queries.js";
+import { findWorkspace, inboxEntries, projectEntries, workspaceColor } from "../../data/queries.js";
 import { saveState, state, ui } from "../../data/state.js";
 import { openDetails } from "../../ui/details.js";
 import { bindHeadTitle, setHeadTitle } from "../../ui/head-title.js";
+import { registerCover, renderCover } from "../../ui/page-cover.js";
 import { iconPickerAction } from "../../ui/pickers.js";
 import { goBack, restoreFrom, showSearch } from "../../ui/router.js";
 import { emptyState } from "../../ui/empty-state.js";
@@ -125,6 +128,14 @@ export function renderPageBody() {
   else dom.pageBody.innerHTML = listMarkup(inboxEntries(), emptyStates.inbox);
 }
 
+/* Das Cover gibt es nur auf einem Arbeitsbereich, nie auf den Sammlungen
+   derselben Ansicht — dort wird es beim Wechsel wieder abgeschaltet. */
+function renderWorkspaceCover() {
+  const page = ui.currentPage;
+  const workspace = page && page.isWorkspace ? findWorkspace(page.workspaceId) : null;
+  renderCover(el("view-page"), { on: Boolean(workspace && workspace.cover), color: workspaceColor() });
+}
+
 /* Suche und Optionen ein-/ausblenden, je nachdem wie weit die Liste gescrollt ist. */
 function updatePageHeadScroll() {
   if (!isViewActive("page")) return;
@@ -152,6 +163,8 @@ function renderPage() {
   dom.pageCrumb.innerHTML = page.isWorkspace ? typeCrumbMarkup(WORKSPACE_CRUMB) : "";
   dom.pageHead.classList.toggle("is-pinned", Boolean(page.isWorkspace));
   renderPageBody();
+  /* Nach dem Inhalt: das Cover misst die Pillen, die gerade erst entstanden sind */
+  renderWorkspaceCover();
 }
 
 /* Das Seitenmenü hängt davon ab, was die Seite ist. */
@@ -180,6 +193,12 @@ function openPageMenu() {
       label: workspace.favorite ? "Aus Favoriten entfernen" : "Zu Favoriten",
       icon: workspace.favorite ? "star" : "star-outline",
       onSelect: () => toggleFavorite(workspace),
+    });
+    /* Wie auf einer Eintragsseite: Cover und Icon nebeneinander im Menü */
+    options.push({
+      label: workspace.cover ? "Cover entfernen" : "Cover hinzufügen",
+      icon: "image",
+      onSelect: () => setCover(workspace, !workspace.cover),
     });
     options.push(
       iconPickerAction(workspace.icon, (name) => {
@@ -225,6 +244,11 @@ export function initPage() {
     if (workspace && event.target.closest("[data-type-sheet]")) openTypeChangeSheet({ workspace });
   });
   initWorkspaceTitle();
+  /* Das Cover endet an den Pillen eines Arbeitsbereichs; die Sammlungen haben keine */
+  registerCover(el("view-page"), {
+    title: dom.pageTitle,
+    row: () => (ui.currentPage && ui.currentPage.isWorkspace ? dom.pageBody.querySelector(".page-pills-row") : null),
+  });
   initArchive();
   initWorkspaceCollection();
   /* Erst die Suchseite zeigen: dort ist die allgemeine Kopfzeile mit dem
@@ -249,7 +273,9 @@ export function initPage() {
     renderPage();
   });
   on(events.dataChanged, () => {
+    if (!isViewActive("page")) return;
     /* Nicht mitten ins Tippen hinein neu zeichnen: der Text ist schon gemerkt. */
-    if (isViewActive("page") && !isWritingNotes()) renderPageBody();
+    if (!isWritingNotes()) renderPageBody();
+    renderWorkspaceCover();
   });
 }

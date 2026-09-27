@@ -1,17 +1,13 @@
 /*
  * Cover und Icon oben auf der Seite eines Eintrags — wie in Notion, beides
- * wählt man im Menü oben rechts (src/ui/entry-menu.js). Das Cover ist ein
- * Verlauf in der Farbe der Kategorie hinter Kopfzeile und Titel, der an der
- * Oberkante der Pillen endet; das Icon steht groß über dem Titel, ein
- * Tipp darauf öffnet den Icon-Wähler.
- *
- * Wo die Pillen liegen, hängt von Icon und Titellänge ab: die Oberkante wird
- * gemessen und als --entry-cover-solid an styles/entry-cover.css gegeben —
- * beim Zeichnen und immer, wenn der Titel beim Tippen höher oder niedriger wird.
+ * wählt man im Menü oben rechts (src/ui/entry-menu.js). Das Cover selbst ist
+ * der gemeinsame Baustein aller Detailseiten (src/ui/page-cover.js); hier
+ * kommen nur die Farbe der Kategorie und das Icon dazu. Das Icon steht groß
+ * über dem Titel, ein Tipp darauf öffnet den Icon-Wähler.
  * Pfad: src/features/entry/entry-cover.js
  *
- * Keine anpassbaren visuellen Werte: Stärke des Verlaufs und Größe des
- * Icons stehen in styles/entry-cover.css.
+ * Keine anpassbaren visuellen Werte: Verlauf und Größe des Icons stehen in
+ * styles/page-cover.css.
  */
 
 import { dom, el } from "../../core/dom.js";
@@ -19,38 +15,24 @@ import { icon } from "../../core/html.js";
 import { setEntryIcon } from "../../data/mutations.js";
 import { entryColor, findEntry } from "../../data/queries.js";
 import { ui } from "../../data/state.js";
+import { registerCover, renderCover } from "../../ui/page-cover.js";
 import { openIconPicker } from "../../ui/pickers.js";
-
-/* Die Oberkante der Pillen-Zeile, gemessen von der Oberkante der Seite
-   (offsetTop, weil #view-entry der positionierte Vorfahr ist). */
-function measureSolid() {
-  const view = el("view-entry");
-  if (view.hidden || dom.entryCover.hidden) return;
-  view.style.setProperty("--entry-cover-solid", `${dom.entryPills.parentElement.offsetTop}px`);
-}
 
 /** Cover und Icon passend zum Eintrag zeigen oder verbergen. */
 export function renderEntryCover(entry) {
-  const view = el("view-entry");
-  const cover = Boolean(entry.cover);
-  view.classList.toggle("has-cover", cover);
-  dom.entryCover.hidden = !cover;
-  /* Die Farbe der Kategorie kommt als Variable mit: der Verlauf und das
-     Icon lesen sie in styles/entry-cover.css. */
-  view.style.setProperty("--entry-accent", entryColor(entry));
-
+  /* Erst das Icon: es schiebt Titel und Pillen nach unten, das Cover misst danach. */
   const name = entry.icon || "";
   dom.entryIcon.hidden = !name;
   dom.entryIcon.innerHTML = name ? icon(name) : "";
-  measureSolid();
+  renderCover(el("view-entry"), { on: Boolean(entry.cover), color: entryColor(entry) });
 }
 
-/** Den Tipp auf das Icon anmelden: er öffnet denselben Wähler wie das Menü. */
+/** Cover anmelden und den Tipp auf das Icon: er öffnet denselben Wähler wie das Menü. */
 export function initEntryCover() {
-  /* Wächst der Titel beim Tippen um eine Zeile, rutschen die Pillen — die
-     Fläche muss mit. ResizeObserver meldet das, ohne bei jedem Tastendruck
-     zu messen. */
-  new ResizeObserver(measureSolid).observe(dom.entryTitle);
+  registerCover(el("view-entry"), {
+    title: dom.entryTitle,
+    row: () => dom.entryPills.parentElement,
+  });
 
   dom.entryIcon.addEventListener("click", () => {
     const entry = findEntry(ui.currentEntryId);

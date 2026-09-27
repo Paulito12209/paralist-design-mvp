@@ -224,6 +224,8 @@ export function entryToWorkspace(entry) {
     name: (entry.title || "").trim() || workspaceDefaultName,
     tab: workspaceTabFor(entry),
     favorite: Boolean(entry.favorite),
+    /* Cover und Icon gestalten die Seite: sie bleiben, auch wenn der Typ wechselt */
+    cover: Boolean(entry.cover),
     body: entry.body || "",
     archived: Boolean(entry.archived),
     /* Punkte gab es schon beim Anlegen des Eintrags — nicht noch einmal. */
@@ -232,6 +234,7 @@ export function entryToWorkspace(entry) {
   /* Die Punkte-Sperre einer erledigten Aufgabe reist mit — sonst brächte der
      Umweg über den Arbeitsbereich ein zweites „Erledigt“. */
   if (entry.doneAwarded) workspace.doneAwarded = true;
+  if (entry.icon) workspace.icon = entry.icon;
   state.workspaces.push(workspace);
 
   entriesAt(ref).forEach((item) => {
@@ -266,6 +269,8 @@ export function workspaceToEntry(workspace, type) {
     links: [],
     archived: Boolean(workspace.archived),
     favorite: Boolean(workspace.favorite),
+    cover: Boolean(workspace.cover),
+    icon: workspace.icon || "",
     createdAt: Date.now(),
   };
   if (workspace.doneAwarded) entry.doneAwarded = true;

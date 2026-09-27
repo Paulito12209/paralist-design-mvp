@@ -164,6 +164,8 @@ function migrate() {
   });
   state.workspaces.forEach((workspace) => {
     if (typeof workspace.favorite !== "boolean") workspace.favorite = false;
+    /* Das Cover kam später dazu: ohne Angabe hat ein Arbeitsbereich keins. */
+    if (typeof workspace.cover !== "boolean") workspace.cover = false;
   });
   state.workspaces.forEach((workspace) => {
     if (typeof workspace.body !== "string") workspace.body = "";

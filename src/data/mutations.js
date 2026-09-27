@@ -79,6 +79,7 @@ export function addWorkspace() {
     placeholder: nextWorkspacePlaceholder(),
     tab: state.activeTabId,
     favorite: false,
+    cover: false,
     body: "",
     /* Punkte gibt es erst, wenn der Name steht */
     awarded: false,
@@ -90,9 +91,9 @@ export function addWorkspace() {
   return workspace;
 }
 
-/** Den Farbverlauf oben auf der Seite eines Eintrags ein- oder ausschalten. */
-export function setEntryCover(entry, on) {
-  entry.cover = Boolean(on);
+/** Den Farbverlauf oben auf der Seite eines Eintrags oder Arbeitsbereichs ein- oder ausschalten. */
+export function setCover(target, on) {
+  target.cover = Boolean(on);
   saveState();
   emit(events.dataChanged);
 }

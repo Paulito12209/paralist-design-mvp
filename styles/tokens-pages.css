@@ -120,8 +120,8 @@
  * --search-cancel-color     -> Rot der Schrift von „Abbrechen“ auf der Suche
  * --search-fade             -> Länge des Ausblendens ab der Oberkante der Knöpfe unten auf der Suche
  *
- * EINTRAG
- * --entry-cover-mix         -> wie kräftig die Kategoriefarbe ganz oben im Cover ist (im Dunkeln stärker, siehe styles/tokens-dark.css)
+ * DETAILSEITEN (EINTRAG UND ARBEITSBEREICH)
+ * --page-cover-mix          -> wie kräftig die Kategoriefarbe ganz oben im Cover ist (im Dunkeln stärker, siehe styles/tokens-dark.css)
  * --entry-icon-glyph        -> Größe des eigenen Icons über dem Titel eines Eintrags
  * --entry-icon-gap          -> Luft zwischen diesem Icon und dem Titel
  *
@@ -272,8 +272,8 @@
   --draw-color-size: 22px;
   --draw-tools-space: 62px;
 
-  /* Eintrag: Cover und Icon über dem Titel */
-  --entry-cover-mix: 60%;
+  /* Detailseiten: Cover; Eintrag: Icon über dem Titel */
+  --page-cover-mix: 60%;
   --entry-icon-glyph: 40px;
   --entry-icon-gap: 10px;
 

@@ -27,7 +27,7 @@
  * styles/swipe-rows.css      -> Wisch-Zeile: Knöpfe dahinter, Einfärben nach dem Halten
  * styles/empty-state.css     -> Platzhalter für leere Listen (eigene Werte, siehe dort)
  * styles/entry.css           -> Seite eines Eintrags: Titel, Text, verknüpfte Einträge
- * styles/entry-cover.css     -> Seite eines Eintrags: Farbverlauf oben (Cover) und eigenes Icon über dem Titel
+ * styles/page-cover.css      -> Eintrag und Arbeitsbereich: Farbverlauf oben (Cover); Eintrag: eigenes Icon über dem Titel
  * styles/blocks.css          -> Inhalt eines Eintrags: Stichpunkte, Zahlen, runde Checkboxen, Trennlinie
  * styles/embeds.css          -> Inhalt eines Eintrags: Karten für Standort, Video und Web-Lesezeichen
  * styles/slash-menu.css      -> Inhalt eines Eintrags: das „/“-Menü mit Gruppen und Kacheln

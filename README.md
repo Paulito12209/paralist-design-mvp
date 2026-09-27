@@ -197,6 +197,10 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   und in jeder Listenzeile statt des Typ-Icons. Ein Tipp auf das Icon öffnet
   dasselbe Raster mit dem gewählten Icon markiert und „Icon entfernen“ unten.
   Dasselbe Raster nutzen Tab und Arbeitsbereich.
+- Arbeitsbereich: Menü oben rechts → „Cover hinzufügen“ legt den Verlauf in
+  Orange (Farbe der Arbeitsbereiche) über die Seite, er endet an den Pillen.
+  Zurück und in Eingang/Favoriten: dort ist kein Cover. Typ ändern zwischen
+  Eintrag und Arbeitsbereich nimmt Cover und Icon mit.
 - Typ ändern — drei Wege: das Menü, die graue Pille mit dem Typ mitten in der
   Kopfzeile (bei einer Aufgabe steht „Typ ändern“ unten im Blatt mit Status
   und Dringlichkeit) und das Menü beim gedrückt Halten einer Zeile. Notiz →

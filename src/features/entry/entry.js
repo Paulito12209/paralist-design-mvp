@@ -27,7 +27,8 @@
  * „Inhalt“, Filter und Plus unter „Verknüpfte Einträge“ (entry-tools.js).
  *
  * Über dem Titel können ein Farbverlauf in der Farbe der Kategorie und ein
- * eigenes Icon stehen, beides aus dem Menü oben rechts (entry-cover.js).
+ * eigenes Icon stehen, beides aus dem Menü oben rechts (entry-cover.js;
+ * das Cover teilt sich die Seite mit dem Arbeitsbereich: src/ui/page-cover.js).
  * Pfad: src/features/entry/entry.js
  *
  * Keine anpassbaren visuellen Werte: Schriftgrößen stehen in styles/entry.css

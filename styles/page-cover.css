@@ -1,17 +1,17 @@
 /*
- * Seite eines Eintrags: das Cover (Farbverlauf in der Farbe der Kategorie,
- * der hinter Kopfzeile und Titel nach oben hin kräftiger wird — wie der
- * Kopf einer Seite „Neue Funktionen“ in iOS) und das eigene Icon über dem
- * Titel. Beides schaltet man im Menü oben rechts ein
- * (src/features/entry/entry-cover.js). Die Farbe kommt als --entry-accent
- * vom Skript, weil sie sich mit dem Typ des Eintrags ändert.
- * Pfad: styles/entry-cover.css
+ * Detailseiten (Eintrag und Arbeitsbereich): das Cover — ein Farbverlauf in
+ * der Farbe der Kategorie, der hinter Kopfzeile und Titel nach oben hin
+ * kräftiger wird, wie der Kopf einer Seite „Neue Funktionen“ in iOS. Dazu das
+ * eigene Icon über dem Titel eines Eintrags. Beides schaltet man im Menü oben
+ * rechts ein (src/ui/page-cover.js, src/features/entry/entry-cover.js). Die
+ * Farbe kommt als --cover-accent vom Skript, weil sie sich mit dem Typ ändert.
+ * Pfad: styles/page-cover.css
  *
  * ANPASSBARE WERTE (in styles/tokens-pages.css, im Dunkeln styles/tokens-dark.css)
  * -----------------------------------
  * Der Verlauf reicht von ganz oben bis zur Oberkante der Pillen; wo die liegt,
- * misst src/features/entry/entry-cover.js und gibt es als --entry-cover-solid herein.
- * --entry-cover-mix         -> wie kräftig die Farbe ganz oben ist (100% = volle Kategoriefarbe)
+ * misst src/ui/page-cover.js und gibt es als --cover-solid herein.
+ * --page-cover-mix          -> wie kräftig die Farbe ganz oben ist (100% = volle Kategoriefarbe)
  * --entry-icon-glyph        -> Größe des Icons über dem Titel
  * --entry-icon-gap          -> Luft zwischen Icon und Titel
  * --content-side            -> der Verlauf reicht um diesen Rand nach links und rechts hinaus (styles/tokens.css)
@@ -19,21 +19,22 @@
  */
 
 /* Der Verlauf liegt HINTER Kopfzeile und Titel: die Seite bildet dafür ihren
-   eigenen Stapel, in dem das Cover ganz unten liegt. */
-#view-entry {
+   eigenen Stapel, in dem das Cover ganz unten liegt — nur solange sie ein
+   Cover hat, ohne bleibt alles wie auf jeder anderen Seite. */
+.view.has-cover {
   position: relative; /* position: Anker für das Cover */
   z-index: 0; /* z-index: eigener Stapel, damit z-index: -1 des Covers nicht unter die Seite fällt */
 }
 
-.entry-cover {
+.page-cover {
   position: absolute; /* position: liegt hinter dem Inhalt, nimmt keinen Platz */
   top: 0;
   /* bis an die Bildschirmränder, nicht nur bis zum Inhaltsrand */
   left: calc(-1 * var(--content-side));
   right: calc(-1 * var(--content-side));
-  /* Der Verlauf endet genau an der Oberkante der Pillen (--entry-cover-solid,
-     gemessen in entry-cover.js): darunter ist die Seite ohne Farbe. */
-  height: var(--entry-cover-solid, 0px);
+  /* Der Verlauf endet genau an der Oberkante der Pillen (--cover-solid,
+     gemessen in src/ui/page-cover.js): darunter ist die Seite ohne Farbe. */
+  height: var(--cover-solid, 0px);
   z-index: -1; /* z-index: hinter Kopfzeile, Icon und Titel */
   pointer-events: none; /* pointer-events: nur Farbe, nichts zum Antippen */
   /* Oben kräftig, zum Titel hin schwächer, an den Pillen im Hintergrund
@@ -41,21 +42,21 @@
      damit der Verlauf nicht gleich unter der Kopfzeile verblasst. */
   background: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--entry-accent) var(--entry-cover-mix), var(--bg)) 0%,
-    color-mix(in srgb, var(--entry-accent) calc(var(--entry-cover-mix) * 0.75), var(--bg)) 40%,
-    color-mix(in srgb, var(--entry-accent) calc(var(--entry-cover-mix) * 0.3), var(--bg)) 75%,
+    color-mix(in srgb, var(--cover-accent) var(--page-cover-mix), var(--bg)) 0%,
+    color-mix(in srgb, var(--cover-accent) calc(var(--page-cover-mix) * 0.75), var(--bg)) 40%,
+    color-mix(in srgb, var(--cover-accent) calc(var(--page-cover-mix) * 0.3), var(--bg)) 75%,
     var(--bg) 100%
   );
 }
 
-.entry-cover[hidden] {
+.page-cover[hidden] {
   display: none;
 }
 
 /* Mit Cover ist die feststehende Kopfzeile durchsichtig, solange der große
    Titel zu sehen ist — sonst schnitte ihr Hintergrund den Verlauf ab. Erst
    der kleine Titel bringt den Hintergrund zurück (src/ui/head-title.js). */
-#view-entry.has-cover .page-head:not(.is-title-shown) {
+.view.has-cover .page-head:not(.is-title-shown) {
   background: transparent;
 }
 
@@ -68,7 +69,7 @@
   height: var(--head-btn-size);
   /* margin-left: das Icon selbst, nicht seine Tippfläche, steht bündig mit dem Titel */
   margin: 0 0 var(--entry-icon-gap) calc((var(--entry-icon-glyph) - var(--head-btn-size)) / 2);
-  color: var(--entry-accent);
+  color: var(--cover-accent);
 }
 
 .entry-icon .icon {

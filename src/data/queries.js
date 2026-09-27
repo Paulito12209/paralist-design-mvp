@@ -222,6 +222,11 @@ export function entryTime(entry) {
   return null;
 }
 
+/** Farbe der Arbeitsbereiche — dieselbe wie im Verlauf des Fortschritt-Blatts. */
+export function workspaceColor() {
+  return xpItems.arbeitsbereich.color;
+}
+
 /** Farbe eines Eintrags — dieselbe wie im Verlauf des Fortschritt-Blatts. */
 export function entryColor(entry) {
   return (xpItems[entry.type] || xpItems.notiz).color;

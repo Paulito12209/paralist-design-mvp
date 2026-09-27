@@ -84,7 +84,6 @@ export const dom = {
   get backBtn() { return el("back-btn"); },
 
   /* Eintrag bearbeiten */
-  get entryCover() { return el("entry-cover"); },
   get entryIcon() { return el("entry-icon"); },
   get entryTitle() { return el("entry-title"); },
   get entryPills() { return el("entry-pills"); },
