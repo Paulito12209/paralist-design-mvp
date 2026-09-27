@@ -7,7 +7,7 @@
  * -----------------------------------
  * --draw-tool-size          -> Größe der Werkzeug-Knöpfe
  * --draw-color-size         -> Größe der Farbpunkte
- * --draw-tools-gap          -> Abstand zwischen Zeichenfläche und Werkzeugleiste
+ * --draw-tools-gap          -> Abstand der Werkzeugleiste zur Zeichenfläche darüber und zur Karte „Details“ darunter
  * --draw-color              -> wird je Punkt aus src/features/drawing/drawing-tools.js gesetzt
  */
 
@@ -38,10 +38,11 @@
 .draw-tools {
   display: none;
   align-items: center;
+  /* justify-content: die Leiste ist so breit wie die Zeichenfläche (16px zum
+     Rand wie aller Inhalt), die Knöpfe verteilen sich über die ganze Breite */
+  justify-content: space-between;
   gap: 4px;
-  width: fit-content;
-  max-width: 100%;
-  margin: var(--draw-tools-gap) auto 0;
+  margin: var(--draw-tools-gap) 0 0;
   padding: 6px 8px;
   border-radius: 999px; /* border-radius: Pillenform wie die Navigation */
   background: var(--card);
@@ -104,4 +105,11 @@ body.is-drawing .draw-tools:not([hidden]) {
 /* Ring um die gewählte Farbe */
 .draw-color.is-active {
   box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--draw-color);
+}
+
+/* Unter der Werkzeugleiste folgt die Karte „Details“ mit demselben Abstand
+   wie zwischen Fläche und Leiste — nicht mit dem größeren Abstand, den sie
+   unter einem Text hat (--details-gap in styles/entry-details.css). */
+.draw-tools + .details-card {
+  margin-top: var(--draw-tools-gap);
 }
