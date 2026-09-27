@@ -11,6 +11,7 @@
  */
 
 import { dom, el } from "../../core/dom.js";
+import { markEdited } from "../../data/mutations.js";
 import { findEntry } from "../../data/queries.js";
 import { scheduleSave, ui } from "../../data/state.js";
 
@@ -43,6 +44,7 @@ export function initEntryTitle() {
     const entry = findEntry(ui.currentEntryId);
     if (!entry) return;
     entry.title = typedTitle().trim();
+    markEdited(entry);
     syncHeadTitle(entry.title);
     scheduleSave();
   });

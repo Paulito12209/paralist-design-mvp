@@ -18,7 +18,7 @@ import { sweepFinishedTasks } from "../data/mutations.js";
 import { findEntry } from "../data/queries.js";
 import { flushSave, ui } from "../data/state.js";
 import { usageAreaOf } from "../data/usage-areas.js";
-import { flushUsage, resetUsageTick, setUsageArea, trackUsage } from "../data/usage.js";
+import { flushUsage, resetUsageTick, setUsageArea, setUsageEntry, trackUsage } from "../data/usage.js";
 import { currentView } from "../ui/views.js";
 
 const usageTickSeconds = 15;
@@ -42,9 +42,11 @@ function armMidnightSweep() {
   }, next - now + afterMidnightMs);
 }
 
-/* Offene Ansicht (bei einem Eintrag: sein Typ) als Bereich der Nutzungszeit melden. */
+/* Offene Ansicht (bei einem Eintrag: sein Typ) als Bereich der Nutzungszeit
+   melden, dazu den Eintrag selbst — für die Zeit auf seiner Seite. */
 function reportUsageArea(view) {
   const entry = view === "entry" ? findEntry(ui.currentEntryId) : null;
+  setUsageEntry(entry ? entry.id : null);
   setUsageArea(usageAreaOf(view, {
     entryType: entry ? entry.type : null,
     isWorkspace: Boolean(ui.currentPage && ui.currentPage.isWorkspace),

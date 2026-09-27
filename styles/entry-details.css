@@ -1,0 +1,227 @@
+/*
+ * Seite eines Eintrags, Reiter „Inhalt“: das Ende der Seite. Zuerst der
+ * Rahmen um Text bzw. Zeichenfläche (.entry-fold), der langen Text beim
+ * Öffnen abschneidet und weich auslaufen lässt, darunter der Knopf „Mehr
+ * anzeigen“ / „Weniger anzeigen“ (src/features/entry/entry-fold.js). Dann die
+ * Karte „Details“ (src/features/entry/entry-details.js): Kopf mit Überschrift
+ * und Ketten-Symbol, drei Kennzahlen nebeneinander, nach einer Trennlinie die
+ * Angaben in Abschnitten. Die Karte liegt unter der Navigation und scrollt
+ * mit der Seite; Kennzahlen und Abschnitte blenden erst ein, wenn sie über
+ * der Navigation auftauchen (Klasse is-revealed, gesetzt von entry-fold.js).
+ * Pfad: styles/entry-details.css
+ *
+ * ANPASSBARE WERTE (in styles/tokens-pages.css)
+ * -----------------------------------
+ * --details-gap             -> Luft zwischen Text und Karte
+ * --details-head-h          -> Höhe des Kartenkopfs — so viel schaut beim Öffnen über der Navigation hervor
+ * --entry-fold-fade         -> wie lang gekürzter Text nach unten ausläuft
+ *
+ * Aus styles/tokens.css:
+ * --card                    -> Fläche der Karte
+ * --radius-xl               -> Rundung der Karte
+ * --line                    -> Trennlinie unter den Kennzahlen
+ * --muted / --text          -> Beschriftungen und Werte
+ * --link-color              -> Farbe von „Mehr anzeigen“
+ * --icon-soft               -> abgeschwächtes Ketten-Symbol, wie die Knöpfe neben den Pillen
+ * --page-tool-size / --page-tool-icon -> Tippfläche und Größe des Ketten-Symbols
+ * --sheet-heading-size      -> Schriftgröße der Abschnitts-Überschriften, wie im Auswahl-Blatt
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel:
+ * .details-title font-size      -> „Details“ (17px)
+ * .details-stat-value font-size -> Wert einer Kennzahl (17px)
+ * .details-stat-label font-size -> Beschriftung darunter (13px)
+ * .details-row font-size        -> Zeilen der Abschnitte (15px)
+ * .entry-more font-size         -> „Mehr anzeigen“ (15px)
+ * .details-stats transition     -> wie schnell Kennzahlen und Abschnitte einblenden (0.2s)
+ */
+
+/* ---------- Gekürzter Text ---------- */
+
+/* Eingeklappt: abschneiden und zum Rand hin ausblenden. mask-image statt
+   einer darübergelegten Fläche — so bleibt der Hintergrund (auch ein Cover)
+   unverändert sichtbar. */
+.entry-fold.is-folded {
+  overflow: hidden; /* overflow: schneidet den Text an der gemessenen Höhe ab */
+  -webkit-mask-image: linear-gradient(to bottom, #000 calc(100% - var(--entry-fold-fade)), transparent);
+  mask-image: linear-gradient(to bottom, #000 calc(100% - var(--entry-fold-fade)), transparent);
+}
+
+/* Der Freiraum unter dem Text (--entry-end-space in styles/entry.css) ist
+   auf der Eintragsseite überflüssig: die freie Fläche über der Karte ist die
+   Tippfläche zum Weiterschreiben. Er stünde sonst als Lücke zwischen Textende
+   und „Mehr anzeigen“ bzw. der Karte. */
+.entry-fold > .entry-body {
+  margin-bottom: 0;
+}
+
+/* Die Zeichenfläche füllt den Rahmen, dessen Höhe das Skript setzt */
+.entry-fold > .draw-pad {
+  height: 100%;
+}
+
+.entry-more {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 auto;
+  padding: 10px 14px;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--link-color);
+}
+
+/* Ohne diese Zeile würde display: flex das hidden-Attribut überstimmen */
+.entry-more[hidden] {
+  display: none;
+}
+
+.entry-more .icon {
+  width: 14px;
+  height: 14px;
+  transform: rotate(90deg); /* transform: der Pfeil zeigt nach unten — hier kommt mehr */
+}
+
+.entry-more .icon.is-up {
+  transform: rotate(-90deg); /* transform: ausgeklappt zeigt er nach oben — zurück zu weniger */
+}
+
+.entry-more:active {
+  opacity: 0.55;
+}
+
+/* ---------- Karte „Details“ ---------- */
+
+.details-card {
+  margin-top: var(--details-gap);
+  padding: 0 16px 20px;
+  border-radius: var(--radius-xl);
+  background: var(--card);
+}
+
+.details-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between; /* justify-content: Überschrift links, Ketten-Symbol rechts */
+  height: var(--details-head-h);
+  /* margin-right: das Symbol, nicht sein unsichtbarer Kreis, schließt mit dem Inhalt ab */
+  margin-right: calc((var(--page-tool-icon) - var(--page-tool-size)) / 2);
+}
+
+/* Die ganze Kopfhöhe ist Tippfläche: ein Tipp holt die Karte hoch */
+.details-title {
+  align-self: stretch; /* align-self: nicht nur die Schrift, die ganze Höhe ist antippbar */
+  padding: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.details-link {
+  width: var(--page-tool-size);
+  height: var(--page-tool-size);
+  display: grid;
+  place-items: center;
+  border-radius: 999px; /* border-radius: runde Tippfläche */
+  color: var(--icon-soft);
+}
+
+.details-link .icon {
+  width: var(--page-tool-icon);
+  height: var(--page-tool-icon);
+}
+
+.details-title:active,
+.details-link:active {
+  opacity: 0.55;
+}
+
+/* Solange die Karte nur mit dem Kopf hervorschaut, bleibt der Rest leer:
+   neben und unter der runden Navigation sähe man sonst halbe Zeilen. */
+.details-stats,
+.details-list {
+  opacity: 0;
+  transition: opacity 0.2s ease; /* transition: weiches Einblenden beim Hochscrollen */
+}
+
+.details-card.is-revealed .details-stats,
+.details-card.is-revealed .details-list {
+  opacity: 1;
+}
+
+/* Drei Kennzahlen: links, Mitte, rechts — wie Follower | Beiträge | Folgt in einem Profil */
+.details-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  padding: 4px 0 16px;
+}
+
+.details-stat {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  min-width: 0; /* min-width: ein langer Wert kürzt sich mit „…“, statt die Spalte zu sprengen */
+  padding: 0;
+  text-align: left;
+}
+
+.details-stat:nth-child(2) {
+  align-items: center;
+  text-align: center;
+}
+
+.details-stat:nth-child(3) {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.details-stat-value {
+  max-width: 100%;
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--stat-color, var(--text)); /* --stat-color: Farbe von Status und Dringlichkeit, gesetzt vom Skript */
+  overflow: hidden; /* overflow: nötig für text-overflow */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.details-stat-label {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+button.details-stat:active {
+  opacity: 0.55;
+}
+
+/* Nach der Trennlinie die Abschnitte */
+.details-list {
+  border-top: 0.5px solid var(--line);
+}
+
+.details-heading {
+  padding: 16px 0 4px;
+  color: var(--muted);
+  font-size: var(--sheet-heading-size);
+  font-weight: 600;
+  text-transform: uppercase; /* text-transform: hebt die Überschrift ab, ohne sie größer zu machen */
+  letter-spacing: 0.04em; /* letter-spacing: Großbuchstaben brauchen etwas mehr Luft */
+}
+
+.details-row {
+  display: flex;
+  justify-content: space-between; /* justify-content: Bezeichnung links, Wert rechts */
+  gap: 16px;
+  padding: 7px 0;
+  font-size: 15px;
+}
+
+.details-row-label {
+  color: var(--muted);
+}
+
+.details-row-value {
+  color: var(--text);
+  text-align: right;
+}

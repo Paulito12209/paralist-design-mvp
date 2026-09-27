@@ -189,11 +189,19 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   und nachsehen).
 - Menü: Favorit, Verknüpfen, Typ ändern, Cover, Icon, Archivieren, Löschen.
   Eine archivierte Aufgabe gibt Punkte.
-- Leiste über der Navigation (jede Kategorie, in der Farbe der Kategorie):
-  „Details“ links öffnet das Blatt mit den Angaben, das Ketten-Symbol rechts
-  das Blatt „Verknüpfen“ mit den Pillen Zuletzt | Ablageort | Kategorien —
-  antippen und wischen wechselt, ein Haken bleibt beim Schließen erhalten.
-  Der Text darunter endet nicht hinter der Leiste (ganz nach unten scrollen).
+- Karte „Details“ am Ende von „Inhalt“ (jede Kategorie): beim Öffnen schauen
+  „Details“ und das Ketten-Symbol gerade über der Navigation hervor — mit
+  leerem Text, kurzem Text und langem Text prüfen. Langer Text endet dort
+  und läuft aus, „Mehr anzeigen“ klappt ihn aus, „Weniger anzeigen“ wieder
+  ein; jede neu geöffnete Seite beginnt eingeklappt, ein Tipp in den Text
+  klappt von selbst aus. Ein Tipp in die freie Fläche über der Karte schreibt
+  am Textende weiter. Hochscrollen zeigt die ganze Karte über der Navigation;
+  ein Tipp auf „Details“ holt sie hoch. Oben drei Kennzahlen (Aufgabe: Datum |
+  Status | Dringlichkeit, ein Tipp auf Status oder Dringlichkeit öffnet das
+  Blatt), darunter Text, Nutzung (Zeit auf der Seite, Besuche, zuletzt
+  bearbeitet), Verlauf und Ablage. Das Ketten-Symbol öffnet „Verknüpfen“ mit
+  den Pillen Zuletzt | Ablageort | Kategorien. Bei einer Zeichnung ist die
+  Fläche so hoch, dass die Karte über der Werkzeugleiste hervorschaut.
 - Cover und Icon (wie in Notion): „Cover hinzufügen“ legt einen Farbverlauf in
   der Farbe der Kategorie hinter Kopfzeile und Titel — hell und dunkel ansehen,
   Typ ändern wechselt die Farbe mit, „Cover entfernen“ nimmt ihn weg. Beim

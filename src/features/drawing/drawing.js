@@ -13,6 +13,9 @@
  */
 
 import { dom } from "../../core/dom.js";
+import { markEdited } from "../../data/mutations.js";
+import { findEntry } from "../../data/queries.js";
+import { scheduleSave } from "../../data/state.js";
 import { saveThumbs, setThumb, thumbOf } from "../../data/thumbs.js";
 import { colors, colorsMarkup, tools } from "./drawing-tools.js";
 
@@ -48,6 +51,12 @@ export function saveDrawing() {
   dirty = false;
   setThumb(entryId, canvas.toDataURL("image/png"));
   saveThumbs();
+  /* Ein Strich ist eine Bearbeitung — für „Zuletzt bearbeitet“ in den Details */
+  const entry = findEntry(entryId);
+  if (entry) {
+    markEdited(entry);
+    scheduleSave();
+  }
 }
 
 /* Speichern kurz nach dem letzten Strich, nicht bei jeder Bewegung. */

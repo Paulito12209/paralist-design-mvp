@@ -26,9 +26,11 @@
  * Rechts neben den Pillen stehen je nach Pille andere Knöpfe: Kopieren unter
  * „Inhalt“, Filter und Plus unter „Verknüpfte Einträge“ (entry-tools.js).
  *
- * Direkt über der Navigation liegt bei jeder Kategorie die Leiste „Details“
- * mit dem Ketten-Symbol „Verknüpfen“ (entry-strip.js) — „Details“ steht
- * darum nicht mehr im Menü oben rechts.
+ * Unter „Inhalt“ endet die Seite bei jeder Kategorie mit der Karte „Details“
+ * und dem Ketten-Symbol „Verknüpfen“ (entry-details.js). Ihr Kopf schaut beim
+ * Öffnen gerade über der Navigation hervor; langer Text wird dafür gekürzt
+ * und lässt sich mit „Mehr anzeigen“ ausklappen (entry-fold.js). „Details“
+ * steht darum nicht mehr im Menü oben rechts.
  *
  * Über dem Titel können ein Farbverlauf in der Farbe der Kategorie und ein
  * eigenes Icon stehen, beides aus dem Menü oben rechts (entry-cover.js;
@@ -48,10 +50,12 @@ import { linkedEntries } from "../../data/links.js";
 import { entriesOf, findEntry, isContainer } from "../../data/queries.js";
 import { entryRef } from "../../data/refs.js";
 import { groupedListMarkup, linkedListMarkup } from "../../ui/groups.js";
+import { markEdited } from "../../data/mutations.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { entryMenuOptions } from "../../ui/entry-menu.js";
 import { initEntryCover, renderEntryCover } from "./entry-cover.js";
-import { initEntryStrip, renderEntryStrip } from "./entry-strip.js";
+import { initEntryDetails, renderEntryDetails } from "./entry-details.js";
+import { initEntryFold, layoutEntryFold, resetEntryFold } from "./entry-fold.js";
 import { initEntryTitle, showEntryTitle } from "./entry-title.js";
 import { initEntryTools, linkFilterFor, renderEntryTools } from "./entry-tools.js";
 import { bindHeadTitle, setHeadTitle } from "../../ui/head-title.js";
@@ -95,6 +99,8 @@ function renderEntryPills(entry) {
   dom.entryPanelNotes.hidden = ui.entryPill !== "notes";
   dom.entryPanelLinks.hidden = ui.entryPill !== "links";
   renderEntryTools(entry);
+  /* Erst jetzt ist „Inhalt“ zu sehen und lässt sich messen */
+  layoutEntryFold();
 }
 
 /* Ein Projekt zeigt, was darin liegt; jeder andere Eintrag, womit er verknüpft ist.
@@ -128,9 +134,11 @@ function renderEntry() {
   if (!entry) return;
 
   renderEntryCover(entry);
-  renderEntryStrip(entry);
   showEntryTitle(entry);
   bodyEditor.setText(entry.body || "");
+  /* Jede geöffnete Seite beginnt mit gekürztem Text und hervorschauender Karte */
+  resetEntryFold();
+  renderEntryDetails(entry);
   /* Mittig die Kategorie, nicht der Ort: der Zurück-Pfeil führt dorthin, wo
      man zuletzt war — nicht zwingend an den Ort des Eintrags. */
   renderCrumb(entry);
@@ -162,15 +170,24 @@ function saveBody(text) {
   const entry = findEntry(ui.currentEntryId);
   if (!entry) return;
   entry.body = text;
+  markEdited(entry);
   scheduleSave();
 }
 
 /** Felder, Pillen, Menü und Zurück-Pfeil der Eintragsseite anmelden. */
 export function initEntry() {
   initEntryCover();
-  initEntryStrip();
+  /* Rahmen und Karte vor dem Editor: sein „/“-Menü hängt sich in den Rahmen */
+  initEntryFold();
+  initEntryDetails();
   initEntryTitle();
   bodyEditor = createBlockEditor(dom.entryBody, { onChange: saveBody });
+  /* Wörter, Zeichen und „Zuletzt bearbeitet“ erst nach dem Schreiben
+     auffrischen, nicht bei jedem Buchstaben */
+  el("view-entry").addEventListener("focusout", () => {
+    const entry = findEntry(ui.currentEntryId);
+    if (entry) renderEntryDetails(entry);
+  });
   initEntryTools({
     rerender: (entry) => {
       renderLinks(entry);
@@ -237,9 +254,9 @@ export function initEntry() {
       return;
     }
     /* Verknüpfungen können sich im offenen Blatt gerade ändern, der Typ auch —
-       und mit ihm die Farbe von Cover und Leiste unten */
+       und mit ihm die Farbe des Covers und die Angaben der Karte „Details“ */
     renderEntryCover(entry);
-    renderEntryStrip(entry);
+    renderEntryDetails(entry);
     renderCrumb(entry);
     syncHeadSub(entry);
     renderLinks(entry);

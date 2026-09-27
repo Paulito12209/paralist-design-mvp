@@ -30,7 +30,7 @@ import { typeChangeAction } from "./type-menu.js";
  * @param onPage true auf der Eintragsseite: nur dort gibt es Cover und Icon
  *   (wie in Notion — beides wirkt oben auf der Seite) und „Zeichnung
  *   leeren“, weil nur dort die Zeichenfläche offen ist. „Details“ fehlt
- *   dort dafür: es steht in der Leiste über der Navigation.
+ *   dort dafür: es steht als Karte am Ende der Seite.
  * @param afterRemove läuft nach Archivieren und Löschen — die Eintragsseite
  *   kehrt dann zurück, in einer Liste verschwindet nur die Zeile.
  */
@@ -74,8 +74,8 @@ export function entryMenuOptions(entry, { onPage = false, afterRemove = () => {}
       iconPickerAction(entry.icon, (name) => setEntryIcon(entry, name))
     );
   }
-  /* Auf der Seite steht „Details“ in der Leiste über der Navigation
-     (src/features/entry/entry-strip.js) — im Menü nur aus einer Liste heraus. */
+  /* Auf der Seite steht „Details“ als Karte am Ende des Reiters „Inhalt“
+     (src/features/entry/entry-details.js) — im Menü nur aus einer Liste heraus. */
   if (!onPage) {
     options.push({
       label: "Details",

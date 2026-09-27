@@ -13,10 +13,8 @@
 
 /* ---------- Zeichnung ---------- */
 
-/* Zeichenfläche: weißes Papier, füllt den Platz zwischen Titel und Werkzeugleiste */
+/* Zeichenfläche: weißes Papier; ihre Höhe bekommt sie vom Rahmen darum (styles/entry-details.css) */
 .draw-pad {
-  flex: 1;
-  min-height: 0;
   background: #ffffff; /* bleibt auch im Dunkelmodus weiß, damit die Striche lesbar bleiben */
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow);
@@ -32,30 +30,12 @@
   display: block;
 }
 
-/* Auf einer Zeichnung scrollt nichts: die Seite füllt den Platz bis zur Werkzeugleiste */
+/* Die Zeichenfläche ist genau so hoch, dass darunter der Kopf der Karte
+   „Details“ über der Werkzeugleiste hervorschaut (src/features/entry/entry-fold.js).
+   Die Seite scrollt nur, um die Karte ganz zu zeigen — auf der Fläche selbst
+   zeichnet der Finger (touch-action oben). Unten Platz für die Werkzeugleiste. */
 body.is-drawing .content {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  /* dazu die Leiste „Details“ über der Navigation (styles/entry-strip.css) */
-  padding-bottom: calc(var(--tab-space) + var(--draw-tools-space) + var(--entry-strip-space));
-}
-
-body.is-drawing #view-entry {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-}
-
-/* Die Fläche hinter der Pille „Inhalt“ muss selbst mitwachsen, sonst bliebe die
-   Zeichenfläche darin auf ihrer Vorgabehöhe stehen statt bis zur Werkzeugleiste
-   zu reichen. */
-body.is-drawing #entry-panel-notes {
-  flex: 1;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
+  padding-bottom: calc(var(--tab-space) + var(--draw-tools-space));
 }
 
 /* Werkzeugleiste über der Navigation wie Apples Stiftpalette; nur auf einer Zeichnung zu sehen */

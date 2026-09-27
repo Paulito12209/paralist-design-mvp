@@ -91,6 +91,15 @@ export function addWorkspace() {
   return workspace;
 }
 
+/**
+ * Merkt, dass der Inhalt eines Eintrags gerade bearbeitet wurde (Titel, Text,
+ * Zeichnung) — für „Zuletzt bearbeitet“ in den Details. Speichert nicht
+ * selbst: wer tippt, speichert ohnehin gleich mit scheduleSave().
+ */
+export function markEdited(entry) {
+  entry.editedAt = Date.now();
+}
+
 /** Den Farbverlauf oben auf der Seite eines Eintrags oder Arbeitsbereichs ein- oder ausschalten. */
 export function setCover(target, on) {
   target.cover = Boolean(on);

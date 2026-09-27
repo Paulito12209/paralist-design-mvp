@@ -1,7 +1,7 @@
 /*
  * Das Blatt „Verknüpfen“ mit Tabs. Es öffnet sich über das Ketten-Symbol in
- * der Leiste über der Navigation auf der Seite eines Eintrags
- * (src/features/entry/entry-strip.js), über das Plus unter „Verknüpfte
+ * der Karte „Details“ am Ende der Seite eines Eintrags
+ * (src/features/entry/entry-details.js), über das Plus unter „Verknüpfte
  * Einträge“, über „Verknüpfen“ in den Menüs und nach dem Wischen einer Zeile.
  *
  * Oben stehen Icon und Name des Eintrags, darunter die Pillen — wie im Blatt

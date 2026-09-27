@@ -1,7 +1,10 @@
 /*
  * Nutzungszeit — nur echte, gemessene Zeit, keine Beispielwerte.
  * Gespeichert wird { v, since, days: { "2026-09-18": 2400 },
- * areas: { "2026-09-18": { notiz: 1200, … } } } in Sekunden.
+ * areas: { "2026-09-18": { notiz: 1200, … } }, entries: { "12": 340 } } in
+ * Sekunden. `entries` ist die Zeit auf der Seite eines einzelnen Eintrags
+ * (Details am Ende der Seite, src/data/entry-facts.js); welcher gerade offen
+ * ist, meldet src/shell/lifecycle.js über setUsageEntry().
  * Gezählt wird nur, solange die App sichtbar ist; lange Pausen zählen nicht mit.
  * Wann gezählt und geschrieben wird, entscheidet src/shell/lifecycle.js,
  * welcher Bereich gerade offen ist, meldet es über setUsageArea().
@@ -22,11 +25,13 @@ const formatVersion = 2;
 
 let usage = freshUsage();
 let area = fallbackArea;
+/* Der offene Eintrag als Text-Schlüssel, oder null, wenn keiner offen ist. */
+let openEntry = null;
 let lastTickAt = Date.now();
 let unsaved = false;
 
 function freshUsage() {
-  return { v: formatVersion, since: dayKey(new Date()), days: {}, areas: {} };
+  return { v: formatVersion, since: dayKey(new Date()), days: {}, areas: {}, entries: {} };
 }
 
 /** Tagesschlüssel eines Zeitpunkts, wie im Kalender. */
@@ -82,6 +87,8 @@ export function loadUsage() {
   const saved = readJson(storageKeys.usage);
   if (saved && saved.v === formatVersion && saved.days && saved.areas) {
     usage = saved;
+    /* Die Zeit je Eintrag kam später dazu: ältere Stände beginnen dort bei null */
+    if (!usage.entries) usage.entries = {};
     return;
   }
   usage = freshUsage();
@@ -98,7 +105,26 @@ export function trackUsage() {
   usage.days[key] = (usage.days[key] || 0) + spent;
   const split = usage.areas[key] || (usage.areas[key] = {});
   split[area] = (split[area] || 0) + spent;
+  if (openEntry) usage.entries[openEntry] = (usage.entries[openEntry] || 0) + spent;
   unsaved = true;
+}
+
+/**
+ * Den offenen Eintrag wechseln (null: keiner). Wie beim Bereich gehört die
+ * bis jetzt gelaufene Zeit noch dem alten — von einer Notiz zur nächsten
+ * wechselt der Bereich nicht, deshalb bucht auch diese Stelle vorher.
+ */
+export function setUsageEntry(id) {
+  const next = id == null ? null : String(id);
+  if (next === openEntry) return;
+  trackUsage();
+  openEntry = next;
+}
+
+/** Gemessene Zeit auf der Seite eines Eintrags in Sekunden (seit es die Messung gibt). */
+export function entryUsage(id) {
+  trackUsage();
+  return usage.entries[String(id)] || 0;
 }
 
 /**

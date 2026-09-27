@@ -65,8 +65,8 @@
   }
 
   /* ---------- Breite ---------- */
-  /* width: 100%: auf einer Zeichnung ist .content eine Flex-Spalte (styles/drawing.css),
-     dort schrumpfte die Seite mit margin-inline: auto sonst auf ihren Inhalt.
+  /* width: 100%: die Seite füllt die Spalte bis zur Höchstbreite, statt mit
+     margin-inline: auto auf ihren Inhalt zu schrumpfen.
      Pillen-Leisten, Wisch-Zeilen und Board reichen wie am Handy um --content-side
      über den Rand — am Desktop genau bis an den Rand der Spalte, das passt so. */
   #view-home, #view-calendar, #view-tasks, #view-media {

@@ -22,6 +22,9 @@ export function noteOpen(kind, id) {
   const found = state.opens.find((item) => item.key === key);
   if (found) {
     found.count += 1;
+    /* Der Besuch davor: auf der offenen Seite ist „zuletzt geöffnet“ immer
+       jetzt — interessant ist, wann man vorher zuletzt da war. */
+    found.prev = found.ts;
     found.ts = Date.now();
   } else {
     state.opens.push({ key, kind, id: String(id), count: 1, ts: Date.now() });
@@ -49,6 +52,11 @@ export function moveOpen(fromKey, kind, id) {
   open.key = toKey;
   open.kind = kind;
   open.id = String(id);
+}
+
+/** Wie oft und wann etwas geöffnet wurde: { count, ts, prev } oder null. */
+export function openStats(kind, id) {
+  return state.opens.find((item) => item.key === `${kind}:${id}`) || null;
 }
 
 /** Merkt einen Suchbegriff; der neueste steht vorn, Wiederholungen rutschen nach oben. */

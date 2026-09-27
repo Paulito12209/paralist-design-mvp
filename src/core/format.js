@@ -22,6 +22,7 @@ const clockTime = new Intl.DateTimeFormat("de-DE", { hour: "2-digit", minute: "2
 const shortDate = new Intl.DateTimeFormat("de-DE", { day: "2-digit", month: "2-digit" });
 const longWeekdayDate = new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "2-digit", month: "2-digit" });
 const fullDate = new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
+const dayMonthYear = new Intl.DateTimeFormat("de-DE", { day: "numeric", month: "short", year: "numeric" });
 
 /** Tausenderpunkte, z.B. 1234 → „1.234“. */
 export function formatNumber(value) {
@@ -122,4 +123,22 @@ export function groupByMonth(list) {
     else groups.push({ heading, items: [entry] });
   });
   return groups;
+}
+
+/**
+ * Wann etwas war, in Worten: „gerade eben“, „vor 5 Min“, „heute, 14:20“,
+ * „gestern, 09:10“, „vor 3 Tagen“, sonst „12. Sept. 2026“. Für die Details
+ * einer Seite, wo das Gefühl für „wie lange her“ mehr zählt als die Uhrzeit.
+ */
+export function relativeTime(ts) {
+  const now = Date.now();
+  const minutes = Math.floor((now - ts) / 60000);
+  if (minutes < 1) return "gerade eben";
+  if (minutes < 60) return `vor ${minutes} Min`;
+  const time = clockTime.format(new Date(ts));
+  if (sameDay(ts, now)) return `heute, ${time}`;
+  if (sameDay(ts, now - MS_PER_DAY)) return `gestern, ${time}`;
+  const days = Math.round((startOfDay(now) - startOfDay(ts)) / MS_PER_DAY);
+  if (days < 7) return `vor ${days} Tagen`;
+  return dayMonthYear.format(new Date(ts));
 }

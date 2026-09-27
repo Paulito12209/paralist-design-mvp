@@ -28,6 +28,12 @@
   line-height: 1.5;
 }
 
+/* Ohne diese Zeile würde display: flex das hidden-Attribut überstimmen — auf
+   einer Zeichnung stünde dann „Schreib etwas …“ über der Zeichenfläche */
+.note-blocks[hidden] {
+  display: none;
+}
+
 .nb {
   display: flex;
   align-items: flex-start;
