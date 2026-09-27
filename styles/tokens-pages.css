@@ -71,6 +71,7 @@
  * --viewer-foot-btn-size    -> Größe von Verknüpfen-Knopf und Drei-Punkte-Menü unten
  * --viewer-foot-goto-h      -> Höhe des Knopfes „Zur Seite“ in der Mitte (schmaler als die Runden)
  * --media-btn-size / --media-actions-space -> Größe der runden Knöpfe über der Navigation und ihr Extra-Platz
+ * --media-actions-gap      -> Abstand zwischen diesen Knöpfen
  *
  * SUCHE
  * --search-meta-size        -> Schriftgröße der kleinen Infos unter Such-Einträgen
@@ -161,6 +162,7 @@
   --viewer-foot-goto-h: 36px;
   --media-btn-size: 48px;
   --media-actions-space: 60px;
+  --media-actions-gap: 12px;
 
   /* Suche: Zeilen und die drei Knöpfe unten */
   --search-meta-size: 13px;

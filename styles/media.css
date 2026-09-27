@@ -12,6 +12,7 @@
  * --media-badge-bg          -> Hintergrund des Dauer-Schilds
  * --media-btn-size          -> Größe der runden Knöpfe
  * --media-actions-space     -> Extra-Platz am Seitenende
+ * --media-actions-gap       -> Abstand zwischen den runden Knöpfen
  * --media-strip-width       -> Breite einer Kachel unter „Verknüpfte Einträge“
  * --media-strip-gap         -> Fuge zwischen diesen Kacheln
  * --media-strip-radius      -> Rundung dieser Kacheln
@@ -175,12 +176,13 @@
   background: linear-gradient(135deg, #1e3c72, #2a5298);
 }
 
-/* Knöpfe über der Navigation: Foto in der Bildschirmmitte, Import ganz rechts */
+/* Knöpfe über der Navigation: als Gruppe mittig, Foto ganz rechts */
 .media-actions {
   display: none;
   align-items: center;
-  justify-content: space-between;
-  margin: 0 0 12px calc(50% - var(--media-btn-size) / 2); /* linker Rand: erster Knopf sitzt genau in der Mitte */
+  justify-content: center; /* justify-content: die vier Knöpfe als Gruppe mittig */
+  gap: var(--media-actions-gap);
+  margin: 0 0 12px;
 }
 
 body.is-media .media-actions:not([hidden]) {
