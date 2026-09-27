@@ -11,6 +11,7 @@
  * --date-wheel-item-h       -> Höhe einer Zeile in diesen Rollen
  * --tab-pill-active-bg      -> graues Band hinter der gewählten Zeile der Rollen
  * --muted                   -> Farbe der Wochentage und fremden Monate
+ * --icon-soft               -> abgeschwächter Pfeil neben Monat und Jahr
  * --line                    -> Trennlinie unter der Bedienzeile, zum Raster hin
  * --content-side            -> Seitenabstand, den die Trennlinie automatisch übernimmt
  * --content-top             -> um so viel wird der einrastende Kopf nach oben verlängert
@@ -81,6 +82,7 @@
 .cal-month .icon {
   width: 18px;
   height: 18px;
+  color: var(--icon-soft);
 }
 
 .cal-month:active {
