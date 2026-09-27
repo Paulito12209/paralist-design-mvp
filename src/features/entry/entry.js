@@ -18,8 +18,8 @@
  *
  * Der Text unter „Inhalt“ besteht aus Bausteinen wie in Notion — „/“ öffnet
  * die Auswahl (Listen, Checkboxen, Trennlinie, Standort, Video, Link). Ein
- * Tipp auf eine YouTube-Karte spielt das Video im Player an der Stelle des
- * Textes ab (entry-video.js, nachgeladen).
+ * Tipp auf eine YouTube-Karte spielt das Video an der Stelle der Karte ab
+ * (src/ui/video-player.js, nachgeladen); gekürzter Text klappt dafür aus.
  *
  * Unter „Inhalt“ startet ein Tipp in die freie Fläche unter dem Text das
  * Schreiben am Textende; bei offener Tastatur schließt ein Tipp nur sie
@@ -57,7 +57,7 @@ import { scheduleSave, ui } from "../../data/state.js";
 import { entryMenuOptions } from "../../ui/entry-menu.js";
 import { initEntryCover, renderEntryCover } from "./entry-cover.js";
 import { initEntryDetails, renderEntryDetails } from "./entry-details.js";
-import { initEntryFold, layoutEntryFold, resetEntryFold } from "./entry-fold.js";
+import { expandEntryFold, initEntryFold, layoutEntryFold, resetEntryFold } from "./entry-fold.js";
 import { initEntryTitle, showEntryTitle } from "./entry-title.js";
 import { initEntryTools, linkFilterFor, renderEntryTools } from "./entry-tools.js";
 import { bindHeadTitle, setHeadTitle } from "../../ui/head-title.js";
@@ -73,8 +73,8 @@ import { createBlockEditor } from "../../ui/block-editor.js";
 /* Der Baustein-Editor unter „Inhalt“ (src/ui/block-editor.js), angelegt in initEntry. */
 let bodyEditor = null;
 
-/* Ein offener Videoplayer (entry-video.js, nachgeladen) schließt, sobald der
-   Text wieder gebraucht wird — nur wenn das Modul überhaupt schon da ist. */
+/* Ein offener Videoplayer (src/ui/video-player.js, nachgeladen) schließt,
+   sobald der Text neu gezeichnet oder verlassen wird — nur wenn das Modul schon da ist. */
 function closeVideoIfOpen() {
   loadedModule("video")?.closeVideo();
 }
@@ -192,8 +192,13 @@ export function initEntry() {
   initEntryTitle();
   bodyEditor = createBlockEditor(dom.entryBody, {
     onChange: saveBody,
-    /* YouTube-Karte: Player in der App statt neuer Tab (entry-video.js, nachgeladen) */
-    onVideo: (block) => load("video").then((module) => module.openVideo(block)),
+    /* YouTube-Karte: Player an ihrer Stelle statt neuer Tab (src/ui/video-player.js,
+       nachgeladen). Der Text klappt aus, damit der Player nicht unterm Auslaufen liegt. */
+    onVideo: (block, card) =>
+      load("video").then((module) => {
+        module.openVideo(block, card);
+        expandEntryFold();
+      }),
   });
   /* Wörter, Zeichen und „Zuletzt bearbeitet“ erst nach dem Schreiben
      auffrischen, nicht bei jedem Buchstaben */

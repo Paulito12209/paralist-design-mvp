@@ -12,9 +12,9 @@
  *   Öffnen eingeklappt; wer in den Text tippt, klappt ihn von selbst aus,
  *   damit beim Schreiben nichts verdeckt ist.
  * - Zeichnung: die Zeichenfläche ist genau so hoch, dass unter ihr die
- *   Werkzeugleiste und darunter der Kopf der Karte Platz haben. Genauso der
- *   Videoplayer, der den Text vorübergehend ersetzt (entry-video.js hängt
- *   ihn in den Rahmen und setzt „has-video“).
+ *   Werkzeugleiste und darunter der Kopf der Karte Platz haben.
+ * - Ein Videoplayer im Text (src/ui/video-player.js) klappt den Text aus,
+ *   damit er nicht unter dem Auslaufen liegt.
  *
  * Kennzahlen und Abschnitte der Karte erscheinen erst, wenn sie beim
  * Hochscrollen über der Navigation auftauchen (IntersectionObserver, kein
@@ -95,8 +95,7 @@ function setMore(show, open) {
 export function layoutEntryFold() {
   const card = detailsCard();
   if (!fold || !card || !isViewActive("entry") || dom.entryPanelNotes.hidden) return;
-  /* Zeichenfläche und Videoplayer füllen den Rahmen, statt sich nach dem Text zu richten */
-  const fixed = !dom.drawPad.hidden || fold.classList.contains("has-video");
+  const drawing = !dom.drawPad.hidden;
   const head = card.firstElementChild;
 
   /* Erst alles zurücksetzen, dann messen */
@@ -118,7 +117,7 @@ export function layoutEntryFold() {
   watchReveal(card, covered);
   const room = Math.max(MIN_ROOM_PX, Math.round(cardTop - between - top));
 
-  if (fixed) {
+  if (drawing) {
     fold.style.height = `${room}px`;
     return;
   }
@@ -140,9 +139,10 @@ export function resetEntryFold() {
   expanded = false;
 }
 
-/** Der Rahmen um Text und Zeichenfläche — der Videoplayer hängt sich dort ein. */
-export function foldFrame() {
-  return fold;
+/** Den Text ausklappen (für den Videoplayer im Text) und neu messen. */
+export function expandEntryFold() {
+  expanded = true;
+  layoutEntryFold();
 }
 
 /* Wer Bewegung abgeschaltet hat, springt sofort statt zu gleiten. */

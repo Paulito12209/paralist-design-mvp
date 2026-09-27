@@ -1,6 +1,7 @@
 /*
- * Videoplayer im Inhalt eines Eintrags (src/features/entry/entry-video.js):
- * ein dunkler Block anstelle des Textes, oben das Video mit zwei runden
+ * Videoplayer für YouTube-Karten (src/ui/video-player.js): ein dunkler Block
+ * an der Stelle der Karte — im Text über die ganze Zeile, auf der
+ * Lesezeichen-Seite anstelle der Zeile —, oben das Video mit zwei runden
  * Glasknöpfen (zurück zum Text, auf YouTube öffnen), unten rechts die Zeit,
  * darunter die Glasleiste mit Tempo, Fortschritt und Vollbild, ganz unten
  * der Titel des Videos. Immer dunkel, auch im hellen Modus — das Video ist es auch.
@@ -15,6 +16,7 @@
  * --video-bar-h        -> Höhe der Leiste unten
  * --video-speed-size   -> Größe des weißen Tempo-Knopfs „1x“ in der Leiste
  * --video-track-h      -> Dicke der Fortschrittsleiste
+ * --video-stage-h      -> Höhe der Bildfläche
  * --video-inset        -> Abstand der Knöpfe und der Leiste zum Rand des Videos
  * --video-title-size   -> Schriftgröße des Titels unter dem Video
  * --video-progress     -> Fortschritt 0–1, setzt das Skript beim Abspielen
@@ -25,12 +27,9 @@
  * .video-knob width      -> der Punkt auf der Fortschrittsleiste (12px)
  */
 
-/* Der Block füllt den Rahmen, dessen Höhe entry-fold.js setzt (wie die Zeichenfläche) */
-.entry-fold > .video-pad {
-  height: 100%;
-}
-
+/* Der Block nimmt die ganze Breite der Zeile, in der die Karte stand */
 .video-pad {
+  width: 100%;
   display: flex;
   flex-direction: column;
   border-radius: var(--radius-lg);
@@ -42,8 +41,7 @@
 /* Bildfläche mit dem Video; die Knöpfe liegen darüber */
 .video-stage {
   position: relative; /* position: Anker für Knöpfe, Zeit und Leiste über dem Video */
-  flex: 1;
-  min-height: 0;
+  height: var(--video-stage-h);
   background: #000000;
 }
 

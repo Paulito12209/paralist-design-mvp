@@ -34,8 +34,8 @@ const EMPTY_HINT = "Schreib etwas …";
  * onChange(text) wird nach jeder Änderung mit dem neuen Text aufgerufen —
  * das Speichern (und wie oft) entscheidet der Aufrufer.
  * emptyHint ist der graue Platzhalter einer ganz leeren Notiz.
- * onVideo(block) übernimmt, wenn gesetzt, den Tipp auf eine YouTube-Karte
- * (Player in der App statt neuer Tab, siehe block-embeds.js).
+ * onVideo(block, card) übernimmt, wenn gesetzt, den Tipp auf eine YouTube-Karte
+ * (Player an der Stelle der Karte statt neuer Tab, siehe block-embeds.js).
  * Liefert { setText, focusEnd, blur }.
  */
 export function createBlockEditor(root, { onChange, onVideo = null, emptyHint = EMPTY_HINT }) {

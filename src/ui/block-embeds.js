@@ -165,11 +165,12 @@ function toggleCheck(ed, button) {
 }
 
 /** Klicks auf Karten und Checkboxen anmelden (ein Zuhörer am Editor).
-    onVideo(block) übernimmt YouTube-Karten, sonst öffnet jede Karte ihren Link. */
+    onVideo(block, card) übernimmt YouTube-Karten (card ist das Element der
+    Karte, an dessen Stelle der Player kommt), sonst öffnet jede Karte ihren Link. */
 export function bindBlockEmbeds(ed, { onVideo = null } = {}) {
   const { root } = ed;
-  const openCard = (block) => {
-    if (onVideo && block.kind === "video" && youtubeId(block.url)) onVideo(block);
+  const openCard = (block, card) => {
+    if (onVideo && block.kind === "video" && youtubeId(block.url)) onVideo(block, card);
     else openLink(block.url);
   };
 
@@ -192,13 +193,13 @@ export function bindBlockEmbeds(ed, { onVideo = null } = {}) {
     const copy = event.target.closest("[data-embed-copy]");
     if (copy) copyName(block, copy);
     else if (event.target.closest("[data-embed-menu]")) openCardMenu(ed, block);
-    else openCard(block);
+    else openCard(block, card);
   });
 
   /* Mit der Tastatur: Enter auf einer Karte öffnet sie */
   root.addEventListener("keydown", (event) => {
     if (event.key !== "Enter" || !event.target.matches?.(".embed")) return;
     const block = ed.blocks[ed.indexOf(event.target)];
-    if (block) openCard(block);
+    if (block) openCard(block, event.target);
   });
 }
