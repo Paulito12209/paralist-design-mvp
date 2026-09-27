@@ -130,7 +130,7 @@
  *
  * ZEICHNUNG
  * --draw-tool-size / --draw-color-size -> Größe der Werkzeug-Knöpfe und Farbpunkte
- * --draw-tools-space        -> Extra-Platz unter der Zeichenfläche
+ * --draw-tools-gap          -> Abstand zwischen Zeichenfläche und Werkzeugleiste darunter
  *
  * EINSTELLUNGEN UND FEEDBACK
  * --support-field-radius     -> Rundung der Felder und Art-Knöpfe im Feedback
@@ -273,7 +273,7 @@
   /* Zeichnung: Werkzeug-Knöpfe und Farbpunkte */
   --draw-tool-size: 38px;
   --draw-color-size: 22px;
-  --draw-tools-space: 62px;
+  --draw-tools-gap: 12px;
 
   /* Detailseiten: Cover; Eintrag: Icon über dem Titel */
   --page-cover-mix: 60%;

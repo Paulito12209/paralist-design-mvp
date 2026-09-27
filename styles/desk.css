@@ -158,7 +158,7 @@
     pointer-events: none; /* pointer-events: die meist leere Leiste lässt Klicks zur Seite durch */
   }
 
-  .bottom-bar :is(.toast, .media-actions, .draw-tools, .search-combo, .search-cancel, .nav-shell) {
+  .bottom-bar :is(.toast, .media-actions, .search-combo, .search-cancel, .nav-shell) {
     pointer-events: auto; /* pointer-events: die sichtbaren Flächen sind wieder anklickbar */
   }
 
@@ -201,7 +201,7 @@
   /* Glas für alles, was unten über der Seite schwebt. .device und :is() machen
      die Regel so stark wie die Dunkelmodus-Schatten in styles/toast.css.
      Auswahl-Dialog und Menü bekommen dasselbe Glas in styles/desk-overlays.css. */
-  .device :is(.nav-shell.is-composing, .media-actions, .draw-tools, .search-combo, .search-cancel, .bottom-bar .toast) {
+  .device :is(.nav-shell.is-composing, .media-actions, .search-combo, .search-cancel, .bottom-bar .toast) {
     background: var(--desk-glass);
     -webkit-backdrop-filter: blur(var(--desk-glass-blur)); /* backdrop-filter: ältere Safari kennen nur die Vorsilbe */
     backdrop-filter: blur(var(--desk-glass-blur)); /* backdrop-filter: die Seite scheint verwischt durch das Glas */

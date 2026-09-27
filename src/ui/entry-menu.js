@@ -18,6 +18,7 @@ import { deleteEntry, setCover, setEntryIcon, toggleFavorite } from "../data/mut
 import { findEntry } from "../data/queries.js";
 import { archiveEntry } from "../data/xp.js";
 import { copyOptions } from "./copy-page.js";
+import { openDrawingExport } from "./drawing-export.js";
 import { openCtxMenu } from "./ctx-menu.js";
 import { openDetails } from "./details.js";
 import { openLinkSheet } from "./link-sheet.js";
@@ -87,6 +88,10 @@ export function entryMenuOptions(entry, { onPage = false, afterRemove = () => {}
      Gedrückthalten dort nicht kennt, findet beide Wege im Menü — und aus
      einer Liste kopiert man, ohne die Seite zu öffnen. */
   options.push(...copyOptions(entry));
+  /* Eine Zeichnung lässt sich auch als Datei sichern — PNG oder JPEG */
+  if (entry.type === "zeichnung") {
+    options.push({ label: "Exportieren", icon: "share", onSelect: () => openDrawingExport(entry) });
+  }
 
   if (onPage && entry.type === "zeichnung") {
     options.push({

@@ -1,5 +1,5 @@
 /*
- * Text in die Zwischenablage legen.
+ * Text oder ein Bild in die Zwischenablage legen.
  * Pfad: src/core/clipboard.js
  *
  * Keine anpassbaren visuellen Werte.
@@ -40,4 +40,21 @@ export async function copyText(text) {
     }
   }
   return copyWithField(text);
+}
+
+/**
+ * Ein Bild (PNG) in die Zwischenablage legen — danach lässt es sich in
+ * jeden Chat oder jedes Dokument einfügen. `blobTask` ist ein Promise auf die
+ * Bilddaten: Safari verlangt, dass write() noch während des Tipps aufgerufen
+ * wird, die Daten dürfen nachkommen. Liefert true, wenn es geklappt hat.
+ */
+export async function copyImage(blobTask) {
+  /* ClipboardItem: ohne ihn (ältere Browser, http im Heimnetz) gibt es keinen Weg für Bilder */
+  if (!navigator.clipboard?.write || typeof ClipboardItem === "undefined" || !window.isSecureContext) return false;
+  try {
+    await navigator.clipboard.write([new ClipboardItem({ "image/png": blobTask })]);
+    return true;
+  } catch {
+    return false;
+  }
 }

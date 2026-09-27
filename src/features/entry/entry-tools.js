@@ -41,7 +41,8 @@ export function linkFilterFor(entry) {
 
 /** Die Knöpfe passend zur gewählten Pille zeichnen. */
 export function renderEntryTools(entry) {
-  dom.entryTools.innerHTML = pageToolsMarkup(ui.entryPill, filterKey(entry), linkGroups(entry));
+  const copyLabel = entry.type === "zeichnung" ? "Bild" : "Seite";
+  dom.entryTools.innerHTML = pageToolsMarkup(ui.entryPill, filterKey(entry), linkGroups(entry), copyLabel);
 }
 
 /* In einem Projekt entsteht der neue Eintrag darin — dafür reicht ein Tipp.

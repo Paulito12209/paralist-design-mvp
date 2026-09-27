@@ -200,8 +200,13 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   Status | Dringlichkeit, ein Tipp auf Status oder Dringlichkeit öffnet das
   Blatt), darunter Text, Nutzung (Zeit auf der Seite, Besuche, zuletzt
   bearbeitet), Verlauf und Ablage. Das Ketten-Symbol öffnet „Verknüpfen“ mit
-  den Pillen Zuletzt | Ablageort | Kategorien. Bei einer Zeichnung ist die
-  Fläche so hoch, dass die Karte über der Werkzeugleiste hervorschaut.
+  den Pillen Zuletzt | Ablageort | Kategorien.
+- Zeichnung: kein Textfeld; unter der weißen Fläche die Werkzeugleiste, darunter
+  schaut die Karte „Details“ über der Navigation hervor. Der Kopier-Knopf neben
+  den Pillen legt das Bild (weißer Grund, PNG) in die Zwischenablage — in einen
+  Chat einfügen und nachsehen; gedrückt halten bietet „Bild“ oder „Titel“. Das
+  Menü hat „Exportieren“ mit „Als PNG“ und „Als JPEG“ (Datei wird geladen, auch
+  aus dem Menü einer Zeile heraus); ein gerade gezogener Strich ist mit dabei.
 - Cover und Icon (wie in Notion): „Cover hinzufügen“ legt einen Farbverlauf in
   der Farbe der Kategorie hinter Kopfzeile und Titel — hell und dunkel ansehen,
   Typ ändern wechselt die Farbe mit, „Cover entfernen“ nimmt ihn weg. Beim

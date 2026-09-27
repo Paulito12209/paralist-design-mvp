@@ -5,7 +5,8 @@
  * darin.
  *
  * - unter „Inhalt“ der Kopier-Knopf: Antippen kopiert die ganze Seite als
- *   Markdown, Gedrückthalten (oder Rechtsklick) fragt „Seite“ oder „Titel“,
+ *   Markdown (bei einer Zeichnung das Bild), Gedrückthalten (oder
+ *   Rechtsklick) fragt „Seite“ bzw. „Bild“ oder „Titel“,
  * - unter „Verknüpfte Einträge“ Filter und Plus. Was das Plus tut, weiß die
  *   jeweilige Seite; der Filter zeigt „Alle“ oder genau einen Typ.
  *
@@ -78,10 +79,11 @@ function toolButton(name, label, data, extra = "") {
  * @param pill   "notes" (Inhalt) oder "links" (Verknüpfte Einträge)
  * @param key    Schlüssel der Seite für den Filter
  * @param groups die Gruppen unter der zweiten Pille
+ * @param copyLabel was der Kopier-Knopf kopiert — „Seite“, bei einer Zeichnung „Bild“
  */
-export function pageToolsMarkup(pill, key, groups) {
+export function pageToolsMarkup(pill, key, groups, copyLabel = "Seite") {
   if (pill === "notes") {
-    return toolButton("copy", "Seite kopieren — gedrückt halten für nur den Titel", "data-copy-page");
+    return toolButton("copy", `${copyLabel} kopieren — gedrückt halten für nur den Titel`, "data-copy-page");
   }
   const active = activeFilter(key, groups);
   /* Bei nur einer Gruppe gibt es nichts zu filtern — der Knopf bleibt stehen,

@@ -11,8 +11,8 @@
  *   Ausgeklappt steht am Textende „Weniger anzeigen“. Jede Seite beginnt beim
  *   Öffnen eingeklappt; wer in den Text tippt, klappt ihn von selbst aus,
  *   damit beim Schreiben nichts verdeckt ist.
- * - Zeichnung: die Zeichenfläche ist genau so hoch, dass die Karte darunter
- *   hervorschaut.
+ * - Zeichnung: die Zeichenfläche ist genau so hoch, dass unter ihr die
+ *   Werkzeugleiste und darunter der Kopf der Karte Platz haben.
  *
  * Kennzahlen und Abschnitte der Karte erscheinen erst, wenn sie beim
  * Hochscrollen über der Navigation auftauchen (IntersectionObserver, kein
@@ -54,16 +54,11 @@ let revealMargin = "";
 /* Ausgeklappt? Beginnt bei jeder geöffneten Seite eingeklappt. */
 let expanded = false;
 
-/* Oberkante dessen, was unten über der Seite liegt: auf einer Zeichnung die
-   Werkzeugleiste, sonst die Navigation. Ist keins davon zu sehen (Desktop),
-   zählt der untere Rand der Anzeigefläche. */
-function coveredFrom(drawing) {
-  const bars = drawing ? [dom.drawTools, dom.navShell] : [dom.navShell];
-  for (const bar of bars) {
-    const rect = bar ? bar.getBoundingClientRect() : null;
-    if (rect && rect.height) return rect.top;
-  }
-  return dom.content.getBoundingClientRect().bottom;
+/* Oberkante dessen, was unten über der Seite liegt: die Navigation. Ist sie
+   nicht zu sehen (Desktop), zählt der untere Rand der Anzeigefläche. */
+function coveredFrom() {
+  const rect = dom.navShell ? dom.navShell.getBoundingClientRect() : null;
+  return rect && rect.height ? rect.top : dom.content.getBoundingClientRect().bottom;
 }
 
 /*
@@ -100,23 +95,27 @@ export function layoutEntryFold() {
   if (!fold || !card || !isViewActive("entry") || dom.entryPanelNotes.hidden) return;
   const drawing = !dom.drawPad.hidden;
   const head = card.firstElementChild;
-  const scroller = dom.content;
-  /* Oberkante des Rahmens, als stünde die Seite ganz oben */
-  const top = fold.getBoundingClientRect().top + scroller.scrollTop;
-  /* Einmal je Messung, nicht beim Scrollen: der Abstand über der Karte steht im CSS */
-  const cardGap = parseFloat(getComputedStyle(card).marginTop) || 0;
-  const covered = coveredFrom(drawing);
-  const cardTop = covered - PEEK_BELOW_HEAD_PX - head.offsetHeight;
-  watchReveal(card, covered);
-  const room = Math.max(MIN_ROOM_PX, Math.round(cardTop - cardGap - top));
 
+  /* Erst alles zurücksetzen, dann messen */
   fold.classList.remove("is-folded");
   fold.style.minHeight = "";
   fold.style.maxHeight = "";
   fold.style.height = "";
+  setMore(false);
+
+  const foldRect = fold.getBoundingClientRect();
+  /* Oberkante des Rahmens, als stünde die Seite ganz oben */
+  const top = foldRect.top + dom.content.scrollTop;
+  /* Was zwischen Rahmen und Karte steht: der Abstand über der Karte, bei
+     einer Zeichnung dazu die Werkzeugleiste. Gemessen statt aus dem CSS
+     gelesen — so zählt alles mit, was dort gerade steht. */
+  const between = card.getBoundingClientRect().top - foldRect.bottom;
+  const covered = coveredFrom();
+  const cardTop = covered - PEEK_BELOW_HEAD_PX - head.offsetHeight;
+  watchReveal(card, covered);
+  const room = Math.max(MIN_ROOM_PX, Math.round(cardTop - between - top));
 
   if (drawing) {
-    setMore(false);
     fold.style.height = `${room}px`;
     return;
   }

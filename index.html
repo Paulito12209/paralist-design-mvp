@@ -148,6 +148,24 @@
               <div class="draw-pad" id="draw-pad" hidden>
                 <canvas id="draw-canvas"></canvas>
               </div>
+              <!-- Zeichenwerkzeuge wie Apples Stiftpalette: Stift, Marker, Radierer, Farben, Rückgängig; nur auf einer Zeichnung, zwischen Zeichenfläche und Karte „Details“ -->
+              <div class="draw-tools" id="draw-tools">
+                <button class="draw-tool is-active" type="button" data-draw-tool="pen" aria-label="Stift">
+                  <svg class="icon"><use href="#icon-pencil"></use></svg>
+                </button>
+                <button class="draw-tool" type="button" data-draw-tool="marker" aria-label="Marker">
+                  <svg class="icon"><use href="#icon-marker"></use></svg>
+                </button>
+                <button class="draw-tool" type="button" data-draw-tool="eraser" aria-label="Radierer">
+                  <svg class="icon"><use href="#icon-eraser"></use></svg>
+                </button>
+                <span class="draw-split"></span>
+                <div class="draw-colors" id="draw-colors"></div>
+                <span class="draw-split"></span>
+                <button class="draw-tool" type="button" data-draw-undo="1" aria-label="Rückgängig">
+                  <svg class="icon"><use href="#icon-undo"></use></svg>
+                </button>
+              </div>
             </div>
             <div class="entry-panel" id="entry-panel-links" hidden>
               <!-- Bei einem Projekt: was darin liegt. Sonst: womit der Eintrag verknüpft ist -->
@@ -221,24 +239,6 @@
           <input id="media-file-video" type="file" accept="video/*" capture="environment" hidden />
           <input id="media-file-audio" type="file" accept="audio/*" multiple hidden />
           <input id="media-file-import" type="file" multiple hidden />
-          <!-- Zeichenwerkzeuge wie Apples Stiftpalette: Stift, Marker, Radierer, Farben, Rückgängig; nur auf einer Zeichnung zu sehen -->
-          <div class="draw-tools" id="draw-tools">
-            <button class="draw-tool is-active" type="button" data-draw-tool="pen" aria-label="Stift">
-              <svg class="icon"><use href="#icon-pencil"></use></svg>
-            </button>
-            <button class="draw-tool" type="button" data-draw-tool="marker" aria-label="Marker">
-              <svg class="icon"><use href="#icon-marker"></use></svg>
-            </button>
-            <button class="draw-tool" type="button" data-draw-tool="eraser" aria-label="Radierer">
-              <svg class="icon"><use href="#icon-eraser"></use></svg>
-            </button>
-            <span class="draw-split"></span>
-            <div class="draw-colors" id="draw-colors"></div>
-            <span class="draw-split"></span>
-            <button class="draw-tool" type="button" data-draw-undo="1" aria-label="Rückgängig">
-              <svg class="icon"><use href="#icon-undo"></use></svg>
-            </button>
-          </div>
           <!-- Suchen-Knoepfe: Mikrofon+Suchen teilen sich ein mittig stehendes Gehaeuse, Abbrechen steht separat rechts daneben -->
           <div class="search-actions" id="search-actions">
             <div class="search-combo"><button class="search-combo-btn" type="button" id="search-voice" aria-label="Suche einsprechen"><svg class="icon"><use href="#icon-mic"></use></svg></button><button class="search-combo-btn is-active" type="button" id="search-pill">Suchen</button></div>
