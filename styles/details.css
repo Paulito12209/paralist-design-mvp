@@ -26,6 +26,7 @@
   overflow-wrap: anywhere; /* overflow-wrap: sehr lange Wörter umbrechen statt überstehen */
   user-select: text; /* user-select: den Titel markieren und kopieren können */
   -webkit-user-select: text;
+  -webkit-touch-callout: default; /* -webkit-touch-callout: iPhone-Menü „Kopieren“ für die Markierung zulassen */
 }
 
 /* Ein Satz dazu, was gleich passiert — im Blatt „Typ ändern“ unter der Überschrift */

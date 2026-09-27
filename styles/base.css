@@ -43,6 +43,24 @@ body {
   color: var(--text);
   background: var(--stage-bg);
   -webkit-font-smoothing: antialiased;
+  /* user-select: wie in einer nativen App lässt sich Bedientext (Menüs, Pillen,
+     Knöpfe, Zähler) nicht markieren — sonst greift ein langes Drücken statt des
+     eigenen Menüs die Beschriftung. Markierbar sind nur Felder zum Schreiben
+     (Regel darunter) und einzeln freigegebene Titel (.entry-title, .sheet-lead,
+     .page-title.is-editable). */
+  user-select: none;
+  -webkit-user-select: none;
+  /* -webkit-touch-callout: kein iPhone-Menü „Kopieren/Nachschlagen“ auf Bedientext */
+  -webkit-touch-callout: none;
+}
+
+/* Alles, worin man schreibt, bleibt markierbar und kopierbar */
+input,
+textarea,
+[contenteditable]:not([contenteditable="false"]) {
+  user-select: text;
+  -webkit-user-select: text;
+  -webkit-touch-callout: default;
 }
 
 button,
