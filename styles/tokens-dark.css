@@ -45,6 +45,8 @@
     --dot-2: rgba(255, 159, 10, 0.52);
     --dot-3: rgba(255, 159, 10, 0.76);
     --dot-4: #ff9f0a;
+    --ms-locked: #48484a;
+    --ms-track: rgba(255, 255, 255, 0.12);
     --cal-accent: #4aa3ff;
     --cal-now: #6fcbe8;
     --prio-jetzt: #ff6961;
@@ -93,6 +95,8 @@
   --dot-2: rgba(255, 159, 10, 0.52);
   --dot-3: rgba(255, 159, 10, 0.76);
   --dot-4: #ff9f0a;
+  --ms-locked: #48484a;
+  --ms-track: rgba(255, 255, 255, 0.12);
   --cal-accent: #4aa3ff;
   --cal-now: #6fcbe8;
   --prio-jetzt: #ff6961;

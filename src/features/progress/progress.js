@@ -1,10 +1,13 @@
 /*
- * Das Fortschritt-Blatt hinter der Level-Anzeige oben links: Ring, Verlauf,
- * nächste Stufen und Historie. Wird erst beim ersten Öffnen nachgeladen.
+ * Das Fortschritt-Blatt hinter der Level-Anzeige oben links: Ring,
+ * Meilensteine, Verlauf, nächste Stufen und Historie. Tippt man die Karte
+ * „Meilensteine“ an, tritt deren eigene Seite an die Stelle der Karten — mit
+ * Pfeil zurück, wie im Einstellungs-Blatt. Wird erst beim ersten Öffnen
+ * nachgeladen.
  * Pfad: src/features/progress/progress.js
  *
- * Keine anpassbaren visuellen Werte: siehe styles/progress.css und
- * styles/overlays.css.
+ * Keine anpassbaren visuellen Werte: siehe styles/progress.css,
+ * styles/milestones.css und styles/overlays.css.
  */
 
 import { emit, events } from "../../core/bus.js";
@@ -16,10 +19,21 @@ import { closeCtxMenu } from "../../ui/ctx-menu.js";
 import { closeSheet } from "../../ui/sheet.js";
 import { donutCard, historyCard } from "./progress-charts.js";
 import { historyPageSize, levelsCard, logCard } from "./progress-lists.js";
+import { enterMilestones, milestonesPage, milestonesTeaser, toggleMilestone } from "./progress-milestones.js";
 
-/** Alle vier Karten in das Blatt zeichnen. */
+/* Offene Unterseite des Blatts: null für die Karten, "milestones" für die Meilensteine. */
+let detail = null;
+
+/** Das Blatt zeichnen: die Karten oder die Seite „Meilensteine“. */
 export function renderProgress() {
-  dom.progressBody.innerHTML = donutCard() + historyCard() + levelsCard() + logCard();
+  dom.progressBody.innerHTML =
+    detail === "milestones"
+      ? milestonesPage()
+      : donutCard() + milestonesTeaser() + historyCard() + levelsCard() + logCard();
+  /* Auf der Unterseite rücken Pfeil und „Fortschritt“ zusammen nach links — sie
+     sind der Weg zurück zu den Karten (siehe .modal-head.is-back). */
+  el("progress-back").hidden = !detail;
+  el("progress-head").classList.toggle("is-back", Boolean(detail));
 }
 
 /* Neu zeichnen, ohne dass die Liste nach oben springt. */
@@ -29,8 +43,12 @@ function rerenderKeepingScroll() {
   dom.progressBody.scrollTop = scroll;
 }
 
-/** Das Blatt öffnen. */
-export function open(push = true) {
+/**
+ * Das Blatt öffnen.
+ * @param push false, wenn der Verlauf es zurückholt — dann sagt `entry`, ob
+ *   dabei die Seite „Meilensteine“ offen war.
+ */
+export function open(push = true, entry = null) {
   closeSheet();
   closeCtxMenu();
   emit(events.overlayOpened);
@@ -38,6 +56,9 @@ export function open(push = true) {
   dom.profileModal.hidden = true;
   dom.avatarView.hidden = true;
 
+  const wanted = entry && entry.detail === "milestones" ? "milestones" : null;
+  if (wanted && wanted !== detail) enterMilestones();
+  detail = wanted;
   ui.historyLimit = historyPageSize;
   renderProgress();
   clearModalPull(dom.progressModal);
@@ -46,22 +67,45 @@ export function open(push = true) {
   if (push) history.pushState({ view: "progress", from: ui.sourceView }, "", "#/fortschritt");
 }
 
+/** Die Seite „Meilensteine“ öffnen; sie bekommt einen eigenen Schritt im Verlauf. */
+function openMilestones() {
+  enterMilestones();
+  detail = "milestones";
+  renderProgress();
+  dom.progressBody.scrollTop = 0;
+  history.pushState({ view: "progress", detail, from: ui.sourceView }, "", "#/fortschritt/meilensteine");
+}
+
+/** Von den Meilensteinen zurück zu den Karten. */
+function closeDetail() {
+  if (history.state && history.state.view === "progress" && history.state.detail) {
+    history.back();
+    return;
+  }
+  detail = null;
+  renderProgress();
+}
+
 /** Das Blatt ohne Umweg über den Verlauf schließen. */
 export function hide() {
   dom.progressModal.hidden = true;
+  detail = null;
 }
 
 /** Das Blatt schließen; der Verlauf geht dabei einen Schritt zurück. */
 export function close() {
   if (dom.progressModal.hidden) return;
-  if (history.state && history.state.view === "progress") {
-    history.back();
+  const entry = history.state;
+  if (entry && entry.view === "progress") {
+    /* Auf den Meilensteinen liegen zwei Schritte im Verlauf: das Kreuz
+       schließt beide, sonst stünden danach wieder die Karten offen. */
+    history.go(entry.detail ? -2 : -1);
     return;
   }
   hide();
 }
 
-/* Klicks im Blatt: Zeitraum umstellen oder mehr Historie zeigen. */
+/* Klicks im Blatt: Zeitraum umstellen, mehr Historie, Meilensteine öffnen oder aufklappen. */
 function onBodyClick(event) {
   const range = event.target.closest("[data-range]");
   if (range) {
@@ -72,12 +116,23 @@ function onBodyClick(event) {
   if (event.target.closest("#history-more")) {
     ui.historyLimit += historyPageSize;
     rerenderKeepingScroll();
+    return;
+  }
+  if (event.target.closest("[data-progress-detail]")) {
+    openMilestones();
+    return;
+  }
+  const row = event.target.closest("[data-milestone]");
+  if (row) {
+    toggleMilestone(row.dataset.milestone);
+    rerenderKeepingScroll();
   }
 }
 
 /* Beim Laden des Moduls einmal alles anmelden. */
 function init() {
   el("progress-close").addEventListener("click", close);
+  el("progress-back").addEventListener("click", closeDetail);
   dom.progressModal.addEventListener("click", (event) => {
     if (event.target === dom.progressModal) close();
   });

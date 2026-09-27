@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "89a6b605cc52";
+export const appVersion = "eff9618d1553";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -49,6 +49,8 @@ export const appFiles = [
   "src/data/insights.js",
   "src/data/link-kinds.js",
   "src/data/links.js",
+  "src/data/milestone-tracks.js",
+  "src/data/milestones.js",
   "src/data/mutations.js",
   "src/data/nav-labels.js",
   "src/data/note-blocks.js",
@@ -110,6 +112,7 @@ export const appFiles = [
   "src/features/profile/theme.js",
   "src/features/progress/progress-charts.js",
   "src/features/progress/progress-lists.js",
+  "src/features/progress/progress-milestones.js",
   "src/features/progress/progress.js",
   "src/features/resources/resources.js",
   "src/features/search/search-data.js",
@@ -196,6 +199,7 @@ export const appFiles = [
   "styles/empty-state.css",
   "styles/entry.css",
   "styles/media.css",
+  "styles/milestones.css",
   "styles/modal-top.css",
   "styles/navigation.css",
   "styles/overlays.css",

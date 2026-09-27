@@ -49,6 +49,16 @@
  * --slash-radius            -> Rundung des Menüs
  * --slash-max-h             -> ab dieser Höhe scrollt das Menü
  *
+ * MEILENSTEINE (Seite im Fortschritt-Blatt)
+ * --ms-tasks … --ms-streak  -> Farbe der Plakette je Abzeichen (Task Master, Ehrgeizling, Dichter,
+ *                              Fotograf, Denker, Künstler, Planer, Stammgast)
+ * --ms-medal-size           -> Durchmesser der Plakette in der Liste
+ * --ms-medal-small          -> Durchmesser der kleinen Plaketten auf der Karte im Fortschritt-Blatt
+ * --ms-ring-w               -> Breite des Rings um die Plakette, der bis zur nächsten Stufe wächst
+ * --ms-bar-h                -> Höhe der Balken unter dem Namen und in der Summe
+ * --ms-locked               -> Grau einer noch gesperrten Plakette
+ * --ms-track                -> Grund von Ring und Balken, bevor sie sich füllen
+ *
  * KALENDER
  * --cal-now-label           -> Schriftfarbe in der Uhrzeit-Pille der Jetzt-Linie
  * --cal-accent              -> Blau des gewählten Tages und des „Heute“-Knopfes
@@ -164,6 +174,22 @@
   --slash-tile-bg: color-mix(in srgb, var(--text) 6%, transparent);
   --slash-radius: 20px;
   --slash-max-h: 320px;
+
+  /* Meilensteine: Farben der Abzeichen, Plaketten, Ring und Balken */
+  --ms-tasks: #34c759;
+  --ms-projects: #ff375f;
+  --ms-writing: #ff9500;
+  --ms-photos: #32ade6;
+  --ms-notes: #e6b800;
+  --ms-drawings: #af52de;
+  --ms-events: #007aff;
+  --ms-streak: #ff6b1a;
+  --ms-medal-size: 58px;
+  --ms-medal-small: 30px;
+  --ms-ring-w: 4px;
+  --ms-bar-h: 6px;
+  --ms-locked: #aeaeb2;
+  --ms-track: rgba(60, 60, 67, 0.12);
 
   /* Kalender: Farben des gewählten Tages, Jetzt-Linie und Höhen der Raster */
   --cal-now-label: #0b1a2a;
