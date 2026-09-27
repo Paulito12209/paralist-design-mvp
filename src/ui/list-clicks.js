@@ -101,6 +101,12 @@ function handleSwipeAction(action) {
   openLinkPicker(entry);
 }
 
+/* Favorit einer Zeile umschalten — Eintrag oder Arbeitsbereich, je nach Zeile. */
+function toggleRowFavorite(row) {
+  const item = row.dataset.openEntry ? findEntry(row.dataset.openEntry) : findWorkspace(row.dataset.openWorkspace);
+  if (item) toggleFavorite(item);
+}
+
 /* Eine Tab-Pille: der aktive Tab öffnet das Umbenennen, ein anderer wird gewählt. */
 function handleTabPill(pill) {
   const id = Number(pill.dataset.tabId);
@@ -190,6 +196,14 @@ function onClick(event) {
 
   if (event.target.closest("[data-tab-add]")) {
     addTab();
+    return;
+  }
+
+  /* Das Icon vor dem Titel schaltet Favorit um, statt die Zeile zu öffnen. */
+  const glyph = event.target.closest("[data-fav-toggle]");
+  if (glyph) {
+    if (isSwipedOpen(glyph)) closeSwipes();
+    else toggleRowFavorite(glyph.closest("[data-open-entry], [data-open-workspace]"));
     return;
   }
 

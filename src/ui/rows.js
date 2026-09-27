@@ -4,7 +4,7 @@
  * Pfad: src/ui/rows.js
  *
  * Keine anpassbaren visuellen Werte: Höhe, Farben und Abstände stehen in
- * styles/rows.css (Klasse .workspace-row), styles/swipe-rows.css (.swipe, .swipe-action), der Haken
+ * styles/rows.css (Klasse .workspace-row, das Favoriten-Icon in .row-glyph), styles/swipe-rows.css (.swipe, .swipe-action), der Haken
  * vor einer Aufgabe in styles/task-status.css.
  */
 
@@ -61,6 +61,18 @@ export function entryGlyph(entry) {
 }
 
 /**
+ * Das Icon vor dem Titel als Favoriten-Schalter: ein Tipp darauf wirkt wie der
+ * Stern-Knopf beim Wischen, und ein Favorit zeigt sein Icon im Gold des
+ * Sterns. Vorschaubilder bleiben, wie sie sind — auf einem Foto sähe man das
+ * Gold nicht, und ein Tipp darauf soll das Foto öffnen.
+ */
+function favoriteGlyph(glyphHtml, isFavorite) {
+  if (glyphHtml.startsWith("<img")) return glyphHtml;
+  const label = isFavorite ? "Aus Favoriten entfernen" : "Zu Favoriten";
+  return `<span class="row-glyph${isFavorite ? " is-favorite" : ""}" data-fav-toggle aria-label="${label}">${glyphHtml}</span>`;
+}
+
+/**
  * Die vier Wisch-Knöpfe einer Eintrags-Zeile, je zwei auf jeder Seite: links
  * steht, was den Eintrag in der Liste lässt (Favorit, Verknüpfen), rechts das,
  * was ihn herausnimmt — Archivieren direkt neben dem roten Löschen.
@@ -100,7 +112,7 @@ export function entryRow(entry, prefix = "") {
     `
       ${task ? taskCheck(entry) : ""}
       <button class="workspace-row entry-row" type="button" data-open-entry="${entry.id}">
-        ${task ? "" : entryGlyph(entry)}
+        ${task ? "" : favoriteGlyph(entryGlyph(entry), entry.favorite)}
         ${prefix}
         <span${done ? ' class="is-done"' : ""}>${escapeHtml(entry.title)}</span>
         ${icon("chevron", "chevron")}
@@ -141,7 +153,7 @@ export function workspaceRow(workspace, canEdit = false) {
     ],
     `
       <button class="workspace-row" type="button" data-open-workspace="${workspace.id}">
-        ${icon(workspaceIcon(workspace))}
+        ${favoriteGlyph(icon(workspaceIcon(workspace)), workspace.favorite)}
         <span>${escapeHtml(workspaceLabel(workspace))}</span>
         ${icon("chevron", "chevron")}
       </button>
