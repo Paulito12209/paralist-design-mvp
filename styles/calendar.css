@@ -16,7 +16,7 @@
  * --content-top             -> um so viel wird der einrastende Kopf nach oben verlängert
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei
- * (Monat und Jahr 18px, Tageszahlen 18px, Rollen-Zeilen 20px, „Fertig“ 17px).
+ * (Monat und Jahr 18px, Tageszahlen 16px, Rollen-Zeilen 20px, „Fertig“ 17px).
 */
 
 /* @import: die Ringe haben eine eigene Datei, weil diese sonst über 400 Zeilen
@@ -173,7 +173,7 @@
   display: grid;
   place-items: center;
   border-radius: 50%;
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 500;
   letter-spacing: -0.02em;
 }

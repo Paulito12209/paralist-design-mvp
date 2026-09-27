@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "5e307de80c32";
+export const appVersion = "a2ae8e65c695";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
