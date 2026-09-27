@@ -1,11 +1,13 @@
 /*
- * Startseite: die zweite Kartenseite rechts neben den vier festen Karten,
- * die Karten „Demnächst verfügbar“ und der Pfeil neben „Arbeitsbereiche“.
+ * Startseite: die zweite Kartenseite rechts neben den vier festen Karten
+ * (erst sichtbar, wenn man sie hereinwischt), die Linie darunter, die zeigt,
+ * welche Seite steht, die Karten „Demnächst verfügbar“ und der Pfeil neben
+ * „Arbeitsbereiche“.
  * Pfad: styles/overview-more.css
  *
  * ANPASSBARE WERTE (in styles/tokens-pages.css)
  * -----------------------------------
- * --overview-peek      -> wie weit die zweite Kartenseite rechts hervorschaut
+ * --overview-pager-h   -> Dicke der Seitenlinie unter den Karten
  * --soon-opacity       -> wie blass Icon und Name einer abgeschalteten Karte sind
  *
  * Direkt hier bei ihrer Regel:
@@ -13,7 +15,9 @@
  * .card-info           -> das „i“ im Kreis neben dem Namen: 16px groß
  * .section-link .icon  -> Pfeil nach oben rechts neben „Arbeitsbereiche“: 16px groß
  *
- * Farben kommen aus styles/tokens.css (--muted, --text, --archive-color).
+ * Farben kommen aus styles/tokens.css: --line (Seitenlinie, wie die Trennlinien
+ * der Listen), --placeholder (ihr gefüllter Teil, wie „Suchen“ im Suchfeld),
+ * --muted, --text, --archive-color.
  */
 
 /* ---------- Kartenseiten zum Schieben ---------- */
@@ -36,10 +40,35 @@
 }
 
 .overview-page {
-  /* flex: jede Seite ist so breit wie der Inhalt minus das Stück, das von der nächsten hervorschaut */
-  flex: 0 0 calc(100% - var(--overview-peek));
+  /* flex: jede Seite ist genau so breit wie der Inhalt — die nächste bleibt ganz verborgen */
+  flex: 0 0 100%;
   /* scroll-snap-align: hier rastet die Seite ein */
   scroll-snap-align: start;
+}
+
+/* ---------- Seitenlinie unter den Karten ---------- */
+
+/* Eine Linie wie zwischen den Listenzeilen; die gefüllte Hälfte zeigt, welche
+   der zwei Kartenseiten steht, und wandert beim Wischen mit dem Finger mit. */
+.overview-pager {
+  height: var(--overview-pager-h);
+  margin-inline: var(--title-side);
+  background: var(--line);
+  border-radius: 999px;
+  /* overflow: die Hälfte darf beim Wandern nicht über das Ende hinausstehen */
+  overflow: hidden;
+}
+
+.overview-pager-thumb {
+  display: block;
+  width: 50%;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--placeholder);
+  /* transform: src/features/overview/overview.js schiebt die Hälfte je nach Wischweg */
+  transform: translateX(calc(var(--pager-progress, 0) * 100%));
+  /* will-change: eigene Ebene, das Mitwandern ruckelt nicht */
+  will-change: transform;
 }
 
 /* ---------- Karten „Demnächst verfügbar“ ---------- */

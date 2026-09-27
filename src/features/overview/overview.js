@@ -2,8 +2,10 @@
  * Die Karten oben auf der Startseite. Links die vier festen — Eingang,
  * Favoriten, Projekte, Ressourcen —, rechts daneben eine zweite Seite mit vier
  * weiteren (src/data/collections.js, moreCards): Archiv und drei Karten, die
- * noch „Demnächst verfügbar“ sind. Man schiebt sie waagerecht herein; die
- * zweite Seite schaut am rechten Rand ein Stück hervor, damit man sie findet.
+ * noch „Demnächst verfügbar“ sind. Man schiebt sie waagerecht herein; auf der
+ * Übersicht sieht man zuerst nur die vier festen. Die Linie unter den Karten
+ * ist halb gefüllt und zeigt, welche Seite gerade steht — beim Wischen wandert
+ * die gefüllte Hälfte mit.
  * Pfad: src/features/overview/overview.js
  *
  * Keine anpassbaren visuellen Werte: Größe, Rundung und Icon-Farben stehen in
@@ -14,7 +16,7 @@
  */
 
 import { on, events } from "../../core/bus.js";
-import { dom } from "../../core/dom.js";
+import { dom, el } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
 import { moreCards, SOON_LABEL } from "../../data/collections.js";
 import { overviewPages } from "../../data/config.js";
@@ -87,8 +89,26 @@ export function renderOverview() {
   dom.overviewGrid.scrollLeft = scrolled;
 }
 
+/*
+ * Die gefüllte Hälfte der Seitenlinie so weit schieben, wie die Karten
+ * geschoben sind (0 = erste Seite, 1 = zweite). Nur einmal je Bild, damit
+ * schnelles Wischen nicht öfter rechnet, als der Bildschirm zeichnet.
+ */
+let pagerFrame = 0;
+function syncPager() {
+  if (pagerFrame) return;
+  pagerFrame = requestAnimationFrame(() => {
+    pagerFrame = 0;
+    const grid = dom.overviewGrid;
+    const range = grid.scrollWidth - grid.clientWidth;
+    const progress = range > 0 ? Math.min(1, Math.max(0, grid.scrollLeft / range)) : 0;
+    el("overview-pager").style.setProperty("--pager-progress", progress.toFixed(3));
+  });
+}
+
 /** Die Karten anmelden: sie frischen sich auf, wenn sich Daten ändern. */
 export function initOverview() {
+  dom.overviewGrid.addEventListener("scroll", syncPager, { passive: true });
   on(events.dataChanged, () => {
     if (isViewActive("home")) renderOverview();
   });
