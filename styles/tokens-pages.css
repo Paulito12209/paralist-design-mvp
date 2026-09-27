@@ -100,7 +100,7 @@
 :root {
   /* Übersicht: zweite Kartenseite und abgeschaltete Karten */
   --overview-pager-h: 1px;
-  --overview-pager-w: 40px;
+  --overview-pager-w: 48px;
   --soon-opacity: 0.45;
 
   /* Fortschritt und Profil: Level-Anzeige, Verlaufskurve und Punkte-Raster */
