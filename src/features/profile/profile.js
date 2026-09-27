@@ -21,10 +21,12 @@ import { bindModalPull, clearModalPull } from "../../ui/modal-pull.js";
 import { closeCtxMenu } from "../../ui/ctx-menu.js";
 import { registerOverlay } from "../../ui/router.js";
 import { closeSheet, openSheet } from "../../ui/sheet.js";
+import { hideCropper, openCropper } from "./avatar-crop.js";
 import {
   bindPhotoInputs,
   commitDraft,
   currentPhoto,
+  currentSource,
   discardDraft,
   hasDraft,
   renderAvatarStage,
@@ -74,8 +76,8 @@ function showSaveBar(on) {
   dom.profileSave.hidden = !on;
 }
 
-function applyDraft(value) {
-  setDraft(value);
+function applyDraft(value, whole = null) {
+  setDraft(value, whole);
   rerenderKeepingScroll();
   showSaveBar(true);
 }
@@ -109,6 +111,7 @@ function closeDetail() {
 export function hide() {
   dom.profileModal.hidden = true;
   dom.avatarView.hidden = true;
+  hideCropper();
   ui.settingsDetail = null;
   dropDraft();
   clearModalPull(dom.profileModal);
@@ -181,12 +184,29 @@ function hideAvatarView() {
   dom.avatarView.hidden = true;
 }
 
-/* Das Blatt „Profilbild“ mit den drei Quellen. */
+/* Den Ausschnitt-Editor schließen; er hat einen eigenen Verlaufsschritt. */
+function closeCropper() {
+  if (history.state && history.state.view === "avatar-crop") {
+    history.back();
+    return;
+  }
+  hideCropper();
+}
+
+/* Den Ausschnitt wählen — für ein neues Foto oder das schon hinterlegte. */
+function startCrop(whole) {
+  openCropper(whole, { done: applyDraft, close: closeCropper });
+  history.pushState({ view: "avatar-crop", from: "profile" }, "", "#/einstellungen/bild/ausschnitt");
+}
+
+/* Das Blatt „Profilbild“ mit den Quellen, dem Ausschnitt und dem Entfernen. */
 function openAvatarPicker() {
   const options = [
     { icon: "camera", label: "Foto aufnehmen", onSelect: () => el("profile-file-photo").click() },
     { icon: "photos", label: "Aus der Bibliothek", onSelect: () => el("profile-file-library").click() },
   ];
+  const whole = currentSource();
+  if (whole) options.push({ icon: "image", label: "Ausschnitt ändern", onSelect: () => startCrop(whole) });
   if (currentPhoto()) {
     options.push({
       icon: "trash",
@@ -264,12 +284,14 @@ function init() {
     rerenderKeepingScroll();
   });
 
-  bindPhotoInputs(applyDraft);
+  bindPhotoInputs((image) => startCrop({ image, crop: null }));
   bindModalPull(dom.profileModal, close);
   bindModalPull(dom.avatarView, closeAvatarView);
 
   registerOverlay("profile", { open, hide });
   registerOverlay("avatar", { open: openAvatarView, hide: hideAvatarView });
+  /* Den Editor holt der Verlauf nicht zurück — das gewählte Foto ist dann nicht mehr da. */
+  registerOverlay("crop", { open: () => {}, hide: hideCropper });
 }
 
 init();

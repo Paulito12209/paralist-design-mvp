@@ -236,7 +236,7 @@ function hideAllOverlays() {
 
 /* Welcher nachladbare Bereich bringt welches Blatt mit? Steht ein Blatt nicht
    hier, heißt sein Bereich genauso. */
-const overlayModules = { avatar: "profile", file: "viewer" };
+const overlayModules = { avatar: "profile", crop: "profile", file: "viewer" };
 
 /*
  * Ein Blatt aus dem Verlauf wiederherstellen; bei Bedarf wird sein Bereich
@@ -272,6 +272,7 @@ window.addEventListener("popstate", (event) => {
      stehen, wenn man von ihr zum Profil zurückgeht. */
   overlays.get("progress")?.hide();
   overlays.get("avatar")?.hide();
+  overlays.get("crop")?.hide();
   overlays.get("file")?.hide();
 
   if (entry && entry.view === "file") {
@@ -288,7 +289,8 @@ window.addEventListener("popstate", (event) => {
     restoreOverlay("profile", null, "avatar");
     return;
   }
-  if (entry && entry.view === "profile") {
+  /* Der Ausschnitt-Editor kommt nicht zurück (siehe profile.js) — dafür das Profil */
+  if (entry && (entry.view === "profile" || entry.view === "avatar-crop")) {
     restoreOverlay("profile", entry);
     return;
   }
