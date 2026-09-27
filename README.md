@@ -213,6 +213,15 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 - Bei offener Tastatur irgendwo auf die Seite tippen, auch mitten in einen
   langen Text: nur die Tastatur geht zu, der Cursor springt nicht, die
   Navigation kommt zurück. Zurück-Pfeil und Menü wirken sofort.
+- Bausteine unter „Inhalt“: „/“ am Zeilenanfang öffnet das Menü (Grundlagen,
+  Einbettungen), Weitertippen filtert, Escape schließt. „- “, „1. “, „[] “ und
+  „---“ wandeln die Zeile direkt um. Enter setzt eine Liste fort, Enter in
+  einer leeren Listenzeile beendet sie, Löschen am Zeilenanfang macht Text
+  daraus bzw. hängt die Zeile an die vorige. Runde Checkbox antippen füllt sie.
+  Standort, Video, Web-Lesezeichen: Link einfügen → Karte mit Bild links und
+  Name rechts; Karte antippen öffnet den Link, „⋯“ bietet Umbenennen und
+  Entfernen. „/“ vor einem schon eingefügten Link macht ihn direkt zur Karte.
+  Nach Neuladen steht alles wieder so da; Kopieren liefert Markdown.
 
 **Kalender**
 - Raster und Liste umschalten, Zeitraum 1 W / 2 W / 1 M, „Heute“, Monatsmenü.

@@ -8,6 +8,8 @@
  * sie lassen sich nicht als Text darstellen.
  */
 
+import { readableBody } from "./note-blocks.js";
+
 /** Der Titel ohne doppelte Leerzeichen; leer, wenn keiner vergeben ist. */
 export function titleText(entry) {
   return (entry.title || "").replace(/\s+/g, " ").trim();
@@ -16,7 +18,8 @@ export function titleText(entry) {
 /** Die ganze Seite als Markdown. Ohne Titel bleibt nur der Text, ohne Text nur die Überschrift. */
 export function pageMarkdown(entry) {
   const title = titleText(entry);
-  const body = entry.type === "zeichnung" ? "" : (entry.body || "").trim();
+  /* Karten werden zu Markdown-Links, damit sie außerhalb der App lesbar sind */
+  const body = entry.type === "zeichnung" ? "" : readableBody(entry.body || "").trim();
   return [title && `# ${title}`, body].filter(Boolean).join("\n\n");
 }
 

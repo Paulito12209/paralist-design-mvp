@@ -29,6 +29,23 @@
  * --mini-card-height        -> Mindesthöhe einer Analyse-Kachel
  * --mini-chart-height       -> Höhe der kleinen Grafik auf der Kachel
  *
+ * NOTIZ-BAUSTEINE (Inhalt eines Eintrags, „/“-Menü)
+ * --block-gap               -> Luft zwischen zwei Zeilen/Bausteinen
+ * --block-mark-w            -> Breite der Spalte für Punkt, Zahl oder Checkbox vor einer Listenzeile
+ * --block-check-size        -> Durchmesser der runden Checkbox
+ * --block-check-color       -> Farbe, mit der sich eine abgehakte Checkbox füllt
+ * --block-rule-gap          -> Luft über und unter einer Trennlinie
+ * --embed-h                 -> Höhe einer Karte (Standort, Video, Web-Lesezeichen)
+ * --embed-media-w           -> Breite des Bildes links auf der Karte (Karte, Vorschaubild, Logo)
+ * --embed-radius            -> Rundung der Karten
+ * --embed-bg                -> Fläche der Karte hinter Name und Untertitel
+ * --embed-tint              -> wie deckend die Logofarbe hinter dem Favicon liegt (25% = zart)
+ * --embed-gap               -> Luft über und unter einer Karte
+ * --slash-bg                -> Hintergrund des „/“-Menüs
+ * --slash-tile-bg           -> Fläche einer Kachel im Menü
+ * --slash-radius            -> Rundung des Menüs
+ * --slash-max-h             -> ab dieser Höhe scrollt das Menü
+ *
  * KALENDER
  * --cal-now-label           -> Schriftfarbe in der Uhrzeit-Pille der Jetzt-Linie
  * --cal-accent              -> Blau des gewählten Tages und des „Heute“-Knopfes
@@ -123,6 +140,24 @@
   --mini-gap: 12px;
   --mini-card-height: 132px;
   --mini-chart-height: 34px;
+
+  /* Notiz-Bausteine: Listen, Checkboxen, Karten und das „/“-Menü.
+     color-mix mit --text: passt sich ohne eigene Dunkel-Werte an Hell und Dunkel an */
+  --block-gap: 2px;
+  --block-mark-w: 26px;
+  --block-check-size: 20px;
+  --block-check-color: #007aff;
+  --block-rule-gap: 12px;
+  --embed-h: 84px;
+  --embed-media-w: 112px;
+  --embed-radius: 16px;
+  --embed-bg: color-mix(in srgb, var(--text) 6%, transparent);
+  --embed-tint: 25%;
+  --embed-gap: 6px;
+  --slash-bg: var(--update-bg);
+  --slash-tile-bg: color-mix(in srgb, var(--text) 6%, transparent);
+  --slash-radius: 20px;
+  --slash-max-h: 320px;
 
   /* Kalender: Farben des gewählten Tages, Jetzt-Linie und Höhen der Raster */
   --cal-now-label: #0b1a2a;

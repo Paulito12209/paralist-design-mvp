@@ -70,8 +70,10 @@ function onMouseDown(event) {
   const field = page && writingField(page);
   if (!field || !(ui.keyboardOpen || down?.touch)) return;
   /* Zurück-Pfeil und Menü sind ausdrückliche Knöpfe: sie wirken sofort, das
-     Feld verliert den Fokus dabei von selbst. */
-  if (event.target.closest(".page-head")) return;
+     Feld verliert den Fokus dabei von selbst. Was data-write-keep trägt (das
+     „/“-Menü, eine Checkbox im Text), gehört zum Schreiben selbst und wirkt
+     ebenfalls sofort, ohne die Tastatur zu schließen. */
+  if (event.target.closest(".page-head, [data-write-keep]")) return;
   event.preventDefault();
   swallowClick = true;
   field.blur();
@@ -98,6 +100,10 @@ function onClick(event) {
   /* War die Tastatur offen oder stand der Cursor in einem anderen Feld, hat
      dieser Tipp nur das beendet. */
   if (start.keyboard || (isTextField(start.focused) && start.focused !== field)) return;
+  if (page.focusEnd) {
+    page.focusEnd();
+    return;
+  }
   /* preventScroll: nicht erst zum Anfang des Textes springen; die Tastatur
      holt das Textende von selbst in den Blick. */
   field.focus({ preventScroll: true });
@@ -112,8 +118,10 @@ function onClick(event) {
  *           zu sehen ist (andere Pille, Zeichnung)
  * isOpen -> optional: zeigt die Ansicht gerade wirklich diese Seite? „page“
  *           zeigt auch Sammlungen wie die Favoriten — dort gilt das hier nicht
+ * focusEnd -> optional: setzt den Cursor ans Ende, wenn field kein einfaches
+ *           Textfeld ist (der Baustein-Editor, src/ui/block-editor.js)
  */
-export function addWritePage({ view, field, isOpen = () => true }) {
+export function addWritePage({ view, field, isOpen = () => true, focusEnd = null }) {
   if (!pages.length) {
     const { content } = dom;
     /* Aufnahmephase: vor list-clicks.js und den Pillen, damit ein Tipp, der
@@ -123,5 +131,5 @@ export function addWritePage({ view, field, isOpen = () => true }) {
     content.addEventListener("click", onClickCapture, true);
     content.addEventListener("click", onClick);
   }
-  pages.push({ view, field, isOpen });
+  pages.push({ view, field, isOpen, focusEnd });
 }
