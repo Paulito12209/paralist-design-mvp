@@ -1,8 +1,8 @@
 /*
  * Cover und Icon oben auf der Seite eines Eintrags — wie in Notion, beides
  * wählt man im Menü oben rechts (src/ui/entry-menu.js). Das Cover ist ein
- * Fläche in der Farbe der Kategorie hinter Kopfzeile und Titel, die ab der
- * Oberkante der Pillen ausläuft; das Icon steht groß über dem Titel, ein
+ * Verlauf in der Farbe der Kategorie hinter Kopfzeile und Titel, der an der
+ * Oberkante der Pillen endet; das Icon steht groß über dem Titel, ein
  * Tipp darauf öffnet den Icon-Wähler.
  *
  * Wo die Pillen liegen, hängt von Icon und Titellänge ab: die Oberkante wird
@@ -10,8 +10,8 @@
  * beim Zeichnen und immer, wenn der Titel beim Tippen höher oder niedriger wird.
  * Pfad: src/features/entry/entry-cover.js
  *
- * Keine anpassbaren visuellen Werte: Länge und Stärke des Auslaufens sowie
- * die Größe des Icons stehen in styles/entry-cover.css.
+ * Keine anpassbaren visuellen Werte: Stärke des Verlaufs und Größe des
+ * Icons stehen in styles/entry-cover.css.
  */
 
 import { dom, el } from "../../core/dom.js";

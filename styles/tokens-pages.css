@@ -121,7 +121,6 @@
  * --search-fade             -> Länge des Ausblendens ab der Oberkante der Knöpfe unten auf der Suche
  *
  * EINTRAG
- * --entry-cover-fade        -> wie weit das Cover unterhalb der Pillen noch ausläuft (darüber ist es voll gefärbt)
  * --entry-cover-mix         -> wie kräftig die Kategoriefarbe ganz oben im Cover ist (im Dunkeln stärker, siehe styles/tokens-dark.css)
  * --entry-icon-glyph        -> Größe des eigenen Icons über dem Titel eines Eintrags
  * --entry-icon-gap          -> Luft zwischen diesem Icon und dem Titel
@@ -274,7 +273,6 @@
   --draw-tools-space: 62px;
 
   /* Eintrag: Cover und Icon über dem Titel */
-  --entry-cover-fade: 160px;
   --entry-cover-mix: 60%;
   --entry-icon-glyph: 40px;
   --entry-icon-gap: 10px;
