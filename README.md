@@ -223,6 +223,8 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   Name, darunter „Kopieren“ (kopiert nur den Namen, zeigt kurz „Kopiert“); antippen öffnet den Link, „⋯“ bietet Umbenennen, Namen kopieren und
   Entfernen. „/“ vor einem schon eingefügten Link macht ihn direkt zur Karte.
   Nach Neuladen steht alles wieder so da; Kopieren liefert Markdown.
+  Dasselbe im Inhalt eines Arbeitsbereichs — dort zeigt ein anderer
+  Arbeitsbereich seinen eigenen Text, Pillen wechseln behält alles.
 
 **Kalender**
 - Raster und Liste umschalten, Zeitraum 1 W / 2 W / 1 M, „Heute“, Monatsmenü.

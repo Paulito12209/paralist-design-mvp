@@ -33,9 +33,10 @@ const EMPTY_HINT = "Schreib etwas …";
  * Den Baustein-Editor in `root` einrichten.
  * onChange(text) wird nach jeder Änderung mit dem neuen Text aufgerufen —
  * das Speichern (und wie oft) entscheidet der Aufrufer.
+ * emptyHint ist der graue Platzhalter einer ganz leeren Notiz.
  * Liefert { setText, focusEnd, blur }.
  */
-export function createBlockEditor(root, { onChange }) {
+export function createBlockEditor(root, { onChange, emptyHint = EMPTY_HINT }) {
   /* Zu jedem Baustein sein Element. Ein geänderter Baustein ist ein neues
      Objekt und bekommt darum beim nächsten Zeichnen ein neues Element. */
   let nodes = new WeakMap();
@@ -56,7 +57,7 @@ export function createBlockEditor(root, { onChange }) {
           node.innerHTML = blockInner(block, number, LINE_HINT);
           node.dataset.n = String(number);
           const edit = node.querySelector(".nb-edit");
-          if (edit) edit.dataset.empty = EMPTY_HINT;
+          if (edit) edit.dataset.empty = emptyHint;
           nodes.set(block, node);
         }
         node.dataset.i = String(index);
