@@ -57,6 +57,7 @@
     --support-choice-active-bg: rgba(10, 132, 255, 0.18);
     --credits-chip-bg: rgba(255, 255, 255, 0.1);
     --page-cover-mix: 75%;
+    --entry-strip-mix: 34%;
   }
 }
 
@@ -108,4 +109,5 @@
   --support-choice-active-bg: rgba(10, 132, 255, 0.18);
   --credits-chip-bg: rgba(255, 255, 255, 0.1);
   --page-cover-mix: 75%;
+  --entry-strip-mix: 34%;
 }

@@ -20,7 +20,8 @@ import { archiveEntry } from "../data/xp.js";
 import { copyOptions } from "./copy-page.js";
 import { openCtxMenu } from "./ctx-menu.js";
 import { openDetails } from "./details.js";
-import { iconPickerAction, openLinkPicker } from "./pickers.js";
+import { openLinkSheet } from "./link-sheet.js";
+import { iconPickerAction } from "./pickers.js";
 import { toggleTaskFromCheck } from "./task-status.js";
 import { typeChangeAction } from "./type-menu.js";
 
@@ -28,7 +29,8 @@ import { typeChangeAction } from "./type-menu.js";
  * Alle Aktionen eines Eintrags in der Reihenfolge des Menüs.
  * @param onPage true auf der Eintragsseite: nur dort gibt es Cover und Icon
  *   (wie in Notion — beides wirkt oben auf der Seite) und „Zeichnung
- *   leeren“, weil nur dort die Zeichenfläche offen ist.
+ *   leeren“, weil nur dort die Zeichenfläche offen ist. „Details“ fehlt
+ *   dort dafür: es steht in der Leiste über der Navigation.
  * @param afterRemove läuft nach Archivieren und Löschen — die Eintragsseite
  *   kehrt dann zurück, in einer Liste verschwindet nur die Zeile.
  */
@@ -52,7 +54,7 @@ export function entryMenuOptions(entry, { onPage = false, afterRemove = () => {}
     {
       label: "Verknüpfen",
       icon: "link",
-      onSelect: () => openLinkPicker(entry),
+      onSelect: () => openLinkSheet(entry),
     }
   );
   /* „Typ ändern“ steht bei den Dingen, die den Eintrag umbauen (Verknüpfen),
@@ -72,17 +74,19 @@ export function entryMenuOptions(entry, { onPage = false, afterRemove = () => {}
       iconPickerAction(entry.icon, (name) => setEntryIcon(entry, name))
     );
   }
-  options.push(
-    {
+  /* Auf der Seite steht „Details“ in der Leiste über der Navigation
+     (src/features/entry/entry-strip.js) — im Menü nur aus einer Liste heraus. */
+  if (!onPage) {
+    options.push({
       label: "Details",
       icon: "info",
       onSelect: () => openDetails(entry.title || "Ohne Titel", entryDetails(entry)),
-    },
-    /* Auch hier, nicht nur hinter dem Kopier-Knopf der Seite: wer das
-       Gedrückthalten dort nicht kennt, findet beide Wege im Menü — und aus
-       einer Liste kopiert man, ohne die Seite zu öffnen. */
-    ...copyOptions(entry)
-  );
+    });
+  }
+  /* Auch hier, nicht nur hinter dem Kopier-Knopf der Seite: wer das
+     Gedrückthalten dort nicht kennt, findet beide Wege im Menü — und aus
+     einer Liste kopiert man, ohne die Seite zu öffnen. */
+  options.push(...copyOptions(entry));
 
   if (onPage && entry.type === "zeichnung") {
     options.push({

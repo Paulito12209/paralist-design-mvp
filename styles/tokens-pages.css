@@ -124,6 +124,9 @@
  * --page-cover-mix          -> wie kräftig die Kategoriefarbe ganz oben im Cover ist (im Dunkeln stärker, siehe styles/tokens-dark.css)
  * --entry-icon-glyph        -> Größe des eigenen Icons über dem Titel eines Eintrags
  * --entry-icon-gap          -> Luft zwischen diesem Icon und dem Titel
+ * --entry-strip-height      -> Höhe der Leiste „Details“ über der Navigation auf der Seite eines Eintrags
+ * --entry-strip-mix         -> wie kräftig die Kategoriefarbe in dieser Leiste ist (im Dunkeln stärker)
+ * --entry-strip-space       -> Platz am Seitenende, damit diese Leiste nichts verdeckt
  *
  * ZEICHNUNG
  * --draw-tool-size / --draw-color-size -> Größe der Werkzeug-Knöpfe und Farbpunkte
@@ -276,6 +279,10 @@
   --page-cover-mix: 60%;
   --entry-icon-glyph: 40px;
   --entry-icon-gap: 10px;
+  /* Eintrag: Leiste „Details“ über der Navigation; der Platz ist Höhe plus 12px Luft */
+  --entry-strip-height: 52px;
+  --entry-strip-mix: 22%;
+  --entry-strip-space: 64px;
 
   /* Einstellungen und Feedback: Felder, gewählte Art und Danksagungen */
   --support-field-radius: 14px;

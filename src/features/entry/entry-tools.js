@@ -19,7 +19,7 @@ import { entryRef } from "../../data/refs.js";
 import { ui } from "../../data/state.js";
 import { openCtxMenu } from "../../ui/ctx-menu.js";
 import { activeFilter, openFilterMenu, pageToolsMarkup, registerCopySource } from "../../ui/page-tools.js";
-import { openLinkPicker } from "../../ui/pickers.js";
+import { openLinkSheet } from "../../ui/link-sheet.js";
 
 /* Zeichnet die Liste neu, wenn der Filter wechselt; kommt aus entry.js. */
 let rerender = () => {};
@@ -46,8 +46,8 @@ export function renderEntryTools(entry) {
 
 /* In einem Projekt entsteht der neue Eintrag darin — dafür reicht ein Tipp.
    Sonst gibt es zwei Wege: neu anlegen (gleich verknüpft) oder Bestehendes
-   verknüpfen — „Verknüpfen“ heißt wie im Menü oben rechts, dort öffnet es
-   dieselbe Auswahl. */
+   verknüpfen — „Verknüpfen“ heißt wie in der Leiste über der Navigation,
+   dort öffnet das Ketten-Symbol dasselbe Blatt. */
 function addLinked(button, entry) {
   if (isContainer(entry)) {
     emit(events.createRequested);
@@ -55,7 +55,7 @@ function addLinked(button, entry) {
   }
   openCtxMenu(button, [
     { label: "Neuer Eintrag", icon: "plus-circle", onSelect: () => emit(events.createRequested) },
-    { label: "Verknüpfen", icon: "link", onSelect: () => openLinkPicker(entry) },
+    { label: "Verknüpfen", icon: "link", onSelect: () => openLinkSheet(entry) },
   ]);
 }
 

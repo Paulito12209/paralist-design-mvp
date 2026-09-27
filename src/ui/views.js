@@ -67,6 +67,8 @@ export function showView(name) {
   const entry = name === "entry" ? findEntry(ui.currentEntryId) : null;
   document.body.classList.toggle("is-media", name === "media");
   document.body.classList.toggle("is-drawing", Boolean(entry && entry.type === "zeichnung"));
+  /* is-entry zeigt die Leiste „Details“ über der Navigation (styles/entry-strip.css) */
+  document.body.classList.toggle("is-entry", name === "entry");
   document.body.classList.toggle("is-search", name === "search");
   document.body.classList.toggle("is-subpage", name === "page" || name === "entry");
 

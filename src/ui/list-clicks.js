@@ -28,7 +28,7 @@ import { archiveEntry } from "../data/xp.js";
 import { openEntryCtxMenu } from "./entry-menu.js";
 import { cancelHold, consumeClickBlock } from "./long-press.js";
 import { openMoveWorkspaceMenu } from "./move-menu.js";
-import { openLinkPicker } from "./pickers.js";
+import { openLinkSheet } from "./link-sheet.js";
 import { openArchive, openEntryOrFile, openTarget, openWorkspacesPage, showTab } from "./router.js";
 import { closeSwipes, isSwipedOpen } from "./swipe.js";
 import { toggleGroup } from "./groups.js";
@@ -98,7 +98,7 @@ function handleSwipeAction(action) {
     toggleFavorite(entry);
     return;
   }
-  openLinkPicker(entry);
+  openLinkSheet(entry);
 }
 
 /* Favorit einer Zeile umschalten — Eintrag oder Arbeitsbereich, je nach Zeile. */

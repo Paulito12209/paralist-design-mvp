@@ -100,9 +100,10 @@ Tab
   `src/data/config.js`). Ein Projekt kann nicht in einem Projekt liegen — so
   kann nie ein Kreis entstehen, und der Baum ist immer höchstens drei Ebenen
   tief.
-- **Verknüpfen heißt an- und abwählen:** „Verknüpfen mit“ zeigt alle Orte mit
-  Haken, jeder lässt sich hinzunehmen oder wegnehmen, nachträglich und von
-  überall. „Eingang” nimmt alle weg.
+- **Verknüpfen heißt an- und abwählen:** das Blatt „Verknüpfen“ hat Pillen —
+  „Zuletzt“ (was zuletzt geöffnet wurde), „Ablageort“ und je Kategorie eine.
+  Jeder Haken lässt sich hinzunehmen oder wegnehmen, nachträglich und von
+  überall. „Eingang” nimmt alle Orte weg.
 - **Löschen ist ortsbezogen:** Verschwindet ein Ort (Arbeitsbereich gelöscht,
   „Alle Einträge löschen“), wird er aus den Einträgen gestrichen. Was nur dort
   lag, ist weg bzw. rückt in den Eingang; was auch woanders liegt, bleibt dort.
@@ -186,8 +187,13 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 **Eintrag**
 - Titel und Text tippen — nach kurzer Pause ist es gespeichert (Seite neu laden
   und nachsehen).
-- Menü: Favorit, Verknüpfen, Typ ändern, Cover, Icon, Details, Archivieren,
-  Löschen. Eine archivierte Aufgabe gibt Punkte.
+- Menü: Favorit, Verknüpfen, Typ ändern, Cover, Icon, Archivieren, Löschen.
+  Eine archivierte Aufgabe gibt Punkte.
+- Leiste über der Navigation (jede Kategorie, in der Farbe der Kategorie):
+  „Details“ links öffnet das Blatt mit den Angaben, das Ketten-Symbol rechts
+  das Blatt „Verknüpfen“ mit den Pillen Zuletzt | Ablageort | Kategorien —
+  antippen und wischen wechselt, ein Haken bleibt beim Schließen erhalten.
+  Der Text darunter endet nicht hinter der Leiste (ganz nach unten scrollen).
 - Cover und Icon (wie in Notion): „Cover hinzufügen“ legt einen Farbverlauf in
   der Farbe der Kategorie hinter Kopfzeile und Titel — hell und dunkel ansehen,
   Typ ändern wechselt die Farbe mit, „Cover entfernen“ nimmt ihn weg. Beim

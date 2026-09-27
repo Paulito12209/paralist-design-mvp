@@ -19,7 +19,7 @@ import { findEntry } from "../../data/queries.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { openEntry, registerOverlay } from "../../ui/router.js";
 import { bindModalPull, clearModalPull } from "../../ui/modal-pull.js";
-import { openLinkPicker } from "../../ui/pickers.js";
+import { openLinkSheet } from "../../ui/link-sheet.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { openViewerMenu, shareEntry } from "./viewer-menu.js";
 import { navMarkup, neighborId, updateNav } from "./viewer-nav.js";
@@ -175,7 +175,7 @@ function onClick(event) {
     return;
   }
   if (button.dataset.viewer === "link") {
-    openLinkPicker(entry);
+    openLinkSheet(entry);
     return;
   }
   if (button.dataset.viewer === "goto") {

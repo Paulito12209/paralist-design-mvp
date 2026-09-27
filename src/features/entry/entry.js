@@ -26,6 +26,10 @@
  * Rechts neben den Pillen stehen je nach Pille andere Knöpfe: Kopieren unter
  * „Inhalt“, Filter und Plus unter „Verknüpfte Einträge“ (entry-tools.js).
  *
+ * Direkt über der Navigation liegt bei jeder Kategorie die Leiste „Details“
+ * mit dem Ketten-Symbol „Verknüpfen“ (entry-strip.js) — „Details“ steht
+ * darum nicht mehr im Menü oben rechts.
+ *
  * Über dem Titel können ein Farbverlauf in der Farbe der Kategorie und ein
  * eigenes Icon stehen, beides aus dem Menü oben rechts (entry-cover.js;
  * das Cover teilt sich die Seite mit dem Arbeitsbereich: src/ui/page-cover.js).
@@ -47,6 +51,7 @@ import { groupedListMarkup, linkedListMarkup } from "../../ui/groups.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { entryMenuOptions } from "../../ui/entry-menu.js";
 import { initEntryCover, renderEntryCover } from "./entry-cover.js";
+import { initEntryStrip, renderEntryStrip } from "./entry-strip.js";
 import { initEntryTitle, showEntryTitle } from "./entry-title.js";
 import { initEntryTools, linkFilterFor, renderEntryTools } from "./entry-tools.js";
 import { bindHeadTitle, setHeadTitle } from "../../ui/head-title.js";
@@ -123,6 +128,7 @@ function renderEntry() {
   if (!entry) return;
 
   renderEntryCover(entry);
+  renderEntryStrip(entry);
   showEntryTitle(entry);
   bodyEditor.setText(entry.body || "");
   /* Mittig die Kategorie, nicht der Ort: der Zurück-Pfeil führt dorthin, wo
@@ -162,6 +168,7 @@ function saveBody(text) {
 /** Felder, Pillen, Menü und Zurück-Pfeil der Eintragsseite anmelden. */
 export function initEntry() {
   initEntryCover();
+  initEntryStrip();
   initEntryTitle();
   bodyEditor = createBlockEditor(dom.entryBody, { onChange: saveBody });
   initEntryTools({
@@ -230,8 +237,9 @@ export function initEntry() {
       return;
     }
     /* Verknüpfungen können sich im offenen Blatt gerade ändern, der Typ auch —
-       und mit ihm die Farbe des Covers */
+       und mit ihm die Farbe von Cover und Leiste unten */
     renderEntryCover(entry);
+    renderEntryStrip(entry);
     renderCrumb(entry);
     syncHeadSub(entry);
     renderLinks(entry);

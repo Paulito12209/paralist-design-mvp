@@ -37,7 +37,8 @@ body.is-drawing .content {
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  padding-bottom: calc(var(--tab-space) + var(--draw-tools-space));
+  /* dazu die Leiste „Details“ über der Navigation (styles/entry-strip.css) */
+  padding-bottom: calc(var(--tab-space) + var(--draw-tools-space) + var(--entry-strip-space));
 }
 
 body.is-drawing #view-entry {
