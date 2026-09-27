@@ -218,9 +218,9 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   „---“ wandeln die Zeile direkt um. Enter setzt eine Liste fort, Enter in
   einer leeren Listenzeile beendet sie, Löschen am Zeilenanfang macht Text
   daraus bzw. hängt die Zeile an die vorige. Runde Checkbox antippen füllt sie.
-  Standort, Video, Web-Lesezeichen: Link einfügen → Karte mit Bild links und
-  Name rechts; Karte antippen öffnet den Link, „⋯“ bietet Umbenennen und
-  Entfernen. „/“ vor einem schon eingefügten Link macht ihn direkt zur Karte.
+  Standort, Video, Web-Lesezeichen: Link einfügen → links eine Kachel (oben
+  das Bild, unten graue Leiste mit Logo, Dienst und „⋯“), rechts groß der
+  Name; antippen öffnet den Link, „⋯“ bietet Umbenennen und Entfernen. „/“ vor einem schon eingefügten Link macht ihn direkt zur Karte.
   Nach Neuladen steht alles wieder so da; Kopieren liefert Markdown.
 
 **Kalender**

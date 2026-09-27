@@ -1,26 +1,31 @@
 /*
  * Karten im Inhalt eines Eintrags: Standort (kleine Landkarte), Video
  * (Vorschaubild mit Abspiel-Knopf) und Web-Lesezeichen (Favicon auf einer
- * Fläche in seiner Logofarbe). Zwei Spalten: links das Bild, rechts Name und
- * Untertitel, oben rechts das Drei-Punkte-Menü. Dazu das Eingabefeld, bevor
- * ein Link da ist. Markup in src/ui/block-markup.js.
+ * Fläche in seiner Logofarbe). Zwei Spalten: links eine Kachel so groß wie
+ * die auf der Übersicht — oben das Bild, unten zwei Fünftel graue Leiste mit
+ * Logo, Dienst und Drei-Punkte-Menü —, rechts daneben groß der Name. Dazu das
+ * Eingabefeld, bevor ein Link da ist. Markup in src/ui/block-markup.js.
  * Pfad: styles/embeds.css
  *
  * ANPASSBARE WERTE (in styles/tokens-pages.css)
  * -----------------------------------
- * --embed-h         -> Höhe einer Karte
- * --embed-media-w   -> Breite des Bildes links
- * --embed-radius    -> Rundung der Karte
- * --embed-bg        -> Fläche hinter Name und Untertitel
- * --embed-tint      -> wie deckend die Logofarbe hinter dem Favicon liegt
+ * --embed-tile-w    -> Breite der Kachel links (halbe Breite wie die Übersichtskarten)
+ * --embed-h         -> Höhe der Kachel
+ * --embed-bar-h     -> Anteil der grauen Leiste unten (40% = zwei Fünftel)
+ * --embed-radius    -> Rundung der Kachel
+ * --embed-tile-bg   -> Fläche der Kachel
+ * --embed-bar-bg    -> Grau der Leiste mit Logo, Dienst und Menü
+ * --embed-tint      -> wie deckend die Logofarbe hinter dem Favicon einer Website liegt
+ * --embed-bg        -> Fläche des Eingabefelds vor dem Link
  * --embed-gap       -> Luft über und unter einer Karte
  *
  * Direkt bei ihrer Regel:
- * .embed-name font-size     -> Name der Karte (15px)
- * .embed-sub font-size      -> grauer Untertitel (12px)
+ * .embed-name font-size     -> Name rechts neben der Kachel (17px, wie auf den Übersichtskarten)
+ * .embed-label font-size    -> Dienst in der grauen Leiste (12px)
  * .embed-map iframe width   -> wie groß die Landkarte hinter dem Ausschnitt ist (400px);
  *                              größer = Ortsschild und Knöpfe von Google liegen außerhalb
- * .embed-logo img width     -> Größe des Favicons (32px)
+ * .embed-logo img width     -> Größe des Favicons einer Website oben in der Kachel (32px)
+ * .embed-logo-mark width    -> Größe des Logos in der Leiste (16px)
  * .embed-play width         -> Größe des Abspiel-Knopfes (32px)
  */
 
@@ -31,32 +36,40 @@
   padding: var(--embed-gap) 0;
 }
 
+/* Die ganze Zeile ist der Link: links die Kachel, rechts der Name */
 .embed {
-  position: relative; /* position: Anker für den Menü-Knopf oben rechts */
+  display: flex;
+  align-items: center;
+  gap: 14px;
   flex: 1;
   min-width: 0;
-  height: var(--embed-h);
-  display: flex;
-  border-radius: var(--embed-radius);
-  background: var(--embed-bg);
-  overflow: hidden; /* overflow: Bild und Karte folgen der Rundung */
   cursor: pointer;
   -webkit-touch-callout: none; /* -webkit-touch-callout: Halten öffnet kein iPhone-Linkmenü */
 }
 
-.embed:active {
-  opacity: 0.7;
+.embed:active .embed-tile {
+  transform: scale(0.98); /* transform: gibt beim Drücken leicht nach wie die Übersichtskarten */
 }
 
-/* Linke Spalte: Landkarte, Vorschaubild oder Logo */
+/* Kachel: oben das Bild, unten die graue Leiste */
+.embed-tile {
+  flex: 0 0 var(--embed-tile-w);
+  height: var(--embed-h);
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--embed-radius);
+  background: var(--embed-tile-bg);
+  overflow: hidden; /* overflow: Bild und Leiste folgen der Rundung */
+}
+
 .embed-media {
   position: relative;
-  flex: 0 0 var(--embed-media-w);
+  flex: 1;
+  min-height: 0;
   display: grid;
   place-items: center;
   overflow: hidden;
   color: var(--muted);
-  background: var(--embed-bg);
 }
 
 .embed-media > .icon {
@@ -75,7 +88,7 @@
   height: 400px;
   border: 0;
   transform: translate(-50%, -50%); /* transform: mittig über dem Ausschnitt */
-  pointer-events: none; /* pointer-events: die Karte lässt sich nicht verschieben, der Tipp geht an die Karte */
+  pointer-events: none; /* pointer-events: die Karte lässt sich nicht verschieben, der Tipp geht an die Zeile */
 }
 
 /* Noch kein Ort bekannt: angedeutetes Kartenraster mit Stecknadel */
@@ -87,6 +100,8 @@
 }
 
 .embed-thumb img {
+  position: absolute;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover; /* object-fit: das 4:3-Bild von YouTube füllt die Fläche ohne Balken */
@@ -111,8 +126,8 @@
   border-color: transparent transparent transparent #ffffff;
 }
 
-/* Favicon auf seiner eigenen Farbe, zart durchscheinend (--embed-color setzt
-   src/ui/block-markup.js aus dem Favicon) */
+/* Website: großes Favicon auf seiner eigenen Farbe, zart durchscheinend
+   (--embed-color setzt src/ui/block-markup.js aus dem Favicon) */
 .embed-logo {
   background: color-mix(in srgb, var(--embed-color) var(--embed-tint), transparent);
 }
@@ -123,27 +138,75 @@
   border-radius: 8px;
 }
 
-/* Rechte Spalte: Name, darunter grau Dienst oder Website */
-.embed-info {
-  flex: 1;
-  min-width: 0;
+/* Graue Leiste unten: Logo, Dienst, Drei-Punkte-Menü */
+.embed-bar {
+  flex: 0 0 var(--embed-bar-h);
+  min-height: 0;
   display: flex;
-  flex-direction: column;
-  justify-content: center;
-  gap: 4px;
-  padding: 0 40px 0 14px;
+  align-items: center;
+  gap: 6px;
+  padding-left: 10px;
+  background: var(--embed-bar-bg);
+  color: var(--muted);
 }
 
+/* Logo: das Icon liegt unter dem Favicon und bleibt stehen, falls es nicht lädt */
+.embed-logo-mark {
+  position: relative;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+}
+
+.embed-logo-mark > * {
+  position: absolute;
+  inset: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.embed-logo-mark img {
+  border-radius: 4px;
+}
+
+.embed-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis; /* text-overflow: lange Website-Namen enden mit „…“ */
+  white-space: nowrap;
+}
+
+.embed-more {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+
+.embed-more .icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Rechts neben der Kachel: der Name, groß */
 .embed-name {
-  font-size: 15px;
+  flex: 1;
+  min-width: 0;
+  font-size: 17px;
   font-weight: 600;
   line-height: 1.25;
+  letter-spacing: -0.02em;
   color: var(--text);
   overflow-wrap: anywhere;
-  display: -webkit-box; /* -webkit-box mit line-clamp: nach zwei Zeilen endet der Name mit „…“ */
+  display: -webkit-box; /* -webkit-box mit line-clamp: nach vier Zeilen endet der Name mit „…“ */
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
+  -webkit-line-clamp: 4;
+  line-clamp: 4;
   overflow: hidden;
 }
 
@@ -154,43 +217,6 @@
   cursor: text;
   user-select: text;
   -webkit-user-select: text;
-}
-
-.embed-sub {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  min-width: 0;
-  font-size: 12px;
-  color: var(--muted);
-}
-
-.embed-sub > span {
-  overflow: hidden;
-  text-overflow: ellipsis; /* text-overflow: lange Adresse endet mit „…“ */
-  white-space: nowrap;
-}
-
-.embed-sub-icon {
-  flex: 0 0 auto;
-  width: 13px;
-  height: 13px;
-}
-
-.embed-more {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 40px;
-  height: 40px;
-  display: grid;
-  place-items: center;
-  color: var(--muted);
-}
-
-.embed-more .icon {
-  width: 18px;
-  height: 18px;
 }
 
 /* Eingabefeld, solange die Karte noch keinen Link hat */

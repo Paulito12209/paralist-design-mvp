@@ -1,7 +1,7 @@
 /*
  * Wie ein Baustein im Inhalt einer Notiz aussieht: Absatz, Stichpunkt,
  * nummerierte Zeile, runde Checkbox, Trennlinie — und die Karten für
- * Standort, Video und Web-Lesezeichen (links das Bild, rechts der Name).
+ * Standort, Video und Web-Lesezeichen (links die Kachel, rechts der Name).
  * Diese Datei baut nur Elemente; was beim Tippen passiert, steht in
  * src/ui/block-editor.js.
  * Pfad: src/ui/block-markup.js
@@ -9,7 +9,8 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * MAP_ZOOM      -> wie nah die kleine Karte an den Ort heranzoomt (höher = näher)
- * kindLabels    -> grauer Untertitel einer Karte, solange nichts Genaueres da ist
+ * kindLabels    -> Beschriftung in der grauen Leiste der Kachel (leer = Name der Website)
+ * logoHosts     -> wessen Favicon dort als Logo steht (Website-Karten: ihr eigenes)
  * urlHints      -> Platzhalter im Eingabefeld, bevor ein Link eingefügt ist
  *
  * Aussehen (Größen, Farben, Rundungen): styles/blocks.css und styles/embeds.css.
@@ -23,6 +24,8 @@ const MAP_ZOOM = 15;
 
 const kindLabels = { place: "Google Maps", video: "YouTube", link: "" };
 const kindIcons = { place: "pin", video: "video", link: "bookmark" };
+/* Wessen Favicon in der grauen Leiste als Logo steht */
+const logoHosts = { place: "maps.google.com", video: "youtube.com" };
 
 const urlHints = {
   place: "Link von Google Maps einfügen …",
@@ -71,21 +74,32 @@ function linkMedia(block) {
 
 const mediaOf = { place: placeMedia, video: videoMedia, link: linkMedia };
 
-/* Karte: links das Bild, rechts Name und Untertitel, ganz rechts das Menü.
-   role=link statt a: im Kartenkopf steckt ein Knopf, und Knöpfe dürfen nicht
-   in einem Link liegen. */
+/* Logo in der grauen Leiste: das Favicon des Dienstes. Das Icon darunter
+   bleibt sichtbar, falls das Bild nicht lädt (offline). */
+function barLogo(block) {
+  const host = logoHosts[block.kind] || hostOf(block.url);
+  return `<span class="embed-logo-mark">${icon(kindIcons[block.kind])}<img src="${faviconUrl(host)}" alt="" loading="lazy" decoding="async" /></span>`;
+}
+
+/* Karte: links eine Kachel so groß wie die auf der Übersicht — oben das Bild,
+   unten eine graue Leiste mit Logo, Dienst und Drei-Punkte-Menü —, rechts
+   daneben groß der Name. role=link statt a: in der Kachel steckt ein Knopf,
+   und Knöpfe dürfen nicht in einem Link liegen. */
 function embedMarkup(block) {
   const host = hostOf(block.url);
-  const sub = kindLabels[block.kind] || host;
+  const label = kindLabels[block.kind] || host;
   const name = block.name || (block.kind === "video" ? "Video" : host) || "Link";
   return `
     <div class="embed embed-${block.kind}" role="link" tabindex="0" data-open title="${escapeHtml(block.url)}">
-      ${mediaOf[block.kind](block)}
-      <div class="embed-info">
-        <span class="embed-name">${escapeHtml(name)}</span>
-        <span class="embed-sub">${icon(kindIcons[block.kind], "embed-sub-icon")}<span>${escapeHtml(sub)}</span></span>
+      <div class="embed-tile">
+        ${mediaOf[block.kind](block)}
+        <div class="embed-bar">
+          ${barLogo(block)}
+          <span class="embed-label">${escapeHtml(label)}</span>
+          <button class="embed-more" type="button" data-embed-menu aria-label="Optionen">${icon("dots")}</button>
+        </div>
       </div>
-      <button class="embed-more" type="button" data-embed-menu aria-label="Optionen">${icon("dots")}</button>
+      <span class="embed-name">${escapeHtml(name)}</span>
     </div>`;
 }
 

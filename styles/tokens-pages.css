@@ -35,11 +35,14 @@
  * --block-check-size        -> Durchmesser der runden Checkbox
  * --block-check-color       -> Farbe, mit der sich eine abgehakte Checkbox füllt
  * --block-rule-gap          -> Luft über und unter einer Trennlinie
- * --embed-h                 -> Höhe einer Karte (Standort, Video, Web-Lesezeichen)
- * --embed-media-w           -> Breite des Bildes links auf der Karte (Karte, Vorschaubild, Logo)
- * --embed-radius            -> Rundung der Karten
- * --embed-bg                -> Fläche der Karte hinter Name und Untertitel
- * --embed-tint              -> wie deckend die Logofarbe hinter dem Favicon liegt (25% = zart)
+ * --embed-tile-w            -> Breite der Kachel links einer Karte (halbe Breite wie die Übersichtskarten)
+ * --embed-h                 -> Höhe dieser Kachel
+ * --embed-bar-h             -> Anteil der grauen Leiste unten in der Kachel (40% = zwei Fünftel)
+ * --embed-radius            -> Rundung der Kachel (wie die Übersichtskarten)
+ * --embed-tile-bg           -> Fläche der Kachel (wie die Übersichtskarten)
+ * --embed-bar-bg            -> Grau der Leiste mit Logo, Dienst und Menü
+ * --embed-bg                -> Fläche des Eingabefelds, solange eine Karte noch keinen Link hat
+ * --embed-tint              -> wie deckend die Logofarbe hinter dem Favicon einer Website liegt (25% = zart)
  * --embed-gap               -> Luft über und unter einer Karte
  * --slash-bg                -> Hintergrund des „/“-Menüs
  * --slash-tile-bg           -> Fläche einer Kachel im Menü
@@ -148,9 +151,12 @@
   --block-check-size: 20px;
   --block-check-color: #007aff;
   --block-rule-gap: 12px;
-  --embed-h: 84px;
-  --embed-media-w: 112px;
-  --embed-radius: 16px;
+  --embed-tile-w: calc(50% - 6px);
+  --embed-h: 124px;
+  --embed-bar-h: 40%;
+  --embed-radius: var(--radius-lg);
+  --embed-tile-bg: var(--overview-card-bg);
+  --embed-bar-bg: color-mix(in srgb, var(--text) 9%, var(--overview-card-bg));
   --embed-bg: color-mix(in srgb, var(--text) 6%, transparent);
   --embed-tint: 25%;
   --embed-gap: 6px;
