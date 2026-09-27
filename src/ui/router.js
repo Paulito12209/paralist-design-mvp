@@ -10,6 +10,7 @@
 import { emit, events } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { load, loadedModule } from "../core/lazy.js";
+import { workspacesPage } from "../data/collections.js";
 import { archivePage, overviewPages } from "../data/config.js";
 import { noteOpen } from "../data/opens.js";
 import { findEntry, findWorkspace, workspaceLabel } from "../data/queries.js";
@@ -104,10 +105,33 @@ export function showPage(page, fresh = true) {
   showView("page");
 }
 
-/** Das Archiv öffnen: dieselbe Unterseite wie eine Sammlung, nur andere Liste. */
-export function openArchive() {
-  showPage({ ...archivePage });
-  writeHistory({ view: "archive", from: ui.sourceView }, "#/archiv", false);
+/**
+ * Das Archiv öffnen: dieselbe Unterseite wie eine Sammlung, nur andere Liste.
+ * @param pill welche Pille oben gewählt ist — „Zum Archiv“ unter den
+ *   Arbeitsbereichen öffnet gleich deren Pille, die Karte „Alle“.
+ */
+export function openArchive(pill = "all") {
+  showPage({ ...archivePage, pill });
+  writeHistory({ view: "archive", pill, from: ui.sourceView }, "#/archiv", false);
+}
+
+/**
+ * Die Sammlung aller Arbeitsbereiche öffnen (Pfeil neben „Arbeitsbereiche“).
+ * Sie beginnt bei dem Tab, der auf der Übersicht gerade gewählt ist.
+ */
+export function openWorkspacesPage(pill) {
+  showPage({ ...workspacesPage, pill });
+  writeHistory({ view: "workspaces", pill, from: ui.sourceView }, "#/arbeitsbereiche", false);
+}
+
+/**
+ * Die Pille einer Sammlung wechseln und im Verlauf vermerken: kommt man über
+ * Zurück wieder hierher, steht dieselbe Pille wie beim Verlassen.
+ */
+export function setPagePill(pill) {
+  if (!ui.currentPage) return;
+  ui.currentPage.pill = pill;
+  if (history.state) history.replaceState({ ...history.state, pill }, "");
 }
 
 /**
@@ -297,7 +321,12 @@ window.addEventListener("popstate", (event) => {
   }
   if (entry.view === "archive") {
     ui.sourceView = entry.from || "home";
-    showPage({ ...archivePage }, false);
+    showPage({ ...archivePage, pill: entry.pill || "all" }, false);
+    return;
+  }
+  if (entry.view === "workspaces") {
+    ui.sourceView = entry.from || "home";
+    showPage({ ...workspacesPage, pill: entry.pill }, false);
     return;
   }
   if (entry.view === "overview") {

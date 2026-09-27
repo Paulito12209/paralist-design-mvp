@@ -26,8 +26,9 @@ const AXIS_RATIO = 1.5;
 const EDGE_PX = 24;
 
 /* Dort hat Wischen schon eine eigene Bedeutung: zeichnen, Pillen-Leiste
-   schieben, im Titel den Cursor setzen. */
-const OWN_GESTURES = ".draw-pad, .tab-pills, input";
+   schieben, im Titel den Cursor setzen. `data-own-swipe` markiert weitere
+   Flächen, die selbst seitlich rollen (die Karten der Übersicht). */
+const OWN_GESTURES = ".draw-pad, .tab-pills, input, [data-own-swipe]";
 
 /* Die gewählte Pille ins Bild rollen. „nearest“ rollt nur, wenn sie ganz oder
    halb außerhalb steht, und beachtet dabei den Randabstand aus scroll-padding. */

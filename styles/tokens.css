@@ -22,6 +22,7 @@
  * styles/base.css            -> Grundgerüst: Seite, Gerätefenster, Inhaltsbereich, Icons
  * styles/top-bar.css         -> Kopfzeile: Level-Anzeige, Suchleiste, Profil-Knopf
  * styles/overview.css        -> Startseite: die vier Karten und die Tab-Pillen
+ * styles/overview-more.css   -> Startseite: zweite Kartenseite zum Schieben, Karten „Demnächst verfügbar“, Pfeil neben „Arbeitsbereiche“
  * styles/rows.css            -> Listenzeilen, Kopfzeile einer Unterseite
  * styles/swipe-rows.css      -> Wisch-Zeile: Knöpfe dahinter, Einfärben nach dem Halten
  * styles/empty-state.css     -> Platzhalter für leere Listen (eigene Werte, siehe dort)

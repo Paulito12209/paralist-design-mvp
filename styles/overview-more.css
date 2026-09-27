@@ -1,0 +1,112 @@
+/*
+ * Startseite: die zweite Kartenseite rechts neben den vier festen Karten,
+ * die Karten „Demnächst verfügbar“ und der Pfeil neben „Arbeitsbereiche“.
+ * Pfad: styles/overview-more.css
+ *
+ * ANPASSBARE WERTE (in styles/tokens-pages.css)
+ * -----------------------------------
+ * --overview-peek      -> wie weit die zweite Kartenseite rechts hervorschaut
+ * --soon-opacity       -> wie blass Icon und Name einer abgeschalteten Karte sind
+ *
+ * Direkt hier bei ihrer Regel:
+ * .card-soon           -> Schildchen „Demnächst verfügbar“: Schrift 10px, Abstand 10px zur Ecke
+ * .card-info           -> das „i“ im Kreis neben dem Namen: 16px groß
+ * .section-link .icon  -> Pfeil nach oben rechts neben „Arbeitsbereiche“: 16px groß
+ *
+ * Farben kommen aus styles/tokens.css (--muted, --text, --archive-color).
+ */
+
+/* ---------- Kartenseiten zum Schieben ---------- */
+
+.overview-grid {
+  /* overflow-x: die Seiten liegen nebeneinander, der Finger schiebt sie */
+  overflow-x: auto;
+  /* scroll-snap-type: nach dem Loslassen rastet immer eine ganze Seite ein */
+  scroll-snap-type: x mandatory;
+  /* scroll-padding: eingerastet steht die Seite auf der Fluchtlinie des Inhalts, nicht am Rand */
+  scroll-padding-inline: 12px;
+  /* overscroll-behavior: am Ende schiebt der Finger nicht die ganze Seite oder die Zurück-Geste an */
+  overscroll-behavior-x: contain;
+  /* scrollbar-width: keine Leiste unter den Karten — das Hervorschauen zeigt schon, dass es weitergeht */
+  scrollbar-width: none;
+}
+
+.overview-grid::-webkit-scrollbar {
+  display: none;
+}
+
+.overview-page {
+  /* flex: jede Seite ist so breit wie der Inhalt minus das Stück, das von der nächsten hervorschaut */
+  flex: 0 0 calc(100% - var(--overview-peek));
+  /* scroll-snap-align: hier rastet die Seite ein */
+  scroll-snap-align: start;
+}
+
+/* ---------- Karten „Demnächst verfügbar“ ---------- */
+
+.overview-card.is-soon {
+  /* position: Anker für das Schildchen oben rechts */
+  position: relative;
+  cursor: default;
+}
+
+/* Abgeschaltet: nicht eindrücken */
+.overview-card.is-soon:active {
+  transform: none;
+}
+
+.overview-card.is-soon .card-icon,
+.overview-card.is-soon .card-title {
+  opacity: var(--soon-opacity);
+}
+
+.card-soon {
+  /* position: das Schildchen steht in der Ecke, ohne Icon und Namen zu verschieben */
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 3px 8px;
+  border-radius: 999px;
+  /* color-mix: ein Hauch der Schriftfarbe — passt hell wie dunkel ohne eigene Farbe */
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+.card-info {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+  /* align-self: das Icon hat keine Grundlinie, es steht mittig zum Namen */
+  align-self: center;
+}
+
+/* Das Archiv-Icon im Grau des Archivieren-Knopfes */
+.card-icon-archive {
+  color: var(--archive-color);
+}
+
+/* ---------- Pfeil neben „Arbeitsbereiche“ ---------- */
+
+.section-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0;
+  color: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+.section-link .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.section-link:active {
+  opacity: 0.55;
+}

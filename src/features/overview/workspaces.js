@@ -37,7 +37,7 @@ export function renderWorkspaces() {
   const hasArchived = archivedWorkspaces().length > 0 || archivedEntries().length > 0;
   const archiveButton = hasArchived
     ? `<div class="archive-link-row">
-      <button class="archive-link" type="button" data-open-archive="1">
+      <button class="archive-link" type="button" data-open-archive="workspaces">
         ${icon("archive")}
         <span>Zum Archiv</span>
       </button>

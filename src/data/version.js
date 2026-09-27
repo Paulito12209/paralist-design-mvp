@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "254ee924247f";
+export const appVersion = "9c82267f94a7";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -37,6 +37,7 @@ export const appFiles = [
   "src/core/lazy.js",
   "src/core/no-history.js",
   "src/core/storage.js",
+  "src/data/collections.js",
   "src/data/config.js",
   "src/data/convert-notes.js",
   "src/data/convert.js",
@@ -87,6 +88,7 @@ export const appFiles = [
   "src/features/overview/overview.js",
   "src/features/overview/page.js",
   "src/features/overview/tabs.js",
+  "src/features/overview/workspace-collection.js",
   "src/features/overview/workspace-page.js",
   "src/features/overview/workspace-title.js",
   "src/features/overview/workspaces.js",
@@ -179,6 +181,7 @@ export const appFiles = [
   "styles/modal-top.css",
   "styles/navigation.css",
   "styles/overlays.css",
+  "styles/overview-more.css",
   "styles/overview.css",
   "styles/profile.css",
   "styles/progress.css",
