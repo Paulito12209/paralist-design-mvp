@@ -27,7 +27,7 @@
  * .embed-logo img width     -> Größe des Favicons einer Website oben in der Kachel (32px)
  * .embed-logo-mark width    -> Größe des Logos in der Leiste (16px)
  * .embed-play width         -> Größe des Abspiel-Knopfes (32px)
- * .embed-copy width         -> Tippfläche des Kopier-Knopfs hinter dem Namen (36px), Symbol 18px
+ * .embed-copy font-size     -> „Kopieren“ unter dem Namen (13px), Symbol daneben 15px
  * --xp-done                 -> Farbe des Hakens nach dem Kopieren (tokens-pages.css)
  */
 
@@ -195,34 +195,42 @@
   height: 18px;
 }
 
-/* Rechts neben der Kachel: der Name und direkt dahinter der Kopier-Knopf */
+/* Rechts neben der Kachel: der Name, darunter dezent „Kopieren“ */
 .embed-side {
   flex: 1;
   min-width: 0;
   display: flex;
-  align-items: center;
-  gap: 2px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
 }
 
 .embed-copy {
-  flex: 0 0 auto;
-  width: 36px;
-  height: 36px;
-  display: grid;
-  place-items: center;
+  position: relative; /* position: Anker für die größere Tippfläche darunter */
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
   color: var(--muted);
 }
 
+/* Unsichtbar größere Tippfläche, ohne das Layout zu verschieben */
+.embed-copy::after {
+  content: "";
+  position: absolute;
+  inset: -10px -8px;
+}
+
 .embed-copy .icon {
-  width: 18px;
-  height: 18px;
+  width: 15px;
+  height: 15px;
 }
 
 .embed-copy:active {
   opacity: 0.55;
 }
 
-/* Kurz nach dem Kopieren: grüner Haken statt der zwei Blätter */
+/* Kurz nach dem Kopieren: grüner Haken und „Kopiert“ */
 .embed-copy.is-done {
   color: var(--xp-done);
 }
@@ -230,6 +238,7 @@
 /* Der Name, groß */
 .embed-name {
   flex: 0 1 auto;
+  max-width: 100%; /* max-width: ein langer Name bricht um, statt über den Rand zu laufen */
   min-width: 0;
   font-size: 17px;
   font-weight: 600;
@@ -237,10 +246,10 @@
   letter-spacing: -0.02em;
   color: var(--text);
   overflow-wrap: anywhere;
-  display: -webkit-box; /* -webkit-box mit line-clamp: nach vier Zeilen endet der Name mit „…“ */
+  display: -webkit-box; /* -webkit-box mit line-clamp: nach drei Zeilen endet der Name mit „…“ */
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 4;
-  line-clamp: 4;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   overflow: hidden;
 }
 

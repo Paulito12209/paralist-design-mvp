@@ -2,13 +2,13 @@
  * Die Karten im Baustein-Editor: Link übernehmen und im Netz nachschlagen
  * (Name des Ortes, Titel des Videos, Name und Farbe der Website), Karte
  * antippen öffnet den Link, das Drei-Punkte-Menü bietet Öffnen, Umbenennen,
- * Namen kopieren, Link kopieren und Entfernen. Der Knopf hinter dem Namen
+ * Namen kopieren, Link kopieren und Entfernen. „Kopieren“ unter dem Namen
  * kopiert nur den Namen („Good Aroma“). Dazu die runden Checkboxen.
  * Pfad: src/ui/block-embeds.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * COPIED_MS -> so lange zeigt der Kopier-Knopf hinter dem Namen einen Haken
+ * COPIED_MS -> so lange steht unter dem Namen „Kopiert“ mit Haken
  *
  * Aussehen der Karten in styles/embeds.css.
  */
@@ -89,7 +89,7 @@ export function fillMissingColors(ed) {
     });
 }
 
-/* Nur den Namen kopieren. Am Knopf hinter dem Namen bestätigt ein Haken,
+/* Nur den Namen kopieren. Am Knopf unter dem Namen bestätigt „Kopiert“,
    aus dem Blatt heraus (Knopf nicht zu sehen) eine kurze Meldung. */
 async function copyName(block, button = null) {
   const name = cardName(block);
@@ -98,11 +98,11 @@ async function copyName(block, button = null) {
     showToast({ icon: "copy", title: "Name kopiert" });
     return;
   }
-  button.innerHTML = icon("check");
+  button.innerHTML = `${icon("check")}<span>Kopiert</span>`;
   button.classList.add("is-done");
   clearTimeout(button.copiedTimer);
   button.copiedTimer = setTimeout(() => {
-    button.innerHTML = icon("copy");
+    button.innerHTML = `${icon("copy")}<span>Kopieren</span>`;
     button.classList.remove("is-done");
   }, COPIED_MS);
 }

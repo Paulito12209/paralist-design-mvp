@@ -83,7 +83,7 @@ function barLogo(block) {
 
 /* Karte: links eine Kachel so groß wie die auf der Übersicht — oben das Bild,
    unten eine graue Leiste mit Logo, Dienst und Drei-Punkte-Menü —, rechts
-   daneben groß der Name und dahinter ein Knopf, der nur den Namen kopiert. role=link statt a: in der Kachel steckt ein Knopf,
+   daneben groß der Name und darunter dezent „Kopieren“ — kopiert nur den Namen. role=link statt a: in der Kachel steckt ein Knopf,
    und Knöpfe dürfen nicht in einem Link liegen. */
 /** Der Name, der rechts neben der Kachel steht (und kopiert wird). */
 export function cardName(block) {
@@ -106,7 +106,7 @@ function embedMarkup(block) {
       </div>
       <div class="embed-side">
         <span class="embed-name">${escapeHtml(name)}</span>
-        <button class="embed-copy" type="button" data-embed-copy aria-label="Namen kopieren">${icon("copy")}</button>
+        <button class="embed-copy" type="button" data-embed-copy aria-label="Namen kopieren">${icon("copy")}<span>Kopieren</span></button>
       </div>
     </div>`;
 }
