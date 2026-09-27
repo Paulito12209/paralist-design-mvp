@@ -19,6 +19,8 @@
  * --viewer-pad          -> Abstand vom Rand um Datei und untere Leiste
  * --viewer-foot-btn-size -> Größe von Verknüpfen-Knopf und Drei-Punkte-Menü unten
  * --viewer-foot-goto-h  -> Höhe des Knopfes „Zur Seite“ in der Mitte
+ * --viewer-nav-size    -> Tippfläche der Blätter-Pfeile links und rechts
+ * --viewer-nav-opacity -> wie deutlich die Blätter-Pfeile zu sehen sind
  * --text / --muted     -> Schrift und Icons oben wie unten, Hinweise
  * --tab-pill-active-bg  -> Fläche, die beim Drücken eines Knopfes kurz erscheint
  *
@@ -164,6 +166,55 @@
 }
 
 /* ---------- Die Datei selbst ---------- */
+
+/* Rahmen um Datei und Blätter-Pfeile: die Pfeile richten sich an seiner Mitte aus */
+.viewer-main {
+  flex: 1;
+  min-height: 0; /* min-height: erst damit darf die Datei darin schrumpfen */
+  position: relative; /* position: Bezugsrahmen für die beiden Pfeile */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Blätter-Pfeile: nur ein halb durchsichtiges Zeichen ohne Fläche, damit sie
+   dem Bild möglichst wenig Aufmerksamkeit nehmen. */
+.viewer-nav {
+  position: absolute; /* position: liegt über dem Bildrand, ohne es zu verkleinern */
+  top: 50%;
+  transform: translateY(-50%); /* transform: genau auf halber Höhe der Datei */
+  width: var(--viewer-nav-size);
+  height: var(--viewer-nav-size);
+  display: grid;
+  place-items: center;
+  color: var(--text);
+  opacity: var(--viewer-nav-opacity);
+  border-radius: 50%; /* border-radius: rundet die Fläche beim Drücken */
+}
+
+.viewer-nav[hidden] {
+  display: none;
+}
+
+.viewer-nav .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.viewer-nav:active {
+  background: var(--tab-pill-active-bg);
+}
+
+.viewer-nav-prev {
+  left: 0;
+}
+
+.viewer-nav-prev .icon {
+  transform: scaleX(-1); /* transform: derselbe Pfeil wie rechts, nur gespiegelt */
+}
+
+.viewer-nav-next {
+  right: 0;
+}
 
 .viewer-stage {
   flex: 1;

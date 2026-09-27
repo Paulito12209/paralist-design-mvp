@@ -44,8 +44,9 @@ function imageMarkup(url, title) {
 /* Video und Audio nutzen die Bedienleiste des Browsers — sie kann Abspielen,
    Spulen und Lautstärke schon und sieht auf jedem Gerät vertraut aus. */
 function videoMarkup(url) {
-  /* video: nur dieses Element kann ein Video abspielen; playsinline hält es im Bildschirm */
-  return `<video class="viewer-video" src="${url}" controls playsinline preload="metadata"></video>`;
+  /* video: nur dieses Element kann ein Video abspielen; playsinline hält es im Bildschirm.
+     data-own-swipe: Wischen spult hier, statt zur nächsten Datei zu blättern. */
+  return `<video class="viewer-video" src="${url}" controls playsinline preload="metadata" data-own-swipe></video>`;
 }
 
 function audioMarkup(url, title) {
@@ -54,7 +55,7 @@ function audioMarkup(url, title) {
     <div class="viewer-player">
       <div class="viewer-player-icon">${icon("wave")}</div>
       <p class="viewer-player-name">${escapeHtml(title)}</p>
-      <audio class="viewer-audio" src="${url}" controls preload="metadata"></audio>
+      <audio class="viewer-audio" src="${url}" controls preload="metadata" data-own-swipe></audio>
     </div>`;
 }
 
