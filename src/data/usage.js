@@ -1,24 +1,33 @@
 /*
- * Nutzungszeit je Tag in Sekunden: { "2026-09-18": 2400 }.
+ * Nutzungszeit — nur echte, gemessene Zeit, keine Beispielwerte.
+ * Gespeichert wird { v, since, days: { "2026-09-18": 2400 },
+ * areas: { "2026-09-18": { notiz: 1200, … } } } in Sekunden.
  * Gezählt wird nur, solange die App sichtbar ist; lange Pausen zählen nicht mit.
- * Wann gezählt und geschrieben wird, entscheidet src/shell/lifecycle.js.
+ * Wann gezählt und geschrieben wird, entscheidet src/shell/lifecycle.js,
+ * welcher Bereich gerade offen ist, meldet es über setUsageArea().
  * Pfad: src/data/usage.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * maxTickGap    -> längste Pause, die noch als Nutzung zählt (Sekunden)
- * seedDays      -> wie viele Tage Beispieldaten der erste Start anlegt
+ * formatVersion -> Stand des Speicherformats; ältere Stände werden verworfen
  */
 
 import { dayKey, dayShift, parseDay, startOfDay } from "../core/dates.js";
 import { readJson, storageKeys, writeJson } from "../core/storage.js";
+import { fallbackArea } from "./usage-areas.js";
 
 const maxTickGap = 60;
-const seedDays = 250;
+const formatVersion = 2;
 
-let usage = {};
+let usage = freshUsage();
+let area = fallbackArea;
 let lastTickAt = Date.now();
 let unsaved = false;
+
+function freshUsage() {
+  return { v: formatVersion, since: dayKey(new Date()), days: {}, areas: {} };
+}
 
 /** Tagesschlüssel eines Zeitpunkts, wie im Kalender. */
 function keyOf(ts) {
@@ -27,12 +36,36 @@ function keyOf(ts) {
 
 /** Nutzungszeit eines Tages in Sekunden. */
 export function usageOfDay(ts) {
-  return usage[keyOf(ts)] || 0;
+  return usage.days[keyOf(ts)] || 0;
 }
 
 /** Alle gespeicherten Tage als Schlüssel-Liste. */
 export function usageDays() {
-  return Object.keys(usage);
+  return Object.keys(usage.days);
+}
+
+/** Beginn der Aufzeichnung als Tagesanfang (ms) — davor gibt es keine Werte. */
+export function usageSince() {
+  return parseDay(usage.since).getTime();
+}
+
+/**
+ * Zeit je Bereich über die letzten `days` Tage (heute eingeschlossen),
+ * absteigend sortiert: [{ area, seconds }].
+ */
+export function usageByArea(days) {
+  const from = dayShift(startOfDay(Date.now()), -(days - 1));
+  const totals = {};
+  Object.entries(usage.areas).forEach(([key, split]) => {
+    if (parseDay(key).getTime() < from) return;
+    Object.entries(split).forEach(([name, seconds]) => {
+      totals[name] = (totals[name] || 0) + seconds;
+    });
+  });
+  return Object.entries(totals)
+    .map(([name, seconds]) => ({ area: name, seconds }))
+    .filter((row) => row.seconds > 0)
+    .sort((a, b) => b.seconds - a.seconds);
 }
 
 function saveUsage() {
@@ -40,48 +73,42 @@ function saveUsage() {
   unsaved = false;
 }
 
-/**
- * Beispielwerte für den ersten Start, damit Verlauf und Raster nicht leer sind.
- * Fester Startwert, damit auf jedem Gerät dieselbe Beispielkurve entsteht.
+/*
+ * Beim Start einlesen. Der alte Stand war ein flaches { Tag: Sekunden } und
+ * enthielt ausgedachte Beispieltage — echte und erfundene Werte lassen sich
+ * darin nicht trennen, deshalb beginnt die Aufzeichnung dann neu.
  */
-function seedUsage() {
-  let seed = 20250619;
-  const random = () => {
-    seed = (seed * 1103515245 + 12345) % 2147483648;
-    return seed / 2147483648;
-  };
-  const today = startOfDay(Date.now());
-  for (let back = seedDays; back >= 0; back -= 1) {
-    const ts = dayShift(today, -back);
-    const weekday = new Date(ts).getDay();
-    const chance = weekday === 0 || weekday === 6 ? 0.32 : 0.7;
-    if (random() > chance) continue;
-    usage[keyOf(ts)] = Math.round((10 + random() * 75) * 60);
-  }
-  const todayKey = keyOf(Date.now());
-  usage[todayKey] = Math.max(usage[todayKey] || 0, 14 * 60);
-}
-
-/** Beim Start einlesen; ohne gespeicherte Werte entstehen die Beispieldaten. */
 export function loadUsage() {
   const saved = readJson(storageKeys.usage);
-  if (saved && typeof saved === "object" && !Array.isArray(saved)) {
+  if (saved && saved.v === formatVersion && saved.days && saved.areas) {
     usage = saved;
     return;
   }
-  seedUsage();
+  usage = freshUsage();
   saveUsage();
 }
 
-/** Die Zeit seit dem letzten Aufruf dem heutigen Tag zuschlagen. */
+/** Die Zeit seit dem letzten Aufruf dem heutigen Tag und dem offenen Bereich zuschlagen. */
 export function trackUsage() {
   const now = Date.now();
   const spent = Math.min(maxTickGap, Math.round((now - lastTickAt) / 1000));
   lastTickAt = now;
   if (document.hidden || spent <= 0) return;
   const key = keyOf(now);
-  usage[key] = (usage[key] || 0) + spent;
+  usage.days[key] = (usage.days[key] || 0) + spent;
+  const split = usage.areas[key] || (usage.areas[key] = {});
+  split[area] = (split[area] || 0) + spent;
   unsaved = true;
+}
+
+/**
+ * Den offenen Bereich wechseln. Die bis jetzt gelaufene Zeit gehört noch dem
+ * alten Bereich, deshalb wird vorher gebucht.
+ */
+export function setUsageArea(next) {
+  if (next === area) return;
+  trackUsage();
+  area = next;
 }
 
 /** Gezählte Zeit wegschreiben, wenn sich etwas geändert hat. */
@@ -94,7 +121,7 @@ export function flushUsage() {
  * beginnt die laufende Serie bei gestern, damit sie nicht vorzeitig reißt.
  */
 export function usageStreaks() {
-  const active = new Set(Object.keys(usage).filter((key) => usage[key] > 0));
+  const active = new Set(Object.keys(usage.days).filter((key) => usage.days[key] > 0));
   const today = startOfDay(Date.now());
   let current = 0;
   let cursor = active.has(keyOf(today)) ? today : dayShift(today, -1);

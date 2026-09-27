@@ -1,0 +1,122 @@
+/*
+ * Nutzungszeit: Karte „Wo die Zeit hingeht“ unter dem Balkenverlauf — ein
+ * geteiltes Band und je Bereich eine Zeile mit Icon, Dauer und Anteil.
+ * Pfad: styles/usage-split.css
+ *
+ * ANPASSBARE WERTE (in styles/tokens-pages.css)
+ * -----------------------------------
+ * --usage-split-band-height -> Höhe des geteilten Bands oben
+ * --usage-split-icon-size   -> Größe des runden Bereich-Icons
+ * --usage-split-bar-height  -> Höhe des dünnen Anteilsbalkens je Zeile
+ * --dot-empty               -> Grund hinter den Anteilsbalken
+ *
+ * Die Farbe je Bereich kommt aus src/data/usage-areas.js (als --area-color).
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel.
+ */
+
+/* Abstand zur Karte mit dem Balkenverlauf darüber */
+.usage-split {
+  margin-top: 12px;
+}
+
+.usage-split-band {
+  display: flex;
+  gap: 2px;
+  height: var(--usage-split-band-height);
+  border-radius: calc(var(--usage-split-band-height) / 2);
+  overflow: hidden; /* overflow: die äußeren Stücke übernehmen die Rundung des Bands */
+  margin: 4px 0 8px;
+}
+
+.usage-split-band span {
+  min-width: 3px;
+}
+
+.usage-split-list {
+  list-style: none;
+}
+
+.usage-split-row {
+  display: grid;
+  grid-template-columns: var(--usage-split-icon-size) 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 0.5px solid var(--line);
+}
+
+.usage-split-row:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+/* Rundes Icon in der Farbe des Bereichs, auf blassem Grund derselben Farbe */
+.usage-split-icon {
+  position: relative; /* position: der blasse Grund liegt als ::before darunter */
+  display: grid;
+  place-items: center;
+  width: var(--usage-split-icon-size);
+  height: var(--usage-split-icon-size);
+  color: var(--area-color);
+}
+
+.usage-split-icon::before {
+  content: "";
+  position: absolute; /* position: füllt den Kreis hinter dem Icon */
+  inset: 0;
+  border-radius: 50%;
+  background: var(--area-color);
+  opacity: 0.16;
+}
+
+.usage-split-icon .icon {
+  position: relative; /* position: hebt das Icon über den blassen Grund */
+  width: 18px;
+  height: 18px;
+}
+
+.usage-split-main {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.usage-split-line {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  font-size: 16px;
+}
+
+.usage-split-label {
+  overflow: hidden; /* overflow + text-overflow: lange Namen enden mit „…“ */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.usage-split-time {
+  color: var(--muted);
+  font-variant-numeric: tabular-nums; /* gleich breite Ziffern, damit die Zeiten bündig stehen */
+}
+
+.usage-split-bar {
+  display: block;
+  height: var(--usage-split-bar-height);
+  border-radius: calc(var(--usage-split-bar-height) / 2);
+  background: var(--dot-empty);
+  overflow: hidden; /* overflow: der farbige Teil übernimmt die Rundung */
+}
+
+.usage-split-bar span {
+  display: block;
+  height: 100%;
+  background: var(--area-color);
+}
+
+.usage-split-share {
+  min-width: 44px;
+  text-align: right;
+  font-size: 14px;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums; /* gleich breite Ziffern, damit die Prozente bündig stehen */
+}

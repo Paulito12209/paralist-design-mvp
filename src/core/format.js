@@ -55,6 +55,11 @@ export function axisDateFormat(days) {
   return days <= 7 ? weekdayShort : dayMonthShort;
 }
 
+/** Knappes Datum mit Monatsnamen, z.B. „27. Sept.“. */
+export function dayMonth(ts) {
+  return dayMonthShort.format(new Date(ts));
+}
+
 /** Überschrift einer Tagesgruppe im Fortschritt, z.B. „Heute“ oder „Sa 13. September“. */
 export function activityDayHeading(ts) {
   const today = startOfDay(Date.now());

@@ -2,6 +2,7 @@
  * Die Ereignisse der Seite selbst: in den Hintergrund gehen, geschlossen
  * werden. Sie stehen hier gesammelt, damit die Datenschicht keine Zuhörer auf
  * dem Dokument anmelden muss.
+ * Außerdem meldet sie der Nutzungszeit, welcher Bereich gerade offen ist.
  * Pfad: src/shell/lifecycle.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -11,10 +12,14 @@
  *                     ins Archiv wandern (Millisekunden)
  */
 
+import { events, on } from "../core/bus.js";
 import { pauseNoHistoryForm, resumeNoHistoryForm } from "../core/no-history.js";
 import { sweepFinishedTasks } from "../data/mutations.js";
-import { flushSave } from "../data/state.js";
-import { flushUsage, resetUsageTick, trackUsage } from "../data/usage.js";
+import { findEntry } from "../data/queries.js";
+import { flushSave, ui } from "../data/state.js";
+import { usageAreaOf } from "../data/usage-areas.js";
+import { flushUsage, resetUsageTick, setUsageArea, trackUsage } from "../data/usage.js";
+import { currentView } from "../ui/views.js";
 
 const usageTickSeconds = 15;
 const afterMidnightMs = 1000;
@@ -37,12 +42,23 @@ function armMidnightSweep() {
   }, next - now + afterMidnightMs);
 }
 
+/* Offene Ansicht (bei einem Eintrag: sein Typ) als Bereich der Nutzungszeit melden. */
+function reportUsageArea(view) {
+  const entry = view === "entry" ? findEntry(ui.currentEntryId) : null;
+  setUsageArea(usageAreaOf(view, {
+    entryType: entry ? entry.type : null,
+    isWorkspace: Boolean(ui.currentPage && ui.currentPage.isWorkspace),
+  }));
+}
+
 /**
  * Speichern und Zeitzählung an den Lebenszyklus der Seite hängen.
  * @param hooks.onShow läuft, wenn die App wieder sichtbar wird — z.B. um nach
  *                     einer neuen Fassung zu sehen. Kommt aus src/main.js.
  */
 export function initLifecycle({ onShow = () => {} } = {}) {
+  reportUsageArea(currentView());
+  on(events.viewOpened, reportUsageArea);
   setInterval(trackUsage, usageTickSeconds * 1000);
   armMidnightSweep();
 

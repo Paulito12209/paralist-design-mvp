@@ -25,6 +25,9 @@
  * --profile-avatar-edit-size -> Größe des kleinen Stift-Knopfs am Profilbild
  * --crop-size               -> Fenster zum Wählen des Profilbild-Ausschnitts
  * --crop-shade              -> Abdunklung außerhalb des Kreises beim Zuschneiden
+ * --usage-split-band-height -> Höhe des geteilten Bands „Wo die Zeit hingeht“
+ * --usage-split-icon-size   -> Größe des runden Bereich-Icons in dieser Karte
+ * --usage-split-bar-height  -> Höhe des dünnen Anteilsbalkens je Bereich
  * --mini-gap                -> Fuge zwischen den beiden Analyse-Kacheln
  * --mini-card-height        -> Mindesthöhe einer Analyse-Kachel
  * --mini-chart-height       -> Höhe der kleinen Grafik auf der Kachel
@@ -150,6 +153,9 @@
   --profile-avatar-edit-size: 36px;
   --crop-size: 300px;
   --crop-shade: rgba(0, 0, 0, 0.6);
+  --usage-split-band-height: 12px;
+  --usage-split-icon-size: 34px;
+  --usage-split-bar-height: 4px;
   --mini-gap: 12px;
   --mini-card-height: 132px;
   --mini-chart-height: 34px;

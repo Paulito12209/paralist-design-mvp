@@ -1,6 +1,7 @@
 /*
  * Die Karten im Profil-Blatt: Kopf mit Bild und Namen, Balkenverlauf der
- * Nutzungszeit, Punkte-Raster der Serie und die Listen darunter.
+ * Nutzungszeit, Punkte-Raster der Serie und die Listen darunter. Die Aufteilung
+ * der Nutzungszeit nach Bereichen steht in usage-split.js.
  * Pfad: src/features/profile/profile-cards.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -15,13 +16,14 @@
  */
 
 import { dayShift, parseDay, startOfDay } from "../../core/dates.js";
-import { axisDateFormat, formatAxisSpan, formatSpan } from "../../core/format.js";
+import { axisDateFormat, dayMonth, formatAxisSpan, formatSpan } from "../../core/format.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { chartRanges } from "../../data/config.js";
 import { ui } from "../../data/state.js";
-import { usageDays, usageOfDay, usageStreaks } from "../../data/usage.js";
+import { usageDays, usageOfDay, usageSince, usageStreaks } from "../../data/usage.js";
 import { chartBox, dateMarks, gridLines, niceStep, rangeSwitch, yAxis } from "../../ui/chart.js";
 import { currentPhoto } from "./avatar.js";
+import { usageSplitCard } from "./usage-split.js";
 
 /** Die festen Angaben im Kopf des Blatts. */
 const profile = {
@@ -73,7 +75,10 @@ export function identityCard() {
   `;
 }
 
-/** Balken je Tag: wie lange die App an diesem Tag offen war. */
+/**
+ * Balken je Tag: wie lange die App an diesem Tag offen war. Darunter die
+ * Aufteilung nach Bereichen für denselben Zeitraum.
+ */
 export function usageCard() {
   const days = ui.usageRange;
   const today = startOfDay(Date.now());
@@ -85,6 +90,11 @@ export function usageCard() {
 
   const total = rows.reduce((sum, row) => sum + row.seconds, 0);
   const activeDays = rows.filter((row) => row.seconds > 0).length;
+  /* Vor Beginn der Aufzeichnung gibt es keine Werte — diese Tage zählen nicht
+     als „nicht genutzt“, sonst sähe ein frischer Start schlechter aus, als er ist. */
+  const since = usageSince();
+  const trackedDays = rows.filter((row) => row.ts >= since).length;
+  const sinceNote = trackedDays < days ? `<p class="chart-note">Aufgezeichnet seit ${dayMonth(since)}</p>` : "";
   const maxMinutes = Math.max(...rows.map((row) => row.seconds / 60), 1);
 
   const step = niceStep(maxMinutes, stepSizes, 4) || fallbackStep;
@@ -111,14 +121,16 @@ export function usageCard() {
     <section class="pcard">
       <div class="pcard-head">${icon("clock")}<span>Nutzungszeit</span></div>
       <p class="stat-big">${formatSpan(total)}</p>
-      <p class="stat-sub">an ${activeDays} von ${days} Tagen · ⌀ ${formatSpan(average)} je aktivem Tag</p>
+      <p class="stat-sub">an ${activeDays} von ${trackedDays} ${trackedDays === 1 ? "Tag" : "Tagen"} · ⌀ ${formatSpan(average)} je aktivem Tag</p>
       ${rangeSwitch("usage-range", chartRanges, days, "data-usage-range")}
       <svg class="chart" viewBox="0 0 ${chartBox.width} ${chartBox.height}" aria-hidden="true">
         ${grid}
         ${marks}
         ${bars}
       </svg>
+      ${sinceNote}
     </section>
+    ${usageSplitCard(days)}
   `;
 }
 
