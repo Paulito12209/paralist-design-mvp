@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "c210a6cd1a98";
+export const appVersion = "5b8aaeac4062";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -41,6 +41,7 @@ export const appFiles = [
   "src/core/no-history.js",
   "src/core/storage.js",
   "src/core/week-range.js",
+  "src/core/youtube.js",
   "src/data/bookmarks.js",
   "src/data/collections.js",
   "src/data/config.js",
@@ -95,6 +96,7 @@ export const appFiles = [
   "src/features/entry/entry-fold.js",
   "src/features/entry/entry-title.js",
   "src/features/entry/entry-tools.js",
+  "src/features/entry/entry-video.js",
   "src/features/entry/entry.js",
   "src/features/media/media-import.js",
   "src/features/media/media.js",
@@ -244,5 +246,6 @@ export const appFiles = [
   "styles/top-bar.css",
   "styles/update.css",
   "styles/usage-split.css",
+  "styles/video-player.css",
   "styles/viewer.css",
 ];

@@ -1,7 +1,8 @@
 /*
  * Die Karten im Baustein-Editor: Link übernehmen und im Netz nachschlagen
  * (Name des Ortes, Titel des Videos, Name und Farbe der Website), Karte
- * antippen öffnet den Link, das Drei-Punkte-Menü bietet Öffnen, Umbenennen,
+ * antippen öffnet den Link — eine YouTube-Karte stattdessen den Player in
+ * der App, wenn der Aufrufer onVideo hereingibt —, das Drei-Punkte-Menü bietet Öffnen, Umbenennen,
  * Namen kopieren, Link kopieren und Entfernen. „Kopieren“ unter dem Namen
  * kopiert nur den Namen („Good Aroma“). Dazu die runden Checkboxen.
  * Pfad: src/ui/block-embeds.js
@@ -163,9 +164,14 @@ function toggleCheck(ed, button) {
   ed.commit();
 }
 
-/** Klicks auf Karten und Checkboxen anmelden (ein Zuhörer am Editor). */
-export function bindBlockEmbeds(ed) {
+/** Klicks auf Karten und Checkboxen anmelden (ein Zuhörer am Editor).
+    onVideo(block) übernimmt YouTube-Karten, sonst öffnet jede Karte ihren Link. */
+export function bindBlockEmbeds(ed, { onVideo = null } = {}) {
   const { root } = ed;
+  const openCard = (block) => {
+    if (onVideo && block.kind === "video" && youtubeId(block.url)) onVideo(block);
+    else openLink(block.url);
+  };
 
   /* Checkbox antippen, während geschrieben wird: der Cursor bleibt, wo er
      ist, und die Tastatur bleibt offen. */
@@ -186,13 +192,13 @@ export function bindBlockEmbeds(ed) {
     const copy = event.target.closest("[data-embed-copy]");
     if (copy) copyName(block, copy);
     else if (event.target.closest("[data-embed-menu]")) openCardMenu(ed, block);
-    else openLink(block.url);
+    else openCard(block);
   });
 
   /* Mit der Tastatur: Enter auf einer Karte öffnet sie */
   root.addEventListener("keydown", (event) => {
     if (event.key !== "Enter" || !event.target.matches?.(".embed")) return;
     const block = ed.blocks[ed.indexOf(event.target)];
-    if (block) openLink(block.url);
+    if (block) openCard(block);
   });
 }

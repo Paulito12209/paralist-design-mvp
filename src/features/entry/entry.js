@@ -17,7 +17,9 @@
  * anderen untergeordnet (src/data/links.js).
  *
  * Der Text unter „Inhalt“ besteht aus Bausteinen wie in Notion — „/“ öffnet
- * die Auswahl (Listen, Checkboxen, Trennlinie, Standort, Video, Link).
+ * die Auswahl (Listen, Checkboxen, Trennlinie, Standort, Video, Link). Ein
+ * Tipp auf eine YouTube-Karte spielt das Video im Player an der Stelle des
+ * Textes ab (entry-video.js, nachgeladen).
  *
  * Unter „Inhalt“ startet ein Tipp in die freie Fläche unter dem Text das
  * Schreiben am Textende; bei offener Tastatur schließt ein Tipp nur sie
@@ -43,7 +45,7 @@
 
 import { events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
-import { load } from "../../core/lazy.js";
+import { load, loadedModule } from "../../core/lazy.js";
 import { canChangeType } from "../../data/convert.js";
 import { entryTypeName } from "../../data/details.js";
 import { linkedEntries } from "../../data/links.js";
@@ -70,6 +72,12 @@ import { createBlockEditor } from "../../ui/block-editor.js";
 
 /* Der Baustein-Editor unter „Inhalt“ (src/ui/block-editor.js), angelegt in initEntry. */
 let bodyEditor = null;
+
+/* Ein offener Videoplayer (entry-video.js, nachgeladen) schließt, sobald der
+   Text wieder gebraucht wird — nur wenn das Modul überhaupt schon da ist. */
+function closeVideoIfOpen() {
+  loadedModule("video")?.closeVideo();
+}
 
 /* Die beiden Pillen; die zweite trägt die Anzahl dessen, was darunter steht.
    Kein Icon: es wird nie mehr als diese zwei geben, das Wort allein reicht. */
@@ -133,6 +141,7 @@ function renderEntry() {
   const entry = findEntry(ui.currentEntryId);
   if (!entry) return;
 
+  closeVideoIfOpen();
   renderEntryCover(entry);
   showEntryTitle(entry);
   bodyEditor.setText(entry.body || "");
@@ -181,7 +190,11 @@ export function initEntry() {
   initEntryFold();
   initEntryDetails();
   initEntryTitle();
-  bodyEditor = createBlockEditor(dom.entryBody, { onChange: saveBody });
+  bodyEditor = createBlockEditor(dom.entryBody, {
+    onChange: saveBody,
+    /* YouTube-Karte: Player in der App statt neuer Tab (entry-video.js, nachgeladen) */
+    onVideo: (block) => load("video").then((module) => module.openVideo(block)),
+  });
   /* Wörter, Zeichen und „Zuletzt bearbeitet“ erst nach dem Schreiben
      auffrischen, nicht bei jedem Buchstaben */
   el("view-entry").addEventListener("focusout", () => {
@@ -201,7 +214,10 @@ export function initEntry() {
     if (!entry) return;
     /* Der Text verschwindet gleich: vorher den Cursor herausnehmen, sonst
        bliebe die Tastatur für ein unsichtbares Feld offen. */
-    if (id !== "notes") bodyEditor.blur();
+    if (id !== "notes") {
+      bodyEditor.blur();
+      closeVideoIfOpen();
+    }
     ui.entryPill = id;
     renderEntryPills(entry);
   };

@@ -1,0 +1,226 @@
+/*
+ * Videoplayer im Inhalt eines Eintrags (src/features/entry/entry-video.js):
+ * ein dunkler Block anstelle des Textes, oben das Video mit zwei runden
+ * Glasknöpfen (zurück zum Text, auf YouTube öffnen), unten rechts die Zeit,
+ * darunter die Glasleiste mit Tempo, Fortschritt und Vollbild, ganz unten
+ * der Titel des Videos. Immer dunkel, auch im hellen Modus — das Video ist es auch.
+ * Pfad: styles/video-player.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-pages.css)
+ * -----------------------------------
+ * --video-bg           -> Grund des Blocks (unter dem Video und hinter dem Titel)
+ * --video-glass        -> Milchglas der runden Knöpfe und der Leiste unten
+ * --video-glass-line   -> feiner heller Rand darum
+ * --video-btn-size     -> Größe der runden Knöpfe oben
+ * --video-bar-h        -> Höhe der Leiste unten
+ * --video-speed-size   -> Größe des weißen Tempo-Knopfs „1x“ in der Leiste
+ * --video-track-h      -> Dicke der Fortschrittsleiste
+ * --video-inset        -> Abstand der Knöpfe und der Leiste zum Rand des Videos
+ * --video-title-size   -> Schriftgröße des Titels unter dem Video
+ * --video-progress     -> Fortschritt 0–1, setzt das Skript beim Abspielen
+ *
+ * Direkt bei ihrer Regel:
+ * .video-time font-size  -> Zeit „12:18 / 28:00“ über der Leiste (12px)
+ * .video-speed font-size -> „1x“ (15px)
+ * .video-knob width      -> der Punkt auf der Fortschrittsleiste (12px)
+ */
+
+/* Der Block füllt den Rahmen, dessen Höhe entry-fold.js setzt (wie die Zeichenfläche) */
+.entry-fold > .video-pad {
+  height: 100%;
+}
+
+.video-pad {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-lg);
+  background: var(--video-bg);
+  color: #ffffff;
+  overflow: hidden; /* overflow: Video und Titel folgen der Rundung */
+}
+
+/* Bildfläche mit dem Video; die Knöpfe liegen darüber */
+.video-stage {
+  position: relative; /* position: Anker für Knöpfe, Zeit und Leiste über dem Video */
+  flex: 1;
+  min-height: 0;
+  background: #000000;
+}
+
+.video-host {
+  position: absolute;
+  inset: 0;
+}
+
+/* Der Player von YouTube (ein iframe) füllt die Fläche wie ein Foto mit
+   object-fit: cover — immer 16:9, mindestens so breit und so hoch wie die
+   Fläche, mittig; was über den Rand hinausgeht, ist abgeschnitten. So
+   bleiben keine schwarzen Balken, und YouTubes eigene Schilder am oberen
+   Rand liegen außerhalb. */
+.video-stage iframe {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: auto;
+  height: auto;
+  min-width: 100%;
+  min-height: 100%;
+  aspect-ratio: 16 / 9; /* aspect-ratio: mit den beiden Mindestmaßen ergibt das „cover“ */
+  border: 0;
+  transform: translate(-50%, -50%); /* transform: mittig über der Fläche */
+}
+
+/* Runde Glasknöpfe oben links und rechts */
+.video-glass {
+  position: absolute;
+  top: var(--video-inset);
+  width: var(--video-btn-size);
+  height: var(--video-btn-size);
+  display: grid;
+  place-items: center;
+  border-radius: 50%; /* border-radius: rund */
+  background: var(--video-glass);
+  box-shadow: inset 0 0 0 1px var(--video-glass-line);
+  backdrop-filter: blur(12px); /* backdrop-filter: das Video schimmert weich durch den Knopf */
+  -webkit-backdrop-filter: blur(12px);
+  color: #ffffff;
+}
+
+.video-glass .icon {
+  width: 24px;
+  height: 24px;
+}
+
+.video-close {
+  left: var(--video-inset);
+}
+
+.video-open {
+  right: var(--video-inset);
+}
+
+.video-glass:active,
+.video-speed:active,
+.video-full:active {
+  opacity: 0.6;
+}
+
+/* Zeit rechts über der Leiste */
+.video-time {
+  position: absolute;
+  right: calc(var(--video-inset) + 8px);
+  bottom: calc(var(--video-inset) + var(--video-bar-h) + 8px);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums; /* tabular-nums: die Zeit zittert nicht, wenn Ziffern wechseln */
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* Glasleiste unten: Tempo, Fortschritt, Vollbild */
+.video-bar {
+  position: absolute;
+  left: var(--video-inset);
+  right: var(--video-inset);
+  bottom: var(--video-inset);
+  height: var(--video-bar-h);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 0 6px;
+  border-radius: 999px; /* border-radius: Pillenform */
+  background: var(--video-glass);
+  box-shadow: inset 0 0 0 1px var(--video-glass-line);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+.video-speed {
+  flex: 0 0 auto;
+  width: var(--video-speed-size);
+  height: var(--video-speed-size);
+  border-radius: 50%; /* border-radius: weißer runder Knopf */
+  background: #ffffff;
+  color: #111111;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+/* Fortschrittsleiste: dünne Linie, vorne weiß gefüllt, mit Punkt am Ende.
+   Die Tippfläche ist so hoch wie die Leiste, die Linie selbst dünn. */
+.video-track {
+  position: relative; /* position: Anker für Füllung und Punkt */
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  cursor: pointer;
+  touch-action: none; /* touch-action: der Finger zieht den Fortschritt, statt die Seite zu scrollen */
+  --video-progress: 0;
+}
+
+.video-track::before,
+.video-track::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: var(--video-track-h);
+  border-radius: 999px;
+  transform: translateY(-50%); /* transform: mittig in der Tippfläche */
+}
+
+.video-track::before {
+  right: 0;
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.video-track::after {
+  width: calc(var(--video-progress) * 100%);
+  background: #ffffff;
+}
+
+/* Der Punkt sitzt am Ende der Füllung */
+.video-knob {
+  position: absolute;
+  top: 50%;
+  left: calc(var(--video-progress) * 100%);
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #ffffff;
+  transform: translate(-50%, -50%); /* transform: der Punkt sitzt mittig auf dem Ende der Füllung */
+}
+
+.video-full {
+  flex: 0 0 auto;
+  width: var(--video-speed-size);
+  height: var(--video-speed-size);
+  display: grid;
+  place-items: center;
+  color: #ffffff;
+}
+
+.video-full .icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* Titel unter dem Video, groß wie im Vorbild */
+.video-title {
+  flex: 0 0 auto;
+  /* margin statt padding: die dritte Zeile würde sonst im unteren Innenabstand
+     noch angeschnitten durchscheinen, overflow schneidet erst am Innenrand */
+  margin: 14px 16px 18px;
+  font-size: var(--video-title-size);
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  overflow: hidden;
+  display: -webkit-box; /* -webkit-box mit -webkit-line-clamp: nach zwei Zeilen endet der Titel mit „…“
+                           (nur die webkit-Form: die neue Standardform line-clamp lässt in Chrome die dritte Zeile stehen) */
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+}
+
+/* Im Vollbild ohne Rundung, der Titel bleibt unten stehen */
+.video-pad:fullscreen {
+  border-radius: 0;
+}

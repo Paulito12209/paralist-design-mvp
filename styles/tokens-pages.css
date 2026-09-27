@@ -136,6 +136,11 @@
  * --draw-tool-size / --draw-color-size -> Größe der Werkzeug-Knöpfe und Farbpunkte
  * --draw-tools-gap          -> Abstand der Werkzeugleiste zur Zeichenfläche darüber und zur Karte „Details“ darunter
  *
+ * VIDEOPLAYER IM EINTRAG
+ * --video-bg / --video-glass / --video-glass-line -> Grund des Blocks, Milchglas der Knöpfe und Leiste, ihr feiner Rand
+ * --video-btn-size / --video-bar-h / --video-speed-size -> runde Knöpfe oben, Leiste unten, Tempo-Knopf „1x“ darin
+ * --video-track-h / --video-inset / --video-title-size  -> Dicke der Fortschrittsleiste, Abstand zum Rand, Titel unter dem Video
+ *
  * EINSTELLUNGEN UND FEEDBACK
  * --support-field-radius     -> Rundung der Felder und Art-Knöpfe im Feedback
  * --support-text-min-height  -> Mindesthöhe des Beschreibungsfelds im Feedback
@@ -280,6 +285,17 @@
   --draw-tool-size: 38px;
   --draw-color-size: 22px;
   --draw-tools-gap: 12px;
+
+  /* Videoplayer im Eintrag: immer dunkel, Knöpfe aus Milchglas */
+  --video-bg: #141414;
+  --video-glass: rgba(255, 255, 255, 0.18);
+  --video-glass-line: rgba(255, 255, 255, 0.22);
+  --video-btn-size: 56px;
+  --video-bar-h: 52px;
+  --video-speed-size: 40px;
+  --video-track-h: 4px;
+  --video-inset: 14px;
+  --video-title-size: 26px;
 
   /* Detailseiten: Cover; Eintrag: Icon über dem Titel */
   --page-cover-mix: 60%;
