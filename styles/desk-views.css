@@ -91,10 +91,18 @@
   /* Der negative Rand am Handy schafft nur Platz für Kartenschatten; die
      Desktop-Karten haben keinen, sonst stünde das Raster 12px über dem Rand. */
   #view-home .overview-grid {
+    display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--views-card-gap);
     margin-inline: 0;
     padding-inline: 0;
+    /* overflow: am Desktop wird nicht geschoben, beide Kartenseiten stehen als zwei Reihen untereinander */
+    overflow: visible;
+  }
+
+  /* display: contents — die Kartenseiten lösen sich auf, ihre Karten füllen das Raster direkt */
+  #view-home .overview-page {
+    display: contents;
   }
 
   #view-home .overview-card {
@@ -119,6 +127,13 @@
     width: 100%;
   }
 
+  /* Karten „Demnächst verfügbar“ haben keine Zahl: das „i“ steht neben dem Namen */
+  #view-home .is-soon .card-label {
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+  }
+
   #view-home .card-title {
     max-width: 100%;
     color: var(--avatar-btn-bg);
@@ -139,7 +154,7 @@
   /* Ohne Einträge zeigt das Handy keine Zahl; hier steht statt eines Lochs eine
      blasse Null. content: nur Zierde, die Anzahl steht im aria-label der Karte.
      Eigene Regel: kennt ein Browser :has nicht, fällt nur sie weg. */
-  #view-home .card-label:not(:has(.card-count))::after {
+  #view-home .overview-card:not(.is-soon) .card-label:not(:has(.card-count))::after {
     content: "0";
     font-size: var(--desk-tile-num-size);
     font-weight: var(--desk-num-weight);

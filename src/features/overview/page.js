@@ -37,13 +37,14 @@ import { entryRow, workspaceRow } from "../../ui/rows.js";
 import { openSheet } from "../../ui/sheet.js";
 import { openTypeChangeSheet, typeChangeAction, typeCrumbMarkup } from "../../ui/type-menu.js";
 import { isViewActive } from "../../ui/views.js";
-import { archiveMarkup } from "./archive.js";
+import { initArchive, renderArchive } from "./archive.js";
+import { initWorkspaceCollection, renderWorkspaceCollection } from "./workspace-collection.js";
 import { isWritingNotes, renderWorkspacePage } from "./workspace-page.js";
 import { beginRenameWorkspaceTitle, initWorkspaceTitle, setupWorkspaceTitle } from "./workspace-title.js";
 import { commitStaleWorkspaceName, focusWorkspaceName } from "./workspaces.js";
 
 /* Sammlungen: dort gibt es nichts zu löschen oder zu markieren, also kein Menü. */
-const collectionsWithoutMenu = ["resources", "projects", "archive"];
+const collectionsWithoutMenu = ["resources", "projects", "archive", "workspaces"];
 
 /*
  * Seiten, die neben ihrem Titel noch einen grauen Zweittitel zeigen: ein Tippen
@@ -116,7 +117,8 @@ export function renderPageBody() {
   if (!page) return;
 
   if (page.kind === "favorites") renderFavorites();
-  else if (page.kind === "archive") dom.pageBody.innerHTML = archiveMarkup();
+  else if (page.kind === "archive") renderArchive();
+  else if (page.kind === "workspaces") renderWorkspaceCollection();
   else if (page.kind === "projects") dom.pageBody.innerHTML = listMarkup(projectEntries(), emptyStates.projects);
   else if (page.kind === "resources") load("resources").then((module) => module.renderResources());
   else if (page.isWorkspace) renderWorkspacePage(page);
@@ -223,6 +225,8 @@ export function initPage() {
     if (workspace && event.target.closest("[data-type-sheet]")) openTypeChangeSheet({ workspace });
   });
   initWorkspaceTitle();
+  initArchive();
+  initWorkspaceCollection();
   /* Erst die Suchseite zeigen: dort ist die allgemeine Kopfzeile mit dem
      echten Suchfeld wieder da, und ein verstecktes Feld nimmt keinen Fokus an. */
   dom.pageSearchBtn.addEventListener("click", () => {

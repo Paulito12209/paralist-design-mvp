@@ -29,7 +29,7 @@ import { openEntryCtxMenu } from "./entry-menu.js";
 import { cancelHold, consumeClickBlock } from "./long-press.js";
 import { openMoveWorkspaceMenu } from "./move-menu.js";
 import { openLinkPicker } from "./pickers.js";
-import { openArchive, openEntryOrFile, openTarget, showTab } from "./router.js";
+import { openArchive, openEntryOrFile, openTarget, openWorkspacesPage, showTab } from "./router.js";
 import { closeSwipes, isSwipedOpen } from "./swipe.js";
 import { toggleGroup } from "./groups.js";
 import { toggleTaskFromCheck } from "./task-status.js";
@@ -152,8 +152,17 @@ function onClick(event) {
     return;
   }
 
-  if (event.target.closest("[data-open-archive]")) {
-    openArchive();
+  /* Der Wert sagt, welche Pille im Archiv gewählt ist: „Zum Archiv“ unter
+     den Arbeitsbereichen öffnet deren Pille, die Karte „Alle“. */
+  const archiveBtn = event.target.closest("[data-open-archive]");
+  if (archiveBtn) {
+    openArchive(archiveBtn.dataset.openArchive);
+    return;
+  }
+
+  /* Pfeil neben „Arbeitsbereiche“: die Sammlung beginnt beim gewählten Tab. */
+  if (event.target.closest("[data-open-workspaces]")) {
+    openWorkspacesPage(state.activeTabId);
     return;
   }
 

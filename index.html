@@ -35,7 +35,7 @@
     <link rel="stylesheet" href="styles/tokens-dark.css" />
     <link rel="stylesheet" href="styles/base.css" />
     <link rel="stylesheet" href="styles/top-bar.css" />
-    <link rel="stylesheet" href="styles/overview.css" />
+    <link rel="stylesheet" href="styles/overview.css" /><link rel="stylesheet" href="styles/overview-more.css" />
     <link rel="stylesheet" href="styles/rows.css" /><link rel="stylesheet" href="styles/swipe-rows.css" />
     <link rel="stylesheet" href="styles/empty-state.css" />
     <link rel="stylesheet" href="styles/entry.css" />
@@ -82,11 +82,11 @@
           <section class="view is-active" id="view-home" data-view="home">
             <h1 class="screen-title">Übersicht</h1>
 
-            <div class="overview-grid" id="overview-grid"></div>
+            <!-- data-own-swipe: waagerecht wischen schiebt die zweite Kartenseite herein, statt den Tab zu wechseln.
+                 Der Pfeil neben „Arbeitsbereiche“ öffnet die Sammlung aller Arbeitsbereiche, je Tab eine Pille. -->
+            <div class="overview-grid" id="overview-grid" data-own-swipe></div>
 
-            <div class="section-head">
-              <h2>Arbeitsbereiche</h2>
-            </div>
+            <div class="section-head"><h2><button class="section-link" type="button" data-open-workspaces="1" aria-label="Alle Arbeitsbereiche öffnen">Arbeitsbereiche<svg class="icon"><use href="#icon-arrow-up-right"></use></svg></button></h2></div>
 
             <!-- Tabs links, Plus-Button rechts; bei vielen Tabs laufen die Pillen unter Linie und Button durch -->
             <div class="tab-pills-row">

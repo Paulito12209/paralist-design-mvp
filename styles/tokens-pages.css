@@ -1,5 +1,5 @@
 /*
- * Die Werte der einzelnen Seiten: Fortschritt, Profil, Kalender, Aufgaben,
+ * Die Werte der einzelnen Seiten: Übersicht, Fortschritt, Profil, Kalender, Aufgaben,
  * Medien, Dateiansicht, Suche, Zeichnung und Einstellungen. Alles, was auf
  * jeder Seite wirkt — Grundfarben, Kopfzeile, Navigation, Eingabefeld,
  * Listenzeilen und Blätter — steht in styles/tokens.css.
@@ -11,6 +11,10 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
+ * ÜBERSICHT
+ * --overview-peek           -> wie weit die zweite Kartenseite rechts hervorschaut
+ * --soon-opacity            -> wie blass Icon und Name einer Karte „Demnächst verfügbar“ sind
+ *
  * FORTSCHRITT UND PROFIL
  * --level-color / --level-dim / --level-glow -> Level-Anzeige oben links; --level-color färbt auch Plus und Ring des Navigations-Knopfes
  * --xp-created / --xp-done  -> Blau für „Angelegt“, Grün für „Erledigt“
@@ -91,6 +95,10 @@
  */
 
 :root {
+  /* Übersicht: zweite Kartenseite und abgeschaltete Karten */
+  --overview-peek: 32px;
+  --soon-opacity: 0.45;
+
   /* Fortschritt und Profil: Level-Anzeige, Verlaufskurve und Punkte-Raster */
   --level-color: #4d72ad;
   --level-dim: rgba(77, 114, 173, 0.22);

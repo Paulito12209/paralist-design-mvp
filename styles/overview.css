@@ -1,6 +1,7 @@
 /*
- * Startseite: die vier Übersichtskarten, die Zeile „Arbeitsbereiche“ und die
- * Tab-Pillen darunter.
+ * Startseite: die Übersichtskarten (je Seite vier), die Zeile „Arbeitsbereiche“
+ * und die Tab-Pillen darunter. Schieben der Kartenseiten, abgeschaltete Karten
+ * und der Pfeil neben „Arbeitsbereiche“: styles/overview-more.css.
  * Pfad: styles/overview.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens.css)
@@ -25,10 +26,10 @@
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
 
+/* Zwei Kartenseiten nebeneinander, waagerecht zu schieben; das Schieben und
+   Einrasten steht in styles/overview-more.css. */
 .overview-grid {
-  display: grid;
-  /* minmax(0, 1fr): sonst darf eine Spalte mit langem Wort („Ressourcen“) breiter werden als die andere */
-  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  display: flex;
   gap: 12px;
   /* Negativer Rand + Padding: die Schatten der Cards brechen links/rechts über den
      content-Padding hinaus, damit sie nicht vom overflow:hidden abgeschnitten werden */
@@ -36,6 +37,14 @@
   margin-right: -12px;
   padding-left: 12px;
   padding-right: 12px;
+}
+
+/* Eine Kartenseite: vier Karten im Raster 2 × 2 */
+.overview-page {
+  display: grid;
+  /* minmax(0, 1fr): sonst darf eine Spalte mit langem Wort („Ressourcen“) breiter werden als die andere */
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 12px;
 }
 
 .overview-card {
