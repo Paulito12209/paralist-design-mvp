@@ -220,7 +220,9 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   daraus bzw. hängt die Zeile an die vorige. Runde Checkbox antippen füllt sie.
   Standort, Video, Web-Lesezeichen: Link einfügen → links eine Kachel (oben
   das Bild, unten graue Leiste mit Logo, Dienst und „⋯“), rechts groß der
-  Name; antippen öffnet den Link, „⋯“ bietet Umbenennen und Entfernen. „/“ vor einem schon eingefügten Link macht ihn direkt zur Karte.
+  Name mit Kopier-Knopf dahinter (kopiert nur den Namen, zeigt kurz einen
+  Haken); antippen öffnet den Link, „⋯“ bietet Umbenennen, Namen kopieren und
+  Entfernen. „/“ vor einem schon eingefügten Link macht ihn direkt zur Karte.
   Nach Neuladen steht alles wieder so da; Kopieren liefert Markdown.
 
 **Kalender**

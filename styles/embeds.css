@@ -27,6 +27,8 @@
  * .embed-logo img width     -> Größe des Favicons einer Website oben in der Kachel (32px)
  * .embed-logo-mark width    -> Größe des Logos in der Leiste (16px)
  * .embed-play width         -> Größe des Abspiel-Knopfes (32px)
+ * .embed-copy width         -> Tippfläche des Kopier-Knopfs hinter dem Namen (36px), Symbol 18px
+ * --xp-done                 -> Farbe des Hakens nach dem Kopieren (tokens-pages.css)
  */
 
 .nb-embed,
@@ -193,9 +195,41 @@
   height: 18px;
 }
 
-/* Rechts neben der Kachel: der Name, groß */
-.embed-name {
+/* Rechts neben der Kachel: der Name und direkt dahinter der Kopier-Knopf */
+.embed-side {
   flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.embed-copy {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+
+.embed-copy .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.embed-copy:active {
+  opacity: 0.55;
+}
+
+/* Kurz nach dem Kopieren: grüner Haken statt der zwei Blätter */
+.embed-copy.is-done {
+  color: var(--xp-done);
+}
+
+/* Der Name, groß */
+.embed-name {
+  flex: 0 1 auto;
   min-width: 0;
   font-size: 17px;
   font-weight: 600;

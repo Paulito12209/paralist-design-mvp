@@ -83,12 +83,17 @@ function barLogo(block) {
 
 /* Karte: links eine Kachel so groß wie die auf der Übersicht — oben das Bild,
    unten eine graue Leiste mit Logo, Dienst und Drei-Punkte-Menü —, rechts
-   daneben groß der Name. role=link statt a: in der Kachel steckt ein Knopf,
+   daneben groß der Name und dahinter ein Knopf, der nur den Namen kopiert. role=link statt a: in der Kachel steckt ein Knopf,
    und Knöpfe dürfen nicht in einem Link liegen. */
+/** Der Name, der rechts neben der Kachel steht (und kopiert wird). */
+export function cardName(block) {
+  return block.name || (block.kind === "video" ? "Video" : hostOf(block.url)) || "Link";
+}
+
 function embedMarkup(block) {
   const host = hostOf(block.url);
   const label = kindLabels[block.kind] || host;
-  const name = block.name || (block.kind === "video" ? "Video" : host) || "Link";
+  const name = cardName(block);
   return `
     <div class="embed embed-${block.kind}" role="link" tabindex="0" data-open title="${escapeHtml(block.url)}">
       <div class="embed-tile">
@@ -99,7 +104,10 @@ function embedMarkup(block) {
           <button class="embed-more" type="button" data-embed-menu aria-label="Optionen">${icon("dots")}</button>
         </div>
       </div>
-      <span class="embed-name">${escapeHtml(name)}</span>
+      <div class="embed-side">
+        <span class="embed-name">${escapeHtml(name)}</span>
+        <button class="embed-copy" type="button" data-embed-copy aria-label="Namen kopieren">${icon("copy")}</button>
+      </div>
     </div>`;
 }
 

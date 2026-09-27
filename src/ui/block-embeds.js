@@ -2,10 +2,15 @@
  * Die Karten im Baustein-Editor: Link übernehmen und im Netz nachschlagen
  * (Name des Ortes, Titel des Videos, Name und Farbe der Website), Karte
  * antippen öffnet den Link, das Drei-Punkte-Menü bietet Öffnen, Umbenennen,
- * Kopieren und Entfernen. Dazu die runden Checkboxen.
+ * Namen kopieren, Link kopieren und Entfernen. Der Knopf hinter dem Namen
+ * kopiert nur den Namen („Good Aroma“). Dazu die runden Checkboxen.
  * Pfad: src/ui/block-embeds.js
  *
- * Keine anpassbaren visuellen Werte: Aussehen der Karten in styles/embeds.css.
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * COPIED_MS -> so lange zeigt der Kopier-Knopf hinter dem Namen einen Haken
+ *
+ * Aussehen der Karten in styles/embeds.css.
  */
 
 import { selectAll } from "../core/caret.js";
@@ -13,7 +18,12 @@ import { copyText } from "../core/clipboard.js";
 import { faviconColor, pagePreview, videoPreview } from "../core/link-preview.js";
 import { guessName, hostOf, isShortMapsLink, normalizeUrl, placeFromUrl, youtubeId } from "../data/link-kinds.js";
 import { embedKinds, isTextKind, makeBlock } from "../data/note-blocks.js";
+import { icon } from "../core/html.js";
+import { cardName } from "./block-markup.js";
 import { openSheet } from "./sheet.js";
+import { showToast } from "./toast.js";
+
+const COPIED_MS = 1500;
 
 /* Links, deren Farbe schon gesucht wurde — nicht bei jedem Öffnen erneut fragen. */
 const colorTried = new Set();
@@ -79,6 +89,24 @@ export function fillMissingColors(ed) {
     });
 }
 
+/* Nur den Namen kopieren. Am Knopf hinter dem Namen bestätigt ein Haken,
+   aus dem Blatt heraus (Knopf nicht zu sehen) eine kurze Meldung. */
+async function copyName(block, button = null) {
+  const name = cardName(block);
+  if (!(await copyText(name))) return;
+  if (!button) {
+    showToast({ icon: "copy", title: "Name kopiert" });
+    return;
+  }
+  button.innerHTML = icon("check");
+  button.classList.add("is-done");
+  clearTimeout(button.copiedTimer);
+  button.copiedTimer = setTimeout(() => {
+    button.innerHTML = icon("copy");
+    button.classList.remove("is-done");
+  }, COPIED_MS);
+}
+
 function openLink(url) {
   window.open(url, "_blank", "noopener");
 }
@@ -111,6 +139,7 @@ function openCardMenu(ed, block) {
   openSheet(title, [
     { label: "Link öffnen", icon: "external", onSelect: () => openLink(block.url) },
     { label: "Umbenennen", icon: "pencil", onSelect: () => renameCard(ed, block) },
+    { label: "Namen kopieren", icon: "copy", onSelect: () => copyName(block) },
     { label: "Link kopieren", icon: "copy", onSelect: () => copyText(block.url) },
     {
       label: "Entfernen",
@@ -154,7 +183,9 @@ export function bindBlockEmbeds(ed) {
     if (!card || event.target.isContentEditable) return;
     const block = ed.blocks[ed.indexOf(card)];
     if (!block || !embedKinds.includes(block.kind)) return;
-    if (event.target.closest("[data-embed-menu]")) openCardMenu(ed, block);
+    const copy = event.target.closest("[data-embed-copy]");
+    if (copy) copyName(block, copy);
+    else if (event.target.closest("[data-embed-menu]")) openCardMenu(ed, block);
     else openLink(block.url);
   });
 
