@@ -4,7 +4,7 @@
  * Pfad: src/ui/rows.js
  *
  * Keine anpassbaren visuellen Werte: Höhe, Farben und Abstände stehen in
- * styles/rows.css (Klassen .workspace-row, .swipe, .swipe-action), der Haken
+ * styles/rows.css (Klasse .workspace-row), styles/swipe-rows.css (.swipe, .swipe-action), der Haken
  * vor einer Aufgabe in styles/task-status.css.
  */
 

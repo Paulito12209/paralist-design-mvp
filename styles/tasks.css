@@ -144,7 +144,7 @@
 
 /* Der Haken steht als eigener Knopf neben der Zeile, damit ein Tipp darauf
    abhakt statt den Editor zu öffnen. Die Trennlinie zeichnet .swipe::after in
-   styles/rows.css — dort läuft sie über die ganze Zeile, Haken eingeschlossen. */
+   styles/swipe-rows.css — dort läuft sie über die ganze Zeile, Haken eingeschlossen. */
 .task-rows .swipe-body {
   display: flex;
   align-items: center;

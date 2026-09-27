@@ -3,6 +3,8 @@
  * („Verknüpfte Einträge“), nach rechts die vorige („Inhalt“). Genutzt auf der
  * Seite eines Eintrags und eines Arbeitsbereichs, in der Suche, auf der
  * Übersicht für die Tabs der Arbeitsbereiche, auf Medien und Ressourcen.
+ * Das gilt auch über Listenzeilen: deren Knöpfe kommen erst nach Halten und
+ * Ziehen (src/ui/swipe.js) — eine solche Berührung wechselt keinen Tab.
  * Nach dem Wechsel — per Wischen oder Antippen (initPillTapReveal) — rollt
  * eine seitlich laufende Pillen-Leiste (.tab-pills) so,
  * dass die neue Pille ganz sichtbar ist und den Randabstand aus
@@ -17,13 +19,15 @@
  *                 Zurück-Geste des Systems (Android, iOS)
  */
 
+import { isRowGesture } from "./swipe.js";
+
 const SWIPE_MIN_PX = 60;
 const AXIS_RATIO = 1.5;
 const EDGE_PX = 24;
 
-/* Dort hat Wischen schon eine eigene Bedeutung: Zeilen aufwischen, zeichnen,
-   Pillen-Leiste schieben, im Titel den Cursor setzen. */
-const OWN_GESTURES = ".swipe, .draw-pad, .tab-pills, input";
+/* Dort hat Wischen schon eine eigene Bedeutung: zeichnen, Pillen-Leiste
+   schieben, im Titel den Cursor setzen. */
+const OWN_GESTURES = ".draw-pad, .tab-pills, input";
 
 /* Die gewählte Pille ins Bild rollen. „nearest“ rollt nur, wenn sie ganz oder
    halb außerhalb steht, und beachtet dabei den Randabstand aus scroll-padding. */
@@ -93,7 +97,7 @@ export function initPillSwipe(area, { order, current, select, enabled = () => tr
       const dy = touch.clientY - start.y;
       start = null;
       if (Math.abs(dx) < SWIPE_MIN_PX || Math.abs(dx) < AXIS_RATIO * Math.abs(dy)) return;
-      if (hasSelection()) return;
+      if (hasSelection() || isRowGesture()) return;
       const ids = typeof order === "function" ? order() : order;
       const next = ids.indexOf(current()) + (dx < 0 ? 1 : -1);
       if (next < 0 || next >= ids.length) return;
