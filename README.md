@@ -231,6 +231,10 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   hoch), daneben tippen schließt nur die Tastatur statt einen Eintrag zu
   öffnen, zugeklappt zeigt sich die Suchen-Pille rechts über der Navigation.
 - Fortschritt: Zeitraum 7/30/90, „Mehr anzeigen“, Blatt nach unten ziehen.
+- Meilensteine: Karte im Fortschritt-Blatt öffnen, eine Zeile auf- und
+  zuklappen. Pfeil und Browser-Zurück führen zu den Karten, das Kreuz schließt
+  alles. „Neu“ ist beim zweiten Öffnen weg; eine erreichte Stufe bleibt, auch
+  wenn man danach Einträge löscht.
 - Einstellungen (Knopf oben rechts): die beiden Kacheln unter „Analyse“
   öffnen die volle Karte — Zurück-Pfeil, Browser-Zurück und das Kreuz müssen
   sich unterscheiden (Kreuz schließt alles). Nutzungszeit steht als

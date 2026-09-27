@@ -24,3 +24,13 @@ export function pageMarkdown(entry) {
 export function hasPageBody(entry) {
   return entry.type !== "zeichnung" && Boolean((entry.body || "").trim());
 }
+
+/**
+ * Wie viele Zeichen eine Seite hat: Titel und Text zusammen, Leerzeichen
+ * mitgezählt wie in jedem Schreibprogramm. Zeichnungen haben keinen Text.
+ * Dieselbe Zahl steht unter „Details“ und zählt für das Abzeichen „Dichter“.
+ */
+export function charCount(entry) {
+  const body = entry.type === "zeichnung" ? "" : (entry.body || "").trim();
+  return titleText(entry).length + body.length;
+}

@@ -1,0 +1,301 @@
+/*
+ * Meilensteine im Fortschritt-Blatt: die Karte mit den kleinen Plaketten und
+ * die eigene Seite mit Summe, einer Zeile je Abzeichen und der aufklappbaren
+ * Stufen-Leiter.
+ * Pfad: styles/milestones.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-pages.css)
+ * -----------------------------------
+ * --ms-tasks … --ms-streak -> Farbe der Plakette je Abzeichen
+ * --ms-medal-size          -> Durchmesser der Plakette in der Liste
+ * --ms-medal-small         -> Durchmesser der kleinen Plaketten auf der Karte
+ * --ms-ring-w              -> Breite des Rings bis zur nächsten Stufe
+ * --ms-bar-h               -> Höhe der Balken
+ * --ms-locked / --ms-track -> Grau gesperrter Plaketten und Grund von Ring und Balken
+ * --card / --line / --muted / --radius-xl (styles/tokens.css) -> Karten, Trennlinien, kleine Schrift
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel:
+ * Überschrift 17px, Summe 34px, Name 17px, Stufe und Zähler 13px.
+ */
+
+/* ---------- Karte im Fortschritt-Blatt ---------- */
+
+.ms-teaser {
+  display: block;
+  width: 100%;
+  text-align: left;
+  color: var(--text);
+}
+
+.ms-teaser .pcard-head {
+  margin-bottom: 12px;
+}
+
+.ms-go {
+  margin-left: auto;
+  color: var(--chevron);
+  display: flex;
+}
+
+.ms-go .icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* Die Plaketten in einer Reihe: je Abzeichen eine gleich breite Spalte, so
+   bricht auch auf 375 px keine in die nächste Zeile um */
+.ms-shelf {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  justify-items: center;
+}
+
+.ms-teaser-sum {
+  display: block;
+  margin-top: 12px;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+/* Kleine Pille „Neu“ / „2 neu“ neben einem Namen */
+.ms-new {
+  margin-left: 8px;
+  padding: 2px 8px;
+  border-radius: 999px; /* border-radius: macht das Schild zur Pille */
+  background: var(--ms-streak);
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  vertical-align: 2px; /* vertical-align: sitzt mittig neben dem größeren Namen */
+}
+
+/* ---------- Plakette ---------- */
+
+/*
+ * Außen ein Ring, der bis zur nächsten Stufe wächst; conic-gradient zeichnet
+ * ihn als Tortenstück, --ms-share setzt die Zeile im Markup.
+ */
+.ms-medal {
+  position: relative; /* position: Bezug für die Stufen-Zahl unten */
+  flex: 0 0 auto;
+  width: var(--ms-medal-size);
+  height: var(--ms-medal-size);
+  border-radius: 50%;
+  padding: var(--ms-ring-w);
+  background: conic-gradient(var(--ms-color) var(--ms-share), var(--ms-track) 0);
+}
+
+.ms-medal.is-small {
+  width: var(--ms-medal-small);
+  height: var(--ms-medal-small);
+  padding: 2px;
+}
+
+.ms-medal-face {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--ms-color);
+  color: #ffffff;
+  /* box-shadow: ein heller Spalt zwischen Ring und Fläche, damit beide getrennt lesbar sind */
+  box-shadow: 0 0 0 2px var(--card);
+}
+
+.ms-medal-face .icon {
+  width: 55%;
+  height: 55%;
+}
+
+/* Gesperrt: grau, das Icon nur angedeutet */
+.ms-medal.is-locked .ms-medal-face {
+  background: var(--ms-locked);
+  color: var(--card);
+}
+
+/* Höchste Stufe: der Ring ist voll und leuchtet leicht */
+.ms-medal.is-max {
+  box-shadow: 0 0 12px var(--ms-color);
+}
+
+/* Die Stufe als Zahl, unten auf der Plakette */
+.ms-medal-tier {
+  position: absolute; /* position: überlappt den unteren Rand der Plakette */
+  left: 50%;
+  bottom: -6px;
+  transform: translateX(-50%); /* transform: mittig unter der Plakette */
+  min-width: 22px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--text);
+  color: var(--card);
+  font-size: 12px;
+  font-weight: 700;
+  text-align: center;
+}
+
+/* ---------- Seite „Meilensteine“ ---------- */
+
+.ms-heading {
+  text-align: center;
+  padding-top: 2px;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.ms-summary {
+  text-align: center;
+}
+
+.ms-summary-value {
+  font-size: 34px;
+  color: var(--muted);
+  letter-spacing: -0.02em;
+}
+
+.ms-summary-value b {
+  color: var(--text);
+  font-weight: 700;
+}
+
+.ms-summary-label {
+  font-size: 15px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.ms-summary-next {
+  margin-top: 12px;
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+/* Balken: Summe oben und je Abzeichen in der Liste */
+.ms-bar {
+  display: block;
+  height: var(--ms-bar-h);
+  border-radius: 999px;
+  background: var(--ms-track);
+  overflow: hidden;
+}
+
+.ms-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--ms-color, var(--ms-streak));
+}
+
+.ms-list {
+  padding-block: 6px;
+}
+
+.ms-item + .ms-item {
+  border-top: 1px solid var(--line);
+}
+
+.ms-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 0 16px;
+  text-align: left;
+  color: var(--text);
+}
+
+.ms-copy {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ms-title {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.ms-tier,
+.ms-count {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Der Pfeil dreht sich nach unten, solange die Leiter offen ist */
+.ms-item.is-open .ms-go {
+  transform: rotate(90deg); /* transform: zeigt „aufgeklappt“ an */
+}
+
+/* ---------- Aufgeklappte Stufen-Leiter ---------- */
+
+.ms-ladder {
+  padding: 0 0 14px calc(var(--ms-medal-size) + 14px);
+}
+
+.ms-hint {
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 8px;
+}
+
+.ms-steps {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ms-step {
+  display: grid;
+  grid-template-columns: 24px 1fr auto;
+  column-gap: 10px;
+  align-items: center;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.ms-step-dot {
+  grid-row: span 2;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--ms-track);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ms-step-dot .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.ms-step.is-reached {
+  color: var(--text);
+}
+
+.ms-step.is-reached .ms-step-dot {
+  background: var(--ms-color);
+  color: #ffffff;
+}
+
+.ms-step-name {
+  font-weight: 600;
+}
+
+.ms-step-goal {
+  text-align: right;
+  font-variant-numeric: tabular-nums; /* font-variant-numeric: Ziffern gleich breit, damit die Zahlen untereinander stehen */
+}
+
+.ms-step-note {
+  grid-column: 2 / -1;
+  font-size: 13px;
+  color: var(--muted);
+}
