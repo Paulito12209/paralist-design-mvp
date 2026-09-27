@@ -9,7 +9,9 @@
  *
  * ANPASSBARE WERTE (in styles/tokens-pages.css, im Dunkeln styles/tokens-dark.css)
  * -----------------------------------
- * --entry-cover-h           -> wie weit der Verlauf von oben nach unten reicht
+ * --entry-cover-fade        -> wie weit der Verlauf unterhalb der Pillen noch ausläuft
+ *                              (bis zur Oberkante der Pillen ist er voll gefärbt; wo die liegt,
+ *                              misst entry-cover.js und gibt es als --entry-cover-solid herein)
  * --entry-cover-mix         -> wie kräftig die Farbe ganz oben ist (100% = volle Kategoriefarbe)
  * --entry-icon-glyph        -> Größe des Icons über dem Titel
  * --entry-icon-gap          -> Luft zwischen Icon und Titel
@@ -30,16 +32,18 @@
   /* bis an die Bildschirmränder, nicht nur bis zum Inhaltsrand */
   left: calc(-1 * var(--content-side));
   right: calc(-1 * var(--content-side));
-  height: var(--entry-cover-h);
+  height: calc(var(--entry-cover-solid, 0px) + var(--entry-cover-fade));
   z-index: -1; /* z-index: hinter Kopfzeile, Icon und Titel */
   pointer-events: none; /* pointer-events: nur Farbe, nichts zum Antippen */
-  /* Drei Stufen statt zwei: die Farbe hält oben etwas länger und läuft dann
-     weich in den Hintergrund aus — ohne die Stufe in der Mitte wirkte der
-     Verlauf wie ein hartes Band. */
+  /* Bis zur Oberkante der Pillen (--entry-cover-solid) eine Fläche, erst
+     darunter läuft die Farbe aus — mit einer Stufe in der Mitte, damit das
+     Auslaufen weich wirkt statt wie ein hartes Band. */
   background: linear-gradient(
     to bottom,
-    color-mix(in srgb, var(--entry-accent) var(--entry-cover-mix), var(--bg)) 0%,
-    color-mix(in srgb, var(--entry-accent) calc(var(--entry-cover-mix) * 0.45), var(--bg)) 50%,
+    color-mix(in srgb, var(--entry-accent) var(--entry-cover-mix), var(--bg)) 0,
+    color-mix(in srgb, var(--entry-accent) var(--entry-cover-mix), var(--bg)) var(--entry-cover-solid, 0px),
+    color-mix(in srgb, var(--entry-accent) calc(var(--entry-cover-mix) * 0.45), var(--bg))
+      calc(var(--entry-cover-solid, 0px) + var(--entry-cover-fade) / 2),
     var(--bg) 100%
   );
 }
@@ -78,4 +82,12 @@
 
 .entry-icon[hidden] {
   display: none;
+}
+
+/* Auf der farbigen Fläche wäre Grau kaum zu lesen: die nicht gewählte Pille
+   und die Knöpfe daneben nehmen die Textfarbe, nur etwas zurückgenommen. */
+#view-entry.has-cover .page-pills-row .tab-pill:not(.is-active),
+#view-entry.has-cover .page-tool {
+  color: var(--text);
+  opacity: 0.7;
 }

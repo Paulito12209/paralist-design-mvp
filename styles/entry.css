@@ -74,7 +74,8 @@
   min-width: 0; /* min-width: sonst drückt ein langes Wort das Menü aus dem Bild */
   text-align: center;
   font-size: 15px;
-  color: var(--muted);
+  /* in der Textfarbe, nicht grau: auf einem Cover in Kategoriefarbe war Grau kaum zu lesen */
+  color: var(--text);
   font-weight: 500;
   overflow: hidden; /* overflow: nötig für text-overflow */
   text-overflow: ellipsis;
