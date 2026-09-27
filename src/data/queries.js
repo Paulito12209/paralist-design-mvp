@@ -232,6 +232,11 @@ export function entriesOfDay(key) {
   return state.entries.filter((entry) => !entry.archived && entryDay(entry) === key);
 }
 
+/** Alle Einträge eines Kalendertags, archivierte eingeschlossen — für die Ringe im Wochenstreifen. */
+export function calendarDayEntries(key) {
+  return state.entries.filter((entry) => entryDay(entry) === key);
+}
+
 /* ---------- Aufgaben-Seite ---------- */
 
 /** Alle sichtbaren Aufgaben, ungefiltert und unsortiert. */

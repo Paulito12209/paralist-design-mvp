@@ -6,8 +6,6 @@
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
  * --cal-accent              -> Blau des gewählten Tages und des „Heute“-Knopfes
- * --cal-ring-w              -> Breite des Rings um Tage mit Einträgen = Durchmesser der Kugel
- * --cal-ring-mix            -> Deckkraft des Rings in der Farbe des Eintrags (20% = zart)
  * --cal-row-h               -> Höhe einer Wochenzeile
  * --date-wheel-h            -> Höhe der drei Rollen im Blatt „Monat und Jahr“
  * --date-wheel-item-h       -> Höhe einer Zeile in diesen Rollen
@@ -20,6 +18,10 @@
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei
  * (Monat und Jahr 18px, Tageszahlen 18px, Rollen-Zeilen 20px, „Fertig“ 17px).
 */
+
+/* @import: die Ringe haben eine eigene Datei, weil diese sonst über 400 Zeilen
+   käme; index.html ist schon voll, deshalb wird sie hier mitgeladen */
+@import url("calendar-rings.css");
 
 /* ---------- Kalender ---------- */
 
@@ -176,27 +178,8 @@
   letter-spacing: -0.02em;
 }
 
-/* Tage mit Einträgen: Ring wie ein Aktivitätsring der Apple Watch in der
-   Eintragsfarbe (--day-color, gesetzt von calendar-strip.js am Knopf) */
-.cal-day.has-items .cal-day-num {
-  position: relative; /* position: Bezugsrahmen für die Kugel unten auf dem Ring */
-  /* box-shadow inset: zeichnet den Ring innen, ohne die 44 px zu vergrößern.
-     color-mix: dieselbe Farbe mit nur --cal-ring-mix Deckkraft */
-  box-shadow: inset 0 0 0 var(--cal-ring-w) color-mix(in srgb, var(--day-color) var(--cal-ring-mix), transparent);
-}
-
-/* Die Kugel: sitzt unten mittig auf dem Ring, genau so breit wie er, voll deckend */
-.cal-day.has-items .cal-day-num::after {
-  content: "";
-  position: absolute; /* position: liegt auf dem Ring statt im Zahlenfluss */
-  bottom: 0;
-  left: 50%;
-  width: var(--cal-ring-w);
-  height: var(--cal-ring-w);
-  border-radius: 50%;
-  background: var(--day-color);
-  transform: translateX(-50%); /* transform: genau mittig unter der Zahl */
-}
+/* Tage mit Aufgaben, Projekten oder Terminen: Ring und Murmeln stehen in
+   styles/calendar-rings.css */
 
 .cal-day.is-today .cal-day-num {
   font-weight: 700;
