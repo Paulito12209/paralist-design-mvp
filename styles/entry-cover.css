@@ -35,15 +35,18 @@
   height: calc(var(--entry-cover-solid, 0px) + var(--entry-cover-fade));
   z-index: -1; /* z-index: hinter Kopfzeile, Icon und Titel */
   pointer-events: none; /* pointer-events: nur Farbe, nichts zum Antippen */
-  /* Bis zur Oberkante der Pillen (--entry-cover-solid) eine Fläche, erst
-     darunter läuft die Farbe aus — mit einer Stufe in der Mitte, damit das
-     Auslaufen weich wirkt statt wie ein hartes Band. */
+  /* Bis zur Oberkante der Pillen (--entry-cover-solid) eine Fläche; genau
+     dort beginnt das Auslaufen. Die Stufen fallen am Anfang steil und
+     danach flach ab — ein gleichmäßiger Verlauf wirkte an der Kante noch
+     voll gefärbt und schien erst weiter unten zu beginnen. */
   background: linear-gradient(
     to bottom,
     color-mix(in srgb, var(--entry-accent) var(--entry-cover-mix), var(--bg)) 0,
     color-mix(in srgb, var(--entry-accent) var(--entry-cover-mix), var(--bg)) var(--entry-cover-solid, 0px),
-    color-mix(in srgb, var(--entry-accent) calc(var(--entry-cover-mix) * 0.45), var(--bg))
-      calc(var(--entry-cover-solid, 0px) + var(--entry-cover-fade) / 2),
+    color-mix(in srgb, var(--entry-accent) calc(var(--entry-cover-mix) * 0.5), var(--bg))
+      calc(var(--entry-cover-solid, 0px) + var(--entry-cover-fade) * 0.25),
+    color-mix(in srgb, var(--entry-accent) calc(var(--entry-cover-mix) * 0.15), var(--bg))
+      calc(var(--entry-cover-solid, 0px) + var(--entry-cover-fade) * 0.6),
     var(--bg) 100%
   );
 }
