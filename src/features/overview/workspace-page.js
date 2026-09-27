@@ -1,6 +1,7 @@
 /*
  * Die Seite eines Arbeitsbereichs: zwei Pillen oben — „Inhalt“ mit dem
- * freien Text zum Arbeitsbereich und „Verknüpfte Einträge“ mit allem, was darin
+ * Text zum Arbeitsbereich als Bausteine wie auf einer Eintragsseite („/“-Menü,
+ * Listen, Checkboxen, Karten; src/ui/block-editor.js) und „Verknüpfte Einträge“ mit allem, was darin
  * liegt, nach Typ gruppiert und auf-/zuklappbar. Waagerecht wischen wechselt
  * zwischen den Pillen (src/ui/pill-swipe.js). Dieselben zwei Pillen zeigt
  * auch die Seite eines einzelnen Eintrags (src/features/entry/entry.js) —
@@ -15,12 +16,12 @@
  * Keine anpassbaren visuellen Werte: Pillen und Gruppen stehen in
  * styles/rows.css (Klassen .page-pills, .group-head), der Text und die
  * Knöpfe neben den Pillen in styles/entry.css (Klassen .entry-body,
- * .workspace-body, .page-pills-row).
+ * .workspace-body, .page-pills-row), die Bausteine in styles/blocks.css,
+ * styles/embeds.css und styles/slash-menu.css.
  */
 
 import { emit, events } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
-import { escapeHtml } from "../../core/html.js";
 import { entriesOf, findWorkspace, groupedEntriesOf, workspaceLabel } from "../../data/queries.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { groupedListMarkup } from "../../ui/groups.js";
@@ -33,6 +34,7 @@ import {
 } from "../../ui/page-tools.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { addWritePage } from "../../ui/write-tap.js";
+import { createBlockEditor } from "../../ui/block-editor.js";
 
 /* Die beiden Pillen; die zweite trägt die Anzahl der Einträge. Kein Icon:
    es wird nie mehr als diese zwei geben, das Wort allein reicht. */
@@ -65,9 +67,45 @@ function openWorkspace() {
   return page && page.isWorkspace ? findWorkspace(page.workspaceId) : null;
 }
 
-/* Der Inhalt: freier Text, wird kurz nach dem Tippen gespeichert. */
-function notesMarkup(workspace) {
-  return `<textarea class="entry-body workspace-body" id="workspace-body" placeholder="Schreib etwas zu diesem Arbeitsbereich …" aria-label="Inhalt">${escapeHtml(workspace.body || "")}</textarea>`;
+/*
+ * Der Inhalt als Baustein-Editor. Er wird einmal angelegt und bei jedem
+ * Zeichnen der Seite wieder eingehängt; den Text setzt er nur neu, wenn ein
+ * anderer Arbeitsbereich offen ist oder sich der Text von außen geändert hat.
+ * { panel, root, editor, id, text } — oder null, solange nie ein Inhalt offen war.
+ */
+let notes = null;
+
+/* Tippen speichert erst kurz nach dem letzten Buchstaben. */
+function saveNotes(text) {
+  const workspace = openWorkspace();
+  if (!workspace || workspace.id !== notes.id) return;
+  workspace.body = text;
+  notes.text = text;
+  scheduleSave();
+}
+
+/* Die Fläche unter „Inhalt“ mit dem Editor für diesen Arbeitsbereich. */
+function notesPanel(workspace) {
+  if (!notes) {
+    const panel = document.createElement("div");
+    panel.className = "entry-panel";
+    const root = document.createElement("div");
+    root.className = "entry-body note-blocks workspace-body";
+    root.id = "workspace-body";
+    root.setAttribute("role", "group");
+    root.setAttribute("aria-label", "Inhalt");
+    /* Erst einhängen, dann anlegen: das „/“-Menü setzt sich neben den Editor */
+    panel.append(root);
+    const editor = createBlockEditor(root, { onChange: saveNotes, emptyHint: "Schreib etwas zu diesem Arbeitsbereich …" });
+    notes = { panel, root, editor, id: null, text: null };
+  }
+  const text = workspace.body || "";
+  if (notes.id !== workspace.id || notes.text !== text) {
+    notes.id = workspace.id;
+    notes.text = text;
+    notes.editor.setText(text);
+  }
+  return notes.panel;
 }
 
 /** Die Seite des offenen Arbeitsbereichs zeichnen. */
@@ -77,14 +115,15 @@ export function renderWorkspacePage(page) {
   const count = entriesOf(page.parent).length;
   const groups = groupedEntriesOf(page.parent);
   const type = activeFilter(filterKey(page), groups);
-  const body = ui.pagePill === "links" ? groupedListMarkup(page.parent, type) : notesMarkup(workspace);
+  const links = ui.pagePill === "links";
   const tools = pageToolsMarkup(ui.pagePill, filterKey(page), groups);
-  dom.pageBody.innerHTML = pillsRowMarkup(pillsMarkup(ui.pagePill, count), tools) + body;
+  dom.pageBody.innerHTML = pillsRowMarkup(pillsMarkup(ui.pagePill, count), tools) + (links ? groupedListMarkup(page.parent, type) : "");
+  if (!links) dom.pageBody.append(notesPanel(workspace));
 }
 
 /** Tippt jemand gerade im Inhalt? Dann darf die Seite nicht neu gezeichnet werden. */
 export function isWritingNotes() {
-  return document.activeElement === el("workspace-body");
+  return Boolean(notes && notes.root.contains(document.activeElement));
 }
 
 /** Pillen und Inhalt anmelden. */
@@ -94,7 +133,7 @@ export function initWorkspacePage() {
     if (!isWorkspaceOpen()) return;
     /* Der Text wird gleich ersetzt: vorher den Cursor herausnehmen, sonst
        bliebe die Tastatur für ein Feld offen, das es nicht mehr gibt. */
-    if (id !== "notes") el("workspace-body")?.blur();
+    if (id !== "notes") notes?.editor.blur();
     ui.pagePill = id;
     renderWorkspacePage(ui.currentPage);
   };
@@ -137,14 +176,7 @@ export function initWorkspacePage() {
   addWritePage({
     view: "page",
     isOpen: isWorkspaceOpen,
-    field: () => (ui.pagePill === "notes" ? el("workspace-body") : null),
-  });
-
-  dom.pageBody.addEventListener("input", (event) => {
-    if (event.target.id !== "workspace-body" || !ui.currentPage) return;
-    const workspace = findWorkspace(ui.currentPage.workspaceId);
-    if (!workspace) return;
-    workspace.body = event.target.value;
-    scheduleSave();
+    field: () => (ui.pagePill === "notes" && notes?.root.isConnected ? notes.root : null),
+    focusEnd: () => notes?.editor.focusEnd(),
   });
 }
