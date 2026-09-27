@@ -4,17 +4,17 @@
  * Pfad: src/features/calendar/calendar-strip.js
  *
  * Keine anpassbaren visuellen Werte: Farben und Größen stehen in
- * styles/calendar.css (--cal-accent, --cal-ring-w, --cal-ring-mix, --cal-row-h).
- * Hier wird nur die Farbe des Rings als --day-color an den Tag gehängt.
+ * styles/calendar.css (--cal-accent, --cal-row-h). Die Ringe mit den Murmeln
+ * zeichnet calendar-rings.js.
  */
 
 import { addDays, dayKey, isoWeek, parseDay, startOfWeek } from "../../core/dates.js";
 import { dom } from "../../core/dom.js";
 import { longDate, monthHeading } from "../../core/format.js";
 import { calendarSpans } from "../../data/config.js";
-import { entriesOfDay, entryColor } from "../../data/queries.js";
 import { state, ui } from "../../data/state.js";
 import { cal } from "./calendar-state.js";
+import { dayRing } from "./calendar-rings.js";
 
 /** Die Montage der sichtbaren Wochen: eine, zwei oder alle Wochen des Monats. */
 export function visibleWeeks() {
@@ -41,20 +41,16 @@ function weekMarkup(monday, extra = "") {
   for (let offset = 0; offset < 7; offset += 1) {
     const day = addDays(monday, offset);
     const key = dayKey(day);
-    const items = entriesOfDay(key);
+    const ring = dayRing(key);
     const classes = ["cal-day"];
     if (key === ui.calendarDay) classes.push("is-selected");
     if (key === todayKey) classes.push("is-today");
-    if (items.length) classes.push("has-items");
+    if (ring) classes.push("has-items");
     if (state.prefs.calendar.span === 0 && day.getMonth() !== month) classes.push("is-other");
 
-    /* Ring und Kugel haben die Farbe des ersten Termins, sonst die des ersten Eintrags. */
-    const marker = items.find((item) => item.type === "termin") || items[0];
     html += `
-      <button class="${classes.join(" ")}" type="button" data-day="${key}" aria-label="${longDate(key)}"${
-        items.length ? ` style="--day-color:${entryColor(marker)}"` : ""
-      }>
-        <span class="cal-day-num">${day.getDate()}</span>
+      <button class="${classes.join(" ")}" type="button" data-day="${key}" aria-label="${longDate(key)}">
+        <span class="cal-day-num">${ring}${day.getDate()}</span>
       </button>`;
   }
 
