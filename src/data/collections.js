@@ -26,9 +26,9 @@ export const SOON_LABEL = "Demnächst verfügbar";
  */
 export const moreCards = [
   { id: "bookmarks", title: "Lesezeichen", icon: "bookmark", soon: true },
-  { id: "archive", title: "Archiv", icon: "archive" },
   { id: "people", title: "Personen", icon: "people", soon: true },
   { id: "timeline", title: "Zeitleiste", icon: "timeline-axis", soon: true },
+  { id: "archive", title: "Archiv", icon: "archive" },
 ];
 
 /*

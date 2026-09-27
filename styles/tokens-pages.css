@@ -12,7 +12,7 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * ÜBERSICHT
- * --overview-peek           -> wie weit die zweite Kartenseite rechts hervorschaut
+ * --overview-pager-h        -> Dicke der Linie unter den Karten, die zeigt, welche Kartenseite steht
  * --soon-opacity            -> wie blass Icon und Name einer Karte „Demnächst verfügbar“ sind
  *
  * FORTSCHRITT UND PROFIL
@@ -96,7 +96,7 @@
 
 :root {
   /* Übersicht: zweite Kartenseite und abgeschaltete Karten */
-  --overview-peek: 32px;
+  --overview-pager-h: 1px;
   --soon-opacity: 0.45;
 
   /* Fortschritt und Profil: Level-Anzeige, Verlaufskurve und Punkte-Raster */
