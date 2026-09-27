@@ -17,7 +17,7 @@
  * --modal-dismiss-pull      -> wie weit man ziehen muss, damit ein Blatt schließt
  * --card                    -> auch die Fläche der beiden Knöpfe unten nebeneinander (.sheet-pair)
  * --modal-dim               -> wird beim Ziehen von src/ui/modal-pull.js gesetzt
- 
+ * --head-btn-size / --head-icon-size / --page-head-pull -> Zurück-Pfeil im Blatt, gleich wie auf jeder Seite
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -313,9 +313,10 @@
 }
 
 .modal-back {
-  width: 34px;
-  height: 34px;
-  margin-left: -8px; /* margin-left: der Pfeil steht optisch bündig mit dem Blattrand */
+  width: var(--head-btn-size);
+  height: var(--head-btn-size);
+  margin-left: calc(-1 * var(--page-head-pull)); /* margin-left: Pfeilspitze bündig mit dem Inhalt, wie auf jeder Seite */
+  margin-block: calc((var(--head-icon-size) - var(--head-btn-size)) / 2); /* margin-block: große Tippfläche, ohne dass der Kopf höher wird */
   border-radius: 50%; /* border-radius: rundet die Tippfläche des Pfeils */
   display: grid;
   place-items: center;
@@ -328,8 +329,8 @@
 }
 
 .modal-back .icon {
-  width: 24px;
-  height: 24px;
+  width: var(--head-icon-size);
+  height: var(--head-icon-size);
 }
 
 .modal-back:active {

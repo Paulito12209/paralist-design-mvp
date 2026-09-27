@@ -16,6 +16,7 @@
  * --muted               -> Farbe eines erledigten Titels
  * --text                -> Farbe von „Aufgabe“ in der oberen Zeile
  * --chevron             -> Farbe von Punkt und kleinem Pfeil
+ * --crumb-chevron-size  -> Größe des kleinen Pfeils (auch der Leerraum links, der das Wort mittig hält)
  *
  * Direkt bei ihrer Regel:
  * .task-crumb-sub font-size -> Größe von Status und Dringlichkeit unter „Aufgabe“ (13px)
@@ -57,6 +58,17 @@
   border-radius: 999px; /* border-radius: die Druckfläche ist eine Pille */
   color: inherit;
   font: inherit;
+}
+
+/* Links so viel Luft, wie rechts der kleine Pfeil braucht: so steht das Wort
+   selbst genau in der Mitte zwischen Zurück-Pfeil und Menü, und der Pfeil
+   hängt nur daneben — statt das Wort ein Stück nach links zu schieben. */
+.type-crumb {
+  padding-left: calc(4px + var(--crumb-chevron-size) + var(--task-crumb-gap));
+}
+
+.task-crumb-top {
+  padding-left: calc(var(--crumb-chevron-size) + var(--task-crumb-gap));
 }
 
 /* Bei einer Aufgabe zwei Zeilen übereinander wie ein Titel mit Untertitel:
@@ -116,8 +128,8 @@
 /* Kleiner Pfeil nach unten: hier öffnet sich eine Auswahl */
 .task-crumb-chevron,
 .type-crumb-chevron {
-  width: 10px;
-  height: 10px;
+  width: var(--crumb-chevron-size);
+  height: var(--crumb-chevron-size);
   flex: 0 0 auto;
   color: var(--chevron);
   transform: rotate(90deg); /* transform: der Pfeil der Zeilen zeigt nach rechts, hier soll er nach unten zeigen */
