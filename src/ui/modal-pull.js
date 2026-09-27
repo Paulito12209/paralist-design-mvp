@@ -2,7 +2,8 @@
  * Eine Überlagerung nach unten ziehen, um sie zu schließen: die Blätter
  * (Fortschritt, Einstellungen mit allen Unterseiten, Profilbild, Datum,
  * Auswahl-Blatt) und die bildschirmfüllende Dateiansicht. Gezogen wird nur,
- * wenn der Inhalt schon oben steht — sonst scrollt man ganz normal.
+ * wenn der Inhalt schon oben steht — sonst scrollt man ganz normal. Das gilt
+ * auch über Zeilen, Knöpfen und Karten im Inhalt, nicht nur am Kopf.
  * Pfad: src/ui/modal-pull.js
  *
  * ANPASSBARE WERTE
@@ -156,9 +157,23 @@ function onEnd(event) {
   }
 }
 
+/* Auf Touch-Geräten beginnt der Browser beim Wischen über rollbare Zeilen sonst
+   selbst zu rollen und bricht die Zeiger-Ereignisse mit pointercancel ab: das
+   Blatt zuckt kurz und springt zurück. Nur ein abgebrochenes touchmove hält das
+   eigene Rollen des Browsers zurück — preventDefault auf pointermove reicht nicht. */
+function onTouchMove(event) {
+  if (!pull || event.touches.length !== 1) return;
+  const touch = event.touches[0];
+  const dy = touch.clientY - pull.startY;
+  const dx = touch.clientX - pull.startX;
+  if (!pull.active && (dy <= 0 || Math.abs(dy) < Math.abs(dx))) return;
+  if (event.cancelable) event.preventDefault();
+}
+
 /** Die Geste aktivieren. Wird einmal beim Start aufgerufen. */
 export function initModalPull() {
   window.addEventListener("pointermove", onMove, { passive: false });
+  window.addEventListener("touchmove", onTouchMove, { passive: false });
   window.addEventListener("pointerup", onEnd);
   window.addEventListener("pointercancel", onEnd);
   /* Nach dem Ziehen kommt oft noch ein Klick: der würde sonst hinter dem Blatt etwas öffnen. */
