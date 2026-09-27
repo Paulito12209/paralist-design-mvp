@@ -47,7 +47,10 @@ import { beginRenameWorkspaceTitle, initWorkspaceTitle, setupWorkspaceTitle } fr
 import { commitStaleWorkspaceName, focusWorkspaceName } from "./workspaces.js";
 
 /* Sammlungen: dort gibt es nichts zu löschen oder zu markieren, also kein Menü. */
-const collectionsWithoutMenu = ["resources", "projects", "archive", "workspaces"];
+const collectionsWithoutMenu = ["resources", "projects", "archive", "workspaces", "bookmarks"];
+
+/* Seiten, die ihren Titel selbst unter einem großen Icon zeichnen (Lesezeichen). */
+const ownTitlePages = ["bookmarks"];
 
 /*
  * Seiten, die neben ihrem Titel noch einen grauen Zweittitel zeigen: ein Tippen
@@ -124,6 +127,7 @@ export function renderPageBody() {
   else if (page.kind === "workspaces") renderWorkspaceCollection();
   else if (page.kind === "projects") dom.pageBody.innerHTML = listMarkup(projectEntries(), emptyStates.projects);
   else if (page.kind === "resources") load("resources").then((module) => module.renderResources());
+  else if (page.kind === "bookmarks") load("bookmarks").then((module) => module.renderBookmarks());
   else if (page.isWorkspace) renderWorkspacePage(page);
   else dom.pageBody.innerHTML = listMarkup(inboxEntries(), emptyStates.inbox);
 }
@@ -152,6 +156,7 @@ function renderPage() {
   } else {
     dom.pageTitle.textContent = page.title;
   }
+  dom.pageTitle.hidden = ownTitlePages.includes(page.kind);
   /* Auf einem Arbeitsbereich ist der Titel selbst das Namensfeld. */
   setupWorkspaceTitle(page);
   setHeadTitle(dom.pageHead, page.isWorkspace ? page.title : "", "Arbeitsbereich");

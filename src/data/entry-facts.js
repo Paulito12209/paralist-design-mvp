@@ -37,6 +37,7 @@ const statsByType = {
   dokument: ["words", "reading", "opens"],
   zeichnung: ["created", "links", "opens"],
   medien: ["created", "links", "opens"],
+  lesezeichen: ["created", "links", "opens"],
 };
 
 /* Ganze Tage zwischen zwei Zeitpunkten, nach Kalendertagen gezählt */

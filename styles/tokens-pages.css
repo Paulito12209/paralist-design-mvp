@@ -47,6 +47,10 @@
  * --embed-bg                -> Fläche des Eingabefelds, solange eine Karte noch keinen Link hat
  * --embed-tint              -> wie deckend die Logofarbe hinter dem Favicon einer Website liegt (25% = zart)
  * --embed-gap               -> Luft über und unter einer Karte
+ *
+ * LESEZEICHEN (Sammlung hinter der Karte auf der Startseite)
+ * --bookmark-color          -> Lila der Lesezeichen: Karten-Icon, großes Icon oben, Platzhalter
+ * --bookmark-thumb          -> Kantenlänge der quadratischen Kachel links in einer Zeile
  * --slash-bg                -> Hintergrund des „/“-Menüs
  * --slash-tile-bg           -> Fläche einer Kachel im Menü
  * --slash-radius            -> Rundung des Menüs
@@ -184,6 +188,8 @@
   --embed-bg: color-mix(in srgb, var(--text) 6%, transparent);
   --embed-tint: 25%;
   --embed-gap: 6px;
+  --bookmark-color: #af52de;
+  --bookmark-thumb: 88px;
   --slash-bg: var(--update-bg);
   --slash-tile-bg: color-mix(in srgb, var(--text) 6%, transparent);
   --slash-radius: 20px;

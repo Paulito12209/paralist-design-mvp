@@ -10,7 +10,7 @@
 import { emit, events } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { load, loadedModule } from "../core/lazy.js";
-import { workspacesPage } from "../data/collections.js";
+import { bookmarksPage, workspacesPage } from "../data/collections.js";
 import { archivePage, overviewPages } from "../data/config.js";
 import { noteOpen } from "../data/opens.js";
 import { findEntry, findWorkspace, workspaceLabel } from "../data/queries.js";
@@ -113,6 +113,15 @@ export function showPage(page, fresh = true) {
 export function openArchive(pill = "all") {
   showPage({ ...archivePage, pill });
   writeHistory({ view: "archive", pill, from: ui.sourceView }, "#/archiv", false);
+}
+
+/**
+ * Die Lesezeichen-Sammlung öffnen: dieselbe Unterseite wie das Archiv, beim
+ * ersten Öffnen mit der ersten Pille („Web-Lesezeichen“).
+ */
+export function openBookmarks(pill = "") {
+  showPage({ ...bookmarksPage, pill });
+  writeHistory({ view: "bookmarks", pill, from: ui.sourceView }, "#/lesezeichen", false);
 }
 
 /**
@@ -325,6 +334,11 @@ window.addEventListener("popstate", (event) => {
   if (entry.view === "archive") {
     ui.sourceView = entry.from || "home";
     showPage({ ...archivePage, pill: entry.pill || "all" }, false);
+    return;
+  }
+  if (entry.view === "bookmarks") {
+    ui.sourceView = entry.from || "home";
+    showPage({ ...bookmarksPage, pill: entry.pill }, false);
     return;
   }
   if (entry.view === "workspaces") {

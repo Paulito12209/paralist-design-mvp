@@ -22,6 +22,7 @@ import {
   isTaskDone,
   workspaceDefaultName,
 } from "./config.js";
+import { BOOKMARK_TYPE, fillBookmarkEntry } from "./bookmarks.js";
 import { canLink, connectEntries, disconnectEntries, dropLinksTo, isLinked } from "./links.js";
 import { hasPlace, isContainer, tabWorkspaces, taskOrder } from "./queries.js";
 import { entryRef, isEntryRef, refId, workspaceRef } from "./refs.js";
@@ -286,12 +287,15 @@ export function selectTab(id) {
 const orderGap = 1000;
 
 /**
- * Einem frisch angelegten Eintrag seine Aufgaben-Felder geben. Ruft das
+ * Einem frisch angelegten Eintrag seine Aufgaben-Felder geben (und einem
+ * Lesezeichen seine Karte, wenn der Titel ein Link ist). Ruft das
  * Eingabefeld auf, sobald der Eintrag in der Liste steht. Eine neue Aufgabe
  * startet auf `defaultTaskStatus` und `defaultTaskPriority` (siehe config.js)
  * und stellt sich mit ihrer Sortiernummer nach oben.
  */
 export function applyEntryDefaults(entry) {
+  /* Ein Link als Titel eines Lesezeichens wird gleich zur Karte im Inhalt */
+  if (entry.type === BOOKMARK_TYPE) fillBookmarkEntry(entry);
   if (entry.type !== "aufgabe") return;
   entry.status = defaultTaskStatus;
   entry.priority = defaultTaskPriority;

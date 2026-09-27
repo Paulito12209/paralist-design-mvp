@@ -55,9 +55,10 @@ function calendarType() {
  * Verbindung, und ein Projekt steht nie unter „Verknüpfte Einträge“.
  *
  * TYP — das, was die Seite gerade zeigt: die Projekte-Karte ein Projekt, die
- * Ressourcen-Seite den Typ ihrer aktiven Pille, der Kalender einen Termin, die
- * Aufgaben-Seite und ein offenes Projekt eine Aufgabe, die Medien-Seite ein
- * Medium. Sonst der Vorschlag aus src/data/config.js.
+ * Ressourcen-Seite den Typ ihrer aktiven Pille, die Lesezeichen-Seite ein
+ * Lesezeichen, der Kalender einen Termin, die Aufgaben-Seite und ein offenes
+ * Projekt eine Aufgabe, die Medien-Seite ein Medium. Sonst der Vorschlag aus
+ * src/data/config.js.
  *
  * Welcher Knopf unten dazu leuchtet, leitet `chooseComposerType` aus dem Typ
  * ab; nur die Medien-Seite nennt ihn selbst, weil „medien“ keinen hat.
@@ -70,6 +71,7 @@ export function contextDefaults() {
     const page = ui.currentPage;
     if (page.kind === "projects") return { type: "projekt", place: null };
     if (page.kind === "resources") return { type: resourceType(), place: null };
+    if (page.kind === "bookmarks") return { type: "lesezeichen", place: null };
     if (page.isWorkspace) return { ...proposal, place: page.parent };
     return proposal;
   }

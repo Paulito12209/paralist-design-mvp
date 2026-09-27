@@ -38,6 +38,7 @@ export const usageAreas = {
   projekt: { label: "Projekte", icon: xpItems.projekt.icon, color: xpItems.projekt.color },
   zeichnung: { label: "Zeichnungen", icon: xpItems.zeichnung.icon, color: xpItems.zeichnung.color },
   medien: { label: "Medien", icon: xpItems.medien.icon, color: xpItems.medien.color },
+  lesezeichen: { label: "Lesezeichen", icon: xpItems.lesezeichen.icon, color: xpItems.lesezeichen.color },
   sammlung: { label: "Sammlungen", icon: "folder", color: xpItems.tab.color },
   arbeitsbereich: { label: "Arbeitsbereiche", icon: xpItems.arbeitsbereich.icon, color: xpItems.arbeitsbereich.color },
   suche: { label: "Suche", icon: "search", color: "#5e5ce6" },

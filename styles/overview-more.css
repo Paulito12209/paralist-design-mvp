@@ -18,7 +18,8 @@
  *
  * Farben kommen aus styles/tokens.css: --line (Seitenlinie, wie die Trennlinien
  * der Listen), --placeholder (ihr gefüllter Teil, wie „Suchen“ im Suchfeld),
- * --muted, --text, --archive-color, --icon-soft (Pfeil neben „Arbeitsbereiche“).
+ * --muted, --text, --archive-color, --icon-soft (Pfeil neben „Arbeitsbereiche“);
+ * --bookmark-color (Lila der Lesezeichen-Karte) steht in styles/tokens-pages.css.
  */
 
 /* ---------- Kartenseiten zum Schieben ---------- */
@@ -116,6 +117,11 @@
   color: var(--muted);
   /* align-self: das Icon hat keine Grundlinie, es steht mittig zum Namen */
   align-self: center;
+}
+
+/* Das Lesezeichen-Icon im Lila seiner Sammlung */
+.card-icon-bookmark {
+  color: var(--bookmark-color);
 }
 
 /* Das Archiv-Icon im Grau des Archivieren-Knopfes */

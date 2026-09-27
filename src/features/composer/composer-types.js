@@ -34,8 +34,8 @@ import {
 } from "./composer-state.js";
 
 /* Diese Typen stehen im Blatt abgesetzt unter den vier mit eigenem Knopf —
-   in der Reihenfolge aus `types`, also Dokument, Zeichnung, Medium. */
-const sheetResourceTypes = ["dokument", "zeichnung", "medien"];
+   in der Reihenfolge aus `types`, also Dokument, Zeichnung, Medium, Lesezeichen. */
+const sheetResourceTypes = ["dokument", "zeichnung", "medien", "lesezeichen"];
 
 /*
  * Darf gerade ein Projekt entstehen? Steht als Ablageort schon ein Projekt

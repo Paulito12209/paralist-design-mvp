@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "a7b68634b483";
+export const appVersion = "a4adf8b5a3e2";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -41,6 +41,7 @@ export const appFiles = [
   "src/core/no-history.js",
   "src/core/storage.js",
   "src/core/week-range.js",
+  "src/data/bookmarks.js",
   "src/data/collections.js",
   "src/data/config.js",
   "src/data/convert-notes.js",
@@ -68,6 +69,7 @@ export const appFiles = [
   "src/data/usage-areas.js",
   "src/data/usage.js",
   "src/data/xp.js",
+  "src/features/bookmarks/bookmarks.js",
   "src/features/calendar/calendar-date-picker.js",
   "src/features/calendar/calendar-gestures.js",
   "src/features/calendar/calendar-grid.js",
@@ -189,6 +191,7 @@ export const appFiles = [
   "styles/avatar-crop.css",
   "styles/base.css",
   "styles/blocks.css",
+  "styles/bookmarks.css",
   "styles/calendar-panel.css",
   "styles/calendar-rings.css",
   "styles/calendar.css",

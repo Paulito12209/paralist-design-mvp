@@ -53,6 +53,7 @@
     --prio-next: #ff9f0a;
     --prio-spaeter: #4aa3ff;
     --prio-irgendwann: #c77dff;
+  --bookmark-color: #bf5af2;
     --media-doc-color: #0a84ff;
     --support-choice-active-bg: rgba(10, 132, 255, 0.18);
     --credits-chip-bg: rgba(255, 255, 255, 0.1);
@@ -104,6 +105,7 @@
   --prio-next: #ff9f0a;
   --prio-spaeter: #4aa3ff;
   --prio-irgendwann: #c77dff;
+  --bookmark-color: #bf5af2;
   --media-doc-color: #0a84ff;
   --support-choice-active-bg: rgba(10, 132, 255, 0.18);
   --credits-chip-bg: rgba(255, 255, 255, 0.1);

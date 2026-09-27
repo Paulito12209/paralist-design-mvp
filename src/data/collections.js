@@ -1,6 +1,6 @@
 /*
  * Die zweite Kartenseite der Übersicht und die Sammlungen, die nicht an einer
- * der ersten vier Karten hängen: Archiv und Arbeitsbereiche. Die ersten vier
+ * der ersten vier Karten hängen: Lesezeichen, Archiv und Arbeitsbereiche. Die ersten vier
  * Karten stehen in src/data/config.js (overviewPages).
  * Pfad: src/data/collections.js
  *
@@ -11,6 +11,7 @@
  * SOON_LABEL     -> Beschriftung des Schildchens oben rechts auf einer solchen Karte
  * archivePills   -> die Pillen oben im Archiv, von links nach rechts
  * workspacesPage -> Titel der Sammlung hinter dem Pfeil neben „Arbeitsbereiche“
+ * bookmarksPage  -> Titel und Satz darunter auf der Lesezeichen-Seite
  *
  * Aussehen der Karten: styles/overview-more.css.
  */
@@ -22,12 +23,13 @@ export const SOON_LABEL = "Demnächst verfügbar";
 
 /*
  * Reihenfolge wie im Raster: oben links, oben rechts, unten links, unten rechts.
- * Karten mit `soon` sind abgeschaltet; die übrige öffnet das Archiv.
+ * Karten mit `soon` sind abgeschaltet; Lesezeichen und Archiv stehen unten
+ * nebeneinander und öffnen je ihre Sammlung.
  */
 export const moreCards = [
-  { id: "bookmarks", title: "Lesezeichen", icon: "bookmark", soon: true },
   { id: "people", title: "Personen", icon: "people", soon: true },
   { id: "plans", title: "Pläne", icon: "table", soon: true },
+  { id: "bookmarks", title: "Lesezeichen", icon: "bookmark" },
   { id: "archive", title: "Archiv", icon: "archive" },
 ];
 
@@ -43,3 +45,11 @@ export const archivePills = [
 
 /* Sammlung hinter dem Pfeil neben „Arbeitsbereiche“: alle Arbeitsbereiche, je Tab eine Pille. */
 export const workspacesPage = { title: "Arbeitsbereiche", kind: "workspaces" };
+
+/* Die Lesezeichen-Seite: ihr Titel steht wie auf einer iOS-Infoseite unter
+   einem großen Icon, der Satz darunter sagt, woher die Lesezeichen kommen. */
+export const bookmarksPage = {
+  title: "Lesezeichen",
+  kind: "bookmarks",
+  intro: "Websites, Videos und Orte aus all deinen Einträgen — an einem Ort gesammelt.",
+};

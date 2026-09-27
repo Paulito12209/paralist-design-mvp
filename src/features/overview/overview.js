@@ -1,8 +1,8 @@
 /*
  * Die Karten oben auf der Startseite. Links die vier festen — Eingang,
  * Favoriten, Projekte, Ressourcen —, rechts daneben eine zweite Seite mit vier
- * weiteren (src/data/collections.js, moreCards): Archiv und drei Karten, die
- * noch „Demnächst verfügbar“ sind. Man schiebt sie waagerecht herein; auf der
+ * weiteren (src/data/collections.js, moreCards): Lesezeichen, Archiv und
+ * zwei Karten, die noch „Demnächst verfügbar“ sind. Man schiebt sie waagerecht herein; auf der
  * Übersicht sieht man zuerst nur die vier festen. Die Linie unter den Karten
  * ist halb gefüllt und zeigt, welche Seite gerade steht — beim Wischen wandert
  * die gefüllte Hälfte mit.
@@ -18,6 +18,7 @@
 import { on, events } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
+import { bookmarkTotal } from "../../data/bookmarks.js";
 import { moreCards, SOON_LABEL } from "../../data/collections.js";
 import { overviewPages } from "../../data/config.js";
 import { archivedEntries, archivedWorkspaces, pageCount } from "../../data/queries.js";
@@ -47,8 +48,18 @@ function cardMarkup(id, page) {
   `;
 }
 
+/* Was die Karten der zweiten Seite öffnen und zählen — und wie ihr Icon gefärbt ist. */
+const moreTargets = {
+  bookmarks: { data: 'data-open-bookmarks="1"', tint: "card-icon-bookmark", count: bookmarkTotal },
+  archive: {
+    data: 'data-open-archive="all"',
+    tint: "card-icon-archive",
+    count: () => archivedWorkspaces().length + archivedEntries().length,
+  },
+};
+
 /* Eine Karte der zweiten Seite. Abgeschaltete Karten tragen ein „i“ neben dem
-   Namen und das Schildchen oben rechts; das Archiv zählt, was darin liegt. */
+   Namen und das Schildchen oben rechts; die anderen zählen, was darin liegt. */
 function moreCardMarkup(card) {
   if (card.soon) {
     return `
@@ -62,10 +73,11 @@ function moreCardMarkup(card) {
       </button>
     `;
   }
-  const count = archivedWorkspaces().length + archivedEntries().length;
+  const target = moreTargets[card.id];
+  const count = target.count();
   return `
-    <button class="overview-card" type="button" data-open-archive="all" aria-label="${card.title}, ${count} Einträge">
-      ${icon(card.icon, "card-icon card-icon-archive")}
+    <button class="overview-card" type="button" ${target.data} aria-label="${card.title}, ${count} Einträge">
+      ${icon(card.icon, `card-icon ${target.tint}`)}
       <span class="card-label">
         <span class="card-title">${card.title}</span>
         ${count ? `<span class="card-count">${count}</span>` : ""}

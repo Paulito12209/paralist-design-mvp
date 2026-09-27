@@ -41,6 +41,7 @@ export const types = [
   { id: "dokument", label: "Dokument", icon: "doc" },
   { id: "zeichnung", label: "Zeichnung", icon: "scribble" },
   { id: "medien", label: "Medien", icon: "photos" },
+  { id: "lesezeichen", label: "Lesezeichen", icon: "bookmark" },
 ];
 
 /** Typ eines Eintrags ohne ausdrückliche Wahl — kein Knopf gewählt heißt Dokument. */
@@ -80,6 +81,7 @@ export const composerPlaceholders = {
   zeichnung: "Neue Zeichnung anlegen …",
   /* Ein Medium besteht aus seiner Datei — ohne sie lässt es sich nicht anlegen. */
   medien: "Über + eine Datei anhängen …",
+  lesezeichen: "Link oder Name des Lesezeichens …",
 };
 
 /*
@@ -140,7 +142,7 @@ export const linkableTypes = types
   .filter((id) => !containerTypes.includes(id));
 
 /** Reihenfolge der Gruppen unter „Verknüpfte Einträge“: Projekte zuerst. */
-export const typeOrder = ["projekt", "aufgabe", "notiz", "termin", "dokument", "zeichnung", "medien"];
+export const typeOrder = ["projekt", "aufgabe", "notiz", "termin", "dokument", "zeichnung", "medien", "lesezeichen"];
 
 /** Mehrzahl je Typ für die Gruppenüberschriften. */
 export const typePlurals = {
@@ -151,6 +153,7 @@ export const typePlurals = {
   dokument: "Dokumente",
   zeichnung: "Zeichnungen",
   medien: "Medien",
+  lesezeichen: "Lesezeichen",
 };
 
 /** Vorgabename eines neuen Arbeitsbereichs; ab dem zweiten mit Nummer. */
@@ -171,6 +174,7 @@ export const xpItems = {
   projekt: { label: "Projekte", icon: "rocket", color: "#af2d3a" },
   dokument: { label: "Dokument", icon: "doc", color: "#64d2ff" },
   zeichnung: { label: "Zeichnung", icon: "scribble", color: "#ff375f" },
+  lesezeichen: { label: "Lesezeichen", icon: "bookmark", color: "#af52de" },
   arbeitsbereich: { label: "Arbeitsbereich", icon: "layers", color: "#ff9f0a" },
   tab: { label: "Tab", icon: "tag", color: "#bf5af2" },
 };
@@ -214,7 +218,7 @@ export function typeSingular(id) {
 }
 
 /** Unbestimmter Artikel je Typ, für Sätze wie „Jetzt eine Aufgabe“ oder „Wird ein Projekt“. */
-export const typeArticles = { notiz: "eine", aufgabe: "eine", termin: "ein", projekt: "ein", dokument: "ein", arbeitsbereich: "ein" };
+export const typeArticles = { notiz: "eine", aufgabe: "eine", termin: "ein", projekt: "ein", dokument: "ein", lesezeichen: "ein", arbeitsbereich: "ein" };
 
 /** Icon und Farbe für einen Historien-Posten; unbekannte Posten bleiben grau. */
 export function xpItemStyle(item) {
