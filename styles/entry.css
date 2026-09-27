@@ -15,7 +15,8 @@
  * --entry-end-space         -> freie Fläche unter dem Text, auch am Ende eines langen Textes
  * --placeholder             -> Farbe der Platzhaltertexte
  * --content-side            -> Abstand zum linken und rechten Rand
- * --page-head-pull          -> Ausgleich, damit die Kategorie oben genau mittig steht
+ * --head-btn-size           -> Tippfläche des Drei-Punkte-Menüs oben rechts (gleich breit wie der Zurück-Pfeil,
+ *                              darum steht die Kategorie dazwischen genau mittig)
  * --page-tool-size          -> Größe der Knöpfe rechts neben den Pillen (Kopieren, Filter, Plus)
  * --page-tool-icon          -> Größe des Symbols darin
  * --page-tool-gap           -> Abstand zwischen Pillen und Knöpfen
@@ -41,8 +42,8 @@
 
 /* Kopfzeile einer Seite: Zurück links, Drei-Punkte-Menü rechts */
 .head-btn {
-  width: 36px;
-  height: 36px;
+  width: var(--head-btn-size);
+  height: var(--head-btn-size);
   display: grid;
   place-items: center;
   color: var(--text);
@@ -64,12 +65,11 @@
   display: none;
 }
 
-/* Kategorie mittig zwischen Zurück-Pfeil und Menü (beide gleich breit). Der
-   linke Rand gleicht aus, dass die Kopfzeile nach links gerückt ist — so
+/* Kategorie mittig zwischen Zurück-Pfeil und Menü: beide Knöpfe sind gleich
+   breit und die Kopfzeile ragt links und rechts gleich weit hinaus — so
    steht sie genau in der Mitte des Bildschirms. */
 .entry-crumb {
   flex: 1;
-  margin-left: var(--page-head-pull);
   min-width: 0; /* min-width: sonst drückt ein langes Wort das Menü aus dem Bild */
   text-align: center;
   font-size: 15px;

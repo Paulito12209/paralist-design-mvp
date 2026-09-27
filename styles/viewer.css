@@ -8,9 +8,12 @@
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
  * --viewer-stage-bg     -> Fläche hinter Bild, Video und PDF
- * --viewer-btn-size     -> Größe der runden Knöpfe in der Kopfzeile
+ * --head-btn-size      -> Tippfläche von Zurück und Teilen (gleich wie auf jeder Seite)
+ * --head-icon-size     -> Größe von Zurück-Pfeil und Teilen-Icon (gleich wie auf jeder Seite)
+ * --head-edge          -> Abstand der beiden Knöpfe zum Bildschirmrand
+ * --page-head-top      -> Luft über und unter den Knöpfen (wie über dem Pfeil einer Seite)
  * --viewer-title-size   -> Schriftgröße des Namens oben
- * --viewer-pad          -> Abstand vom Rand rundherum
+ * --viewer-pad          -> Abstand vom Rand um Datei und untere Leiste
  * --viewer-foot-bg      -> Fläche der Leiste unten
  * --viewer-foot-btn-size -> Größe von Verknüpfen-Knopf und Drei-Punkte-Menü unten
  * --viewer-foot-goto-h  -> Höhe des Knopfes „Zur Seite“ in der Mitte
@@ -48,13 +51,15 @@
 
 /* ---------- Kopfzeile ---------- */
 
-/* Zurück-Pfeil, Name, Teilen und die drei Punkte — alles in einer Zeile */
+/* Zurück-Pfeil, Name und Teilen in einer Zeile. Pfeil und Teilen stehen genau
+   dort, wo auf jeder Seite Zurück und das Drei-Punkte-Menü stehen: gleiche
+   Knöpfe, gleicher Abstand zum Rand und zur Statusleiste. */
 .viewer-head {
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: calc(var(--viewer-pad) + var(--safe-top)) var(--viewer-pad) var(--viewer-pad);
+  padding: calc(var(--page-head-top) + var(--safe-top)) var(--head-edge) var(--page-head-top);
   background: var(--card);
   border-bottom: 1px solid var(--line); /* border-bottom: trennt die Kopfzeile von der Datei */
 }
@@ -83,8 +88,8 @@
 }
 
 .viewer-btn {
-  width: var(--viewer-btn-size);
-  height: var(--viewer-btn-size);
+  width: var(--head-btn-size);
+  height: var(--head-btn-size);
   flex: 0 0 auto;
   border-radius: 50%; /* border-radius: macht die Tippfläche rund */
   display: grid;
@@ -93,8 +98,8 @@
 }
 
 .viewer-btn .icon {
-  width: 22px;
-  height: 22px;
+  width: var(--head-icon-size);
+  height: var(--head-icon-size);
 }
 
 .viewer-btn:active {

@@ -10,7 +10,9 @@
  * --chevron                 -> Pfeil rechts in der Zeile
  * --content-side            -> Abstand der Zeilen zum Rand
  * --page-head-top           -> Abstand über dem Zurück-Pfeil auf Unterseiten
- * --page-head-pull          -> wie weit die Kopfzeile nach links rückt (Pfeil bündig mit dem Titel)
+ * --page-head-pull          -> wie weit die Kopfzeile links und rechts über den Rand rückt (Pfeil bündig mit dem Titel)
+ * --head-btn-size           -> Tippfläche des Zurück-Pfeils (in allen Kopfzeilen gleich)
+ * --head-icon-size          -> Größe des Zurück-Pfeils (in allen Kopfzeilen gleich)
  * --search-bar-height       -> Höhe der Kopfzeile einer Unterseite (so hoch wie die Suchleiste)
  * --content-top             -> Luft zwischen Kopfzeile und Seitentitel
  * --page-title-gap          -> Luft unter dem Seitentitel
@@ -102,7 +104,10 @@
      „Übersicht“ steht (styles/top-bar.css, --content-top in styles/base.css). */
   box-sizing: content-box; /* box-sizing: height meint nur die Zeile, nicht den Platz für die Statusleiste */
   height: var(--search-bar-height);
-  margin: 0 0 var(--content-top) calc(-1 * var(--page-head-pull));
+  /* Links und rechts gleich weit über den Inhaltsrand: die Spitze des Pfeils
+     steht über dem Titel, und die Mitte zwischen Pfeil und Menü ist die
+     Bildschirmmitte — dort steht die Kategorie. */
+  margin: 0 calc(-1 * var(--page-head-pull)) var(--content-top);
   /* oben genug Platz für Notch und Statusleiste, weil darüber nichts mehr steht */
   padding-top: calc(var(--safe-top) + var(--page-head-top));
   position: sticky; /* position: bleibt oben stehen, während die Liste darunter scrollt */
@@ -111,9 +116,11 @@
   background: var(--bg); /* deckt die durchscrollende Liste ab */
 }
 
+/* Gleiche Tippfläche und gleicher Pfeil wie in der Dateiansicht und in den
+   Einstellungen (--head-btn-size, --head-icon-size in styles/tokens.css) */
 .back-btn {
-  width: 36px;
-  height: 36px;
+  width: var(--head-btn-size);
+  height: var(--head-btn-size);
   display: grid;
   place-items: center;
   color: var(--text);
@@ -121,8 +128,8 @@
 }
 
 .back-btn .icon {
-  width: 22px;
-  height: 22px;
+  width: var(--head-icon-size);
+  height: var(--head-icon-size);
 }
 
 .page-head-reveal {
