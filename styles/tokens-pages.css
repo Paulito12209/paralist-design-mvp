@@ -86,6 +86,8 @@
  * --viewer-pad              -> Abstand vom Rand um Datei und untere Leiste der Dateiansicht
  * --viewer-foot-btn-size    -> Größe von Verknüpfen-Knopf und Drei-Punkte-Menü unten
  * --viewer-foot-goto-h      -> Höhe des Knopfes „Zur Seite“ in der Mitte (schmaler als die Runden)
+ * --viewer-nav-size        -> Tippfläche der Blätter-Pfeile links und rechts über der Datei
+ * --viewer-nav-opacity     -> wie deutlich die Pfeile zu sehen sind (1 = voll, 0.35 = zurückhaltend)
  * --media-btn-size / --media-actions-space -> Größe der runden Knöpfe über der Navigation und ihr Extra-Platz
  * --media-actions-gap      -> Abstand zwischen diesen Knöpfen
  *
@@ -198,6 +200,8 @@
   --viewer-pad: 12px;
   --viewer-foot-btn-size: 44px;
   --viewer-foot-goto-h: 36px;
+  --viewer-nav-size: 40px;
+  --viewer-nav-opacity: 0.4;
   --media-btn-size: 48px;
   --media-actions-space: 60px;
   --media-actions-gap: 12px;
