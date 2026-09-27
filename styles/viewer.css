@@ -1,23 +1,26 @@
 /*
  * Dateiansicht: Foto, Video, Aufnahme und PDF bildschirmfüllend, mit Namen und
- * Teilen-Knopf in der Kopfzeile. Unten liegt eine eigene schwarze Leiste mit
- * Verknüpfen, „Zur Seite“ und dem Drei-Punkte-Menü — sie nimmt eigenen Platz
+ * Teilen-Knopf in der Kopfzeile. Dahinter liegt derselbe Grund mit demselben
+ * Verlauf wie überall in der App. Unten stehen Verknüpfen, „Zur Seite“ und das
+ * Drei-Punkte-Menü nur als Icons ohne eigene Fläche — sie nehmen eigenen Platz
  * ein, statt sich über das Bild oder ein Hochkant-Video zu legen.
  * Pfad: styles/viewer.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
- * --viewer-stage-bg     -> Fläche hinter Bild, Video und PDF
+ * --bg                  -> Grund hinter Bild, Video und PDF (wie auf jeder Seite)
+ * --nav-glow-color / --nav-glow-height -> Farbe und Höhe des Verlaufs von unten, derselbe wie hinter der Navigation
+ *                          (Werte und Form: styles/navigation.css)
  * --head-btn-size      -> Tippfläche von Zurück und Teilen (gleich wie auf jeder Seite)
  * --head-icon-size     -> Größe von Zurück-Pfeil und Teilen-Icon (gleich wie auf jeder Seite)
  * --head-edge          -> Abstand der beiden Knöpfe zum Bildschirmrand
  * --page-head-top      -> Luft über und unter den Knöpfen (wie über dem Pfeil einer Seite)
  * --viewer-title-size   -> Schriftgröße des Namens oben
  * --viewer-pad          -> Abstand vom Rand um Datei und untere Leiste
- * --viewer-foot-bg      -> Fläche der Leiste unten
  * --viewer-foot-btn-size -> Größe von Verknüpfen-Knopf und Drei-Punkte-Menü unten
  * --viewer-foot-goto-h  -> Höhe des Knopfes „Zur Seite“ in der Mitte
- * --text / --muted / --card -> Schrift, Hinweise und die Fläche der Kopfzeile
+ * --text / --muted     -> Schrift und Icons oben wie unten, Hinweise
+ * --tab-pill-active-bg  -> Fläche, die beim Drücken eines Knopfes kurz erscheint
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -37,7 +40,9 @@
 
 .viewer {
   height: 100%;
-  background: var(--viewer-stage-bg);
+  background: var(--bg);
+  position: relative; /* position: Bezugsrahmen für den Verlauf unten */
+  isolation: isolate; /* isolation: eigene Ebene, damit der Verlauf mit z-index -1 hinter Kopf, Datei und Knöpfen bleibt, aber über dem Grund */
   display: flex;
   flex-direction: column;
   animation: viewer-in 0.2s ease; /* animation: die Datei blendet kurz auf, statt zu springen */
@@ -47,6 +52,12 @@
   from {
     opacity: 0;
   }
+}
+
+/* Der Verlauf selbst kommt aus styles/navigation.css (gemeinsame Regel mit
+   .device::before); hier liegt er nur hinter statt über dem Inhalt. */
+.viewer::before {
+  z-index: -1; /* z-index: hinter Bild und Knöpfen, damit die Datei unverfälscht bleibt */
 }
 
 /* ---------- Kopfzeile ---------- */
@@ -60,8 +71,6 @@
   align-items: center;
   gap: 4px;
   padding: calc(var(--page-head-top) + var(--safe-top)) var(--head-edge) var(--page-head-top);
-  background: var(--card);
-  border-bottom: 1px solid var(--line); /* border-bottom: trennt die Kopfzeile von der Datei */
 }
 
 /* Der Name ist zugleich das Feld zum Umbenennen: einfach hineintippen */
@@ -108,8 +117,9 @@
 
 /* ---------- Fußleiste: Verknüpfen, Zur Seite, Drei-Punkte-Menü ---------- */
 
-/* Eigener schwarzer Bereich statt Überlagerung: so bleibt bei einem
-   Hochkant-Video oder -Bild die ganze Datei sichtbar. */
+/* Eigener Bereich statt Überlagerung: so bleibt bei einem Hochkant-Video oder
+   -Bild die ganze Datei sichtbar. Keine Fläche: die Icons stehen direkt auf dem
+   Verlauf und heben sich allein durch ihre Farbe ab. */
 .viewer-foot {
   flex: 0 0 auto;
   display: flex;
@@ -117,11 +127,10 @@
   justify-content: space-between;
   gap: 10px;
   padding: 10px var(--viewer-pad) calc(10px + var(--safe-bottom));
-  background: var(--viewer-foot-bg);
 }
 
 .viewer-foot-btn {
-  color: #ffffff;
+  color: var(--text);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -138,26 +147,20 @@
   width: var(--viewer-foot-btn-size);
   height: var(--viewer-foot-btn-size);
   flex: 0 0 auto;
-  border-radius: 50%; /* border-radius: macht die Tippfläche rund */
-  background: rgba(255, 255, 255, 0.14); /* rgba: dezente Fläche auf Schwarz, unabhängig vom Farbschema */
+  border-radius: 50%; /* border-radius: rundet die Fläche, die beim Drücken erscheint */
 }
 
-.viewer-foot-icon:active {
-  background: rgba(255, 255, 255, 0.24);
+.viewer-foot-btn:active {
+  background: var(--tab-pill-active-bg);
 }
 
-/* Mitte: „Zur Seite“ — eine Pille, absichtlich niedriger als die runden Knöpfe */
+/* Mitte: „Zur Seite“ — Icon und Wort, absichtlich niedriger als die runden Knöpfe */
 .viewer-foot-goto {
   height: var(--viewer-foot-goto-h);
   padding: 0 16px;
-  border-radius: 999px; /* border-radius: Pillenform */
-  background: rgba(255, 255, 255, 0.14);
+  border-radius: 999px; /* border-radius: Pillenform der Fläche beim Drücken */
   font-size: 14px;
   font-weight: 600;
-}
-
-.viewer-foot-goto:active {
-  background: rgba(255, 255, 255, 0.24);
 }
 
 /* ---------- Die Datei selbst ---------- */

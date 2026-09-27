@@ -14,7 +14,6 @@
     --bg: #000000;
     --card: #111318; /* dunkle Version von #AAB2BD (Suchleiste, Karten, Navbar) */
     --overview-card-bg: #111318;
-    --viewer-stage-bg: #000000;
     --composer-mic-bg: #09090a;
     --text: #f2f2f7;
     --muted: #8e8e93;
@@ -63,7 +62,6 @@
   --bg: #000000;
   --card: #111318; /* dunkle Version von #AAB2BD (Suchleiste, Karten, Navbar) */
   --overview-card-bg: #111318;
-  --viewer-stage-bg: #000000;
   --composer-mic-bg: #0e0e0f;
   --text: #f2f2f7;
   --muted: #8e8e93;
