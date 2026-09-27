@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "e9b6af5f33be";
+export const appVersion = "cc6f5cd4f1a9";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -92,6 +92,7 @@ export const appFiles = [
   "src/features/overview/workspace-page.js",
   "src/features/overview/workspace-title.js",
   "src/features/overview/workspaces.js",
+  "src/features/profile/avatar-crop.js",
   "src/features/profile/avatar.js",
   "src/features/profile/credits.js",
   "src/features/profile/feedback.js",
@@ -158,6 +159,7 @@ export const appFiles = [
   "src/ui/type-menu.js",
   "src/ui/views.js",
   "src/ui/write-tap.js",
+  "styles/avatar-crop.css",
   "styles/base.css",
   "styles/calendar-panel.css",
   "styles/calendar.css",

@@ -13,6 +13,7 @@ export const storageKeys = {
   theme: "paralist-theme",
   usage: "paralist-usage",
   avatar: "paralist-avatar",
+  avatarSource: "paralist-avatar-source",
   media: "paralist-media",
   feedback: "paralist-feedback",
   navLabels: "paralist-nav-labels",

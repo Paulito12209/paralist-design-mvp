@@ -145,6 +145,16 @@ body.is-subpage .top-bar {
   opacity: 0.7;
 }
 
+/* Foto im Knopf: fest auf die Knopfgröße, rund beschnitten — ohne feste Maße
+   nähme ein Hochkant-Foto seine eigene Höhe an und ragte unten heraus */
+.avatar .avatar-photo {
+  width: var(--top-bar-profile-btn-width);
+  height: var(--top-bar-profile-btn-height);
+  object-fit: cover; /* object-fit: füllt den Kreis, ohne das Foto zu verzerren */
+  border-radius: 50%; /* border-radius: hält das Foto kreisrund */
+  display: block;
+}
+
 .avatar .icon {
   width: var(--top-bar-profile-icon-size);
   height: var(--top-bar-profile-icon-size);

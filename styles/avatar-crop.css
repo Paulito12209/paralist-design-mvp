@@ -1,0 +1,109 @@
+/*
+ * Ausschnitt fürs Profilbild: dunkles Blatt, in der Mitte ein quadratisches
+ * Fenster mit rundem Ausschnitt, darunter Zoom-Regler und die beiden Knöpfe.
+ * Das Blatt übernimmt Hintergrund und Kopf von der großen Bildansicht
+ * (.avatar-view in styles/profile.css).
+ * Pfad: styles/avatar-crop.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-pages.css bzw. styles/tokens.css)
+ * -----------------------------------
+ * --crop-size    -> Kantenlänge des Fensters, in dem man den Ausschnitt wählt
+ * --crop-shade   -> wie stark das Foto außerhalb des Kreises abgedunkelt wird
+ * --add          -> Farbe des Knopfes „Auswählen“ und des Reglers
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+*/
+
+.avatar-crop {
+  z-index: 47; /* z-index: liegt über dem Einstellungs-Blatt und der großen Bildansicht */
+}
+
+.avatar-crop-body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  overflow: hidden; /* overflow: hier rollt nichts, jede Bewegung gehört dem Foto */
+}
+
+.avatar-crop-frame {
+  position: relative; /* position: Foto und Ring liegen übereinander im Fenster */
+  width: min(var(--crop-size), calc(100% - 32px)); /* min: auf schmalen Schirmen bleibt links und rechts Rand */
+  aspect-ratio: 1; /* aspect-ratio: das Fenster ist immer quadratisch */
+  flex: 0 0 auto;
+  touch-action: none; /* touch-action: Finger verschieben und zoomen das Foto statt die Seite */
+  cursor: grab;
+  user-select: none;
+}
+
+.avatar-crop-frame:active {
+  cursor: grabbing;
+}
+
+.avatar-crop-img {
+  position: absolute; /* position: das Foto liegt oben links und wird per transform verschoben */
+  top: 0;
+  left: 0;
+  max-width: none; /* max-width: sonst würde das Foto auf die Fensterbreite gestaucht */
+  transform-origin: 0 0; /* transform-origin: Zoom und Lage rechnen von der linken oberen Ecke */
+  will-change: transform; /* will-change: flüssiges Verschieben ohne Ruckeln */
+  pointer-events: none; /* pointer-events: die Finger landen im Fenster, nicht auf dem Bild */
+}
+
+/* Kreis: außen dunkel, innen frei — genau dieser Kreis wird das Profilbild */
+.avatar-crop-ring {
+  position: absolute; /* position: deckt das ganze Fenster ab */
+  inset: 0;
+  border-radius: 50%; /* border-radius: der Ausschnitt ist rund wie später das Profilbild */
+  box-shadow: 0 0 0 100vmax var(--crop-shade); /* box-shadow: dunkelt alles außerhalb des Kreises ab */
+  outline: 1.5px solid rgba(255, 255, 255, 0.8);
+  pointer-events: none; /* pointer-events: der Ring fängt keine Finger ab */
+}
+
+.avatar-crop-hint {
+  position: relative; /* position/z-index: der Hinweis liegt über dem abgedunkelten Rand */
+  z-index: 1;
+  font-size: 15px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.avatar-crop-zoom {
+  position: relative; /* position/z-index: der Regler bleibt über dem abgedunkelten Rand bedienbar */
+  z-index: 1;
+  width: min(var(--crop-size), calc(100% - 32px));
+  accent-color: var(--add); /* accent-color: färbt den Regler in der Akzentfarbe */
+}
+
+.avatar-crop-actions {
+  position: relative; /* position/z-index: die Knöpfe liegen über dem abgedunkelten Rand */
+  z-index: 1;
+  flex: 0 0 auto;
+  display: flex;
+  gap: 10px;
+  padding: 12px 16px calc(12px + var(--safe-bottom));
+}
+
+.avatar-crop-cancel,
+.avatar-crop-ok {
+  flex: 1;
+  height: 48px;
+  border-radius: 14px; /* border-radius: wie die Speichern-Knöpfe im Einstellungs-Blatt */
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.avatar-crop-cancel {
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+.avatar-crop-ok {
+  background: var(--add);
+  color: #ffffff;
+}
+
+.avatar-crop-cancel:active,
+.avatar-crop-ok:active {
+  opacity: 0.7;
+}

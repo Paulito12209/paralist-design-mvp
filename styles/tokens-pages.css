@@ -22,6 +22,8 @@
  * --dot-empty / --dot-1..4  -> Punkte-Raster der Nutzungszeit im Profil-Blatt
  * --profile-avatar-size     -> Größe des runden Profilbilds
  * --profile-avatar-edit-size -> Größe des kleinen Stift-Knopfs am Profilbild
+ * --crop-size               -> Fenster zum Wählen des Profilbild-Ausschnitts
+ * --crop-shade              -> Abdunklung außerhalb des Kreises beim Zuschneiden
  * --mini-gap                -> Fuge zwischen den beiden Analyse-Kacheln
  * --mini-card-height        -> Mindesthöhe einer Analyse-Kachel
  * --mini-chart-height       -> Höhe der kleinen Grafik auf der Kachel
@@ -113,6 +115,8 @@
   --dot-4: #ff9500;
   --profile-avatar-size: 128px;
   --profile-avatar-edit-size: 36px;
+  --crop-size: 300px;
+  --crop-shade: rgba(0, 0, 0, 0.6);
   --mini-gap: 12px;
   --mini-card-height: 132px;
   --mini-chart-height: 34px;
