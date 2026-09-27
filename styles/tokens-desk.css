@@ -26,7 +26,7 @@
  * --desk-tint               -> dieselbe Tönung als Bild-Ebene: legt sich über eine schon
  *                              gefüllte Fläche, statt deren Farbe zu ersetzen
  * --desk-tint-on-dark        -> heller Hauch als Bild-Ebene für Knöpfe, die in beiden
- *                              Darstellungen auf Schwarz liegen (Dateiansicht, großes Profilbild)
+ *                              Darstellungen auf Schwarz liegen (großes Profilbild)
  * --desk-hero-from / --desk-hero-to -> Verlauf der zwei großen Karten auf der Übersicht
  * --desk-glass              -> halbdurchsichtige Fläche schwebender Chips und des Eingabefelds
  * --desk-glass-blur         -> wie stark das Glas den Hintergrund verwischt

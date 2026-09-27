@@ -98,8 +98,11 @@
  * Stopps entstehen im Dunkeln sichtbare Streifen.
  *
  * Im Hellmodus steht --nav-glow-opacity auf 0, dann ist nichts davon zu sehen.
+ * Die Dateiansicht (.viewer) nutzt denselben Verlauf, legt ihn aber in
+ * styles/viewer.css hinter Bild und Knöpfe.
  */
-.device::before {
+.device::before,
+.viewer::before {
   content: "";
   position: absolute;
   left: 0;

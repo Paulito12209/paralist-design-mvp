@@ -71,10 +71,8 @@
  * --media-month-size        -> Schriftgröße der Monatsüberschrift auf der Medien-Seite
  * --media-name-size         -> Schriftgröße des Dateinamens auf Dokument-Kacheln
  * --media-doc-color / --media-badge-bg -> Dokument-Icon und Dauer-Schild
- * --viewer-stage-bg         -> Fläche hinter Bild, Video und PDF in der Dateiansicht
  * --viewer-title-size       -> Schriftgröße des Dateinamens oben
  * --viewer-pad              -> Abstand vom Rand um Datei und untere Leiste der Dateiansicht
- * --viewer-foot-bg          -> Fläche der schwarzen Leiste unten in der Dateiansicht
  * --viewer-foot-btn-size    -> Größe von Verknüpfen-Knopf und Drei-Punkte-Menü unten
  * --viewer-foot-goto-h      -> Höhe des Knopfes „Zur Seite“ in der Mitte (schmaler als die Runden)
  * --media-btn-size / --media-actions-space -> Größe der runden Knöpfe über der Navigation und ihr Extra-Platz
@@ -168,10 +166,8 @@
   --media-name-size: 13px;
   --media-doc-color: #007aff;
   --media-badge-bg: rgba(0, 0, 0, 0.55);
-  --viewer-stage-bg: #ffffff;
   --viewer-title-size: 17px;
   --viewer-pad: 12px;
-  --viewer-foot-bg: #000000;
   --viewer-foot-btn-size: 44px;
   --viewer-foot-goto-h: 36px;
   --media-btn-size: 48px;

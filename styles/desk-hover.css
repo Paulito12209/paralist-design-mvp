@@ -38,7 +38,7 @@
  * --desk-enter               -> wie langsam ein Bild näher rückt
  * --desk-item-radius / --desk-radius-sm -> Rundung der Zeilen-Tönung / der Stunden-Tönung
  * --avatar-btn-bg            -> Farbe des Tastatur-Rings
- * --desk-tint-on-dark        -> heller Hauch auf Knöpfen, die immer auf Schwarz liegen
+ * --desk-tint-on-dark        -> heller Hauch auf dem Kreuz des großen Profilbilds (liegt immer auf Schwarz)
  * --content-side             -> Seitenrand; in der Aufgaben-Liste beginnt die Tönung darin
  * --cal-label-w              -> Breite der Uhrzeiten; die Tönung einer Stunde beginnt rechts davon
  */
@@ -117,7 +117,7 @@
   .bottom-bar :is(.media-btn, .draw-tool, .draw-color, .composer-type, .search-combo-btn,
     .composer-send, .composer-close, .toast-action),
   :is(.modal-backdrop, .sheet-backdrop, .ctx-backdrop, .update-backdrop, .viewer-backdrop)
-    :is(.sheet-option, .ctx-item, .modal-back, .viewer-btn, .date-item, .seg button, .date-done,
+    :is(.sheet-option, .ctx-item, .modal-back, .viewer-btn, .viewer-foot-btn, .date-item, .seg button, .date-done,
       .update-now, .fb-send, .profile-save-ok, .profile-avatar, .hist-more, .fb-link) {
     transition: background-color var(--desk-fast) var(--desk-ease), opacity var(--desk-fast) var(--desk-ease);
   }
@@ -132,8 +132,8 @@
     .search-combo-btn:not(.is-active)):hover,
   .content .archive-link:not(:active):hover,
   :is(.modal-backdrop, .sheet-backdrop, .ctx-backdrop, .viewer-backdrop)
-    :is(.sheet-option:not(.is-active, .is-pair), .ctx-item, .modal-back, .viewer-btn, .date-item,
-      .seg button:not(.is-active)):not(:active):hover {
+    :is(.sheet-option:not(.is-active, .is-pair), .ctx-item, .modal-back, .viewer-btn, .viewer-foot-btn,
+      .date-item, .seg button:not(.is-active)):not(:active):hover {
     background-color: var(--desk-hover);
   }
 
@@ -155,7 +155,6 @@
   /* Auf Schwarz sähe man die dunkle Tönung des Hellmodus nicht: dort liegt ein
      heller Hauch darüber. Steht nach der Regel darüber, die für das Kreuz des
      Profilbilds sonst gleich stark wäre. */
-  .viewer-backdrop .viewer-foot-btn:not(:active):hover,
   .modal-backdrop.avatar-view .modal-close:not(:active):hover {
     background-image: var(--desk-tint-on-dark); /* background-image: s. o. */
   }
