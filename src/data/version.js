@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "b81149a819b5";
+export const appVersion = "120ef1ee1073";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -37,6 +37,7 @@ export const appFiles = [
   "src/core/lazy.js",
   "src/core/no-history.js",
   "src/core/storage.js",
+  "src/core/week-range.js",
   "src/data/collections.js",
   "src/data/config.js",
   "src/data/convert-notes.js",
@@ -129,6 +130,7 @@ export const appFiles = [
   "src/shell/search-voice.js",
   "src/shell/sprite.js",
   "src/shell/update-prompt.js",
+  "src/shell/week-fill.js",
   "src/shell/writing.js",
   "src/ui/chart.js",
   "src/ui/copy-page.js",
