@@ -19,6 +19,7 @@
  * --task-chip-size      -> Schriftgröße der Status- und Datums-Chips
  * --muted               -> Farbe der Nebenangaben unter dem Titel
  * --chevron             -> Ring des noch leeren Hakens
+ * --icon-soft           -> abgeschwächter Pfeil an den Gruppen-Pillen
  * --xp-done / --card    -> Farbe des gesetzten Hakens und seines Hakens darin
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
@@ -85,7 +86,7 @@
 .task-group-chevron {
   width: 14px;
   height: 14px;
-  color: var(--muted);
+  color: var(--icon-soft);
   transform: rotate(90deg); /* transform: der Pfeil der Zeilen zeigt nach rechts, hier soll er nach unten zeigen */
 }
 

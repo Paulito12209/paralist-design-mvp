@@ -7,7 +7,7 @@
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
  * --line                    -> Trennlinie zwischen den Zeilen
- * --chevron                 -> Pfeil rechts in der Zeile
+ * --icon-soft               -> Pfeil rechts in der Zeile und Auf-/Zuklapp-Pfeil der Gruppen
  * --content-side            -> Abstand der Zeilen zum Rand
  * --page-head-top           -> Abstand über dem Zurück-Pfeil auf Unterseiten
  * --page-head-pull          -> wie weit die Kopfzeile links und rechts über den Rand rückt (Pfeil bündig mit dem Titel)
@@ -74,7 +74,7 @@
 .workspace-row .chevron {
   width: 16px;
   height: 16px;
-  color: var(--chevron);
+  color: var(--icon-soft);
 }
 
 .workspace-add {
@@ -288,7 +288,7 @@
 .group-chevron {
   width: 18px;
   height: 18px;
-  color: var(--chevron);
+  color: var(--icon-soft);
   transform: rotate(90deg); /* transform: dreht den Rechts-Pfeil nach unten */
   transition: transform 0.15s ease; /* transition: der Pfeil dreht sich sichtbar statt zu springen */
 }

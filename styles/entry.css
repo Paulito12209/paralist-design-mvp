@@ -20,6 +20,7 @@
  * --page-tool-size          -> Größe der Knöpfe rechts neben den Pillen (Kopieren, Filter, Plus)
  * --page-tool-icon          -> Größe des Symbols darin
  * --page-tool-gap           -> Abstand zwischen Pillen und Knöpfen
+ * --icon-soft               -> abgeschwächte Farbe dieser Knöpfe, damit sie nicht mit dem Titel konkurrieren
  * --link-color              -> Farbe des Filters, solange er nur einen Typ zeigt
  * --xp-done                 -> Farbe des Hakens nach dem Kopieren
 
@@ -253,7 +254,7 @@
   display: grid;
   place-items: center;
   border-radius: 999px;
-  color: var(--muted);
+  color: var(--icon-soft);
   -webkit-touch-callout: none; /* -webkit-touch-callout: beim Halten kein iPhone-Menü über unserer Auswahl */
   user-select: none; /* user-select: Halten soll nichts markieren */
 }

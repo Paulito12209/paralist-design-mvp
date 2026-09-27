@@ -13,6 +13,7 @@
  * --ms-bar-h               -> Höhe der Balken
  * --ms-locked / --ms-track -> Grau gesperrter Plaketten und Grund von Ring und Balken
  * --card / --line / --muted / --radius-xl (styles/tokens.css) -> Karten, Trennlinien, kleine Schrift
+ * --icon-soft (styles/tokens.css) -> abgeschwächter Pfeil rechts im Kopf der Vorschaukarte
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel:
  * Überschrift 17px, Summe 34px, Name 17px, Stufe und Zähler 13px.
@@ -33,7 +34,7 @@
 
 .ms-go {
   margin-left: auto;
-  color: var(--chevron);
+  color: var(--icon-soft);
   display: flex;
 }
 

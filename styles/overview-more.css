@@ -18,7 +18,7 @@
  *
  * Farben kommen aus styles/tokens.css: --line (Seitenlinie, wie die Trennlinien
  * der Listen), --placeholder (ihr gefüllter Teil, wie „Suchen“ im Suchfeld),
- * --muted, --text, --archive-color.
+ * --muted, --text, --archive-color, --icon-soft (Pfeil neben „Arbeitsbereiche“).
  */
 
 /* ---------- Kartenseiten zum Schieben ---------- */
@@ -138,6 +138,7 @@
 .section-link .icon {
   width: 16px;
   height: 16px;
+  color: var(--icon-soft);
 }
 
 .section-link:active {

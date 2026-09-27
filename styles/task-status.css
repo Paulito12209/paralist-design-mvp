@@ -15,7 +15,8 @@
  * --cal-accent          -> Ring des Hakens, solange eine Aufgabe „In Arbeit“ ist
  * --muted               -> Farbe eines erledigten Titels
  * --text                -> Farbe von „Aufgabe“ in der oberen Zeile
- * --chevron             -> Farbe von Punkt und kleinem Pfeil
+ * --chevron             -> Farbe des Punkts
+ * --icon-soft           -> Farbe des kleinen Pfeils
  * --crumb-chevron-size  -> Größe des kleinen Pfeils (auch der Leerraum links, der das Wort mittig hält)
  *
  * Direkt bei ihrer Regel:
@@ -131,6 +132,6 @@
   width: var(--crumb-chevron-size);
   height: var(--crumb-chevron-size);
   flex: 0 0 auto;
-  color: var(--chevron);
+  color: var(--icon-soft);
   transform: rotate(90deg); /* transform: der Pfeil der Zeilen zeigt nach rechts, hier soll er nach unten zeigen */
 }

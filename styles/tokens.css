@@ -83,7 +83,10 @@
  * --shadow                  -> weicher Schatten unter Karten und Suche
  * --icon-strong             -> dunkle Icon-Farbe oben (Profil)
  * --placeholder             -> Farbe von Platzhaltertexten in Eingabefeldern
- * --chevron                 -> Farbe der kleinen Pfeile rechts in Listen
+ * --chevron                 -> Grau für Platzhalter, leere Haken-Ringe, gestrichelte Ränder und die Pfeile im Profil
+ * --icon-soft               -> abgeschwächter Ton für Icon-Knöpfe neben Überschriften und alle
+ *                              Pfeile (Chevrons) in Listen — wie „Arbeitsbereich hinzufügen“,
+ *                              damit sie nicht mit Titeln konkurrieren. Mehr Deckkraft = kräftiger.
  * --danger                  -> Rot für Löschen
  * --archive-color           -> Grau des Archivieren-Knopfes hinter einer Zeile
  * --link-color              -> Blau für Verknüpfen
@@ -359,6 +362,8 @@
   --icon-strong: #3a3a3c;
   --placeholder: #aeaeb2;
   --chevron: #c7c7cc;
+  /* color-mix: derselbe Akzentton wie die Überschriften, nur zu 60 % deckend — wechselt mit Hell/Dunkel von selbst */
+  --icon-soft: color-mix(in srgb, var(--avatar-btn-bg) 60%, transparent);
   --modal-dismiss-pull: 100px;
   --safe-top: env(safe-area-inset-top, 0px);
   --safe-bottom: env(safe-area-inset-bottom, 0px);

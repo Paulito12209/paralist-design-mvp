@@ -6,7 +6,7 @@
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
  * --search-meta-size        -> Schriftgröße der Zeile unter dem Titel
- * --chevron                 -> Pfeil rechts
+ * --icon-soft               -> Pfeil rechts
  * --line                    -> Trennlinien
  * --muted                   -> Farbe der Abschnittsüberschriften
  * --search-pill-height      -> Höhe aller drei Knöpfe unten rechts
@@ -62,7 +62,7 @@
 .search-row .chevron {
   width: 16px;
   height: 16px;
-  color: var(--chevron);
+  color: var(--icon-soft);
 }
 
 .date-label {
