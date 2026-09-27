@@ -8,6 +8,7 @@
  * ANPASSBARE WERTE (in styles/tokens-pages.css)
  * -----------------------------------
  * --overview-pager-h   -> Dicke der Seitenlinie unter den Karten
+ * --overview-pager-w   -> Länge der Seitenlinie (rechtsbündig, gefüllter Teil = die Hälfte)
  * --soon-opacity       -> wie blass Icon und Name einer abgeschalteten Karte sind
  *
  * Direkt hier bei ihrer Regel:
@@ -51,8 +52,11 @@
 /* Eine Linie wie zwischen den Listenzeilen; die gefüllte Hälfte zeigt, welche
    der zwei Kartenseiten steht, und wandert beim Wischen mit dem Finger mit. */
 .overview-pager {
+  width: var(--overview-pager-w);
   height: var(--overview-pager-h);
-  margin-inline: var(--title-side);
+  /* margin: links automatisch — die kurze Linie steht rechtsbündig auf der Fluchtlinie des Inhalts */
+  margin-left: auto;
+  margin-right: var(--title-side);
   background: var(--line);
   border-radius: 999px;
   /* overflow: die Hälfte darf beim Wandern nicht über das Ende hinausstehen */

@@ -13,6 +13,7 @@
  * -----------------------------------
  * ÜBERSICHT
  * --overview-pager-h        -> Dicke der Linie unter den Karten, die zeigt, welche Kartenseite steht
+ * --overview-pager-w        -> Länge dieser Linie (steht rechtsbündig; die Hälfte davon ist der gefüllte Teil)
  * --soon-opacity            -> wie blass Icon und Name einer Karte „Demnächst verfügbar“ sind
  *
  * FORTSCHRITT UND PROFIL
@@ -99,6 +100,7 @@
 :root {
   /* Übersicht: zweite Kartenseite und abgeschaltete Karten */
   --overview-pager-h: 1px;
+  --overview-pager-w: 48px;
   --soon-opacity: 0.45;
 
   /* Fortschritt und Profil: Level-Anzeige, Verlaufskurve und Punkte-Raster */
