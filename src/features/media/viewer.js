@@ -2,7 +2,9 @@
  * Die Dateiansicht: tippt man im Medien-Raster auf eine Kachel, geht die Datei
  * hier bildschirmfüllend auf — Foto, Video, Aufnahme oder PDF. Oben stehen der
  * Name zum Ändern und der Teilen-Knopf, unten in einer eigenen schwarzen
- * Leiste liegen Verknüpfen, „Zur Seite“ und das Drei-Punkte-Menü.
+ * Leiste liegen Verknüpfen, „Zur Seite“ und das Drei-Punkte-Menü. Zur
+ * vorigen und nächsten Datei geht es über Pfeile, Wischen oder Pfeiltasten
+ * (viewer-nav.js).
  * Wird erst beim ersten Öffnen einer Datei nachgeladen.
  * Pfad: src/features/media/viewer.js
  *
@@ -18,7 +20,9 @@ import { scheduleSave, ui } from "../../data/state.js";
 import { openEntry, registerOverlay } from "../../ui/router.js";
 import { bindModalPull, clearModalPull } from "../../ui/modal-pull.js";
 import { openLinkPicker } from "../../ui/pickers.js";
+import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { openViewerMenu, shareEntry } from "./viewer-menu.js";
+import { navMarkup, neighborId, updateNav } from "./viewer-nav.js";
 import { releaseStage, renderStage } from "./viewer-stage.js";
 
 /* Welche Datei gerade offen ist. 0 heißt: die Ansicht ist zu. */
@@ -41,7 +45,10 @@ function mount() {
         <input class="viewer-title" type="text" aria-label="Name der Datei" placeholder="Ohne Titel" />
         <button class="viewer-btn" type="button" data-viewer="share" aria-label="Teilen">${icon("share")}</button>
       </header>
-      <div class="viewer-stage"></div>
+      <div class="viewer-main">
+        <div class="viewer-stage"></div>
+        ${navMarkup()}
+      </div>
       <p class="viewer-hint" hidden></p>
       <footer class="viewer-foot">
         <button class="viewer-foot-btn viewer-foot-icon" type="button" data-viewer="link" aria-label="Verknüpfen">${icon("link")}</button>
@@ -101,12 +108,28 @@ function open(push = true, entryOrState = null) {
   clearModalPull(dom.mediaViewer);
   dom.mediaViewer.hidden = false;
 
+  show(entry);
+
+  if (push) history.pushState({ view: "file", id: entry.id, from: ui.sourceView }, "", `#/datei/${entry.id}`);
+}
+
+/* Name, Datei und Pfeile für `entry` zeichnen — beim Öffnen und beim Blättern. */
+function show(entry) {
   const { title, stage } = parts();
   title.value = entry.title || "";
   stage.dataset.entryId = String(entry.id);
   renderStage(stage, entry);
+  updateNav(dom.mediaViewer, entry.id);
+}
 
-  if (push) history.pushState({ view: "file", id: entry.id, from: ui.sourceView }, "", `#/datei/${entry.id}`);
+/* Zur vorigen (−1) oder nächsten (1) Datei. Der Verlaufseintrag wird ersetzt
+   statt ergänzt: Zurück schließt die Ansicht, statt durch alle Bilder zu gehen. */
+function step(direction) {
+  const next = openId ? findEntry(neighborId(openId, direction)) : null;
+  if (!next || closing) return;
+  openId = next.id;
+  show(next);
+  history.replaceState({ ...history.state, id: next.id }, "", `#/datei/${next.id}`);
 }
 
 /** Von der Medien-Seite aus aufgerufen. */
@@ -135,6 +158,10 @@ function onClick(event) {
 
   if (button.dataset.viewer === "close") {
     close();
+    return;
+  }
+  if (button.dataset.viewer === "prev" || button.dataset.viewer === "next") {
+    step(button.dataset.viewer === "prev" ? -1 : 1);
     return;
   }
   if (!entry) return;
@@ -170,6 +197,22 @@ function onInput(event) {
 function init() {
   dom.mediaViewer.addEventListener("click", onClick);
   dom.mediaViewer.addEventListener("input", onInput);
+
+  /* Wischen blättert: der Wisch-Baustein der Pillen erkennt Richtung und
+     Bildschirmrand, „vorher/nachher“ um die offene Datei genügen als Reihe. */
+  initPillSwipe(dom.mediaViewer, {
+    order: ["prev", "open", "next"],
+    current: () => "open",
+    select: (id) => step(id === "prev" ? -1 : 1),
+    enabled: () => Boolean(openId),
+  });
+
+  /* Pfeiltasten am Rechner — außer beim Tippen im Namensfeld. */
+  document.addEventListener("keydown", (event) => {
+    if (!openId || dom.mediaViewer.hidden || event.target.closest("input, textarea")) return;
+    if (event.key === "ArrowLeft") step(-1);
+    if (event.key === "ArrowRight") step(1);
+  });
 
   /* Ist der Eintrag weg (gelöscht, archiviert) oder änderte sich sein Name
      woanders, hört die Ansicht auf bzw. zieht nach. */
