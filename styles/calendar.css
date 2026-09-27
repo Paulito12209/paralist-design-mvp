@@ -10,7 +10,7 @@
  * --date-wheel-h            -> Höhe der drei Rollen im Blatt „Monat und Jahr“
  * --date-wheel-item-h       -> Höhe einer Zeile in diesen Rollen
  * --tab-pill-active-bg      -> graues Band hinter der gewählten Zeile der Rollen
- * --muted                   -> Farbe der Wochentage und fremden Monate
+ * --muted                   -> Farbe von Monat und Jahr, der Wochentage und fremden Monate
  * --icon-soft               -> abgeschwächter Pfeil neben Monat und Jahr
  * --line                    -> Trennlinie unter der Bedienzeile, zum Raster hin
  * --content-side            -> Seitenabstand, den die Trennlinie automatisch übernimmt
@@ -71,7 +71,7 @@
   font-size: 18px;
   font-weight: 500;
   letter-spacing: -0.02em;
-  color: var(--text);
+  color: var(--muted); /* silbergrau wie die nicht gewählten Reiter darunter: tritt hinter „Kalender“ zurück */
   align-self: flex-start;
   /* position/z-index: die Verlaengerung des Kopfes (.cal-head) reicht in Ruhe
      14px in diese Zeile hinein; ohne eigene Ebene wuerde sie das „p“ verdecken */
