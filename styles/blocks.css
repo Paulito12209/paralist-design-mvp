@@ -1,0 +1,144 @@
+/*
+ * Inhalt eines Eintrags als Bausteine: Absätze, Stichpunkte, nummerierte
+ * Zeilen, runde Checkboxen und die Trennlinie. Jede Zeile ist ein eigener
+ * Block (src/ui/block-editor.js). Karten stehen in styles/embeds.css, das
+ * „/“-Menü in styles/slash-menu.css.
+ * Pfad: styles/blocks.css
+ *
+ * ANPASSBARE WERTE (in styles/tokens-pages.css bzw. styles/tokens.css)
+ * -----------------------------------
+ * --entry-body-size         -> Schriftgröße des Textes (tokens.css)
+ * --block-gap               -> Luft zwischen zwei Zeilen
+ * --block-mark-w            -> Breite der Spalte für Punkt, Zahl oder Checkbox
+ * --block-check-size        -> Durchmesser der runden Checkbox
+ * --block-check-color       -> Füllfarbe einer abgehakten Checkbox
+ * --block-rule-gap          -> Luft über und unter der Trennlinie
+ * --line                    -> Farbe der Trennlinie (tokens.css)
+ * --chevron                 -> Farbe des grauen Platzhalters in einer leeren Zeile (tokens.css)
+ *
+ * Direkt bei ihrer Regel:
+ * .nb-bullet .nb-mark::before -> Größe des Punktes vor einem Stichpunkt (6px)
+ * .nb-box .icon               -> Größe des weißen Hakens in der Checkbox (14px)
+ */
+
+.note-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--block-gap);
+  line-height: 1.5;
+}
+
+.nb {
+  display: flex;
+  align-items: flex-start;
+  min-width: 0;
+}
+
+/* Die bearbeitbare Zeile selbst */
+.nb-edit {
+  flex: 1;
+  min-width: 0;
+  min-height: 1.5em; /* min-height: eine leere Zeile bleibt eine Zeile hoch und antippbar */
+  outline: none;
+  white-space: pre-wrap; /* white-space: mehrere Leerzeichen bleiben stehen, wie im Textfeld */
+  overflow-wrap: anywhere; /* overflow-wrap: lange Links brechen um statt überzustehen */
+  cursor: text;
+  user-select: text; /* user-select: Text markieren können, auch wenn die Seite es sonst sperrt */
+  -webkit-user-select: text;
+}
+
+/* Grauer Hinweis: in der leeren Zeile mit Cursor der Tipp zum „/“-Menü,
+   in einer ganz leeren Notiz der gewohnte Platzhalter */
+.nb-edit:empty:focus::before {
+  content: attr(data-ph);
+  color: var(--chevron);
+  pointer-events: none; /* pointer-events: der Hinweis fängt keine Tipps ab */
+}
+
+.note-blocks.is-empty .nb-edit:empty:not(:focus)::before {
+  content: attr(data-empty);
+  color: var(--chevron);
+  pointer-events: none;
+}
+
+/* Spalte vor einer Listenzeile: Punkt, Zahl oder Checkbox. Eine Zeile hoch,
+   damit das Zeichen mittig zur ersten Textzeile steht. */
+.nb-mark {
+  flex: 0 0 var(--block-mark-w);
+  height: 1.5em;
+  display: grid;
+  place-items: center start;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.nb-bullet .nb-mark::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  margin-left: 6px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.nb-number .nb-mark {
+  font-variant-numeric: tabular-nums; /* font-variant-numeric: Zahlen gleich breit, die Texte stehen bündig */
+}
+
+/* Runde Checkbox: leer ein Ring, abgehakt gefüllt mit weißem Haken */
+.nb-box {
+  position: relative; /* position: Anker für die größere Tippfläche darunter */
+  flex: 0 0 auto;
+  width: var(--block-check-size);
+  height: var(--block-check-size);
+  margin: calc((1.5em - var(--block-check-size)) / 2) calc(var(--block-mark-w) - var(--block-check-size)) 0 0;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1.5px solid var(--muted);
+  color: #ffffff;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+/* Unsichtbar größere Tippfläche, damit der kleine Kreis mit dem Daumen trifft */
+.nb-box::after {
+  content: "";
+  position: absolute;
+  inset: -12px;
+}
+
+.nb-box .icon {
+  width: 14px;
+  height: 14px;
+  opacity: 0;
+  transform: scale(0.6); /* transform: der Haken wächst beim Abhaken heraus */
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.is-done .nb-box {
+  background: var(--block-check-color);
+  border-color: var(--block-check-color);
+}
+
+.is-done .nb-box .icon {
+  opacity: 1;
+  transform: none;
+}
+
+.is-done .nb-edit {
+  color: var(--muted);
+  text-decoration: line-through;
+}
+
+/* Trennlinie */
+.nb-divider {
+  padding: var(--block-rule-gap) 0;
+}
+
+.nb-rule {
+  flex: 1;
+  height: 1px;
+  margin: 0;
+  border: 0;
+  background: var(--line);
+}

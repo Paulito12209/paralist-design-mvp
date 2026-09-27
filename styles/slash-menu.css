@@ -1,0 +1,105 @@
+/*
+ * Das „/“-Menü im Inhalt eines Eintrags: eine Karte unter der Zeile mit dem
+ * „/“, darin Gruppen mit grauer Überschrift und je zwei Kacheln (Icon und
+ * Name) nebeneinander. Markup in src/ui/slash-menu.js.
+ * Pfad: styles/slash-menu.css
+ *
+ * ANPASSBARE WERTE (in styles/tokens-pages.css bzw. styles/tokens.css)
+ * -----------------------------------
+ * --slash-bg            -> Hintergrund des Menüs
+ * --slash-tile-bg       -> Fläche einer Kachel
+ * --slash-radius        -> Rundung des Menüs
+ * --slash-max-h         -> ab dieser Höhe scrollt das Menü
+ * --sheet-heading-size  -> Schriftgröße der Gruppen-Überschrift (tokens.css, wie im Auswahl-Blatt)
+ * --link-color          -> Rahmen der mit den Pfeiltasten gewählten Kachel (tokens.css)
+ * --tab-space           -> so viel Platz bleibt beim Hereinrollen unter dem Menü frei (tokens.css)
+ *
+ * Direkt bei ihrer Regel:
+ * .slash-item font-size -> Name auf der Kachel (15px)
+ * .slash-item min-height -> Höhe einer Kachel (48px, Material-Tippfläche)
+ */
+
+/* Anker für das Menü, das unter der Zeile schwebt */
+.entry-panel {
+  position: relative;
+}
+
+/* Solange das Menü offen ist, darf die Seite so weit weiterrollen, dass es
+   auch unter der letzten Zeile ganz zu sehen ist (:has — die Fläche weiß
+   sonst nichts von ihrem schwebenden Menü) */
+.entry-panel:has(> .slash-menu:not([hidden])) {
+  padding-bottom: var(--slash-max-h);
+}
+
+.slash-menu {
+  position: absolute; /* position: schwebt über dem Text darunter, statt ihn wegzuschieben */
+  left: 0;
+  right: 0;
+  z-index: 5; /* z-index: über den Karten mit Landkarte */
+  margin-top: 6px;
+  max-height: var(--slash-max-h);
+  overflow-y: auto;
+  overscroll-behavior: contain; /* overscroll-behavior: am Listenende scrollt nicht die Seite mit */
+  padding: 4px 10px 10px;
+  border-radius: var(--slash-radius);
+  border: 0.5px solid var(--line);
+  background: var(--slash-bg);
+  box-shadow: var(--shadow);
+  /* scroll-margin: beim Öffnen rollt die Seite so weit, dass das Menü über
+     Navigation und Tastatur ganz zu sehen ist */
+  scroll-margin-bottom: calc(var(--tab-space) + var(--keyboard-inset));
+}
+
+.slash-menu[hidden] {
+  display: none;
+}
+
+.slash-heading {
+  margin: 10px 4px 6px;
+  font-size: var(--sheet-heading-size);
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.slash-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+
+.slash-item {
+  min-width: 0;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 0 12px;
+  border-radius: 12px;
+  background: var(--slash-tile-bg);
+  color: var(--text);
+  font-size: 15px;
+  text-align: left;
+}
+
+.slash-item .icon {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  color: var(--muted);
+}
+
+/* Ein langer Name („Nummerierte Liste“) bricht in eine zweite Zeile um */
+.slash-item span {
+  min-width: 0;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.slash-item:active {
+  opacity: 0.6;
+}
+
+/* Mit Pfeiltasten gewählt: Enter nimmt diese Kachel */
+.slash-item.is-active {
+  box-shadow: inset 0 0 0 1.5px var(--link-color);
+}

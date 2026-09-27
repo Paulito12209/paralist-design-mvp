@@ -1,0 +1,303 @@
+/*
+ * Karten im Inhalt eines Eintrags: Standort (kleine Landkarte), Video
+ * (Vorschaubild mit Abspiel-Knopf) und Web-Lesezeichen (Favicon auf einer
+ * Fläche in seiner Logofarbe). Zwei Spalten: links eine Kachel so groß wie
+ * die auf der Übersicht — oben das Bild, unten zwei Fünftel graue Leiste mit
+ * Logo, Dienst und Drei-Punkte-Menü —, rechts daneben groß der Name. Dazu das
+ * Eingabefeld, bevor ein Link da ist. Markup in src/ui/block-markup.js.
+ * Pfad: styles/embeds.css
+ *
+ * ANPASSBARE WERTE (in styles/tokens-pages.css)
+ * -----------------------------------
+ * --embed-tile-w    -> Breite der Kachel links (halbe Breite wie die Übersichtskarten)
+ * --embed-h         -> Höhe der Kachel
+ * --embed-bar-h     -> Anteil der grauen Leiste unten (40% = zwei Fünftel)
+ * --embed-radius    -> Rundung der Kachel
+ * --embed-tile-bg   -> Fläche der Kachel
+ * --embed-bar-bg    -> Grau der Leiste mit Logo, Dienst und Menü
+ * --embed-tint      -> wie deckend die Logofarbe hinter dem Favicon einer Website liegt
+ * --embed-bg        -> Fläche des Eingabefelds vor dem Link
+ * --embed-gap       -> Luft über und unter einer Karte
+ *
+ * Direkt bei ihrer Regel:
+ * .embed-name font-size     -> Name rechts neben der Kachel (17px, wie auf den Übersichtskarten)
+ * .embed-label font-size    -> Dienst in der grauen Leiste (12px)
+ * .embed-map iframe width   -> wie groß die Landkarte hinter dem Ausschnitt ist (400px);
+ *                              größer = Ortsschild und Knöpfe von Google liegen außerhalb
+ * .embed-logo img width     -> Größe des Favicons einer Website oben in der Kachel (32px)
+ * .embed-logo-mark width    -> Größe des Logos in der Leiste (16px)
+ * .embed-play width         -> Größe des Abspiel-Knopfes (32px)
+ * .embed-copy font-size     -> „Kopieren“ unter dem Namen (13px), Symbol daneben 15px
+ * --xp-done                 -> Farbe des Hakens nach dem Kopieren (tokens-pages.css)
+ */
+
+.nb-embed,
+.nb-place,
+.nb-video,
+.nb-link {
+  padding: var(--embed-gap) 0;
+}
+
+/* Die ganze Zeile ist der Link: links die Kachel, rechts der Name */
+.embed {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+  -webkit-touch-callout: none; /* -webkit-touch-callout: Halten öffnet kein iPhone-Linkmenü */
+}
+
+.embed:active .embed-tile {
+  transform: scale(0.98); /* transform: gibt beim Drücken leicht nach wie die Übersichtskarten */
+}
+
+/* Kachel: oben das Bild, unten die graue Leiste */
+.embed-tile {
+  flex: 0 0 var(--embed-tile-w);
+  height: var(--embed-h);
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--embed-radius);
+  background: var(--embed-tile-bg);
+  overflow: hidden; /* overflow: Bild und Leiste folgen der Rundung */
+}
+
+.embed-media {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  color: var(--muted);
+}
+
+.embed-media > .icon {
+  width: 26px;
+  height: 26px;
+}
+
+/* Die Landkarte ist viel größer als ihr Ausschnitt und mittig: so steht der
+   Ort in der Mitte, Googles Ortsschild und Zoom-Knöpfe am Rand bleiben
+   verdeckt. Sie nimmt keine Tipps an — ein Tipp öffnet Google Maps. */
+.embed-map iframe {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 400px;
+  height: 400px;
+  border: 0;
+  transform: translate(-50%, -50%); /* transform: mittig über dem Ausschnitt */
+  pointer-events: none; /* pointer-events: die Karte lässt sich nicht verschieben, der Tipp geht an die Zeile */
+}
+
+/* Noch kein Ort bekannt: angedeutetes Kartenraster mit Stecknadel */
+.embed-map.is-blank {
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 16px 16px;
+}
+
+.embed-thumb img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* object-fit: das 4:3-Bild von YouTube füllt die Fläche ohne Balken */
+}
+
+/* Runder Abspiel-Knopf mit Dreieck über dem Vorschaubild */
+.embed-play {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.6);
+}
+
+.embed-play::before {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 9px;
+  border-style: solid;
+  border-width: 7px 0 7px 11px;
+  border-color: transparent transparent transparent #ffffff;
+}
+
+/* Website: großes Favicon auf seiner eigenen Farbe, zart durchscheinend
+   (--embed-color setzt src/ui/block-markup.js aus dem Favicon) */
+.embed-logo {
+  background: color-mix(in srgb, var(--embed-color) var(--embed-tint), transparent);
+}
+
+.embed-logo img {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+}
+
+/* Graue Leiste unten: Logo, Dienst, Drei-Punkte-Menü */
+.embed-bar {
+  flex: 0 0 var(--embed-bar-h);
+  min-height: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding-left: 10px;
+  background: var(--embed-bar-bg);
+  color: var(--muted);
+}
+
+/* Logo: das Icon liegt unter dem Favicon und bleibt stehen, falls es nicht lädt */
+.embed-logo-mark {
+  position: relative;
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+}
+
+.embed-logo-mark > * {
+  position: absolute;
+  inset: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.embed-logo-mark img {
+  border-radius: 4px;
+}
+
+.embed-label {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis; /* text-overflow: lange Website-Namen enden mit „…“ */
+  white-space: nowrap;
+}
+
+.embed-more {
+  flex: 0 0 auto;
+  width: 36px;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  color: var(--muted);
+}
+
+.embed-more .icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Rechts neben der Kachel: der Name, darunter dezent „Kopieren“ */
+.embed-side {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.embed-copy {
+  position: relative; /* position: Anker für die größere Tippfläche darunter */
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* Unsichtbar größere Tippfläche, ohne das Layout zu verschieben */
+.embed-copy::after {
+  content: "";
+  position: absolute;
+  inset: -10px -8px;
+}
+
+.embed-copy .icon {
+  width: 15px;
+  height: 15px;
+}
+
+.embed-copy:active {
+  opacity: 0.55;
+}
+
+/* Kurz nach dem Kopieren: grüner Haken und „Kopiert“ */
+.embed-copy.is-done {
+  color: var(--xp-done);
+}
+
+/* Der Name, groß */
+.embed-name {
+  flex: 0 1 auto;
+  max-width: 100%; /* max-width: ein langer Name bricht um, statt über den Rand zu laufen */
+  min-width: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  overflow-wrap: anywhere;
+  display: -webkit-box; /* -webkit-box mit line-clamp: nach drei Zeilen endet der Name mit „…“ */
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+}
+
+/* Beim Umbenennen: frei schreiben, ganzer Name sichtbar */
+.embed-name[contenteditable] {
+  display: block;
+  outline: none;
+  cursor: text;
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+/* Eingabefeld, solange die Karte noch keinen Link hat */
+.embed-input {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 48px;
+  padding: 0 14px;
+  border-radius: var(--embed-radius);
+  background: var(--embed-bg);
+  color: var(--muted);
+}
+
+.embed-input .icon {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+}
+
+.nb-url {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--entry-body-size);
+}
+
+.nb-url::placeholder {
+  color: var(--chevron);
+}
+
+/* Kein gültiger Link: rot, bis man es verbessert */
+.nb-url.is-invalid {
+  color: var(--danger);
+}

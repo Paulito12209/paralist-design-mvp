@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "05d4816958d8";
+export const appVersion = "eff9618d1553";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -27,6 +27,7 @@ export const appFiles = [
   "manifest.webmanifest",
   "src/core/blobs.js",
   "src/core/bus.js",
+  "src/core/caret.js",
   "src/core/clipboard.js",
   "src/core/css-vars.js",
   "src/core/dates.js",
@@ -35,6 +36,7 @@ export const appFiles = [
   "src/core/html.js",
   "src/core/ids.js",
   "src/core/lazy.js",
+  "src/core/link-preview.js",
   "src/core/no-history.js",
   "src/core/storage.js",
   "src/core/week-range.js",
@@ -45,11 +47,13 @@ export const appFiles = [
   "src/data/details.js",
   "src/data/files.js",
   "src/data/insights.js",
+  "src/data/link-kinds.js",
   "src/data/links.js",
   "src/data/milestone-tracks.js",
   "src/data/milestones.js",
   "src/data/mutations.js",
   "src/data/nav-labels.js",
+  "src/data/note-blocks.js",
   "src/data/opens.js",
   "src/data/page-text.js",
   "src/data/queries.js",
@@ -137,6 +141,10 @@ export const appFiles = [
   "src/shell/update-prompt.js",
   "src/shell/week-fill.js",
   "src/shell/writing.js",
+  "src/ui/block-editor.js",
+  "src/ui/block-embeds.js",
+  "src/ui/block-keys.js",
+  "src/ui/block-markup.js",
   "src/ui/chart.js",
   "src/ui/copy-page.js",
   "src/ui/ctx-menu.js",
@@ -160,6 +168,7 @@ export const appFiles = [
   "src/ui/router.js",
   "src/ui/rows.js",
   "src/ui/sheet.js",
+  "src/ui/slash-menu.js",
   "src/ui/swipe.js",
   "src/ui/task-status.js",
   "src/ui/toast.js",
@@ -168,6 +177,7 @@ export const appFiles = [
   "src/ui/write-tap.js",
   "styles/avatar-crop.css",
   "styles/base.css",
+  "styles/blocks.css",
   "styles/calendar-panel.css",
   "styles/calendar-rings.css",
   "styles/calendar.css",
@@ -185,6 +195,7 @@ export const appFiles = [
   "styles/desk.css",
   "styles/details.css",
   "styles/drawing.css",
+  "styles/embeds.css",
   "styles/empty-state.css",
   "styles/entry.css",
   "styles/media.css",
@@ -200,6 +211,7 @@ export const appFiles = [
   "styles/search.css",
   "styles/settings.css",
   "styles/sheet-tabs.css",
+  "styles/slash-menu.css",
   "styles/support.css",
   "styles/swipe-rows.css",
   "styles/task-status.css",

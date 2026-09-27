@@ -16,6 +16,9 @@
  * Einträge: die Verbindung gilt auf beiden Seiten, keiner der beiden ist dem
  * anderen untergeordnet (src/data/links.js).
  *
+ * Der Text unter „Inhalt“ besteht aus Bausteinen wie in Notion — „/“ öffnet
+ * die Auswahl (Listen, Checkboxen, Trennlinie, Standort, Video, Link).
+ *
  * Unter „Inhalt“ startet ein Tipp in die freie Fläche unter dem Text das
  * Schreiben am Textende; bei offener Tastatur schließt ein Tipp nur sie
  * (src/ui/write-tap.js).
@@ -49,6 +52,10 @@ import { openTaskSheet, taskCrumbMarkup } from "../../ui/task-status.js";
 import { openTypeChangeSheet, typeCrumbMarkup } from "../../ui/type-menu.js";
 import { isViewActive } from "../../ui/views.js";
 import { addWritePage } from "../../ui/write-tap.js";
+import { createBlockEditor } from "../../ui/block-editor.js";
+
+/* Der Baustein-Editor unter „Inhalt“ (src/ui/block-editor.js), angelegt in initEntry. */
+let bodyEditor = null;
 
 /* Die beiden Pillen; die zweite trägt die Anzahl dessen, was darunter steht.
    Kein Icon: es wird nie mehr als diese zwei geben, das Wort allein reicht. */
@@ -111,7 +118,7 @@ function renderEntry() {
   if (!entry) return;
 
   showEntryTitle(entry);
-  dom.entryBody.value = entry.body || "";
+  bodyEditor.setText(entry.body || "");
   /* Mittig die Kategorie, nicht der Ort: der Zurück-Pfeil führt dorthin, wo
      man zuletzt war — nicht zwingend an den Ort des Eintrags. */
   renderCrumb(entry);
@@ -139,19 +146,17 @@ function openEntryMenu() {
 }
 
 /* Tippen speichert erst kurz nach dem letzten Buchstaben, nicht bei jedem Zeichen. */
-function bindTextField(field, key) {
-  field.addEventListener("input", () => {
-    const entry = findEntry(ui.currentEntryId);
-    if (!entry) return;
-    entry[key] = field.value;
-    scheduleSave();
-  });
+function saveBody(text) {
+  const entry = findEntry(ui.currentEntryId);
+  if (!entry) return;
+  entry.body = text;
+  scheduleSave();
 }
 
 /** Felder, Pillen, Menü und Zurück-Pfeil der Eintragsseite anmelden. */
 export function initEntry() {
   initEntryTitle();
-  bindTextField(dom.entryBody, "body");
+  bodyEditor = createBlockEditor(dom.entryBody, { onChange: saveBody });
   initEntryTools({
     rerender: (entry) => {
       renderLinks(entry);
@@ -165,7 +170,7 @@ export function initEntry() {
     if (!entry) return;
     /* Der Text verschwindet gleich: vorher den Cursor herausnehmen, sonst
        bliebe die Tastatur für ein unsichtbares Feld offen. */
-    if (id !== "notes") dom.entryBody.blur();
+    if (id !== "notes") bodyEditor.blur();
     ui.entryPill = id;
     renderEntryPills(entry);
   };
@@ -187,6 +192,7 @@ export function initEntry() {
   addWritePage({
     view: "entry",
     field: () => (ui.entryPill === "notes" && !dom.entryBody.hidden ? dom.entryBody : null),
+    focusEnd: () => bodyEditor.focusEnd(),
   });
 
   /* „Aufgabe“ mit „Offen · Jetzt“ in der Kopfzeile öffnet Status und Dringlichkeit,
