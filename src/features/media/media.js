@@ -119,7 +119,9 @@ function onCellClick(event) {
   if (!entry) return;
   event.stopPropagation();
   event.preventDefault();
-  load("viewer").then((module) => module.openViewer(entry));
+  /* Geblättert wird durch genau die Kacheln, die gerade im Raster stehen */
+  const list = [...dom.mediaBody.querySelectorAll("[data-open-entry]")].map((item) => item.dataset.openEntry);
+  load("viewer").then((module) => module.openViewer(entry, list));
 }
 
 /** Die ganze Seite neu zeichnen. */

@@ -181,15 +181,16 @@ export function openEntry(id, push = true, replace = false) {
  * Einen Eintrag so öffnen, wie man ihn sehen will: ein Medium bildschirmfüllend
  * als Datei — wie im Medien-Reiter —, alles andere als Seite. Die Seite eines
  * Mediums (Notizen, Verknüpfungen) liegt in der Dateiansicht hinter „Zur Seite“.
+ * @param list optional: die IDs, durch die die Dateiansicht blättern darf.
  */
-export function openEntryOrFile(id) {
+export function openEntryOrFile(id, list = null) {
   const entry = findEntry(id);
   if (!entry) return;
   if (entry.type !== "medien") {
     openEntry(entry.id);
     return;
   }
-  withOverlay("file", (handlers) => handlers.open(true, entry));
+  withOverlay("file", (handlers) => handlers.open(true, entry, list));
 }
 
 /** Zurück zu der Ansicht, aus der man gekommen ist. */

@@ -215,8 +215,17 @@ function onClick(event) {
     return;
   }
   /* Ein Medium geht als Datei auf, nicht als Seite — man will das Foto sehen. */
-  if (row.dataset.openEntry) openEntryOrFile(row.dataset.openEntry);
+  if (row.dataset.openEntry) openEntryOrFile(row.dataset.openEntry, linkedMediaIds(row));
   else openTarget("workspace", row.dataset.openWorkspace);
+}
+
+/* Eine Kachel unter „Verknüpfte Einträge“: die Dateiansicht blättert nur durch
+   die Medien desselben Eintrags (alle Kachelreihen der Gruppe „Medien“), nicht
+   durch alle Medien der App. Eine Zeile ohne solche Gruppe blättert nicht. */
+function linkedMediaIds(row) {
+  const group = row.closest(".media-kinds");
+  if (!group) return null;
+  return [...group.querySelectorAll(".media-cell[data-open-entry]")].map((cell) => cell.dataset.openEntry);
 }
 
 /**
