@@ -255,8 +255,10 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   (Eingabefeld als Aufgabe). Wischen über die Liste wechselt die Ansicht.
   Pille gedrückt halten (oder Rechtsklick): Umbenennen, Icon, Duplizieren,
   Nach links / Nach rechts, Löschen — „Alle“ nur Icon und Duplizieren.
-- Karte „Ansicht“ am Seitenende (Kopf schaut über der Navigation hervor, Tipp
-  darauf holt sie hoch): Layout Liste | Board, Sortieren (Blatt: Erstellt /
+- Karte „Ansicht konfigurieren“ als Ebene über der Liste, unter der
+  Navigation: eingeklappt schaut nur der Kopf hervor; Tipp auf Kopf oder
+  Symbol rechts (oder Kopf ziehen) klappt sie aus und wieder ein, die Liste
+  bleibt dabei stehen. Beim Umstellen bleibt der Inhalt sichtbar. Layout Liste | Board, Sortieren (Blatt: Erstellt /
   Fällig / Titel, Richtung), Filtern (Blatt „Aufgaben von“ — bei „Alle“
   gesperrt, das ⓘ erklärt die eigene Ansicht), Gruppieren als Schalter (an:
   „Spalten nach“ Dringlichkeit | Status), Erledigte zeigen. Jede Ansicht

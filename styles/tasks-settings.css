@@ -1,16 +1,25 @@
 /*
- * Aufgaben-Seite: die Karte „Ansicht“ am Seitenende
- * (src/features/tasks/tasks-settings.js). Karte, Kopf und Zeilen sehen aus
- * wie die Karte „Details“ einer Eintragsseite (styles/entry-details.css) —
- * hier stehen nur die Zutaten, die es dort nicht gibt: das Segment
- * Liste | Board bzw. Dringlichkeit | Status, der Schalter und die gesperrte
- * Filter-Zeile mit dem ⓘ.
+ * Aufgaben-Seite: die Karte „Ansicht konfigurieren“
+ * (src/features/tasks/tasks-panel.js und tasks-settings.js). Karte, Kopf und
+ * Zeilen sehen aus wie die Karte „Details“ einer Eintragsseite
+ * (styles/entry-details.css). Anders als dort liegt sie nicht in der Seite,
+ * sondern als eigene Ebene über der Liste und unter der Navigation:
+ * eingeklappt schaut nur der Kopf hervor, ausgeklappt (Klasse is-expanded)
+ * steht die ganze Karte über der Navigation. Dazu kommen die Zutaten, die es
+ * bei „Details“ nicht gibt: das Segment Liste | Board bzw. Dringlichkeit |
+ * Status, der Schalter und die gesperrte Filter-Zeile mit dem ⓘ.
  * Pfad: styles/tasks-settings.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens-pages.css, außer wo genannt)
  * -----------------------------------
  * --tasks-switch-w / --tasks-switch-h -> Größe des Schalters
  * --tasks-seg-h              -> Höhe des Segments (und seiner Knöpfe)
+ * --tasks-panel-gap          -> Luft zwischen Karte und Navigation darunter
+ * --tasks-panel-slide        -> wie schnell die Karte aus- und einklappt
+ * --details-head-h           -> Höhe des Kopfs — so viel schaut eingeklappt hervor
+ * --nav-height / --nav-bottom -> Lage der Navigation, auf der die Karte sitzt (styles/tokens.css)
+ * --content-side             -> seitlicher Rand der Karte (styles/tokens.css)
+ * --desk-gutter / --desk-read-width -> Lage und größte Breite am Desktop (styles/tokens-desk.css)
  * --tab-pill-active-bg       -> Fläche hinter dem Segment und Schalter „aus“ (styles/tokens.css)
  * --bg                       -> Fläche des gewählten Segment-Knopfs (styles/tokens.css)
  * --add                      -> Schalter „an“ (styles/tokens.css)
@@ -19,6 +28,96 @@
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
+
+/* ---------- Die Ebene über der Liste ---------- */
+
+/* Nur auf der Aufgaben-Seite: die Klasse is-tasks setzt src/ui/views.js */
+.tasks-panel {
+  display: none;
+  position: absolute; /* position: liegt fest über der Liste, statt mit ihr zu scrollen */
+  left: var(--content-side);
+  right: var(--content-side);
+  bottom: calc(var(--nav-height) + var(--nav-bottom) + var(--safe-bottom) + var(--tasks-panel-gap));
+  z-index: 5; /* z-index: über der Seite (0), unter Verlauf (10) und Navigation (20) */
+  max-height: 70%; /* max-height: auch mit allen Zeilen bleibt oben Luft */
+  margin: 0;
+  padding-bottom: 12px;
+  overflow: hidden; /* overflow: sehr niedrige Fenster schneiden die Zeilen ab statt die Karte zu sprengen */
+  /* transform: eingeklappt rutscht alles bis auf den Kopf hinter die Navigation */
+  transform: translateY(calc(100% - var(--details-head-h)));
+  transition: transform var(--tasks-panel-slide) cubic-bezier(0.2, 0.8, 0.2, 1); /* transition: weiches Aus- und Einklappen */
+}
+
+body.is-tasks .tasks-panel {
+  display: block;
+}
+
+.tasks-panel.is-expanded {
+  transform: none;
+}
+
+/* Beim Ziehen folgt die Karte dem Finger, ohne nachzuziehen */
+.tasks-panel.is-dragging {
+  transition: none;
+}
+
+/* Beim Anlegen braucht das Eingabefeld den Platz über der Navigation; beim
+   Schreiben auf Touch-Geräten tritt die Navigation zurück (styles/navigation.css)
+   — die Karte ebenso. :has fragt, ob das Eingabefeld offen ist. */
+body:has(.nav-shell.is-composing) .tasks-panel {
+  display: none;
+}
+
+@media (hover: none) and (pointer: coarse) {
+  body.is-writing .tasks-panel {
+    visibility: hidden; /* visibility: wie die Navigation, ohne dass sich etwas verschiebt */
+  }
+}
+
+/* Der Kopf ist Griff: ziehen statt die Seite zu bewegen */
+.tasks-panel-head {
+  touch-action: none; /* touch-action: der Browser soll das Ziehen nicht selbst als Geste nehmen */
+}
+
+.tasks-panel-toggle .icon {
+  transition: transform var(--tasks-panel-slide) ease; /* transition: das Symbol dreht sich mit */
+}
+
+/* Ausgeklappt zeigt der Pfeil nach unten — hier geht es wieder zu */
+.tasks-panel.is-expanded .tasks-panel-toggle .icon {
+  transform: rotate(180deg); /* transform: Pfeil nach unten */
+}
+
+/* Eingeklappt bleiben die Zeilen leer — neben der runden Navigation sähe man
+   sonst halbe Zeilen. Die Zeilen werden beim Neuzeichnen ersetzt, die Karte
+   nicht: darum bleibt der Inhalt sichtbar, während man etwas umstellt. */
+.tasks-panel.is-expanded .details-list,
+.tasks-panel.is-dragging .details-list {
+  opacity: 1;
+}
+
+/* Die Liste endet über dem eingeklappten Kopf, nicht dahinter */
+#view-tasks {
+  padding-bottom: calc(var(--details-head-h) + var(--tasks-panel-gap));
+}
+
+/* Am Desktop gibt es die Handy-Navigation nicht: die Karte sitzt unten in
+   der Mitte, so breit wie die Aufgaben-Liste. */
+@media (min-width: 1024px) {
+  .tasks-panel {
+    left: calc(var(--desk-nav-width) + var(--desk-gutter));
+    right: var(--desk-gutter);
+    bottom: calc(var(--desk-gutter) + var(--safe-bottom));
+    max-width: var(--desk-read-width);
+    margin-inline: auto; /* margin-inline: mit left/right und max-width steht die Karte mittig */
+  }
+}
+
+@media (min-width: 1280px) {
+  .tasks-panel {
+    right: calc(var(--desk-rail-width) + var(--desk-gutter));
+  }
+}
 
 /* Die Zeilen der Karte sind Knöpfe oder Zeilen mit Steuerung rechts —
    beide gleich hoch und mittig ausgerichtet */

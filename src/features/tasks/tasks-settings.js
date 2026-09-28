@@ -1,7 +1,7 @@
 /*
- * Die Karte „Ansicht“ am Ende der Aufgaben-Seite — aufgebaut wie die Karte
- * „Details“ einer Eintragsseite: ihr Kopf schaut über der Navigation hervor,
- * hochscrollen zeigt die Einstellungen der gewählten Ansicht:
+ * Der Inhalt der Karte „Ansicht konfigurieren“ auf der Aufgaben-Seite: die
+ * Einstellungen der gewählten Ansicht. Kopf, Lage und Aus- und Einklappen
+ * der Karte stehen in tasks-panel.js — hier nur die Zeilen:
  *
  * - Layout: Liste | Board
  * - Sortieren: Zeile mit der Wahl, ein Tipp öffnet das Blatt
@@ -13,7 +13,6 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * cardTitle    -> Überschrift der Karte
  * rowLabels    -> Beschriftungen der Zeilen
  * allPlaces    -> was in der Filter-Zeile steht, solange kein Ort gewählt ist
  * infoTitle / infoText -> das Blatt hinter dem ⓘ
@@ -29,7 +28,6 @@ import { parentName, taskPlaces } from "../../data/queries.js";
 import { updateTaskView } from "../../data/task-views.js";
 import { openSheet } from "../../ui/sheet.js";
 
-const cardTitle = "Ansicht";
 const rowLabels = {
   layout: "Layout",
   sort: "Sortieren",
@@ -82,17 +80,13 @@ function placeValue(view) {
   return parentName(view.place);
 }
 
-/** Die Karte für die gewählte Ansicht. */
+/** Die Zeilen der Karte für die gewählte Ansicht. */
 export function taskSettingsMarkup(view) {
   const grouped = view.group !== "none";
   const groupItems = taskGroupings.map((item) => ({ id: item.id, label: item.label }));
   const groupBy = grouped ? view.group : taskGroupings[0].id;
   return `
-    <section class="details-card tasks-settings" id="tasks-settings">
-      <div class="details-head">
-        <button class="details-title" type="button" data-settings="top">${cardTitle}</button>
-      </div>
-      <div class="details-list">
+      <div class="details-list tasks-settings">
         <div class="details-row">
           <span class="details-row-label">${rowLabels.layout}</span>${segment(layouts, view.layout, "layout")}
         </div>
@@ -117,7 +111,6 @@ export function taskSettingsMarkup(view) {
           <span class="details-row-label">${rowLabels.done}</span>${toggle("done", !view.hideDone, rowLabels.done)}
         </div>
       </div>
-    </section>
   `;
 }
 
@@ -152,13 +145,12 @@ function openPlaceSheet(view) {
   ]);
 }
 
-/** Klicks in der Karte. `view` ist die gewählte Ansicht, `reveal` holt die Karte hoch. */
-export function handleSettingsClick(event, view, reveal) {
+/** Klicks in der Karte. `view` ist die gewählte Ansicht. */
+export function handleSettingsClick(event, view) {
   const button = event.target.closest("[data-settings]");
   if (!button) return;
   const { settings, value } = button.dataset;
-  if (settings === "top") reveal();
-  else if (settings === "layout") updateTaskView({ layout: value });
+  if (settings === "layout") updateTaskView({ layout: value });
   else if (settings === "sort") openSortSheet(view);
   else if (settings === "place") openPlaceSheet(view);
   else if (settings === "info") openSheet(infoTitle, [{ lead: true, label: infoText }]);

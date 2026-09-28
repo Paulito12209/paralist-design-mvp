@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "d568d3d5717c";
+export const appVersion = "4354fc67aa01";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -137,6 +137,7 @@ export const appFiles = [
   "src/features/tasks/tasks-drag.js",
   "src/features/tasks/tasks-inline.js",
   "src/features/tasks/tasks-list.js",
+  "src/features/tasks/tasks-panel.js",
   "src/features/tasks/tasks-parts.js",
   "src/features/tasks/tasks-settings.js",
   "src/features/tasks/tasks-views.js",

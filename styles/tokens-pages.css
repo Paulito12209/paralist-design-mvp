@@ -88,8 +88,10 @@
  * --crumb-chevron-size      -> Größe des kleinen Pfeils neben der Kategorie mitten in der Kopfzeile
  * --task-tools-gap          -> Abstand zwischen der Pille unter dem Titel und dem ersten Abschnitt
  * --task-section-gap        -> Luft zwischen zwei Gruppen der Aufgaben-Liste
- * --tasks-switch-w / --tasks-switch-h -> Größe des Schalters in der Karte „Ansicht“
+ * --tasks-switch-w / --tasks-switch-h -> Größe des Schalters in der Karte „Ansicht konfigurieren“
  * --tasks-seg-h             -> Höhe des Segments Liste | Board in dieser Karte
+ * --tasks-panel-gap         -> Luft zwischen der Karte „Ansicht konfigurieren“ und der Navigation darunter
+ * --tasks-panel-slide       -> wie schnell diese Karte aus- und einklappt
  * --board-col-width         -> Breite einer Board-Spalte
  * --board-gap               -> Fuge zwischen zwei Spalten
  * --board-head-gap          -> Abstand zwischen Kopfzeile und erster Zeile einer Spalte
@@ -244,6 +246,8 @@
   --tasks-switch-w: 46px;
   --tasks-switch-h: 28px;
   --tasks-seg-h: 32px;
+  --tasks-panel-gap: 12px;
+  --tasks-panel-slide: 0.32s;
   --board-col-width: 264px;
   --board-gap: 12px;
   --board-head-gap: 6px;
