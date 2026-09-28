@@ -17,7 +17,7 @@
  * --content-top             -> um so viel wird der einrastende Kopf nach oben verlängert
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei
- * (Monat und Jahr 18px, Tageszahlen 16px, Rollen-Zeilen 20px, „Fertig“ 17px).
+ * (Monat und Jahr 18px, Wochentage und KW 12px, Tageszahlen 16px, Rollen-Zeilen 20px, „Fertig“ 17px).
 */
 
 /* @import: die Ringe haben eine eigene Datei, weil diese sonst über 400 Zeilen
@@ -112,15 +112,16 @@
   height: 28px;
   /* Verlauf: deckt die durchscheinende Vorwoche unter den Wochentagen weitgehend ab */
   background: linear-gradient(to bottom, var(--bg) 55%, color-mix(in srgb, var(--bg) 70%, transparent));
-  font-size: 13px;
+  /* Wochentage so blass wie „KW“, damit Monat und Jahr darüber führen */
+  font-size: 12px;
   font-weight: 600;
   text-transform: uppercase;
   color: var(--muted);
   text-align: center;
 }
 
-.cal-week-head span:first-child {
-  font-size: 12px;
+/* Blässe nur an der Schrift, damit der Verlauf dahinter voll deckt */
+.cal-week-head span {
   opacity: 0.7;
 }
 
