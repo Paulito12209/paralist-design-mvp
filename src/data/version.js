@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "7b59b12f2460";
+export const appVersion = "c7e7e5c56fdd";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -102,6 +102,7 @@ export const appFiles = [
   "src/features/media/viewer-menu.js",
   "src/features/media/viewer-nav.js",
   "src/features/media/viewer-stage.js",
+  "src/features/media/viewer-zoom.js",
   "src/features/media/viewer.js",
   "src/features/overview/archive.js",
   "src/features/overview/overview.js",

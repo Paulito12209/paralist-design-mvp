@@ -144,7 +144,7 @@ dom.pageBody.addEventListener("click", (event) => {
   event.stopPropagation();
   event.preventDefault();
   const row = thumb.closest(".bookmark-row");
-  load("video").then((module) => module.openVideo({ url: thumb.dataset.videoUrl, name: thumb.dataset.videoName }, row));
+  load("video").then((module) => module.openVideo({ url: thumb.dataset.videoUrl, name: thumb.dataset.videoName, entryId: row.dataset.openEntry }, row));
 });
 initPillSwipe(el("view-page"), {
   order: bookmarkPills.map((pill) => pill.id),

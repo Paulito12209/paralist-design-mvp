@@ -57,9 +57,3 @@ export async function createYouTubePlayer(host, videoId) {
     });
   });
 }
-
-/** Adresse für eine schlichte Einbettung mit YouTubes Bedienung, die sofort startet (Medien-Vorschau). */
-export function youtubeEmbedUrl(videoId) {
-  const args = new URLSearchParams({ ...playerVars, autoplay: 1 });
-  return `${PLAYER_HOST}/embed/${videoId}?${args}`;
-}

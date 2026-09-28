@@ -112,13 +112,15 @@ function applyPreview(url, name) {
 
 /**
  * Den Player für ein Video öffnen: { url, name } und das Element, an dessen
- * Stelle er kommt (die Karte bzw. die Zeile). Löst auf, sobald der Block steht.
+ * Stelle er kommt (die Karte bzw. die Zeile). entryId: der Eintrag, in dem das
+ * Video steht — die Leiste der Medien-Vorschau gilt ihm. Löst auf, sobald der
+ * Block steht.
  */
-export async function openVideo({ url, name }, node) {
+export async function openVideo({ url, name, entryId }, node) {
   const id = youtubeId(url);
   if (!id || !node) return;
   closeVideo();
-  current = { url, name: name || "", ratio: 0 };
+  current = { url, name: name || "", ratio: 0, entryId: entryId ?? null };
   pad = document.createElement("div");
   pad.className = "video-pad";
   pad.innerHTML = markup(name);

@@ -2,7 +2,12 @@
  * Die Fläche der Dateiansicht: je nach Art ein Bild, ein Video mit Bedienung,
  * ein Audio-Spieler oder ein PDF. Die Datei kommt aus der Browser-Datenbank
  * (src/core/blobs.js) und bekommt für die Dauer der Ansicht eine kurze Adresse.
- * Dazu ein YouTube-Video aus dem Player einer Karte (renderVideoStage).
+ * Dazu ein YouTube-Video aus dem Player einer Karte (renderVideoStage): über
+ * dem Player liegt eine durchsichtige Fläche, damit Zoomen und Tippen bei der
+ * App ankommen statt im Player von YouTube — nur YouTubes Leiste ganz unten
+ * (Spulen, Ton) bleibt frei. Ein Tipp aufs Bild spielt ab bzw. hält an. Die
+ * Fläche kommt erst, wenn das Video einmal läuft: am Handy startet YouTube
+ * nur nach einem echten Tipp in seinen eigenen Player.
  * Pfad: src/features/media/viewer-stage.js
  *
  * Keine anpassbaren visuellen Werte: Größen, Flächen und Abstände stehen in
@@ -11,7 +16,7 @@
 
 import { getBlob } from "../../core/blobs.js";
 import { escapeHtml, icon } from "../../core/html.js";
-import { youtubeEmbedUrl } from "../../core/youtube.js";
+import { createYouTubePlayer } from "../../core/youtube.js";
 import { youtubeId } from "../../data/link-kinds.js";
 import { mediaKindOf } from "../../data/queries.js";
 import { thumbOf } from "../../data/thumbs.js";
@@ -21,12 +26,24 @@ const kindIcons = { image: "image", video: "video", audio: "wave", doc: "doc" };
 
 /* Die Adresse der gerade gezeigten Datei — sie wird beim Schließen freigegeben. */
 let openUrl = null;
+/* Der YouTube-Player der Ansicht — er wird beim Schließen abgebaut */
+let player = null;
 
-/** Die kurze Adresse der letzten Datei freigeben, damit der Speicher frei wird. */
+/** Die kurze Adresse der letzten Datei freigeben und ein laufendes Video beenden. */
 export function releaseStage() {
+  player?.destroy();
+  player = null;
   if (!openUrl) return;
   URL.revokeObjectURL(openUrl);
   openUrl = null;
+}
+
+/** Tipp aufs Video (über viewer-zoom.js): abspielen bzw. anhalten. */
+export function toggleVideo() {
+  if (!player) return;
+  /* 1 = läuft gerade (YT.PlayerState.PLAYING) */
+  if (player.getPlayerState() === 1) player.pauseVideo();
+  else player.playVideo();
 }
 
 /* Hinweis statt Spieler: die Datei liegt nicht (mehr) im Browser. */
@@ -81,10 +98,28 @@ function docMarkup(url, title, isPdf) {
 export function renderVideoStage(stage, { url, name, ratio }) {
   releaseStage();
   const id = youtubeId(url);
-  /* iframe: der Player von YouTube lässt sich nur so einbetten. allow autoplay:
-     das Video läuft sonst nicht von selbst weiter. data-own-swipe: Wischen
-     gehört dem Player, nicht dem Blättern. */
-  stage.innerHTML = `<iframe class="viewer-embed" src="${escapeHtml(youtubeEmbedUrl(id))}" title="${escapeHtml(name || "Video")}" style="--video-ratio: ${ratio || 0.5625}" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" data-own-swipe></iframe>`;
+  /* Der Player von YouTube ersetzt .viewer-embed-host. .viewer-shield liegt
+     darüber: Finger dort zoomen und tippen in der App, nicht im Player. */
+  stage.innerHTML = `
+    <div class="viewer-embed" style="--video-ratio: ${ratio || 0.5625}" aria-label="${escapeHtml(name || "Video")}">
+      <div class="viewer-embed-host"></div>
+      <div class="viewer-shield" hidden></div>
+    </div>`;
+  const host = stage.querySelector(".viewer-embed-host");
+  createYouTubePlayer(host, id).then((created) => {
+    /* Inzwischen geschlossen oder etwas anderes geöffnet: wieder abbauen */
+    if (!stage.isConnected || !stage.contains(created.getIframe())) {
+      created.destroy();
+      return;
+    }
+    player = created;
+    /* 1 = läuft: ab jetzt gehören Tipp und Zoom der App (siehe oben) */
+    const shield = stage.querySelector(".viewer-shield");
+    player.addEventListener("onStateChange", (event) => {
+      if (event.data === 1) shield.hidden = false;
+    });
+    player.playVideo();
+  });
 }
 
 /**

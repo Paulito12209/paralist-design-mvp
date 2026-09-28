@@ -46,6 +46,14 @@ export function clearModalPull(backdrop) {
   if (body) body.style.overflow = "";
 }
 
+/** Eine begonnene Ziehbewegung abbrechen — z.B. wenn ein zweiter Finger zum Zoomen dazukommt. */
+export function cancelModalPull() {
+  if (!pull) return;
+  const { backdrop, active } = pull;
+  pull = null;
+  if (active) clearModalPull(backdrop);
+}
+
 /** Ein Blatt für die Ziehgeste anmelden. */
 export function bindModalPull(backdrop, closeFn) {
   backdrop.addEventListener("pointerdown", (event) => {
@@ -58,6 +66,8 @@ export function bindModalPull(backdrop, closeFn) {
        eigenen Bedienelemente von Video, Ton und PDF von der Geste verschont. */
     if (event.target.closest(".modal-close, .profile-save, .profile-avatar-edit, .date-wheels")) return;
     if (event.target.closest(".viewer-btn, .viewer-title, .viewer-foot, .viewer-video, .viewer-audio, .viewer-pdf, .viewer-open")) return;
+    /* Vergrößert schiebt ein Finger das Bild (src/features/media/viewer-zoom.js) */
+    if (event.target.closest(".viewer-stage[data-zoomed]")) return;
     if (event.target === backdrop) return;
 
     const body = bodyOf(backdrop);

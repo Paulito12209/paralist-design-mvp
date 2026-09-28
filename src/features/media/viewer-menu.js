@@ -2,7 +2,8 @@
  * Das Drei-Punkte-Menü der Dateiansicht und der Teilen-Knopf. Verknüpfen hat
  * einen eigenen Knopf in der Leiste unten (viewer.js) und steht deshalb nicht
  * mehr hier. Oben stehen Umbenennen und Favorisieren, unten nebeneinander
- * Archivieren und Löschen.
+ * Archivieren und Löschen. Für ein YouTube-Video gibt es ein eigenes, kleines
+ * Menü (openVideoMenu) — es gehört zu keiner Datei, die man löschen könnte.
  * Pfad: src/features/media/viewer-menu.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -14,6 +15,7 @@
 
 import { getBlob } from "../../core/blobs.js";
 import { emit, events } from "../../core/bus.js";
+import { copyText } from "../../core/clipboard.js";
 import { deleteEntry, toggleFavorite } from "../../data/mutations.js";
 import { archiveEntry } from "../../data/xp.js";
 import { openSheet } from "../../ui/sheet.js";
@@ -104,6 +106,41 @@ export function openViewerMenu(entry, { onRename, onClose }) {
         deleteEntry(entry.id);
         onClose();
       },
+    },
+  ]);
+}
+
+/* Den Link in die Zwischenablage legen und das kurz bestätigen. */
+async function copyVideoLink(url, note) {
+  const done = await copyText(url);
+  showNote(note, done ? "Link kopiert." : "Link ließ sich nicht kopieren.");
+}
+
+/** Ein YouTube-Video teilen: das Teilen-Fenster des Geräts, sonst den Link kopieren. */
+export async function shareVideo({ url, name }, note) {
+  if (navigator.share) {
+    try {
+      await navigator.share({ title: name || "Video", url });
+    } catch (error) {
+      /* Abgebrochen: nichts weiter tun */
+    }
+    return;
+  }
+  copyVideoLink(url, note);
+}
+
+/** Das Drei-Punkte-Menü beim YouTube-Video: bei YouTube öffnen oder den Link kopieren. */
+export function openVideoMenu({ url, name }, note) {
+  openSheet(name || "Video", [
+    {
+      label: "Auf YouTube öffnen",
+      icon: "external",
+      onSelect: () => window.open(url, "_blank", "noopener"),
+    },
+    {
+      label: "Link kopieren",
+      icon: "link",
+      onSelect: () => copyVideoLink(url, note),
     },
   ]);
 }

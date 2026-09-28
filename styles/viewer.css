@@ -3,7 +3,9 @@
  * Teilen-Knopf in der Kopfzeile. Dahinter liegt derselbe Grund mit demselben
  * Verlauf wie überall in der App. Unten stehen Verknüpfen, „Zur Seite“ und das
  * Drei-Punkte-Menü nur als Icons ohne eigene Fläche — sie nehmen eigenen Platz
- * ein, statt sich über das Bild oder ein Hochkant-Video zu legen.
+ * ein, statt sich über das Bild oder ein Hochkant-Video zu legen. Gezoomt wird
+ * nur die Datei (src/features/media/viewer-zoom.js): Kopf und Leiste bleiben
+ * immer stehen — auch beim YouTube-Video im Vollbild.
  * Pfad: styles/viewer.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens.css)
@@ -23,6 +25,7 @@
  * --viewer-nav-opacity -> wie deutlich die Blätter-Pfeile zu sehen sind
  * --text / --muted     -> Schrift und Icons oben wie unten, Hinweise
  * --tab-pill-active-bg  -> Fläche, die beim Drücken eines Knopfes kurz erscheint
+ * --viewer-shield-gap   -> Höhe von YouTubes Leiste unten im Video, die für Spulen und Ton frei bleibt
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -48,6 +51,7 @@
   display: flex;
   flex-direction: column;
   animation: viewer-in 0.2s ease; /* animation: die Datei blendet kurz auf, statt zu springen */
+  touch-action: none; /* touch-action: Finger zoomen nur die Datei (viewer-zoom.js), nie die ganze Seite mit Kopf und Leiste */
 }
 
 @keyframes viewer-in {
@@ -172,6 +176,7 @@
   flex: 1;
   min-height: 0; /* min-height: erst damit darf die Datei darin schrumpfen */
   position: relative; /* position: Bezugsrahmen für die beiden Pfeile */
+  overflow: hidden; /* overflow: die vergrößerte Datei bleibt in ihrem Rahmen und legt sich nie über Kopf oder Leiste */
   display: flex;
   flex-direction: column;
 }
@@ -227,6 +232,7 @@
   padding: var(--viewer-pad);
   padding-bottom: calc(var(--viewer-pad) + var(--safe-bottom));
   overflow: auto;
+  transform-origin: 0 0; /* transform-origin: viewer-zoom.js rechnet von der linken oberen Ecke aus */
 }
 
 /* Bild und Video bleiben ganz im Bild, statt beschnitten zu werden */
@@ -248,8 +254,28 @@
   width: 100%;
   max-height: 100%;
   aspect-ratio: 1 / var(--video-ratio); /* aspect-ratio: Breite zu Höhe aus dem gemeldeten Verhältnis */
-  border: 0;
+  position: relative; /* position: Bezugsrahmen für Player und die Fläche darüber */
   background: #000000;
+}
+
+/* iframe: der Player, den YouTube anstelle von .viewer-embed-host einsetzt */
+.viewer-embed iframe {
+  position: absolute; /* position: füllt den Rahmen ganz aus */
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+/* Durchsichtige Fläche über dem Bild: Zoomen und Tippen landen bei der App.
+   Unten bleibt YouTubes Leiste (Spulen, Ton) frei bedienbar. */
+.viewer-shield {
+  position: absolute; /* position: liegt genau über dem Bild des Players */
+  inset: 0 0 var(--viewer-shield-gap);
+}
+
+.viewer-shield[hidden] {
+  display: none;
 }
 
 .viewer-foot[hidden],
@@ -335,6 +361,7 @@
   font-size: 14px;
   color: var(--text);
   text-align: center;
+  pointer-events: none; /* pointer-events: der Hinweis liegt über der Leiste unten — Tipps gehen durch zu den Knöpfen */
 }
 
 .viewer-hint[hidden] {

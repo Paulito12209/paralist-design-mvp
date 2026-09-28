@@ -4,8 +4,10 @@
  * Name zum Ändern und der Teilen-Knopf, unten in einer eigenen schwarzen
  * Leiste liegen Verknüpfen, „Zur Seite“ und das Drei-Punkte-Menü. Zur
  * vorigen und nächsten Datei geht es über Pfeile, Wischen oder Pfeiltasten
- * (viewer-nav.js). Ein YouTube-Video aus dem Player einer Karte geht hier
- * ebenfalls auf (openVideoViewer): nur Zurück und der Name, keine Fußleiste.
+ * (viewer-nav.js). Gezoomt wird nur die Datei, Kopf und Leiste bleiben stehen
+ * (viewer-zoom.js). Ein YouTube-Video aus dem Player einer Karte geht hier
+ * ebenfalls auf (openVideoViewer), mit derselben Kopfzeile und Leiste: sie
+ * gelten dem Eintrag, in dem das Video steht; Teilen gibt den Link weiter.
  * Wird erst beim ersten Öffnen einer Datei nachgeladen.
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -25,9 +27,10 @@ import { openEntry, registerOverlay } from "../../ui/router.js";
 import { bindModalPull, clearModalPull } from "../../ui/modal-pull.js";
 import { openLinkSheet } from "../../ui/link-sheet.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
-import { openViewerMenu, shareEntry } from "./viewer-menu.js";
+import { openVideoMenu, openViewerMenu, shareEntry, shareVideo } from "./viewer-menu.js";
 import { navMarkup, neighborId, updateNav } from "./viewer-nav.js";
-import { releaseStage, renderStage, renderVideoStage } from "./viewer-stage.js";
+import { releaseStage, renderStage, renderVideoStage, toggleVideo } from "./viewer-stage.js";
+import { bindZoom, isZoomed, resetZoom, unbindZoom } from "./viewer-zoom.js";
 
 const VIDEO_ID = "video";
 
@@ -36,6 +39,9 @@ let openId = 0;
 
 /* Die IDs, durch die man blättern kann — die Reihe, aus der geöffnet wurde. */
 let sequence = [];
+
+/* Das offene YouTube-Video ({ url, name, ratio, entryId }), sonst null. */
+let video = null;
 
 /* Das Schließen ist angestoßen, der Verlaufsschritt zurück aber noch nicht
    angekommen. Ohne diese Merkung ginge die App beim Löschen zwei Schritte
@@ -67,6 +73,10 @@ function mount() {
         <button class="viewer-foot-btn viewer-foot-icon" type="button" data-viewer="menu" aria-label="Optionen">${icon("dots")}</button>
       </footer>
     </div>`;
+  /* Ein Tipp auf die Datei: beim YouTube-Video abspielen bzw. anhalten */
+  bindZoom(dom.mediaViewer.querySelector(".viewer"), () => {
+    if (video) toggleVideo();
+  });
 }
 
 /* Die drei Teile, die beim Zeichnen und Bedienen gebraucht werden. */
@@ -82,8 +92,10 @@ function parts() {
 function hide() {
   if (!openId) return;
   openId = 0;
+  video = null;
   closing = false;
   releaseStage();
+  unbindZoom();
   clearModalPull(dom.mediaViewer);
   /* Leeren, damit ein laufendes Video wirklich anhält und nicht weiterspielt. */
   dom.mediaViewer.innerHTML = "";
@@ -113,6 +125,7 @@ function open(push = true, entryOrState = null, list = null) {
     openVideo(push, entryOrState.video);
     return;
   }
+  video = null;
   const entry = entryOrState && entryOrState.id !== undefined ? findEntry(entryOrState.id) : entryOrState;
   if (!entry) return;
 
@@ -128,23 +141,25 @@ function open(push = true, entryOrState = null, list = null) {
   if (push) history.pushState({ view: "file", id: entry.id, list: sequence, from: ui.sourceView }, "", `#/datei/${entry.id}`);
 }
 
-/* Ein YouTube-Video ({ url, name, ratio }) bildschirmfüllend: Name nur zum
-   Lesen, keine Pfeile, keine Fußleiste — es gehört zu keinem Eintrag. */
-function openVideo(push, video) {
+/* Ein YouTube-Video ({ url, name, ratio, entryId }) bildschirmfüllend: Name
+   nur zum Lesen, keine Pfeile. Die Leiste unten gilt dem Eintrag, in dem das
+   Video steht (Lesezeichen oder Karte im Text). */
+function openVideo(push, data) {
   openId = VIDEO_ID;
+  video = data;
   sequence = [];
   closing = false;
   mount();
   clearModalPull(dom.mediaViewer);
   dom.mediaViewer.hidden = false;
   const { title, stage } = parts();
-  title.value = video.name || "Video";
+  title.value = data.name || "Video";
   title.readOnly = true;
-  dom.mediaViewer.querySelector(".viewer-foot").hidden = true;
-  dom.mediaViewer.querySelector("[data-viewer=share]").hidden = true;
-  renderVideoStage(stage, video);
+  /* Ohne Eintrag (gelöscht) hätten Verknüpfen und „Zur Seite“ kein Ziel */
+  dom.mediaViewer.querySelector(".viewer-foot").hidden = !currentEntry();
+  renderVideoStage(stage, data);
   updateNav(dom.mediaViewer, sequence, VIDEO_ID);
-  if (push) history.pushState({ view: "file", video, from: ui.sourceView }, "", "#/video");
+  if (push) history.pushState({ view: "file", video: data, from: ui.sourceView }, "", "#/video");
 }
 
 /** Vom Player einer Karte aus (src/ui/video-player.js): das Video bildschirmfüllend. */
@@ -157,6 +172,7 @@ function show(entry) {
   const { title, stage } = parts();
   title.value = entry.title || "";
   stage.dataset.entryId = String(entry.id);
+  resetZoom();
   renderStage(stage, entry);
   updateNav(dom.mediaViewer, sequence, entry.id);
 }
@@ -176,10 +192,11 @@ export function openViewer(entry, list) {
   open(true, entry, list);
 }
 
-/* Der Eintrag, der gerade zu sehen ist — oder null, wenn er inzwischen weg
-   ist (oder ein YouTube-Video ohne Eintrag offen ist). */
+/* Der Eintrag, der gerade zu sehen ist — beim YouTube-Video der, in dem es
+   steht —, oder null, wenn er inzwischen weg ist. */
 function currentEntry() {
-  return openId && openId !== VIDEO_ID ? findEntry(openId) : null;
+  if (video) return video.entryId ? findEntry(video.entryId) : null;
+  return openId ? findEntry(openId) : null;
 }
 
 /* „Zur Seite“: von der bildschirmfüllenden Datei zu ihrer eigenen Eintragsseite
@@ -204,6 +221,10 @@ function onClick(event) {
     step(button.dataset.viewer === "prev" ? -1 : 1);
     return;
   }
+  if (video && button.dataset.viewer === "share") {
+    shareVideo(video, parts().hint);
+    return;
+  }
   if (!entry) return;
   if (button.dataset.viewer === "share") {
     shareEntry(entry, parts().hint);
@@ -217,6 +238,10 @@ function onClick(event) {
     goToEntryPage(entry);
     return;
   }
+  if (video) {
+    openVideoMenu(video, parts().hint);
+    return;
+  }
   openViewerMenu(entry, {
     onRename: () => {
       focusAtEnd(parts().title);
@@ -227,7 +252,7 @@ function onClick(event) {
 
 /* Tippen im Namensfeld speichert erst kurz nach dem letzten Buchstaben. */
 function onInput(event) {
-  if (!event.target.closest(".viewer-title")) return;
+  if (!event.target.closest(".viewer-title") || video) return;
   const entry = currentEntry();
   if (!entry) return;
   entry.title = event.target.value;
@@ -244,12 +269,12 @@ function init() {
     order: ["prev", "open", "next"],
     current: () => "open",
     select: (id) => step(id === "prev" ? -1 : 1),
-    enabled: () => Boolean(openId),
+    enabled: () => Boolean(openId) && !isZoomed(),
   });
 
   /* Pfeiltasten am Rechner — außer beim Tippen im Namensfeld. */
   document.addEventListener("keydown", (event) => {
-    if (!openId || dom.mediaViewer.hidden || event.target.closest("input, textarea")) return;
+    if (!openId || isZoomed() || dom.mediaViewer.hidden || event.target.closest("input, textarea")) return;
     if (event.key === "ArrowLeft") step(-1);
     if (event.key === "ArrowRight") step(1);
   });

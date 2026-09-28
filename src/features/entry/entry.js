@@ -205,7 +205,7 @@ export function initEntry() {
        nachgeladen). Der Text klappt aus, damit der Player nicht unterm Auslaufen liegt. */
     onVideo: (block, card) =>
       load("video").then((module) => {
-        module.openVideo(block, card);
+        module.openVideo({ ...block, entryId: ui.currentEntryId }, card);
         expandEntryFold();
       }),
   });
