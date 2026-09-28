@@ -25,6 +25,12 @@
  * (.entry-fold), den diese Datei beim Start um beide legt. Gemessen wird nur,
  * wenn sich wirklich etwas ändert (Seite öffnen, Pille wechseln, Größe von
  * Titel, Text oder Anzeigefläche), nie beim Scrollen.
+ *
+ * Die Bildschirmtastatur verschiebt nichts davon: die Karte bleibt beim
+ * Tippen dort, wo sie ohne Tastatur liegt — unter der Tastatur, per Scrollen
+ * erreichbar —, statt mit ihr hochzurutschen und die Fläche zum Schreiben
+ * zusammenzudrücken. Gemessen wird darum immer gegen die Lage der Navigation
+ * bei geschlossener Tastatur.
  * Pfad: src/features/entry/entry-fold.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -37,8 +43,10 @@
  * Aussehen (Auslaufen des Textes, Knopf) in styles/entry-details.css.
  */
 
+import { events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
+import { ui } from "../../data/state.js";
 import { isViewActive } from "../../ui/views.js";
 import { detailsCard } from "./entry-details.js";
 
@@ -55,12 +63,25 @@ let reveal = null;
 let revealMargin = "";
 /* Ausgeklappt? Beginnt bei jeder geöffneten Seite eingeklappt. */
 let expanded = false;
+/* Abstand von der Oberkante der Anzeigefläche bis zur Navigation, zuletzt
+   bei geschlossener Tastatur gemessen (null: noch nie ohne Tastatur gemessen) */
+let restingCover = null;
 
-/* Oberkante dessen, was unten über der Seite liegt: die Navigation. Ist sie
-   nicht zu sehen (Desktop), zählt der untere Rand der Anzeigefläche. */
+/*
+ * Oberkante dessen, was unten über der Seite liegt: die Navigation. Ist sie
+ * nicht zu sehen (Desktop), zählt der untere Rand der Anzeigefläche.
+ * Bei offener Tastatur zählt die Lage ohne Tastatur: die Leiste steht dann
+ * unsichtbar über der Tastatur (styles/navigation.css), und Android macht
+ * zusätzlich die ganze Anzeigefläche kürzer — beides würde die Karte
+ * hochziehen und den Text auf die Mindesthöhe stauchen.
+ */
 function coveredFrom() {
+  const contentTop = dom.content.getBoundingClientRect().top;
+  if (ui.keyboardOpen && restingCover !== null) return contentTop + restingCover;
   const rect = dom.navShell ? dom.navShell.getBoundingClientRect() : null;
-  return rect && rect.height ? rect.top : dom.content.getBoundingClientRect().bottom;
+  const covered = rect && rect.height ? rect.top : dom.content.getBoundingClientRect().bottom;
+  if (!ui.keyboardOpen) restingCover = covered - contentTop;
+  return covered;
 }
 
 /*
@@ -185,4 +206,9 @@ export function initEntryFold() {
      Anzeigefläche sich ändert (Drehen, Tastatur) — ohne bei jedem Tastendruck zu rechnen */
   const observer = new ResizeObserver(() => layoutEntryFold());
   [dom.content, dom.entryTitle, dom.entryBody].forEach((node) => observer.observe(node));
+
+  /* Tastatur zu: am iPhone ändert sich dabei keine Größe, der Beobachter
+     schweigt. Neu messen, falls die Seite mit offener Tastatur geöffnet
+     wurde und die Lage ohne Tastatur noch nicht kannte. */
+  on(events.keyboardClosed, () => layoutEntryFold());
 }
