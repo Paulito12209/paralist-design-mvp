@@ -40,6 +40,10 @@ export const events = {
   /* „Nach Updates suchen“ in den Einstellungen: die Hülle sieht sofort nach und
      lädt eine neuere Fassung gleich. `report(status)` meldet zurück, was war. */
   updateRequested: "update:requested",
+  /* Der schon offene Reiter wurde unten noch einmal angetippt, während die
+     Seite schon ganz oben steht: der Bereich stellt seinen Ausgangszustand
+     her (Übersicht: erste Kartenseite, Kalender: wie „Heute“). */
+  tabReselected: "tab:reselected",
 };
 
 const listeners = new Map();

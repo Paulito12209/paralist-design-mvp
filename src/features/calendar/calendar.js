@@ -190,6 +190,11 @@ function init() {
   on(events.dataChanged, () => {
     if (isViewActive("calendar")) renderCalendar();
   });
+  /* Zweites Antippen von „Kalender“ unten, die Seite steht schon oben: wie
+     der „Heute“-Knopf — heutiger Tag, die Jetzt-Linie gut sichtbar. */
+  on(events.tabReselected, (tab) => {
+    if (tab === "calendar") goToday();
+  });
 
   /* Wurde die Seite schon geöffnet, bevor dieses Modul fertig geladen war: jetzt zeichnen. */
   if (isViewActive("calendar")) {

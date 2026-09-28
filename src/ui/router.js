@@ -39,10 +39,12 @@ export function showHome(replace = true) {
 /** Eine der Navigations-Ansichten zeigen. */
 export function showTab(tab, replace = false) {
   dom.searchInput.blur();
-  /* Antippen des schon aktiven Reiters baut nichts neu auf, sondern rollt nur
-     sanft nach oben — wie beim zweiten Tippen auf einen iOS-Tab. */
+  /* Antippen des schon aktiven Reiters baut nichts neu auf: das erste Mal
+     rollt es sanft nach oben — wie bei einem iOS-Tab —, steht die Seite schon
+     oben, stellt der Bereich seinen Ausgangszustand her. */
   if (!replace && isViewActive(tab)) {
-    dom.content.scrollTo({ top: 0, behavior: "smooth" });
+    if (dom.content.scrollTop > 1) dom.content.scrollTo({ top: 0, behavior: "smooth" });
+    else emit(events.tabReselected, tab);
     return;
   }
   if (tab === "home") {

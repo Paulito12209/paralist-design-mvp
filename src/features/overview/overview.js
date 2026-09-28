@@ -127,4 +127,9 @@ export function initOverview() {
   on(events.viewOpened, (name) => {
     if (name === "home") renderOverview();
   });
+  /* Zweites Antippen von „Übersicht“ unten: die Karten zurück auf die erste
+     Seite mit Eingang, Favoriten, Projekte und Ressourcen. */
+  on(events.tabReselected, (tab) => {
+    if (tab === "home") dom.overviewGrid.scrollTo({ left: 0, behavior: "smooth" });
+  });
 }
