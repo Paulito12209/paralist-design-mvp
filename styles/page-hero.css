@@ -15,7 +15,7 @@
  *
  * Die Farbe des Icons kommt je Sammlung aus src/data/collections.js
  * (collectionHeads) und steht als --hero-color am Element; der Satz nutzt
- * --muted, der Abstand darunter --page-title-gap.
+ * --muted, der Abstand darunter --page-title-gap, der Einzug --title-side.
  */
 
 .page-hero-icon {
@@ -42,8 +42,8 @@
 
 .page-intro {
   margin: 0 0 var(--page-title-gap);
-  /* kein Seitenpolster: bündig mit dem Titel darüber, der auf Unterseiten auch keins hat */
-  padding: 0;
+  /* gleicher Einzug wie der Titel darüber (.screen-title), damit beide bündig stehen */
+  padding: 0 var(--title-side);
   font-size: 20px;
   line-height: 1.3;
   color: var(--muted);

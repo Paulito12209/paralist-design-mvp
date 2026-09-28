@@ -184,7 +184,9 @@
 
 .page-title {
   margin: 0 0 var(--page-title-gap);
-  padding: 0;
+  /* Kein eigenes padding: der Einzug --title-side kommt von .screen-title
+     (styles/base.css), damit Abschnitte, Sammlungen und Ablageorte ihren
+     Titel genauso eingerückt zeigen wie die Übersicht. */
   /* Lange Titel nach --page-title-lines Zeilen mit „…“ abschneiden */
   display: -webkit-box;
   -webkit-box-orient: vertical;
