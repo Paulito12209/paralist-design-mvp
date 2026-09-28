@@ -1,9 +1,8 @@
 /*
  * Die Karten im Baustein-Editor: Link übernehmen und im Netz nachschlagen
  * (Name des Ortes, Titel des Videos, Name und Farbe der Website), Karte
- * antippen öffnet den Link — bei einer YouTube-Karte spielt ein Tipp auf die
- * Kachel das Video in der Kachel ab (src/ui/video-player.js), nur der Name
- * daneben öffnet den Link —, das Drei-Punkte-Menü bietet Öffnen, Umbenennen,
+ * antippen öffnet den Link — eine YouTube-Karte stattdessen den Player in
+ * der App, wenn der Aufrufer onVideo hereingibt —, das Drei-Punkte-Menü bietet Öffnen, Umbenennen,
  * Namen kopieren, Link kopieren und Entfernen. „Kopieren“ unter dem Namen
  * kopiert nur den Namen („Good Aroma“). Dazu die runden Checkboxen.
  * Pfad: src/ui/block-embeds.js
@@ -24,7 +23,6 @@ import { icon } from "../core/html.js";
 import { cardName } from "./block-markup.js";
 import { openSheet } from "./sheet.js";
 import { showToast } from "./toast.js";
-import { playInTile } from "./video-player.js";
 
 const COPIED_MS = 1500;
 
@@ -166,9 +164,15 @@ function toggleCheck(ed, button) {
   ed.commit();
 }
 
-/** Klicks auf Karten und Checkboxen anmelden (ein Zuhörer am Editor). */
-export function bindBlockEmbeds(ed) {
+/** Klicks auf Karten und Checkboxen anmelden (ein Zuhörer am Editor).
+    onVideo(block, card) übernimmt YouTube-Karten (card ist das Element der
+    Karte, an dessen Stelle der Player kommt), sonst öffnet jede Karte ihren Link. */
+export function bindBlockEmbeds(ed, { onVideo = null } = {}) {
   const { root } = ed;
+  const openCard = (block, card) => {
+    if (onVideo && block.kind === "video" && youtubeId(block.url)) onVideo(block, card);
+    else openLink(block.url);
+  };
 
   /* Checkbox antippen, während geschrieben wird: der Cursor bleibt, wo er
      ist, und die Tastatur bleibt offen. */
@@ -189,14 +193,13 @@ export function bindBlockEmbeds(ed) {
     const copy = event.target.closest("[data-embed-copy]");
     if (copy) copyName(block, copy);
     else if (event.target.closest("[data-embed-menu]")) openCardMenu(ed, block);
-    else if (event.target.closest(".embed-tile") && block.kind === "video" && playInTile(card.querySelector(".embed-media"), block.url)) return;
-    else openLink(block.url);
+    else openCard(block, card);
   });
 
   /* Mit der Tastatur: Enter auf einer Karte öffnet sie */
   root.addEventListener("keydown", (event) => {
     if (event.key !== "Enter" || !event.target.matches?.(".embed")) return;
     const block = ed.blocks[ed.indexOf(event.target)];
-    if (block) openLink(block.url);
+    if (block) openCard(block, event.target);
   });
 }

@@ -5,8 +5,8 @@
  * welchem Eintrag das Lesezeichen steht. Den großen Kopf mit Icon und Satz
  * schaltet man wie bei jeder Sammlung im Menü oben rechts ein
  * (src/features/overview/page-hero.js). Waagerecht wischen wechselt die
- * Pille. Ein Tipp auf das Vorschaubild eines Videos spielt es in dieser
- * Kachel ab (src/ui/video-player.js); der Rest der Zeile öffnet den Eintrag.
+ * Pille. Ein Tipp auf das Vorschaubild eines Videos spielt es an der Stelle
+ * der Zeile ab (src/ui/video-player.js); die Zeile selbst öffnet den Eintrag.
  * Wird erst beim ersten Öffnen nachgeladen.
  * Pfad: src/features/bookmarks/bookmarks.js
  *
@@ -20,6 +20,7 @@
  */
 
 import { dom, el } from "../../core/dom.js";
+import { load, loadedModule } from "../../core/lazy.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { colorFromText, faviconUrl } from "../../core/link-preview.js";
 import { BOOKMARK_TYPE, bookmarkCounts, bookmarkItems, bookmarkPills, validBookmarkPill } from "../../data/bookmarks.js";
@@ -31,7 +32,6 @@ import { emptyState } from "../../ui/empty-state.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { setPagePill } from "../../ui/router.js";
 import { isViewActive } from "../../ui/views.js";
-import { playInTile, stopVideo } from "../../ui/video-player.js";
 
 /* Platzhalter je Pille; alle im Lila der Lesezeichen. */
 const emptyArt = {
@@ -66,8 +66,8 @@ function pillsMarkup(active) {
 function thumbMarkup(block) {
   const video = block.kind === "video" && youtubeId(block.url);
   if (video) {
-    /* Der Link am Bild: ein Tipp darauf spielt das Video in der Kachel ab */
-    return `<span class="bookmark-thumb is-video" data-video-url="${escapeHtml(block.url)}"><img src="${youtubeThumb(video)}" alt="" loading="lazy" decoding="async" /><span class="embed-play" aria-hidden="true"></span></span>`;
+    /* Link und Name am Bild: der Tipp darauf startet den Player an der Stelle der Zeile */
+    return `<span class="bookmark-thumb is-video" data-video-url="${escapeHtml(block.url)}" data-video-name="${escapeHtml(block.name || "")}"><img src="${youtubeThumb(video)}" alt="" loading="lazy" decoding="async" /><span class="embed-play" aria-hidden="true"></span></span>`;
   }
   if (block.kind === "link" && block.url) {
     const host = hostOf(block.url);
@@ -117,8 +117,9 @@ export function renderBookmarks() {
     ? `<div class="bookmark-list">${items.map(rowMarkup).join("")}</div>`
     : emptyState({ ...emptyArt[pill], accent: "var(--bookmark-color)", action: { label: EMPTY_ACTION } });
 
-  /* Ein laufendes Video würde mit ersetzt: vorher anhalten */
-  stopVideo();
+  /* Ein offener Player würde mit ersetzt: vorher sauber schließen */
+  const video = loadedModule("video");
+  if (video && video.isVideoOpenIn(dom.pageBody)) video.closeVideo();
   /* Die Leiste wird mit ersetzt: ihre Rollstellung mitnehmen */
   const scrolled = dom.pageBody.querySelector(".bookmark-pills")?.scrollLeft || 0;
   dom.pageBody.innerHTML = pillsMarkup(pill) + list;
@@ -142,7 +143,8 @@ dom.pageBody.addEventListener("click", (event) => {
   /* Nur das Bild spielt ab — die Zeile drumherum (src/ui/list-clicks.js) öffnet sonst den Eintrag */
   event.stopPropagation();
   event.preventDefault();
-  playInTile(thumb, thumb.dataset.videoUrl);
+  const row = thumb.closest(".bookmark-row");
+  load("video").then((module) => module.openVideo({ url: thumb.dataset.videoUrl, name: thumb.dataset.videoName }, row));
 });
 initPillSwipe(el("view-page"), {
   order: bookmarkPills.map((pill) => pill.id),

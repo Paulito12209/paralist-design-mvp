@@ -34,9 +34,11 @@ const EMPTY_HINT = "Schreib etwas …";
  * onChange(text) wird nach jeder Änderung mit dem neuen Text aufgerufen —
  * das Speichern (und wie oft) entscheidet der Aufrufer.
  * emptyHint ist der graue Platzhalter einer ganz leeren Notiz.
+ * onVideo(block, card) übernimmt, wenn gesetzt, den Tipp auf eine YouTube-Karte
+ * (Player an der Stelle der Karte statt neuer Tab, siehe block-embeds.js).
  * Liefert { setText, focusEnd, blur }.
  */
-export function createBlockEditor(root, { onChange, emptyHint = EMPTY_HINT }) {
+export function createBlockEditor(root, { onChange, onVideo = null, emptyHint = EMPTY_HINT }) {
   /* Zu jedem Baustein sein Element. Ein geänderter Baustein ist ein neues
      Objekt und bekommt darum beim nächsten Zeichnen ein neues Element. */
   let nodes = new WeakMap();
@@ -164,7 +166,7 @@ export function createBlockEditor(root, { onChange, emptyHint = EMPTY_HINT }) {
 
   createSlashMenu(ed);
   bindBlockKeys(ed);
-  bindBlockEmbeds(ed);
+  bindBlockEmbeds(ed, { onVideo });
 
   const api = {
     /** Einen gespeicherten Text zeigen (beim Öffnen einer Notiz). */

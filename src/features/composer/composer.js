@@ -24,6 +24,7 @@ import { openPlacePicker } from "../../ui/pickers.js";
 import { openEntry, openEntryOrFile } from "../../ui/router.js";
 import { hideToast, showToast } from "../../ui/toast.js";
 import { isViewActive } from "../../ui/views.js";
+import { fillVideoTitle } from "../../ui/bookmark-title.js";
 import {
   attachFilesTo,
   createMediaEntries,
@@ -237,6 +238,8 @@ export function createEntry() {
     ui.entryPill = "links";
   }
   emit(events.dataChanged);
+  /* Ein Lesezeichen mit YouTube-Link heißt gleich wie das Video, sobald der Titel da ist */
+  fillVideoTitle(entry);
 
   /*
    * Ohne Rückmeldung merkt man vom Anlegen nichts — nur eine Zahl auf einer

@@ -42,11 +42,13 @@ function placeTitle(title) {
   return (title || "").replace(/\s*[-–·|]\s*Google Maps\s*$/i, "").split(" · ")[0].trim();
 }
 
-/** Titel und Kanal eines Videos über noembed.com: { name, sub } oder null. */
+/** Titel, Kanal und Seitenverhältnis (Höhe geteilt durch Breite, 0 = unbekannt)
+    eines Videos über noembed.com: { name, sub, ratio } oder null. */
 export async function videoPreview(url) {
   const data = await fetchJson(`https://noembed.com/embed?url=${encodeURIComponent(url)}`);
   if (!data || data.error || !data.title) return null;
-  return { name: data.title, sub: data.author_name || "" };
+  const ratio = data.width > 0 && data.height > 0 ? data.height / data.width : 0;
+  return { name: data.title, sub: data.author_name || "", ratio };
 }
 
 /**

@@ -13,7 +13,7 @@
  */
 
 import { hostOf, isShortMapsLink, normalizeUrl, placeFromUrl, youtubeId } from "./link-kinds.js";
-import { blockLine, embedKinds, makeBlock, parseBlocks } from "./note-blocks.js";
+import { blockLine, embedKinds, makeBlock, parseBlocks, serializeBlocks } from "./note-blocks.js";
 import { state } from "./state.js";
 
 export const BOOKMARK_TYPE = "lesezeichen";
@@ -81,7 +81,7 @@ export function bookmarkTotal() {
 /**
  * Ein neuer Lesezeichen-Eintrag, dessen Titel ein Link ist: der Link wird zur
  * Karte im Inhalt und der Titel zu etwas Lesbarem (Ort, Website). Ein Video
- * behält vorerst den Link als Titel, bis man ihn umbenennt.
+ * behält den Link als Titel, bis src/ui/bookmark-title.js den Videotitel holt.
  */
 export function fillBookmarkEntry(entry) {
   const url = normalizeUrl(entry.title);
@@ -91,4 +91,27 @@ export function fillBookmarkEntry(entry) {
   entry.body = blockLine(makeBlock(kind, { url, name }));
   if (kind === "place" && name) entry.title = name;
   else if (kind === "link") entry.title = hostOf(url);
+}
+
+/**
+ * Die Adresse eines Lesezeichens ändern (Abschnitt „Link“ in den Details):
+ * die Karte bekommt den neuen Link, ihre Art richtet sich danach, ihr Name
+ * fällt weg (kommt aus dem Netz nach). Hieß der Eintrag wie der alte Link
+ * oder wie die Karte, heißt er jetzt wie der neue. Ungültig: nichts passiert, false.
+ */
+export function setBookmarkUrl(entry, input) {
+  const url = normalizeUrl(input);
+  if (!url) return false;
+  const blocks = parseBlocks(entry.body || "");
+  const index = blocks.findIndex((block) => block.url);
+  const old = index >= 0 ? blocks[index] : null;
+  const kind = embedKindOf(url);
+  const name = kind === "place" ? placeFromUrl(url).name : "";
+  const card = makeBlock(kind, { url, name });
+  if (old) blocks[index] = card;
+  else blocks.unshift(card);
+  entry.body = serializeBlocks(blocks);
+  const stale = !entry.title || (old && (entry.title === old.url || entry.title === old.name));
+  if (stale) entry.title = name || (kind === "link" ? hostOf(url) : url);
+  return true;
 }

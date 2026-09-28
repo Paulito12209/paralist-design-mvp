@@ -24,6 +24,8 @@ import { linkedEntries } from "./links.js";
 import { openStats } from "./opens.js";
 import { charCount, hasPageBody, readingMinutes, wordCount } from "./page-text.js";
 import { entriesOf, isContainer, placesLabel } from "./queries.js";
+import { BOOKMARK_TYPE } from "./bookmarks.js";
+import { parseBlocks } from "./note-blocks.js";
 import { entryRef } from "./refs.js";
 import { entryUsage } from "./usage.js";
 
@@ -159,16 +161,25 @@ function placeRows(entry, facts, shown) {
   return rows;
 }
 
+/* Abschnitt „Link“ eines Lesezeichens: die Adresse seiner Karte, zum Ändern
+   antippbar (edit: "link", siehe src/features/entry/entry-details.js) */
+function linkRows(entry) {
+  if (entry.type !== BOOKMARK_TYPE) return [];
+  const block = parseBlocks(entry.body || "").find((item) => item.url);
+  return block ? [{ label: "Adresse", value: block.url, edit: "link" }] : [];
+}
+
 /**
  * Alles für die Karte „Details“ eines Eintrags.
  * @returns { stats: [{ value, label, color?, field? }] (immer drei),
- *            groups: [{ heading, rows: [{ label, value }] }] (leere fallen weg) }
+ *            groups: [{ heading, rows: [{ label, value, edit? }] }] (leere fallen weg) }
  */
 export function entryFacts(entry) {
   const facts = collect(entry);
   const ids = statsByType[entry.type] || statsByType.notiz;
   const shown = new Set(ids);
   const groups = [
+    { heading: "Link", rows: linkRows(entry) },
     { heading: "Text", rows: textRows(facts, shown) },
     { heading: "Nutzung", rows: usageRows(entry, facts, shown) },
     { heading: "Verlauf", rows: historyRows(entry) },

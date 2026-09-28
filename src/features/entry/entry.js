@@ -18,8 +18,8 @@
  *
  * Der Text unter „Inhalt“ besteht aus Bausteinen wie in Notion — „/“ öffnet
  * die Auswahl (Listen, Checkboxen, Trennlinie, Standort, Video, Link). Ein
- * Tipp auf die Kachel einer YouTube-Karte spielt das Video in der Kachel ab
- * (src/ui/video-player.js).
+ * Tipp auf eine YouTube-Karte spielt das Video an der Stelle der Karte ab
+ * (src/ui/video-player.js, nachgeladen); gekürzter Text klappt dafür aus.
  *
  * Unter „Inhalt“ startet ein Tipp in die freie Fläche unter dem Text das
  * Schreiben am Textende; bei offener Tastatur schließt ein Tipp nur sie
@@ -45,7 +45,7 @@
 
 import { events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
-import { load } from "../../core/lazy.js";
+import { load, loadedModule } from "../../core/lazy.js";
 import { canChangeType } from "../../data/convert.js";
 import { entryTypeName } from "../../data/details.js";
 import { linkedEntries } from "../../data/links.js";
@@ -57,7 +57,7 @@ import { scheduleSave, ui } from "../../data/state.js";
 import { entryMenuOptions } from "../../ui/entry-menu.js";
 import { initEntryCover, renderEntryCover } from "./entry-cover.js";
 import { initEntryDetails, renderEntryDetails } from "./entry-details.js";
-import { initEntryFold, layoutEntryFold, resetEntryFold } from "./entry-fold.js";
+import { expandEntryFold, initEntryFold, layoutEntryFold, resetEntryFold } from "./entry-fold.js";
 import { initEntryTitle, showEntryTitle } from "./entry-title.js";
 import { initEntryTools, linkFilterFor, renderEntryTools } from "./entry-tools.js";
 import { bindHeadTitle, setHeadTitle } from "../../ui/head-title.js";
@@ -69,10 +69,19 @@ import { openTypeChangeSheet, typeCrumbMarkup } from "../../ui/type-menu.js";
 import { isViewActive } from "../../ui/views.js";
 import { addWritePage } from "../../ui/write-tap.js";
 import { createBlockEditor } from "../../ui/block-editor.js";
-import { stopVideo } from "../../ui/video-player.js";
+import { fillVideoTitle } from "../../ui/bookmark-title.js";
 
 /* Der Baustein-Editor unter „Inhalt“ (src/ui/block-editor.js), angelegt in initEntry. */
 let bodyEditor = null;
+/* Der Text, den der Editor gerade zeigt — ändert ihn jemand anderes (Link in
+   den Details, nachgeholter Videotitel), wird er neu geladen */
+let shownBody = "";
+
+/* Ein offener Videoplayer (src/ui/video-player.js, nachgeladen) schließt,
+   sobald der Text neu gezeichnet oder verlassen wird — nur wenn das Modul schon da ist. */
+function closeVideoIfOpen() {
+  loadedModule("video")?.closeVideo();
+}
 
 /* Die beiden Pillen; die zweite trägt die Anzahl dessen, was darunter steht.
    Kein Icon: es wird nie mehr als diese zwei geben, das Wort allein reicht. */
@@ -136,11 +145,11 @@ function renderEntry() {
   const entry = findEntry(ui.currentEntryId);
   if (!entry) return;
 
-  /* Ein Video in einer Kachel verstummt, der Text wird gleich neu gezeichnet */
-  stopVideo();
+  closeVideoIfOpen();
   renderEntryCover(entry);
   showEntryTitle(entry);
   bodyEditor.setText(entry.body || "");
+  shownBody = entry.body || "";
   /* Jede geöffnete Seite beginnt mit gekürztem Text und hervorschauender Karte */
   resetEntryFold();
   renderEntryDetails(entry);
@@ -156,6 +165,9 @@ function renderEntry() {
   if (isDrawing) load("drawing").then((module) => module.openDrawing(entry));
   renderLinks(entry);
   renderEntryPills(entry);
+  /* Ein Lesezeichen mit YouTube-Link ohne Titel: Titel holen — die Änderung
+     kommt über dataChanged zurück auf die Seite */
+  fillVideoTitle(entry);
 }
 
 /* Das Menü oben rechts auf der Eintragsseite — dieselben Aktionen wie beim
@@ -175,6 +187,7 @@ function saveBody(text) {
   const entry = findEntry(ui.currentEntryId);
   if (!entry) return;
   entry.body = text;
+  shownBody = text;
   markEdited(entry);
   scheduleSave();
 }
@@ -186,10 +199,22 @@ export function initEntry() {
   initEntryFold();
   initEntryDetails();
   initEntryTitle();
-  bodyEditor = createBlockEditor(dom.entryBody, { onChange: saveBody });
+  bodyEditor = createBlockEditor(dom.entryBody, {
+    onChange: saveBody,
+    /* YouTube-Karte: Player an ihrer Stelle statt neuer Tab (src/ui/video-player.js,
+       nachgeladen). Der Text klappt aus, damit der Player nicht unterm Auslaufen liegt. */
+    onVideo: (block, card) =>
+      load("video").then((module) => {
+        module.openVideo(block, card);
+        expandEntryFold();
+      }),
+  });
   /* Wörter, Zeichen und „Zuletzt bearbeitet“ erst nach dem Schreiben
-     auffrischen, nicht bei jedem Buchstaben */
-  el("view-entry").addEventListener("focusout", () => {
+     auffrischen, nicht bei jedem Buchstaben — und nur, wenn der Fokus Titel
+     oder Text verlässt: Knöpfe auf der Seite (Player, Karte „Details“)
+     würden die Karte sonst mitten im Tipp ersetzen, und der Tipp ginge verloren */
+  el("view-entry").addEventListener("focusout", (event) => {
+    if (!event.target.closest(".entry-title, .nb-edit")) return;
     const entry = findEntry(ui.currentEntryId);
     if (entry) renderEntryDetails(entry);
   });
@@ -208,8 +233,7 @@ export function initEntry() {
        bliebe die Tastatur für ein unsichtbares Feld offen. */
     if (id !== "notes") {
       bodyEditor.blur();
-      /* Der Text verschwindet: ein Video in einer Kachel liefe sonst unsichtbar weiter */
-      stopVideo();
+      closeVideoIfOpen();
     }
     ui.entryPill = id;
     renderEntryPills(entry);
@@ -270,5 +294,12 @@ export function initEntry() {
     syncHeadSub(entry);
     renderLinks(entry);
     renderEntryPills(entry);
+    /* Text von außen geändert (neuer Link, nachgeholter Titel): Editor und Titel nachziehen */
+    if ((entry.body || "") !== shownBody) {
+      shownBody = entry.body || "";
+      bodyEditor.setText(shownBody);
+      showEntryTitle(entry);
+      setHeadTitle(el("entry-head"), entry.title || "Ohne Titel", entryTypeName(entry));
+    }
   });
 }

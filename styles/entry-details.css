@@ -225,3 +225,32 @@ button.details-stat:active {
   color: var(--text);
   text-align: right;
 }
+
+/* Antippbare Zeile (Adresse eines Lesezeichens): sieht aus wie die anderen,
+   der Wert bricht um, damit ein langer Link ganz zu lesen ist */
+.details-row.is-editable {
+  width: 100%;
+  text-align: left;
+  color: inherit;
+  cursor: pointer;
+}
+
+.details-row.is-editable .details-row-value {
+  overflow-wrap: anywhere;
+}
+
+.details-row.is-editable:active {
+  opacity: 0.55;
+}
+
+/* Das Feld an der Stelle des Werts, in derselben Schrift */
+.details-row-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--link-color);
+  font: inherit;
+  text-align: right;
+}

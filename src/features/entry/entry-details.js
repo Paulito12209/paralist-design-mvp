@@ -5,7 +5,10 @@
  * drei Kennzahlen nebeneinander (bei einer Aufgabe Datum | Status |
  * Dringlichkeit — ein Tipp auf Status oder Dringlichkeit öffnet das Blatt
  * dazu), nach einer Trennlinie die übrigen Angaben in Abschnitten. Was dort
- * steht, stellt src/data/entry-facts.js zusammen.
+ * steht, stellt src/data/entry-facts.js zusammen. Bei einem Lesezeichen
+ * steht oben der Abschnitt „Link“: ein Tipp auf die Adresse macht sie zum
+ * Feld, Enter oder Wegtippen übernimmt den neuen Link (und holt den
+ * Videotitel nach, src/ui/bookmark-title.js).
  *
  * Die Karte gehört zur Seite, nicht zur Navigation: sie scrollt mit dem Text
  * und liegt unter der Navigation. Wie weit sie beim Öffnen hervorschaut,
@@ -23,7 +26,12 @@
 
 import { dom, el } from "../../core/dom.js";
 import { escapeHtml, icon } from "../../core/html.js";
+import { setBookmarkUrl } from "../../data/bookmarks.js";
 import { entryFacts } from "../../data/entry-facts.js";
+import { markEdited } from "../../data/mutations.js";
+import { saveState } from "../../data/state.js";
+import { events, emit } from "../../core/bus.js";
+import { fillVideoTitle } from "../../ui/bookmark-title.js";
 import { findEntry } from "../../data/queries.js";
 import { ui } from "../../data/state.js";
 import { openLinkSheet } from "../../ui/link-sheet.js";
@@ -52,10 +60,17 @@ function statMarkup(stat) {
     : `<div class="details-stat">${inner}</div>`;
 }
 
+/* Eine Zeile mit `edit` ist ein Knopf: der Tipp macht den Wert zum Feld */
+function rowMarkup(row) {
+  const value = `<span class="details-row-value">${escapeHtml(row.value)}</span>`;
+  if (row.edit) {
+    return `<button class="details-row is-editable" type="button" data-details-edit="${row.edit}" aria-label="${escapeHtml(`${row.label} ändern`)}"><span class="details-row-label">${escapeHtml(row.label)}</span>${value}</button>`;
+  }
+  return `<div class="details-row"><span class="details-row-label">${escapeHtml(row.label)}</span>${value}</div>`;
+}
+
 function groupMarkup(group) {
-  const rows = group.rows
-    .map((row) => `<div class="details-row"><span class="details-row-label">${escapeHtml(row.label)}</span><span class="details-row-value">${escapeHtml(row.value)}</span></div>`)
-    .join("");
+  const rows = group.rows.map(rowMarkup).join("");
   return `<p class="details-heading">${escapeHtml(group.heading)}</p>${rows}`;
 }
 
@@ -65,6 +80,43 @@ export function renderEntryDetails(entry) {
   const facts = entryFacts(entry);
   statsBox.innerHTML = facts.stats.map(statMarkup).join("");
   listBox.innerHTML = facts.groups.map(groupMarkup).join("");
+}
+
+/* Die Adresse an Ort und Stelle ändern: ein Feld statt des Werts. Enter oder
+   Wegtippen übernimmt, Escape lässt alles wie es war. */
+function editLink(entry, row) {
+  const value = row.querySelector(".details-row-value");
+  /* input type=url: die Tastatur am Handy zeigt „.“ und „/“; kein eigenes
+     autocomplete, das Formular no-history hält Chromes Verlaufs-Chips fern */
+  const input = document.createElement("input");
+  input.className = "details-row-input";
+  input.type = "url";
+  input.inputMode = "url";
+  input.enterKeyHint = "done";
+  input.setAttribute("form", "no-history");
+  input.setAttribute("aria-label", "Adresse");
+  const before = value.textContent;
+  input.value = before;
+  value.replaceWith(input);
+  input.focus();
+  input.select();
+  let done = false;
+  const finish = (apply) => {
+    if (done) return;
+    done = true;
+    if (apply && input.value.trim() !== before && setBookmarkUrl(entry, input.value)) {
+      markEdited(entry);
+      saveState();
+      emit(events.dataChanged);
+      fillVideoTitle(entry);
+    }
+    renderEntryDetails(entry);
+  };
+  input.addEventListener("blur", () => finish(true));
+  input.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") input.blur();
+    if (event.key === "Escape") finish(false);
+  });
 }
 
 /* Wer Bewegung abgeschaltet hat, springt sofort statt zu gleiten. */
@@ -111,5 +163,7 @@ export function initEntryDetails() {
     }
     const stat = event.target.closest("[data-details-field]");
     if (stat) openTaskSheet(entry, stat.dataset.detailsField);
+    const row = event.target.closest("[data-details-edit]");
+    if (row && !row.querySelector("input")) editLink(entry, row);
   });
 }

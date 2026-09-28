@@ -13,6 +13,8 @@
  *   damit beim Schreiben nichts verdeckt ist.
  * - Zeichnung: die Zeichenfläche ist genau so hoch, dass unter ihr die
  *   Werkzeugleiste und darunter der Kopf der Karte Platz haben.
+ * - Ein Videoplayer im Text (src/ui/video-player.js) klappt den Text aus,
+ *   damit er nicht unter dem Auslaufen liegt.
  *
  * Kennzahlen und Abschnitte der Karte erscheinen erst, wenn sie beim
  * Hochscrollen über der Navigation auftauchen (IntersectionObserver, kein
@@ -137,6 +139,11 @@ export function resetEntryFold() {
   expanded = false;
 }
 
+/** Den Text ausklappen (für den Videoplayer im Text) und neu messen. */
+export function expandEntryFold() {
+  expanded = true;
+  layoutEntryFold();
+}
 
 /* Wer Bewegung abgeschaltet hat, springt sofort statt zu gleiten. */
 function scrollBehavior() {
