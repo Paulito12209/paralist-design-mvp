@@ -251,8 +251,9 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 - Aufgaben-Seite: der Titel steht allein, darunter die Pillen der Ansichten
   wie die Tabs über den Arbeitsbereichen: „Alle“ (fest), eigene Ansichten,
   das kleine Plus legt eine neue Ansicht als Kopie von „Alle“ an (startet im
-  Namensfeld), rechts hinter der Trennlinie legt ✓+ eine Aufgabe an
-  (Eingabefeld als Aufgabe). Wischen über die Liste wechselt die Ansicht.
+  Namensfeld), rechts hinter der Trennlinie öffnet ✓+ dieselbe leere Zeile wie ein Tipp
+  in die Liste (am Ende der Liste bzw. der ersten Gruppe, im Board in der
+  ersten Spalte) und scrollt dorthin. Wischen über die Liste wechselt die Ansicht.
   Pille gedrückt halten (oder Rechtsklick): Umbenennen, Icon, Duplizieren,
   Nach links / Nach rechts, Löschen — „Alle“ nur Icon und Duplizieren.
 - Karte „Ansicht konfigurieren“ als Ebene über der Liste, unter der

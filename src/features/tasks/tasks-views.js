@@ -2,8 +2,8 @@
  * Die Pillen über der Aufgaben-Liste — gebaut wie die Tabs über den
  * Arbeitsbereichen der Übersicht: links „Alle“ und die eigenen Ansichten,
  * dahinter das kleine Plus für eine neue Ansicht; rechts hinter der
- * Trennlinie der runde Knopf ✓+, der eine Aufgabe anlegt (das Eingabefeld
- * unten geht als Aufgabe auf). Der aktive Tab ist gefüllt, eine neue Ansicht
+ * Trennlinie der runde Knopf ✓+, der eine Aufgabe anlegt — dieselbe Zeile
+ * wie ein Tipp in die Liste (tasks-inline.js), nicht das Eingabefeld unten. Der aktive Tab ist gefüllt, eine neue Ansicht
  * startet gleich im Eingabefeld. Gedrückt halten (oder Rechtsklick) öffnet
  * das Menü: Umbenennen, Icon, Duplizieren, nach links, nach rechts, Löschen —
  * „Alle“ kennt nur Icon und Duplizieren. Waagerecht über die Liste wischen
@@ -19,7 +19,6 @@
  * Aussehen: styles/overview.css (Pillenzeile) und styles/tasks.css.
  */
 
-import { emit, events } from "../../core/bus.js";
 import { dom, el, focusAtEnd } from "../../core/dom.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { sameId } from "../../core/ids.js";
@@ -41,6 +40,7 @@ import { addLongPressMenu, cancelHold } from "../../ui/long-press.js";
 import { iconPickerAction } from "../../ui/pickers.js";
 import { fitPillInput, } from "../../ui/pill-input.js";
 import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
+import { startTaskRow } from "./tasks-inline.js";
 
 const addViewLabel = "Ansicht hinzufügen";
 const addTaskLabel = "Aufgabe hinzufügen";
@@ -131,7 +131,7 @@ export function handleViewsClick(event) {
     return;
   }
   if (event.target.closest("[data-task-view-add]")) addTaskView();
-  else if (event.target.closest("[data-task-add]")) emit(events.createRequested, "aufgabe");
+  else if (event.target.closest("[data-task-add]")) startTaskRow();
 }
 
 /** Tastatur im Namensfeld, Halte-Menü, Rechtsklick und Wischen anmelden. */

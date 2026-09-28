@@ -7,6 +7,11 @@
  * gilt dasselbe je Spalte. Nur ein echter Tipp zählt: wer scrollt oder wischt,
  * schreibt nicht — dieselbe Regel wie in src/ui/write-tap.js.
  *
+ * Der runde Knopf ✓+ oben rechts (tasks-views.js) öffnet dieselbe Zeile —
+ * am Ende der Liste bzw. der ersten Gruppe, im Board in der ersten Spalte —
+ * und scrollt dorthin: bei einer langen Liste muss man dafür nicht erst
+ * nach unten.
+ *
  * Das Eingabefeld unten bleibt der Weg für alles Weitere (Datum, Ort, Anhang);
  * die Zeile hier kennt nur den Titel.
  * Pfad: src/features/tasks/tasks-inline.js
@@ -16,17 +21,20 @@
  * TAP_SLOP_PX  -> so weit darf der Finger beim Tippen wandern; wer weiter
  *                 zieht, scrollt und bekommt keine neue Zeile
  * placeholder  -> grauer Text in der noch leeren Zeile
+ * ROW_SCROLL_SHARE -> wo die neue Zeile nach einem Tipp auf ✓+ steht, gemessen
+ *                 von oben (0.3 = im oberen Drittel, über der Tastatur)
  *
  * Aussehen der Zeile: styles/tasks.css (.task-inline).
  */
 
-import { el } from "../../core/dom.js";
+import { dom, el } from "../../core/dom.js";
 import { noHistoryForm } from "../../core/no-history.js";
 import { createTaskInline } from "../../data/mutations.js";
 import { isViewActive } from "../../ui/views.js";
 
 const TAP_SLOP_PX = 20;
 const placeholder = "Neue Aufgabe";
+const ROW_SCROLL_SHARE = 0.3;
 
 /* Die offene Zeile: { row, input, column } — sonst null. */
 let editing = null;
@@ -85,7 +93,7 @@ function commitRow(chain) {
 }
 
 /** Eine neue leere Zeile am Ende des Abschnitts öffnen und den Cursor hineinsetzen. */
-function openRow(section) {
+function openRow(section, reveal = false) {
   if (editing) return;
   const box = section.querySelector(".task-rows, .board-rows");
   if (!box) return;
@@ -117,7 +125,23 @@ function openRow(section) {
     }
   });
   input.addEventListener("blur", () => commitRow(false));
-  input.focus();
+  if (!reveal) {
+    input.focus();
+    return;
+  }
+  /* Selbst scrollen statt dem Browser das Scrollen beim Fokus zu überlassen:
+     der legt die Zeile an den unteren Rand — hinter Navigation und Tastatur. */
+  input.focus({ preventScroll: true });
+  const content = dom.content;
+  const top = content.scrollTop + row.getBoundingClientRect().top - content.getBoundingClientRect().top;
+  content.scrollTo({ top: Math.max(0, top - content.clientHeight * ROW_SCROLL_SHARE), behavior: "smooth" });
+  row.closest(".board")?.scrollTo({ left: 0, behavior: "smooth" });
+}
+
+/** Knopf ✓+: dieselbe Zeile wie ein Tipp in die Liste, im ersten Abschnitt. */
+export function startTaskRow() {
+  const section = el("tasks-body").querySelector(".task-section, .board-col");
+  if (section) openRow(section, true);
 }
 
 function onPointerDown(event) {
