@@ -11,6 +11,9 @@
  * --modal-dismiss-pull (styles/tokens.css) -> wie weit man ziehen muss, damit es schließt
  * startSlack   -> ab wie vielen Pixeln die Bewegung als Ziehen gilt
  * dimDistance  -> ab welcher Strecke der dunkle Hintergrund ganz aufgehellt ist (Pixel)
+ * closeAnimationMs -> wie lange das Blatt nach dem Loslassen nach unten gleitet (ms)
+ * settleTimeoutMs  -> wie lange auf das Schließen über den Verlauf gewartet wird,
+ *                     bevor das Blatt notfalls wieder an seinen Platz springt (ms)
  */
 
 import { cssNumber } from "../core/css-vars.js";
@@ -19,6 +22,7 @@ import { dom } from "../core/dom.js";
 const startSlack = 8;
 const dimDistance = 420;
 const closeAnimationMs = 180;
+const settleTimeoutMs = 1000;
 
 let pull = null;
 let ignoreClicksUntil = 0;
@@ -44,6 +48,40 @@ export function clearModalPull(backdrop) {
   backdrop.style.removeProperty("--modal-dim");
   const body = bodyOf(backdrop);
   if (body) body.style.overflow = "";
+}
+
+/*
+ * Nach dem Zuziehen aufräumen — aber erst, wenn das Blatt wirklich weg ist.
+ * Viele Blätter schließen über den Verlauf (history.back / history.go), und
+ * der meldet sich erst einen Augenblick später. Würde das Blatt vorher
+ * zurückgesetzt, stünde es für diesen Augenblick wieder offen da (z.B. eine
+ * Unterseite der Einstellungen blitzt auf). Bis dahin bleibt es unten und
+ * der Hintergrund ist schon hell.
+ */
+function settleAfterClose(backdrop) {
+  const finish = () => {
+    clearModalPull(backdrop);
+    delete backdrop.dataset.dismissing;
+  };
+  if (backdrop.hidden) {
+    finish();
+    return;
+  }
+  backdrop.style.setProperty("--modal-dim", "0");
+  /* MutationObserver: meldet, sobald das Blatt sein hidden bekommt — ohne
+     in jedem Bild nachzufragen. */
+  const watcher = new MutationObserver(() => {
+    if (!backdrop.hidden) return;
+    watcher.disconnect();
+    clearTimeout(fallback);
+    finish();
+  });
+  watcher.observe(backdrop, { attributes: true, attributeFilter: ["hidden"] });
+  /* Bleibt das Blatt doch offen (Schließen abgelehnt), steht es wieder sauber da. */
+  const fallback = setTimeout(() => {
+    watcher.disconnect();
+    finish();
+  }, settleTimeoutMs);
 }
 
 /** Eine begonnene Ziehbewegung abbrechen — z.B. wenn ein zweiter Finger zum Zoomen dazukommt. */
@@ -150,8 +188,7 @@ function onEnd(event) {
     }
     setTimeout(() => {
       closeFn();
-      clearModalPull(backdrop);
-      delete backdrop.dataset.dismissing;
+      settleAfterClose(backdrop);
     }, closeAnimationMs);
     return;
   }
