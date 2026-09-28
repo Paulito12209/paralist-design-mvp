@@ -36,14 +36,24 @@ export function showHome(replace = true) {
   writeHistory({ view: "home" }, "#/", replace);
 }
 
+/* Reiter, die das erneute Antippen selbst behandeln, statt erst nach oben zu rollen. */
+const reselectHandlers = new Map();
+
+/** Für einen Reiter festlegen, was erneutes Antippen tut (ersetzt das Hochrollen). */
+export function registerReselect(tab, handler) {
+  reselectHandlers.set(tab, handler);
+}
+
 /** Eine der Navigations-Ansichten zeigen. */
 export function showTab(tab, replace = false) {
   dom.searchInput.blur();
   /* Antippen des schon aktiven Reiters baut nichts neu auf: das erste Mal
      rollt es sanft nach oben — wie bei einem iOS-Tab —, steht die Seite schon
-     oben, stellt der Bereich seinen Ausgangszustand her. */
+     oben, stellt der Bereich seinen Ausgangszustand her. Ein Bereich mit
+     eigener Reihenfolge (Kalender) übernimmt beides selbst. */
   if (!replace && isViewActive(tab)) {
-    if (dom.content.scrollTop > 1) dom.content.scrollTo({ top: 0, behavior: "smooth" });
+    if (reselectHandlers.has(tab)) reselectHandlers.get(tab)();
+    else if (dom.content.scrollTop > 1) dom.content.scrollTo({ top: 0, behavior: "smooth" });
     else emit(events.tabReselected, tab);
     return;
   }

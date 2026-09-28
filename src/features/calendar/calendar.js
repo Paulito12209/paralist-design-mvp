@@ -17,6 +17,7 @@ import { dom } from "../../core/dom.js";
 import { calendarSegments, calendarSpans } from "../../data/config.js";
 import { state, ui } from "../../data/state.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
+import { registerReselect } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
 import { isViewActive } from "../../ui/views.js";
 import { openDatePicker } from "./calendar-date-picker.js";
@@ -117,6 +118,22 @@ function stopTick() {
   tickTimer = null;
 }
 
+/*
+ * „Kalender“ unten noch einmal antippen: zuerst wie der „Heute“-Knopf —
+ * heutiger Tag, die Jetzt-Linie gut sichtbar —, steht sie schon im Bild, rollt
+ * die Seite nach oben und Titel, Monat und Streifen rasten wieder ein.
+ */
+function onReselect() {
+  const grid = state.prefs.calendar.mode === "grid";
+  /* Die Liste hat keine Jetzt-Linie: dort nur nach oben rollen, oben dann „Heute“. */
+  if (grid && !(isOnToday() && nowLineVisible())) {
+    goToday();
+    return;
+  }
+  if (dom.content.scrollTop > 1) dom.content.scrollTo({ top: 0, behavior: "smooth" });
+  else goToday();
+}
+
 /* Das Blatt hinter dem Zeitraum-Knopf. */
 function openSpanSheet() {
   openSheet(
@@ -190,11 +207,7 @@ function init() {
   on(events.dataChanged, () => {
     if (isViewActive("calendar")) renderCalendar();
   });
-  /* Zweites Antippen von „Kalender“ unten, die Seite steht schon oben: wie
-     der „Heute“-Knopf — heutiger Tag, die Jetzt-Linie gut sichtbar. */
-  on(events.tabReselected, (tab) => {
-    if (tab === "calendar") goToday();
-  });
+  registerReselect("calendar", onReselect);
 
   /* Wurde die Seite schon geöffnet, bevor dieses Modul fertig geladen war: jetzt zeichnen. */
   if (isViewActive("calendar")) {
