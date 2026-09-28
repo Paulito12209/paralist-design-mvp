@@ -201,14 +201,13 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   Blatt), darunter Text, Nutzung (Zeit auf der Seite, Besuche, zuletzt
   bearbeitet), Verlauf und Ablage. Das Ketten-Symbol öffnet „Verknüpfen“ mit
   den Pillen Zuletzt | Ablageort | Kategorien.
-- YouTube-Karte im Inhalt antippen: die Karte wird an Ort und Stelle zum
-  dunklen Player über die ganze Zeilenbreite (kein neuer Tab), der Text bleibt
-  darüber und darunter stehen; gekürzter Text klappt dafür aus. Tempo-Knopf „1x“ schaltet weiter, Ziehen auf der Leiste springt,
-  Vollbild-Knopf, Pfeil oben links bringt den Text zurück, Pfeil oben rechts
-  öffnet YouTube. Pillenwechsel, Zurück-Pfeil und Browser-Zurück schließen den
-  Player; ein Video ohne Einbettungsfreigabe meldet YouTube selbst. Auf der
-  Lesezeichen-Seite spielt ein Tipp auf das Vorschaubild genauso an der Stelle
-  der Zeile; ein Tipp auf den Rest der Zeile öffnet weiter den Eintrag.
+- Kachel einer YouTube-Karte im Inhalt antippen: das Video läuft in der
+  Kachel an der Stelle des Vorschaubilds (kein neuer Tab, kein eigener
+  Player); ein Tipp aufs laufende Video hält an. Der Name daneben öffnet
+  weiter den Link. Pillenwechsel, Zurück-Pfeil und Browser-Zurück holen das
+  Bild zurück; ein Video ohne Einbettungsfreigabe meldet YouTube selbst. Auf
+  der Lesezeichen-Seite genauso in der Kachel der Zeile; der Rest der Zeile
+  öffnet weiter den Eintrag.
 - Zeichnung: kein Textfeld; unter der weißen Fläche die Werkzeugleiste, darunter
   schaut die Karte „Details“ über der Navigation hervor. Der Kopier-Knopf neben
   den Pillen legt das Bild (weißer Grund, PNG) in die Zwischenablage — in einen

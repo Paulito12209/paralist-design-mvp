@@ -65,7 +65,6 @@ const lazyModules = {
   progress: () => import("./features/progress/progress.js"),
   profile: () => import("./features/profile/profile.js"),
   drawing: () => import("./features/drawing/drawing.js"),
-  video: () => import("./ui/video-player.js"),
   files: () => import("./data/files.js"),
   desk: () => import("./shell/desk.js"),
   dashboard: () => import("./features/dashboard/dashboard.js"),
@@ -75,7 +74,7 @@ const lazyModules = {
 const lazyViews = ["calendar", "tasks", "media", "search"];
 
 /* Reihenfolge des Vorladens: was man am ehesten als Nächstes braucht, zuerst. */
-const prefetchOrder = ["search", "tasks", "calendar", "media", "viewer", "progress", "profile", "resources", "bookmarks", "files", "drawing", "video"];
+const prefetchOrder = ["search", "tasks", "calendar", "media", "viewer", "progress", "profile", "resources", "bookmarks", "files", "drawing"];
 
 /* Gespeicherten Zustand einlesen, bevor irgendetwas gezeichnet wird. */
 function loadEverything() {

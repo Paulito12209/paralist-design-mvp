@@ -1,192 +1,65 @@
 /*
- * Der Videoplayer für YouTube-Karten: ein Tipp auf die Karte spielt das Video
- * hier in der App ab statt in einem neuen Browser-Tab. Der Player kommt als
- * dunkler Block genau an die Stelle der Karte — im Text eines Eintrags über
- * die ganze Zeilenbreite, auf der Lesezeichen-Seite anstelle der Zeile —,
- * der Rest bleibt stehen. Der Pfeil oben links bringt die Karte zurück, oben
- * rechts öffnet das Video auf YouTube; unten liegen Tempo, Fortschritt
- * (ziehen springt) und Vollbild, darunter der Titel. Ein Tipp aufs Bild hält
- * an und spielt weiter (das macht YouTube). Nachgeladen beim ersten Tipp
- * (src/core/lazy.js, Name „video“); es gibt immer nur einen Player.
+ * Video in der Kachel: ein Tipp auf das Vorschaubild einer YouTube-Karte
+ * spielt das Video genau dort ab, wo das Bild war — in der kleinen Kachel im
+ * Inhalt eines Eintrags und in der Kachel einer Lesezeichen-Zeile. Kein
+ * eigener Player, kein neuer Tab: das Bild wird gegen den eingebetteten
+ * YouTube-Player getauscht, ein Tipp darauf hält an und spielt weiter (das
+ * macht YouTube). Es läuft immer nur ein Video; beim Verlassen der Seite und
+ * beim Neuzeichnen kommt das Bild zurück.
  * Pfad: src/ui/video-player.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * SPEEDS  -> die Tempo-Stufen, durch die der Knopf „1x“ der Reihe nach schaltet
- * TICK_MS -> so oft rücken Fortschritt und Zeit nach, solange das Video läuft
+ * PLAYER_HOST -> Adresse des eingebetteten Players (nocookie: keine Cookies, bis das Video läuft)
+ * playerArgs  -> was YouTube zeigt: autoplay 1 = sofort starten, controls 0 = keine
+ *                eigenen Knöpfe, playsinline 1 = am Handy in der Kachel statt im Vollbild
  *
- * Aussehen in styles/video-player.css.
+ * Wie der Player die Kachel füllt: styles/video-player.css.
  */
 
 import { events, on } from "../core/bus.js";
-import { formatClock } from "../core/format.js";
-import { escapeHtml, icon } from "../core/html.js";
-import { videoPreview } from "../core/link-preview.js";
-import { createYouTubePlayer, playerState } from "../core/youtube.js";
+import { escapeHtml } from "../core/html.js";
 import { youtubeId } from "../data/link-kinds.js";
 
-const SPEEDS = [1, 1.25, 1.5, 2, 0.5, 0.75];
-const TICK_MS = 250;
+const PLAYER_HOST = "https://www.youtube-nocookie.com";
+const playerArgs = "autoplay=1&controls=0&playsinline=1&rel=0&modestbranding=1&iv_load_policy=3&disablekb=1";
 
-let pad = null;
-/* Das Element, an dessen Stelle der Player steht; kommt beim Schließen zurück */
-let replaced = null;
-let player = null;
-let timer = 0;
-let speedIndex = 0;
-/* Während man den Knopf auf der Leiste zieht, rückt der Fortschritt nicht von selbst nach */
-let dragging = false;
+/* Die Kachel, in der gerade ein Video läuft, und ihr Bild von vorher */
+let active = null;
 
-function markup(name) {
-  return `
-    <div class="video-stage">
-      <div class="video-host"></div>
-      <button class="video-glass video-close" type="button" data-video-close aria-label="Player schließen">${icon("back")}</button>
-      <button class="video-glass video-open" type="button" data-video-open aria-label="Auf YouTube öffnen">${icon("external")}</button>
-      <div class="video-time"><span data-video-now>0:00</span> / <span data-video-total>0:00</span></div>
-      <div class="video-bar">
-        <button class="video-speed" type="button" data-video-speed aria-label="Tempo">1x</button>
-        <div class="video-track" data-video-track role="slider" aria-label="Fortschritt" tabindex="-1"><span class="video-knob"></span></div>
-        <button class="video-full" type="button" data-video-full aria-label="Vollbild">${icon("expand")}</button>
-      </div>
-    </div>
-    <div class="video-title">${escapeHtml(name || "Video")}</div>`;
+/** Läuft in dieser Kachel gerade ein Video? */
+export function isPlayingIn(tile) {
+  return Boolean(active && active.tile === tile);
 }
 
-/* Fortschritt (0–1) auf die Leiste schreiben; die Zeit darüber mit */
-function showProgress(fraction, now) {
-  const track = pad.querySelector("[data-video-track]");
-  track.style.setProperty("--video-progress", String(fraction));
-  track.setAttribute("aria-valuenow", String(Math.round(fraction * 100)));
-  pad.querySelector("[data-video-now]").textContent = formatClock(now);
-}
-
-function tick() {
-  if (!player || dragging) return;
-  const total = player.getDuration() || 0;
-  const now = player.getCurrentTime() || 0;
-  pad.querySelector("[data-video-total]").textContent = formatClock(total);
-  showProgress(total ? now / total : 0, now);
-}
-
-/* Nur messen, solange das Video läuft — in der Pause steht die Leiste still */
-function setTicking(running) {
-  clearInterval(timer);
-  timer = running ? setInterval(tick, TICK_MS) : 0;
-}
-
-function onState(state) {
-  setTicking(state === playerState.playing);
-  /* Auch nach Pause und Ende einmal nachrücken, damit die Zeit stimmt */
-  if (state !== playerState.playing) tick();
-}
-
-function cycleSpeed(button) {
-  speedIndex = (speedIndex + 1) % SPEEDS.length;
-  const rate = SPEEDS[speedIndex];
-  player?.setPlaybackRate(rate);
-  button.textContent = `${rate}x`;
-}
-
-/* Auf der Leiste ziehen: der Fortschritt folgt dem Finger, losgelassen
-   springt das Video dorthin. Die Breite der Leiste wird einmal beim Anfassen
-   gemessen, nicht bei jeder Bewegung. */
-function bindTrack(track) {
-  let rect = null;
-  let fraction = 0;
-  const at = (event) => Math.min(1, Math.max(0, (event.clientX - rect.left) / rect.width));
-  track.addEventListener("pointerdown", (event) => {
-    if (!player) return;
-    dragging = true;
-    rect = track.getBoundingClientRect();
-    track.setPointerCapture(event.pointerId);
-    fraction = at(event);
-    showProgress(fraction, fraction * (player.getDuration() || 0));
-  });
-  track.addEventListener("pointermove", (event) => {
-    if (!dragging) return;
-    fraction = at(event);
-    showProgress(fraction, fraction * (player.getDuration() || 0));
-  });
-  const finish = () => {
-    if (!dragging) return;
-    dragging = false;
-    player?.seekTo(fraction * (player.getDuration() || 0), true);
-  };
-  track.addEventListener("pointerup", finish);
-  track.addEventListener("pointercancel", finish);
-}
-
-function toggleFullscreen() {
-  if (document.fullscreenElement) document.exitFullscreen();
-  else if (pad.requestFullscreen) pad.requestFullscreen();
-}
-
-function bindPad(url) {
-  pad.addEventListener("click", (event) => {
-    const target = event.target;
-    /* Der Player steht mitten in einer Liste oder im Text: der Tipp gehört ihm allein */
-    event.stopPropagation();
-    if (target.closest("[data-video-close]")) closeVideo();
-    else if (target.closest("[data-video-open]")) window.open(url, "_blank", "noopener");
-    else if (target.closest("[data-video-speed]")) cycleSpeed(target.closest("[data-video-speed]"));
-    else if (target.closest("[data-video-full]")) toggleFullscreen();
-  });
-  bindTrack(pad.querySelector("[data-video-track]"));
+/** Das Video anhalten und das Vorschaubild zurückholen. */
+export function stopVideo() {
+  if (!active) return;
+  const { tile, html } = active;
+  active = null;
+  /* Die Kachel kann beim Neuzeichnen schon ersetzt worden sein */
+  if (!tile.isConnected) return;
+  tile.innerHTML = html;
+  tile.classList.remove("is-playing");
 }
 
 /**
- * Den Player für ein Video öffnen: { url, name } und das Element, an dessen
- * Stelle er kommt (die Karte bzw. die Zeile). Löst auf, sobald der Block steht.
+ * Das Video eines Links in `tile` abspielen (die Fläche, in der das
+ * Vorschaubild steht). Kein YouTube-Link: nichts passiert, gibt false zurück.
  */
-export async function openVideo({ url, name }, node) {
+export function playInTile(tile, url) {
   const id = youtubeId(url);
-  if (!id || !node) return;
-  closeVideo();
-  pad = document.createElement("div");
-  pad.className = "video-pad";
-  pad.innerHTML = markup(name);
-  bindPad(url);
-  speedIndex = 0;
-
-  replaced = node;
-  node.after(pad);
-  /* Direkt am Element statt hidden: Karte und Zeile haben display: flex im
-     Stylesheet, das hidden überstimmen würde */
-  node.style.display = "none";
-  /* Hat die Karte noch keinen Titel (Netz war beim Einfügen nicht da), hier nachschlagen */
-  const title = pad.querySelector(".video-title");
-  if (!name) videoPreview(url).then((video) => video && title.isConnected && (title.textContent = video.name));
-
-  const host = pad.querySelector(".video-host");
-  const created = await createYouTubePlayer(host, id, { onState });
-  /* Inzwischen geschlossen oder ein anderes Video geöffnet */
-  if (!pad || !pad.contains(created.getIframe())) {
-    created.destroy();
-    return;
-  }
-  player = created;
-  tick();
-  player.playVideo();
-}
-
-/** Player schließen; die Karte kommt an ihre Stelle zurück. */
-export function closeVideo() {
-  if (!pad) return;
-  setTicking(false);
-  if (document.fullscreenElement === pad) document.exitFullscreen();
-  player?.destroy();
-  player = null;
-  pad.remove();
-  pad = null;
-  if (replaced) replaced.style.display = "";
-  replaced = null;
-}
-
-/** Steht der Player gerade in `container`? (Wer neu zeichnet, schließt ihn vorher.) */
-export function isVideoOpenIn(container) {
-  return Boolean(pad && container.contains(pad));
+  if (!id || !tile) return false;
+  if (isPlayingIn(tile)) return true;
+  stopVideo();
+  active = { tile, html: tile.innerHTML };
+  const src = `${PLAYER_HOST}/embed/${id}?${playerArgs}`;
+  /* iframe: der Player von YouTube lässt sich nur so einbetten. allow autoplay:
+     sonst startet das Video nach dem Tipp nicht von selbst. */
+  tile.innerHTML = `<iframe src="${escapeHtml(src)}" title="Video" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin"></iframe>`;
+  tile.classList.add("is-playing");
+  return true;
 }
 
 /* Beim Verlassen der Seite verstummt das Video */
-on(events.viewWillChange, closeVideo);
+on(events.viewWillChange, stopVideo);

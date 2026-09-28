@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "9bfa540e05de";
+export const appVersion = "b2ffc677af7a";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -41,7 +41,6 @@ export const appFiles = [
   "src/core/no-history.js",
   "src/core/storage.js",
   "src/core/week-range.js",
-  "src/core/youtube.js",
   "src/data/bookmarks.js",
   "src/data/collections.js",
   "src/data/config.js",

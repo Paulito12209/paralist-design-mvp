@@ -61,7 +61,7 @@
  * styles/page-hero.css       -> Sammlungen: großer Kopf mit Icon und zweizeiligem Satz (im Menü einschaltbar)
  * styles/viewer.css          -> Dateiansicht: Foto, Video, Aufnahme und PDF
  * styles/drawing.css         -> Zeichenfläche und Werkzeugleiste
- * styles/video-player.css    -> YouTube-Player als dunkler Block an der Stelle einer Video-Karte (Eintrag, Lesezeichen)
+ * styles/video-player.css    -> YouTube-Video, das in der Kachel einer Karte oder Lesezeichen-Zeile läuft
  * styles/tokens-desk.css     -> die Werte der Desktop-Fassung (Spalten, Flächen, große Zahlen)
  * styles/desk.css            -> Desktop: Raster aus Seitenleiste, Seite und rechter Spalte; Kopfzeile, Eingabefeld unten
  * styles/desk-overlays.css   -> Desktop: große Blätter, Auswahl-Blatt, Menü und Update-Fenster als Dialoge in der Mitte, samt Auftauchen
