@@ -25,7 +25,7 @@
  * taskStatuses            -> Name, Icon und Farbe der Status-Chips
  * taskGroupings           -> wonach sich Liste und Board gruppieren lassen (Dringlichkeit oder Status)
  * taskSorts               -> wonach die Aufgaben-Seite sortieren kann
- * taskDefaults            -> womit die Aufgaben-Seite beim allerersten Mal startet
+ * taskDefaults            -> womit eine neue Ansicht der Aufgaben-Seite startet
  * calendarSegments[*].add -> Beschriftung der Pille am leeren Kalendertag
  */
 
@@ -325,7 +325,7 @@ export const taskPriorities = [
 export const defaultTaskPriority = "spaeter";
 
 /** Die beiden Ansichten der Aufgaben-Seite. */
-export const taskViews = ["list", "board"];
+export const taskLayouts = ["list", "board"];
 
 /**
  * Wonach die Board-Spalten gruppieren. `columns` sagt, welche Liste die Spalten
@@ -354,13 +354,13 @@ export const taskSorts = [
 ];
 
 /**
- * Womit die Aufgaben-Seite startet: als eine Liste aller Aufgaben, nicht
- * gruppiert, älteste zuerst (Neues hängt sich unten an), Erledigtes
+ * Womit eine Ansicht der Aufgaben-Seite startet: als Liste aller Aufgaben,
+ * nicht gruppiert, älteste zuerst (Neues hängt sich unten an), Erledigtes
  * ausgeblendet. `group` ist "none" oder eine id aus taskGroupings; `place`
  * ist "alle", "inbox" oder ein Verweis wie „w:3“ / „e:12“.
  */
 export const taskDefaults = {
-  view: "list",
+  layout: "list",
   group: "none",
   sort: "erstellt",
   sortAsc: true,

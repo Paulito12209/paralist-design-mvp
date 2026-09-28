@@ -125,6 +125,12 @@
   <symbol id="icon-board" viewBox="0 0 24 24" fill="none">
     <path d="M6 5v11M12 5v6M18 5v14" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" />
   </symbol>
+  <!-- Aufgaben: Haken im offenen Kreis mit Plus unten rechts — neue Aufgabe -->
+  <symbol id="icon-task-plus" viewBox="0 0 24 24" fill="none">
+    <path d="M20.3 10.2A8.5 8.5 0 1 1 12.8 3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+    <path d="M8.5 11.5l3 3L21 5.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />
+    <path d="M18.5 15v6M15.5 18h6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" />
+  </symbol>
   <!-- Aufgaben: Pfeil hoch und Pfeil runter — der Sortier-Knopf -->
   <symbol id="icon-sort" viewBox="0 0 24 24" fill="none">
     <path d="M7 4v16m0 0-3.5-3.5M7 20l3.5-3.5M17 20V4m0 0 3.5 3.5M17 4l-3.5 3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" />

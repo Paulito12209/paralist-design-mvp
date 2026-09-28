@@ -248,17 +248,24 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   Verknüpfungen und Ort passiert, dann „Umwandeln“ oder „Abbrechen“. Nach
   Eintrag → Arbeitsbereich steht die Seite des Arbeitsbereichs offen; Zurück
   führt dorthin, woher man kam. Zeichnung und Medium haben die Option nicht.
-- Aufgaben-Seite: der Titel steht allein, darunter die Zeile wie über den
-  Listen eines Eintrags: links die Pille mit dem Ort („Alle“, „Eingang“ oder
-  ein Arbeitsbereich/Projekt/eine Notiz — Tipp öffnet das Blatt „Aufgaben
-  von“), rechts Sortieren (Erstellt/Fällig/Titel, Richtung), der Umschalter
-  Liste | Board, Einstellungen (nicht gruppieren / nach Dringlichkeit / nach
-  Status, Erledigte zeigen) und Plus (Eingabefeld als Aufgabe). Standard: alle
-  Aufgaben als eine Liste, älteste zuerst. Gruppiert zeigt die Liste dieselben
-  Gruppen wie das Board Spalten; das Board gruppiert ungruppiert nach
-  Dringlichkeit. Der Ring des Hakens trägt die Farbe der Dringlichkeit, „In
-  Arbeit“ zeigt einen Punkt darin. Unter dem Titel nur stiller Text: Fälligkeit
-  (überfällig rot), in Status-Gruppen die Dringlichkeit, dann der Ort.
+- Aufgaben-Seite: der Titel steht allein, darunter die Pillen der Ansichten
+  wie die Tabs über den Arbeitsbereichen: „Alle“ (fest), eigene Ansichten,
+  das kleine Plus legt eine neue Ansicht als Kopie von „Alle“ an (startet im
+  Namensfeld), rechts hinter der Trennlinie legt ✓+ eine Aufgabe an
+  (Eingabefeld als Aufgabe). Wischen über die Liste wechselt die Ansicht.
+  Pille gedrückt halten (oder Rechtsklick): Umbenennen, Icon, Duplizieren,
+  Nach links / Nach rechts, Löschen — „Alle“ nur Icon und Duplizieren.
+- Karte „Ansicht“ am Seitenende (Kopf schaut über der Navigation hervor, Tipp
+  darauf holt sie hoch): Layout Liste | Board, Sortieren (Blatt: Erstellt /
+  Fällig / Titel, Richtung), Filtern (Blatt „Aufgaben von“ — bei „Alle“
+  gesperrt, das ⓘ erklärt die eigene Ansicht), Gruppieren als Schalter (an:
+  „Spalten nach“ Dringlichkeit | Status), Erledigte zeigen. Jede Ansicht
+  merkt sich das für sich. Standard: alle Aufgaben als eine Liste, älteste
+  zuerst. Gruppiert zeigt die Liste dieselben Gruppen wie das Board Spalten;
+  das Board gruppiert ungruppiert nach Dringlichkeit. Der Ring des Hakens
+  trägt die Farbe der Dringlichkeit, „In Arbeit“ zeigt einen Punkt darin.
+  Unter dem Titel nur stiller Text: Fälligkeit (überfällig rot), in
+  Status-Gruppen die Dringlichkeit, dann der Ort.
 - Aufgabe anlegen durch Tippen: ganz ohne Aufgaben liegt die blasse Zeile
   „Neue Aufgabe“ da. Sonst ein Tipp in die freie Fläche — die neue Zeile mit
   Cursor erscheint am Ende der Liste (gruppiert: der Gruppe, unter der man

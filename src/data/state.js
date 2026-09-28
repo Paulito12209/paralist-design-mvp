@@ -20,8 +20,8 @@ import {
   resourceFilters,
   taskDefaults,
   taskGroupings,
+  taskLayouts,
   taskSorts,
-  taskViews,
 } from "./config.js";
 import { sanitizeLinks } from "./links.js";
 import { entryRef, normalizeRef, workspaceRef } from "./refs.js";
@@ -32,6 +32,9 @@ import { pruneThumbs } from "./thumbs.js";
 /** Gespeicherte Daten. Alles hier überlebt ein Neuladen der Seite. */
 export const state = {
   tabs: [{ id: 1, name: "Meine", awarded: true }],
+  /* Ansichten der Aufgaben-Seite (src/data/task-views.js); die erste, „Alle“, ist fest */
+  taskViews: [{ id: 1, name: "Alle", icon: null, fixed: true, ...taskDefaults }],
+  activeTaskViewId: 1,
   activeTabId: 1,
   /* Ein Arbeitsbereich: { id, name, tab, favorite, icon, body, awarded }.
      `body` ist sein Inhalt (freier Text). Bleibt `name` leer, gilt `placeholder`. */
@@ -49,7 +52,6 @@ export const state = {
     media: { filter: "recent" },
     resources: { filter: "all" },
     /* Aufgaben-Seite: Ansicht, Gruppierung der Spalten, Sortierung und die Filter */
-    tasks: { ...taskDefaults },
     /* Welche Sammlung ihren großen Kopf zeigt, z.B. { bookmarks: true }; fehlt = einfacher Titel */
     pageHeads: {},
   },
@@ -69,6 +71,8 @@ export const ui = {
   /* Auf der Seite eines Eintrags: "notes" (Inhalt) oder "links" (Verknüpfte Einträge) */
   entryPill: "notes",
   editingTabId: null,
+  /* Ansicht der Aufgaben-Seite, deren Name gerade getippt wird */
+  editingTaskViewId: null,
   editingWorkspaceId: null,
   /* Was gerade ins Namensfeld eines Arbeitsbereichs getippt wurde: { id, value } */
   nameDraft: null,
@@ -120,7 +124,8 @@ function snapshot() {
     calendar: state.prefs.calendar,
     media: state.prefs.media,
     resources: state.prefs.resources,
-    tasks: state.prefs.tasks,
+    taskViews: state.taskViews,
+    activeTaskViewId: state.activeTaskViewId,
     pageHeads: state.prefs.pageHeads,
     mediaSeeded,
   };
@@ -243,13 +248,6 @@ function adoptPrefs(saved) {
   if (saved.resources && typeof saved.resources === "object") {
     state.prefs.resources = { ...state.prefs.resources, ...saved.resources };
   }
-  /* Ein Stand ohne `sortAsc` stammt von einer früheren Aufgaben-Seite. Die
-     jetzige zeigt alle Aufgaben als eine Liste — das soll jeder beim ersten
-     Öffnen so sehen, nur Liste oder Board bleibt, wie gewählt. */
-  if (saved.tasks && typeof saved.tasks === "object") {
-    const stale = typeof saved.tasks.sortAsc !== "boolean";
-    state.prefs.tasks = stale ? { ...taskDefaults, view: saved.tasks.view } : { ...state.prefs.tasks, ...saved.tasks };
-  }
   if (saved.pageHeads && typeof saved.pageHeads === "object") {
     state.prefs.pageHeads = Object.fromEntries(Object.entries(saved.pageHeads).filter(([, on]) => on === true));
   }
@@ -260,19 +258,30 @@ function adoptPrefs(saved) {
   state.prefs.media.filter = pickValid(state.prefs.media.filter, mediaFilters.map((item) => item.id), "recent");
   state.prefs.resources.filter = pickValid(state.prefs.resources.filter, resourceFilters.map((item) => item.id), "all");
 
-  const tasks = state.prefs.tasks;
-  tasks.view = pickValid(tasks.view, taskViews, taskDefaults.view);
-  tasks.group = pickValid(tasks.group, ["none", ...taskGroupings.map((item) => item.id)], taskDefaults.group);
-  tasks.sort = pickValid(tasks.sort, taskSorts.map((item) => item.id), taskDefaults.sort);
-  tasks.sortAsc = typeof tasks.sortAsc === "boolean" ? tasks.sortAsc : taskDefaults.sortAsc;
-  /* Der Ort ist „alle“, „inbox“ oder ein Verweis wie „w:3“. Gibt es den Ort
-     nicht mehr, fällt der Filter auf „alle“ zurück — sonst bliebe die Seite
-     leer, ohne dass man sähe, warum. */
+  /* Ansichten der Aufgaben-Seite: die erste ist immer „Alle“ (fest,
+     ungefiltert); jede Angabe fällt auf die Vorgabe zurück, wenn sie nichts
+     Gültiges enthält. Ein Ort, den es nicht mehr gibt, wird zu „alle“ — sonst
+     bliebe die Ansicht leer, ohne dass man sähe, warum. */
   const places = ["alle", "inbox"]
     .concat(state.workspaces.map((workspace) => workspaceRef(workspace.id)))
     .concat(state.entries.map((entry) => entryRef(entry.id)));
-  tasks.place = pickValid(tasks.place, places, taskDefaults.place);
-  tasks.hideDone = typeof tasks.hideDone === "boolean" ? tasks.hideDone : taskDefaults.hideDone;
+  const views = Array.isArray(saved.taskViews) ? saved.taskViews.filter((view) => view && typeof view === "object") : [];
+  if (!views.length || !views[0].fixed) views.unshift({ ...state.taskViews[0] });
+  state.taskViews = views.map((view, index) => ({
+    id: Number(view.id) || index + 1,
+    name: index === 0 ? "Alle" : String(view.name || ""),
+    placeholder: typeof view.placeholder === "string" ? view.placeholder : undefined,
+    icon: typeof view.icon === "string" ? view.icon : null,
+    fixed: index === 0,
+    layout: pickValid(view.layout, taskLayouts, taskDefaults.layout),
+    group: pickValid(view.group, ["none", ...taskGroupings.map((item) => item.id)], taskDefaults.group),
+    sort: pickValid(view.sort, taskSorts.map((item) => item.id), taskDefaults.sort),
+    sortAsc: typeof view.sortAsc === "boolean" ? view.sortAsc : taskDefaults.sortAsc,
+    place: index === 0 ? "alle" : pickValid(view.place, places, taskDefaults.place),
+    hideDone: typeof view.hideDone === "boolean" ? view.hideDone : taskDefaults.hideDone,
+  }));
+  const active = Number(saved.activeTaskViewId);
+  state.activeTaskViewId = state.taskViews.some((view) => view.id === active) ? active : state.taskViews[0].id;
 }
 
 /** Liest den gespeicherten Stand; beim allerersten Start entstehen die Beispieldaten. */

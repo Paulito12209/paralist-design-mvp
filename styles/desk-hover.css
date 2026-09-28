@@ -126,7 +126,7 @@
      am Handy schon das Drücken eine Fläche zeigt — die soll sichtbar bleiben. */
   .top-bar :is(.level-btn, .avatar):hover,
   .content :is(.back-btn, .head-btn, .add-btn, .section-more, .tab-pill-add,
-    .task-check:not(.is-done), .tab-pill:not(.is-active, .task-place-pill), .cal-seg-btn:not(.is-active),
+    .task-check:not(.is-done), .tab-pill:not(.is-active), .cal-seg-btn:not(.is-active),
     .cal-today:not(.is-on)):hover,
   .bottom-bar :is(.media-btn, .draw-tool:not(.is-active), .composer-type:not(:disabled),
     .search-combo-btn:not(.is-active)):hover,
@@ -141,8 +141,7 @@
      bleibt. Der aktive Tab ist ein Knopf (Klick benennt ihn um). Die Tage im
      Kalender tönen ihre Zahl, damit der Kreis der Tage mit Einträgen bleibt. */
   .top-bar .search:hover,
-  .content :is(.overview-card, .page-search, .empty-add, button.tab-pill.is-active,
-    .task-place-pill, .cal-round, .cal-span, .cal-today.is-on, .cal-event, .cal-allday-chip):hover,
+  .content :is(.overview-card, .page-search, .empty-add, button.tab-pill.is-active, .cal-round, .cal-span, .cal-today.is-on, .cal-event, .cal-allday-chip):hover,
   .content .cal-day:hover .cal-day-num,
   .bottom-bar :is(.composer-link, .composer-attach, .composer-mic, .composer-attachment-remove,
     .draw-tool.is-active, .search-combo-btn.is-active, .search-cancel):hover,

@@ -60,7 +60,8 @@ function boardColumn(column, field) {
 /** Das ganze Board als HTML. */
 export function taskBoardMarkup(prefs) {
   const { field, columns } = taskColumns(prefs);
-  return `<div class="board" id="tasks-board">${columns
+  /* data-own-swipe: seitlich schieben rollt das Board, wechselt nicht die Ansicht (src/ui/pill-swipe.js) */
+  return `<div class="board" id="tasks-board" data-own-swipe>${columns
     .map((column) => boardColumn(column, field))
     .join("")}</div>`;
 }

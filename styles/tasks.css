@@ -1,7 +1,7 @@
 /*
- * Aufgaben-Seite: die Zeile mit Orts-Pille und Werkzeugen unter dem Titel,
- * die Gruppen der Liste, die Zeile zum Anlegen durch Tippen in die Fläche
- * und alles, was eine Aufgabe
+ * Aufgaben-Seite: die Pillen der Ansichten unter dem Titel, die Gruppen der
+ * Liste, die Zeile zum Anlegen durch Tippen in die Fläche und alles, was
+ * eine Aufgabe
  * gegenüber den übrigen Zeilen (styles/rows.css) zusätzlich hat: den runden
  * Haken-Knopf mit Ring in der Farbe der Dringlichkeit und die stille
  * Nebenzeile unter dem Titel. Das Board hat eine eigene Datei,
@@ -10,17 +10,14 @@
  *
  * ANPASSBARE WERTE (alle in styles/tokens-pages.css, außer wo genannt)
  * -----------------------------------
- * --page-title-gap      -> Luft zwischen Titel und Werkzeugzeile (styles/tokens.css)
- * --task-tools-gap      -> Abstand zwischen Werkzeugzeile und Liste
- * --page-tool-size      -> Größe der runden Knöpfe rechts (styles/tokens.css)
+ * --page-title-gap      -> Luft zwischen Titel und Pillenzeile (styles/tokens.css)
+ * --task-tools-gap      -> Abstand zwischen Pillenzeile und Liste
  * --task-section-gap    -> Luft zwischen zwei Gruppen
  * --task-check-size     -> Größe des runden Haken-Knopfes
  * --task-meta-size      -> Schriftgröße der Nebenzeile unter dem Titel
- * --tab-pill-active-bg  -> Fläche hinter dem Umschalter Liste | Board (styles/tokens.css)
- * --card                -> Fläche des gewählten Knopfs darin und des gesetzten Hakens
+ * --card                -> Fläche des gesetzten Hakens
  * --muted               -> Nebenzeile, Anzahl im Gruppenkopf, Geister-Zeile, Hinweis bei leerem Filter
  * --chevron             -> Ring eines Hakens ohne Dringlichkeitsfarbe
- * --icon-soft           -> der kleine Pfeil in der Pille
  * --prio-jetzt          -> Rot eines überfälligen Datums
  * --xp-done             -> Fläche des gesetzten Hakens
  * --line                -> Trennlinie unter der Zeile zum Anlegen
@@ -28,45 +25,18 @@
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
 
-/* ---------- Zeile unter dem Titel: Orts-Pille und Werkzeuge ---------- */
+/* ---------- Zeile unter dem Titel: Pillen der Ansichten ---------- */
 
-/* Dieselbe Zeile wie über den Listen eines Eintrags (.page-pills-row,
-   styles/entry.css) — nur der Abstand zum Titel darüber kommt von hier. */
-.tasks-tools .page-pills-row {
+/* Dieselbe Zeile wie über den Arbeitsbereichen (.tab-pills-row,
+   styles/overview.css) — nur der Abstand zum Titel darüber kommt von hier. */
+.tasks-tools .tab-pills-row {
   margin: var(--page-title-gap) 0 var(--task-tools-gap);
 }
 
-/* Die Pille ist ein Menü-Knopf: am Ende ein kleiner Pfeil nach unten */
-.task-place-pill {
-  padding-right: 12px;
-}
-
-.task-place-chevron {
-  width: 14px;
-  height: 14px;
-  flex: 0 0 auto;
-  color: var(--icon-soft);
-  transform: rotate(90deg); /* transform: der Pfeil der Zeilen zeigt nach rechts, hier soll er nach unten zeigen */
-}
-
-/* Liste | Board: zwei runde Knöpfe in einer gemeinsamen Pille, der gewählte
-   ist gefüllt — wie der Umschalter Liste/Raster in Dateiablagen */
-.task-view-seg {
-  display: inline-flex;
-  align-items: center;
-  padding: 2px;
-  border-radius: 999px; /* border-radius: macht aus den zwei Knöpfen eine Pille */
-  background: var(--tab-pill-active-bg);
-}
-
-.task-view-seg .page-tool {
-  width: calc(var(--page-tool-size) - 4px);
-  height: calc(var(--page-tool-size) - 4px);
-}
-
-.task-view-seg .page-tool.is-on {
-  background: var(--card);
-  color: var(--text);
+/* Der runde Knopf ✓+ hinter der Trennlinie: neue Aufgabe */
+.task-add-btn .icon {
+  width: 24px;
+  height: 24px;
 }
 
 /* Der Filter lässt nichts übrig: ein Satz statt einer leeren Fläche */

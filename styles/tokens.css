@@ -50,9 +50,10 @@
  * styles/avatar-crop.css     -> Ausschnitt fürs Profilbild: Fenster, Zoom-Regler, Auswählen
  * styles/settings.css        -> Einstellungs-Blatt: Analyse-Kacheln und Darstellung
  * styles/support.css         -> Einstellungs-Blatt: Feedback-Formular und Danksagungen
- * styles/tasks.css           -> Aufgaben-Seite: Bedienzeile und Liste
+ * styles/tasks.css           -> Aufgaben-Seite: Pillen der Ansichten, Liste, Haken, Anlegen durch Tippen
  * styles/tasks-board.css     -> Aufgaben-Seite: die Spalten des Kanban-Boards
  * styles/task-status.css     -> Haken vor Aufgaben in jeder Liste, „Aufgabe“ über „Offen · Jetzt“ auf der Aufgabenseite
+ * styles/tasks-settings.css  -> Karte „Ansicht“ am Ende der Aufgaben-Seite: Segment, Schalter, gesperrter Filter
  * styles/calendar.css        -> Kalender: Monat, Wochenstreifen, Bedienzeile
  * styles/calendar-rings.css  -> Kalender: Ringe mit Murmeln um die Tageszahlen
  * styles/calendar-panel.css  -> Kalender: graue Fläche mit Stundenraster und Liste
@@ -228,7 +229,6 @@
  * --sheet-slide-time        -> wie lange das Hereingleiten dauert
  * --sheet-tile-size / --sheet-tile-icon -> Kachel und Icon im Raster „Icon wählen“
  * --modal-dismiss-pull      -> Wie weit man ein Blatt ziehen muss, damit es schließt
- *
  * Dunkelmodus: dieselben Werte werden weiter unten noch einmal gesetzt —
  * einmal für „folgt dem System“ und einmal für „in den Einstellungen gewählt“.
  */

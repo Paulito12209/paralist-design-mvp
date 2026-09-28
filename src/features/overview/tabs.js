@@ -20,6 +20,7 @@ import { saveState, state, ui } from "../../data/state.js";
 import { awardXp } from "../../data/xp.js";
 import { openCtxMenu } from "../../ui/ctx-menu.js";
 import { iconPickerAction } from "../../ui/pickers.js";
+import { fitPillInput } from "../../ui/pill-input.js";
 import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
 import { isViewActive } from "../../ui/views.js";
 
@@ -44,32 +45,6 @@ function pillMarkup(tab) {
   `;
 }
 
-/**
- * Die Eingabe beim Umbenennen so schmal wie der Text machen, damit ein neuer
- * Tab nicht extra groß aussieht. Die Breite lässt sich nur messen, indem man
- * denselben Text unsichtbar daneben setzt.
- */
-export function fitTabNameInput(input) {
-  if (!input) return;
-  const sample = input.value || input.placeholder || "";
-  const style = getComputedStyle(input);
-  const probe = document.createElement("span");
-  probe.textContent = sample || " ";
-  /* position/visibility/white-space: nötig, damit die Messhilfe nichts verschiebt und nicht umbricht */
-  probe.style.position = "absolute";
-  probe.style.visibility = "hidden";
-  probe.style.whiteSpace = "pre";
-  probe.style.font = style.font;
-  probe.style.fontSize = style.fontSize;
-  probe.style.fontWeight = style.fontWeight;
-  probe.style.fontFamily = style.fontFamily;
-  probe.style.letterSpacing = style.letterSpacing;
-  document.body.appendChild(probe);
-  const width = Math.ceil(probe.getBoundingClientRect().width);
-  probe.remove();
-  input.style.width = `${Math.max(width, 1)}px`;
-}
-
 /** Die Pillen neu zeichnen. Beim Umbenennen bekommt die Eingabe den Fokus. */
 export function renderTabs() {
   dom.workspaceTabs.innerHTML = `${state.tabs.map(pillMarkup).join("")}
@@ -79,7 +54,7 @@ export function renderTabs() {
 
   const input = el("tab-name-input");
   if (!input) return;
-  fitTabNameInput(input);
+  fitPillInput(input);
   focusAtEnd(input);
 }
 
@@ -141,7 +116,7 @@ export function initTabs() {
 
   pills.addEventListener("input", (event) => {
     if (event.target.id !== "tab-name-input") return;
-    fitTabNameInput(event.target);
+    fitPillInput(event.target);
     /* Der Tab wächst beim Tippen: sonst verschwände sein Ende unter Linie und Plus-Knopf */
     revealActive(el("view-home"));
   });

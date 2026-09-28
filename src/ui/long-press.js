@@ -25,6 +25,11 @@ export function setLongPressMenus(handlers) {
   openers = handlers;
 }
 
+/** Ein weiteres Menü anmelden — für Bereiche, die erst später nachgeladen werden (Aufgaben-Ansichten). */
+export function addLongPressMenu(kind, open) {
+  openers = { ...openers, [kind]: open };
+}
+
 /** Laufendes Halten abbrechen (z.B. weil der Finger wandert oder gewischt wird). */
 export function cancelHold() {
   if (!hold) return;

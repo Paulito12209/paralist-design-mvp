@@ -142,9 +142,11 @@ function contentsIntoLinks(entry, ref, fallback) {
   contents.forEach((item) => connectEntries(entry, item));
 }
 
-/* Der Orts-Filter der Aufgaben-Seite folgt dem Ort — oder fällt auf „alle“ zurück. */
+/* Der Orts-Filter jeder Ansicht der Aufgaben-Seite folgt dem Ort — oder fällt auf „alle“ zurück. */
 function movePlaceFilter(fromRef, toRef) {
-  if (state.prefs.tasks.place === fromRef) state.prefs.tasks.place = toRef || "alle";
+  state.taskViews.forEach((view) => {
+    if (view.place === fromRef) view.place = toRef || "alle";
+  });
 }
 
 /* Der Typwechsel selbst, ohne zu speichern — Verknüpfungen und Inhalt wandern mit. */

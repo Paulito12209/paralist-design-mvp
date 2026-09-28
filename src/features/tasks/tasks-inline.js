@@ -134,7 +134,7 @@ function onClick(event) {
   if (start.wasEditing || editing) return;
   if (!ghost) {
     /* Zeilen, Knöpfe, Griffe und Wisch-Knöpfe haben ihre eigene Bedeutung. */
-    if (target.closest("button, a, input, [data-grip], .swipe-actions, .board-row, .board-head")) return;
+    if (target.closest("button, a, input, [data-grip], .swipe-actions, .board-row, .board-head, .tasks-tools, .tasks-settings")) return;
     if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > TAP_SLOP_PX) return;
   }
   const section = ghost ? el("tasks-body").querySelector(".task-section") : sectionAt(target, event.clientY);

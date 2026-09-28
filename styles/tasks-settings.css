@@ -1,0 +1,142 @@
+/*
+ * Aufgaben-Seite: die Karte „Ansicht“ am Seitenende
+ * (src/features/tasks/tasks-settings.js). Karte, Kopf und Zeilen sehen aus
+ * wie die Karte „Details“ einer Eintragsseite (styles/entry-details.css) —
+ * hier stehen nur die Zutaten, die es dort nicht gibt: das Segment
+ * Liste | Board bzw. Dringlichkeit | Status, der Schalter und die gesperrte
+ * Filter-Zeile mit dem ⓘ.
+ * Pfad: styles/tasks-settings.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-pages.css, außer wo genannt)
+ * -----------------------------------
+ * --tasks-switch-w / --tasks-switch-h -> Größe des Schalters
+ * --tasks-seg-h              -> Höhe des Segments (und seiner Knöpfe)
+ * --tab-pill-active-bg       -> Fläche hinter dem Segment und Schalter „aus“ (styles/tokens.css)
+ * --bg                       -> Fläche des gewählten Segment-Knopfs (styles/tokens.css)
+ * --add                      -> Schalter „an“ (styles/tokens.css)
+ * --text / --muted           -> Schrift im Segment, gewählt und nicht gewählt
+ * --icon-soft                -> das ⓘ neben der gesperrten Filter-Zeile
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+*/
+
+/* Die Zeilen der Karte sind Knöpfe oder Zeilen mit Steuerung rechts —
+   beide gleich hoch und mittig ausgerichtet */
+.tasks-settings .details-row {
+  align-items: center;
+  width: 100%;
+  min-height: 40px;
+  text-align: left;
+}
+
+/* ---------- Segment: Liste | Board, Dringlichkeit | Status ---------- */
+
+.tasks-seg {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 999px; /* border-radius: macht aus den Knöpfen eine Pille */
+  background: var(--tab-pill-active-bg);
+}
+
+.tasks-seg-btn {
+  display: grid;
+  place-items: center;
+  min-width: calc(var(--tasks-seg-h) - 4px);
+  height: calc(var(--tasks-seg-h) - 4px);
+  padding: 0 10px;
+  border-radius: 999px; /* border-radius: der gefüllte Knopf ist rund wie die Pille */
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tasks-seg-btn .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.tasks-seg-btn.is-on {
+  background: var(--bg);
+  color: var(--text);
+}
+
+.tasks-seg-btn:active {
+  opacity: 0.55;
+}
+
+/* ---------- Schalter ---------- */
+
+.tasks-switch {
+  position: relative; /* position: Bezugsrahmen für den Knopf darin */
+  width: var(--tasks-switch-w);
+  height: var(--tasks-switch-h);
+  flex: 0 0 auto;
+  border-radius: 999px; /* border-radius: die Bahn ist rund */
+  background: var(--tab-pill-active-bg);
+  transition: background 0.18s ease; /* transition: die Bahn färbt sich weich */
+}
+
+.tasks-switch-knob {
+  position: absolute; /* position: der Knopf gleitet in der Bahn */
+  top: 3px;
+  left: 3px;
+  width: calc(var(--tasks-switch-h) - 6px);
+  height: calc(var(--tasks-switch-h) - 6px);
+  border-radius: 50%; /* border-radius: ein runder Knopf */
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform 0.18s ease; /* transition: der Knopf gleitet statt zu springen */
+}
+
+.tasks-switch.is-on {
+  background: var(--add);
+}
+
+.tasks-switch.is-on .tasks-switch-knob {
+  transform: translateX(calc(var(--tasks-switch-w) - var(--tasks-switch-h))); /* transform: nach rechts, so weit die Bahn reicht */
+}
+
+/* ---------- Filter-Zeile ---------- */
+
+/* Die Zeile trägt links den Knopf mit Bezeichnung und Wert, rechts das ⓘ */
+.tasks-filter-row {
+  gap: 8px;
+}
+
+.tasks-filter-btn {
+  display: flex;
+  flex: 1;
+  justify-content: space-between; /* justify-content: Bezeichnung links, Wert rechts */
+  gap: 16px;
+  min-width: 0;
+  text-align: left;
+}
+
+.tasks-filter-btn:active {
+  opacity: 0.55;
+}
+
+/* Gesperrt („Alle“): blass, nicht antippbar — der ⓘ daneben erklärt es */
+.tasks-filter-row.is-locked .tasks-filter-btn {
+  opacity: 0.45;
+}
+
+.tasks-info {
+  width: var(--page-tool-size);
+  height: var(--page-tool-size);
+  margin: -8px -8px -8px 0; /* margin: die Tippfläche wächst, ohne die Zeile höher zu machen */
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: var(--icon-soft);
+}
+
+.tasks-info .icon {
+  width: var(--page-tool-icon);
+  height: var(--page-tool-icon);
+}
+
+.tasks-info:active {
+  opacity: 0.55;
+}

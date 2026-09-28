@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "fffa72bc375d";
+export const appVersion = "1569014d3d7b";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -66,6 +66,7 @@ export const appFiles = [
   "src/data/seed.js",
   "src/data/state.js",
   "src/data/task-archive.js",
+  "src/data/task-views.js",
   "src/data/thumbs.js",
   "src/data/usage-areas.js",
   "src/data/usage.js",
@@ -137,7 +138,8 @@ export const appFiles = [
   "src/features/tasks/tasks-inline.js",
   "src/features/tasks/tasks-list.js",
   "src/features/tasks/tasks-parts.js",
-  "src/features/tasks/tasks-tools.js",
+  "src/features/tasks/tasks-settings.js",
+  "src/features/tasks/tasks-views.js",
   "src/features/tasks/tasks.js",
   "src/main.js",
   "src/shell/desk-nav-parts.js",
@@ -182,6 +184,7 @@ export const appFiles = [
   "src/ui/page-cover.js",
   "src/ui/page-tools.js",
   "src/ui/pickers.js",
+  "src/ui/pill-input.js",
   "src/ui/pill-swipe.js",
   "src/ui/pull-search.js",
   "src/ui/router.js",
@@ -241,6 +244,7 @@ export const appFiles = [
   "styles/swipe-rows.css",
   "styles/task-status.css",
   "styles/tasks-board.css",
+  "styles/tasks-settings.css",
   "styles/tasks.css",
   "styles/toast.css",
   "styles/tokens-dark.css",
