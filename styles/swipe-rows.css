@@ -5,15 +5,16 @@
  * Tab (src/ui/pill-swipe.js).
  * Pfad: styles/swipe-rows.css
  *
- * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * ANPASSBARE WERTE (in styles/tokens.css, --xp-done und --swipe-done-mark in styles/tokens-pages.css)
  * -----------------------------------
  * --swipe-action-size       -> Größe der runden Wisch-Knöpfe
  * --swipe-action-gap        -> Abstand zwischen den Knöpfen und zum Rand
  * --swipe-grab-bg           -> Farbe der Zeile, sobald sie nach dem Halten „angefasst“ ist
  * --swipe-grab-anim         -> wie schnell diese Farbe auftaucht
  * --danger / --archive-color / --link-color / --star-color / --restore-color /
- * --move-color
- *                           -> Farben der Wisch-Knöpfe
+ * --move-color / --xp-done
+ *                           -> Farben der Wisch-Knöpfe (--xp-done: Grün von „Abhaken“)
+ * --swipe-done-mark         -> Farbe des Hakens im grünen Abhaken-Knopf
  * --content-side            -> Abstand der Zeilen zum Rand
  * --line                    -> Trennlinie zwischen den Zeilen
  */
@@ -103,6 +104,12 @@
 
 .swipe-action-favorite {
   background: var(--star-color);
+}
+
+/* Abhaken einer Aufgabe: dasselbe Grün wie ein gesetzter Haken */
+.swipe-action-done {
+  background: var(--xp-done);
+  color: var(--swipe-done-mark);
 }
 
 .swipe-action:active {

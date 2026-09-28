@@ -1,7 +1,9 @@
 /*
- * Status einer Aufgabe außerhalb der Aufgaben-Seite: der runde Haken vor einer
- * Aufgabe in jeder Liste (Projekt, Arbeitsbereich, verknüpfte Einträge,
- * Kalender) und mittig in der Kopfzeile der Aufgabenseite „Aufgabe“, darunter
+ * Status einer Aufgabe außerhalb der Aufgaben-Seite: der durchgestrichene
+ * Titel einer erledigten Aufgabe in jeder Liste (Projekt, Arbeitsbereich,
+ * verknüpfte Einträge, Kalender — abgehakt wird dort über den grünen
+ * Wisch-Knopf, styles/swipe-rows.css), der „In Arbeit“-Ring des Hakens
+ * und mittig in der Kopfzeile der Aufgabenseite „Aufgabe“, darunter
  * „Offen · Jetzt“, zum Antippen. Dieselbe Pille trägt auf jeder anderen Eintragsseite
  * die Kategorie („Notiz“, .type-crumb aus src/ui/type-menu.js) — der Stil
  * steht darum nur hier. Der Haken selbst sieht aus wie auf der Aufgaben-Seite
@@ -23,15 +25,7 @@
  * .task-crumb-sub font-size -> Größe von Status und Dringlichkeit unter „Aufgabe“ (13px)
 */
 
-/* ---------- Haken in allgemeinen Listen ---------- */
-
-/* Haken und Zeile nebeneinander; der Haken steht an der Stelle, an der sonst
-   das Typ-Icon steht (gleicher Abstand zum Titel wie in .entry-row). */
-.swipe[data-has-check] > .swipe-body {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
+/* ---------- Aufgaben in Listen ---------- */
 
 /* Erledigt: durchgestrichen und blasser — wie auf der Aufgaben-Seite */
 .entry-row .is-done {

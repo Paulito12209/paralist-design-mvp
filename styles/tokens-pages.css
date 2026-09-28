@@ -18,7 +18,8 @@
  *
  * FORTSCHRITT UND PROFIL
  * --level-color / --level-dim / --level-glow -> Level-Anzeige oben links; --level-color färbt auch Plus und Ring des Navigations-Knopfes
- * --xp-created / --xp-done  -> Blau für „Angelegt“, Grün für „Erledigt“
+ * --xp-created / --xp-done  -> Blau für „Angelegt“, Grün für „Erledigt“ (auch der Abhaken-Wischknopf)
+ * --swipe-done-mark         -> Farbe des Hakens im grünen Abhaken-Knopf hinter einer Aufgabe
  * --xp-line                 -> Orange der Verlaufskurve im Fortschritt-Blatt
  * --dot-empty / --dot-1..4  -> Punkte-Raster der Nutzungszeit im Profil-Blatt
  * --profile-avatar-size     -> Größe des runden Profilbilds
@@ -161,6 +162,7 @@
   --level-glow: transparent;
   --xp-created: #007aff;
   --xp-done: #34c759;
+  --swipe-done-mark: #ffffff;
   --xp-line: #ff9500;
   --dot-empty: rgba(60, 60, 67, 0.09);
   --dot-1: rgba(255, 149, 0, 0.3);

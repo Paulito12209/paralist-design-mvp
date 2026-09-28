@@ -69,9 +69,9 @@ function handleWorkspaceAction(kind, id, button) {
   return false;
 }
 
-/* Der Wisch-Knopf einer Zeile — links Favorit und Verknüpfen (beim
-   Arbeitsbereich: in einen anderen Tab), rechts Archivieren
-   und Löschen. Welcher es ist, sagt data-swipe, nicht die Seite. */
+/* Der Wisch-Knopf einer Zeile — links Verknüpfen und Favorit bzw. bei einer
+   Aufgabe Abhaken (beim Arbeitsbereich: Favorit und in einen anderen Tab),
+   rechts Archivieren und Löschen. Welcher es ist, sagt data-swipe, nicht die Seite. */
 function handleSwipeAction(action) {
   const kind = action.dataset.swipe;
   const wrap = action.closest(".swipe");
@@ -96,6 +96,10 @@ function handleSwipeAction(action) {
   }
   if (kind === "favorite") {
     toggleFavorite(entry);
+    return;
+  }
+  if (kind === "done") {
+    toggleTaskFromCheck(entry.id);
     return;
   }
   openLinkSheet(entry);
@@ -125,8 +129,8 @@ function onClick(event) {
     return;
   }
 
-  /* Der runde Haken vor einer Aufgabe — in jeder Liste und auf der Seite der
-     Aufgabe selbst. Eine aufgewischte Zeile schiebt sich dabei erst zu. */
+  /* Der runde Haken vor einer Aufgabe — nur noch auf der Aufgaben-Seite
+     (Liste und Board). Eine aufgewischte Zeile schiebt sich dabei erst zu. */
   const check = event.target.closest("[data-task-done]");
   if (check) {
     if (isSwipedOpen(check)) closeSwipes();

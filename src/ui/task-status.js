@@ -2,8 +2,9 @@
  * Status und Dringlichkeit einer Aufgabe — überall, wo eine Aufgabe auftaucht,
  * nicht nur auf der Aufgaben-Seite:
  *
- * - der runde Haken-Knopf, der in JEDER Liste vor einer Aufgabe steht (Projekt,
- *   Arbeitsbereich, verknüpfte Einträge, Kalender, Aufgaben-Seite),
+ * - der runde Haken-Knopf auf der Aufgaben-Seite (Liste und Board); in allen
+ *   anderen Listen trägt eine Aufgabe ihr Icon und wird über den grünen
+ *   Wisch-Knopf abgehakt (src/ui/rows.js), der dieselbe Funktion ruft,
  * - auf der Seite der Aufgabe mittig in der Kopfzeile „Aufgabe“, darunter „Offen · Jetzt“;
  *   ein Tipp darauf öffnet von unten das Blatt mit Status und Dringlichkeit,
  * - die kurze Meldung „Erledigt“ mit „Rückgängig“ — ein Tipp auf den
@@ -20,7 +21,7 @@
  * typeTitle   -> Beschriftung des Tabs „Typ“ im Blatt
  *
  * Aussehen steht in styles/tasks.css (Haken) und styles/task-status.css
- * (Kopfzeile der Aufgabenseite, Haken in allgemeinen Listen).
+ * (Kopfzeile der Aufgabenseite, erledigter Titel in allgemeinen Listen).
  */
 
 import { escapeHtml, icon } from "../core/html.js";

@@ -4,8 +4,9 @@
  * Pfad: src/ui/rows.js
  *
  * Keine anpassbaren visuellen Werte: Höhe, Farben und Abstände stehen in
- * styles/rows.css (Klasse .workspace-row, das Favoriten-Icon in .row-glyph), styles/swipe-rows.css (.swipe, .swipe-action), der Haken
- * vor einer Aufgabe in styles/task-status.css.
+ * styles/rows.css (Klasse .workspace-row, das Favoriten-Icon in .row-glyph),
+ * styles/swipe-rows.css (.swipe, .swipe-action, der grüne Abhaken-Knopf),
+ * der durchgestrichene Titel einer erledigten Aufgabe in styles/task-status.css.
  */
 
 import { escapeHtml, icon } from "../core/html.js";
@@ -16,7 +17,6 @@ import { mediaKindOf, workspaceIcon, workspaceLabel } from "../data/queries.js";
 import { ui } from "../data/state.js";
 import { thumbOf } from "../data/thumbs.js";
 import { canMoveWorkspace } from "./move-menu.js";
-import { taskCheck } from "./task-status.js";
 
 /** Eine Zeile mit Wisch-Knöpfen; die Knöpfe liegen hinter der Zeile. */
 export function swipeRow(dataAttr, actionsLeft, actionsRight, rowHtml) {
@@ -75,19 +75,27 @@ function favoriteGlyph(glyphHtml, isFavorite) {
 
 /**
  * Die vier Wisch-Knöpfe einer Eintrags-Zeile, je zwei auf jeder Seite: links
- * steht, was den Eintrag in der Liste lässt (Favorit, Verknüpfen), rechts das,
- * was ihn herausnimmt — Archivieren direkt neben dem roten Löschen.
+ * steht, was den Eintrag in der Liste lässt — ganz außen Verknüpfen, daneben
+ * Favorit —, rechts das, was ihn herausnimmt: Archivieren direkt neben dem
+ * roten Löschen.
+ *
+ * Eine Aufgabe in einer allgemeinen Liste hat keinen runden Haken vor sich;
+ * dort tritt der grüne Abhaken-Knopf an die Stelle des Favoriten-Knopfes
+ * (Favorit geht dort über das Icon). Die Aufgaben-Seite zeigt den Haken
+ * selbst und behält deshalb den Stern.
  *
  * Die Liste steht hier und nicht bei den einzelnen Zeilen, weil es zwei Arten
  * von Eintrags-Zeilen gibt (diese hier und die der Aufgaben-Seite). Stünde sie
  * zweimal im Code, liefen die beiden Seiten mit der Zeit auseinander.
+ * @param withDone true, wenn eine Aufgabe hier den Abhaken-Knopf bekommt.
  */
-export function entryActions(entry) {
+export function entryActions(entry, withDone = false) {
+  const second =
+    withDone && entry.type === "aufgabe"
+      ? swipeAction("done", isTaskDone(entry) ? "Wieder öffnen" : "Abhaken", "check")
+      : swipeAction("favorite", "Favorit", entry.favorite ? "star" : "star-outline", "favorite");
   return {
-    left: [
-      swipeAction("favorite", "Favorit", entry.favorite ? "star" : "star-outline", "favorite"),
-      swipeAction("link", "Verknüpfen", "link"),
-    ],
+    left: [swipeAction("link", "Verknüpfen", "link"), second],
     right: [
       swipeAction("archive", "Archivieren", "archive"),
       swipeAction("delete", "Löschen", "trash"),
@@ -100,20 +108,17 @@ export function entryActions(entry) {
  * @param prefix optionaler Einschub vor dem Titel, z.B. die Uhrzeit im Kalender.
  */
 export function entryRow(entry, prefix = "") {
-  const actions = entryActions(entry);
-  /* Eine Aufgabe trägt statt ihres Typ-Icons den runden Haken — so lässt sie
-     sich in jeder Liste abhaken, nicht nur auf der Aufgaben-Seite. Er steht
-     neben der Zeile statt darin, damit ein Tipp darauf nicht die Seite öffnet. */
-  const task = entry.type === "aufgabe";
-  const done = task && isTaskDone(entry);
+  const actions = entryActions(entry, true);
+  /* Auch eine Aufgabe trägt hier ihr Icon — abgehakt wird sie über den
+     grünen Wisch-Knopf; erledigt bleibt sie am durchgestrichenen Titel erkennbar. */
+  const done = entry.type === "aufgabe" && isTaskDone(entry);
   return swipeRow(
-    `data-entry="${entry.id}"${task ? " data-has-check" : ""}`,
+    `data-entry="${entry.id}"`,
     actions.left,
     actions.right,
     `
-      ${task ? taskCheck(entry) : ""}
       <button class="workspace-row entry-row" type="button" data-open-entry="${entry.id}">
-        ${task ? "" : favoriteGlyph(entryGlyph(entry), entry.favorite)}
+        ${favoriteGlyph(entryGlyph(entry), entry.favorite)}
         ${prefix}
         <span${done ? ' class="is-done"' : ""}>${escapeHtml(entry.title)}</span>
         ${icon("chevron", "chevron")}
