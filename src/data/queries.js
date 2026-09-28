@@ -22,6 +22,7 @@ import {
   taskGroupings,
   taskPriorities,
   typeIcon,
+  typeSingular,
   typeOrder,
   typePlurals,
   xpItems,
@@ -249,9 +250,9 @@ export function taskEntries() {
   return state.entries.filter((entry) => entry.type === "aufgabe" && !entry.archived);
 }
 
-/** Die Sortiernummer einer Aufgabe; ohne eigene zählt der Zeitpunkt des Anlegens. */
+/** Die Sortiernummer einer Aufgabe: aufsteigend heißt Ältestes zuerst, Neues hängt unten. Ohne eigene zählt der Zeitpunkt des Anlegens. */
 export function taskOrder(entry) {
-  return Number.isFinite(entry.order) ? entry.order : -(entry.createdAt || 0);
+  return Number.isFinite(entry.order) ? entry.order : entry.createdAt || 0;
 }
 
 /* Platz einer Priorität in der Spalten-Reihenfolge; Unbekanntes kommt hinten. */
@@ -261,38 +262,82 @@ function priorityRank(entry) {
 }
 
 /**
- * Aufgaben sortieren. Erledigtes steht immer ganz unten; davor gilt die von
- * Hand gezogene Reihenfolge (sonst: Neuestes zuerst). Mit `sortId` "prio"
- * kommt die Dringlichkeit davor — das braucht die Übersicht (insights.js),
- * die keine Abschnitte hat.
+ * Aufgaben sortieren. Erledigtes steht immer ganz unten. `sortId` kommt aus
+ * taskSorts (config.js): „erstellt“ ist die Reihenfolge des Anlegens — bzw.
+ * die im Board von Hand gezogene —, „faellig“ das Datum, „titel“ das Alphabet.
+ * `asc` false dreht die Reihenfolge um. „prio“ braucht nur die Übersicht
+ * (insights.js), die keine Gruppen kennt.
  */
-export function sortTasks(list, sortId = "neu") {
+export function sortTasks(list, sortId = "erstellt", asc = true) {
   const rest = (a, b) => {
     if (sortId === "prio") return priorityRank(a) - priorityRank(b) || taskOrder(a) - taskOrder(b);
+    if (sortId === "faellig") return String(a.date || "\uffff").localeCompare(String(b.date || "\uffff"));
+    if (sortId === "titel") return String(a.title).localeCompare(String(b.title), "de");
     return taskOrder(a) - taskOrder(b);
   };
-  return [...list].sort((a, b) => Number(isTaskDone(a)) - Number(isTaskDone(b)) || rest(a, b));
+  const sign = asc ? 1 : -1;
+  return [...list].sort((a, b) => Number(isTaskDone(a)) - Number(isTaskDone(b)) || sign * rest(a, b));
 }
 
-/** Aufgaben der Seite: ohne Erledigte, solange das Menü sie ausblendet. */
+/** Gehört die Aufgabe zu dem Ort, den der Filter verlangt — abgelegt oder verknüpft? „alle“ lässt alles durch. */
+function matchesPlace(entry, place) {
+  if (place === "alle") return true;
+  if (place === "inbox") return hasPlace(entry, null);
+  if (hasPlace(entry, place)) return true;
+  return isEntryRef(place) && (entry.links || []).some((id) => sameId(id, refId(place)));
+}
+
+/** Aufgaben der Seite: nach Ort gesiebt, ohne Erledigte (solange das Menü sie ausblendet), sortiert. */
 export function visibleTasks(prefs) {
-  return sortTasks(taskEntries().filter((entry) => !(prefs.hideDone && isTaskDone(entry))));
+  const list = taskEntries().filter(
+    (entry) => !(prefs.hideDone && isTaskDone(entry)) && matchesPlace(entry, prefs.place)
+  );
+  return sortTasks(list, prefs.sort, prefs.sortAsc);
 }
 
 /**
- * Die Abschnitte der Liste und die Spalten des Boards — dieselbe Gliederung:
- * [{ id, label, icon, color, items }] in der Reihenfolge aus config.js.
- * `field` sagt, welches Feld einer Aufgabe den Abschnitt bestimmt.
+ * Die Gruppen der Liste: [{ id, label, icon, color, items }] in der
+ * Reihenfolge aus config.js. `field` sagt, welches Feld einer Aufgabe die
+ * Gruppe bestimmt — oder null, wenn nicht gruppiert wird: dann gibt es genau
+ * eine Gruppe ohne Namen mit allen Aufgaben.
  */
-export function taskColumns(prefs) {
-  const grouping = taskGroupings.find((item) => item.id === prefs.group) || taskGroupings[0];
+export function taskGroups(prefs) {
+  const grouping = taskGroupings.find((item) => item.id === prefs.group) || null;
   const list = visibleTasks(prefs);
+  if (!grouping) return { field: null, columns: [{ id: "alle", label: "", icon: "", color: "var(--muted)", items: list }] };
   const columns = grouping.columns.map((column) => ({ ...column, items: [] }));
   list.forEach((entry) => {
     const target = columns.find((column) => column.id === entry[grouping.field]) || columns[0];
     target.items.push(entry);
   });
   return { field: grouping.field, columns };
+}
+
+/** Die Spalten des Boards: wie taskGroups — nur dass ein Board immer Spalten braucht, ungruppiert nach Dringlichkeit. */
+export function taskColumns(prefs) {
+  const grouping = taskGroupings.find((item) => item.id === prefs.group) ? prefs.group : taskGroupings[0].id;
+  return taskGroups({ ...prefs, group: grouping });
+}
+
+/**
+ * Wonach sich die Aufgaben-Seite filtern lässt: jeder Ort, an dem eine
+ * Aufgabe liegt oder mit dem eine verknüpft ist — Arbeitsbereiche, Projekte,
+ * Notizen. Was keine Aufgabe hat, taucht nicht auf.
+ */
+export function taskPlaces() {
+  const tasks = taskEntries();
+  const used = new Set();
+  tasks.forEach((entry) => {
+    (entry.places || []).forEach((ref) => used.add(ref));
+    (entry.links || []).forEach((id) => used.add(entryRef(id)));
+  });
+  const spaces = state.workspaces
+    .filter((workspace) => used.has(workspaceRef(workspace.id)))
+    .map((workspace) => ({ ref: workspaceRef(workspace.id), label: workspaceLabel(workspace), icon: workspaceIcon(workspace) }));
+  const entries = state.entries
+    .filter((entry) => !entry.archived && entry.type !== "aufgabe" && used.has(entryRef(entry.id)))
+    .map((entry) => ({ ref: entryRef(entry.id), label: entry.title || typeSingular(entry.type), icon: typeIcon(entry.type) }));
+  return [...spaces, ...entries];
 }
 
 /** Der erste Ablageort einer Aufgabe — dafür steht das kleine Label in der Zeile. */

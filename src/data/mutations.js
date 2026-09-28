@@ -291,7 +291,7 @@ const orderGap = 1000;
  * Lesezeichen seine Karte, wenn der Titel ein Link ist). Ruft das
  * Eingabefeld auf, sobald der Eintrag in der Liste steht. Eine neue Aufgabe
  * startet auf `defaultTaskStatus` und `defaultTaskPriority` (siehe config.js)
- * und stellt sich mit ihrer Sortiernummer nach oben.
+ * und stellt sich mit ihrer Sortiernummer ans Ende.
  */
 export function applyEntryDefaults(entry) {
   /* Ein Link als Titel eines Lesezeichens wird gleich zur Karte im Inhalt */
@@ -299,7 +299,7 @@ export function applyEntryDefaults(entry) {
   if (entry.type !== "aufgabe") return;
   entry.status = defaultTaskStatus;
   entry.priority = defaultTaskPriority;
-  entry.order = -(entry.createdAt || Date.now());
+  entry.order = entry.createdAt || Date.now();
   /* Kam die Aufgabe über den Knopf am Ende einer Board-Spalte, gehört sie dorthin. */
   const target = ui.taskDraftColumn;
   ui.taskDraftColumn = null;
@@ -308,8 +308,9 @@ export function applyEntryDefaults(entry) {
 
 /**
  * Eine Aufgabe direkt in der Liste anlegen — nur mit Titel, ohne Eingabefeld.
- * `column` ist der Abschnitt, in den getippt wurde ({ field, value }); die
- * Aufgabe landet mit dessen Dringlichkeit bzw. Status am Ende des Abschnitts.
+ * `column` ist die Gruppe, in die getippt wurde ({ field, value }), oder null
+ * in der ungruppierten Liste; die Aufgabe landet mit deren Dringlichkeit bzw.
+ * Status am Ende — hinter der letzten Aufgabe, die dort schon liegt.
  * Bringt dieselben Punkte wie das Anlegen über das Eingabefeld.
  */
 export function createTaskInline(title, column) {
@@ -326,9 +327,8 @@ export function createTaskInline(title, column) {
   };
   applyEntryDefaults(entry);
   if (column && (column.field === "status" || column.field === "priority")) entry[column.field] = column.value;
-  /* Ans Ende des Abschnitts: hinter die letzte Aufgabe, die dort schon liegt. */
   const siblings = state.entries.filter(
-    (item) => item.type === "aufgabe" && !item.archived && column && item[column.field] === column.value
+    (item) => item.type === "aufgabe" && !item.archived && (!column || item[column.field] === column.value)
   );
   const last = siblings.reduce((max, item) => Math.max(max, taskOrder(item)), -Infinity);
   if (last !== -Infinity) entry.order = last + orderGap;
@@ -385,6 +385,6 @@ export function moveTask(entry, field, value, before, after) {
   if (top !== null && bottom !== null) entry.order = (top + bottom) / 2;
   else if (top !== null) entry.order = top + orderGap;
   else if (bottom !== null) entry.order = bottom - orderGap;
-  else entry.order = -(entry.createdAt || Date.now());
+  else entry.order = entry.createdAt || Date.now();
   saveState();
 }

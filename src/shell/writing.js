@@ -30,9 +30,11 @@ const KEYBOARD_SETTLE_MS = 250;
 let showTimer = null;
 let blurTimer = null;
 
-/* Ein Textfeld auf der Seite — nicht unten im Eingabefeld, nicht oben in der Suche. */
+/* Ein Textfeld auf der Seite — nicht unten im Eingabefeld, nicht oben in der
+   Suche. Trägt ein Feld data-keep-nav (die Zeile zum Anlegen einer Aufgabe),
+   bleibt die Leiste ebenfalls: dort tippt man einen Titel, keinen Text. */
 function isPageField(node) {
-  return isTextField(node) && dom.content.contains(node);
+  return isTextField(node) && dom.content.contains(node) && !node.hasAttribute("data-keep-nav");
 }
 
 function setWriting(writing) {

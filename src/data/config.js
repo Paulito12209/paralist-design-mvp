@@ -23,7 +23,8 @@
  * defaultTaskPriority     -> Priorität, mit der eine NEUE Aufgabe startet („Später“)
  * defaultTaskStatus       -> Status, mit dem eine neue Aufgabe startet („Offen“)
  * taskStatuses            -> Name, Icon und Farbe der Status-Chips
- * taskGroupings           -> wonach Liste und Board gliedern (Dringlichkeit oder Status)
+ * taskGroupings           -> wonach sich Liste und Board gruppieren lassen (Dringlichkeit oder Status)
+ * taskSorts               -> wonach die Aufgaben-Seite sortieren kann
  * taskDefaults            -> womit die Aufgaben-Seite beim allerersten Mal startet
  * calendarSegments[*].add -> Beschriftung der Pille am leeren Kalendertag
  */
@@ -342,12 +343,28 @@ export const taskGroupings = [
 ];
 
 /**
- * Womit die Aufgaben-Seite startet: als Liste, nach Dringlichkeit gegliedert,
- * Erledigtes ausgeblendet. Alles drei lässt sich im Menü der Pille ändern.
+ * Sortierarten der Aufgaben-Seite. Welche Regel dahintersteckt, steht in
+ * `sortTasks` in src/data/queries.js; „erstellt“ ist zugleich die von Hand
+ * im Board gezogene Reihenfolge.
+ */
+export const taskSorts = [
+  { id: "erstellt", label: "Erstellt", icon: "history" },
+  { id: "faellig", label: "Fällig", icon: "calendar" },
+  { id: "titel", label: "Titel", icon: "text" },
+];
+
+/**
+ * Womit die Aufgaben-Seite startet: als eine Liste aller Aufgaben, nicht
+ * gruppiert, älteste zuerst (Neues hängt sich unten an), Erledigtes
+ * ausgeblendet. `group` ist "none" oder eine id aus taskGroupings; `place`
+ * ist "alle", "inbox" oder ein Verweis wie „w:3“ / „e:12“.
  */
 export const taskDefaults = {
   view: "list",
-  group: "priority",
+  group: "none",
+  sort: "erstellt",
+  sortAsc: true,
+  place: "alle",
   hideDone: true,
 };
 

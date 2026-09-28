@@ -22,6 +22,7 @@ import { cssNumber } from "../../core/css-vars.js";
 import { dom } from "../../core/dom.js";
 import { moveTask } from "../../data/mutations.js";
 import { findEntry } from "../../data/queries.js";
+import { saveState, state } from "../../data/state.js";
 
 const scrollSpeed = 12;
 const startSlack = 4;
@@ -128,8 +129,17 @@ function endDrag(save) {
   const entry = entryOfCard(card);
   const siblings = Array.from(box.querySelectorAll(".board-row"));
   const index = siblings.indexOf(card);
-  const before = entryOfCard(siblings[index - 1]);
-  const after = entryOfCard(siblings[index + 1]);
+  const above = entryOfCard(siblings[index - 1]);
+  const below = entryOfCard(siblings[index + 1]);
+  /* Von Hand gezogen heißt: diese Reihenfolge soll gelten. Sie lebt in der
+     Sortierung „Erstellt“ — steht die Seite auf Fällig oder Titel, wechselt
+     sie dafür zurück. Absteigend gezeigt ist die Zeile darüber die spätere. */
+  const tasks = state.prefs.tasks;
+  if (tasks.sort !== "erstellt") {
+    tasks.sort = "erstellt";
+    saveState();
+  }
+  const [before, after] = tasks.sortAsc ? [above, below] : [below, above];
   moveTask(entry, box.dataset.field, box.dataset.drop, before, after);
   redrawBoard();
 }

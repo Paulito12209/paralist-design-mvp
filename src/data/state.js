@@ -20,10 +20,11 @@ import {
   resourceFilters,
   taskDefaults,
   taskGroupings,
+  taskSorts,
   taskViews,
 } from "./config.js";
 import { sanitizeLinks } from "./links.js";
-import { normalizeRef, workspaceRef } from "./refs.js";
+import { entryRef, normalizeRef, workspaceRef } from "./refs.js";
 import { seedMedia, seedXpFromExisting } from "./seed.js";
 import { archiveFinishedTasks } from "./task-archive.js";
 import { pruneThumbs } from "./thumbs.js";
@@ -158,6 +159,11 @@ function pickValid(value, allowed, fallback) {
 /* Ältere Speicherstände auf die heutige Form bringen. Gibt zurück, ob sich etwas geändert hat. */
 function migrate() {
   const before = JSON.stringify({ workspaces: state.workspaces, entries: state.entries, tabs: state.tabs, opens: state.opens });
+  /* Die Sortiernummer einer Aufgabe war früher der negative Zeitpunkt des
+     Anlegens (Neuestes zuerst); jetzt zählt sie aufsteigend, Neues hängt unten. */
+  state.entries.forEach((entry) => {
+    if (entry.type === "aufgabe" && Number.isFinite(entry.order) && entry.order < 0) entry.order = -entry.order;
+  });
   /* Der erste Tab hieß früher „Privat“. */
   state.tabs.forEach((tab) => {
     if (tab.name === "Privat") tab.name = "Meine";
@@ -237,12 +243,12 @@ function adoptPrefs(saved) {
   if (saved.resources && typeof saved.resources === "object") {
     state.prefs.resources = { ...state.prefs.resources, ...saved.resources };
   }
-  /* Ein Stand mit `sort` stammt von der Aufgaben-Seite mit Filterzeile. Die
-     neue Seite gliedert nach Dringlichkeit und blendet Erledigtes aus — das
-     soll jeder beim ersten Öffnen so sehen, nur die Ansicht bleibt. */
+  /* Ein Stand ohne `sortAsc` stammt von einer früheren Aufgaben-Seite. Die
+     jetzige zeigt alle Aufgaben als eine Liste — das soll jeder beim ersten
+     Öffnen so sehen, nur Liste oder Board bleibt, wie gewählt. */
   if (saved.tasks && typeof saved.tasks === "object") {
-    const fresh = "sort" in saved.tasks;
-    state.prefs.tasks = fresh ? { ...taskDefaults, view: saved.tasks.view } : { ...state.prefs.tasks, ...saved.tasks };
+    const stale = typeof saved.tasks.sortAsc !== "boolean";
+    state.prefs.tasks = stale ? { ...taskDefaults, view: saved.tasks.view } : { ...state.prefs.tasks, ...saved.tasks };
   }
   if (saved.pageHeads && typeof saved.pageHeads === "object") {
     state.prefs.pageHeads = Object.fromEntries(Object.entries(saved.pageHeads).filter(([, on]) => on === true));
@@ -256,7 +262,16 @@ function adoptPrefs(saved) {
 
   const tasks = state.prefs.tasks;
   tasks.view = pickValid(tasks.view, taskViews, taskDefaults.view);
-  tasks.group = pickValid(tasks.group, taskGroupings.map((item) => item.id), taskDefaults.group);
+  tasks.group = pickValid(tasks.group, ["none", ...taskGroupings.map((item) => item.id)], taskDefaults.group);
+  tasks.sort = pickValid(tasks.sort, taskSorts.map((item) => item.id), taskDefaults.sort);
+  tasks.sortAsc = typeof tasks.sortAsc === "boolean" ? tasks.sortAsc : taskDefaults.sortAsc;
+  /* Der Ort ist „alle“, „inbox“ oder ein Verweis wie „w:3“. Gibt es den Ort
+     nicht mehr, fällt der Filter auf „alle“ zurück — sonst bliebe die Seite
+     leer, ohne dass man sähe, warum. */
+  const places = ["alle", "inbox"]
+    .concat(state.workspaces.map((workspace) => workspaceRef(workspace.id)))
+    .concat(state.entries.map((entry) => entryRef(entry.id)));
+  tasks.place = pickValid(tasks.place, places, taskDefaults.place);
   tasks.hideDone = typeof tasks.hideDone === "boolean" ? tasks.hideDone : taskDefaults.hideDone;
 }
 

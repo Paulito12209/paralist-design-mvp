@@ -1,8 +1,8 @@
 /*
  * Aufgaben direkt in der Liste anlegen — so, wie man es von Erinnerungen
- * kennt: Ein Tipp in die freie Fläche der Seite lässt am Ende des Abschnitts,
- * unter dem man getippt hat, eine neue Zeile mit leerem Ring und Cursor
- * erscheinen. Enter legt die Aufgabe an und öffnet gleich die nächste Zeile;
+ * kennt: Ein Tipp in die freie Fläche der Seite lässt am Ende der Liste (bzw.
+ * der Gruppe, unter der man getippt hat) eine neue Zeile mit leerem Ring und
+ * Cursor erscheinen. Enter legt die Aufgabe an und öffnet gleich die nächste Zeile;
  * eine leere Zeile verschwindet lautlos, sobald man sie verlässt. Im Board
  * gilt dasselbe je Spalte. Nur ein echter Tipp zählt: wer scrollt oder wischt,
  * schreibt nicht — dieselbe Regel wie in src/ui/write-tap.js.
@@ -93,16 +93,19 @@ function openRow(section) {
   const row = document.createElement("div");
   row.className = `task-inline${board ? " board-row" : ""}`;
   /* form: gegen Chromes Verlaufs-Chips über der Tastatur (src/core/no-history.js);
-     enterkeyhint: die Enter-Taste soll „Fertig“ heißen, nicht „Weiter“. */
+     enterkeyhint: die Enter-Taste soll „Fertig“ heißen, nicht „Weiter“;
+     data-keep-nav: die untere Leiste bleibt stehen (src/shell/writing.js). */
   row.innerHTML = `
     <span class="task-check task-inline-ring" aria-hidden="true"></span>
-    <input class="task-inline-input" type="text" form="${noHistoryForm}" enterkeyhint="done"
+    <input class="task-inline-input" type="text" form="${noHistoryForm}" enterkeyhint="done" data-keep-nav
       placeholder="${placeholder}" aria-label="${placeholder}" />
   `;
   box.append(row);
   section.classList.add("is-adding");
   const input = row.querySelector("input");
-  editing = { row, input, section, column: { field: section.dataset.field, value: section.dataset.section } };
+  /* In der ungruppierten Liste (kein Feld) bekommt die Aufgabe nur die Vorgaben. */
+  const { field } = section.dataset;
+  editing = { row, input, section, column: field ? { field, value: section.dataset.section } : null };
 
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {

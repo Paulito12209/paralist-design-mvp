@@ -1,10 +1,10 @@
 /*
  * Die Aufgaben-Seite hinter dem dritten Reiter. Der Titel steht allein,
- * darunter die eine Pille mit dem Menü, darunter je nach Wahl die Liste in
- * Abschnitten oder das Kanban-Board mit denselben Abschnitten als Spalten.
- * Diese Datei hält nur alles zusammen: gezeichnet wird in tasks-list.js und
- * tasks-board.js, die Pille steht in tasks-tools.js, das Ziehen in
- * tasks-drag.js, das Anlegen durch Tippen in die Fläche in tasks-inline.js.
+ * darunter die Zeile mit Orts-Pille und Werkzeugen, darunter je nach Wahl die
+ * Liste oder das Kanban-Board. Diese Datei hält nur alles zusammen:
+ * gezeichnet wird in tasks-list.js und tasks-board.js, die Werkzeugzeile
+ * steht in tasks-tools.js, das Ziehen in tasks-drag.js, das Anlegen durch
+ * Tippen in die Fläche in tasks-inline.js.
  * Wird erst beim ersten Öffnen nachgeladen.
  * Pfad: src/features/tasks/tasks.js
  *

@@ -1,6 +1,7 @@
 /*
- * Aufgaben-Seite: die Pille unter dem Titel, die Abschnitte der Liste, die
- * Zeile zum Anlegen durch Tippen in die Fläche und alles, was eine Aufgabe
+ * Aufgaben-Seite: die Zeile mit Orts-Pille und Werkzeugen unter dem Titel,
+ * die Gruppen der Liste, die Zeile zum Anlegen durch Tippen in die Fläche
+ * und alles, was eine Aufgabe
  * gegenüber den übrigen Zeilen (styles/rows.css) zusätzlich hat: den runden
  * Haken-Knopf mit Ring in der Farbe der Dringlichkeit und die stille
  * Nebenzeile unter dem Titel. Das Board hat eine eigene Datei,
@@ -9,43 +10,70 @@
  *
  * ANPASSBARE WERTE (alle in styles/tokens-pages.css, außer wo genannt)
  * -----------------------------------
- * --page-title-gap      -> Luft zwischen Titel und Pille (styles/tokens.css)
- * --task-tools-gap      -> Abstand zwischen der Pille und dem ersten Abschnitt
- * --task-section-gap    -> Luft zwischen zwei Abschnitten
+ * --page-title-gap      -> Luft zwischen Titel und Werkzeugzeile (styles/tokens.css)
+ * --task-tools-gap      -> Abstand zwischen Werkzeugzeile und Liste
+ * --page-tool-size      -> Größe der runden Knöpfe rechts (styles/tokens.css)
+ * --task-section-gap    -> Luft zwischen zwei Gruppen
  * --task-check-size     -> Größe des runden Haken-Knopfes
  * --task-meta-size      -> Schriftgröße der Nebenzeile unter dem Titel
- * --tab-pill-active-bg  -> Fläche der Pille (styles/tokens.css)
- * --muted               -> Nebenzeile, Anzahl im Abschnittskopf, Geister-Zeile
+ * --tab-pill-active-bg  -> Fläche hinter dem Umschalter Liste | Board (styles/tokens.css)
+ * --card                -> Fläche des gewählten Knopfs darin und des gesetzten Hakens
+ * --muted               -> Nebenzeile, Anzahl im Gruppenkopf, Geister-Zeile, Hinweis bei leerem Filter
  * --chevron             -> Ring eines Hakens ohne Dringlichkeitsfarbe
  * --icon-soft           -> der kleine Pfeil in der Pille
  * --prio-jetzt          -> Rot eines überfälligen Datums
- * --xp-done / --card    -> Fläche des gesetzten Hakens und der Haken darin
+ * --xp-done             -> Fläche des gesetzten Hakens
  * --line                -> Trennlinie unter der Zeile zum Anlegen
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
 
-/* ---------- Pille unter dem Titel ---------- */
+/* ---------- Zeile unter dem Titel: Orts-Pille und Werkzeuge ---------- */
 
-.tasks-tools {
-  display: flex;
-  align-items: center;
+/* Dieselbe Zeile wie über den Listen eines Eintrags (.page-pills-row,
+   styles/entry.css) — nur der Abstand zum Titel darüber kommt von hier. */
+.tasks-tools .page-pills-row {
   margin: var(--page-title-gap) 0 var(--task-tools-gap);
 }
 
-/* Die Pille sagt, was man sieht, und ist zugleich der Menü-Knopf — deshalb
-   endet sie mit einem kleinen Pfeil nach unten. */
-.task-view-pill {
-  padding: 8px 10px 8px 14px;
+/* Die Pille ist ein Menü-Knopf: am Ende ein kleiner Pfeil nach unten */
+.task-place-pill {
+  padding-right: 12px;
+}
+
+.task-place-chevron {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  color: var(--icon-soft);
+  transform: rotate(90deg); /* transform: der Pfeil der Zeilen zeigt nach rechts, hier soll er nach unten zeigen */
+}
+
+/* Liste | Board: zwei runde Knöpfe in einer gemeinsamen Pille, der gewählte
+   ist gefüllt — wie der Umschalter Liste/Raster in Dateiablagen */
+.task-view-seg {
+  display: inline-flex;
+  align-items: center;
+  padding: 2px;
+  border-radius: 999px; /* border-radius: macht aus den zwei Knöpfen eine Pille */
   background: var(--tab-pill-active-bg);
+}
+
+.task-view-seg .page-tool {
+  width: calc(var(--page-tool-size) - 4px);
+  height: calc(var(--page-tool-size) - 4px);
+}
+
+.task-view-seg .page-tool.is-on {
+  background: var(--card);
   color: var(--text);
 }
 
-.task-view-chevron {
-  width: 14px;
-  height: 14px;
-  color: var(--icon-soft);
-  transform: rotate(90deg); /* transform: der Pfeil der Zeilen zeigt nach rechts, hier soll er nach unten zeigen */
+/* Der Filter lässt nichts übrig: ein Satz statt einer leeren Fläche */
+.task-empty-note {
+  padding: 14px 2px;
+  color: var(--muted);
+  font-size: 15px;
 }
 
 /* ---------- Abschnitte ---------- */

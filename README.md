@@ -248,22 +248,27 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   Verknüpfungen und Ort passiert, dann „Umwandeln“ oder „Abbrechen“. Nach
   Eintrag → Arbeitsbereich steht die Seite des Arbeitsbereichs offen; Zurück
   führt dorthin, woher man kam. Zeichnung und Medium haben die Option nicht.
-- Aufgaben-Seite: der Titel steht allein, darunter die Pille „Liste“ bzw.
-  „Board“ mit dem Menü (Liste/Board, Nach Dringlichkeit/Nach Status, Erledigte
-  zeigen). Die Liste ist in dieselben Abschnitte gegliedert wie das Board in
-  Spalten; leere Abschnitte fehlen, nur der erste („Jetzt“) steht immer da.
-  Der Ring des Hakens trägt die Farbe der Dringlichkeit, „In Arbeit“ zeigt
-  einen Punkt darin. Unter dem Titel nur stiller Text: Fälligkeit (überfällig
-  rot), in Status-Abschnitten die Dringlichkeit, dann der Ort.
-- Aufgabe anlegen durch Tippen: ganz ohne Aufgaben liegt unter „Jetzt“ die
-  blasse Zeile „Neue Aufgabe“. Sonst ein Tipp in die freie Fläche — die neue
-  Zeile mit Cursor erscheint am Ende des Abschnitts, unter dem man getippt
-  hat; im Board in der angetippten Spalte. Enter legt an und öffnet die
+- Aufgaben-Seite: der Titel steht allein, darunter die Zeile wie über den
+  Listen eines Eintrags: links die Pille mit dem Ort („Alle“, „Eingang“ oder
+  ein Arbeitsbereich/Projekt/eine Notiz — Tipp öffnet das Blatt „Aufgaben
+  von“), rechts Sortieren (Erstellt/Fällig/Titel, Richtung), der Umschalter
+  Liste | Board, Einstellungen (nicht gruppieren / nach Dringlichkeit / nach
+  Status, Erledigte zeigen) und Plus (Eingabefeld als Aufgabe). Standard: alle
+  Aufgaben als eine Liste, älteste zuerst. Gruppiert zeigt die Liste dieselben
+  Gruppen wie das Board Spalten; das Board gruppiert ungruppiert nach
+  Dringlichkeit. Der Ring des Hakens trägt die Farbe der Dringlichkeit, „In
+  Arbeit“ zeigt einen Punkt darin. Unter dem Titel nur stiller Text: Fälligkeit
+  (überfällig rot), in Status-Gruppen die Dringlichkeit, dann der Ort.
+- Aufgabe anlegen durch Tippen: ganz ohne Aufgaben liegt die blasse Zeile
+  „Neue Aufgabe“ da. Sonst ein Tipp in die freie Fläche — die neue Zeile mit
+  Cursor erscheint am Ende der Liste (gruppiert: der Gruppe, unter der man
+  getippt hat); im Board in der angetippten Spalte. Die untere Leiste bleibt
+  dabei stehen. Enter legt an und öffnet die
   nächste Zeile, Escape oder Verlassen einer leeren Zeile lässt sie
   verschwinden, Verlassen mit Text legt an. Scrollen und Wischen legen nichts an.
 - Aufgabe abhaken: Erledigtes ist standardmäßig ausgeblendet (die Meldung
   unten bietet „Rückgängig“); mit „Erledigte zeigen“ bleibt sie ausgegraut
-  ganz unten im Abschnitt bzw. in der Board-Spalte stehen. Ab 00:00 Uhr des
+  ganz unten in der Liste bzw. in der Board-Spalte stehen. Ab 00:00 Uhr des
   nächsten Tages liegt sie im Archiv (`src/data/task-archive.js`). Zurückgeholt
   bleibt sie wieder bis Mitternacht sichtbar.
 - Zwischen den Pillen „Inhalt“ und „Verknüpfte Einträge“ wechseln — bei jedem

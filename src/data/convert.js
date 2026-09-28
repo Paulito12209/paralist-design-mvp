@@ -142,6 +142,11 @@ function contentsIntoLinks(entry, ref, fallback) {
   contents.forEach((item) => connectEntries(entry, item));
 }
 
+/* Der Orts-Filter der Aufgaben-Seite folgt dem Ort — oder fällt auf „alle“ zurück. */
+function movePlaceFilter(fromRef, toRef) {
+  if (state.prefs.tasks.place === fromRef) state.prefs.tasks.place = toRef || "alle";
+}
+
 /* Der Typwechsel selbst, ohne zu speichern — Verknüpfungen und Inhalt wandern mit. */
 function applyType(entry, type) {
   const ref = entryRef(entry.id);
@@ -163,6 +168,7 @@ function applyType(entry, type) {
     entry.links = [];
   } else if (wasContainer && !nowContainer) {
     contentsIntoLinks(entry, ref, entry.places || []);
+    movePlaceFilter(ref, null);
   }
 }
 
@@ -237,6 +243,7 @@ export function entryToWorkspace(entry) {
   linksIntoPlace(entry, target);
   dropLinksTo(entry.id);
   moveOpen(`entry:${entry.id}`, "workspace", id);
+  movePlaceFilter(ref, target);
   state.entries = state.entries.filter((item) => item !== entry);
   commit({ prunedEntries: true });
   return workspace;
@@ -277,8 +284,10 @@ export function workspaceToEntry(workspace, type) {
       item.places = item.places.filter((place) => place !== source);
       if (!isContainer(item) && !hasPlace(item, target)) item.places.push(target);
     });
+    movePlaceFilter(source, target);
   } else {
     contentsIntoLinks(entry, source, []);
+    movePlaceFilter(source, null);
   }
   state.workspaces = state.workspaces.filter((item) => item !== workspace);
   moveOpen(`workspace:${workspace.id}`, "entry", entry.id);
