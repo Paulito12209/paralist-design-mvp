@@ -271,8 +271,9 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 - Aufgabe anlegen durch Tippen: ganz ohne Aufgaben liegt die blasse Zeile
   „Neue Aufgabe“ da. Sonst ein Tipp in die freie Fläche — die neue Zeile mit
   Cursor erscheint am Ende der Liste (gruppiert: der Gruppe, unter der man
-  getippt hat); im Board in der angetippten Spalte. Die untere Leiste bleibt
-  dabei stehen. Enter legt an und öffnet die
+  getippt hat); im Board in der angetippten Spalte. Die untere Leiste weicht
+  am Handy der Tastatur wie bei jedem Feld auf der Seite, am Rechner bleibt
+  sie stehen. Enter legt an und öffnet die
   nächste Zeile, Escape oder Verlassen einer leeren Zeile lässt sie
   verschwinden, Verlassen mit Text legt an. Scrollen und Wischen legen nichts an.
 - Aufgabe abhaken: Erledigtes ist standardmäßig ausgeblendet (die Meldung

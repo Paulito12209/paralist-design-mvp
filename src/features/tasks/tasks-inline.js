@@ -93,11 +93,12 @@ function openRow(section) {
   const row = document.createElement("div");
   row.className = `task-inline${board ? " board-row" : ""}`;
   /* form: gegen Chromes Verlaufs-Chips über der Tastatur (src/core/no-history.js);
-     enterkeyhint: die Enter-Taste soll „Fertig“ heißen, nicht „Weiter“;
-     data-keep-nav: die untere Leiste bleibt stehen (src/shell/writing.js). */
+     enterkeyhint: die Enter-Taste soll „Fertig“ heißen, nicht „Weiter“.
+     Die untere Leiste weicht der Tastatur wie bei jedem Feld auf der Seite
+     (src/shell/writing.js). */
   row.innerHTML = `
     <span class="task-check task-inline-ring" aria-hidden="true"></span>
-    <input class="task-inline-input" type="text" form="${noHistoryForm}" enterkeyhint="done" data-keep-nav
+    <input class="task-inline-input" type="text" form="${noHistoryForm}" enterkeyhint="done"
       placeholder="${placeholder}" aria-label="${placeholder}" />
   `;
   box.append(row);

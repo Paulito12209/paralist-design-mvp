@@ -1,9 +1,12 @@
 /*
  * Schreiben auf der Seite selbst: Titel und Text eines Eintrags, Name und
- * Inhalt eines Arbeitsbereichs, Umbenennen eines Tabs oder Arbeitsbereichs.
+ * Inhalt eines Arbeitsbereichs, Umbenennen eines Tabs oder Arbeitsbereichs,
+ * eine neue Aufgabe direkt in der Liste.
  * Solange dort geschrieben wird, tritt die untere Leiste zurück — über der
  * Tastatur hätte die Navigation nichts zu tun (Klasse is-writing, siehe
- * styles/navigation.css). Das Eingabefeld unten und das Suchfeld oben sind
+ * styles/navigation.css). Das gilt nur auf Touch-Geräten, wo ein Feld die
+ * Bildschirmtastatur öffnet — am Rechner mit Maus bleibt die Leiste stehen.
+ * Das Eingabefeld unten und das Suchfeld oben sind
  * nicht gemeint: zu ihnen gehört die Leiste mit ihren Knöpfen.
  *
  * Die Leiste kommt erst zurück, wenn die Tastatur zu ist — sonst stünde sie
@@ -30,11 +33,9 @@ const KEYBOARD_SETTLE_MS = 250;
 let showTimer = null;
 let blurTimer = null;
 
-/* Ein Textfeld auf der Seite — nicht unten im Eingabefeld, nicht oben in der
-   Suche. Trägt ein Feld data-keep-nav (die Zeile zum Anlegen einer Aufgabe),
-   bleibt die Leiste ebenfalls: dort tippt man einen Titel, keinen Text. */
+/* Ein Textfeld auf der Seite — nicht unten im Eingabefeld, nicht oben in der Suche. */
 function isPageField(node) {
-  return isTextField(node) && dom.content.contains(node) && !node.hasAttribute("data-keep-nav");
+  return isTextField(node) && dom.content.contains(node);
 }
 
 function setWriting(writing) {

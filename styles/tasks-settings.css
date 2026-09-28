@@ -14,7 +14,8 @@
  * -----------------------------------
  * --tasks-switch-w / --tasks-switch-h -> Größe des Schalters
  * --tasks-seg-h              -> Höhe des Segments (und seiner Knöpfe)
- * --tasks-panel-gap          -> Luft zwischen Karte und Navigation darunter
+ * --tasks-panel-gap          -> Luft zwischen ausgeklappter Karte und Navigation darunter;
+ *                               eingeklappt steht der Kopf direkt auf der Navigation, wie „Details“
  * --tasks-panel-slide        -> wie schnell die Karte aus- und einklappt
  * --details-head-h           -> Höhe des Kopfs — so viel schaut eingeklappt hervor
  * --nav-height / --nav-bottom -> Lage der Navigation, auf der die Karte sitzt (styles/tokens.css)
@@ -43,8 +44,11 @@
   margin: 0;
   padding-bottom: 12px;
   overflow: hidden; /* overflow: sehr niedrige Fenster schneiden die Zeilen ab statt die Karte zu sprengen */
-  /* transform: eingeklappt rutscht alles bis auf den Kopf hinter die Navigation */
-  transform: translateY(calc(100% - var(--details-head-h)));
+  /* transform: eingeklappt rutscht alles bis auf den Kopf hinter die Navigation.
+     Die Luft zur Navigation fällt dabei weg: der Kopf endet genau an ihrer
+     Oberkante, auf derselben Höhe wie „Details“ auf einer Eintragsseite
+     (src/features/entry/entry-fold.js) — beim Wechsel springt nichts. */
+  transform: translateY(calc(100% - var(--details-head-h) + var(--tasks-panel-gap)));
   transition: transform var(--tasks-panel-slide) cubic-bezier(0.2, 0.8, 0.2, 1); /* transition: weiches Aus- und Einklappen */
 }
 
@@ -98,7 +102,7 @@ body:has(.nav-shell.is-composing) .tasks-panel {
 
 /* Die Liste endet über dem eingeklappten Kopf, nicht dahinter */
 #view-tasks {
-  padding-bottom: calc(var(--details-head-h) + var(--tasks-panel-gap));
+  padding-bottom: var(--details-head-h);
 }
 
 /* Am Desktop gibt es die Handy-Navigation nicht: die Karte sitzt unten in

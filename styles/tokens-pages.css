@@ -90,7 +90,7 @@
  * --task-section-gap        -> Luft zwischen zwei Gruppen der Aufgaben-Liste
  * --tasks-switch-w / --tasks-switch-h -> Größe des Schalters in der Karte „Ansicht konfigurieren“
  * --tasks-seg-h             -> Höhe des Segments Liste | Board in dieser Karte
- * --tasks-panel-gap         -> Luft zwischen der Karte „Ansicht konfigurieren“ und der Navigation darunter
+ * --tasks-panel-gap         -> Luft zwischen der ausgeklappten Karte „Ansicht konfigurieren“ und der Navigation
  * --tasks-panel-slide       -> wie schnell diese Karte aus- und einklappt
  * --board-col-width         -> Breite einer Board-Spalte
  * --board-gap               -> Fuge zwischen zwei Spalten
