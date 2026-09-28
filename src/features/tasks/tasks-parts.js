@@ -1,75 +1,63 @@
 /*
  * Die kleinen Bausteine einer Aufgabe, die Liste und Board gemeinsam nutzen:
- * das Label mit dem Ablageort und die Chips für Status, Dringlichkeit und
- * Datum. Der runde Haken-Knopf steht in src/ui/task-status.js, weil er in
- * jeder Liste der App vorkommt, nicht nur hier.
+ * der Titel und die stille Nebenzeile darunter. Keine Chips mit Rahmen — nur
+ * grauer Text, durch Punkte getrennt: Fälligkeit, dann der Ablageort. Farbe
+ * bekommt einzig, was Aufmerksamkeit verdient: ein überfälliges Datum wird
+ * rot. Der Status steht nicht in der Zeile, den zeigt der Ring des Hakens
+ * (src/ui/task-status.js); die Dringlichkeit steht nur dann als Wort da, wenn
+ * der Abschnitt sie nicht schon sagt (Gliederung nach Status).
  * Pfad: src/features/tasks/tasks-parts.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * untitledTask       -> wie eine Aufgabe ohne Titel heißt
- * priorityFieldIcon  -> Icon vor der Dringlichkeit in einer Zeile; kommt aus
- *                       taskGroupings in src/data/config.js
+ * untitledTask -> wie eine Aufgabe ohne Titel heißt
  *
- * Aussehen und Größen stehen in styles/tasks.css (--task-check-size,
- * --task-meta-size, --task-chip-size).
+ * Aussehen und Größen stehen in styles/tasks.css (--task-meta-size, das Rot
+ * eines überfälligen Datums ist --prio-jetzt).
  */
 
-import { escapeHtml, icon } from "../../core/html.js";
+import { dayKey } from "../../core/dates.js";
+import { escapeHtml } from "../../core/html.js";
 import { shortDay } from "../../core/format.js";
-import { taskGroupings, taskPriorityOf, taskStatusOf } from "../../data/config.js";
-import { entryDay, mainPlace, parentIcon, placesLabel } from "../../data/queries.js";
+import { isTaskDone, taskPriorityOf } from "../../data/config.js";
+import { placesLabel } from "../../data/queries.js";
 
 const untitledTask = "Ohne Titel";
-
-/*
- * Welches Icon in einer Zeile vor der Dringlichkeit steht. Nicht das der
- * einzelnen Stufe: die Uhr bei „Später“ sagt nichts darüber, um welches Feld
- * es überhaupt geht, und sieht dem Verlaufs-Icon von „In Arbeit“ zum
- * Verwechseln ähnlich. Stattdessen das Icon der Gruppierung „Dringlichkeit“ —
- * dasselbe, das auch die Pille „Gruppieren“ trägt. Die Spaltenköpfe im Board
- * behalten ihr eigenes Icon je Stufe: dort ist die Stufe ja die Überschrift.
- */
-const priorityGroup = taskGroupings.find((group) => group.field === "priority");
-const priorityFieldIcon = priorityGroup ? priorityGroup.icon : "flame";
 
 /** Titel einer Aufgabe, abgesichert für die Ausgabe. */
 export function taskTitle(entry) {
   return escapeHtml(entry.title || untitledTask);
 }
 
-/** Wozu die Aufgabe gehört: Projekt, Arbeitsbereich oder „Eingang”. */
-export function taskPlaceLabel(entry) {
-  return `
-    <span class="task-place">
-      ${icon(parentIcon(mainPlace(entry)), "task-place-icon")}
-      <span class="task-place-name">${escapeHtml(placesLabel(entry))}</span>
-    </span>
-  `;
+/* Die Fälligkeit — nur, wenn die Aufgabe wirklich ein Datum hat. Der Tag des
+   Anlegens ist keine Fälligkeit und bleibt deshalb weg. */
+function dueMarkup(entry) {
+  if (!entry.date) return "";
+  const overdue = !isTaskDone(entry) && entry.date < dayKey(new Date());
+  return `<span class="task-due${overdue ? " is-overdue" : ""}">${escapeHtml(shortDay(entry.date))}</span>`;
 }
 
-/** Ein Chip: kleines Icon, kurzer Text, Farbe aus der Angabe. */
-function chip(iconName, label, color, extra = "") {
-  return `
-    <span class="task-chip${extra}" style="--chip-color:${color}">
-      ${icon(iconName, "task-chip-icon")}${escapeHtml(label)}
-    </span>
-  `;
-}
-
-/** Status-Chip mit der Farbe des Status. */
-export function taskStatusChip(entry) {
-  const status = taskStatusOf(entry.status);
-  return chip(status.icon, status.label, status.color);
-}
-
-/** Dringlichkeits-Chip: Icon des Feldes, Name und Farbe der Stufe. */
-export function taskPriorityChip(entry) {
+/* Die Dringlichkeit als Wort in ihrer Farbe — nur in Status-Abschnitten. */
+function priorityMarkup(entry) {
   const priority = taskPriorityOf(entry.priority);
-  return chip(priorityFieldIcon, priority.label, priority.color);
+  return `<span class="task-prio" style="--chip-color:${priority.color}">${escapeHtml(priority.label)}</span>`;
 }
 
-/** Datums-Chip: „Heute“, „Morgen“, sonst der kurze Tag. */
-export function taskDateChip(entry) {
-  return chip("calendar", shortDay(entryDay(entry)), "var(--muted)", " task-chip-date");
+/* Der Ablageort — nur, wenn die Aufgabe irgendwo liegt. Im Eingang steht nichts. */
+function placeMarkup(entry) {
+  if (!(entry.places || []).length) return "";
+  return `<span class="task-place">${escapeHtml(placesLabel(entry))}</span>`;
+}
+
+/**
+ * Die Nebenzeile unter dem Titel. `field` ist das Feld der Gliederung: was
+ * der Abschnitt schon sagt, wiederholt die Zeile nicht. Ohne Angaben bleibt
+ * die Zeile ganz weg, und die Aufgabe ist eine einzeilige Zeile.
+ */
+export function taskMeta(entry, field) {
+  const parts = [dueMarkup(entry), field === "status" ? priorityMarkup(entry) : "", placeMarkup(entry)].filter(
+    Boolean
+  );
+  if (!parts.length) return "";
+  return `<span class="task-meta">${parts.join('<span class="task-meta-dot" aria-hidden="true">·</span>')}</span>`;
 }

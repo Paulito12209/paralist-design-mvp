@@ -59,8 +59,9 @@ const taskFields = {
 
 /**
  * Der runde Haken-Knopf. Er sitzt als eigener Knopf neben der Zeile, damit ein
- * Tipp darauf die Aufgabe abhakt und nicht die Seite öffnet. „In Arbeit“ färbt
- * den Ring ein — so sieht man den Stand auch in Listen ohne Status-Chip.
+ * Tipp darauf die Aufgabe abhakt und nicht die Seite öffnet. Der Ring trägt
+ * die Farbe der Dringlichkeit — dasselbe Motiv wie die Ringe im Kalender —,
+ * „In Arbeit“ setzt einen Punkt hinein, erledigt füllt ihn grün.
  */
 export function taskCheck(entry) {
   const done = isTaskDone(entry);
@@ -69,6 +70,7 @@ export function taskCheck(entry) {
   const state = done ? " is-done" : busy ? " is-busy" : "";
   return `
     <button class="task-check${state}" type="button" data-task-done="${entry.id}"
+      style="--task-ring:${taskPriorityOf(entry.priority).color}"
       aria-pressed="${done}" aria-label="${done ? "Wieder öffnen" : "Erledigt"}">
       ${icon("check", "task-check-icon")}
     </button>

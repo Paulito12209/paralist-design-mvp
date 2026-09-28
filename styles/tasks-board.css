@@ -2,7 +2,7 @@
  * Aufgaben-Seite: das Kanban-Board. Waagerecht scrollende Spalten, je Spalte
  * eine farbige Kopfzeile und darunter die Aufgaben als schlichte Zeilen mit
  * Trennlinie — keine Karten. Erst beim Ziehen hebt sich eine Zeile als Karte
- * ab. Die Farbe einer Spalte kommt als --col-color aus
+ * ab. Angelegt wird durch Tippen in die freie Fläche einer Spalte. Die Farbe einer Spalte kommt als --col-color aus
  * src/features/tasks/tasks-board.js und stammt aus der Liste der
  * Dringlichkeiten bzw. Status in src/data/config.js.
  * Pfad: styles/tasks-board.css
@@ -13,12 +13,12 @@
  * --board-gap          -> Fuge zwischen zwei Spalten
  * --board-head-gap     -> Abstand zwischen Kopfzeile und erster Zeile
  * --board-grip-width   -> Breite des Griffstreifens am rechten Rand einer Zeile
- * --board-card-radius  -> Rundung der angehobenen Zeile, der Lücke und des Knopfes
+ * --board-card-radius  -> Rundung der angehobenen Zeile und der Lücke
  * --board-head-radius  -> Rundung der farbigen Kopfzeile
  * --board-drop-min     -> Mindesthöhe einer leeren Spalte
  * --content-side       -> Abstand des Boards zum Rand
  * --card / --line      -> Fläche der angehobenen Zeile und die Trennlinien
- * --muted / --chevron  -> Nebentexte, Griffpunkte und gestrichelter Knopf
+ * --muted / --chevron  -> Nebentexte, Griffpunkte und die Lücke beim Ziehen
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -156,28 +156,19 @@
   display: none;
 }
 
-/* Knopf am Spaltenende */
-.board-add {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  width: 100%;
-  margin-top: 10px;
-  padding: 10px;
-  border: 1px dashed var(--chevron); /* gestrichelt: hier ist noch nichts, hier kommt etwas hin */
-  border-radius: var(--board-card-radius);
-  color: var(--muted);
-  font-size: 14px;
+/* Die Zeile zum Anlegen (src/features/tasks/tasks-inline.js) steht im Board
+   wie jede andere Zeile: Feld links, Ring rechts, ohne Griff */
+.board-row.task-inline {
+  padding-right: var(--board-grip-width);
 }
 
-.board-add-icon {
-  width: 16px;
-  height: 16px;
+.board-row.task-inline .task-inline-ring {
+  order: 2; /* order: im Board sitzt der Ring rechts, in der Liste links */
 }
 
-.board-add:active {
-  opacity: 0.6;
+/* Solange in der Spalte geschrieben wird, ist der Hinweis „Nichts hier“ überflüssig */
+.board-col.is-adding .board-empty {
+  display: none;
 }
 
 /* ---------- Ziehen ---------- */

@@ -22,7 +22,6 @@ export const events = {
   composerRequested: "composer:requested",
   /* Die Aufgaben-Seite bittet um das Eingabefeld mit schon gewähltem Typ
      „Aufgabe“ — der Knopf am Ende einer Board-Spalte. */
-  taskRequested: "task:requested",
   /* Die Pille im Platzhalter einer leeren Liste bittet um das Eingabefeld mit
      dem Typ, der auf diese Liste passt („aufgabe“, „projekt“, „ressourcen“ …). */
   createRequested: "create:requested",

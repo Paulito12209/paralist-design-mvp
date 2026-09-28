@@ -1,9 +1,10 @@
 /*
- * Die Aufgaben-Seite hinter dem dritten Reiter. Neben dem Titel der Umschalter,
- * darunter die Pillen und je nach Wahl die Liste oder das Kanban-Board. Diese
- * Datei hält nur alles zusammen: gezeichnet wird in tasks-list.js und
- * tasks-board.js, die Bedienelemente stehen in tasks-tools.js, das Ziehen in
- * tasks-drag.js.
+ * Die Aufgaben-Seite hinter dem dritten Reiter. Der Titel steht allein,
+ * darunter die eine Pille mit dem Menü, darunter je nach Wahl die Liste in
+ * Abschnitten oder das Kanban-Board mit denselben Abschnitten als Spalten.
+ * Diese Datei hält nur alles zusammen: gezeichnet wird in tasks-list.js und
+ * tasks-board.js, die Pille steht in tasks-tools.js, das Ziehen in
+ * tasks-drag.js, das Anlegen durch Tippen in die Fläche in tasks-inline.js.
  * Wird erst beim ersten Öffnen nachgeladen.
  * Pfad: src/features/tasks/tasks.js
  *
@@ -11,13 +12,14 @@
  * Nachbardateien, Maße in styles/tasks.css und styles/tasks-board.css.
  */
 
-import { emit, events, on } from "../../core/bus.js";
+import { events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
-import { state, ui } from "../../data/state.js";
+import { state } from "../../data/state.js";
 import { openEntry } from "../../ui/router.js";
 import { isViewActive } from "../../ui/views.js";
 import { taskBoardMarkup } from "./tasks-board.js";
 import { consumeDragClick, initTaskDrag } from "./tasks-drag.js";
+import { initTaskInline } from "./tasks-inline.js";
 import { taskListMarkup } from "./tasks-list.js";
 import { handleToolClick, taskToolsMarkup } from "./tasks-tools.js";
 
@@ -31,14 +33,13 @@ export function renderTasks() {
 
   dom.tasksTools.innerHTML = taskToolsMarkup();
   dom.tasksBody.innerHTML = board ? taskBoardMarkup(prefs) : taskListMarkup(prefs);
-  dom.tasksBody.classList.toggle("is-board", board);
 
   const next = board ? dom.tasksBody.querySelector(".board") : null;
   if (next) next.scrollLeft = left;
 }
 
-/* Klicks im Inhalt: Knopf am Spaltenende, Zeile im Board öffnen. Den
-   Haken-Knopf fängt src/ui/list-clicks.js — er gilt in jeder Liste gleich. */
+/* Klicks im Inhalt: Zeile im Board öffnen. Den Haken-Knopf fängt
+   src/ui/list-clicks.js — er gilt in jeder Liste gleich. */
 function onBodyClick(event) {
   /* Nach dem Ablegen einer Zeile kommt noch ein Klick — der öffnet nichts. */
   if (consumeDragClick()) {
@@ -46,17 +47,6 @@ function onBodyClick(event) {
     event.stopPropagation();
     return;
   }
-
-  const add = event.target.closest("[data-add-task]");
-  if (add) {
-    /* Das Eingabefeld gehört einem anderen Bereich: es wird über eine
-       Nachricht gebeten, nicht importiert. Wohin die neue Aufgabe soll,
-       liegt so lange im flüchtigen Zustand. */
-    ui.taskDraftColumn = { field: add.dataset.field, value: add.dataset.addTask };
-    emit(events.taskRequested);
-    return;
-  }
-
   /* In der Liste öffnet src/ui/list-clicks.js den Eintrag; im Board hier. */
   const row = event.target.closest("[data-board-row]");
   if (row) openEntry(row.dataset.boardRow);
@@ -68,6 +58,7 @@ function init() {
   dom.tasksTools.addEventListener("click", onToolClick);
   dom.tasksBody.addEventListener("click", onBodyClick);
   initTaskDrag(renderTasks);
+  initTaskInline();
 
   on(events.dataChanged, () => {
     if (isViewActive("tasks")) renderTasks();

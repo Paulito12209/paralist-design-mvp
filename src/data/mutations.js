@@ -306,6 +306,38 @@ export function applyEntryDefaults(entry) {
   if (target && (target.field === "status" || target.field === "priority")) entry[target.field] = target.value;
 }
 
+/**
+ * Eine Aufgabe direkt in der Liste anlegen — nur mit Titel, ohne Eingabefeld.
+ * `column` ist der Abschnitt, in den getippt wurde ({ field, value }); die
+ * Aufgabe landet mit dessen Dringlichkeit bzw. Status am Ende des Abschnitts.
+ * Bringt dieselben Punkte wie das Anlegen über das Eingabefeld.
+ */
+export function createTaskInline(title, column) {
+  const entry = {
+    id: state.nextEntryId++,
+    type: "aufgabe",
+    title,
+    body: "",
+    places: [],
+    links: [],
+    archived: false,
+    favorite: false,
+    createdAt: Date.now(),
+  };
+  applyEntryDefaults(entry);
+  if (column && (column.field === "status" || column.field === "priority")) entry[column.field] = column.value;
+  /* Ans Ende des Abschnitts: hinter die letzte Aufgabe, die dort schon liegt. */
+  const siblings = state.entries.filter(
+    (item) => item.type === "aufgabe" && !item.archived && column && item[column.field] === column.value
+  );
+  const last = siblings.reduce((max, item) => Math.max(max, taskOrder(item)), -Infinity);
+  if (last !== -Infinity) entry.order = last + orderGap;
+  state.entries.push(entry);
+  awardXp("created", "aufgabe", title);
+  commit();
+  return entry;
+}
+
 /*
  * Wechselt eine Aufgabe auf „erledigt“, wird das wie beim Archivieren im
  * XP-Protokoll vermerkt (xpKinds.done). `doneAwarded` merkt sich, dass es die

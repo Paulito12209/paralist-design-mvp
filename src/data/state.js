@@ -20,12 +20,10 @@ import {
   resourceFilters,
   taskDefaults,
   taskGroupings,
-  taskSorts,
-  taskStatuses,
   taskViews,
 } from "./config.js";
 import { sanitizeLinks } from "./links.js";
-import { entryRef, normalizeRef, workspaceRef } from "./refs.js";
+import { normalizeRef, workspaceRef } from "./refs.js";
 import { seedMedia, seedXpFromExisting } from "./seed.js";
 import { archiveFinishedTasks } from "./task-archive.js";
 import { pruneThumbs } from "./thumbs.js";
@@ -239,8 +237,12 @@ function adoptPrefs(saved) {
   if (saved.resources && typeof saved.resources === "object") {
     state.prefs.resources = { ...state.prefs.resources, ...saved.resources };
   }
+  /* Ein Stand mit `sort` stammt von der Aufgaben-Seite mit Filterzeile. Die
+     neue Seite gliedert nach Dringlichkeit und blendet Erledigtes aus — das
+     soll jeder beim ersten Öffnen so sehen, nur die Ansicht bleibt. */
   if (saved.tasks && typeof saved.tasks === "object") {
-    state.prefs.tasks = { ...state.prefs.tasks, ...saved.tasks };
+    const fresh = "sort" in saved.tasks;
+    state.prefs.tasks = fresh ? { ...taskDefaults, view: saved.tasks.view } : { ...state.prefs.tasks, ...saved.tasks };
   }
   if (saved.pageHeads && typeof saved.pageHeads === "object") {
     state.prefs.pageHeads = Object.fromEntries(Object.entries(saved.pageHeads).filter(([, on]) => on === true));
@@ -255,16 +257,7 @@ function adoptPrefs(saved) {
   const tasks = state.prefs.tasks;
   tasks.view = pickValid(tasks.view, taskViews, taskDefaults.view);
   tasks.group = pickValid(tasks.group, taskGroupings.map((item) => item.id), taskDefaults.group);
-  tasks.sort = pickValid(tasks.sort, taskSorts.map((item) => item.id), taskDefaults.sort);
-  tasks.status = pickValid(tasks.status, ["alle", ...taskStatuses.map((item) => item.id)], taskDefaults.status);
-  /* Der Ort ist „alle“, „inbox“ oder ein Verweis wie „w:3“. Gibt es den Ort
-     nicht mehr, fällt der Filter auf „alle“ zurück — sonst bliebe die Seite
-     leer, ohne dass man sähe, warum. */
-  const places = ["alle", "inbox"]
-    .concat(state.workspaces.map((workspace) => workspaceRef(workspace.id)))
-    .concat(state.entries.map((entry) => entryRef(entry.id)));
-  tasks.place = pickValid(tasks.place, places, taskDefaults.place);
-  tasks.hideDone = Boolean(tasks.hideDone);
+  tasks.hideDone = typeof tasks.hideDone === "boolean" ? tasks.hideDone : taskDefaults.hideDone;
 }
 
 /** Liest den gespeicherten Stand; beim allerersten Start entstehen die Beispieldaten. */

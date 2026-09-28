@@ -343,7 +343,6 @@ export function initComposer() {
      nicht importieren muss. */
   on(events.composerRequested, openComposerForSlot);
   /* Dasselbe für die Aufgaben-Seite: ihr Knopf am Spaltenende will eine Aufgabe. */
-  on(events.taskRequested, () => openComposer({ type: "aufgabe", pick: "aufgabe" }));
   on(events.createRequested, (pick) => openComposer(pickOverrides(pick)));
   /* Geht ein Blatt von unten auf, gibt das Eingabefeld auf: es lag sonst
      unsichtbar dahinter weiter offen — samt laufendem Diktat. */

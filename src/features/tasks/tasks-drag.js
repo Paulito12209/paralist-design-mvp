@@ -22,7 +22,6 @@ import { cssNumber } from "../../core/css-vars.js";
 import { dom } from "../../core/dom.js";
 import { moveTask } from "../../data/mutations.js";
 import { findEntry } from "../../data/queries.js";
-import { saveState, state } from "../../data/state.js";
 
 const scrollSpeed = 12;
 const startSlack = 4;
@@ -131,12 +130,6 @@ function endDrag(save) {
   const index = siblings.indexOf(card);
   const before = entryOfCard(siblings[index - 1]);
   const after = entryOfCard(siblings[index + 1]);
-  /* Von Hand gezogen heißt: diese Reihenfolge soll gelten. Stand die Seite auf
-     einer anderen Sortierung, wechselt sie dafür zurück auf „Neueste zuerst“. */
-  if (state.prefs.tasks.sort !== "neu") {
-    state.prefs.tasks.sort = "neu";
-    saveState();
-  }
   moveTask(entry, box.dataset.field, box.dataset.drop, before, after);
   redrawBoard();
 }

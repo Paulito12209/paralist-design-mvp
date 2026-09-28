@@ -261,40 +261,28 @@ function priorityRank(entry) {
 }
 
 /**
- * Aufgaben sortieren. Zwei Regeln gelten immer: Erledigtes steht ganz unten,
- * und bei „Neueste zuerst“ schlägt eine von Hand gezogene Reihenfolge die
- * automatische. Eine neue Sortierart braucht hier nur einen weiteren Fall.
+ * Aufgaben sortieren. Erledigtes steht immer ganz unten; davor gilt die von
+ * Hand gezogene Reihenfolge (sonst: Neuestes zuerst). Mit `sortId` "prio"
+ * kommt die Dringlichkeit davor — das braucht die Übersicht (insights.js),
+ * die keine Abschnitte hat.
  */
-export function sortTasks(list, sortId) {
+export function sortTasks(list, sortId = "neu") {
   const rest = (a, b) => {
-    if (sortId === "alt") return (a.createdAt || 0) - (b.createdAt || 0);
-    if (sortId === "titel") return String(a.title).localeCompare(String(b.title), "de");
     if (sortId === "prio") return priorityRank(a) - priorityRank(b) || taskOrder(a) - taskOrder(b);
     return taskOrder(a) - taskOrder(b);
   };
   return [...list].sort((a, b) => Number(isTaskDone(a)) - Number(isTaskDone(b)) || rest(a, b));
 }
 
-/** Liegt die Aufgabe an dem Ort, den der Filter verlangt? „alle“ lässt alles durch. */
-function matchesPlace(entry, place) {
-  if (place === "alle") return true;
-  if (place === "inbox") return hasPlace(entry, null);
-  return hasPlace(entry, place);
-}
-
-/** Aufgaben nach den Filtern der Bedienzeile sieben und sortieren. */
+/** Aufgaben der Seite: ohne Erledigte, solange das Menü sie ausblendet. */
 export function visibleTasks(prefs) {
-  const list = taskEntries().filter((entry) => {
-    if (prefs.hideDone && isTaskDone(entry)) return false;
-    if (prefs.status !== "alle" && entry.status !== prefs.status) return false;
-    return matchesPlace(entry, prefs.place);
-  });
-  return sortTasks(list, prefs.sort);
+  return sortTasks(taskEntries().filter((entry) => !(prefs.hideDone && isTaskDone(entry))));
 }
 
 /**
- * Die Spalten des Boards: [{ id, label, icon, color, items }] in der Reihenfolge
- * aus config.js. `field` sagt, welches Feld einer Aufgabe die Spalte bestimmt.
+ * Die Abschnitte der Liste und die Spalten des Boards — dieselbe Gliederung:
+ * [{ id, label, icon, color, items }] in der Reihenfolge aus config.js.
+ * `field` sagt, welches Feld einer Aufgabe den Abschnitt bestimmt.
  */
 export function taskColumns(prefs) {
   const grouping = taskGroupings.find((item) => item.id === prefs.group) || taskGroupings[0];

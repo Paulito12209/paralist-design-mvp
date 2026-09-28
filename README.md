@@ -248,10 +248,24 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   Verknüpfungen und Ort passiert, dann „Umwandeln“ oder „Abbrechen“. Nach
   Eintrag → Arbeitsbereich steht die Seite des Arbeitsbereichs offen; Zurück
   führt dorthin, woher man kam. Zeichnung und Medium haben die Option nicht.
-- Aufgabe abhaken: sie bleibt ausgegraut stehen, auf der Aufgaben-Seite ganz
-  unten (auch in jeder Board-Spalte). Ab 00:00 Uhr des nächsten Tages liegt
-  sie im Archiv (`src/data/task-archive.js`). Zurückgeholt bleibt sie wieder
-  bis Mitternacht sichtbar.
+- Aufgaben-Seite: der Titel steht allein, darunter die Pille „Liste“ bzw.
+  „Board“ mit dem Menü (Liste/Board, Nach Dringlichkeit/Nach Status, Erledigte
+  zeigen). Die Liste ist in dieselben Abschnitte gegliedert wie das Board in
+  Spalten; leere Abschnitte fehlen, nur der erste („Jetzt“) steht immer da.
+  Der Ring des Hakens trägt die Farbe der Dringlichkeit, „In Arbeit“ zeigt
+  einen Punkt darin. Unter dem Titel nur stiller Text: Fälligkeit (überfällig
+  rot), in Status-Abschnitten die Dringlichkeit, dann der Ort.
+- Aufgabe anlegen durch Tippen: ganz ohne Aufgaben liegt unter „Jetzt“ die
+  blasse Zeile „Neue Aufgabe“. Sonst ein Tipp in die freie Fläche — die neue
+  Zeile mit Cursor erscheint am Ende des Abschnitts, unter dem man getippt
+  hat; im Board in der angetippten Spalte. Enter legt an und öffnet die
+  nächste Zeile, Escape oder Verlassen einer leeren Zeile lässt sie
+  verschwinden, Verlassen mit Text legt an. Scrollen und Wischen legen nichts an.
+- Aufgabe abhaken: Erledigtes ist standardmäßig ausgeblendet (die Meldung
+  unten bietet „Rückgängig“); mit „Erledigte zeigen“ bleibt sie ausgegraut
+  ganz unten im Abschnitt bzw. in der Board-Spalte stehen. Ab 00:00 Uhr des
+  nächsten Tages liegt sie im Archiv (`src/data/task-archive.js`). Zurückgeholt
+  bleibt sie wieder bis Mitternacht sichtbar.
 - Zwischen den Pillen „Inhalt“ und „Verknüpfte Einträge“ wechseln — bei jedem
   Eintragstyp (Aufgabe, Notiz, Termin, Zeichnung, Projekt). Bei einer
   Zeichnung steht unter „Inhalt“ die Zeichenfläche.

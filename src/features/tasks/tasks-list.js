@@ -1,50 +1,39 @@
 /*
- * Die Listenansicht der Aufgaben-Seite. Die Zeilen sind dieselben wie in allen
- * übrigen Listen der App (dieselben Klassen aus styles/rows.css, dieselben
- * Wisch-Knöpfe, Antippen öffnet den Editor); dazu kommen nur der Haken-Knopf
- * links und unter dem Titel die Angaben in fester Reihenfolge: Datum, Status,
- * Ablageort. Der Ort steht zuletzt, weil er als einziger gekürzt wird, wenn
- * es eng wird.
+ * Die Listenansicht der Aufgaben-Seite: dieselben Abschnitte untereinander,
+ * die das Board nebeneinander als Spalten zeigt (Jetzt, Als Nächstes, Später,
+ * Irgendwann — oder Offen, In Arbeit, Erledigt). Jeder Abschnitt hat eine
+ * dünne Überschrift mit Icon in seiner Farbe und der Anzahl, darunter die
+ * Zeilen wie in allen übrigen Listen der App: Haken-Knopf links, Titel, stille
+ * Nebenzeile, Pfeil; dahinter dieselben Wisch-Knöpfe.
+ *
+ * Leere Abschnitte bleiben weg — bis auf den ersten: der steht immer da, denn
+ * ein leeres „Jetzt“ ist selbst eine Nachricht („nichts brennt“) und die
+ * Stelle, an der man tippt, um die erste Aufgabe zu schreiben. Solange es gar
+ * keine Aufgabe gibt, liegt unter ihm eine blasse Geister-Zeile, die das
+ * Tippen ein einziges Mal erklärt (src/features/tasks/tasks-inline.js).
  * Pfad: src/features/tasks/tasks-list.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * emptyAll    -> Platzhalter, solange es überhaupt keine Aufgabe gibt
- * emptyFilter -> Platzhalter, wenn nur die gewählten Filter nichts übrig lassen
+ * ghostLabel -> Text der Geister-Zeile, solange es keine Aufgabe gibt
  *
  * Aussehen und Abstände stehen in styles/rows.css und styles/tasks.css.
  */
 
-import { emptyState } from "../../ui/empty-state.js";
-import { entryActions, swipeRow } from "../../ui/rows.js";
-import { isTaskDone } from "../../data/config.js";
-import { taskEntries, visibleTasks } from "../../data/queries.js";
 import { icon } from "../../core/html.js";
-import { taskDateChip, taskPlaceLabel, taskStatusChip, taskTitle } from "./tasks-parts.js";
+import { isTaskDone } from "../../data/config.js";
+import { taskColumns } from "../../data/queries.js";
+import { entryActions, swipeRow } from "../../ui/rows.js";
 import { taskCheck } from "../../ui/task-status.js";
+import { taskMeta, taskTitle } from "./tasks-parts.js";
 
-/* Noch gar keine Aufgabe: dann lädt der Platzhalter zum Anlegen ein. */
-const emptyAll = {
-  icon: "task",
-  accent: "var(--xp-created)",
-  title: "Noch keine Aufgaben",
-  text: "Schreib auf, was ansteht — die Dringlichkeit stellst du später im Board ein.",
-  action: { label: "Aufgabe hinzufügen", pick: "aufgabe" },
-};
-
-/* Es gibt Aufgaben, aber die Bedienzeile blendet sie gerade alle aus. */
-const emptyFilter = {
-  icon: "sliders",
-  accent: "var(--prio-spaeter)",
-  title: "Nichts passt zu dieser Auswahl",
-  text: "Ändere die Filter in der Bedienzeile oder zeige erledigte Aufgaben wieder an.",
-};
+const ghostLabel = "Neue Aufgabe";
 
 /**
- * Eine Zeile: Haken-Knopf, Titel mit Ort und Chips, Pfeil — dahinter dieselben
+ * Eine Zeile: Haken-Knopf, Titel mit Nebenzeile, Pfeil — dahinter dieselben
  * Wisch-Knöpfe wie in jeder anderen Liste (src/ui/rows.js).
  */
-function taskRow(entry) {
+function taskRow(entry, field) {
   const done = isTaskDone(entry);
   const actions = entryActions(entry);
   return swipeRow(
@@ -56,9 +45,7 @@ function taskRow(entry) {
       <button class="workspace-row entry-row task-row" type="button" data-open-entry="${entry.id}">
         <span class="task-main">
           <span class="task-title${done ? " is-done" : ""}">${taskTitle(entry)}</span>
-          <span class="task-meta">
-            ${taskDateChip(entry)}${taskStatusChip(entry)}${taskPlaceLabel(entry)}
-          </span>
+          ${taskMeta(entry, field)}
         </span>
         ${icon("chevron", "chevron")}
       </button>
@@ -66,9 +53,40 @@ function taskRow(entry) {
   );
 }
 
-/** Die ganze Liste als HTML; leer, wenn die Filter nichts übrig lassen. */
+/* Die blasse Zeile, die nur ganz am Anfang da ist: ein leerer Ring, ein
+   grauer Text. Ein Tipp darauf macht daraus die erste echte Zeile. */
+function ghostRow() {
+  return `
+    <button class="task-ghost" type="button" data-task-ghost>
+      <span class="task-check task-ghost-ring" aria-hidden="true"></span>
+      <span class="task-ghost-label">${ghostLabel}</span>
+    </button>
+  `;
+}
+
+/* Ein Abschnitt: Überschrift mit Icon, Name und Anzahl, darunter die Zeilen.
+   data-section und data-field sagen dem Inline-Anlegen, wohin eine neue
+   Aufgabe gehört, wenn unter diesen Abschnitt getippt wird. */
+function sectionMarkup(column, field, ghost) {
+  const rows = column.items.map((entry) => taskRow(entry, field)).join("");
+  return `
+    <section class="task-section" data-section="${column.id}" data-field="${field}" style="--col-color:${column.color}">
+      <h2 class="task-section-head">
+        ${icon(column.icon, "task-section-icon")}
+        <span class="task-section-name">${column.label}</span>
+        <span class="task-section-count">${column.items.length || ""}</span>
+      </h2>
+      <div class="workspace-list task-rows">${rows}${ghost ? ghostRow() : ""}</div>
+    </section>
+  `;
+}
+
+/** Die ganze Liste als HTML: die Abschnitte der Gliederung untereinander. */
 export function taskListMarkup(prefs) {
-  const list = visibleTasks(prefs);
-  if (!list.length) return emptyState(taskEntries().length ? emptyFilter : emptyAll);
-  return `<div class="workspace-list task-rows">${list.map(taskRow).join("")}</div>`;
+  const { field, columns } = taskColumns(prefs);
+  const empty = columns.every((column) => !column.items.length);
+  return `<div class="task-sections">${columns
+    .filter((column, index) => index === 0 || column.items.length)
+    .map((column, index) => sectionMarkup(column, field, empty && index === 0))
+    .join("")}</div>`;
 }

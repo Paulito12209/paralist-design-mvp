@@ -1,129 +1,114 @@
 /*
- * Aufgaben-Seite: die Titelzeile mit dem runden Umschalter Liste ↔ Board und
- * der Pille „Gruppieren“, darunter die Listenansicht. Die Zeilen sind dieselben wie in allen übrigen Listen
- * (styles/rows.css) — hier stehen nur die Zutaten, die eine Aufgabe zusätzlich
- * hat: der runde Haken-Knopf, das Label mit dem Ablageort und die kleinen
- * Chips. Das Board hat eine eigene Datei, styles/tasks-board.css.
+ * Aufgaben-Seite: die Pille unter dem Titel, die Abschnitte der Liste, die
+ * Zeile zum Anlegen durch Tippen in die Fläche und alles, was eine Aufgabe
+ * gegenüber den übrigen Zeilen (styles/rows.css) zusätzlich hat: den runden
+ * Haken-Knopf mit Ring in der Farbe der Dringlichkeit und die stille
+ * Nebenzeile unter dem Titel. Das Board hat eine eigene Datei,
+ * styles/tasks-board.css.
  * Pfad: styles/tasks.css
  *
- * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * ANPASSBARE WERTE (alle in styles/tokens-pages.css, außer wo genannt)
  * -----------------------------------
- * --task-tools-gap      -> Abstand zwischen der Titelzeile und der Liste
- * --task-view-btn-size  -> Durchmesser des runden Umschalters
- * --task-pill-anim      -> wie lange die Pille „Gruppieren“ heraus- bzw. hineinfährt
- * --task-pill-slide     -> aus welcher Entfernung sie dabei herangleitet
- * --tab-pill-active-bg  -> Fläche von Umschalter und Pille „Gruppieren“
- * --overview-gap        -> Abstand der Titelzeile zu den Pillen
+ * --page-title-gap      -> Luft zwischen Titel und Pille (styles/tokens.css)
+ * --task-tools-gap      -> Abstand zwischen der Pille und dem ersten Abschnitt
+ * --task-section-gap    -> Luft zwischen zwei Abschnitten
  * --task-check-size     -> Größe des runden Haken-Knopfes
- * --task-meta-size      -> Schriftgröße des Ortes unter dem Titel
- * --task-chip-size      -> Schriftgröße der Status- und Datums-Chips
- * --muted               -> Farbe der Nebenangaben unter dem Titel
- * --chevron             -> Ring des noch leeren Hakens
- * --icon-soft           -> abgeschwächter Pfeil an den Gruppen-Pillen
- * --xp-done / --card    -> Farbe des gesetzten Hakens und seines Hakens darin
+ * --task-meta-size      -> Schriftgröße der Nebenzeile unter dem Titel
+ * --tab-pill-active-bg  -> Fläche der Pille (styles/tokens.css)
+ * --muted               -> Nebenzeile, Anzahl im Abschnittskopf, Geister-Zeile
+ * --chevron             -> Ring eines Hakens ohne Dringlichkeitsfarbe
+ * --icon-soft           -> der kleine Pfeil in der Pille
+ * --prio-jetzt          -> Rot eines überfälligen Datums
+ * --xp-done / --card    -> Fläche des gesetzten Hakens und der Haken darin
+ * --line                -> Trennlinie unter der Zeile zum Anlegen
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
 
-/* ---------- Titelzeile mit Umschalter ---------- */
-
-/* Titel links, Bedienelemente rechts — auf einer Höhe. Die Zeile ist nur so
-   hoch wie der Titel, damit er auf derselben Höhe steht wie auf allen anderen
-   Seiten; die höheren Knöpfe ragen oben und unten um --tasks-tools-overhang
-   darüber hinaus, und der Abstand zur Liste zählt ab ihrer Unterkante. */
-.tasks-head {
-  --tasks-tools-overhang: calc((var(--task-view-btn-size) - var(--title-size) * 1.1) / 2);
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: calc(var(--task-tools-gap) + var(--tasks-tools-overhang));
-}
-
-.tasks-head .screen-title {
-  flex: 1;
-  min-width: 0;
-  margin: 0;
-}
+/* ---------- Pille unter dem Titel ---------- */
 
 .tasks-tools {
   display: flex;
   align-items: center;
-  gap: 8px;
-  flex: 0 0 auto;
-  margin-block: calc(-1 * var(--tasks-tools-overhang)); /* margin-block: Knöpfe machen die Zeile nicht höher */
+  margin: var(--page-title-gap) 0 var(--task-tools-gap);
 }
 
-/* Runder Umschalter: Board-Icon in der Liste, Listen-Icon im Board */
-.task-view-btn {
-  width: var(--task-view-btn-size);
-  height: var(--task-view-btn-size);
-  display: grid;
-  place-items: center;
-  border-radius: 50%; /* border-radius: macht aus dem Knopf einen Kreis */
-  background: var(--tab-pill-active-bg);
-  color: var(--text);
-  flex: 0 0 auto;
-}
-
-.task-view-btn:active {
-  opacity: 0.55;
-}
-
-.task-view-icon {
-  width: 20px;
-  height: 20px;
-}
-
-/* Die Pille „Gruppieren“ liegt links vom Umschalter und wächst aus ihm heraus.
-   Sie ist ein Menü-Knopf, deshalb steht am Ende ein kleiner Pfeil nach unten. */
-.task-group-pill {
+/* Die Pille sagt, was man sieht, und ist zugleich der Menü-Knopf — deshalb
+   endet sie mit einem kleinen Pfeil nach unten. */
+.task-view-pill {
   padding: 8px 10px 8px 14px;
   background: var(--tab-pill-active-bg);
   color: var(--text);
-  transform-origin: right center; /* transform-origin: die Pille wächst vom Umschalter her */
 }
 
-.task-group-chevron {
+.task-view-chevron {
   width: 14px;
   height: 14px;
   color: var(--icon-soft);
   transform: rotate(90deg); /* transform: der Pfeil der Zeilen zeigt nach rechts, hier soll er nach unten zeigen */
 }
 
-/* Zum Board hin fährt die Pille aus dem Umschalter heraus … */
-.task-group-pill.is-entering {
-  animation: task-pill-in var(--task-pill-anim) cubic-bezier(0.2, 0.8, 0.3, 1) both; /* animation: einmaliges Herausfahren */
+/* ---------- Abschnitte ---------- */
+
+.task-section + .task-section {
+  margin-top: var(--task-section-gap);
 }
 
-/* … zurück zur Liste fährt sie wieder hinein, dann wird neu gezeichnet */
-.task-group-pill.is-leaving {
-  animation: task-pill-in var(--task-pill-anim) ease-in reverse both; /* animation: dieselbe Bewegung rückwärts */
-  pointer-events: none; /* pointer-events: während des Hineinfahrens nicht mehr antippbar */
+/* Dünne Überschrift: Icon in der Farbe des Abschnitts, Name, rechts blass die Anzahl */
+.task-section-head {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 2px;
+  padding: 0 2px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text);
 }
 
-@keyframes task-pill-in {
-  from {
-    opacity: 0;
-    transform: translateX(var(--task-pill-slide)) scaleX(0.4);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0) scaleX(1);
-  }
+.task-section-icon {
+  width: 15px;
+  height: 15px;
+  color: var(--col-color);
+}
+
+.task-section-name {
+  flex: 1;
+  min-width: 0;
+}
+
+.task-section-count {
+  color: var(--muted);
+  font-weight: 500;
 }
 
 /* ---------- Runder Haken-Knopf ---------- */
 
+/* Der Ring trägt die Farbe der Dringlichkeit (--task-ring, gesetzt in
+   src/ui/task-status.js) — wie die Ringe um die Tage im Kalender. */
 .task-check {
   width: var(--task-check-size);
   height: var(--task-check-size);
   flex: 0 0 auto;
+  position: relative; /* position: Bezugsrahmen für den Punkt „In Arbeit“ */
   display: grid;
   place-items: center;
   border-radius: 50%; /* border-radius: macht aus dem Knopf einen Kreis */
-  box-shadow: inset 0 0 0 1.5px var(--chevron); /* box-shadow statt border: der Ring bleibt innen, die Größe stimmt */
+  box-shadow: inset 0 0 0 1.5px var(--task-ring, var(--chevron)); /* box-shadow statt border: der Ring bleibt innen, die Größe stimmt */
   color: transparent; /* der Haken ist erst zu sehen, wenn die Aufgabe erledigt ist */
   transition: color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+/* In Arbeit: ein Punkt im Ring — angefangen, noch nicht fertig */
+.task-check.is-busy::after {
+  content: "";
+  position: absolute; /* position: der Punkt liegt mitten im Ring */
+  inset: 50%;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%; /* border-radius: ein runder Punkt */
+  background: var(--task-ring, var(--chevron));
+  transform: translate(-50%, -50%); /* transform: von der Mitte aus zentriert */
 }
 
 .task-check.is-done {
@@ -168,7 +153,7 @@
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 3px;
+  gap: 2px;
 }
 
 .task-title {
@@ -177,58 +162,91 @@
   white-space: nowrap;
 }
 
-/* Erledigt: durchgestrichen und blasser — in der Liste wie auf der Karte */
+/* Erledigt: durchgestrichen und blasser — in der Liste wie im Board */
 .task-title.is-done {
   text-decoration: line-through;
   color: var(--muted);
 }
 
-/* ---------- Ort und Chips ---------- */
+/* ---------- Nebenzeile ---------- */
 
+/* Grauer Text mit Punkten dazwischen; nur der Ort wird gekürzt, wenn es eng wird */
 .task-meta {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
   min-width: 0;
+  font-size: var(--task-meta-size);
   color: var(--muted);
 }
 
-.task-place {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  min-width: 0;
-  font-size: var(--task-meta-size);
+.task-meta-dot,
+.task-due,
+.task-prio {
+  flex: 0 0 auto;
 }
 
-.task-place-name {
+.task-due.is-overdue {
+  color: var(--prio-jetzt);
+  font-weight: 600;
+}
+
+.task-prio {
+  color: var(--chip-color, var(--muted));
+}
+
+.task-place {
   overflow: hidden; /* overflow: nötig für text-overflow */
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-.task-chip {
-  display: inline-flex;
+/* ---------- Anlegen durch Tippen: Geister-Zeile und Eingabezeile ---------- */
+
+/* Beide sehen aus wie eine Zeile der Liste, nur der Ring ist leer und
+   trägt die Farbe des Abschnitts. */
+.task-ghost,
+.task-inline {
+  display: flex;
   align-items: center;
-  gap: 4px;
-  flex: 0 0 auto;
-  font-size: var(--task-chip-size);
-  color: var(--chip-color, var(--muted));
+  gap: 12px;
+  width: 100%;
+  min-height: 52px;
+  padding: 6px 2px;
+  border-bottom: 0.5px solid var(--line);
+  font-size: 17px;
+  text-align: left;
 }
 
-/* Das Datum steht vorn und bleibt immer ganz stehen; gekürzt wird der Ort dahinter */
-.task-chip-date {
+.task-ghost-ring,
+.task-inline-ring {
+  --task-ring: var(--col-color);
+}
+
+.task-ghost-label {
   color: var(--muted);
 }
 
-/* Die Icons in Ort und Chips sind kleiner als die Icons der übrigen Zeilen.
-   Die Klasse .icon steht mit davor, damit die Regel die allgemeine aus
-   styles/rows.css wirklich überstimmt. */
-.task-place-icon,
-.task-chip-icon,
-.workspace-row .icon.task-place-icon,
-.workspace-row .icon.task-chip-icon {
-  width: 14px;
-  height: 14px;
-  color: inherit;
+.task-ghost:active {
+  opacity: 0.55;
+}
+
+/* Das Feld sieht aus wie der Titel einer Zeile: kein Rahmen, keine Fläche */
+.task-inline-input {
+  flex: 1;
+  min-width: 0;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+}
+
+.task-inline-input::placeholder {
+  color: var(--muted);
+}
+
+/* Solange in einem Abschnitt geschrieben wird, ist die Geister-Zeile darunter überflüssig */
+.task-section.is-adding .task-ghost {
+  display: none;
 }

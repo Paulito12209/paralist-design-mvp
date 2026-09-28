@@ -2,8 +2,7 @@
  * Status einer Aufgabe außerhalb der Aufgaben-Seite: der durchgestrichene
  * Titel einer erledigten Aufgabe in jeder Liste (Projekt, Arbeitsbereich,
  * verknüpfte Einträge, Kalender — abgehakt wird dort über den grünen
- * Wisch-Knopf, styles/swipe-rows.css), der „In Arbeit“-Ring des Hakens
- * und mittig in der Kopfzeile der Aufgabenseite „Aufgabe“, darunter
+ * Wisch-Knopf, styles/swipe-rows.css) und mittig in der Kopfzeile der Aufgabenseite „Aufgabe“, darunter
  * „Offen · Jetzt“, zum Antippen. Dieselbe Pille trägt auf jeder anderen Eintragsseite
  * die Kategorie („Notiz“, .type-crumb aus src/ui/type-menu.js) — der Stil
  * steht darum nur hier. Der Haken selbst sieht aus wie auf der Aufgaben-Seite
@@ -14,7 +13,6 @@
  * -----------------------------------
  * --task-crumb-gap      -> Abstand zwischen Status, Punkt und Dringlichkeit (und vor dem Pfeil)
  * --tab-pill-active-bg  -> Fläche unter dem Schriftzug, solange man draufdrückt
- * --cal-accent          -> Ring des Hakens, solange eine Aufgabe „In Arbeit“ ist
  * --muted               -> Farbe eines erledigten Titels
  * --text                -> Farbe von „Aufgabe“ in der oberen Zeile
  * --chevron             -> Farbe des Punkts
@@ -31,11 +29,6 @@
 .entry-row .is-done {
   text-decoration: line-through;
   color: var(--muted);
-}
-
-/* In Arbeit: der Ring bekommt die Farbe des Status, noch ohne Haken */
-.task-check.is-busy {
-  box-shadow: inset 0 0 0 2px var(--cal-accent); /* box-shadow statt border: Größe bleibt gleich */
 }
 
 /* ---------- Kopfzeile der Aufgabenseite: „Aufgabe“ über „Offen · Jetzt“ ---------- */
