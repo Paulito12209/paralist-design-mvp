@@ -205,9 +205,12 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   dunklen Player über die ganze Zeilenbreite (kein neuer Tab), der Text bleibt
   darüber und darunter stehen; gekürzter Text klappt dafür aus. Das Bild hat
   sein echtes Seitenverhältnis (hochkant prüfen: ein Short macht den Block
-  hoch, nichts ist abgeschnitten). In der Leiste: Play/Pause (zeigt den
-  Zustand), Tempo „1x“ schaltet weiter, Ziehen springt, Vollbild. Der Titel
-  endet nach fünf Zeilen mit „…“. Pillenwechsel, Zurück-Pfeil und
+  hoch, nichts ist abgeschnitten) mit YouTubes eigener Bedienung im Bild.
+  Darunter, zwischen Bild und Titel, die Leiste: links das Tempo-Raster
+  (0,25x bis 2x, Vorgabe 1x in der Mitte), rechts Vollbild — öffnet das Video
+  in der Medien-Vorschau (Zurück-Pfeil und Browser-Zurück schließen sie,
+  danach steht wieder die Karte bzw. Zeile) — und „×“, das den Player
+  schließt und Karte bzw. Zeile zurückholt. Der Titel endet nach fünf Zeilen mit „…“. Pillenwechsel, Zurück-Pfeil und
   Browser-Zurück schließen den Player; ein Video ohne Einbettungsfreigabe
   meldet YouTube selbst. Auf der Lesezeichen-Seite spielt ein Tipp auf das
   Vorschaubild genauso an der Stelle der Zeile; der Rest der Zeile öffnet den Eintrag.

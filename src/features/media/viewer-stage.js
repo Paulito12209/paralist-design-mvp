@@ -2,6 +2,7 @@
  * Die Fläche der Dateiansicht: je nach Art ein Bild, ein Video mit Bedienung,
  * ein Audio-Spieler oder ein PDF. Die Datei kommt aus der Browser-Datenbank
  * (src/core/blobs.js) und bekommt für die Dauer der Ansicht eine kurze Adresse.
+ * Dazu ein YouTube-Video aus dem Player einer Karte (renderVideoStage).
  * Pfad: src/features/media/viewer-stage.js
  *
  * Keine anpassbaren visuellen Werte: Größen, Flächen und Abstände stehen in
@@ -10,6 +11,8 @@
 
 import { getBlob } from "../../core/blobs.js";
 import { escapeHtml, icon } from "../../core/html.js";
+import { youtubeEmbedUrl } from "../../core/youtube.js";
+import { youtubeId } from "../../data/link-kinds.js";
 import { mediaKindOf } from "../../data/queries.js";
 import { thumbOf } from "../../data/thumbs.js";
 
@@ -68,6 +71,20 @@ function docMarkup(url, title, isPdf) {
       <p class="viewer-player-name">${escapeHtml(title)}</p>
       <a class="viewer-open" href="${url}" download="${escapeHtml(title)}">Datei öffnen</a>
     </div>`;
+}
+
+/**
+ * Ein YouTube-Video aus dem Player einer Karte: { url, name, ratio } — der
+ * eingebettete Player mit YouTubes Bedienung, so breit wie die Fläche und in
+ * seinem Seitenverhältnis (ratio = Höhe geteilt durch Breite, 0 = 16:9).
+ */
+export function renderVideoStage(stage, { url, name, ratio }) {
+  releaseStage();
+  const id = youtubeId(url);
+  /* iframe: der Player von YouTube lässt sich nur so einbetten. allow autoplay:
+     das Video läuft sonst nicht von selbst weiter. data-own-swipe: Wischen
+     gehört dem Player, nicht dem Blättern. */
+  stage.innerHTML = `<iframe class="viewer-embed" src="${escapeHtml(youtubeEmbedUrl(id))}" title="${escapeHtml(name || "Video")}" style="--video-ratio: ${ratio || 0.5625}" allow="autoplay; encrypted-media; picture-in-picture" referrerpolicy="strict-origin-when-cross-origin" data-own-swipe></iframe>`;
 }
 
 /**

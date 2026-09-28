@@ -60,14 +60,7 @@
   <symbol id="icon-external" viewBox="0 0 24 24" fill="none">
     <path d="M8 16 16 8m0 0h-5.6M16 8v5.6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
   </symbol>
-  <!-- Videoplayer: Play, Pause und Vollbild (vier Ecken) -->
-  <symbol id="icon-play" viewBox="0 0 24 24" fill="none">
-    <path d="M8.5 5.8v12.4a.6.6 0 0 0 .9.5l9.6-6.2a.6.6 0 0 0 0-1L9.4 5.3a.6.6 0 0 0-.9.5Z" fill="currentColor" />
-  </symbol>
-  <symbol id="icon-pause" viewBox="0 0 24 24" fill="none">
-    <rect x="6.5" y="5.5" width="4" height="13" rx="1" fill="currentColor" />
-    <rect x="13.5" y="5.5" width="4" height="13" rx="1" fill="currentColor" />
-  </symbol>
+  <!-- Videoplayer: Vollbild (vier Ecken) -->
   <symbol id="icon-expand" viewBox="0 0 24 24" fill="none">
     <path d="M4.5 9V4.5H9M15 4.5h4.5V9M19.5 15v4.5H15M9 19.5H4.5V15" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" />
   </symbol>

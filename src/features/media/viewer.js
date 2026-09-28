@@ -4,12 +4,16 @@
  * Name zum Ändern und der Teilen-Knopf, unten in einer eigenen schwarzen
  * Leiste liegen Verknüpfen, „Zur Seite“ und das Drei-Punkte-Menü. Zur
  * vorigen und nächsten Datei geht es über Pfeile, Wischen oder Pfeiltasten
- * (viewer-nav.js).
+ * (viewer-nav.js). Ein YouTube-Video aus dem Player einer Karte geht hier
+ * ebenfalls auf (openVideoViewer): nur Zurück und der Name, keine Fußleiste.
  * Wird erst beim ersten Öffnen einer Datei nachgeladen.
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * VIDEO_ID -> Kennung, unter der ein YouTube-Video offen ist (kein Eintrag)
  * Pfad: src/features/media/viewer.js
  *
- * Keine anpassbaren visuellen Werte: Flächen, Größen und Farben stehen in
- * styles/viewer.css.
+ * Flächen, Größen und Farben stehen in styles/viewer.css.
  */
 
 import { events, on } from "../../core/bus.js";
@@ -23,7 +27,9 @@ import { openLinkSheet } from "../../ui/link-sheet.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { openViewerMenu, shareEntry } from "./viewer-menu.js";
 import { navMarkup, neighborId, updateNav } from "./viewer-nav.js";
-import { releaseStage, renderStage } from "./viewer-stage.js";
+import { releaseStage, renderStage, renderVideoStage } from "./viewer-stage.js";
+
+const VIDEO_ID = "video";
 
 /* Welche Datei gerade offen ist. 0 heißt: die Ansicht ist zu. */
 let openId = 0;
@@ -103,6 +109,10 @@ function close() {
  * @param list die IDs der Reihe zum Blättern; beim Browser-Zurück steht sie im Verlaufseintrag.
  */
 function open(push = true, entryOrState = null, list = null) {
+  if (entryOrState && entryOrState.video) {
+    openVideo(push, entryOrState.video);
+    return;
+  }
   const entry = entryOrState && entryOrState.id !== undefined ? findEntry(entryOrState.id) : entryOrState;
   if (!entry) return;
 
@@ -116,6 +126,30 @@ function open(push = true, entryOrState = null, list = null) {
   show(entry);
 
   if (push) history.pushState({ view: "file", id: entry.id, list: sequence, from: ui.sourceView }, "", `#/datei/${entry.id}`);
+}
+
+/* Ein YouTube-Video ({ url, name, ratio }) bildschirmfüllend: Name nur zum
+   Lesen, keine Pfeile, keine Fußleiste — es gehört zu keinem Eintrag. */
+function openVideo(push, video) {
+  openId = VIDEO_ID;
+  sequence = [];
+  closing = false;
+  mount();
+  clearModalPull(dom.mediaViewer);
+  dom.mediaViewer.hidden = false;
+  const { title, stage } = parts();
+  title.value = video.name || "Video";
+  title.readOnly = true;
+  dom.mediaViewer.querySelector(".viewer-foot").hidden = true;
+  dom.mediaViewer.querySelector("[data-viewer=share]").hidden = true;
+  renderVideoStage(stage, video);
+  updateNav(dom.mediaViewer, sequence, VIDEO_ID);
+  if (push) history.pushState({ view: "file", video, from: ui.sourceView }, "", "#/video");
+}
+
+/** Vom Player einer Karte aus (src/ui/video-player.js): das Video bildschirmfüllend. */
+export function openVideoViewer(video) {
+  openVideo(true, video);
 }
 
 /* Name, Datei und Pfeile für `entry` zeichnen — beim Öffnen und beim Blättern. */
@@ -142,9 +176,10 @@ export function openViewer(entry, list) {
   open(true, entry, list);
 }
 
-/* Der Eintrag, der gerade zu sehen ist — oder null, wenn er inzwischen weg ist. */
+/* Der Eintrag, der gerade zu sehen ist — oder null, wenn er inzwischen weg
+   ist (oder ein YouTube-Video ohne Eintrag offen ist). */
 function currentEntry() {
-  return openId ? findEntry(openId) : null;
+  return openId && openId !== VIDEO_ID ? findEntry(openId) : null;
 }
 
 /* „Zur Seite“: von der bildschirmfüllenden Datei zu ihrer eigenen Eintragsseite
@@ -222,7 +257,7 @@ function init() {
   /* Ist der Eintrag weg (gelöscht, archiviert) oder änderte sich sein Name
      woanders, hört die Ansicht auf bzw. zieht nach. */
   on(events.dataChanged, () => {
-    if (!openId) return;
+    if (!openId || openId === VIDEO_ID) return;
     const entry = findEntry(openId);
     if (!entry || entry.archived) {
       close();

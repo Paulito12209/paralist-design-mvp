@@ -1,32 +1,29 @@
 /*
  * Videoplayer für YouTube-Karten (src/ui/video-player.js): ein dunkler Block
  * an der Stelle der Karte — im Text über die ganze Zeile, auf der
- * Lesezeichen-Seite anstelle der Zeile —, oben das Video in seinem echten
+ * Lesezeichen-Seite anstelle der Zeile. Oben das Video in seinem echten
  * Seitenverhältnis (--video-ratio setzt das Skript; hochkant wird der Block
- * hoch), unten rechts die Zeit, darunter die Glasleiste mit Play/Pause,
- * Tempo, Fortschritt und Vollbild, ganz unten der Titel des Videos. Immer
+ * hoch) mit YouTubes eigener Bedienung. Darunter, zwischen Bild und Titel,
+ * die eigene Leiste: links das Tempo-Raster als Pille mit Stufen, die
+ * gewählte Stufe weiß, rechts die runden Knöpfe Vollbild und Schließen.
+ * Ganz unten der Titel. Immer
  * dunkel, auch im hellen Modus — das Video ist es auch.
  * Pfad: styles/video-player.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens-pages.css)
  * -----------------------------------
- * --video-bg           -> Grund des Blocks (unter dem Video und hinter dem Titel)
- * --video-glass        -> Milchglas der Leiste unten
- * --video-glass-line   -> feiner heller Rand darum
- * --video-bar-h        -> Höhe der Leiste unten
- * --video-speed-size   -> Größe der weißen runden Knöpfe in der Leiste (Play/Pause, „1x“)
- * --video-track-h      -> Dicke der Fortschrittsleiste
+ * --video-bg           -> Grund des Blocks (unter dem Video, hinter Leiste und Titel)
+ * --video-glass        -> Fläche der Tempo-Pille und der runden Knöpfe rechts
+ * --video-bar-h        -> Höhe der Leiste zwischen Bild und Titel
+ * --video-speed-size   -> Höhe der Stufen im Tempo-Raster (und der runden Knöpfe rechts)
  * --video-ratio        -> Seitenverhältnis des Bildes (Höhe geteilt durch Breite), Vorgabe 16:9,
  *                         das Skript setzt das gemeldete
- * --video-inset        -> Abstand der Leiste zum Rand des Videos
+ * --video-inset        -> Abstand von Leiste und Titel zum Rand des Blocks
  * --video-title-size   -> Schriftgröße des Titels unter dem Video
  * --page-title-lines   -> nach so vielen Zeilen endet der Titel mit „…“ (tokens.css, wie alle Seitentitel)
- * --video-progress     -> Fortschritt 0–1, setzt das Skript beim Abspielen
  *
  * Direkt bei ihrer Regel:
- * .video-time font-size  -> Zeit „12:18 / 28:00“ über der Leiste (12px)
- * .video-speed font-size -> „1x“ (15px)
- * .video-knob width      -> der Punkt auf der Fortschrittsleiste (12px)
+ * .video-speed font-size -> Beschriftung der Tempo-Stufen (13px)
  */
 
 /* Der Block nimmt die ganze Breite der Zeile, in der die Karte stand */
@@ -38,13 +35,13 @@
   border-radius: var(--radius-lg);
   background: var(--video-bg);
   color: #ffffff;
-  overflow: hidden; /* overflow: Video und Titel folgen der Rundung */
+  overflow: hidden; /* overflow: Video, Leiste und Titel folgen der Rundung */
 }
 
 /* Bildfläche mit dem Video: so hoch, wie es das Seitenverhältnis verlangt —
    ein hochkantes Video macht den Block hoch statt es abzuschneiden */
 .video-stage {
-  position: relative; /* position: Anker für Zeit und Leiste über dem Video */
+  position: relative; /* position: Anker für den Player, der die Fläche füllt */
   aspect-ratio: 1 / var(--video-ratio); /* aspect-ratio: Breite zu Höhe aus dem gemeldeten Verhältnis */
   background: #000000;
 }
@@ -60,137 +57,78 @@
   border: 0;
 }
 
-.video-speed:active,
-.video-full:active {
-  opacity: 0.6;
+/* Leiste zwischen Bild und Titel: Tempo links, Vollbild und Schließen rechts */
+.video-bar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  height: var(--video-bar-h);
+  padding: 0 var(--video-inset);
+  margin-top: 8px;
 }
 
-/* Zeit rechts über der Leiste */
-.video-time {
-  position: absolute;
-  right: calc(var(--video-inset) + 8px);
-  bottom: calc(var(--video-inset) + var(--video-bar-h) + 8px);
-  font-size: 12px;
-  font-variant-numeric: tabular-nums; /* tabular-nums: die Zeit zittert nicht, wenn Ziffern wechseln */
+/* Tempo-Raster: eine Pille, darin die Stufen; die gewählte ist weiß */
+.video-speeds {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 999px; /* border-radius: Pillenform */
+  background: var(--video-glass);
+}
+
+.video-speed {
+  height: calc(var(--video-speed-size) - 6px);
+  padding: 0 8px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums; /* tabular-nums: alle Stufen gleich breit beschriftet */
   color: rgba(255, 255, 255, 0.75);
 }
 
-/* Glasleiste unten: Play/Pause, Tempo, Fortschritt, Vollbild */
-.video-bar {
-  position: absolute;
-  left: var(--video-inset);
-  right: var(--video-inset);
-  bottom: var(--video-inset);
-  height: var(--video-bar-h);
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 0 6px;
-  border-radius: 999px; /* border-radius: Pillenform */
-  background: var(--video-glass);
-  box-shadow: inset 0 0 0 1px var(--video-glass-line);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-}
-
-/* Weiße runde Knöpfe: Play/Pause und Tempo */
-.video-play,
-.video-speed {
-  flex: 0 0 auto;
-  display: grid;
-  place-items: center;
-  width: var(--video-speed-size);
-  height: var(--video-speed-size);
-  border-radius: 50%; /* border-radius: weißer runder Knopf */
+.video-speed.is-active {
   background: #ffffff;
   color: #111111;
-  font-size: 15px;
-  font-weight: 600;
 }
 
-.video-play .icon {
-  width: 20px;
-  height: 20px;
+.video-speed:active,
+.video-round:active {
+  opacity: 0.6;
 }
 
-/* Von den beiden Symbolen ist immer nur eins zu sehen: Play in der Pause,
-   Pause beim Abspielen (Klasse is-playing setzt das Skript) */
-.video-play .video-icon-pause,
-.video-pad.is-playing .video-play .video-icon-play {
-  display: none;
+/* Rechts die zwei runden Knöpfe: Vollbild und Schließen */
+.video-actions {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
-.video-pad.is-playing .video-play .video-icon-pause {
-  display: block;
-}
-
-.video-play:active,
-
-/* Fortschrittsleiste: dünne Linie, vorne weiß gefüllt, mit Punkt am Ende.
-   Die Tippfläche ist so hoch wie die Leiste, die Linie selbst dünn. */
-.video-track {
-  position: relative; /* position: Anker für Füllung und Punkt */
-  flex: 1;
-  min-width: 0;
-  height: 100%;
-  cursor: pointer;
-  touch-action: none; /* touch-action: der Finger zieht den Fortschritt, statt die Seite zu scrollen */
-  --video-progress: 0;
-}
-
-.video-track::before,
-.video-track::after {
-  content: "";
-  position: absolute;
-  top: 50%;
-  left: 0;
-  height: var(--video-track-h);
-  border-radius: 999px;
-  transform: translateY(-50%); /* transform: mittig in der Tippfläche */
-}
-
-.video-track::before {
-  right: 0;
-  background: rgba(255, 255, 255, 0.3);
-}
-
-.video-track::after {
-  width: calc(var(--video-progress) * 100%);
-  background: #ffffff;
-}
-
-/* Der Punkt sitzt am Ende der Füllung */
-.video-knob {
-  position: absolute;
-  top: 50%;
-  left: calc(var(--video-progress) * 100%);
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: #ffffff;
-  transform: translate(-50%, -50%); /* transform: der Punkt sitzt mittig auf dem Ende der Füllung */
-}
-
-.video-full {
+.video-round {
   flex: 0 0 auto;
   width: var(--video-speed-size);
   height: var(--video-speed-size);
   display: grid;
   place-items: center;
+  border-radius: 50%; /* border-radius: runde Tippfläche */
+  background: var(--video-glass);
   color: #ffffff;
 }
 
-.video-full .icon {
+.video-round .icon {
   width: 22px;
   height: 22px;
 }
 
-/* Titel unter dem Video, groß wie im Vorbild */
+/* Titel unter der Leiste, groß wie im Vorbild */
 .video-title {
   flex: 0 0 auto;
-  /* margin statt padding: die dritte Zeile würde sonst im unteren Innenabstand
+  /* margin statt padding: eine weitere Zeile würde sonst im unteren Innenabstand
      noch angeschnitten durchscheinen, overflow schneidet erst am Innenrand */
-  margin: 14px 16px 18px;
+  margin: 8px var(--video-inset) 18px;
   font-size: var(--video-title-size);
   font-weight: 600;
   line-height: 1.2;
@@ -200,9 +138,4 @@
                            (nur die webkit-Form: die neue Standardform line-clamp ließe in Chrome eine Zeile mehr stehen) */
   -webkit-box-orient: vertical;
   -webkit-line-clamp: var(--page-title-lines);
-}
-
-/* Im Vollbild ohne Rundung, der Titel bleibt unten stehen */
-.video-pad:fullscreen {
-  border-radius: 0;
 }

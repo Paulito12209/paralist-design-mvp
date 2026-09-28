@@ -241,6 +241,22 @@
   width: 100%;
 }
 
+/* YouTube-Video aus dem Player einer Karte: so breit wie die Fläche, in
+   seinem Seitenverhältnis (--video-ratio setzt src/features/media/viewer-stage.js),
+   höchstens so hoch wie die Fläche */
+.viewer-embed {
+  width: 100%;
+  max-height: 100%;
+  aspect-ratio: 1 / var(--video-ratio); /* aspect-ratio: Breite zu Höhe aus dem gemeldeten Verhältnis */
+  border: 0;
+  background: #000000;
+}
+
+.viewer-foot[hidden],
+.viewer-btn[hidden] {
+  display: none;
+}
+
 /* PDF: das eingebettete Fenster füllt die ganze Fläche */
 .viewer-pdf {
   width: 100%;

@@ -137,9 +137,9 @@
  * --draw-tools-gap          -> Abstand der Werkzeugleiste zur Zeichenfläche darüber und zur Karte „Details“ darunter
  *
  * VIDEOPLAYER IM EINTRAG
- * --video-bg / --video-glass / --video-glass-line -> Grund des Blocks, Milchglas der Leiste, ihr feiner Rand
- * --video-bar-h / --video-speed-size -> Leiste unten und die weißen runden Knöpfe darin (Play/Pause, „1x“)
- * --video-track-h / --video-inset / --video-title-size  -> Dicke der Fortschrittsleiste, Abstand zum Rand, Titel unter dem Video
+ * --video-bg / --video-glass -> Grund des Blocks, Fläche der Tempo-Pille und der runden Knöpfe rechts
+ * --video-bar-h / --video-speed-size -> Leiste zwischen Bild und Titel, Höhe der Tempo-Stufen und der runden Knöpfe
+ * --video-inset / --video-title-size -> Abstand von Leiste und Titel zum Rand, Schriftgröße des Titels
  *
  * EINSTELLUNGEN UND FEEDBACK
  * --support-field-radius     -> Rundung der Felder und Art-Knöpfe im Feedback
@@ -286,13 +286,11 @@
   --draw-color-size: 22px;
   --draw-tools-gap: 12px;
 
-  /* Videoplayer: immer dunkel, Leiste aus Milchglas */
+  /* Videoplayer: immer dunkel, Tempo-Pille aus Milchglas */
   --video-bg: #141414;
   --video-glass: rgba(255, 255, 255, 0.18);
-  --video-glass-line: rgba(255, 255, 255, 0.22);
-  --video-bar-h: 52px;
-  --video-speed-size: 40px;
-  --video-track-h: 4px;
+  --video-bar-h: 44px;
+  --video-speed-size: 36px;
   --video-inset: 14px;
   --video-title-size: 26px;
 
