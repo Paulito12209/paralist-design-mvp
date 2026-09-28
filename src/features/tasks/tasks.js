@@ -75,6 +75,11 @@ function init() {
   on(events.viewOpened, (name) => {
     if (name === "tasks") renderTasks();
   });
+  /* Zweites Antippen von „Aufgaben“ unten, die Seite steht schon oben: das
+     Board rollt zurück zur ersten Spalte. Liste oder Board bleibt, wie gewählt. */
+  on(events.tabReselected, (tab) => {
+    if (tab === "tasks") dom.tasksBody.querySelector(".board")?.scrollTo({ left: 0, behavior: "smooth" });
+  });
 
   /* Wurde die Seite schon geöffnet, bevor dieses Modul fertig geladen war: jetzt zeichnen. */
   if (isViewActive("tasks")) renderTasks();

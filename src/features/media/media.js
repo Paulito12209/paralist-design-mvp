@@ -23,7 +23,7 @@ import { findEntry, mediaEntries, mediaKindOf } from "../../data/queries.js";
 import { saveState, state } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { mediaCell } from "../../ui/media-cell.js";
-import { initPillSwipe } from "../../ui/pill-swipe.js";
+import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
 import { isViewActive } from "../../ui/views.js";
 import { bindMediaPicks, initMediaImport } from "./media-import.js";
 
@@ -161,6 +161,13 @@ function init() {
   });
   on(events.dataChanged, () => {
     if (isViewActive("media")) renderMedia();
+  });
+  /* Zweites Antippen von „Medien“ unten, die Seite steht schon oben: zurück
+     auf die erste Pille „Zuletzt erstellt“, die Pillenleiste rollt mit. */
+  on(events.tabReselected, (tab) => {
+    if (tab !== "media") return;
+    if (state.prefs.media.filter !== mediaFilters[0].id) selectFilter(mediaFilters[0].id);
+    revealActive(el("view-media"));
   });
 
   /* Wurde die Seite schon geöffnet, bevor dieses Modul fertig geladen war: jetzt zeichnen. */
