@@ -3,7 +3,8 @@
  * Zurückkehren und alle paar Minuten nach, ob auf dem Server ein anderer
  * Versionsstempel liegt als der, mit dem sie gestartet ist
  * (src/data/version.js, geschrieben von tools/version.py). Ist das so, fragt
- * dieses Fenster, ob jetzt aktualisiert werden soll.
+ * dieses Fenster, ob jetzt aktualisiert werden soll. Wer es weggetippt hat,
+ * findet dasselbe in den Einstellungen unter „Mehr → Nach Updates suchen“.
  *
  * Aktualisieren heißt: den Zustand sichern, jede Datei der App am
  * Zwischenspeicher des Browsers vorbei neu holen und die Seite neu laden. Ein
@@ -21,6 +22,7 @@
  * Aussehen und Maße stehen in styles/update.css (--update-radius, --update-width …).
  */
 
+import { events, on } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { icon } from "../core/html.js";
 import { flushSave } from "../data/state.js";
@@ -121,19 +123,52 @@ function later() {
 }
 
 /* Sichern, alle Dateien frisch holen, neu laden. Schlägt eine Datei fehl, wird
-   trotzdem neu geladen — dann holt der Browser sie beim Laden selbst. */
-async function applyUpdate(button) {
+   trotzdem neu geladen — dann holt der Browser sie beim Laden selbst.
+   `button` fehlt, wenn das Update aus den Einstellungen kommt. */
+async function applyUpdate(button = null) {
   if (updating || !pending) return;
   updating = true;
-  button.disabled = true;
-  button.textContent = "Wird geladen …";
+  if (button) {
+    button.disabled = true;
+    button.textContent = "Wird geladen …";
+  }
   flushSave();
   await Promise.allSettled(pending.files.map((name) => fetch(new URL(name, APP_ROOT), { cache: "reload" })));
   location.reload();
+}
+
+/*
+ * Auf Wunsch sofort nachsehen — auch wenn man das Fenster vorhin mit „Später“
+ * weggetippt hat. Gibt es eine neuere Fassung, wird ohne weitere Frage
+ * aktualisiert: wer die Zeile antippt, will genau das.
+ * report("loading" | "current" | "offline") meldet der Einstellungs-Zeile den Stand.
+ */
+async function updateOnRequest({ report = () => {} } = {}) {
+  if (updating) return;
+  let server = null;
+  try {
+    server = await fetchServerStamp();
+  } catch {
+    server = null;
+  }
+  if (!server) {
+    report("offline");
+    return;
+  }
+  lastCheck = Date.now();
+  if (server.version === appVersion) {
+    report("current");
+    return;
+  }
+  pending = server;
+  if (host) host.hidden = true;
+  report("loading");
+  applyUpdate();
 }
 
 /** Das regelmäßige Nachsehen starten. Das Nachsehen beim Zurückkehren meldet src/shell/lifecycle.js. */
 export function initUpdatePrompt() {
   setTimeout(checkForUpdate, FIRST_CHECK_MS);
   setInterval(checkForUpdate, CHECK_EVERY_MS);
+  on(events.updateRequested, updateOnRequest);
 }

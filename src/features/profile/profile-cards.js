@@ -6,7 +6,9 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * profile        -> Name, Mailadresse, Plan und Version im Kopf
+ * profile        -> Name, Mailadresse, Plan und Version im Kopf (Name, Mail
+ *                   und Plan stehen auch in den Kontoeinstellungen)
+ * listSections   -> welche Zeilen unter welcher Überschrift stehen
  * supportLinks   -> wohin „Feedback“ und „Roadmap“ unter „Support“ führen
  * stepSizes      -> die runden Schritte der senkrechten Achse (Minuten)
  * barWidthShare  -> wie breit ein Balken im Verhältnis zu seiner Spalte ist
@@ -30,6 +32,7 @@ const profile = {
   name: "Paul Angeles",
   mail: "paul@paralist.app",
   meta: "Pro · Dabei seit Juni 2025",
+  plan: "Pro",
   version: "PARALIST 0.1.0 (MVP)",
   initials: "PA",
 };
@@ -194,10 +197,19 @@ export function streakCard() {
 /*
  * Die Zeilenkarten unter den Diagrammen. `detail` nennt die Seite, die sich
  * beim Antippen auftut (siehe `details` in settings-cards.js), `link` eine
- * Adresse außerhalb der App; Zeilen ohne beides zeigen im MVP nur den Aufbau.
+ * Adresse außerhalb der App, `action` etwas, das profile.js beim Antippen
+ * ausführt; Zeilen ohne all das zeigen im MVP nur den Aufbau. „Konto löschen“
+ * steht absichtlich nicht hier, sondern eine Ebene tiefer in den
+ * Kontoeinstellungen (account.js) — ganz unten im Blatt träfe man es zu leicht.
  */
 const listSections = [
-  { title: "Plan", rows: [{ icon: "arrow-up-circle", label: "Plan verwalten", trail: "chevron" }] },
+  {
+    title: "Konto",
+    rows: [
+      { icon: "person", label: "Kontoeinstellungen", trail: "chevron", detail: "account" },
+      { icon: "arrow-up-circle", label: "Plan verwalten", trail: "chevron" },
+    ],
+  },
   {
     title: "Support",
     rows: [
@@ -206,34 +218,56 @@ const listSections = [
       { icon: "cube", label: "Danksagungen", trail: "chevron", detail: "credits" },
     ],
   },
-  { title: "Mehr", rows: [{ icon: "signout", label: "Abmelden" }] },
-  { title: "Gefahrenzone", rows: [{ icon: "trash", label: "Konto löschen", danger: true }] },
+  { title: "Mehr", rows: [{ icon: "import", label: "Nach Updates suchen", action: "update" }] },
 ];
 
-/** Die Listen unter den Karten. */
-export function listsMarkup() {
-  const sections = listSections
-    .map((section) => {
-      const rows = section.rows
-        .map((row) => {
-          const shell = `class="plist-row${row.danger ? " is-danger" : ""}"`;
-          const inner = `
+/* Eine Zeile: Link, Unterseite, Aktion oder nur Aufbau. `value` steht grau am
+   rechten Rand (z.B. die Mailadresse in den Kontoeinstellungen). */
+function rowMarkup(row) {
+  const shell = `class="plist-row${row.danger ? " is-danger" : ""}"`;
+  const value = row.value ? `<span class="plist-value">${escapeHtml(row.value)}</span>` : "";
+  /* plist-status: dort meldet „Nach Updates suchen“ den Stand, ohne neu zu zeichnen */
+  const status = row.action ? `<span class="plist-value plist-status"></span>` : "";
+  const inner = `
           ${icon(row.icon)}
           <span>${escapeHtml(row.label)}</span>
+          ${value}${status}
           ${row.trail ? icon(row.trail, "plist-trail") : ""}`;
-          /* a statt button: nur ein echter Link öffnet verlässlich einen neuen
-             Tab. target: die App bleibt dahinter stehen, sonst müsste man sich
-             von der fremden Seite mehrfach zurücktippen. rel: der neue Tab darf
-             sonst über window.opener auf die App zugreifen. */
-          if (row.link) {
-            return `<a ${shell} href="${escapeHtml(row.link)}" target="_blank" rel="noopener noreferrer">${inner}</a>`;
-          }
-          return `<button ${shell} type="button"${row.detail ? ` data-settings-detail="${row.detail}"` : ""}>${inner}</button>`;
-        })
-        .join("");
-      return `<p class="psection">${section.title}</p><section class="plist">${rows}</section>`;
-    })
-    .join("");
+  /* a statt button: nur ein echter Link öffnet verlässlich einen neuen
+     Tab. target: die App bleibt dahinter stehen, sonst müsste man sich
+     von der fremden Seite mehrfach zurücktippen. rel: der neue Tab darf
+     sonst über window.opener auf die App zugreifen. */
+  if (row.link) {
+    return `<a ${shell} href="${escapeHtml(row.link)}" target="_blank" rel="noopener noreferrer">${inner}</a>`;
+  }
+  const data = row.detail
+    ? ` data-settings-detail="${row.detail}"`
+    : row.action
+      ? ` data-settings-action="${row.action}"`
+      : "";
+  return `<button ${shell} type="button"${data}>${inner}</button>`;
+}
 
-  return `${sections}<p class="profile-version">${escapeHtml(profile.version)}</p>`;
+/** Eine Abschnittsüberschrift mit ihrer Zeilenkarte — auch für die Unterseiten. */
+export function sectionMarkup(title, rows) {
+  return `<p class="psection">${escapeHtml(title)}</p><section class="plist">${rows.map(rowMarkup).join("")}</section>`;
+}
+
+/** Name, Mailadresse und Plan für die Kontoeinstellungen. */
+export function accountInfo() {
+  return { name: profile.name, mail: profile.mail, plan: profile.plan };
+}
+
+/**
+ * Die Listen unter den Karten, darunter „Abmelden“ als schlichter Text in der
+ * Mitte — kein Menüpunkt wie die anderen, sondern der Schluss der Seite — und
+ * ganz unten die Versionszeile.
+ */
+export function listsMarkup() {
+  const sections = listSections.map((section) => sectionMarkup(section.title, section.rows)).join("");
+  return `
+    ${sections}
+    <button class="profile-signout" type="button">Abmelden</button>
+    <p class="profile-version">${escapeHtml(profile.version)}</p>
+  `;
 }

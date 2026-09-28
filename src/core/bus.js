@@ -37,6 +37,9 @@ export const events = {
   /* Die Wahl im Einstellungs-Blatt hat sich geändert: die Navigationsleiste
      zeigt oder verbirgt die Namen unter den Icons sofort, ohne Neuladen. */
   navLabelsChanged: "nav:labels-changed",
+  /* „Nach Updates suchen“ in den Einstellungen: die Hülle sieht sofort nach und
+     lädt eine neuere Fassung gleich. `report(status)` meldet zurück, was war. */
+  updateRequested: "update:requested",
 };
 
 const listeners = new Map();

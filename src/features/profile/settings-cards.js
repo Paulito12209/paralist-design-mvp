@@ -4,7 +4,7 @@
  * Sie zeigen nur den Kopfwert und einen winzigen Verlauf; das ganze Diagramm
  * erscheint erst beim Antippen. Darunter der Abschnitt „Darstellung“.
  * Hier steht außerdem, welche große Seite hinter welchem Schlüssel liegt —
- * auch die Feedback- und die Danksagungs-Seite aus dem Abschnitt „Support“.
+ * auch die Kontoeinstellungen und die Feedback- und Danksagungs-Seite.
  * Pfad: src/features/profile/settings-cards.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -21,6 +21,7 @@
 import { dayShift, startOfDay } from "../../core/dates.js";
 import { icon } from "../../core/html.js";
 import { usageOfDay, usageStreaks } from "../../data/usage.js";
+import { accountCard } from "./account.js";
 import { creditsCard, startCreditsVideo } from "./credits.js";
 import { enterFeedback, feedbackCard } from "./feedback.js";
 import { navLabelsRowMarkup } from "./nav-labels.js";
@@ -125,6 +126,7 @@ const details = {
   usage: { hash: "nutzungszeit", title: "Nutzungszeit", card: usageCard },
   streak: { hash: "serie", title: "Serie", card: streakCard },
   feedback: { hash: "feedback", title: "Feedback", card: feedbackCard, enter: enterFeedback },
+  account: { hash: "konto", title: "Kontoeinstellungen", card: accountCard },
   credits: { hash: "danksagungen", title: "Danksagungen", card: creditsCard, settle: startCreditsVideo },
 };
 

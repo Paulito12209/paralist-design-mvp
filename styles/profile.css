@@ -11,7 +11,7 @@
  * --profile-avatar-edit-size -> Größe des kleinen Stift-Knopfes
  * --dot-empty / --dot-1..4  -> Helligkeitsstufen im Punkte-Raster
  * --xp-line                 -> Farbe der Balken
- * --danger                  -> Rot in der Gefahrenzone
+ * --danger                  -> Rot in der Gefahrenzone und von „Abmelden“
  * --radius-xl               -> Rundung der Zeilenkarten
  
  *
@@ -320,6 +320,22 @@
   color: var(--chevron);
 }
 
+/* Grauer Wert am rechten Rand (Mailadresse, Stand der Update-Suche). flex:
+   schlägt das flex: 1 der Beschriftung, damit der Wert nur so breit wie nötig ist. */
+.plist-row .plist-value {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis; /* text-overflow: eine lange Mailadresse endet mit „…“ statt die Zeile zu sprengen */
+  white-space: nowrap;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.plist-row .plist-status:empty {
+  display: none;
+}
+
 .plist-row.is-danger,
 .plist-row.is-danger .icon {
   color: var(--danger);
@@ -327,6 +343,28 @@
 
 .plist-row:active {
   background: var(--bg);
+}
+
+/* „Abmelden“: kein Menüpunkt, sondern schlichter Text mittig unter den Listen */
+.profile-signout {
+  align-self: center; /* align-self: das Blatt ist eine Spalte; so bleibt die Tippfläche nur so breit wie das Wort */
+  min-height: 44px;
+  padding: 10px 24px;
+  margin-top: 12px;
+  font-size: 17px;
+  color: var(--danger);
+}
+
+.profile-signout:active {
+  opacity: 0.5;
+}
+
+/* Der Hinweis unter „Konto löschen“ in den Kontoeinstellungen */
+.account-note {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--muted);
+  padding: 0 4px;
 }
 
 .profile-version {

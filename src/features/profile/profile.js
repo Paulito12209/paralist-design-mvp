@@ -3,10 +3,11 @@
  * beiden Kacheln unter „Analyse“, die Darstellung und die Konto-Listen. Tippt
  * man eine Kachel an, tritt an die Stelle der Liste die volle Karte mit
  * Diagramm. Der Bereich heißt weiter „profile“, weil das Blatt am Profilkopf
- * hängt. Unter „Support“ führen zwei Zeilen auf eigene Seiten: das
- * Feedback-Formular und die Danksagungen; „Roadmap“ ist dagegen ein Link nach
- * draußen und braucht hier nichts (Adresse in profile-cards.js). Wird erst
- * beim ersten Öffnen nachgeladen.
+ * hängt. Unter „Konto“ führt eine Zeile zu den Kontoeinstellungen, unter
+ * „Support“ zwei auf das Feedback-Formular und die Danksagungen; „Roadmap“
+ * ist dagegen ein Link nach draußen und braucht hier nichts (Adresse in
+ * profile-cards.js). „Nach Updates suchen“ unter „Mehr“ bittet die Hülle, die
+ * neueste Fassung zu laden. Wird erst beim ersten Öffnen nachgeladen.
  * Pfad: src/features/profile/profile.js
  *
  * Keine anpassbaren visuellen Werte: siehe styles/profile.css,
@@ -219,6 +220,27 @@ function openAvatarPicker() {
   openSheet("Profilbild", options);
 }
 
+/* Was „Nach Updates suchen“ rechts in der Zeile anzeigt. */
+const updateStatus = {
+  checking: "Wird gesucht …",
+  loading: "Wird geladen …",
+  current: "Aktuell",
+  offline: "Kein Netz",
+};
+
+/* Die Hülle (src/shell/update-prompt.js) sieht nach und lädt eine neuere
+   Fassung sofort; hier steht nur, was sie zurückmeldet. */
+function checkForUpdateNow(row) {
+  if (row.dataset.busy === "1") return;
+  const status = row.querySelector(".plist-status");
+  const show = (key) => {
+    status.textContent = updateStatus[key] || "";
+    row.dataset.busy = key === "checking" || key === "loading" ? "1" : "";
+  };
+  show("checking");
+  emit(events.updateRequested, { report: show });
+}
+
 /* Klicks im Blatt: Feedback-Seite, Bild, Kacheln, Darstellung, Zeitraum. */
 function onBodyClick(event) {
   if (onFeedbackClick(event)) {
@@ -231,6 +253,10 @@ function onBodyClick(event) {
   }
   if (event.target.closest("[data-avatar-view]")) {
     openAvatarView();
+    return;
+  }
+  if (event.target.closest('[data-settings-action="update"]')) {
+    checkForUpdateNow(event.target.closest("button"));
     return;
   }
   const card = event.target.closest("[data-settings-detail]");
