@@ -12,6 +12,9 @@
  * Der Verlauf reicht von ganz oben bis zur Oberkante der Pillen; wo die liegt,
  * misst src/ui/page-cover.js und gibt es als --cover-solid herein.
  * --page-cover-mix          -> wie kräftig die Farbe ganz oben ist (100% = volle Kategoriefarbe)
+ * --cover-ink-split         -> ab welcher Helligkeit des Covers Pfad, Kategorie und Knöpfe schwarz statt weiß werden
+ * --cover-ink-muted         -> wie deckend Pfad und Trennzeichen über dem Cover sind
+ * --accent-l-min / --accent-l-max -> Helligkeitsbereich des eigenen Icons ohne Cover (im Dunkeln styles/tokens-dark.css)
  * --entry-icon-glyph        -> Größe des Icons über dem Titel
  * --entry-icon-gap          -> Luft zwischen Icon und Titel
  * --content-side            -> der Verlauf reicht um diesen Rand nach links und rechts hinaus (styles/tokens.css)
@@ -53,6 +56,33 @@
   display: none;
 }
 
+/* Lesbar über jeder Kategoriefarbe: --cover-ink ist Schwarz oder Weiß, je
+   nachdem, was sich von der Farbe oben im Cover stärker abhebt — ein Gelb
+   braucht dunkle Schrift, ein Blau helle. Ohne Unterstützung für relative
+   Farben bleibt die gewohnte Schriftfarbe. */
+.view.has-cover {
+  --cover-top: color-mix(in srgb, var(--cover-accent) var(--page-cover-mix), var(--bg));
+  --cover-ink: var(--text);
+}
+
+@supports (color: oklch(from red l c h)) {
+  .view.has-cover {
+    /* oklch(from …): nimmt die Helligkeit l des Covers; heller als die Grenze → 0 (schwarz), dunkler → 1 (weiß) */
+    --cover-ink: oklch(from var(--cover-top) clamp(0, (var(--cover-ink-split) - l) * 1000, 1) 0 0);
+  }
+}
+
+/* Die Kopfzeile liest ihre Farben aus diesen Variablen: Pfad, Kategorie,
+   Stern, Cover-Knopf und Menü wechseln so gemeinsam. Sobald der kleine Titel
+   den Hintergrund zurückbringt, gelten wieder die gewohnten Farben. */
+.view.has-cover .page-head:not(.is-title-shown) {
+  --text: var(--cover-ink);
+  --muted: color-mix(in srgb, var(--cover-ink) var(--cover-ink-muted), transparent);
+  --desk-hover: color-mix(in srgb, var(--cover-ink) 14%, transparent);
+  --star-color: var(--cover-ink);
+  color: var(--text);
+}
+
 /* Mit Cover ist die feststehende Kopfzeile durchsichtig, solange der große
    Titel zu sehen ist — sonst schnitte ihr Hintergrund den Verlauf ab. Erst
    der kleine Titel bringt den Hintergrund zurück (src/ui/head-title.js). */
@@ -70,6 +100,20 @@
   /* margin-left: das Icon selbst, nicht seine Tippfläche, steht bündig mit dem Titel */
   margin: 0 0 var(--entry-icon-gap) calc((var(--entry-icon-glyph) - var(--head-btn-size)) / 2);
   color: var(--cover-accent);
+}
+
+/* Ohne Cover steht das Icon auf dem Grund der Seite: seine Helligkeit wird in
+   einen Bereich gerückt, der sich davon abhebt (ein Gelb wird im Hellen zu
+   Gold), Farbton und Sättigung bleiben. */
+@supports (color: oklch(from red l c h)) {
+  .entry-icon {
+    color: oklch(from var(--cover-accent) clamp(var(--accent-l-min), l, var(--accent-l-max)) c h); /* oklch(from …): s. o. */
+  }
+}
+
+/* Auf dem Cover läge es Farbe auf Farbe — dort trägt es die Schrift des Kopfs. */
+.view.has-cover .entry-icon {
+  color: var(--cover-ink);
 }
 
 .entry-icon .icon {

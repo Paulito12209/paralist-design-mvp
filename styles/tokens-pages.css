@@ -129,6 +129,11 @@
  *
  * DETAILSEITEN (EINTRAG UND ARBEITSBEREICH)
  * --page-cover-mix          -> wie kräftig die Kategoriefarbe ganz oben im Cover ist (im Dunkeln stärker, siehe styles/tokens-dark.css)
+ * --cover-ink-split         -> ab welcher Helligkeit der Cover-Farbe (0 = schwarz, 1 = weiß) Pfad und Knöpfe darüber
+ *                              schwarz statt weiß werden; höher = öfter weiß
+ * --cover-ink-muted         -> wie deckend die blassen Teile (Pfad, Trennzeichen) über dem Cover sind
+ * --accent-l-min / --accent-l-max -> Helligkeitsbereich, in den das eigene Icon ohne Cover gerückt wird, damit es
+ *                              sich vom Grund abhebt (im Hellen nach oben begrenzt, im Dunkeln nach unten, styles/tokens-dark.css)
  * --entry-icon-glyph        -> Größe des eigenen Icons über dem Titel eines Eintrags
  * --entry-icon-gap          -> Luft zwischen diesem Icon und dem Titel
  * --details-gap             -> Luft zwischen dem Text eines Eintrags und der Karte „Details“ darunter
@@ -303,6 +308,10 @@
 
   /* Detailseiten: Cover; Eintrag: Icon über dem Titel */
   --page-cover-mix: 60%;
+  --cover-ink-split: 0.6;
+  --cover-ink-muted: 84%;
+  --accent-l-min: 0;
+  --accent-l-max: 0.62;
   --entry-icon-glyph: 40px;
   --entry-icon-gap: 10px;
   /* Eintrag: Karte „Details“ am Ende von „Inhalt“ und gekürzter Text darüber */

@@ -25,6 +25,7 @@
  * --desk-hover      -> Tönung des runden Knopfs und der Glieder des Pfads unter der Maus
  * --desk-item-radius -> Rundung der Glieder des Pfads
  * --muted           -> blasse Glieder und Trennzeichen des Pfads
+ * --cover-ink       -> Schrift über dem Cover (styles/page-cover.css): tönt dort den runden Cover-Knopf, solange er an ist (16%)
  * --rail-pill-height -> Größe des runden Knopfs (styles/desk-rail.css)
  */
 
@@ -96,6 +97,12 @@
 
   #entry-head .entry-head-cover.is-on {
     color: var(--star-color);
+  }
+
+  /* Über dem Cover ist der Knopf in der Schrift des Kopfs; an ist er dann an der getönten Scheibe zu sehen. */
+  .view.has-cover #entry-head:not(.is-title-shown) .entry-head-cover.is-on {
+    border-radius: 50%;
+    background: color-mix(in srgb, var(--cover-ink) 16%, transparent);
   }
 }
 
