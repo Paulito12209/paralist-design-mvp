@@ -88,7 +88,7 @@ Von oben nach unten:
    - **Profil und Einstellungen** sind eine Zeile: Profilbild, Name, „Pro“,
      rechts das Zahnrad und `⌘,`. Klick öffnet die Einstellungsseite auf
      „Konto“ — Profil und Einstellungen sind dasselbe.
-   - Die Tipp-Karte entfällt; `?` zeigt alle Kürzel als Dialog.
+   - Die Tipp-Karte entfällt; `?` öffnet Profil › Kurzbefehle.
 
 Die vier Reiter stehen nicht in der Seitenleiste, sondern in der Reiterzeile
 (Abschnitt 3a). Eingeklappt ist die Leiste 0 px breit; die Reiterzeile bleibt
@@ -114,7 +114,10 @@ sichtbar, und jede Sammlung hat ein Kürzel, damit man ohne Leiste überall hink
 
 Alle Kürzel stehen als kleine Schilder direkt an ihrer Zeile, in der
 Blau-Tönung von `--link-color`, damit sie als eine Familie lesbar sind und
-sich von Zahlen wie „4 im Eingang“ unterscheiden.
+sich von Zahlen wie „4 im Eingang“ unterscheiden. Ein Akkord ist **ein**
+Schild („G I“), nicht zwei: G drücken, loslassen, dann innerhalb einer
+Sekunde den Buchstaben. Die Schilder lassen sich unter Profil › Kurzbefehle
+ausblenden, getrennt für Seitenleiste und Reiterzeile.
 
 | Kürzel | Wirkung |
 | --- | --- |
@@ -125,7 +128,7 @@ sich von Zahlen wie „4 im Eingang“ unterscheiden.
 | `⌘[` `⌘]` | Zurück, Vorwärts |
 | `⌘\` | Seitenleiste ein- und ausklappen |
 | `⌘,` | Profil und Einstellungen |
-| `?` | alle Kürzel zeigen |
+| `?` | Profil › Kurzbefehle öffnen |
 | `Esc` | schließt, was obenauf liegt |
 
 Akkorde mit `G` (wie in Linear und GitHub) skalieren auf beliebig viele Orte:
@@ -162,7 +165,8 @@ Satz („Heute frei“) und bietet eine Aktion („Termin anlegen“).
 
 ## 6. Die Seiten
 
-**Übersicht.** Kopf: „Übersicht“ und das Datum. Darunter drei Kennzahlen
+**Übersicht.** Kopf: nur „Übersicht“, die Überschrift steht allein. Das Datum
+steht in der Karte „Heute“ rechts, wo es hingehört. Darunter drei Kennzahlen
 statt vier (Einträge, Offen, Erledigt in 7 Tagen — „Heute“ steht rechts).
 Aktivitätsband ohne Stufen-Pille. Zwei große Karten „Diese Woche“ und
 „Serie“. Dann die vier Sammlungs-Karten und die Arbeitsbereiche.
@@ -188,8 +192,13 @@ Cover, Menü) rechts in der Kopfzeile.
 
 **Profil und Einstellungen.** Eine Seite in der Mitte statt eines Dialogs,
 Titel „Profil“. Links ein Untermenü: Konto, Darstellung, Navigation, Analyse,
-Feedback, Hilfe und Kürzel. Rechts der Inhalt der heutigen Karten. Zurück
+Feedback, Kurzbefehle, Hilfe. Rechts der Inhalt der heutigen Karten. Zurück
 führt dorthin, woher man kam.
+
+**Profil › Kurzbefehle.** Eine Unterseite mit allen Kürzeln nach Gruppen
+(Seiten, Sammlungen, Überall) und zwei Schaltern: „Schilder in der
+Seitenleiste“ und „Schilder in der Reiterzeile“. Die Wahl wird gespeichert
+(`ui.shortcutHints` in `src/data/state.js`). Die Taste `?` öffnet diese Seite.
 
 ## 7. Copy
 
@@ -220,9 +229,12 @@ Jeder Schritt ist für sich lauffähig, wird geprüft (`tools/version.py`,
    `shell/` keine `features/` importiert. Karten in
    `src/shell/desk-rail-cards.js` (Übersicht) und je Bereich eine Datei
    `src/features/<bereich>/<bereich>-rail.js`.
-4. **Einstellungen als Seite** — `styles/desk-overlays.css`: das
-   Einstellungs-Blatt wird am Desktop eine Ansicht `settings` mit Untermenü
-   (`src/features/profile/settings-nav.js`).
+4. **Profil als Seite** — `styles/desk-overlays.css`: das Einstellungs-Blatt
+   wird am Desktop eine Ansicht `settings` mit Untermenü
+   (`src/features/profile/settings-nav.js`). Neue Unterseite Kurzbefehle
+   (`src/features/profile/shortcuts.js`, `styles/shortcuts.css`) mit der
+   Liste und den zwei Schaltern; die Seitenleiste liest den Schalter und
+   blendet ihre Schilder aus.
 5. **Kalender-Woche** — `src/features/calendar/calendar-week.js` und
    `styles/calendar-week.css`: Sieben-Spalten-Raster ab 1024 px, Segment
    Tag / Woche / Monat in der Werkzeugzeile.

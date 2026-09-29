@@ -9,7 +9,7 @@
 <body>
 <div class="page">
   <h1>Paralist am Desktop: Wireframes</h1>
-  <p class="lead">Acht Zustände in einem Fenster von 1440 × 900. Oben die Reiterzeile mit Zurück, Vorwärts und den vier Sichten; links die Orte, die Suche und das Konto; rechts die Kontextspalte, die mit der Seite wechselt. Der Plan dazu steht in <code>docs/desktop-redesign-plan.md</code>.</p>
+  <p class="lead">Neun Zustände in einem Fenster von 1440 × 900. Oben die Reiterzeile mit Zurück, Vorwärts und den vier Sichten; links die Orte, die Suche und das Konto; rechts die Kontextspalte, die mit der Seite wechselt. Der Plan dazu steht in <code>docs/desktop-redesign-plan.md</code>.</p>
   <ul class="legend">
     <li class="l-nav">Seitenleiste (nur Wege und Zahlen)</li>
     <li class="l-main">Mitte (die Seite)</li>
@@ -24,11 +24,11 @@
     <li><b>Suche in der Seitenleiste</b> unter dem Tab-Namen, mit ⌘K. Kürzel-Schilder in Blau an jeder Zeile.</li>
     <li><b>Stufe und Profil</b> stehen fest unten; Profil und Einstellungen sind eine Zeile. Die Tipp-Karte entfällt.</li>
     <li><b>Rechts nur „Heute“ und „Zuletzt“</b>: Eingang und Fortschritt kommen nicht mehr doppelt vor.</li>
-    <li>Drei Kennzahlen statt vier; das Aktivitätsband ohne Stufen-Pille.</li>
+    <li>Drei Kennzahlen statt vier; das Aktivitätsband ohne Stufen-Pille. <b>Das Datum</b> steht in der Heute-Karte, die Überschrift bleibt allein.</li>
   </ul>
   <div class="frame-wrap"><div class="frame" data-nav="home" data-tab="home" data-actions="Ansicht">
     <div class="main">
-      <h3 class="title">Übersicht<span class="alt">Dienstag, 29. September</span></h3>
+      <h3 class="title">Übersicht</h3>
       <div class="stats">
         <div class="stat"><span class="pill on">Einträge</span><div class="num">128<small>insgesamt</small></div></div>
         <div class="stat"><span class="pill">Offen</span><div class="num">12<small>Aufgaben</small></div></div>
@@ -48,7 +48,7 @@
       </div>
     </div>
     <aside class="side">
-      <div class="card"><h4>Heute <span class="lnk">Kalender →</span></h4>
+      <div class="card"><h4>Heute <span class="lnk">Kalender →</span></h4><div class="muted" style="margin:-4px 0 8px">Dienstag, 29. September</div>
         <div class="row"><span class="ico" style="background:var(--accent);opacity:1"></span><span class="t">Design-Review</span><span class="m">14:00</span></div>
         <div class="dayline"></div><div class="muted" style="display:flex;justify-content:space-between;font-size:9px"><span>06</span><span>22</span></div>
         <div class="list-head" style="margin-top:10px">Fällig <span class="muted">3</span></div>
@@ -229,7 +229,7 @@
   <h2>7 · Profil und Einstellungen</h2>
   <ul class="diff">
     <li><b>Profil und Einstellungen sind eine Seite</b>, erreichbar über die Konto-Zeile unten links oder mit ⌘,.</li>
-    <li><b>Untermenü links</b>: Konto, Darstellung, Navigation, Analyse, Feedback, Hilfe (dort auch die Tastenkürzel).</li>
+    <li><b>Untermenü links</b>: Konto, Darstellung, Navigation, Analyse, Feedback, Kurzbefehle, Hilfe.</li>
     <li>Die Karten aus dem Handy-Blatt bleiben inhaltlich gleich, nur breiter und in Abschnitten.</li>
   </ul>
   <div class="frame-wrap"><div class="frame settings-nav" data-nav="account" data-tab="" data-actions="">
@@ -239,7 +239,8 @@
       <div class="nav-row"><span class="ico"></span>Navigation</div>
       <div class="nav-row"><span class="ico"></span>Analyse</div>
       <div class="nav-row"><span class="ico"></span>Feedback</div>
-      <div class="nav-row"><span class="ico"></span>Hilfe und Kürzel</div>
+      <div class="nav-row"><span class="ico"></span>Kurzbefehle</div>
+      <div class="nav-row"><span class="ico"></span>Hilfe</div>
     </div>
     <div class="main read">
       <div class="crumb"><span>Profil</span><span>›</span><b>Konto</b></div>
@@ -275,8 +276,39 @@
     </div>
     <aside class="side">
       <div class="card"><h4>Ansicht</h4><div class="kv"><span>Gruppieren</span><span>Fälligkeit ▾</span><span>Sortieren</span><span>Dringlichkeit ▾</span><span>Erledigte</span><span>ausblenden ○</span></div></div>
-      <div class="card"><h4>Kürzel <span class="lnk">?</span></h4><div class="kv"><span>Eingang</span><span><span class="kbd">G</span> <span class="kbd">I</span></span><span>Favoriten</span><span><span class="kbd">G</span> <span class="kbd">F</span></span><span>Projekte</span><span><span class="kbd">G</span> <span class="kbd">P</span></span><span>Lesezeichen</span><span><span class="kbd">G</span> <span class="kbd">L</span></span><span>Archiv</span><span><span class="kbd">G</span> <span class="kbd">A</span></span><span>Leiste</span><span><span class="kbd">⌘\\</span></span></div></div>
+      <div class="card"><h4>Kürzel <span class="lnk">?</span></h4><div class="kv"><span>Eingang</span><span><span class="kbd">G I</span></span><span>Favoriten</span><span><span class="kbd">G F</span></span><span>Projekte</span><span><span class="kbd">G P</span></span><span>Lesezeichen</span><span><span class="kbd">G L</span></span><span>Archiv</span><span><span class="kbd">G A</span></span><span>Leiste</span><span><span class="kbd">⌘\\</span></span></div></div>
     </aside>
+  </div></div>
+
+  <!-- ========== 9 · Kurzbefehle ========== -->
+  <h2>9 · Profil › Kurzbefehle</h2>
+  <ul class="diff">
+    <li><b>Alle Kürzel auf einer Seite</b>, nach Gruppen. Die Taste ? öffnet genau diese Seite.</li>
+    <li><b>Schilder ein- und ausblenden</b>: in der Seitenleiste, in der Reiterzeile, oder beide aus. Wer die Kürzel kennt, bekommt eine ruhigere Leiste.</li>
+    <li>Ein Akkord wie <span class="kbd">G I</span> heißt: G drücken, loslassen, dann innerhalb einer Sekunde I.</li>
+  </ul>
+  <div class="frame-wrap"><div class="frame settings-nav" data-nav="account" data-tab="" data-actions="">
+    <div class="sub">
+      <div class="nav-row"><span class="ico"></span>Konto</div>
+      <div class="nav-row"><span class="ico"></span>Darstellung</div>
+      <div class="nav-row"><span class="ico"></span>Navigation</div>
+      <div class="nav-row"><span class="ico"></span>Analyse</div>
+      <div class="nav-row"><span class="ico"></span>Feedback</div>
+      <div class="nav-row active"><span class="ico"></span>Kurzbefehle</div>
+      <div class="nav-row"><span class="ico"></span>Hilfe</div>
+    </div>
+    <div class="main read">
+      <div class="crumb"><span>Profil</span><span>›</span><b>Kurzbefehle</b></div>
+      <h3 class="title">Kurzbefehle</h3>
+      <div class="section-h">Schilder zeigen</div>
+      <div class="set-list"><div class="row"><span class="t">In der Seitenleiste</span><span class="m" style="color:var(--accent)">●</span></div><div class="row"><span class="t">In der Reiterzeile</span><span class="m" style="color:var(--accent)">●</span></div></div>
+      <div class="section-h">Seiten</div>
+      <div class="set-list"><div class="row"><span class="t">Übersicht · Kalender · Aufgaben · Medien</span><span class="m"><span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">3</span> <span class="kbd">4</span></span></div><div class="row"><span class="t">Zurück · Vorwärts</span><span class="m"><span class="kbd">⌘[</span> <span class="kbd">⌘]</span></span></div></div>
+      <div class="section-h">Sammlungen · erst G, dann der Buchstabe</div>
+      <div class="set-list"><div class="row"><span class="t">Eingang · Favoriten · Projekte</span><span class="m"><span class="kbd">G I</span> <span class="kbd">G F</span> <span class="kbd">G P</span></span></div><div class="row"><span class="t">Ressourcen · Lesezeichen · Archiv</span><span class="m"><span class="kbd">G R</span> <span class="kbd">G L</span> <span class="kbd">G A</span></span></div></div>
+      <div class="section-h">Überall</div>
+      <div class="set-list"><div class="row"><span class="t">Neu · Suche · Seitenleiste</span><span class="m"><span class="kbd">N</span> <span class="kbd">⌘K</span> <span class="kbd">⌘\</span></span></div><div class="row"><span class="t">Profil · Diese Seite · Schließen</span><span class="m"><span class="kbd">⌘,</span> <span class="kbd">?</span> <span class="kbd">Esc</span></span></div></div>
+    </div>
   </div></div>
 
   <p class="note" style="margin-top:40px">Alle Namen und Zahlen in den Rahmen sind Beispieldaten.</p>
@@ -298,7 +330,7 @@
       <div class="nav-search"><span class="ico"></span>Suchen${kbd("⌘K")}</div>
       <div class="nav-new"><span>+ Neu</span>${kbd("N")}</div>
       <div class="nav-h"><span>Sammlungen</span></div>
-      ${sets.map(([id, l, c, k]) => row(id, l, c, active, kbd("G") + kbd(k), "ico", id === "arch" ? " faint" : "")).join("")}
+      ${sets.map(([id, l, c, k]) => row(id, l, c, active, kbd("G " + k), "ico", id === "arch" ? " faint" : "")).join("")}
       ${soon.map(([id, l]) => row(id, l, "", active, kbd("bald"), "ico", " soon")).join("")}
       <div class="nav-h"><span>Arbeitsbereiche</span><span>+</span></div>
       ${spaces.map(([id, l]) => row(id, l, "", active)).join("")}
