@@ -33,27 +33,32 @@ Segmente, die grauen Flächen aus `color-mix`, die orangen Ordner der leeren
 Zustände, das Glas-Eingabefeld unten, das Punkte-Band der Aktivität, die
 Karten der vier Sammlungen.
 
-Drei Spalten, jede mit einer Aufgabe:
+Zwei Fragen, zwei Orte: **„Wie schaue ich drauf?“** beantworten die vier
+Reiter oben (Übersicht, Kalender, Aufgaben, Medien sind Sichten auf dieselben
+Daten). **„Wo liegt es?“** beantwortet die Seitenleiste (Sammlungen und
+Arbeitsbereiche sind Orte). Neue Orte wie Planer, Personen und Tags kommen
+später als Zeilen in die Seitenleiste; die Reiterzeile wächst nie.
 
 ```
-┌──────────┬────────────────────────────────────────┬──────────────┐
-│ Seiten-  │ Suchfeld (volle Breite)  · Aktionen    │              │
-│ leiste   ├────────────────────────────────────────┤  Kontext     │
-│          │                                        │  (je Seite   │
-│ Neu      │  Seite                                 │  anders,     │
-│ Seiten   │                                        │  einklappbar)│
-│ Sammlung │                                        │              │
-│ Bereiche │                                        │              │
-│          │                                        │              │
-│ Stufe    │  Eingabefeld (Glas, schwebt)           │              │
-│ Konto ⚙  │                                        │              │
-└──────────┴────────────────────────────────────────┴──────────────┘
-  264 px      Rest                                    320 px (ab 1280)
+┌──────────────┬──────────────────────────────────────────┬──────────────┐
+│ ≡  Meine ▾   │ ‹ ›  Übersicht Kalender Aufgaben Medien  ⋯│              │
+│ 🔍 Suchen ⌘K ├──────────────────────────────────────────┤  Kontext     │
+│ + Neu      N │  Übersicht › Marketing › Notiz  (Pfad)   │  (je Seite   │
+│ SAMMLUNGEN   │                                          │  anders,     │
+│  …    G I    │  Seite                                   │  einklappbar)│
+│ ARBEITSBER.  │                                          │              │
+│  …           │                                          │              │
+│ Stufe 3      │  Eingabefeld (Glas, schwebt)             │              │
+│ Paul · ⚙  ⌘, │                                          │              │
+└──────────────┴──────────────────────────────────────────┴──────────────┘
+  264 px         Rest                                       320 px (ab 1280)
 ```
 
-- **Seitenleiste** = Navigation. Sie zeigt nie Inhalte, nur Wege und Zahlen.
-- **Kopfzeile der Mitte** = Suche und die Werkzeuge der offenen Seite.
-- **Mitte** = die Seite selbst, breit oder in Lesebreite.
+- **Seitenleiste** = Orte, Suche, Neu, Konto. Sie zeigt nie Inhalte.
+- **Reiterzeile über der Mitte** = Zurück und Vorwärts, die vier Reiter, rechts
+  die Werkzeuge der offenen Seite (und die Suche als Knopf, wenn die
+  Seitenleiste zu ist).
+- **Mitte** = Pfad, Titel und die Seite selbst, breit oder in Lesebreite.
 - **Kontextspalte** = das, was zur offenen Seite gehört: Details, Filter,
   Vorschau, Tagesplan. Auf 1024–1279 px eingeklappt, über einen Knopf in
   der Kopfzeile aufklappbar (wie das „i“ in Drive).
@@ -62,43 +67,83 @@ Drei Spalten, jede mit einer Aufgabe:
 
 Von oben nach unten:
 
-1. **Tab-Wähler** statt Logo: der aktive Tab („Meine“) als Kopfzeile mit
-   Pfeil, ein Klick zeigt alle Tabs (wie der Projekt-Wechsler in Codex).
-   Die Tab-Pillen unter „Arbeitsbereiche“ entfallen dadurch.
-2. **Neu** — ein Knopf, schwarz, mit `N`. Kürzer als „Neu anlegen“; das Menü
-   dahinter nennt die Typen.
-3. **Seiten:** Übersicht, Kalender, Aufgaben, Medien. Zahl rechts nur, wenn
-   sie etwas Neues sagt: Kalender = Termine heute, Aufgaben = heute fällig.
-4. **Sammlungen:** Eingang (Zahl = unsortiert), Favoriten, Projekte,
-   Ressourcen.
+1. **Klapp-Knopf und Tab-Wähler.** Ganz links der Knopf zum Einklappen
+   (`⌘\`), daneben der aktive Tab („Meine ▾“); ein Klick zeigt alle Tabs.
+   Der Klapp-Knopf steht immer an derselben Stelle oben links: bei offener
+   Leiste in ihr, bei geschlossener am linken Rand der Reiterzeile (wie in
+   ChatGPT und Codex). Die Tab-Pillen unter „Arbeitsbereiche“ entfallen.
+2. **Suchfeld** in voller Leistenbreite, rechts das Schild `⌘K`. Es ist nur
+   der Einstieg; die Suche selbst ist die Palette (Abschnitt 4).
+3. **Neu** — ein Knopf, schwarz, mit `N`. Das Menü dahinter nennt die Typen.
+4. **Sammlungen**, alle auf einmal: Eingang, Favoriten, Projekte,
+   Ressourcen, Lesezeichen, Archiv (blass, immer zuletzt). Heute fehlen
+   Lesezeichen und Archiv am Desktop ganz — am Handy liegen sie auf der
+   zweiten Kartenseite bzw. an der Pille unter den Arbeitsbereichen.
+   Planer, Personen und Tags kommen später als weitere Zeilen dazu; wird die
+   Liste lang, klappen die Gruppen ein und merken sich den Zustand.
 5. **Arbeitsbereiche** des aktiven Tabs, Plus rechts neben der Überschrift.
 6. **Fuß, fest unten** (rollt nicht mit):
-   - **Stufe**: kleiner Ring, „Stufe 1 · 300 XP bis Stufe 2“. Klick öffnet
-     Fortschritt. Das ist die einzige Stelle mit dem Ring; der Level-Ring
-     links oben und die Kachel rechts entfallen.
-   - **Einstellungen** mit Zahnrad, Kürzel `⌘,`.
-   - **Konto**: Profilbild, Name, darunter „Pro“. Klick öffnet Einstellungen
-     auf „Konto“.
-   - Die Tipp-Karte entfällt. Tastenkürzel liegen auf `?` und im Menü
-     „Hilfe“ unter Einstellungen.
+   - **Stufe**: kleiner Ring, „Stufe 3 · 160 XP bis Stufe 4“. Klick öffnet
+     Fortschritt. Die einzige Stelle mit dem Ring.
+   - **Profil und Einstellungen** sind eine Zeile: Profilbild, Name, „Pro“,
+     rechts das Zahnrad und `⌘,`. Klick öffnet die Einstellungsseite auf
+     „Konto“ — Profil und Einstellungen sind dasselbe.
+   - Die Tipp-Karte entfällt; `?` zeigt alle Kürzel als Dialog.
 
-Einklappen auf 72 px (nur Icons) über `⌘\` oder den Griff am Rand; die
-Einstellung wird gemerkt.
+Die vier Reiter stehen nicht in der Seitenleiste, sondern in der Reiterzeile
+(Abschnitt 3a). Eingeklappt ist die Leiste 0 px breit; die Reiterzeile bleibt
+sichtbar, und jede Sammlung hat ein Kürzel, damit man ohne Leiste überall hinkommt.
+
+## 3a. Reiterzeile, Zurück, Vorwärts, Pfad
+
+- **Links** das Pfeilpaar `‹ ›` für den Verlauf (Zurück `⌘[`, Vorwärts `⌘]`),
+  wie in Finder, Codex und VS Code. Ist die Leiste zu, steht davor der
+  Klapp-Knopf.
+- **Mitte-links** die vier Reiter als Pillen: Übersicht, Kalender, Aufgaben,
+  Medien (`1–4`). Unter 1280 px nur Icons mit Tooltip. Ist eine Sammlung, ein
+  Arbeitsbereich oder ein Eintrag offen, leuchtet kein Reiter; der Ort zeigt
+  sich in der Seitenleiste und im Pfad.
+- **Rechts** die Werkzeuge der offenen Seite (Ansicht, Filter, Menü) und der
+  runde Such-Knopf, sobald die Leiste zu ist.
+- **Pfad** über dem Seitentitel, wie bei Google Drive: „Übersicht › Marketing ›
+  Design-System Notizen“. Jedes Glied klickbar, das letzte ist der Titel. Liegt
+  ein Eintrag an mehreren Orten, zeigt der Pfad den Weg, über den man kam
+  (`ui.sourceView`); die übrigen Orte stehen in den Details rechts.
+
+## 3b. Tastenkürzel
+
+Alle Kürzel stehen als kleine Schilder direkt an ihrer Zeile, in der
+Blau-Tönung von `--link-color`, damit sie als eine Familie lesbar sind und
+sich von Zahlen wie „4 im Eingang“ unterscheiden.
+
+| Kürzel | Wirkung |
+| --- | --- |
+| `1` `2` `3` `4` | Übersicht, Kalender, Aufgaben, Medien |
+| `N` | Neu |
+| `⌘K` oder `/` | Suche (Palette) |
+| `G` dann `I` `F` `P` `R` `L` `A` | Eingang, Favoriten, Projekte, Ressourcen, Lesezeichen, Archiv |
+| `⌘[` `⌘]` | Zurück, Vorwärts |
+| `⌘\` | Seitenleiste ein- und ausklappen |
+| `⌘,` | Profil und Einstellungen |
+| `?` | alle Kürzel zeigen |
+| `Esc` | schließt, was obenauf liegt |
+
+Akkorde mit `G` (wie in Linear und GitHub) skalieren auf beliebig viele Orte:
+Planer, Personen und Tags bekommen später je einen freien Buchstaben.
 
 ## 4. Suche
 
-- **Ein Suchfeld**, in der Kopfzeile der Mitte, volle Breite bis 720 px,
-  Platzhalter „Suchen oder Befehl … ⌘K“.
-- Tippen öffnet eine **Ergebnisliste direkt unter dem Feld** (Palette), in
-  Gruppen: Zuletzt geöffnet, Einträge, Aufgaben, Termine, Arbeitsbereiche.
-  Pfeiltasten wählen, Enter öffnet, Esc schließt. Die Seite dahinter bleibt.
-- Enter im leeren Feld oder „Alle Ergebnisse“ öffnet die **Suchseite in
-  der Mitte**: Treffer in voller Breite, Filter als Pillen darüber (Alle,
-  Aufgaben, Notizen, Termine, Medien), rechts die Vorschau des markierten
-  Treffers. Keine Pillen „Suchen / Abbrechen“ unten mehr — die Tastatur
-  ist immer da.
-- Die Handy-Pillen „Zuletzt geöffnet / Am häufigsten / Zuletzt gesucht“
-  werden am Desktop die Gruppen der leeren Palette.
+- **Einstieg** ist das Feld in der Seitenleiste oder `⌘K`; bei eingeklappter
+  Leiste der runde Knopf rechts in der Reiterzeile.
+- **Die Suche ist eine Palette** in der Mitte des Fensters: ein Feld, darunter
+  Treffer in Gruppen (Zuletzt geöffnet, Einträge, Aufgaben, Termine,
+  Arbeitsbereiche). Pfeiltasten wählen, Enter öffnet, Esc schließt. Die Seite
+  dahinter bleibt stehen und ist abgedunkelt.
+- **„Alle Ergebnisse“** oder Enter im leeren Feld öffnet die Suchseite in der
+  Mitte: Treffer in voller Breite, Filter-Pillen darüber, rechts die Vorschau
+  des markierten Treffers. Keine Pillen „Suchen / Abbrechen“ unten mehr.
+- Die Handy-Pillen „Zuletzt geöffnet / Am häufigsten / Zuletzt gesucht“ werden
+  die Gruppen der leeren Palette.
 
 ## 5. Kontextspalte je Seite
 
@@ -110,7 +155,7 @@ Einstellung wird gemerkt.
 | Medien | **Details** der markierten Datei: Vorschau, Typ, Größe, Datum, Ablageort, „Öffnen“. Ohne Auswahl: Speicherbelegung nach Typ. |
 | Suche | **Vorschau** des markierten Treffers. |
 | Eintrag / Arbeitsbereich | **Details** (heute die Karte am Textende): Kennzahlen, Ablageort, Verknüpfte Einträge, Cover und Icon. Der Text in der Mitte bleibt allein und ruhig. |
-| Einstellungen | keine; die Seite hat links ein eigenes Untermenü. |
+| Profil und Einstellungen | keine; die Seite hat links ein eigenes Untermenü. |
 
 Ein Kontextteil ist eine Karte mit Titel. Was leer ist, sagt es in einem
 Satz („Heute frei“) und bietet eine Aktion („Termin anlegen“).
@@ -141,9 +186,10 @@ Video, Foto) liegen als Glas-Pille unten wie heute.
 dieselbe Liste wie die Kontextspalte, nur breit. Werkzeuge (Favorit, Typ,
 Cover, Menü) rechts in der Kopfzeile.
 
-**Einstellungen.** Eine Seite in der Mitte statt eines Dialogs. Links ein
-Untermenü: Konto, Darstellung, Navigation, Analyse, Feedback, Hilfe. Rechts
-der Inhalt der heutigen Karten. Zurück-Pfeil führt dorthin, woher man kam.
+**Profil und Einstellungen.** Eine Seite in der Mitte statt eines Dialogs,
+Titel „Profil“. Links ein Untermenü: Konto, Darstellung, Navigation, Analyse,
+Feedback, Hilfe und Kürzel. Rechts der Inhalt der heutigen Karten. Zurück
+führt dorthin, woher man kam.
 
 ## 7. Copy
 
@@ -158,15 +204,17 @@ der Inhalt der heutigen Karten. Zurück-Pfeil führt dorthin, woher man kam.
 Jeder Schritt ist für sich lauffähig, wird geprüft (`tools/version.py`,
 `tools/check.py`, Browser) und einzeln committet.
 
-1. **Gerüst** — `styles/desk.css`: Raster `nav | top | rail`, die Kopfzeile
-   wandert über die Mitte, Level-Ring und Profil-Knopf am Desktop aus.
-   `src/shell/desk-nav-parts.js`: Fuß mit Stufe, Einstellungen, Konto;
-   Tipp-Karte raus (`desk-nav-tip.css` wird zum Tasten-Schild-Stil).
-   Neue Datei `styles/desk-nav-foot.css`.
-2. **Suche** — `styles/search.css` und `desk.css`: Feld volle Breite, keine
-   Pillen unten. Neue Datei `src/shell/search-palette.js` mit Ergebnisliste
-   unter dem Feld (nutzt `src/features/search/search-data.js` über
-   `load("search")`).
+1. **Gerüst** — `styles/desk.css`: Raster `nav | top | rail`; Reiterzeile mit
+   `‹ ›`, den vier Reitern und den Seitenwerkzeugen über der Mitte
+   (`src/shell/desk-tabs.js`, `styles/desk-tabs.css`). Level-Ring und
+   Profil-Knopf oben aus. `src/shell/desk-nav-parts.js`: Klapp-Knopf, Suchfeld,
+   alle sechs Sammlungen, Fuß mit Stufe und Profil; Tipp-Karte raus.
+   Neue Dateien `styles/desk-nav-foot.css`, Kürzel-Schilder in Blau in
+   `styles/desk-nav-tip.css`. Verlauf vorwärts: `src/ui/router.js` bekommt
+   `goForward()` neben dem bestehenden Zurück.
+2. **Suche** — neue Datei `src/shell/search-palette.js`: Dialog in der Mitte
+   mit Feld und Gruppen (nutzt `src/features/search/search-data.js` über
+   `load("search")`); `styles/search.css`: keine Pillen unten.
 3. **Kontextspalte** — `src/shell/desk-rail.js` bekommt Karten je Ansicht:
    `registerRailCards(view, cards)` wird von `src/main.js` gefüllt, damit
    `shell/` keine `features/` importiert. Karten in
@@ -186,11 +234,11 @@ Jeder Schritt ist für sich lauffähig, wird geprüft (`tools/version.py`,
 
 Neue Werte kommen nach `styles/tokens-desk.css`: `--desk-top-height`,
 `--desk-search-width`, `--desk-nav-collapsed`, `--desk-foot-height`.
-Grenzen: 1024 (Seitenleiste + Mitte), 1280 (plus Kontextspalte), 1440
-(Lesebreite 720 → 760 px).
+Grenzen: 1024 (Seitenleiste + Mitte, Reiter nur als Icons), 1280 (plus
+Kontextspalte, Reiter mit Namen), 1440 (Lesebreite 720 → 760 px).
 
 ## 9. Was gleich bleibt
 
 Handy-Layout unter 1024 px, Datenmodell, Router, Eingabefeld und seine
-Kürzel, Tastenkürzel `N`, `/`, `⌘K`, `1–4`, `Esc`, alle Blätter und Menüs
+Kürzel, Tastenkürzel `N`, `/`, `⌘K`, `1–4`, `Esc` (neue kommen dazu), alle Blätter und Menüs
 (sie werden am Desktop weiter als Dialoge gezeigt), die Icon-Sammlung.
