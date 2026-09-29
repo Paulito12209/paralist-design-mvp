@@ -23,7 +23,7 @@ import { overviewPages } from "../data/config.js";
 import { addTab, addWorkspace, selectTab } from "../data/mutations.js";
 import { findWorkspace, pageCount } from "../data/queries.js";
 import { state, ui } from "../data/state.js";
-import { closeOverlay, openArchive, openBookmarks, openTarget, restoreFrom, showTab } from "../ui/router.js";
+import { closeOverlay, openArchive, openBookmarks, openTarget, openWorkspacesPage, restoreFrom, showTab } from "../ui/router.js";
 import { isViewActive } from "../ui/views.js";
 import { collectionLinks } from "../ui/desk-links.js";
 import { activeTargets, footMarkup, skeletonMarkup, tabGroupsMarkup } from "./desk-nav-parts.js";
@@ -170,6 +170,7 @@ const clickActions = [
   ["[data-nav-new]", () => emit(events.createRequested)],
   ["[data-nav-collection]", (node) => openCollection(node.dataset.navCollection)],
   ["[data-nav-more]", toggleMore],
+  ["[data-nav-workspaces]", () => openWorkspacesPage(state.activeTabId)],
   ["[data-nav-add-tab]", addTabFromNav],
   ["[data-nav-add-workspace]", (node) => addWorkspaceIn(node.dataset.navAddWorkspace)],
   ["[data-nav-tab-toggle]", (node) => toggleGroup(node.dataset.navTabToggle)],

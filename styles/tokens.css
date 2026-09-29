@@ -66,7 +66,7 @@
  * styles/desk-views.css      -> Desktop: wie Übersicht, Kalender, Aufgaben, Medien und Eintrag die Breite nutzen
  * styles/desk-hover.css      -> Desktop: Überfahren, Drücken und Tastatur-Rahmen für Seite, Kopfzeile und Dialoge
  * styles/desk-nav.css        -> Desktop: Seitenleiste mit „Neu“, Sammlungen, Tab-Gruppen; ihr Fuß (Stufe, Konto) in styles/desk-nav-foot.css
- * styles/desk-kbd.css        -> Desktop: Tasten-Schilder als leuchtende Punktmatrix und das Auftauchen der Seitenleiste
+ * styles/desk-kbd.css        -> Desktop: dezente Tasten-Schilder und das Auftauchen der Blöcke der Seitenleiste
  * styles/search-palette.css  -> Desktop: Such-Palette in der Fenstermitte (⌘K, „/“, Suchfeld, Such-Knopf)
  * styles/desk-settings.css   -> Desktop: Profil als Seite mit Untermenü; styles/shortcuts.css: Liste der Kurzbefehle
  * styles/desk-rail.css       -> Desktop: rechte Spalte mit nächstem Termin, Aufgaben und zuletzt Geöffnetem

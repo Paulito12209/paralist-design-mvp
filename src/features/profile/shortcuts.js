@@ -19,7 +19,7 @@ import { emit, events } from "../../core/bus.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { hintsShown, setHintsShown } from "../../data/shortcut-hints.js";
 import { chordKey, collectionLinks, pageLinks, withCommand } from "../../ui/desk-links.js";
-import { keyCap } from "../../ui/dot-keys.js";
+import { keyCap } from "../../ui/key-caps.js";
 
 /* Kürzel, die auf jeder Seite gelten. Die Befehlstaste heißt je nach Rechner ⌘ oder Strg. */
 const everywhere = [

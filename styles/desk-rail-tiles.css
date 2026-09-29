@@ -1,7 +1,7 @@
 /*
  * Desktop: Kacheln und Grafiken der rechten Spalte (ab 1280px) — die Kachel
- * „Eingang“ mit Papierstapel und rundem Plus, die Kachel „Fortschritt“ mit dem
- * Strich-Ring der Stufe, die große dünne Zahl (auch die Uhrzeit von „Als
+ * „Eingang“ über die ganze Breite mit Papierstapel und rundem Plus, die große
+ * dünne Zahl (auch die Uhrzeit von „Als
  * Nächstes“) und die Tagesleiste. Dieselbe Aufteilung wie die Grafiken in
  * src/shell/desk-rail-visuals.js. Spalte, Karten, Pillen und das Auftauchen
  * stehen in styles/desk-rail.css. Keine eigenen Farben, keine Schatten.
@@ -10,14 +10,14 @@
  * ANPASSBARE WERTE AUS styles/tokens-desk.css UND styles/tokens.css
  * -----------------------------------
  * --desk-panel / --desk-radius -> Fläche und Rundung der Kacheln; Rand um den Knopf „jetzt“
- * --desk-tint / --desk-sheen -> Tönung unter der Maus (als Ebene über der Fläche), Lichthof hinter dem Ring
+ * --desk-tint -> Tönung unter der Maus (als Ebene über der Fläche)
  * --desk-glass / --desk-glass-blur -> Glas des Plus-Knopfes und wie stark es verwischt
  * --desk-edge / --desk-hero-from -> Haarlinie und Papier der Blätter
- * --desk-ink / --desk-level-1 … -3 -> Tinte von Punktkreis, Tagesleiste und Termin-Strichen
+ * --desk-ink / --desk-level-1 … -3 -> Tinte von Tagesleiste und Termin-Strichen
  * --desk-label-size / --desk-tile-num-size / --desk-num-weight -> Kachel-Namen, große Zahlen, ihre Strichstärke
  * --desk-fast / --desk-ease -> Dauer und Kurve von Drücken und Überfahren
  * --text / --avatar-btn-bg / --muted -> Knopf „jetzt“, Kachel-Namen, blasse Beschriftungen
- * --inbox-icon-color / --level-color / --level-dim -> Eingang-Icon, leuchtende und dunkle Ring-Striche
+ * --inbox-icon-color -> Eingang-Icon
  *
  * EIGENE WERTE (bei .desk-rail, gelten nur in dieser Spalte)
  * -----------------------------------
@@ -26,8 +26,6 @@
  * --rail-sheet-height / --rail-sheet-step -> Höhe eines Papierblatts, wie weit jedes hintere hervorschaut
  * --rail-sheet-shrink  -> um wie viel jedes hintere Blatt schmaler ist (0.06 = 6 %)
  * --rail-sheet-spread  -> wie weit der Stapel unter der Maus zusätzlich auffächert
- * --rail-ring-size     -> Durchmesser des Rings der Stufe
- * --rail-level-sheen   -> Lichthof hinter dem Ring: Mitte, Farbe und wie weit er reicht
  * --rail-track-height  -> Dicke der Tagesleiste
  * --rail-knob-size / --rail-knob-ring -> Knopf „jetzt“ samt Rand, und wie breit der Rand ist
  *
@@ -38,23 +36,20 @@
  *
  * SCHRIFTGRÖSSEN EINZELNER ELEMENTE (direkt bei ihrer Regel)
  * -----------------------------------
- * 11px -> Titel auf einem Papierblatt, „Stufe“ unter der Zahl, Randzeiten der Tagesleiste
- * 12px -> Notiz unten in der Kachel („zu sortieren“, „noch 120 XP“)
+ * 11px -> Titel auf einem Papierblatt, Randzeiten der Tagesleiste
+ * 12px -> Notiz unten in der Kachel („zu sortieren“)
  */
 
 @media (min-width: 1280px) {
   .desk-rail {
     --rail-tile-gap: 12px;
-    --rail-tile-height: 184px;
+    --rail-tile-height: 156px;
     --rail-tile-pad: 14px;
     --rail-plus-size: 32px;
     --rail-sheet-height: 34px;
     --rail-sheet-step: 17px;
     --rail-sheet-shrink: 0.06;
     --rail-sheet-spread: 0px;
-    --rail-ring-size: 92px;
-    /* radial-gradient: weicher Lichthof hinter dem Ring — nur Licht, keine Farbe */
-    --rail-level-sheen: radial-gradient(circle at 50% 52%, var(--desk-sheen), transparent 58%);
     --rail-track-height: 4px;
     --rail-knob-size: 18px;
     --rail-knob-ring: 3px;
@@ -62,7 +57,7 @@
 
   .rail-tiles {
     display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-columns: minmax(0, 1fr);
     gap: var(--rail-tile-gap);
   }
 
@@ -83,8 +78,6 @@
     border-radius: inherit;
     background-color: var(--desk-panel);
   }
-
-  .rail-level .rail-tile-hit { background-image: var(--rail-level-sheen); }
 
   .rail-tile > :not(.rail-tile-hit) {
     position: relative; /* position: der Inhalt liegt über dem Knopf */
@@ -113,7 +106,7 @@
   }
 
   .rail-inbox-icon { color: var(--inbox-icon-color); }
-  .rail-tile-arrow, .rail-sheet.is-back, .rail-tile-note, .rail-ring-label, .rail-track-scale { color: var(--muted); }
+  .rail-tile-arrow, .rail-sheet.is-back, .rail-tile-note, .rail-track-scale { color: var(--muted); }
 
   .rail-plus {
     display: grid;
@@ -170,7 +163,7 @@
   .rail-tile-note { font-size: 12px; }
 
   /* Große dünne Zahlen: in beiden Kacheln und die Uhrzeit von „Als Nächstes“. */
-  .rail-tile-num, .rail-ring-num, .rail-event-time {
+  .rail-tile-num, .rail-event-time {
     font-size: var(--desk-tile-num-size);
     font-weight: var(--desk-num-weight);
     letter-spacing: -0.05em;
@@ -178,46 +171,7 @@
   }
 
   /* font-variant-numeric: gleich breite Ziffern, nichts springt in der Breite */
-  .rail-tile-num, .rail-ring-num, .rail-event-time, .rail-track-scale { font-variant-numeric: tabular-nums; }
-
-  /* ---------- Ring der Stufe: Striche außen, blasser Punktkreis innen, die Zahl in der Mitte ---------- */
-
-  .rail-ring-wrap {
-    display: grid;
-    place-items: center;
-    width: var(--rail-ring-size);
-    aspect-ratio: 1; /* aspect-ratio: so hoch wie breit, damit der Ring rund bleibt */
-    margin: auto;
-  }
-
-  .rail-ring {
-    position: absolute; /* position: der Ring liegt frei hinter der Zahl */
-    inset: 0;
-    width: 100%;
-    height: 100%;
-  }
-
-  .rail-ring-center {
-    position: relative; /* position: die Zahl liegt vor dem Ring */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .rail-ring-label {
-    margin-top: 3px;
-    font-size: 11px;
-  }
-
-  .rail-ring-tick {
-    stroke: var(--level-dim); /* stroke: Farbe eines Strichs in der Vektorgrafik */
-    stroke-width: 1.6;
-    stroke-linecap: round; /* stroke-linecap: runde Enden, wie die Level-Anzeige oben links */
-  }
-
-  .rail-ring-tick.is-on { stroke: var(--level-color); }
-  .rail-ring-tick.is-head { stroke-width: 2.4; }
-  .rail-ring-dot { fill: var(--desk-level-1); /* fill: Farbe eines Punkts in der Vektorgrafik */ }
+  .rail-tile-num, .rail-event-time, .rail-track-scale { font-variant-numeric: tabular-nums; }
 
   /* ---------- Tagesleiste: vergangener Teil dunkler, Knopf bei „jetzt“, Striche für Termine ---------- */
 
@@ -316,7 +270,6 @@
 @media (min-width: 1280px) and (hover: hover) {
   .rail-tile-hit:hover, .rail-plus:hover { background-image: var(--desk-tint); }
   /* Der Lichthof bleibt unter der Tönung liegen. */
-  .rail-level .rail-tile-hit:hover { background-image: var(--desk-tint), var(--rail-level-sheen); }
   /* :has — unter der Maus fächert der Stapel ein wenig auf und der Pfeil rückt vor. */
   .rail-tile:has(> .rail-tile-hit:hover) .rail-pile { --rail-sheet-spread: 3px; }
   .rail-tile:has(> .rail-tile-hit:hover) .rail-tile-arrow { transform: translateX(2px); }

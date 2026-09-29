@@ -27,7 +27,7 @@ import { escapeHtml, icon } from "../core/html.js";
 import { load } from "../core/lazy.js";
 import { noteSearch } from "../data/opens.js";
 import { ui } from "../data/state.js";
-import { keyCap } from "../ui/dot-keys.js";
+import { keyCap } from "../ui/key-caps.js";
 import { openEntryOrFile, openTarget, showSearch } from "../ui/router.js";
 import { isViewActive } from "../ui/views.js";
 

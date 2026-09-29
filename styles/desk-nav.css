@@ -16,7 +16,7 @@
  * --sidebar-tool / --sidebar-tool-icon -> Größe der runden Plus-Knöpfe und ihrer Icons
  * --sidebar-fade       -> Höhe der weichen Ausblendung oben und unten im rollenden Teil
  * Einzelne Größen stehen bei ihrer Regel: Pfeil der Tab-Gruppe und von „Mehr anzeigen“ 14px, Stern 14px,
- * Schrift von „+ Tab“ 12px.
+ * Pfeil hinter „Arbeitsbereiche“ 13px.
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
  * --desk-nav-pad -> Rand links und rechts (bündig mit dem Suchfeld darüber)
@@ -259,23 +259,38 @@
     transform: none;
   }
 
-  /* „Mehr anzeigen“: leise wie das Archiv, der Pfeil zeigt nach rechts und dreht beim Öffnen nach unten */
+  /* „Mehr anzeigen“: leise, der Pfeil steht an der Stelle des Icons und zeigt
+     nach unten; aufgeklappt steht der Knopf ganz unten als „Weniger anzeigen“
+     mit Pfeil nach oben. */
   .desk-nav-more-toggle {
     color: var(--muted);
   }
 
-  .desk-nav-more-toggle .desk-nav-icon {
-    color: var(--muted);
-  }
-
-  .desk-nav-more-chevron {
+  .desk-nav-more-toggle .desk-nav-more-chevron {
+    justify-self: center; /* justify-self: der kleinere Pfeil steht mittig in der Icon-Spalte */
     width: 14px;
     height: 14px;
+    color: var(--muted);
+    transform: rotate(90deg); /* transform: der Pfeil des Sprites zeigt nach rechts — gedreht nach unten */
     transition: transform var(--desk-fast) var(--desk-ease); /* transition: s. o. */
   }
 
   .desk-nav-more-toggle[aria-expanded="true"] .desk-nav-more-chevron {
-    transform: rotate(90deg); /* transform: offen, Pfeil nach unten */
+    transform: rotate(-90deg); /* transform: offen, Pfeil nach oben */
+  }
+
+  /* „Arbeitsbereiche ↗“: die Überschrift ist zugleich der Weg zur Sammlung */
+  .desk-nav-heading-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: inherit;
+    font: inherit;
+  }
+
+  .desk-nav-heading-link .icon {
+    width: 13px;
+    height: 13px;
   }
 
   .desk-nav-tabgroup .desk-nav-space {
@@ -299,19 +314,13 @@
     height: var(--sidebar-tool-icon);
   }
 
-  /* „+ Tab“ neben „Arbeitsbereiche“: Icon mit Wort */
-  .desk-nav-tool-text {
-    display: inline-flex;
-    gap: 4px;
-    width: auto;
-    padding: 0 10px 0 6px;
-    font-size: 12px;
-    font-weight: 600;
-  }
-
   /* ---------- Überfahren, Drücken, Tastatur ---------- */
 
   @media (hover: hover) {
+    .desk-nav-heading-link:hover {
+      color: var(--text);
+    }
+
     .desk-nav-row:not(.is-soon):hover,
     .desk-nav-tool:hover,
     .desk-nav-tabtoggle:hover {

@@ -21,18 +21,24 @@ muss alles wie am Handy aussehen.
   … XP“, Klick öffnet Fortschritt als Seite (die Anzeige ist dann hinterlegt),
   ein zweiter Klick rollt nur nach oben. Unter 1024 px steht sie wieder oben
   links in der Kopfzeile.
-- Tasten-Schilder („N“, „G I“, „⌘,“, Palette, Profil › Kurzbefehle) sind eine
-  Punktmatrix ohne Kachel: dunkel silbern leuchtend, hell graphitfarben.
+- Tasten-Schilder („N“, „G I“, „⌘,“, Palette, Profil › Kurzbefehle): kleine
+  Schrift mit feiner Haarlinie, ohne Fläche — dezent, aber gut lesbar.
 - ‹ und › oben links, ⌘[ und ⌘] (Strg außerhalb des Macs) und Browser-Zurück
   führen durch denselben Verlauf.
 - Alle sechs Sammlungen links öffnen, auch per G und Buchstabe (G I, G F, G P,
   G R, G L, G A); die offene ist markiert. Nur Personen und Pläne (noch nicht
-  fertig) stehen unter „Mehr anzeigen“ (bleibt nach neu laden offen oder zu).
+  fertig) stehen unter „Mehr anzeigen“ (Pfeil nach unten; aufgeklappt steht
+  ganz unten „Weniger anzeigen“ mit Pfeil nach oben; bleibt nach neu laden).
+- „Arbeitsbereiche ↗“ öffnet die Sammlung aller Arbeitsbereiche; das Plus
+  daneben legt einen Tab an. Überfahren eines Tab-Kopfs („Meine“) zeigt rechts
+  den Ordner mit Plus für einen neuen Arbeitsbereich darin.
+- Rechte Spalte: oben nur die Kachel „Eingang“ über die ganze Breite — die
+  Stufe steht oben rechts in der Reiterzeile.
 - Seitenleiste mit dem Knopf und mit ⌘\ zu- und aufklappen, neu laden: der
   Zustand bleibt. Der Klapp-Knopf steht dann links in der Reiterzeile; das
   Eingabefeld und „Ansicht konfigurieren“ rücken mit.
 - Tab-Gruppe unter „Arbeitsbereiche“ zuklappen (Zahl erscheint), Plus am Kopf
-  legt einen Arbeitsbereich darin an, „+ Tab“ einen Tab — benannt wird auf der
+  legt einen Arbeitsbereich darin an, das Plus neben der Überschrift einen Tab — benannt wird auf der
   Übersicht, deren Arbeitsbereiche nur dafür kurz auftauchen. Rechtsklick auf Kopf oder Zeile öffnet das Menü, „Umbenennen“
   springt zur Übersicht.
 - Fortschritt (über die Level-Anzeige oben rechts) ist eine Seite: Karten
@@ -42,7 +48,8 @@ muss alles wie am Handy aussehen.
 - Leere Sammlung mit Pille zum Anlegen (Lesezeichen, Projekte …): die Pille
   trägt die Farbe der Kategorie, neutrale Themen das Silber, nie Blau.
 - Übersicht: vier Zahlen, darunter die Bühne mit den zuletzt geöffneten Seiten
-  (Punkte, Pfeile, ←/→ und waagerechtes Wischen blättern; „Öffnen“), darunter
+  (Punkte, Pfeile, ←/→ und waagerechtes Wischen blättern; „Öffnen“; Cover und
+  Kacheln zeigen nur Icons, nie Vorschaubilder), darunter
   die Kacheln der verknüpften Einträge (bei Projekt und Arbeitsbereich:
   „Inhalt“). Leerer Speicher zeigt „Willkommen“ mit „Neu anlegen“. Keine
   Sammlungs-Karten, keine Arbeitsbereiche, rechts kein „Zuletzt geöffnet“.

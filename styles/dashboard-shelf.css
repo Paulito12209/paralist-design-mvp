@@ -73,19 +73,11 @@
     place-items: center;
     width: 100%;
     aspect-ratio: 1; /* aspect-ratio: s. Cover */
-    overflow: hidden; /* overflow: s. Cover */
     border: 0.5px solid var(--desk-edge);
     border-radius: 26%;
     background: color-mix(in srgb, var(--tile-accent) 16%, var(--card));
     color: color-mix(in srgb, var(--tile-accent) 82%, var(--text));
     transition: transform var(--desk-fast) var(--desk-ease); /* transition: die Kachel hebt sich beim Überfahren weich */
-  }
-
-  /* Vorschaubild (Foto, Zeichnung) füllt die ganze Kachel */
-  .showcase-tile-art .entry-thumb {
-    width: 100%;
-    height: 100%;
-    border-radius: 0;
   }
 
   .showcase-tile-art .icon {

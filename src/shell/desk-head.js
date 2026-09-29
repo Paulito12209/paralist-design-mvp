@@ -27,7 +27,7 @@ import { levelInfo, totalXp } from "../data/xp.js";
 import { closeOverlay, goBack, goForward, showTab } from "../ui/router.js";
 import { currentView, isViewActive } from "../ui/views.js";
 import { pageLinks, withCommand } from "../ui/desk-links.js";
-import { keyCap } from "../ui/dot-keys.js";
+import { keyCap } from "../ui/key-caps.js";
 import { coveringPage } from "./desk-nav.js";
 import { openPalette } from "./search-palette.js";
 

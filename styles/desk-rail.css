@@ -28,12 +28,11 @@
  * --rail-pill-height   -> Höhe der Pillen („Alle“, „Kalender“) und der Kartenköpfe
  * --rail-check-size / --rail-prio-size -> Abhak-Kreis, Punkt der Dringlichkeit
  * --rail-recent-height -> Höhe der kleinen Karten unter „Zuletzt geöffnet“
- * --rail-tick-step / --rail-pulse -> Takt der Ring-Striche beim Auftauchen, Dauer eines Pulses im Zeit-Chip
+ * --rail-pulse -> Dauer eines Pulses im Zeit-Chip
  *
  * VON JAVASCRIPT GESETZT
  * -----------------------------------
  * --i -> Platz einer Karte in der Spalte; setzt src/shell/desk-rail.js je Element
- * --k -> Nummer eines Ring-Strichs; setzt src/shell/desk-rail-visuals.js je Element
  *
  * SCHRIFTGRÖSSEN EINZELNER ELEMENTE (direkt bei ihrer Regel)
  * -----------------------------------
@@ -50,7 +49,6 @@
     --rail-check-size: 20px;
     --rail-prio-size: 6px;
     --rail-recent-height: 150px;
-    --rail-tick-step: 12ms;
     --rail-pulse: 1.8s;
     display: flex;
     flex-direction: column;
@@ -351,18 +349,12 @@
 }
 
 /* Bewegung nur, wenn im System nicht „Bewegung reduzieren“ gewählt ist. Die Namen
-   desk-rail-rise und desk-rail-tick stehen auch in src/shell/desk-rail.js (entranceMotions). */
+   desk-rail-rise steht auch in src/shell/desk-rail.js (entranceMotions). */
 @media (min-width: 1280px) and (prefers-reduced-motion: no-preference) {
-  /* animation: beim ersten Zeigen tauchen die Karten nacheinander auf (Takt aus --i) … */
+  /* animation: beim ersten Zeigen tauchen die Karten nacheinander auf (Takt aus --i). */
   .desk-rail.is-entering [data-slot] {
     animation: desk-rail-rise var(--desk-enter) var(--desk-ease) backwards;
     animation-delay: calc(var(--i) * var(--desk-enter-step));
-  }
-
-  /* animation: … und danach gehen die Striche des Rings der Reihe nach an (--k je Strich). */
-  .desk-rail.is-entering .rail-ring-tick.is-on {
-    animation: desk-rail-tick var(--desk-enter) var(--desk-ease) backwards;
-    animation-delay: calc(var(--desk-enter) / 2 + var(--k) * var(--rail-tick-step));
   }
 
   /* transition: der Stapel fächert unter der Maus weich auf (styles/desk-rail-tiles.css). */
@@ -377,10 +369,6 @@
       opacity: 0;
       transform: translateY(var(--desk-enter-rise));
     }
-  }
-
-  @keyframes desk-rail-tick {
-    from { stroke: var(--level-dim); }
   }
 
   @keyframes desk-rail-pulse {

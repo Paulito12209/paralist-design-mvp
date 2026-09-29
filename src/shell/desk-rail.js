@@ -3,7 +3,8 @@
  * Ihre Karten wechseln mit der Seite: Kalender, Aufgaben, Medien und Suche
  * bringen eigene mit (src/features/<bereich>/<bereich>-rail.js, angemeldet in
  * src/main.js über registerRailCards). Alle anderen Seiten zeigen die Karten
- * der Übersicht: oben die Kacheln „Eingang“ und „Fortschritt“, darunter „Als
+ * der Übersicht: oben die Kachel „Eingang“ über die ganze Breite (die Stufe
+ * steht oben rechts in der Reiterzeile), darunter „Als
  * Nächstes“, die dringendsten Aufgaben und was zuletzt geöffnet wurde.
  * Diese Datei baut je Kartensatz das Gerüst einmal, setzt bei jedem
  * Neuzeichnen nur die Karten neu ein, deren Inhalt sich wirklich geändert hat,
@@ -29,29 +30,27 @@
 import { emit, events } from "../core/bus.js";
 import { dayKey, pad2 } from "../core/dates.js";
 import { dom } from "../core/dom.js";
-import { load } from "../core/lazy.js";
 import { ui } from "../data/state.js";
 import { openEntry, openTarget, showSearch, showTab } from "../ui/router.js";
 import { toggleTaskFromCheck } from "../ui/task-status.js";
 import { currentView, isViewActive } from "../ui/views.js";
-import { inboxTile, levelTile, nextCard, recentSection, tasksCard } from "./desk-rail-cards.js";
+import { inboxTile, nextCard, recentSection, tasksCard } from "./desk-rail-cards.js";
 
 const checkDelay = 220;
 const inboxPage = "1";
 const hoursAhead = 1;
 
 /* Die Bewegungen des ersten Zeigens — dieselben Namen wie die @keyframes in styles/desk-rail.css. */
-const entranceMotions = ["desk-rail-rise", "desk-rail-tick"];
+const entranceMotions = ["desk-rail-rise"];
 
 /*
- * Die Plätze der Übersicht von oben nach unten. `group` legt die beiden Kacheln
- * nebeneinander in eine Zeile; `tag` ist das Element des Platzes. Die
+ * Die Plätze der Übersicht von oben nach unten. `group` legt Kacheln
+ * nebeneinander in eine Zeile (heute nur die Kachel „Eingang“); `tag` ist das Element des Platzes. Die
  * Reihenfolge bestimmt auch, in welcher Folge die Karten beim ersten Zeigen
  * auftauchen.
  */
 const slots = [
   { name: "inbox", tag: "div", className: "rail-tile rail-inbox", group: "tiles", render: inboxTile },
-  { name: "level", tag: "div", className: "rail-tile rail-level", group: "tiles", render: levelTile },
   { name: "next", tag: "section", className: "rail-card rail-next", render: nextCard },
   { name: "tasks", tag: "section", className: "rail-card rail-tasks", render: tasksCard },
   { name: "recent", tag: "section", className: "rail-recent", render: recentSection },
@@ -125,7 +124,6 @@ function newEventSoon() {
 const actions = {
   inbox: openInbox,
   create: (button) => emit(events.createRequested, button.dataset.pick),
-  level: () => load("progress").then((module) => module.open()),
   entry: (button) => openEntry(button.dataset.id),
   calendar: openCalendarToday,
   event: newEventSoon,
@@ -224,7 +222,7 @@ function endEntrance() {
 
 /*
  * Das leere Gerüst eines Kartensatzes: ein Element je Platz, Plätze mit
- * `group` gemeinsam in einer Zeile (die zwei Kacheln der Übersicht). Der Satz
+ * `group` gemeinsam in einer Zeile (die Kachel der Übersicht). Der Satz
  * steht in einem eigenen Element, das die Spalte selbst nicht verändert
  * (display: contents in styles/desk-rail-views.css).
  */

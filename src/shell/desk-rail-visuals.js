@@ -1,6 +1,5 @@
 /*
- * Die kleinen Grafiken der rechten Spalte am Desktop: der Strich-Ring der
- * Stufe (dieselbe Idee wie die Level-Anzeige oben links), der Papierstapel des
+ * Die kleinen Grafiken der rechten Spalte am Desktop: der Papierstapel des
  * Eingangs und die Tagesleiste von morgens bis abends. Alles entsteht als
  * Text-Schnipsel und wird mit seiner Karte in einem Zug eingesetzt — kein
  * Element wird einzeln angelegt oder vermessen.
@@ -8,14 +7,7 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * ringBox            -> Kantenlänge des Zeichenrasters, in dem der Ring liegt (ringCenter
- *                       ist seine Mitte); alle Maße des Rings unten beziehen sich darauf
- * ringTicks          -> wie viele Striche der Ring der Stufe hat (mehr = feiner)
- * ringDots           -> wie viele Punkte der blasse Punktkreis innen hat
- * tickInner / tickOuter -> wo ein Strich des Rings anfängt und aufhört (Raster 0–ringBox)
- * headInner          -> wie weit der Strich an der Spitze des Fortschritts nach innen ragt
- * dotRing / dotSize  -> Abstand des Punktkreises zur Mitte und Größe eines Punkts
- * decimals           -> Nachkommastellen von Koordinaten und Prozent-Angaben im Text;
+ * decimals           -> Nachkommastellen der Prozent-Angaben im Text;
  *                       mehr macht den Text länger, ohne dass man es sieht
  * percent            -> Umrechnung eines Anteils (0 bis 1) in Prozent — fest, nicht ändern
  * pileSize           -> wie viele Blätter der Stapel im Eingang immer zeigt
@@ -27,64 +19,13 @@
 import { pad2 } from "../core/dates.js";
 import { escapeHtml } from "../core/html.js";
 
-const ringBox = 100;
-const ringCenter = ringBox / 2;
-const ringTicks = 60;
-const ringDots = 40;
-const tickInner = 42.5;
-const tickOuter = 48.5;
-const headInner = 38.5;
-const dotRing = 35;
-const dotSize = 0.85;
 const decimals = 2;
 const percent = 100;
-const fullTurn = Math.PI * 2;
-/* Der Ring beginnt oben in der Mitte, wie ein Uhrzeiger auf zwölf. */
-const ringStart = -Math.PI / 2;
 
 export const pileSize = 3;
 const dayStartHour = 6;
 const dayEndHour = 22;
 const msPerHour = 3600000;
-
-/* Punkt auf einem Kreis um die Mitte, auf `decimals` Stellen gerundet — kürzerer Text, gleiches Bild. */
-function onCircle(radius, angle) {
-  return [
-    (ringCenter + Math.cos(angle) * radius).toFixed(decimals),
-    (ringCenter + Math.sin(angle) * radius).toFixed(decimals),
-  ];
-}
-
-/**
- * Ring aus Strichen für die Kachel „Stufe“: so viele Striche leuchten, wie
- * von der Stufe schon geschafft ist; der letzte leuchtende reicht etwas weiter
- * nach innen und markiert, wo man gerade steht.
- * @param progress Fortschritt in der Stufe, 0 bis 1.
- */
-export function levelRing(progress) {
-  const lit = Math.round(progress * ringTicks);
-  let ticks = "";
-  for (let n = 0; n < ringTicks; n += 1) {
-    const angle = ringStart + (fullTurn / ringTicks) * n;
-    const isOn = n < lit;
-    const isHead = n === lit - 1;
-    const [x1, y1] = onCircle(isHead ? headInner : tickInner, angle);
-    const [x2, y2] = onCircle(tickOuter, angle);
-    const flags = `${isOn ? " is-on" : ""}${isHead ? " is-head" : ""}`;
-    /* --k: laufende Nummer, damit die leuchtenden Striche beim ersten Zeigen nacheinander angehen. */
-    const order = isOn ? ` style="--k:${n}"` : "";
-    ticks += `<line class="rail-ring-tick${flags}"${order} x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" />`;
-  }
-
-  let dots = "";
-  for (let n = 0; n < ringDots; n += 1) {
-    const [cx, cy] = onCircle(dotRing, ringStart + (fullTurn / ringDots) * n);
-    dots += `<circle class="rail-ring-dot" cx="${cx}" cy="${cy}" r="${dotSize}" />`;
-  }
-
-  /* svg: Striche und Punkte im Kreis lassen sich nur als Vektorgrafik sauber zeichnen. */
-  return `<svg class="rail-ring" viewBox="0 0 ${ringBox} ${ringBox}" aria-hidden="true">${dots}${ticks}</svg>`;
-}
 
 /**
  * Papierstapel für die Kachel „Eingang“: vorn das Neueste, dahinter die

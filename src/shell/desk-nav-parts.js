@@ -22,7 +22,7 @@ import { workspaceRef } from "../data/refs.js";
 import { state, ui } from "../data/state.js";
 import { currentView } from "../ui/views.js";
 import { chordKey, collectionLinks, pageLinks, soonLinks, withCommand } from "../ui/desk-links.js";
-import { keyCap } from "../ui/dot-keys.js";
+import { keyCap } from "../ui/key-caps.js";
 
 function newButtonMarkup() {
   return `
@@ -35,6 +35,15 @@ function newButtonMarkup() {
 
 function headMarkup(title, tool = "") {
   return `<div class="desk-nav-head"><h2 class="desk-nav-heading">${title}</h2>${tool}</div>`;
+}
+
+/* Überschrift „Arbeitsbereiche ↗“: öffnet die Sammlung aller Arbeitsbereiche, wie am Handy. */
+function spacesHeadMarkup(tool) {
+  return `
+    <div class="desk-nav-head">
+      <h2 class="desk-nav-heading"><button class="desk-nav-heading-link" type="button" data-nav-workspaces="1" aria-label="Alle Arbeitsbereiche öffnen">Arbeitsbereiche${icon("arrow-up-right")}</button></h2>
+      ${tool}
+    </div>`;
 }
 
 /*
@@ -76,9 +85,8 @@ function collectionsMarkup() {
         ${collectionLinks.map(collectionRowMarkup).join("")}
         <div class="desk-nav-more" id="desk-nav-more" hidden>${soonLinks.map(soonRowMarkup).join("")}</div>
         <button class="desk-nav-row desk-nav-more-toggle" type="button" data-nav-more="1" aria-expanded="false" aria-controls="desk-nav-more">
-          ${icon("dots", "desk-nav-icon")}
+          ${icon("chevron", "desk-nav-icon desk-nav-more-chevron")}
           <span class="desk-nav-text">Mehr anzeigen</span>
-          ${icon("chevron", "desk-nav-more-chevron")}
         </button>
       </div>
     </section>`;
@@ -87,12 +95,10 @@ function collectionsMarkup() {
 /* Die Tab-Gruppen bleiben hier leer; renderDeskNav() füllt sie. */
 function spacesMarkup() {
   const addTab = `
-    <button class="desk-nav-tool desk-nav-tool-text" type="button" data-nav-add-tab="1" title="Neuen Tab anlegen">
-      ${icon("plus")}<span>Tab</span>
-    </button>`;
+    <button class="desk-nav-tool" type="button" data-nav-add-tab="1" aria-label="Neuen Tab anlegen" title="Neuen Tab anlegen">${icon("plus")}</button>`;
   return `
     <section class="desk-nav-group" aria-label="Arbeitsbereiche">
-      ${headMarkup("Arbeitsbereiche", addTab)}
+      ${spacesHeadMarkup(addTab)}
       <div data-nav-slot="spaces"></div>
     </section>`;
 }
@@ -148,7 +154,7 @@ function tabGroupMarkup(tab, closedIds, activeId) {
           <span class="desk-nav-text">${name}</span>
           ${closed && spaces.length ? `<span class="desk-nav-count">${formatNumber(spaces.length)}</span>` : ""}
         </button>
-        <button class="desk-nav-tool" type="button" data-nav-add-workspace="${id}" aria-label="Arbeitsbereich in „${name}“ anlegen" title="Arbeitsbereich anlegen">${icon("plus")}</button>
+        <button class="desk-nav-tool" type="button" data-nav-add-workspace="${id}" aria-label="Arbeitsbereich in „${name}“ anlegen" title="Arbeitsbereich anlegen">${icon("folder-plus")}</button>
       </div>
       <div class="desk-nav-list" id="${listId}"${closed ? " hidden" : ""}>${list}</div>
     </div>`;

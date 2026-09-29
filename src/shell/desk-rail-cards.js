@@ -1,6 +1,6 @@
 /*
- * Die Karten der rechten Spalte am Desktop als HTML-Schnipsel: die Kacheln
- * „Eingang“ und „Fortschritt“, „Als Nächstes“ mit der Tagesleiste, die
+ * Die Karten der rechten Spalte am Desktop als HTML-Schnipsel: die Kachel
+ * „Eingang“, „Als Nächstes“ mit der Tagesleiste, die
  * dringendsten Aufgaben und die zuletzt geöffneten Einträge. Die Karten lesen
  * nur — was ein Klick auslöst, entscheidet src/shell/desk-rail.js anhand der
  * Angabe data-rail am Knopf.
@@ -26,7 +26,6 @@ import {
   eventStart,
   eventsOfDay,
   focusTasks,
-  levelSummary,
   newestInbox,
   nextEvent,
   recentEntries,
@@ -34,7 +33,7 @@ import {
 import { inboxEntries, taskEntries } from "../data/queries.js";
 import { cardHead, createPill, railTaskRow, railTitle } from "../ui/rail-parts.js";
 import { entryGlyph } from "../ui/rows.js";
-import { dayPassed, dayTrack, levelRing, paperPile, pileSize } from "./desk-rail-visuals.js";
+import { dayPassed, dayTrack, paperPile, pileSize } from "./desk-rail-visuals.js";
 
 const taskLimit = 4;
 const recentLimit = 3;
@@ -81,24 +80,6 @@ export function inboxTile() {
     </div>
     ${paperPile(newestInbox(pileSize))}
     <div class="rail-tile-foot" aria-hidden="true">${foot}</div>
-  `;
-}
-
-/** Kachel „Fortschritt“: Strich-Ring mit der Stufe in der Mitte, darunter die fehlenden Punkte. */
-export function levelTile() {
-  const level = levelSummary();
-  const missing = formatNumber(level.missing);
-  return `
-    <button class="rail-tile-hit" type="button" data-rail="level" aria-label="Fortschritt öffnen, Stufe ${level.level}, noch ${missing} XP bis zur nächsten"></button>
-    <div class="rail-tile-head" aria-hidden="true">
-      <span class="rail-tile-label">Fortschritt</span>
-      ${icon("arrow-right", "rail-tile-arrow")}
-    </div>
-    <div class="rail-ring-wrap" aria-hidden="true">
-      ${levelRing(level.progress)}
-      <span class="rail-ring-center"><span class="rail-ring-num">${level.level}</span><span class="rail-ring-label">Stufe</span></span>
-    </div>
-    <div class="rail-tile-foot" aria-hidden="true"><span class="rail-tile-note">noch ${missing} XP</span></div>
   `;
 }
 

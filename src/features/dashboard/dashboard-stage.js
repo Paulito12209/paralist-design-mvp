@@ -26,13 +26,12 @@
 import { emit, events } from "../../core/bus.js";
 import { formatNumber, shortOpenTime } from "../../core/format.js";
 import { escapeHtml, icon } from "../../core/html.js";
-import { typeSingular } from "../../data/config.js";
+import { typeIcon, typeSingular } from "../../data/config.js";
 import { recentPages } from "../../data/insights.js";
 import { canLink } from "../../data/links.js";
 import { entryColor, findEntry, workspaceColor, workspaceIcon, workspaceLabel } from "../../data/queries.js";
 import { openLinkSheet } from "../../ui/link-sheet.js";
 import { openEntry, openEntryOrFile, openTarget } from "../../ui/router.js";
-import { entryGlyph } from "../../ui/rows.js";
 
 const slideLimit = 6;
 const tileLimit = 7;
@@ -46,6 +45,15 @@ let pages = [];
 let index = 0;
 let swipeSum = 0;
 let swipeLockUntil = 0;
+
+/*
+ * Das Emblem eines Eintrags: sein eigenes Icon oder das seines Typs — nie ein
+ * Vorschaubild. Eine Skizze oder ein Foto im Cover wirkte wie ein Fremdkörper
+ * zwischen den ruhigen Icons; die Vorschau gibt es auf der Seite selbst.
+ */
+function emblem(entry) {
+  return icon(entry.icon || typeIcon(entry.type));
+}
 
 /* „1 verknüpfter Eintrag“ / „3 Einträge darin“ — der Satz unter dem Titel. */
 function relatedSentence(page) {
@@ -76,7 +84,7 @@ function describe(page) {
     kicker: escapeHtml(typeSingular(entry.type)),
     title: escapeHtml(entry.title || "Ohne Titel"),
     color: entryColor(entry),
-    art: entryGlyph(entry),
+    art: emblem(entry),
   };
 }
 
@@ -141,7 +149,7 @@ function tileMarkup(entry) {
   const title = escapeHtml(entry.title || "Ohne Titel");
   return `
     <button class="showcase-tile" type="button" data-showcase-entry="${escapeHtml(entry.id)}" style="--tile-accent: ${entryColor(entry)}">
-      <span class="showcase-tile-art">${entryGlyph(entry)}</span>
+      <span class="showcase-tile-art">${emblem(entry)}</span>
       <span class="showcase-tile-title">${title}</span>
       <span class="showcase-tile-kind">${escapeHtml(typeSingular(entry.type))}</span>
     </button>`;
