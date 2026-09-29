@@ -82,6 +82,7 @@ const railCards = {
   tasks: () => import("./features/tasks/tasks-rail.js"),
   media: () => import("./features/media/media-rail.js"),
   search: () => import("./features/search/search-rail.js"),
+  entry: () => import("./features/entry/entry-rail.js"),
 };
 
 /* Von den nachladbaren Bereichen sind das die, die eine eigene Ansicht haben. */

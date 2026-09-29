@@ -41,12 +41,16 @@
  * moreLabel / lessLabel -> Beschriftung des Knopfs unter dem Text
  *
  * Aussehen (Auslaufen des Textes, Knopf) in styles/entry-details.css.
+ *
+ * Am Desktop mit rechter Spalte (ab 1280px) gilt nichts davon: die Details
+ * stehen rechts (entry-rail.js), der Text bleibt ganz.
  */
 
 import { events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
 import { ui } from "../../data/state.js";
+import { isRailShown } from "../../ui/desk-mode.js";
 import { isViewActive } from "../../ui/views.js";
 import { detailsCard } from "./entry-details.js";
 
@@ -125,6 +129,9 @@ export function layoutEntryFold() {
   fold.style.maxHeight = "";
   fold.style.height = "";
   setMore(false);
+  /* Am Desktop mit rechter Spalte stehen die Details dort (entry-rail.js):
+     der Text bleibt ganz, nichts wird gekürzt oder für die Karte freigehalten. */
+  if (isRailShown()) return;
 
   const foldRect = fold.getBoundingClientRect();
   /* Oberkante des Rahmens, als stünde die Seite ganz oben */

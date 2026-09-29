@@ -37,6 +37,8 @@
  * Über dem Titel können ein Farbverlauf in der Farbe der Kategorie und ein
  * eigenes Icon stehen, beides aus dem Menü oben rechts (entry-cover.js;
  * das Cover teilt sich die Seite mit dem Arbeitsbereich: src/ui/page-cover.js).
+ * Am Desktop stehen Favorit und Cover als Knöpfe rechts in der Kopfzeile
+ * (entry-head.js), ab 1280px die Details rechts in der Spalte (entry-rail.js).
  * Pfad: src/features/entry/entry.js
  *
  * Keine anpassbaren visuellen Werte: Schriftgrößen stehen in styles/entry.css
@@ -57,6 +59,7 @@ import { scheduleSave, ui } from "../../data/state.js";
 import { entryMenuOptions } from "../../ui/entry-menu.js";
 import { initEntryCover, renderEntryCover } from "./entry-cover.js";
 import { initEntryDetails, renderEntryDetails } from "./entry-details.js";
+import { initEntryHead, renderEntryHead } from "./entry-head.js";
 import { expandEntryFold, initEntryFold, layoutEntryFold, resetEntryFold } from "./entry-fold.js";
 import { initEntryTitle, showEntryTitle } from "./entry-title.js";
 import { initEntryTools, linkFilterFor, renderEntryTools } from "./entry-tools.js";
@@ -156,6 +159,7 @@ function renderEntry() {
   /* Mittig die Kategorie, nicht der Ort: der Zurück-Pfeil führt dorthin, wo
      man zuletzt war — nicht zwingend an den Ort des Eintrags. */
   renderCrumb(entry);
+  renderEntryHead(entry);
   setHeadTitle(el("entry-head"), entry.title || "Ohne Titel", entryTypeName(entry));
 
   /* Zeichnungen zeigen statt des Textes die Zeichenfläche. */
@@ -198,6 +202,7 @@ export function initEntry() {
   /* Rahmen und Karte vor dem Editor: sein „/“-Menü hängt sich in den Rahmen */
   initEntryFold();
   initEntryDetails();
+  initEntryHead();
   initEntryTitle();
   bodyEditor = createBlockEditor(dom.entryBody, {
     onChange: saveBody,
@@ -291,6 +296,7 @@ export function initEntry() {
     renderEntryCover(entry);
     renderEntryDetails(entry);
     renderCrumb(entry);
+    renderEntryHead(entry);
     syncHeadSub(entry);
     renderLinks(entry);
     renderEntryPills(entry);
