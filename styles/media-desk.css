@@ -51,6 +51,9 @@
   /* Die Pillen reichen am Handy bis über den Rand; hier enden sie vor den Werkzeugen. */
   #view-media .media-filters {
     margin-right: 0;
+    /* mask-image: die Pillen laufen vor den Werkzeugen weich aus, statt hart abzubrechen */
+    -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
+    mask-image: linear-gradient(to right, #000 calc(100% - 32px), transparent);
   }
 
   .media-tools {

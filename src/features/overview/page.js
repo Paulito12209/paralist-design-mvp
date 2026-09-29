@@ -34,6 +34,7 @@ import { openDetails } from "../../ui/details.js";
 import { bindHeadTitle, setHeadTitle } from "../../ui/head-title.js";
 import { registerCover, renderCover } from "../../ui/page-cover.js";
 import { iconPickerAction } from "../../ui/pickers.js";
+import { mountPath, pageSteps, renderPath } from "../../ui/page-path.js";
 import { goBack, restoreFrom, showSearch } from "../../ui/router.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { entryRow, workspaceRow } from "../../ui/rows.js";
@@ -144,10 +145,14 @@ function updatePageHeadScroll() {
   dom.pageHead.classList.toggle("is-scrolled", dom.content.scrollTop > HEADER_REVEAL_PX);
 }
 
+/* Der Pfad oben links in der Kopfzeile am Desktop (src/ui/page-path.js), angelegt in initPage. */
+let path = null;
+
 /** Kopfzeile und Inhalt der Unterseite aufbauen. */
 function renderPage() {
   const page = ui.currentPage;
   if (!page) return;
+  renderPath(path, pageSteps(page));
   const jump = titleSwitches[page.kind];
   if (jump) {
     dom.pageTitle.innerHTML = `${escapeHtml(page.title)}<button class="title-switch" type="button" data-title-switch="${jump.target}">${jump.label}</button>`;
@@ -246,6 +251,7 @@ function openPageMenu() {
 
 /** Seitenmenü, Suche, Zurück-Pfeil und Auffrischen anmelden. */
 export function initPage() {
+  path = mountPath(dom.pageHead);
   dom.pageMenuBtn.addEventListener("click", openPageMenu);
   dom.pageCrumb.addEventListener("click", (event) => {
     const page = ui.currentPage;

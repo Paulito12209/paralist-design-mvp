@@ -83,6 +83,7 @@ const railCards = {
   media: () => import("./features/media/media-rail.js"),
   search: () => import("./features/search/search-rail.js"),
   entry: () => import("./features/entry/entry-rail.js"),
+  page: () => import("./features/overview/workspace-rail.js"),
 };
 
 /* Von den nachladbaren Bereichen sind das die, die eine eigene Ansicht haben. */

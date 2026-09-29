@@ -211,21 +211,24 @@
      Schiene darum durchsichtig; erst über der Spalte zeigt ein schmaler blasser
      Griff, wie weit es weitergeht. Nur die Farbe wechselt, die Breite bleibt —
      beim Überfahren springt nichts. .device hebt die Regeln über die gleich
-     starken in styles/base.css (Mitte am Handy ohne Balken) und styles/desk-nav.css. */
-  .device :is(.desk-nav, .desk-nav-scroll, .content, .desk-rail) {
+     starken in styles/base.css (Mitte am Handy ohne Balken) und styles/desk-nav.css.
+     Dazu gehören auch die Flächen, die in sich rollen: das Stundenraster des
+     Kalenders (am Handy ohne Balken, styles/calendar-panel.css) und die
+     Trefferliste der Such-Palette. */
+  .device :is(.desk-nav, .desk-nav-scroll, .content, .desk-rail, .cal-panel.is-grid, .palette-list) {
     scrollbar-width: thin; /* scrollbar-width: schmal (Chrome, Firefox) */
     scrollbar-color: transparent transparent; /* scrollbar-color: Griff und Schiene unsichtbar, der Platz bleibt */
   }
 
   /* Safari kennt scrollbar-color nicht und zeichnet den Balken über diese
      Vorsilben-Teile. Chrome übergeht sie, sobald scrollbar-color gesetzt ist. */
-  .device :is(.desk-nav, .desk-nav-scroll, .content, .desk-rail)::-webkit-scrollbar {
+  .device :is(.desk-nav, .desk-nav-scroll, .content, .desk-rail, .cal-panel.is-grid, .palette-list)::-webkit-scrollbar {
     display: block; /* display: styles/base.css blendet den Balken der Mitte fürs Handy aus */
     width: 6px;
   }
 
-  .device :is(.desk-nav, .desk-nav-scroll, .content, .desk-rail)::-webkit-scrollbar-track,
-  .device :is(.desk-nav, .desk-nav-scroll, .content, .desk-rail)::-webkit-scrollbar-thumb {
+  .device :is(.desk-nav, .desk-nav-scroll, .content, .desk-rail, .cal-panel.is-grid, .palette-list)::-webkit-scrollbar-track,
+  .device :is(.desk-nav, .desk-nav-scroll, .content, .desk-rail, .cal-panel.is-grid, .palette-list)::-webkit-scrollbar-thumb {
     background: transparent;
   }
 
@@ -308,12 +311,26 @@
    1024px bliebe nach einem Tippen sonst ein „Überfahren“ hängen und der Balken
    stünde dauerhaft da. */
 @media (min-width: 1024px) and (hover: hover) {
-  .device :is(.desk-nav, .desk-nav-scroll, .content, .desk-rail):hover {
+  .device :is(.desk-nav, .desk-nav-scroll, .content, .desk-rail, .cal-panel.is-grid, .palette-list):hover {
     scrollbar-color: var(--desk-scroll-thumb) transparent; /* scrollbar-color: blasser Griff, keine Schiene */
   }
 
-  .device :is(.desk-nav, .desk-nav-scroll, .content, .desk-rail):hover::-webkit-scrollbar-thumb {
+  .device :is(.desk-nav, .desk-nav-scroll, .content, .desk-rail, .cal-panel.is-grid, .palette-list):hover::-webkit-scrollbar-thumb {
     background: var(--desk-scroll-thumb);
     border-radius: 999px; /* border-radius: runde Enden am Griff */
+  }
+}
+
+/* „Bewegung reduzieren“ im System: nichts gleitet — weder das Zuklappen der
+   Seitenleiste noch Tönungen beim Überfahren. Das Auftauchen von Karten und
+   Dialogen steht ohnehin nur unter prefers-reduced-motion: no-preference.
+   !important, weil jede Übergangs-Regel sonst einzeln überschrieben werden müsste. */
+@media (min-width: 1024px) and (prefers-reduced-motion: reduce) {
+  .device *,
+  .device *::before,
+  .device *::after {
+    transition-duration: 0s !important; /* transition: aus, Änderungen stehen sofort da */
+    transition-delay: 0s !important; /* transition-delay: auch das verzögerte Ausblenden der zugeklappten Leiste wartet nicht */
+    scroll-behavior: auto !important; /* scroll-behavior: springen statt gleiten */
   }
 }

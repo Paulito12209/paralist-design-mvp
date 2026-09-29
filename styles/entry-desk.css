@@ -12,28 +12,75 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * Einzelne Größen stehen bei ihrer Regel: Abstand zwischen Kategorie und
- * Knöpfen 6px, Knöpfe der Gestaltung 8px Fuge, runder Knopf „Verknüpfen“ 28px.
+ * Knöpfen 6px, Knöpfe der Gestaltung 8px Fuge, runder Knopf „Verknüpfen“ 28px,
+ * Schrift des Pfads 14px, Fuge zwischen seinen Gliedern 6px.
+ *
+ * Den Pfad oben links (src/ui/page-path.js) zeichnet diese Datei auch: auf
+ * Einträgen, Sammlungen und Arbeitsbereichen.
  *
  * WERTE AUS styles/tokens.css UND styles/tokens-desk.css
  * -----------------------------------
  * --star-color      -> Gold des Sterns, solange der Eintrag Favorit ist
  * --text / --bg     -> gefüllte Pille „Cover“, solange ein Cover gesetzt ist
- * --desk-hover      -> Tönung des runden Knopfs unter der Maus
+ * --desk-hover      -> Tönung des runden Knopfs und der Glieder des Pfads unter der Maus
+ * --desk-item-radius -> Rundung der Glieder des Pfads
+ * --muted           -> blasse Glieder und Trennzeichen des Pfads
  * --rail-pill-height -> Größe des runden Knopfs (styles/desk-rail.css)
  */
 
-/* Am Handy stehen Favorit und Cover im Menü hinter den drei Punkten. */
-.entry-head-tool {
+/* Am Handy stehen Favorit und Cover im Menü hinter den drei Punkten, und
+   einen Pfad gibt es nicht — dort führt der Zurück-Pfeil. */
+.entry-head-tool,
+.page-path {
   display: none;
 }
 
 @media (min-width: 1024px) {
-  .content .page-head .back-btn {
-    display: none;
+  .content .page-head .back-btn,
+  .content .page-head .head-title {
+    display: none; /* der kleine Titel beim Rollen: der Pfad nennt die Seite schon */
+  }
+
+  /* ---------- Pfad (src/ui/page-path.js) ---------- */
+
+  .page-path {
+    display: flex;
+    align-items: center;
+    flex: 1 1 auto;
+    gap: 6px;
+    min-width: 0;
+    overflow: hidden; /* overflow: ein langer Pfad wird abgeschnitten, statt die Knöpfe zu verdrängen */
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .page-path-step {
+    min-width: 0;
+    padding: 4px 6px;
+    border-radius: var(--desk-item-radius);
+    overflow: hidden;
+    text-overflow: ellipsis; /* text-overflow: lange Namen enden mit „…“ */
+    color: var(--muted);
+  }
+
+  .page-path-step.is-current {
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  button.page-path-step:hover {
+    background: var(--desk-hover);
+    color: var(--text);
+  }
+
+  .page-path-sep {
+    flex: 0 0 auto;
+    color: var(--muted);
   }
 
   /* Kategorie und Werkzeuge rücken zusammen an den rechten Rand. */
   #view-entry .entry-crumb {
+    flex: 0 1 auto;
     text-align: right;
     margin-right: 6px;
   }

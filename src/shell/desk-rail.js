@@ -265,7 +265,8 @@ function buildSet(name, cards) {
  * @param importFn holt das Modul; es exportiert `railCards` (Plätze wie
  *   `slots` oben, mit `render(now)`), wahlweise `railActions` (Name →
  *   Funktion(Knopf)) für seine eigenen data-rail-Knöpfe und `railClick(event)`
- *   für alles andere — gibt es `true` zurück, ist der Klick erledigt.
+ *   für alles andere — gibt es `true` zurück, ist der Klick erledigt —, und
+ *   wahlweise `railApplies()`: `false` zeigt für diese Seite die Übersicht.
  */
 export function registerRailCards(view, importFn) {
   loaders.set(view, importFn);
@@ -279,6 +280,9 @@ export function registerRailCards(view, importFn) {
 function setForView() {
   const view = currentView();
   const module = modules.get(view);
+  /* railApplies: eine Ansicht kann ihre Karten nur für manche Seiten wollen
+     (Arbeitsbereiche, nicht die Sammlungen) — sonst gilt die Übersicht. */
+  if (module && module.railApplies && !module.railApplies()) return sets.get("overview");
   if (module) return sets.get(view) || buildSet(view, module.railCards);
   if (loaders.has(view)) {
     const importFn = loaders.get(view);
