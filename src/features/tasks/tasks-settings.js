@@ -80,6 +80,20 @@ function placeValue(view) {
   return parentName(view.place);
 }
 
+/**
+ * Rechts in der Werkzeugzeile am Desktop: Segment Liste | Board und der
+ * Filter nach Ort — dieselben Schalter wie in der Karte, also dieselben Klicks.
+ */
+export function deskToolsMarkup(view) {
+  return `
+    <span class="tasks-desk-tools">
+      ${segment(layouts, view.layout, "layout")}
+      <button class="tasks-desk-filter" type="button" data-settings="place"${view.fixed ? " disabled" : ""} title="${escapeHtml(rowLabels.place)}">
+        ${icon("sliders")}<span>${escapeHtml(placeValue(view))}</span>
+      </button>
+    </span>`;
+}
+
 /** Die Zeilen der Karte für die gewählte Ansicht. */
 export function taskSettingsMarkup(view) {
   const grouped = view.group !== "none";

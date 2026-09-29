@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "86209b3fc365";
+export const appVersion = "8a3d8389017e";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -102,6 +102,7 @@ export const appFiles = [
   "src/features/entry/entry-title.js",
   "src/features/entry/entry-tools.js",
   "src/features/entry/entry.js",
+  "src/features/media/media-desk.js",
   "src/features/media/media-import.js",
   "src/features/media/media-rail.js",
   "src/features/media/media.js",
@@ -244,6 +245,7 @@ export const appFiles = [
   "styles/empty-state.css",
   "styles/entry-details.css",
   "styles/entry.css",
+  "styles/media-desk.css",
   "styles/media.css",
   "styles/milestones.css",
   "styles/modal-top.css",
@@ -267,6 +269,7 @@ export const appFiles = [
   "styles/swipe-rows.css",
   "styles/task-status.css",
   "styles/tasks-board.css",
+  "styles/tasks-desk.css",
   "styles/tasks-settings.css",
   "styles/tasks.css",
   "styles/toast.css",

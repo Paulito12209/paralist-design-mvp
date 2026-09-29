@@ -1,0 +1,128 @@
+/*
+ * Desktop: die Aufgaben-Seite in der Breite. Rechts neben den Pillen der
+ * Ansichten stehen Liste | Board und der Filter nach Ort; die Liste zeigt
+ * Fälligkeit, Dringlichkeit und Ablageort als ruhige Spalten statt in der
+ * Nebenzeile; die Zeile unter der Maus ist getönt (ihre Details stehen
+ * rechts). Ab 1280px wandert die Karte „Ansicht konfigurieren“ in die rechte
+ * Spalte (src/features/tasks/tasks-rail.js) — die schwebende Karte unten
+ * entfällt dann. Am Handy gilt hier nichts.
+ * Pfad: styles/tasks-desk.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (oben bei #view-tasks)
+ * -----------------------------------
+ * --tasks-desk-tools   -> Platz rechts neben den Pillen für Liste | Board, Filter und Plus
+ * --task-col-due / --task-col-prio / --task-col-place -> Breite der drei Spalten
+ * Einzelne Größen stehen bei ihrer Regel: Schrift der Spalten 13px, Filter 13px.
+ *
+ * WERTE AUS styles/tokens.css UND styles/tokens-desk.css
+ * -----------------------------------
+ * --tab-pills-tools-width -> Platz, den die Pillen rechts frei lassen (styles/overview.css)
+ * --tab-pill-active-bg / --muted / --text -> Fläche des Filters, blasse und volle Schrift
+ * --desk-hover         -> Tönung der markierten Zeile
+ */
+
+/* Am Handy: keine Werkzeuge rechts, keine Spalten — alles steht in der Nebenzeile. */
+.tasks-desk-tools,
+.task-cols {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  #view-tasks {
+    --tasks-desk-tools: 330px;
+    --task-col-due: 72px;
+    --task-col-prio: 104px;
+    --task-col-place: 150px;
+    --tab-pills-tools-width: var(--tasks-desk-tools);
+  }
+
+  .tasks-desk-tools {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-right: 8px;
+  }
+
+  .tasks-desk-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    max-width: 150px;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: var(--tab-pill-active-bg);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .tasks-desk-filter span {
+    overflow: hidden;
+    text-overflow: ellipsis; /* text-overflow: lange Ortsnamen enden mit „…“ */
+    white-space: nowrap;
+  }
+
+  .tasks-desk-filter .icon {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+  }
+
+  .tasks-desk-filter:disabled {
+    color: var(--muted);
+    cursor: default;
+  }
+
+  /* ---------- Liste: ruhige Spalten ---------- */
+
+  /* min-width: ein langer Titel darf die Zeile schmaler machen, statt sie über
+     den Rand zu schieben — er endet dann mit „…“. */
+  #view-tasks .task-row {
+    min-width: 0;
+  }
+
+  /* Der Pfeil rechts bleibt gleich groß, auch wenn der Titel eng wird. */
+  #view-tasks .task-row .chevron {
+    flex-shrink: 0;
+  }
+
+  #view-tasks .task-row .task-meta {
+    display: none;
+  }
+
+  #view-tasks .task-row .task-cols {
+    display: grid;
+    grid-template-columns: var(--task-col-due) var(--task-col-prio) var(--task-col-place); /* grid-template-columns: Fällig | Dringlichkeit | Ort */
+    align-items: center;
+    flex: 0 0 auto;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  /* .task-row span (styles/tasks.css) hielte die Zellen schmal — sie sollen ihre Spalte füllen. */
+  #view-tasks .task-row .task-col {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis; /* text-overflow: s. o. */
+    white-space: nowrap;
+  }
+
+  /* Die Zeile, deren Details rechts stehen */
+  #view-tasks .is-marked {
+    background-color: var(--desk-hover);
+  }
+}
+
+/* Ab 1280px steht „Ansicht konfigurieren“ in der rechten Spalte. */
+@media (min-width: 1280px) {
+  body.is-tasks .tasks-panel {
+    display: none;
+  }
+
+  /* Rechts ist die Karte immer offen: die Zeilen sind gleich zu sehen,
+     statt wie in der schwebenden Karte erst beim Ausklappen einzublenden. */
+  .rail-view-card .details-list {
+    opacity: 1;
+  }
+}

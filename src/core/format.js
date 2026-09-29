@@ -142,3 +142,19 @@ export function relativeTime(ts) {
   if (days < 7) return `vor ${days} Tagen`;
   return dayMonthYear.format(new Date(ts));
 }
+
+/* Einheiten der Dateigröße, je Stufe 1024-mal größer. */
+const byteUnits = ["B", "KB", "MB", "GB"];
+const byteStep = 1024;
+
+/** Menschenlesbare Dateigröße: „820 KB“, „4,2 MB“. */
+export function formatBytes(bytes) {
+  let value = bytes;
+  let unit = 0;
+  while (value >= byteStep && unit < byteUnits.length - 1) {
+    value /= byteStep;
+    unit += 1;
+  }
+  const rounded = value < 10 && unit > 0 ? Math.round(value * 10) / 10 : Math.round(value);
+  return `${rounded.toLocaleString("de-DE")} ${byteUnits[unit]}`;
+}

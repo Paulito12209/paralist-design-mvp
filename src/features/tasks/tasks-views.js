@@ -75,7 +75,7 @@ function pillMarkup(view) {
 }
 
 /** Die ganze Zeile: Pillen, kleines Plus, Trennlinie, ✓+. */
-export function taskViewsMarkup() {
+export function taskViewsMarkup(end = "") {
   return `
     <div class="tab-pills-row">
       <div class="tab-pills" id="task-view-pills">
@@ -85,6 +85,7 @@ export function taskViewsMarkup() {
       <div class="tab-pills-tools">
         <div class="tab-pills-fade"></div>
         <div class="tab-pills-end">
+          ${end}
           <div class="tab-pills-split"></div>
           <button class="add-btn task-add-btn" type="button" data-task-add aria-label="${addTaskLabel}" title="${addTaskLabel}">
             ${icon("task-plus")}

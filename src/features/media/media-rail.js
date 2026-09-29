@@ -1,40 +1,65 @@
 /*
  * Die Karten der Medien-Seite in der rechten Spalte am Desktop: „Speicher“
  * zeigt je Art (Bilder, Videos, Audio, Dokumente), wie viel Platz sie belegt,
- * als Balken; darunter die zuletzt hinzugefügten Medien. Die Details einer
- * markierten Datei kommen, sobald die Seite am Desktop markieren kann
- * (Schritt 6 des Desktop-Plans). Geladen über registerRailCards in src/main.js.
+ * als Balken; darunter die zuletzt hinzugefügten Medien. Darüber stehen die
+ * Details der markierten Datei — markiert ist die Kachel oder Zeile unter der
+ * Maus oder mit dem Tastatur-Fokus: Vorschau, Art, Größe, Dauer, Datum,
+ * Ablageort und „Öffnen“. Geladen über registerRailCards in src/main.js.
  * Pfad: src/features/media/media-rail.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * newestLimit -> wie viele Medien „Zuletzt hinzugefügt“ zeigt
- * byteUnits   -> Einheiten der Größenangabe, je Stufe 1024-mal größer
  *
  * Aussehen in styles/desk-rail-views.css, die Arten in src/data/config.js (mediaKinds).
  */
 
-import { formatNumber, shortOpenTime } from "../../core/format.js";
+import { emit, events } from "../../core/bus.js";
+import { dom } from "../../core/dom.js";
+import { dayMonth, formatBytes, formatClock, formatNumber, shortOpenTime } from "../../core/format.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { mediaKinds } from "../../data/config.js";
-import { mediaEntries, mediaKindOf } from "../../data/queries.js";
+import { findEntry, mediaEntries, mediaKindOf, placesLabel } from "../../data/queries.js";
+import { thumbOf } from "../../data/thumbs.js";
 import { cardHead, railTitle } from "../../ui/rail-parts.js";
 import { openEntryOrFile } from "../../ui/router.js";
 
 const newestLimit = 4;
-const byteUnits = ["B", "KB", "MB", "GB"];
-const byteStep = 1024;
 
-/* Menschenlesbare Größe: „820 KB“, „4,2 MB“. */
-function formatBytes(bytes) {
-  let value = bytes;
-  let unit = 0;
-  while (value >= byteStep && unit < byteUnits.length - 1) {
-    value /= byteStep;
-    unit += 1;
-  }
-  const rounded = value < 10 && unit > 0 ? Math.round(value * 10) / 10 : Math.round(value);
-  return `${rounded.toLocaleString("de-DE")} ${byteUnits[unit]}`;
+/* Die markierte Datei (ihre Nummer) oder null. */
+let marked = null;
+
+/* Zwei Spalten „Angabe | Wert“; leere Werte fallen weg. */
+function facts(pairs) {
+  return `<div class="rail-facts">${pairs
+    .filter(([, value]) => value)
+    .map(([label, value]) => `<span class="rail-muted">${label}</span><span>${escapeHtml(value)}</span>`)
+    .join("")}</div>`;
+}
+
+/** Karte „Details“ der markierten Datei — leer (und ausgeblendet), solange keine markiert ist. */
+function detailsCard() {
+  const entry = marked && findEntry(marked);
+  if (!entry || entry.type !== "medien") return "";
+  const media = entry.media || {};
+  const kind = mediaKinds.find((item) => item.id === mediaKindOf(entry));
+  const thumb = thumbOf(entry.id);
+  /* Vorschau: das Bild selbst, sonst das Icon der Art auf ruhiger Fläche */
+  const preview = thumb
+    ? `<img class="rail-media-thumb" src="${thumb}" alt="" loading="lazy" decoding="async" />`
+    : `<span class="rail-media-thumb">${icon(kind ? kind.icon : "photos")}</span>`;
+  const open = `<button class="rail-pill rail-head-end" type="button" data-rail="media-open" data-id="${escapeHtml(entry.id)}">Öffnen${icon("arrow-right")}</button>`;
+  return `
+    ${cardHead("Details", open)}
+    ${preview}
+    <h3 class="rail-preview-title">${railTitle(entry)}</h3>
+    ${facts([
+      ["Art", kind ? kind.label : ""],
+      ["Größe", media.size ? formatBytes(media.size) : ""],
+      ["Dauer", media.duration ? formatClock(media.duration) : ""],
+      ["Datum", entry.createdAt ? dayMonth(entry.createdAt) : ""],
+      ["Ablageort", placesLabel(entry)],
+    ])}`;
 }
 
 /** Karte „Speicher“: je Art Anzahl, Größe und Anteil am Ganzen. */
@@ -84,6 +109,7 @@ function newestCard() {
 
 /** Die Plätze der Spalte auf der Medien-Seite (Aufbau wie in src/shell/desk-rail.js). */
 export const railCards = [
+  { name: "details", className: "rail-card", render: detailsCard },
   { name: "storage", className: "rail-card", render: storageCard },
   { name: "newest", className: "rail-card", render: newestCard },
 ];
@@ -92,3 +118,17 @@ export const railCards = [
 export const railActions = {
   "media-open": (button) => openEntryOrFile(button.dataset.id),
 };
+
+/* Kachel oder Zeile markieren: getönt auf der Seite und rechts als Details. */
+function onPointer(event) {
+  const item = event.target.closest?.("[data-open-entry]");
+  if (!item || item.dataset.openEntry === marked) return;
+  dom.mediaBody.querySelector(".is-marked")?.classList.remove("is-marked");
+  item.classList.add("is-marked");
+  marked = item.dataset.openEntry;
+  emit(events.contextChanged);
+}
+
+/* Einmal beim Laden: Maus und Tastatur-Fokus markieren Medien. */
+dom.mediaBody.addEventListener("pointerover", onPointer);
+dom.mediaBody.addEventListener("focusin", onPointer);

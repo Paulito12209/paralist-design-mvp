@@ -375,6 +375,15 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   Klick auf einen Tageskopf öffnet „Tag“. Monat: Chips öffnen den Termin,
   „+ n weitere“ und die Zahl öffnen den Tag, die Zelle wählt ihn. Wahl bleibt
   nach neu laden; unter 1024 px wieder der Handy-Kalender.
+- Aufgaben (Taste 3): rechts neben den Pillen Liste | Board und „Alle Orte“
+  (bei „Alle“ gesperrt); Spalten Fällig, Dringlichkeit, Ort, lange Titel enden
+  mit „…“. Ab 1280 px „Ansicht konfigurieren“ rechts (alle Schalter), die
+  Karte unten ist weg; Zeile überfahren → „Details“ mit „Öffnen“ und
+  „Erledigen“. Zwischen 1024 und 1279 px bleibt die Karte unten.
+- Medien (Taste 4): Raster | Liste und Regler für die Kachelgröße (bleibt nach
+  neu laden); Liste mit Art, Ort, Datum, Größe; Kachel oder Zeile überfahren →
+  „Details“ rechts, Klick öffnet die Datei. Pillen und Werkzeuge überlappen
+  nicht, auch bei 1024 px.
 
 **Immer**
 - `python3 tools/version.py` ausführen, dann meldet `python3 tools/check.py` „alles in Ordnung“.

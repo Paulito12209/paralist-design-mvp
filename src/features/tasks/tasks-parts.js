@@ -61,3 +61,18 @@ export function taskMeta(entry, field) {
   if (!parts.length) return "";
   return `<span class="task-meta">${parts.join('<span class="task-meta-dot" aria-hidden="true">·</span>')}</span>`;
 }
+
+/**
+ * Am Desktop stehen Fälligkeit, Dringlichkeit und Ablageort als ruhige
+ * Spalten rechts in der Zeile statt in der Nebenzeile (styles/tasks-desk.css
+ * blendet je nach Breite das eine oder das andere aus). Leere Zellen bleiben
+ * stehen, damit die Spalten untereinander fluchten.
+ */
+export function taskColumns(entry) {
+  return `
+    <span class="task-cols">
+      <span class="task-col">${dueMarkup(entry)}</span>
+      <span class="task-col">${priorityMarkup(entry)}</span>
+      <span class="task-col">${placeMarkup(entry)}</span>
+    </span>`;
+}

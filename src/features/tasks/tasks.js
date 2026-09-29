@@ -6,7 +6,9 @@
  * den Einstellungen (tasks-settings.js). Diese Datei hält nur alles
  * zusammen: gezeichnet wird in tasks-list.js und tasks-board.js, das Ziehen
  * steht in tasks-drag.js, das Anlegen durch Tippen in die Fläche in
- * tasks-inline.js. Wird erst beim ersten Öffnen nachgeladen.
+ * tasks-inline.js. Am Desktop wandert die Karte in die rechte Spalte
+ * (tasks-rail.js), rechts neben den Pillen stehen Liste | Board und Filter.
+ * Wird erst beim ersten Öffnen nachgeladen.
  * Pfad: src/features/tasks/tasks.js
  *
  * Keine anpassbaren Werte in dieser Datei. Maße stehen in styles/tasks.css,
@@ -23,7 +25,7 @@ import { consumeDragClick, initTaskDrag } from "./tasks-drag.js";
 import { initTaskInline } from "./tasks-inline.js";
 import { taskListMarkup } from "./tasks-list.js";
 import { initTaskPanel, setTaskPanelContent } from "./tasks-panel.js";
-import { handleSettingsClick, taskSettingsMarkup } from "./tasks-settings.js";
+import { deskToolsMarkup, handleSettingsClick, taskSettingsMarkup } from "./tasks-settings.js";
 import { afterViewsRender, handleViewsClick, initTaskViews, taskViewsMarkup } from "./tasks-views.js";
 
 /** Die ganze Seite neu zeichnen. */
@@ -34,7 +36,8 @@ export function renderTasks() {
   const scrolled = dom.tasksBody.querySelector(".board");
   const left = scrolled ? scrolled.scrollLeft : 0;
 
-  dom.tasksTools.innerHTML = taskViewsMarkup();
+  /* Rechts neben den Pillen: Liste | Board und Filter — nur am Desktop zu sehen (styles/tasks-desk.css). */
+  dom.tasksTools.innerHTML = taskViewsMarkup(deskToolsMarkup(view));
   afterViewsRender();
   dom.tasksBody.innerHTML = board ? taskBoardMarkup(view) : taskListMarkup(view);
   setTaskPanelContent(taskSettingsMarkup(view));
@@ -60,7 +63,10 @@ function onBodyClick(event) {
 /* Beim Laden des Moduls anmelden: die Seite frischt sich auf, solange sie offen ist. */
 function init() {
   initTaskPanel((event) => handleSettingsClick(event, activeTaskView()));
-  dom.tasksTools.addEventListener("click", handleViewsClick);
+  dom.tasksTools.addEventListener("click", (event) => {
+    if (event.target.closest("[data-settings]")) handleSettingsClick(event, activeTaskView());
+    else handleViewsClick(event);
+  });
   dom.tasksBody.addEventListener("click", onBodyClick);
   initTaskDrag(renderTasks);
   initTaskInline();

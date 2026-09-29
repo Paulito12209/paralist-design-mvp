@@ -1,0 +1,161 @@
+/*
+ * Desktop: die Medien-Seite in der Breite. Rechts neben den Pillen der Arten
+ * stehen Raster | Liste und der Regler für die Kachelgröße; die Liste zeigt
+ * je Datei eine Zeile mit ruhigen Spalten; die Kachel oder Zeile unter der
+ * Maus ist markiert (ihre Details stehen rechts, ab 1280px). Dazu die
+ * Vorschau in der Details-Karte rechts. Gebaut von
+ * src/features/media/media-desk.js und src/features/media/media-rail.js. Am
+ * Handy gilt hier nichts.
+ * Pfad: styles/media-desk.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (oben bei #view-media)
+ * -----------------------------------
+ * --media-row-height -> Höhe einer Zeile der Liste
+ * --media-row-cols   -> Breite der Spalten Art | Ort | Datum | Größe
+ * --media-size-width -> Länge des Reglers für die Kachelgröße
+ * Einzelne Größen stehen bei ihrer Regel: Schrift der Liste 14px (Spalten
+ * 13px), Vorschaubild der Liste 36px, Vorschau in der Details-Karte 16:10.
+ *
+ * WERTE AUS styles/tokens.css UND styles/tokens-desk.css
+ * -----------------------------------
+ * --views-media-tile -> Kachelbreite; setzt media-desk.js aus dem Regler
+ * --desk-hover / --desk-item-radius / --desk-radius-sm -> Tönung, Rundung von Zeilen und Vorschau
+ * --line / --muted / --text / --card / --link-color -> Linien, blasse Schrift, Schrift,
+ *                      Fläche ohne Bild, Rahmen der markierten Kachel
+ */
+
+/* Am Handy keine Werkzeuge rechts. */
+.media-tools {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  #view-media {
+    --media-row-height: 52px;
+    --media-row-cols: 130px 150px 90px 80px;
+    --media-size-width: 110px;
+  }
+
+  /* Titel und Inhalt über die ganze Breite, dazwischen Pillen links und Werkzeuge rechts. */
+  #view-media:not([hidden]) {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto; /* grid-template-columns: Pillen | Werkzeuge */
+    align-content: start;
+    column-gap: 16px;
+  }
+
+  #view-media > :not(.media-filters):not(.media-tools) {
+    grid-column: 1 / -1; /* grid-column: Titel und Raster reichen über beide Spalten */
+  }
+
+  /* Die Pillen reichen am Handy bis über den Rand; hier enden sie vor den Werkzeugen. */
+  #view-media .media-filters {
+    margin-right: 0;
+  }
+
+  .media-tools {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px; /* margin-bottom: wie unter den Pillen (styles/media.css) */
+  }
+
+  .media-size {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--muted);
+  }
+
+  .media-size .icon { width: 16px; height: 16px; }
+
+  .media-size input {
+    width: var(--media-size-width);
+    accent-color: var(--text); /* accent-color: der Regler in der Schriftfarbe statt Browser-Blau */
+  }
+
+  .media-size input:disabled { opacity: 0.4; }
+
+  /* ---------- Liste ---------- */
+
+  .media-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .media-row {
+    display: grid;
+    grid-template-columns: 36px minmax(0, 1fr) var(--media-row-cols); /* grid-template-columns: Vorschau | Titel | Art | Ort | Datum | Größe */
+    align-items: center;
+    column-gap: 14px;
+    min-height: var(--media-row-height);
+    padding: 0 10px;
+    border-bottom: 0.5px solid var(--line);
+    border-radius: var(--desk-item-radius);
+    font-size: 14px;
+    text-align: left;
+  }
+
+  .media-row-glyph {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    overflow: hidden; /* overflow: das Vorschaubild endet an der Rundung */
+    border-radius: 8px;
+    background: var(--card);
+    color: var(--muted);
+  }
+
+  .media-row-glyph img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* object-fit: das Bild füllt das Quadrat, ohne sich zu verzerren */
+  }
+
+  .media-row-title,
+  .media-row-cell {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis; /* text-overflow: zu lange Namen enden mit „…“ */
+    white-space: nowrap;
+  }
+
+  .media-row-title { font-weight: 500; }
+
+  .media-row-cell {
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .media-row-size {
+    text-align: right;
+    font-variant-numeric: tabular-nums; /* font-variant-numeric: Größen stehen bündig untereinander */
+  }
+
+  /* Die Datei, deren Details rechts stehen */
+  #view-media .media-row.is-marked,
+  #view-media .media-row:hover {
+    background-color: var(--desk-hover);
+  }
+
+  #view-media .media-cell.is-marked {
+    outline: 2px solid var(--link-color); /* outline: Rahmen außen, das Bild bleibt ganz */
+    outline-offset: 2px;
+  }
+
+  /* ---------- Vorschau in der Details-Karte rechts ---------- */
+
+  .rail-media-thumb {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    aspect-ratio: 16 / 10; /* aspect-ratio: gleiche Höhe für Bilder und Dateien ohne Bild */
+    object-fit: cover; /* object-fit: s. o. */
+    border-radius: var(--desk-radius-sm);
+    background: var(--card);
+    color: var(--muted);
+  }
+
+  .rail-media-thumb .icon { width: 32px; height: 32px; }
+}

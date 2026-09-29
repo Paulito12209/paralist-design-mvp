@@ -306,8 +306,21 @@ Jeder Schritt ist für sich lauffähig, wird geprüft (`tools/version.py`,
    „+ n weitere“; Klick auf die Zahl öffnet den Tag, auf die Zelle wählt ihn
    (die rechte Spalte zieht mit). „Tag“ ist die bisherige Ansicht mit
    Wochenstreifen. Am Handy bleibt alles wie zuvor.
-6. **Aufgaben und Medien** — Werkzeugzeilen, Spalten der Liste, Kachelgrößen;
-   „Ansicht konfigurieren“ in die Kontextspalte.
+6. **Aufgaben und Medien** — *umgesetzt.* Aufgaben: rechts neben den
+   Pillen Liste | Board und der Filter nach Ort
+   (`deskToolsMarkup` in `src/features/tasks/tasks-settings.js`); die Liste
+   zeigt Fälligkeit, Dringlichkeit und Ablageort als Spalten
+   (`taskColumns` in `tasks-parts.js`, `styles/tasks-desk.css`). Ab 1280 px
+   steht „Ansicht konfigurieren“ als Karte in der rechten Spalte, die
+   schwebende Karte entfällt; darunter die Details der Aufgabe unter Maus
+   oder Fokus mit „Öffnen“ und „Erledigen“ (`tasks-rail.js`, Klicks über den
+   neuen Haken `railClick` in `src/shell/desk-rail.js`). Medien: rechts
+   Raster | Liste und ein Regler für die Kachelgröße, dazu eine
+   Listenansicht mit Art, Ort, Datum und Größe
+   (`src/features/media/media-desk.js`, `styles/media-desk.css`, gemerkt in
+   `prefs.media.deskLayout` und `prefs.media.tileSize`); rechts die Details
+   der markierten Datei mit Vorschau (`media-rail.js`). `formatBytes` liegt
+   jetzt in `src/core/format.js`.
 7. **Eintrag** — Details in die Kontextspalte, Werkzeuge in die Kopfzeile.
 8. **Feinschliff** — Seitenleiste einklappen, `?` für Kürzel, Bewegungen,
    Rollbalken, Dunkelmodus in allen Zuständen, 1024 / 1280 / 1440 prüfen.

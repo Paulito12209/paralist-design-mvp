@@ -153,11 +153,17 @@ function checkTask(button) {
   }, checkDelay);
 }
 
-/* Erst die Knöpfe des sichtbaren Bereichs, dann die gemeinsamen (Eintrag öffnen, abhaken …). */
+/*
+ * Erst darf der sichtbare Bereich selbst (railClick, etwa die Schalter von
+ * „Ansicht konfigurieren“), dann seine Knöpfe, dann die gemeinsamen
+ * (Eintrag öffnen, abhaken …).
+ */
 function onClick(event) {
+  const module = modules.get(active?.name);
+  if (module?.railClick?.(event)) return;
   const button = event.target.closest("[data-rail]");
   if (!button || !root.contains(button)) return;
-  const own = modules.get(active?.name)?.railActions || {};
+  const own = module?.railActions || {};
   const action = own[button.dataset.rail] || actions[button.dataset.rail];
   if (action) action(button);
 }
@@ -257,8 +263,9 @@ function buildSet(name, cards) {
  * src/shell/desk.js hereingegeben — so kennt src/shell/ keinen Bereich.
  * @param view Name der Ansicht, z.B. "calendar".
  * @param importFn holt das Modul; es exportiert `railCards` (Plätze wie
- *   `slots` oben, mit `render(now)`) und wahlweise `railActions` (Name →
- *   Funktion(Knopf)) für seine eigenen data-rail-Knöpfe.
+ *   `slots` oben, mit `render(now)`), wahlweise `railActions` (Name →
+ *   Funktion(Knopf)) für seine eigenen data-rail-Knöpfe und `railClick(event)`
+ *   für alles andere — gibt es `true` zurück, ist der Klick erledigt.
  */
 export function registerRailCards(view, importFn) {
   loaders.set(view, importFn);

@@ -16,7 +16,8 @@
  * ghostLabel  -> Text der Geister-Zeile, solange es keine Aufgabe gibt
  * emptyFilter -> Text, wenn der Ort-Filter keine Aufgabe übrig lässt
  *
- * Aussehen und Abstände stehen in styles/rows.css und styles/tasks.css.
+ * Aussehen und Abstände stehen in styles/rows.css und styles/tasks.css, die
+ * Spalten am Desktop in styles/tasks-desk.css.
  */
 
 import { icon } from "../../core/html.js";
@@ -24,7 +25,7 @@ import { isTaskDone } from "../../data/config.js";
 import { taskEntries, taskGroups } from "../../data/queries.js";
 import { entryActions, swipeRow } from "../../ui/rows.js";
 import { taskCheck } from "../../ui/task-status.js";
-import { taskMeta, taskTitle } from "./tasks-parts.js";
+import { taskColumns, taskMeta, taskTitle } from "./tasks-parts.js";
 
 const ghostLabel = "Neue Aufgabe";
 const emptyFilter = "Hier liegt keine offene Aufgabe.";
@@ -47,6 +48,7 @@ function taskRow(entry, field) {
           <span class="task-title${done ? " is-done" : ""}">${taskTitle(entry)}</span>
           ${taskMeta(entry, field)}
         </span>
+        ${taskColumns(entry)}
         ${icon("chevron", "chevron")}
       </button>
     `
