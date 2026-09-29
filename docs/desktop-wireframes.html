@@ -21,7 +21,8 @@
   <h2>1 · Übersicht</h2>
   <ul class="diff">
     <li><b>Die vier Reiter oben, zentriert über der Mitte,</b> sind Sichten, die Seitenleiste zeigt Orte: alle Sammlungen auf einmal, auch Lesezeichen und Archiv.</li>
-    <li><b>Suche in der Seitenleiste</b> unter dem Tab-Namen, mit ⌘K. Kürzel-Schilder in Blau an jeder Zeile.</li>
+    <li><b>Suche in der Seitenleiste</b> neben dem Klapp-Knopf, mit ⌘K. Kürzel-Schilder in Blau an jeder Zeile.</li>
+    <li><b>Tabs sind Gruppen</b> unter „Arbeitsbereiche“, wie die Abschnitte in Codex: „Meine“ offen, „Arbeit“ zugeklappt mit Zahl. Kein Wechseln, kein Kürzel nötig.</li>
     <li><b>Stufe und Profil</b> stehen fest unten; Profil und Einstellungen sind eine Zeile. Die Tipp-Karte entfällt.</li>
     <li><b>Rechts nur „Heute“ und „Zuletzt“</b>: Eingang und Fortschritt kommen nicht mehr doppelt vor.</li>
     <li>Drei Kennzahlen statt vier; das Aktivitätsband ohne Stufen-Pille. <b>Das Datum</b> steht in der Heute-Karte, die Überschrift bleibt allein.</li>
@@ -320,20 +321,20 @@
   const tabs = [["home", "Übersicht", "1"], ["calendar", "Kalender", "2"], ["tasks", "Aufgaben", "3"], ["media", "Medien", "4"]];
   const sets = [["inbox", "Eingang", "4", "I"], ["fav", "Favoriten", "", "F"], ["proj", "Projekte", "", "P"], ["res", "Ressourcen", "", "R"], ["bm", "Lesezeichen", "", "L"], ["arch", "Archiv", "", "A"]];
   const soon = [["planner", "Planer"], ["people", "Personen"], ["tags", "Tags"]];
-  const spaces = [["ws", "Marketing"], ["ws2", "Vertrieb"], ["ws3", "Reise"]];
+  /* Jeder Tab ist eine auf- und zuklappbare Gruppe unter „Arbeitsbereiche“. */
+  const groups = [["Meine", true, [["ws", "Marketing"], ["ws2", "Vertrieb"], ["ws3", "Reise"]]], ["Arbeit", false, [["ws4", "Kunden"], ["ws5", "Intern"]]]];
   const kbd = (k) => `<span class="kbd">${k}</span>`;
   const row = (id, label, count, active, extra = "", icon = "ico", cls = "") =>
     `<div class="nav-row${active === id ? " active" : ""}${cls}"><span class="${icon}"></span><span class="lbl">${label}</span>${count ? `<span class="count">${count}</span>` : ""}${extra ? `<span class="keys">${extra}</span>` : ""}</div>`;
   function nav(active) {
     return `<aside class="nav">
-      <div class="nav-tab"><span class="toggle" title="Seitenleiste einklappen ⌘\\"></span><span class="grow">Meine ▾</span></div>
-      <div class="nav-search"><span class="ico"></span>Suchen${kbd("⌘K")}</div>
+      <div class="nav-tab"><span class="toggle" title="Seitenleiste einklappen ⌘\\"></span><div class="nav-search grow"><span class="ico"></span>Suchen${kbd("⌘K")}</div></div>
       <div class="nav-new"><span>+ Neu</span>${kbd("N")}</div>
       <div class="nav-h"><span>Sammlungen</span></div>
       ${sets.map(([id, l, c, k]) => row(id, l, c, active, kbd("G " + k), "ico", id === "arch" ? " faint" : "")).join("")}
       ${soon.map(([id, l]) => row(id, l, "", active, kbd("bald"), "ico", " soon")).join("")}
-      <div class="nav-h"><span>Arbeitsbereiche</span><span>+</span></div>
-      ${spaces.map(([id, l]) => row(id, l, "", active)).join("")}
+      <div class="nav-h"><span>Arbeitsbereiche</span><span>+ Tab</span></div>
+      ${groups.map(([name, open, list]) => `<div class="nav-group${open ? "" : " closed"}"><div class="nav-group-head"><span class="chev">${open ? "▾" : "▸"}</span>${name}<span class="keys">${open ? "+" : `<span class="count">${list.length}</span>`}</span></div>${open ? list.map(([id, l]) => row(id, l, "", active)).join("") : ""}</div>`).join("")}
       <div class="nav-foot">
         ${row("level", "Stufe 3<span class=\"hint\">160 XP bis Stufe 4</span>", "", active, "", "ico ring")}
         ${row("account", "Paul Angeles<span class=\"hint\">Pro</span>", "", active, '<span class="ico gear"></span>' + kbd("⌘,"), "ico avatar")}

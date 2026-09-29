@@ -41,13 +41,13 @@ später als Zeilen in die Seitenleiste; die Reiterzeile wächst nie.
 
 ```
 ┌──────────────┬──────────────────────────────────────────┬──────────────┐
-│ ≡  Meine ▾   │ ‹ ›     Übersicht Kalender Aufgaben Medien   ⋯│              │
-│ 🔍 Suchen ⌘K ├──────────────────────────────────────────┤  Kontext     │
-│ + Neu      N │  Übersicht › Marketing › Notiz  (Pfad)   │  (je Seite   │
+│ ≡ 🔍 Suchen ⌘K│ ‹ ›     Übersicht Kalender Aufgaben Medien   ⋯│              │
+│ + Neu      N ├──────────────────────────────────────────┤  Kontext     │
+│ SAMMLUNGEN   │  Übersicht › Marketing › Notiz  (Pfad)   │  (je Seite   │
 │ SAMMLUNGEN   │                                          │  anders,     │
 │  …    G I    │  Seite                                   │  einklappbar)│
 │ ARBEITSBER.  │                                          │              │
-│  …           │                                          │              │
+│   Marketing  │                                          │              │
 │ Stufe 3      │  Eingabefeld (Glas, schwebt)             │              │
 │ Paul · ⚙  ⌘, │                                          │              │
 └──────────────┴──────────────────────────────────────────┴──────────────┘
@@ -67,13 +67,13 @@ später als Zeilen in die Seitenleiste; die Reiterzeile wächst nie.
 
 Von oben nach unten:
 
-1. **Klapp-Knopf und Tab-Wähler.** Ganz links der Knopf zum Einklappen
-   (`⌘\`), daneben der aktive Tab („Meine ▾“); ein Klick zeigt alle Tabs.
-   Der Klapp-Knopf steht immer an derselben Stelle oben links: bei offener
-   Leiste in ihr, bei geschlossener am linken Rand der Reiterzeile (wie in
-   ChatGPT und Codex). Die Tab-Pillen unter „Arbeitsbereiche“ entfallen.
-2. **Suchfeld** in voller Leistenbreite, rechts das Schild `⌘K`. Es ist nur
-   der Einstieg; die Suche selbst ist die Palette (Abschnitt 4).
+1. **Klapp-Knopf und Suchfeld** in einer Zeile. Ganz links der Knopf zum
+   Einklappen (`⌘\`), daneben das Suchfeld mit dem Schild `⌘K`. Der
+   Klapp-Knopf steht immer an derselben Stelle oben links: bei offener Leiste
+   in ihr, bei geschlossener am linken Rand der Reiterzeile (wie in ChatGPT
+   und Codex). Das Suchfeld ist nur der Einstieg; die Suche selbst ist die
+   Palette (Abschnitt 4).
+2. *(entfällt, siehe Punkt 5: die Tabs sind Gruppen der Arbeitsbereiche)*
 3. **Neu** — ein Knopf, schwarz, mit `N`. Das Menü dahinter nennt die Typen.
 4. **Sammlungen**, alle auf einmal: Eingang, Favoriten, Projekte,
    Ressourcen, Lesezeichen, Archiv (blass, immer zuletzt). Heute fehlen
@@ -81,7 +81,16 @@ Von oben nach unten:
    zweiten Kartenseite bzw. an der Pille unter den Arbeitsbereichen.
    Planer, Personen und Tags kommen später als weitere Zeilen dazu; wird die
    Liste lang, klappen die Gruppen ein und merken sich den Zustand.
-5. **Arbeitsbereiche** des aktiven Tabs, Plus rechts neben der Überschrift.
+5. **Arbeitsbereiche, nach Tabs gruppiert.** Jeder Tab ist eine auf- und
+   zuklappbare Gruppe wie die Abschnitte in der Codex-Seitenleiste: Kopf mit
+   Pfeil und Name („Meine ▾“), darunter eingerückt seine Arbeitsbereiche. Alle
+   Tabs sind auf einmal sichtbar, nichts muss gewechselt werden, darum braucht
+   es kein Kürzel. Zugeklappt zeigt der Kopf die Zahl seiner Arbeitsbereiche;
+   der Zustand wird gemerkt (`ui.collapsedTabs`). Das Plus am Kopf legt einen
+   Arbeitsbereich in diesem Tab an, Rechtsklick auf den Kopf gibt Umbenennen,
+   Icon, Verschieben und Löschen (dasselbe Menü wie die Tab-Pille am Handy).
+   „+ Tab“ neben der Überschrift legt eine neue Gruppe an. Am Handy bleiben
+   die Tab-Pillen wie sie sind; `state.activeTabId` gilt dort weiter.
 6. **Fuß, fest unten** (rollt nicht mit):
    - **Stufe**: kleiner Ring, „Stufe 3 · 160 XP bis Stufe 4“. Klick öffnet
      Fortschritt. Die einzige Stelle mit dem Ring.
