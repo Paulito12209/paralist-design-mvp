@@ -225,9 +225,22 @@ function closeCropper() {
   hideCropper();
 }
 
+/*
+ * Das gewählte Bild vormerken. Schließt der Editor über den Verlauf, tritt die
+ * Profilseite am Desktop kurz ab und wirft dabei jeden Entwurf weg — deshalb
+ * wird er erst gesetzt, wenn der Verlauf zurück ist und die Seite wieder steht.
+ */
+function finishCrop(value, whole) {
+  if (!history.state || history.state.view !== "avatar-crop") {
+    applyDraft(value, whole);
+    return;
+  }
+  window.addEventListener("popstate", () => applyDraft(value, whole), { once: true });
+}
+
 /* Den Ausschnitt wählen — für ein neues Foto oder das schon hinterlegte. */
 function startCrop(whole) {
-  openCropper(whole, { done: applyDraft, close: closeCropper });
+  openCropper(whole, { done: finishCrop, close: closeCropper });
   history.pushState({ view: "avatar-crop", from: "profile" }, "", "#/einstellungen/bild/ausschnitt");
 }
 
