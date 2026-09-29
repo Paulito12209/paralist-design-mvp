@@ -1,6 +1,7 @@
 /*
  * Die Kalenderseite. Wird erst beim ersten Öffnen nachgeladen und setzt dann
- * Streifen, Fläche, Knöpfe und Gesten zusammen. In der Listenansicht wechselt
+ * Streifen, Fläche, Knöpfe und Gesten zusammen. Am Desktop kommen die
+ * Werkzeugzeile und die Ansichten Woche und Monat dazu (calendar-week.js). In der Listenansicht wechselt
  * waagerechtes Wischen unter dem Streifen zwischen Aufgaben, Termine und
  * Projekte (src/ui/pill-swipe.js).
  * Pfad: src/features/calendar/calendar.js
@@ -19,21 +20,35 @@ import { state, ui } from "../../data/state.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { registerReselect } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
+import { onDeskChange } from "../../ui/desk-mode.js";
 import { isViewActive } from "../../ui/views.js";
 import { openDatePicker } from "./calendar-date-picker.js";
 import { initCalendarGestures, setRedraw as setGestureRedraw } from "./calendar-gestures.js";
 import { moveNowLine, nowLineVisible, renderGrid, scrollToNow, sizeGrid } from "./calendar-grid.js";
 import { renderList } from "./calendar-list.js";
 import {
+  goToDay,
   goToday,
   setMode,
   setRedraw as setNavRedraw,
   setSegment,
   setSpan,
+  shiftMonth,
+  shiftWeeks,
 } from "./calendar-nav.js";
 import { cal } from "./calendar-state.js";
 import { renderStrip } from "./calendar-strip.js";
-import { dayKey, pad2 } from "../../core/dates.js";
+import {
+  deskView,
+  renderMonth,
+  renderToolbar,
+  renderWeek,
+  scrollWeekToNow,
+  setDeskView,
+  sizeWeek,
+  toolbarElement,
+} from "./calendar-week.js";
+import { addDays, dayKey, pad2, parseDay } from "../../core/dates.js";
 
 const tickSeconds = 30;
 
@@ -42,24 +57,35 @@ let tickTimer = null;
 /* Der Tag, den der Kalender zuletzt gezeigt hat — wechselt er, zieht die Spalte rechts nach. */
 let shownDay = null;
 
+/* Was in die Fläche kommt: am Desktop Woche oder Monat, sonst Tagesraster oder Liste. */
+function panelMarkup(wide, grid) {
+  if (wide === "week") return renderWeek();
+  if (wide === "month") return renderMonth();
+  return grid ? renderGrid() : renderList();
+}
+
 /**
  * Die ganze Seite neu zeichnen.
  * @param jumpToNow true, wenn das Raster zur aktuellen Uhrzeit rollen soll.
  */
-
 export function renderCalendar(jumpToNow = false) {
   /* Der Scrollstand des Rasters geht beim Neuzeichnen verloren: erst merken,
      danach wiederherstellen — sonst springt der Tag bei jeder Änderung auf
      00:00 zurück. */
   const keepScroll = dom.calPanel.scrollTop;
   renderStrip();
-  const grid = state.prefs.calendar.mode === "grid";
+  renderToolbar();
+  const wide = deskView();
+  /* Die Woche ist ein Stundenraster wie der Tag; der Monat rollt mit der Seite. */
+  const grid = wide === "week" || (wide !== "month" && state.prefs.calendar.mode === "grid");
   /* is-grid: nur das Stundenraster rollt in sich selbst (styles/calendar-panel.css) */
   dom.calPanel.classList.toggle("is-grid", grid);
-  dom.calPanel.innerHTML = grid ? renderGrid() : renderList();
+  dom.calPanel.innerHTML = panelMarkup(wide, grid);
   if (grid) {
-    sizeGrid();
-    if (jumpToNow) scrollToNow();
+    if (wide === "week") sizeWeek();
+    else sizeGrid();
+    if (jumpToNow && wide === "week") scrollWeekToNow();
+    else if (jumpToNow) scrollToNow();
     else dom.calPanel.scrollTop = keepScroll;
     updateGridLock();
   } else {
@@ -156,7 +182,11 @@ function openSpanSheet() {
   );
 }
 
-/* In der Fläche: Spalte wechseln oder eine leere Stunde antippen, um dort einen Termin anzulegen. */
+/*
+ * In der Fläche: Spalte wechseln, einen Tag der Woche oder des Monats öffnen,
+ * im Monat einen Tag wählen oder eine leere Stunde antippen, um dort einen
+ * Termin anzulegen (in der Woche an dem Tag ihrer Spalte).
+ */
 function onPanelClick(event) {
   const seg = event.target.closest("[data-seg]");
   if (seg) {
@@ -164,9 +194,58 @@ function onPanelClick(event) {
     return;
   }
   if (event.target.closest("[data-open-entry]")) return;
+  const day = event.target.closest("[data-cw-day]");
+  if (day) {
+    ui.calendarDay = day.dataset.cwDay;
+    switchDeskView("day");
+    return;
+  }
+  const cell = event.target.closest("[data-cm-day]");
+  if (cell) {
+    goToDay(cell.dataset.cmDay);
+    return;
+  }
   const hour = event.target.closest("[data-hour]");
   if (!hour) return;
-  emit(events.composerRequested, { date: ui.calendarDay, time: `${pad2(Number(hour.dataset.hour))}:00` });
+  const date = hour.dataset.day || ui.calendarDay;
+  emit(events.composerRequested, { date, time: `${pad2(Number(hour.dataset.hour))}:00` });
+}
+
+/* Am Desktop die Ansicht wechseln; die Seite steht danach wieder oben. */
+function switchDeskView(id) {
+  setDeskView(id);
+  dom.content.scrollTop = 0;
+  renderCalendar(true);
+}
+
+/* Die Pfeile blättern um das, was gerade zu sehen ist: einen Tag, eine Woche, einen Monat. */
+function stepDeskView(direction) {
+  const wide = deskView();
+  if (wide === "month") shiftMonth(direction);
+  else if (wide === "week") shiftWeeks(direction);
+  else goToDay(dayKey(addDays(parseDay(ui.calendarDay), direction)));
+}
+
+/* Klicks in der Werkzeugzeile am Desktop. */
+function onToolbarClick(event) {
+  const target = event.target.closest("button");
+  if (!target) return;
+  const { calView, calStep, calToday, calPicker, calAdd } = target.dataset;
+  if (calView) switchDeskView(calView);
+  else if (calStep) stepDeskView(Number(calStep));
+  else if (calToday) goToday();
+  else if (calPicker) openDatePicker();
+  else if (calAdd) emit(events.createRequested, "termin");
+}
+
+/* Neue Fenstergröße: das Raster (Tag oder Woche) misst seine Höhe neu. */
+function onResize() {
+  if (!isViewActive("calendar")) return;
+  const wide = deskView();
+  if (wide === "month" || (wide !== "week" && state.prefs.calendar.mode !== "grid")) return;
+  if (wide === "week") sizeWeek();
+  else sizeGrid();
+  updateGridLock();
 }
 
 /* Beim Laden des Moduls einmal alles anmelden. */
@@ -183,6 +262,7 @@ function init() {
   dom.calTodayBtn.addEventListener("click", goToday);
   dom.calSpanBtn.addEventListener("click", openSpanSheet);
   dom.calPanel.addEventListener("click", onPanelClick);
+  toolbarElement().addEventListener("click", onToolbarClick);
   /* Nur auf der Fläche unter dem Streifen: dort blättert waagerechtes Wischen
      schon Wochen um. Das Stundenraster hat keine Tabs. */
   initPillSwipe(dom.calPanel, {
@@ -195,10 +275,10 @@ function init() {
   dom.calPanel.addEventListener("scroll", onScroll, { passive: true });
   /* Dreht sich das Gerät oder ändert sich die Fensterhöhe, passt die Höhe des
      Rasters nicht mehr: neu messen. */
-  window.addEventListener("resize", () => {
-    if (!isViewActive("calendar") || state.prefs.calendar.mode !== "grid") return;
-    sizeGrid();
-    updateGridLock();
+  window.addEventListener("resize", onResize);
+  /* Über die Breitengrenze: Werkzeugzeile und Woche kommen oder gehen. */
+  onDeskChange(() => {
+    if (isViewActive("calendar")) renderCalendar(true);
   });
 
   on(events.viewOpened, (name) => {

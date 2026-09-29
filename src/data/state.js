@@ -48,7 +48,8 @@ export const state = {
   /* zuletzt getippte Suchbegriffe */
   recentSearches: [],
   prefs: {
-    calendar: { span: 1, mode: "grid", seg: "termine" },
+    /* deskView: Tag, Woche oder Monat am Desktop (src/features/calendar/calendar-week.js) */
+    calendar: { span: 1, mode: "grid", seg: "termine", deskView: "week" },
     media: { filter: "recent" },
     resources: { filter: "all" },
     /* Aufgaben-Seite: Ansicht, Gruppierung der Spalten, Sortierung und die Filter */

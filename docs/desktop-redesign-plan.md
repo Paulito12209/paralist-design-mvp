@@ -294,9 +294,18 @@ Jeder Schritt ist für sich lauffähig, wird geprüft (`tools/version.py`,
    verschoben) und hat die zwei Schalter; gespeichert in
    `src/data/shortcut-hints.js`, angewandt von `src/shell/desk.js` über
    `.hide-nav-kbd` / `.hide-tabs-kbd`.
-5. **Kalender-Woche** — `src/features/calendar/calendar-week.js` und
-   `styles/calendar-week.css`: Sieben-Spalten-Raster ab 1024 px, Segment
-   Tag / Woche / Monat in der Werkzeugzeile.
+5. **Kalender-Woche** — *umgesetzt.* `src/features/calendar/calendar-week.js`
+   und `styles/calendar-week.css`: ab 1024 px eine Werkzeugzeile (Pfeile,
+   Monat öffnet „Monat und Jahr“, „Heute“, Segment Tag / Woche / Monat,
+   Plus); die Pfeile blättern um einen Tag, eine Woche oder einen Monat.
+   „Woche“ (Voreinstellung, gemerkt in `prefs.calendar.deskView`) ist ein
+   Raster mit sieben Spalten, festem Kopf, Reihe „ganztags“ und quer
+   laufender Jetzt-Linie; Klick in eine freie Stunde legt dort einen Termin
+   an, gleichzeitige Termine stehen nebeneinander, Klick auf den Tageskopf
+   öffnet „Tag“. „Monat“ zeigt sechs Wochen mit bis zu drei Terminchips und
+   „+ n weitere“; Klick auf die Zahl öffnet den Tag, auf die Zelle wählt ihn
+   (die rechte Spalte zieht mit). „Tag“ ist die bisherige Ansicht mit
+   Wochenstreifen. Am Handy bleibt alles wie zuvor.
 6. **Aufgaben und Medien** — Werkzeugzeilen, Spalten der Liste, Kachelgrößen;
    „Ansicht konfigurieren“ in die Kontextspalte.
 7. **Eintrag** — Details in die Kontextspalte, Werkzeuge in die Kopfzeile.

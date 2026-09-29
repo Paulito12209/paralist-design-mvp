@@ -369,6 +369,12 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   holt das Profil wieder. Unter „Kurzbefehle“ die zwei Schalter: Schilder in
   Seitenleiste bzw. Reiterzeile verschwinden, auch nach neu laden. Unter 1024 px
   bleibt es das gewohnte Blatt.
+- Kalender (Taste 2): Werkzeugzeile mit ‹ ›, Monat, „Heute“, Tag / Woche /
+  Monat und Plus. Woche: Kopf bleibt beim Rollen stehen, Jetzt-Linie läuft quer,
+  Klick in eine freie Stunde öffnet das Eingabefeld mit Tag und Uhrzeit,
+  Klick auf einen Tageskopf öffnet „Tag“. Monat: Chips öffnen den Termin,
+  „+ n weitere“ und die Zahl öffnen den Tag, die Zelle wählt ihn. Wahl bleibt
+  nach neu laden; unter 1024 px wieder der Handy-Kalender.
 
 **Immer**
 - `python3 tools/version.py` ausführen, dann meldet `python3 tools/check.py` „alles in Ordnung“.

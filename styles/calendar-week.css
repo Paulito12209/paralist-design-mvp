@@ -1,0 +1,369 @@
+/*
+ * Desktop: der Kalender in der Breite — die Werkzeugzeile über der Fläche
+ * (Pfeile, Monat, „Heute“, Segment Tag / Woche / Monat, Plus), die Woche als
+ * Raster mit sieben Spalten und die Monatsansicht mit Terminchips. In Woche
+ * und Monat treten Monatsknopf und Wochenstreifen des Handys zurück; in der
+ * Ansicht „Tag“ bleibt der Streifen, nur der Monatsknopf wandert in die
+ * Werkzeugzeile. Gebaut von src/features/calendar/calendar-week.js. Unter
+ * 1024px gilt hier nichts.
+ * Pfad: styles/calendar-week.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (oben bei #view-calendar)
+ * -----------------------------------
+ * --cw-gutter      -> Breite der Stundenspalte links (auch Platz für die Uhrzeit der Jetzt-Linie)
+ * --cw-head-height -> Höhe des Kopfs über den sieben Spalten
+ * --cm-cell-min    -> Mindesthöhe eines Tags im Monat
+ * --cal-tool-btn   -> Größe der runden Knöpfe der Werkzeugzeile
+ * Einzelne Größen stehen bei ihrer Regel: Monat in der Werkzeugzeile 22px,
+ * Segment und „Heute“ 14px, Datum im Wochenkopf 20px, Termine 12–13px,
+ * Stunden 12px.
+ *
+ * WERTE AUS styles/tokens.css, styles/tokens-pages.css UND styles/tokens-desk.css
+ * -----------------------------------
+ * --cal-hour-h     -> Höhe einer Stunde (dieselbe wie im Tagesraster)
+ * --cal-accent / --cal-now -> Farbe von „heute“ und der Jetzt-Linie
+ * --event-color    -> Farbe eines Termins; setzt calendar-week.js je Termin
+ * --lane / --lanes -> Platz eines Termins unter gleichzeitigen; setzt calendar-week.js
+ * --line / --muted / --text / --bg -> Linien, blasse Schrift, Schrift, Fläche
+ * --tab-pill-active-bg / --desk-hover -> Fläche des Segments und Tönung unter der Maus
+ * --desk-item-radius -> Rundung von Tagen und Chips
+ *
+ * Wichtig: das padding-top der Spalten (.cw-col, 10px) muss zu gridTopOffset
+ * in src/features/calendar/calendar-state.js passen, sonst stehen Termine und
+ * Jetzt-Linie neben ihrer Stunde.
+ */
+
+/* Am Handy gibt es die Werkzeugzeile nicht (sie bleibt dort auch leer). */
+.cal-toolbar {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  #view-calendar {
+    --cw-gutter: 64px;
+    --cw-head-height: 52px;
+    --cm-cell-min: 112px;
+    --cal-tool-btn: 34px;
+  }
+
+  /* ---------- Werkzeugzeile ---------- */
+
+  .cal-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 18px;
+    /* position/z-index: wie beim Monatsknopf (styles/calendar.css) — in der
+       Ansicht „Tag“ reicht die Verlängerung des Wochenstreifens (.cal-head) in
+       Ruhe bis in diese Zeile; ohne eigene Ebene läge sie über den Knöpfen */
+    position: relative;
+    z-index: 4;
+  }
+
+  .cal-tool-nav {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    margin-right: auto; /* margin-right: Heute, Segment und Plus rücken nach rechts */
+  }
+
+  .cal-tool-round {
+    display: grid;
+    place-items: center;
+    width: var(--cal-tool-btn);
+    height: var(--cal-tool-btn);
+    border-radius: 50%;
+    color: var(--text);
+  }
+
+  .cal-tool-round .icon { width: 18px; height: 18px; }
+
+  .cal-tool-month {
+    margin-left: 8px;
+    padding: 4px 8px;
+    border-radius: var(--desk-item-radius);
+    font-size: 22px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .cal-tool-pill,
+  .cal-views {
+    height: var(--cal-tool-btn);
+    border-radius: 999px;
+    background: var(--tab-pill-active-bg);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .cal-tool-pill { padding: 0 16px; }
+
+  .cal-views {
+    display: flex;
+    padding: 3px;
+  }
+
+  .cal-views-btn {
+    padding: 0 14px;
+    border-radius: 999px;
+    color: var(--muted);
+  }
+
+  .cal-views-btn.is-active {
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  .cal-tool-add {
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  @media (hover: hover) {
+    .cal-tool-round:not(.cal-tool-add):hover,
+    .cal-tool-month:hover,
+    .cal-views-btn:not(.is-active):hover { background: var(--desk-hover); }
+  }
+
+  /* Der Monatsknopf steht jetzt in der Werkzeugzeile; Woche und Monat brauchen
+     auch den Wochenstreifen nicht — sie zeigen die Tage selbst. */
+  #view-calendar .cal-month,
+  #view-calendar.is-desk-week .cal-head,
+  #view-calendar.is-desk-month .cal-head {
+    display: none;
+  }
+
+  /* ---------- Woche ---------- */
+
+  /* Der Kopf der Woche klebt ganz oben in der Fläche — darüber darf kein Rand
+     stehen, durch den die Stunden hindurchschauen. */
+  #view-calendar.is-desk-week .cal-panel {
+    padding-top: 0;
+  }
+
+  .cw {
+    position: relative; /* position: Bezug für den Kopf, der oben stehen bleibt */
+  }
+
+  .cw-head,
+  .cw-allday,
+  .cw-body {
+    display: grid;
+    grid-template-columns: var(--cw-gutter) repeat(7, minmax(0, 1fr)); /* grid-template-columns: Stunden | sieben Tage */
+  }
+
+  .cw-head {
+    position: sticky; /* position: sticky — der Kopf bleibt beim Rollen durch die Stunden stehen */
+    top: 0;
+    z-index: 3; /* z-index: über Terminen (1) und Jetzt-Linie (2) */
+    height: var(--cw-head-height);
+    background: var(--bg);
+    border-bottom: 0.5px solid var(--line);
+  }
+
+  .cw-day {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    margin: 6px 3px;
+    border-radius: var(--desk-item-radius);
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .cw-day b {
+    font-size: 20px;
+    font-weight: 500;
+    color: var(--text);
+  }
+
+  .cw-day.is-today,
+  .cw-day.is-today b { color: var(--cal-accent); }
+  .cw-day.is-selected { background: var(--tab-pill-active-bg); }
+
+  .cw-allday {
+    border-bottom: 0.5px solid var(--line);
+  }
+
+  .cw-allday-label {
+    align-self: center;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .cw-allday-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 4px 3px;
+    min-width: 0;
+  }
+
+  .cw-body {
+    position: relative; /* position: Bezug für Stunden-Beschriftung und Jetzt-Linie */
+    padding-bottom: 8px;
+  }
+
+  .cw-gutter {
+    position: relative; /* position: Bezug für die Stunden-Beschriftung */
+  }
+
+  .cw-hour-label {
+    position: absolute; /* position: genau auf der Linie ihrer Stunde */
+    right: 10px;
+    transform: translateY(-50%); /* transform: die Zahl sitzt mittig auf der Linie */
+    font-size: 12px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums; /* font-variant-numeric: gleich breite Ziffern */
+  }
+
+  .cw-col {
+    position: relative; /* position: Bezug für die Termine der Spalte */
+    padding-top: 10px; /* padding-top: = gridTopOffset in calendar-state.js (s. Kopf) */
+    border-left: 0.5px solid var(--line);
+  }
+
+  .cw-col.is-today {
+    background: color-mix(in srgb, var(--cal-accent) 4%, transparent); /* color-mix: ein Hauch Akzent, kein neuer Farbton */
+  }
+
+  .cw-slot {
+    height: var(--cal-hour-h);
+    border-top: 0.5px solid var(--line);
+    cursor: pointer;
+  }
+
+  @media (hover: hover) {
+    .cw-slot:hover { background: var(--desk-hover); }
+    .cw-day:not(.is-selected):hover { background: var(--desk-hover); }
+  }
+
+  .cw-event,
+  .cw-chip,
+  .cm-chip {
+    display: flex;
+    min-width: 0;
+    border-radius: 8px;
+    background: color-mix(in srgb, var(--event-color, var(--cal-accent)) 22%, transparent); /* color-mix: Tönung der Terminfarbe */
+    color: var(--text);
+    text-align: left;
+  }
+
+  .cw-event {
+    position: absolute; /* position: an der Stelle seiner Uhrzeit (top aus calendar-week.js) */
+    /* left/width: gleichzeitige Termine teilen sich die Spalte (--lane von --lanes, aus calendar-week.js) */
+    left: calc(3px + var(--lane, 0) * (100% - 6px) / var(--lanes, 1));
+    width: calc((100% - 6px) / var(--lanes, 1) - 2px);
+    z-index: 1;
+    flex-direction: column;
+    padding: 4px 8px;
+    border-left: 3px solid var(--event-color, var(--cal-accent));
+    font-size: 13px;
+    font-weight: 600;
+    overflow: hidden; /* overflow: lange Titel werden abgeschnitten, der Block bleibt eine Stunde hoch */
+  }
+
+  .cw-event small,
+  .cm-chip small {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .cw-event span,
+  .cw-chip,
+  .cm-chip span {
+    overflow: hidden;
+    text-overflow: ellipsis; /* text-overflow: zu lange Titel enden mit „…“ */
+    white-space: nowrap;
+  }
+
+  .cw-chip {
+    display: block;
+    padding: 2px 8px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  /* Die Jetzt-Linie läuft quer über alle sieben Tage; die Uhrzeit steht in der Stundenspalte. */
+  .cw-now {
+    --cal-label-w: var(--cw-gutter);
+  }
+
+  .cw-now .cal-now-time span {
+    font-size: 12px;
+    padding: 2px 6px;
+  }
+
+  /* ---------- Monat ---------- */
+
+  .cm-head,
+  .cm-grid {
+    display: grid;
+    grid-template-columns: repeat(7, minmax(0, 1fr)); /* grid-template-columns: sieben Tage */
+  }
+
+  .cm-head span {
+    padding: 0 8px 8px;
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .cm-grid {
+    border-top: 0.5px solid var(--line);
+    border-left: 0.5px solid var(--line);
+  }
+
+  .cm-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    min-height: var(--cm-cell-min);
+    padding: 4px;
+    border-right: 0.5px solid var(--line);
+    border-bottom: 0.5px solid var(--line);
+    cursor: pointer;
+  }
+
+  .cm-cell.is-other { background: color-mix(in srgb, var(--line) 35%, transparent); } /* color-mix: Nachbarmonat leicht grau */
+  .cm-cell.is-selected { background: var(--desk-hover); }
+
+  .cm-num {
+    align-self: flex-start;
+    min-width: 26px;
+    height: 26px;
+    padding: 0 6px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .cm-cell.is-other .cm-num { color: var(--muted); }
+
+  .cm-cell.is-today .cm-num {
+    background: var(--cal-accent);
+    color: var(--bg);
+  }
+
+  .cm-chip {
+    gap: 6px;
+    align-items: baseline;
+    padding: 2px 6px;
+    font-size: 12px;
+    font-weight: 600;
+  }
+
+  .cm-more {
+    align-self: flex-start;
+    padding: 0 6px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  @media (hover: hover) {
+    .cm-cell:not(.is-selected):hover { background: var(--desk-hover); }
+    .cm-num:hover, .cm-more:hover { text-decoration: underline; }
+  }
+}
