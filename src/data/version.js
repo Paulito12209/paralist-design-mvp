@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "ce430e732fef";
+export const appVersion = "8f0b276f94e1";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -42,6 +42,7 @@ export const appFiles = [
   "src/core/storage.js",
   "src/core/week-range.js",
   "src/core/youtube.js",
+  "src/data/account.js",
   "src/data/bookmarks.js",
   "src/data/collections.js",
   "src/data/config.js",
@@ -143,6 +144,8 @@ export const appFiles = [
   "src/features/tasks/tasks-views.js",
   "src/features/tasks/tasks.js",
   "src/main.js",
+  "src/shell/desk-head.js",
+  "src/shell/desk-links.js",
   "src/shell/desk-nav-parts.js",
   "src/shell/desk-nav.js",
   "src/shell/desk-rail-cards.js",
@@ -210,8 +213,10 @@ export const appFiles = [
   "styles/composer.css",
   "styles/dashboard-motion.css",
   "styles/dashboard.css",
+  "styles/desk-head.css",
   "styles/desk-hover.css",
-  "styles/desk-nav-tip.css",
+  "styles/desk-kbd.css",
+  "styles/desk-nav-foot.css",
   "styles/desk-nav.css",
   "styles/desk-overlays.css",
   "styles/desk-rail-tiles.css",

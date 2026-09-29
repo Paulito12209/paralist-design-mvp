@@ -18,6 +18,8 @@ export const storageKeys = {
   feedback: "paralist-feedback",
   navLabels: "paralist-nav-labels",
   milestones: "paralist-milestones",
+  deskNav: "paralist-desk-nav",
+  deskGroups: "paralist-desk-groups",
 };
 
 /** Liest gespeichertes JSON. Fehlt es oder ist es kaputt, kommt `fallback` zurück. */

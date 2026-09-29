@@ -24,7 +24,7 @@ import { loadUsage } from "./data/usage.js";
 import { initComposer, onComposerText } from "./features/composer/composer.js";
 import { initDictation } from "./features/composer/dictation.js";
 import { initEntry } from "./features/entry/entry.js";
-import { loadPhoto, renderProfileButton } from "./features/profile/avatar.js";
+import { loadPhoto, renderProfileButton, savedPhoto } from "./features/profile/avatar.js";
 import { initOverview, renderOverview } from "./features/overview/overview.js";
 import { initPage } from "./features/overview/page.js";
 import { beginRenameTab, initTabs, openTabMenu, renderTabs } from "./features/overview/tabs.js";
@@ -141,7 +141,7 @@ function initLazyViews() {
 function initDeskWhenWide() {
   const mount = () => {
     if (!isDesk()) return;
-    load("desk").then((module) => module.initDesk({ openWorkspaceMenu }));
+    load("desk").then((module) => module.initDesk({ openWorkspaceMenu, openTabMenu, profilePhoto: savedPhoto }));
     load("dashboard").then((module) => module.initDashboard());
   };
   mount();

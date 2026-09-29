@@ -86,7 +86,11 @@ export function beginRenameTab(id) {
   const tab = state.tabs.find((item) => sameId(item.id, id));
   ui.editingTabId = id;
   if (tab && !tab.placeholder) tab.placeholder = tab.name;
-  renderTabs();
+  /* Als Datenänderung melden statt nur die Pillen zu zeichnen — wie beim
+     Arbeitsbereich: kommt „Umbenennen“ aus der Seitenleiste am Desktop, wechselt
+     sie dann zur Übersicht, wo das Namensfeld steht. Die Pillen zeichnet der
+     Zuhörer in initTabs() neu. */
+  emit(events.dataChanged);
 }
 
 /** Das Menü einer Pille (gedrückt halten oder Rechtsklick). */

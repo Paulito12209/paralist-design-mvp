@@ -6,8 +6,7 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * profile        -> Name, Mailadresse, Plan und Version im Kopf (Name, Mail
- *                   und Plan stehen auch in den Kontoeinstellungen)
+ * Name, Mailadresse, Plan und Version im Kopf stehen in src/data/account.js.
  * listSections   -> welche Zeilen unter welcher Überschrift stehen
  * supportLinks   -> wohin „Feedback“ und „Roadmap“ unter „Support“ führen
  * stepSizes      -> die runden Schritte der senkrechten Achse (Minuten)
@@ -20,6 +19,7 @@
 import { dayShift, parseDay, startOfDay } from "../../core/dates.js";
 import { axisDateFormat, dayMonth, formatAxisSpan, formatSpan } from "../../core/format.js";
 import { escapeHtml, icon } from "../../core/html.js";
+import { account } from "../../data/account.js";
 import { chartRanges } from "../../data/config.js";
 import { ui } from "../../data/state.js";
 import { usageDays, usageOfDay, usageSince, usageStreaks } from "../../data/usage.js";
@@ -27,15 +27,10 @@ import { chartBox, dateMarks, gridLines, niceStep, rangeSwitch, yAxis } from "..
 import { currentPhoto } from "./avatar.js";
 import { usageSplitCard } from "./usage-split.js";
 
-/** Die festen Angaben im Kopf des Blatts. */
-const profile = {
-  name: "Paul Angeles",
-  mail: "paul@paralist.app",
-  meta: "Pro · Dabei seit Juni 2025",
-  plan: "Pro",
-  version: "PARALIST 0.1.0 (MVP)",
-  initials: "PA",
-};
+/* Die festen Angaben im Kopf des Blatts: Name, Mail, Plan, Version und
+   Initialen stehen in src/data/account.js — die Seitenleiste am Desktop zeigt
+   sie auch. */
+const profile = account;
 
 /*
  * Die beiden Wege zum öffentlichen Board. Getrennt, weil man das Formular

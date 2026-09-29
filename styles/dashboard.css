@@ -16,7 +16,7 @@
  * --desk-radius-lg / --desk-hero-from / --desk-hero-to -> Rundung und Verlauf der großen Karten
  * --desk-sheen / --desk-edge -> Lichtfleck oben links auf den Karten, Haarlinie um Karten und Chip
  * --desk-glass / --desk-glass-blur -> Glas des Stufen-Chips über dem Band
- * --desk-kbd-bg             -> helle Pillen und Pfeil-Kreis in den Karten
+ * --desk-chip-bg            -> helle Pillen und Pfeil-Kreis in den Karten
  * --desk-level-0 … --desk-level-4 -> Helligkeiten der Punkte (0 = nichts, 4 = viel)
  * --title-alt / --title-alt-gap / --title-side -> graues Datum wie der graue Zweittitel; Einzug der Zahlen
  * --text / --bg / --muted / --avatar-btn-bg -> Schrift, umgekehrte erste Pille, leise Schrift, Akzent
@@ -144,7 +144,7 @@
     margin-top: 2px;
     padding: 3px 9px;
     border-radius: var(--dash-pill);
-    background: var(--desk-kbd-bg);
+    background: var(--desk-chip-bg);
     color: var(--avatar-btn-bg);
     font-size: 12px;
     font-weight: 500;
@@ -286,7 +286,7 @@
     height: var(--dash-go-size);
     margin: -8px -8px -8px auto;
     border-radius: 50%;
-    background: var(--desk-kbd-bg);
+    background: var(--desk-chip-bg);
     color: var(--avatar-btn-bg);
   }
 

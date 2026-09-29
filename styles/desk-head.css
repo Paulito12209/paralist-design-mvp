@@ -1,0 +1,177 @@
+/*
+ * Desktop: der Kopf — links über der Seitenleiste die Wortmarke „Paralist“
+ * mit dem Klapp-Knopf, über der Mitte die Reiterzeile mit Zurück und
+ * Vorwärts, den vier Reitern in der Mitte und rechts dem runden Such-Knopf,
+ * der nur bei zugeklappter Seitenleiste erscheint. Gilt erst ab 1024px
+ * Fensterbreite; das Markup entsteht in src/shell/desk-head.js, der Platz im
+ * Raster in styles/desk.css.
+ * Pfad: styles/desk-head.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-brand und .desk-tabs)
+ * -----------------------------------
+ * --head-btn / --head-icon -> Größe der runden Knöpfe (Klapp-Knopf, Pfeile, Suche) und ihrer Icons
+ * --head-tab-height        -> Höhe eines Reiters
+ * --head-tab-gap           -> Luft zwischen den Reitern
+ * --head-tab-pad           -> Innenrand eines Reiters links und rechts
+ * Einzelwerte stehen bei ihrer Regel: Wortmarke 19px, Reiter-Schrift 14px,
+ * Reiter-Icon 18px.
+ *
+ * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * --desk-top-height -> Höhe von Wortmarke und Reiterzeile
+ * --desk-nav-pad / --desk-gutter -> Rand links (Wortmarke) und seitlich der Reiterzeile
+ * --desk-hover / --desk-fast / --desk-ease -> Tönung beim Überfahren, Dauer und Kurve
+ * --text / --bg / --muted / --avatar-btn-bg -> Schrift, Fläche des gewählten Reiters (vertauscht), Icons
+ */
+
+@media (min-width: 1024px) {
+  .desk-brand,
+  .desk-tabs {
+    --head-btn: 32px;
+    --head-icon: 20px;
+    --head-tab-height: 36px;
+    --head-tab-gap: 4px;
+    --head-tab-pad: 14px;
+  }
+
+  /* ---------- Wortmarke links ---------- */
+
+  .desk-brand {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--safe-top) calc(var(--desk-nav-pad) - 4px) 0 calc(var(--desk-nav-pad) + 6px);
+  }
+
+  .desk-wordmark {
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+    user-select: none; /* user-select: ein Doppelklick markiert den Namen nicht */
+  }
+
+  /* ---------- Reiterzeile über der Mitte ---------- */
+
+  /* Drei Spalten: die äußeren teilen sich den Rest gleich, darum steht die
+     mittlere mit den Reitern immer genau in der Mitte der Spalte. */
+  .desk-tabs {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: 12px;
+    padding: var(--safe-top) var(--desk-gutter) 0 calc(var(--desk-gutter) - 6px);
+  }
+
+  .desk-tabs-lead,
+  .desk-tabs-end {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .desk-tabs-end {
+    justify-content: flex-end;
+  }
+
+  /* Klapp-Knopf und Such-Knopf gibt es hier nur bei zugeklappter Seitenleiste:
+     dann steht der Klapp-Knopf auf derselben Höhe wie vorher in der Leiste. */
+  .desk-tabs :is(.desk-tabs-toggle, .desk-tabs-search) {
+    display: none;
+  }
+
+  .device.is-nav-closed .desk-tabs :is(.desk-tabs-toggle, .desk-tabs-search) {
+    display: grid;
+  }
+
+  .device.is-nav-closed .desk-tabs-toggle {
+    margin-right: 6px;
+  }
+
+  /* Runde Knöpfe: Klapp-Knopf, Zurück, Vorwärts, Suche */
+  .desk-head-btn {
+    display: grid;
+    place-items: center;
+    width: var(--head-btn);
+    height: var(--head-btn);
+    border-radius: 999px;
+    color: var(--avatar-btn-bg);
+    transition: background-color var(--desk-fast) var(--desk-ease), opacity var(--desk-fast) var(--desk-ease); /* transition: Tönung gleitet statt zu springen */
+  }
+
+  .desk-head-btn .icon {
+    width: var(--head-icon);
+    height: var(--head-icon);
+  }
+
+  .desk-head-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  /* Die Reiter: Pillen wie am Handy, der gewählte gefüllt */
+  .desk-tabs-list {
+    display: flex;
+    gap: var(--head-tab-gap);
+  }
+
+  .desk-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: var(--head-tab-height);
+    padding: 0 10px 0 var(--head-tab-pad);
+    border-radius: 999px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--avatar-btn-bg);
+    white-space: nowrap; /* white-space: ein Reitername bricht nie um */
+    transition: background-color var(--desk-fast) var(--desk-ease), color var(--desk-fast) var(--desk-ease); /* transition: Tönung gleitet statt zu springen */
+  }
+
+  .desk-tab-icon {
+    width: 18px;
+    height: 18px;
+    flex: 0 0 auto; /* flex: das Icon schrumpft nie */
+  }
+
+  .desk-tab.is-active {
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .desk-tab.is-active .desk-kbd {
+    background: color-mix(in srgb, var(--bg) 20%, transparent); /* color-mix: ein Hauch der hellen Grundfarbe auf der gefüllten Pille */
+    color: var(--bg);
+  }
+
+  @media (hover: hover) {
+    .desk-head-btn:not(:disabled):hover,
+    .desk-tab:not(.is-active):hover {
+      background: var(--desk-hover);
+      color: var(--text);
+    }
+  }
+
+  .desk-head-btn:not(:disabled):active,
+  .desk-tab:active {
+    opacity: 0.6;
+  }
+
+  .desk-head-btn:focus-visible,
+  .desk-tab:focus-visible {
+    outline: 2px solid var(--avatar-btn-bg); /* outline: sichtbarer Ring nur bei Bedienung mit der Tastatur */
+    outline-offset: 2px;
+  }
+}
+
+/* Unter 1280px ist die Mitte schmaler: die Reiter zeigen nur Icon und Taste,
+   der Name steht im Tooltip und für Vorlesehilfen im aria-label. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+  .desk-tab-label {
+    display: none;
+  }
+
+  .desk-tab {
+    padding: 0 8px 0 12px;
+  }
+}

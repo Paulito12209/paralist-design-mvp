@@ -1,124 +1,41 @@
 /*
- * Bausteine der Seitenleiste am Desktop: das feste Gerüst (Hauptseiten,
- * Knopf „Neu anlegen“, Sammlungen, Arbeitsbereiche, Tipp-Karte) und die
- * beiden Teile, die sich mit den Daten ändern (Tab-Pillen und die Zeilen der
- * Arbeitsbereiche). Hier steht nur Markup und welche Zeile gerade gewählt
- * ist — was ein Klick auslöst, entscheidet src/shell/desk-nav.js.
+ * Bausteine der Seitenleiste am Desktop: das feste Gerüst (Knopf „Neu“,
+ * Sammlungen, Arbeitsbereiche, Fuß) und die Teile, die sich mit den Daten
+ * ändern (die Tab-Gruppen mit ihren Arbeitsbereichen und der Fuß mit Stufe und
+ * Konto). Hier steht nur Markup und was gerade gewählt ist — was ein Klick
+ * auslöst, entscheidet src/shell/desk-nav.js.
  * Pfad: src/shell/desk-nav-parts.js
  *
- * ANPASSBARE WERTE IN DIESER DATEI
- * -----------------------------------
- * pageLinks       -> welche Hauptseiten oben in der Leiste stehen: Icon, Name,
- *                    Taste und welche Zahl rechts daneben erscheint. Die Tasten
- *                    sind zugleich die Tastenkürzel: src/shell/desk.js liest
- *                    sie von hier, Schild und Kürzel stimmen so immer überein.
- * collectionTones -> welche Sammlung ihr Icon in welcher Farbe zeigt (die
- *                    Farben selbst stehen in styles/desk-nav.css)
- * tipKeys         -> die Zeilen der Tipp-Karte am Ende: Taste und was sie tut
- *
- * Aussehen, Abstände und Größen stehen in styles/desk-nav.css, die der
- * Tasten-Schilder und der Tipp-Karte in styles/desk-nav-tip.css.
+ * Keine anpassbaren visuellen Werte: welche Sammlung welche Taste und Farbe
+ * hat, steht in src/shell/desk-links.js; Aussehen, Abstände und Größen stehen
+ * in styles/desk-nav.css, der Fuß in styles/desk-nav-foot.css und die
+ * Tasten-Schilder in styles/desk-kbd.css.
  */
 
 import { formatNumber } from "../core/format.js";
 import { escapeHtml, icon } from "../core/html.js";
 import { sameId } from "../core/ids.js";
+import { account } from "../data/account.js";
 import { overviewPages } from "../data/config.js";
-import { entriesOf, tabWorkspaces, workspaceIcon, workspaceLabel } from "../data/queries.js";
+import { entriesOf, workspaceIcon, workspaceLabel, workspacesOfTab } from "../data/queries.js";
 import { workspaceRef } from "../data/refs.js";
 import { state, ui } from "../data/state.js";
+import { levelInfo, totalXp } from "../data/xp.js";
 import { currentView } from "../ui/views.js";
+import { chordKey, collectionLinks, pageLinks, soonLinks, withCommand } from "./desk-links.js";
 
-/* Die vier Hauptseiten. `count` holt die Zahl rechts aus deskStats(),
-   `spoken` sagt sie für Vorlesehilfen als ganzen Satz. */
-export const pageLinks = [
-  { tab: "home", label: "Übersicht", icon: "grid", key: "1" },
-  {
-    tab: "calendar",
-    label: "Kalender",
-    icon: "calendar",
-    key: "2",
-    count: (stats) => stats.today,
-    spoken: (value) => (value === 1 ? "1 Termin heute" : `${value} Termine heute`),
-  },
-  {
-    tab: "tasks",
-    label: "Aufgaben",
-    icon: "checklist",
-    key: "3",
-    count: (stats) => stats.openTasks,
-    spoken: (value) => (value === 1 ? "1 offene Aufgabe" : `${value} offene Aufgaben`),
-  },
-  { tab: "media", label: "Medien", icon: "photos", key: "4" },
-];
-
-/* Dieselbe Zuordnung wie auf den Karten der Übersicht
-   (src/features/overview/overview.js): vier Icons tragen eine eigene Farbe. */
-const collectionTones = {
-  inbox: "inbox",
-  star: "star",
-  "star-outline": "star",
-  rocket: "project",
-  cube: "resource",
-};
-
-/* „N“ und „/“ stehen zweimal in der App: hier als Hinweis und in
-   src/shell/desk.js, wo sie wirklich etwas tun. Die Spanne der Seiten-Tasten
-   kommt aus pageLinks und ist ein einziges Schild („1–4“) — so hat jede Zeile
-   genau ein Schild, und die Beschreibungen stehen bündig untereinander. */
-const tipKeys = [
-  { key: "N", label: "Neu anlegen" },
-  { key: "/", label: "Suchen" },
-  { key: `${pageLinks[0].key}–${pageLinks.at(-1).key}`, label: "Seiten wechseln" },
-];
-
-/*
- * kbd: eine Taste der Tastatur. An Knöpfen für Vorlesehilfen ausgeblendet —
- * dort sagt aria-keyshortcuts schon dasselbe, sonst hörte man die Taste
- * doppelt. In der Tipp-Karte ist die Taste selbst der Inhalt: `spoken` lässt
- * sie dort hörbar.
- */
-function kbd(key, extraClass = "", spoken = false) {
-  const classes = extraClass ? `desk-nav-kbd ${extraClass}` : "desk-nav-kbd";
-  return `<kbd class="${classes}"${spoken ? "" : ' aria-hidden="true"'}>${escapeHtml(key)}</kbd>`;
-}
-
-function pageRowMarkup(link) {
-  return `
-    <button class="desk-nav-row desk-nav-page" type="button" data-nav-page="${link.tab}" aria-keyshortcuts="${link.key}">
-      ${icon(link.icon, "desk-nav-icon")}
-      <span class="desk-nav-text">${link.label}</span>
-      <span class="desk-nav-count" hidden></span>
-      ${kbd(link.key, "desk-nav-hint")}
-    </button>`;
-}
-
-/*
- * nav: die vier Hauptseiten sind die Navigation der App. Die Leiste unten
- * ist am Desktop ausgeblendet — so finden Vorlesehilfen sie trotzdem als
- * eigenen Bereich, direkt in der Seitenleiste.
- */
-function pagesMarkup() {
-  return `<nav class="desk-nav-pages" aria-label="Hauptseiten">${pageLinks.map(pageRowMarkup).join("")}</nav>`;
+/* kbd: eine Taste der Tastatur. Für Vorlesehilfen ausgeblendet — dort sagt
+   aria-keyshortcuts am Knopf schon dasselbe. */
+function kbd(key, extraClass = "") {
+  return `<kbd class="desk-kbd${extraClass}" aria-hidden="true">${escapeHtml(key)}</kbd>`;
 }
 
 function newButtonMarkup() {
   return `
     <button class="desk-nav-new" type="button" data-nav-new="1" aria-keyshortcuts="N">
       ${icon("plus", "desk-nav-new-icon")}
-      <span>Neu anlegen</span>
-      ${kbd("N", "desk-nav-kbd-inverse")}
-    </button>`;
-}
-
-function collectionRowMarkup([id, page]) {
-  const tone = collectionTones[page.icon];
-  const iconClass = tone ? `desk-nav-icon desk-nav-tone desk-nav-icon-${tone}` : "desk-nav-icon";
-  return `
-    <button class="desk-nav-row" type="button" data-nav-overview="${id}">
-      ${icon(page.icon || "placeholder", iconClass)}
-      <span class="desk-nav-text">${escapeHtml(page.title)}</span>
-      <span class="desk-nav-badge" hidden></span>
+      <span>Neu</span>
+      ${kbd("N", " desk-kbd-inverse")}
     </button>`;
 }
 
@@ -126,74 +43,63 @@ function headMarkup(title, tool = "") {
   return `<div class="desk-nav-head"><h2 class="desk-nav-heading">${title}</h2>${tool}</div>`;
 }
 
-function collectionsMarkup() {
+/* Eine Sammlung: Icon in ihrer Farbe, Name, beim Eingang die Zahl, dann das Kürzel. */
+function collectionRowMarkup(link) {
+  const quiet = link.quiet ? " is-quiet" : "";
+  const counted = link.id === "1" ? '<span class="desk-nav-count" hidden></span>' : "";
   return `
-    <section class="desk-nav-group">
-      ${headMarkup("Sammlungen")}
-      <div class="desk-nav-list">${Object.entries(overviewPages).map(collectionRowMarkup).join("")}</div>
-    </section>`;
-}
-
-/* Tab-Pillen und Zeilen bleiben hier leer; renderDeskNav() füllt sie. */
-function spacesMarkup() {
-  const addButton = `
-    <button class="desk-nav-tool" type="button" data-nav-add-workspace="1" aria-label="Arbeitsbereich hinzufügen" title="Arbeitsbereich hinzufügen">
-      ${icon("folder-plus")}
+    <button class="desk-nav-row${quiet}" type="button" data-nav-collection="${link.id}" aria-keyshortcuts="${chordKey} ${link.key}">
+      ${icon(link.icon, `desk-nav-icon desk-nav-tone desk-nav-icon-${link.tone}`)}
+      <span class="desk-nav-text">${escapeHtml(link.title)}</span>
+      ${counted}
+      ${kbd(`${chordKey} ${link.key}`)}
     </button>`;
-  return `
-    <section class="desk-nav-group">
-      ${headMarkup("Arbeitsbereiche", addButton)}
-      <div class="desk-nav-tabs" data-nav-slot="tabs" role="group" aria-label="Tabs der Arbeitsbereiche"></div>
-      <div class="desk-nav-list" data-nav-slot="spaces"></div>
-    </section>`;
 }
 
-/*
- * Die Tipp-Karte in ihrem eigenen Block am Ende der Leiste. Der Block trägt
- * data-nav-slot und `hidden`: Weggeklickt verschwindet er samt seinem Abstand.
- * Der Schließen-Knopf ist ein gewöhnlicher runder Knopf der Leiste
- * (desk-nav-tool) — Größe, Überfahren und Fokus-Ring wie beim Ordner-Plus.
- */
-function tipMarkup(order, hidden) {
-  const lines = tipKeys.map(({ key, label }) => `<li>${kbd(key, "", true)}<span>${label}</span></li>`).join("");
+/* Was noch kommt: blass, ohne Klick, mit „Bald“ statt Kürzel. */
+function soonRowMarkup(card) {
   return `
-    <div class="desk-nav-block desk-nav-foot" data-nav-slot="tip" style="--i: ${order}"${hidden ? " hidden" : ""}>
-      <section class="desk-tip" aria-label="Tipp: Tastenkürzel">
-        <div class="desk-tip-head">
-          <span class="desk-tip-pill">Tipp</span>
-          <p class="desk-tip-title">Tastenkürzel</p>
-          <button class="desk-nav-tool desk-tip-close" type="button" data-tip-close="1" aria-label="Tipp ausblenden">${icon("close")}</button>
-        </div>
-        <ul class="desk-tip-keys">${lines}</ul>
-      </section>
+    <div class="desk-nav-row is-soon" aria-disabled="true">
+      ${icon(card.icon, "desk-nav-icon")}
+      <span class="desk-nav-text">${escapeHtml(card.title)}</span>
+      <span class="desk-kbd desk-kbd-soon">Bald</span>
     </div>`;
 }
 
-/**
- * Das ganze Gerüst der Leiste. Jeder Block bekommt seine Nummer (--i), damit
- * er beim ersten Zeigen ein wenig nach dem vorigen auftaucht.
- * @param tipHidden true, wenn die Tipp-Karte schon einmal weggeklickt wurde.
- */
-export function skeletonMarkup(tipHidden) {
-  const blocks = [pagesMarkup(), newButtonMarkup(), collectionsMarkup(), spacesMarkup()];
-  const scroll = blocks
-    .map((html, index) => `<div class="desk-nav-block" style="--i: ${index}">${html}</div>`)
-    .join("");
-  /* Die Tipp-Karte rollt als letzter Block mit: bei hohem Fenster ruht sie
-     unten, bei niedrigem folgt sie den Arbeitsbereichen, statt sie zu verdecken. */
-  return `<div class="desk-nav-scroll">${scroll}${tipMarkup(blocks.length, tipHidden)}</div>`;
+function collectionsMarkup() {
+  return `
+    <section class="desk-nav-group" aria-label="Sammlungen">
+      ${headMarkup("Sammlungen")}
+      <div class="desk-nav-list">${collectionLinks.map(collectionRowMarkup).join("")}${soonLinks.map(soonRowMarkup).join("")}</div>
+    </section>`;
 }
 
-/** Die Tab-Pillen: Name wie auf der Übersicht, der gewählte Tab gefüllt. */
-export function tabsMarkup() {
-  return state.tabs
-    .map((tab) => {
-      const chosen = sameId(tab.id, state.activeTabId);
-      const label = tab.name || tab.placeholder || "Tab";
-      const glyph = tab.icon ? icon(tab.icon) : "";
-      return `<button class="desk-nav-tab${chosen ? " is-active" : ""}" type="button" data-nav-tab-id="${tab.id}" aria-pressed="${chosen}">${glyph}<span>${escapeHtml(label)}</span></button>`;
-    })
-    .join("");
+/* Die Tab-Gruppen bleiben hier leer; renderDeskNav() füllt sie. */
+function spacesMarkup() {
+  const addTab = `
+    <button class="desk-nav-tool desk-nav-tool-text" type="button" data-nav-add-tab="1" title="Neuen Tab anlegen">
+      ${icon("plus")}<span>Tab</span>
+    </button>`;
+  return `
+    <section class="desk-nav-group" aria-label="Arbeitsbereiche">
+      ${headMarkup("Arbeitsbereiche", addTab)}
+      <div data-nav-slot="spaces"></div>
+    </section>`;
+}
+
+/**
+ * Das feste Gerüst: oben „Neu“, in der Mitte die rollende Liste, unten der
+ * Fuß. Jeder Block bekommt seine Nummer (--i), damit er beim ersten Zeigen ein
+ * wenig nach dem vorigen auftaucht.
+ */
+export function skeletonMarkup() {
+  return `
+    <div class="desk-nav-block desk-nav-top" style="--i: 0">${newButtonMarkup()}</div>
+    <div class="desk-nav-scroll">
+      <div class="desk-nav-block" style="--i: 1">${collectionsMarkup()}</div>
+      <div class="desk-nav-block" style="--i: 2">${spacesMarkup()}</div>
+    </div>
+    <div class="desk-nav-block desk-nav-foot" style="--i: 3" data-nav-slot="foot"></div>`;
 }
 
 function spaceRowMarkup(workspace, activeId) {
@@ -203,24 +109,74 @@ function spaceRowMarkup(workspace, activeId) {
   const star = workspace.favorite ? icon("star", "desk-nav-star") : "";
   /* title: lange Namen enden mit „…“ — beim Überfahren steht der ganze Name da */
   return `
-    <button class="desk-nav-row${chosen ? " is-active" : ""}" type="button" data-open-workspace="${workspace.id}" title="${label}"${chosen ? ' aria-current="page"' : ""}>
+    <button class="desk-nav-row desk-nav-space${chosen ? " is-active" : ""}" type="button" data-open-workspace="${workspace.id}" title="${label}"${chosen ? ' aria-current="page"' : ""}>
       ${icon(workspaceIcon(workspace), "desk-nav-icon desk-nav-icon-space")}
       <span class="desk-nav-label"><span class="desk-nav-text">${label}</span>${star}</span>
       ${count ? `<span class="desk-nav-count">${formatNumber(count)}</span>` : ""}
     </button>`;
 }
 
-/** Die Arbeitsbereiche des gewählten Tabs; `activeId` ist der gerade offene. */
-export function workspaceRowsMarkup(activeId) {
-  const spaces = tabWorkspaces();
-  if (!spaces.length) return '<p class="desk-nav-empty">Noch keine Arbeitsbereiche</p>';
-  return spaces.map((workspace) => spaceRowMarkup(workspace, activeId)).join("");
+/*
+ * Eine Tab-Gruppe: Kopf zum Auf- und Zuklappen (Rechtsklick: Menü des Tabs),
+ * Plus für einen neuen Arbeitsbereich darin, darunter die Arbeitsbereiche.
+ * Zugeklappt zeigt der Kopf, wie viele darin liegen.
+ */
+function tabGroupMarkup(tab, closedIds, activeId) {
+  const id = String(tab.id);
+  const closed = closedIds.includes(id);
+  const name = escapeHtml(tab.name || tab.placeholder || "Tab");
+  const spaces = workspacesOfTab(tab.id);
+  const list = spaces.length
+    ? spaces.map((workspace) => spaceRowMarkup(workspace, activeId)).join("")
+    : '<p class="desk-nav-empty">Noch keine Arbeitsbereiche</p>';
+  const listId = `desk-tab-group-${id}`;
+  return `
+    <div class="desk-nav-tabgroup${closed ? " is-closed" : ""}">
+      <div class="desk-nav-tabhead">
+        <button class="desk-nav-tabtoggle" type="button" data-nav-tab-toggle="${id}" data-tab-id="${id}" aria-expanded="${!closed}" aria-controls="${listId}">
+          ${icon("chevron", "desk-nav-chevron")}
+          <span class="desk-nav-text">${name}</span>
+          ${closed && spaces.length ? `<span class="desk-nav-count">${formatNumber(spaces.length)}</span>` : ""}
+        </button>
+        <button class="desk-nav-tool" type="button" data-nav-add-workspace="${id}" aria-label="Arbeitsbereich in „${name}“ anlegen" title="Arbeitsbereich anlegen">${icon("plus")}</button>
+      </div>
+      <div class="desk-nav-list" id="${listId}"${closed ? " hidden" : ""}>${list}</div>
+    </div>`;
+}
+
+/** Alle Tabs als Gruppen; `closedIds` sind die zugeklappten, `activeId` der offene Arbeitsbereich. */
+export function tabGroupsMarkup(closedIds, activeId) {
+  return state.tabs.map((tab) => tabGroupMarkup(tab, closedIds, activeId)).join("");
+}
+
+/* Das runde Bild: Foto, sonst die Initialen auf dem Verlauf des Profils. */
+function avatarMarkup(photo) {
+  return photo ? `<img class="desk-foot-photo" src="${photo}" alt="">` : escapeHtml(account.initials);
+}
+
+/** Der Fuß: Stufe mit Ring, darunter Konto mit Zahnrad — beides öffnet sein Blatt. */
+export function footMarkup(photo) {
+  const xp = totalXp();
+  const info = levelInfo(xp);
+  const missing = Math.max(0, info.to - xp);
+  return `
+    <button class="desk-nav-row desk-foot-row" type="button" data-nav-level="1" aria-label="Stufe ${info.level}, noch ${formatNumber(missing)} XP bis Stufe ${info.level + 1}. Fortschritt öffnen">
+      <span class="desk-foot-ring" style="--progress: ${info.progress.toFixed(3)}" aria-hidden="true"><span>${info.level}</span></span>
+      <span class="desk-foot-copy"><span class="desk-foot-title">Stufe ${info.level}</span><span class="desk-foot-hint">${formatNumber(missing)} XP bis Stufe ${info.level + 1}</span></span>
+    </button>
+    <button class="desk-nav-row desk-foot-row" type="button" data-nav-profile="1" aria-label="Profil und Einstellungen" aria-keyshortcuts="Meta+Comma">
+      <span class="desk-foot-avatar" aria-hidden="true">${avatarMarkup(photo)}</span>
+      <span class="desk-foot-copy"><span class="desk-foot-title">${escapeHtml(account.name)}</span><span class="desk-foot-hint">${escapeHtml(account.plan)}</span></span>
+      ${icon("settings", "desk-foot-gear")}
+      ${kbd(withCommand(","))}
+    </button>`;
 }
 
 /* Welche Sammlung zeigt die offene Unterseite? Der Eingang hat keine Art und
-   keinen Ablageort; das Archiv hat die Art „archive“ und zählt nicht mit. */
+   keinen Ablageort; Lesezeichen und Archiv haben ihre eigene Art. */
 function collectionOf(page) {
   if (page.isWorkspace) return null;
+  if (page.kind === "bookmarks" || page.kind === "archive") return page.kind;
   const match = Object.entries(overviewPages).find(([, item]) =>
     item.kind ? item.kind === page.kind : !page.kind && page.parent === null
   );
@@ -229,8 +185,8 @@ function collectionOf(page) {
 
 /**
  * Was in der Leiste gerade als gewählt gilt:
- * tab        -> Hauptseite, wenn eine davon offen ist
- * collection -> Nummer der offenen Sammlung (1–4)
+ * tab        -> Reiter, wenn einer davon offen ist
+ * collection -> id der offenen Sammlung (wie in collectionLinks)
  * workspace  -> Nummer des offenen Arbeitsbereichs
  * Auf einem Eintrag und in der Suche ist nichts gewählt.
  */

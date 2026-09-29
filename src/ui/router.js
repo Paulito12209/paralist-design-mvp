@@ -238,6 +238,11 @@ export function goBack() {
   else restoreFrom(ui.sourceView);
 }
 
+/** Der Vorwärts-Pfeil am Desktop: einen Schritt vor, wenn es einen gibt. */
+export function goForward() {
+  history.forward();
+}
+
 function writeHistory(state, url, replace) {
   if (replace) history.replaceState(state, "", url);
   else history.pushState(state, "", url);

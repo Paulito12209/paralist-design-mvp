@@ -1,0 +1,122 @@
+/*
+ * Desktop: der Fuß der Seitenleiste — fest unten, rollt nicht mit. Oben die
+ * Stufe mit einem kleinen Ring, der den Weg zur nächsten Stufe zeigt, darunter
+ * das Konto mit rundem Bild, Name, Plan, Zahnrad und dem Schild „⌘,“. Profil
+ * und Einstellungen sind dasselbe: beide Wege öffnen dasselbe Blatt. Gilt erst
+ * ab 1024px Fensterbreite; das Markup entsteht in src/shell/desk-nav-parts.js.
+ * Pfad: styles/desk-nav-foot.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-nav-foot)
+ * -----------------------------------
+ * --foot-disc      -> Größe von Ring und Profilbild
+ * --foot-ring      -> Dicke des Rings um die Zahl der Stufe
+ * --foot-row-height -> Höhe einer Zeile im Fuß
+ * Einzelne Größen stehen bei ihrer Regel: Zahl im Ring 12px, Initialen 11px,
+ * Zeile unter dem Namen 12px, Zahnrad 16px.
+ *
+ * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * --desk-nav-pad   -> Rand links, rechts und unten
+ * --desk-edge      -> Haarlinie über dem Fuß
+ * --level-color / --level-dim -> erreichter und offener Teil des Rings (wie die Level-Anzeige am Handy)
+ * --avatar-gradient-from / --avatar-gradient-to -> Verlauf hinter den Initialen, wie im Profil
+ * --text / --muted -> Name und die leise Zeile darunter
+ * --progress       -> Anteil bis zur nächsten Stufe (0 bis 1); setzt src/shell/desk-nav-parts.js
+ */
+
+@media (min-width: 1024px) {
+  .desk-nav-foot {
+    --foot-disc: 28px;
+    --foot-ring: 3px;
+    --foot-row-height: 46px;
+
+    flex: 0 0 auto; /* flex: der Fuß behält seine Höhe, die Liste darüber rollt */
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0 var(--desk-nav-pad);
+    padding: 8px 0 calc(var(--desk-nav-pad) + var(--safe-bottom));
+    border-top: 0.5px solid var(--desk-edge);
+  }
+
+  /* Bild | zwei Zeilen Text | Zahnrad | Schild */
+  .desk-foot-row {
+    grid-template-columns: var(--foot-disc) minmax(0, 1fr) auto auto;
+    height: var(--foot-row-height);
+    padding-left: 6px;
+  }
+
+  .desk-foot-copy {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.25;
+  }
+
+  .desk-foot-title {
+    overflow: hidden; /* overflow/text-overflow/white-space: ein langer Name endet mit „…“ */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .desk-foot-hint {
+    overflow: hidden; /* overflow/text-overflow/white-space: bleibt einzeilig */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  /* Ring der Stufe: die Zahl in der Mitte, der Kreis darum als eigene Ebene */
+  .desk-foot-ring {
+    position: relative; /* position: Bezugspunkt für den Ring darüber */
+    display: grid;
+    place-items: center;
+    width: var(--foot-disc);
+    height: var(--foot-disc);
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--level-color);
+    font-variant-numeric: tabular-nums; /* font-variant-numeric: Ziffern gleich breit */
+  }
+
+  .desk-foot-ring::before {
+    content: "";
+    position: absolute; /* position: der Ring liegt genau über der Fläche des Knopfs */
+    inset: 0;
+    border-radius: 50%;
+    /* conic-gradient: erreichter Teil im Uhrzeigersinn ab oben, der Rest blass */
+    background: conic-gradient(var(--level-color) calc(var(--progress, 0) * 1turn), var(--level-dim) 0);
+    /* mask: nur ein schmaler Rand bleibt stehen, die Mitte ist frei für die Zahl */
+    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--foot-ring)), var(--text) calc(100% - var(--foot-ring) + 0.5px));
+    mask: radial-gradient(farthest-side, transparent calc(100% - var(--foot-ring)), var(--text) calc(100% - var(--foot-ring) + 0.5px));
+  }
+
+  /* Profilbild: Foto oder Initialen auf dem Verlauf des Profils */
+  .desk-foot-avatar {
+    display: grid;
+    place-items: center;
+    width: var(--foot-disc);
+    height: var(--foot-disc);
+    border-radius: 50%;
+    overflow: hidden; /* overflow: das Foto bleibt im Kreis */
+    background: linear-gradient(135deg, var(--avatar-gradient-from), var(--avatar-gradient-to));
+    font-size: 11px;
+    font-weight: 700;
+    color: #fff; /* Initialen immer weiß: der Verlauf dahinter ist in beiden Darstellungen kräftig */
+  }
+
+  .desk-foot-photo {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* object-fit: füllt den Kreis, ohne das Foto zu verzerren */
+  }
+
+  .desk-foot-gear {
+    width: 16px;
+    height: 16px;
+    color: var(--muted);
+  }
+}

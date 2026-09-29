@@ -1,38 +1,49 @@
 /*
  * Desktop-Rahmen ab 1024px: das Gerätefenster wird zum Raster über das ganze
- * Fenster — links Seitenleiste mit Level, Suche und Profil obendrauf, Mitte die
- * Seite, ab 1280px rechts „Heute und zuletzt“. Die Handy-Navigation entfällt,
- * Eingabefeld, Meldung und Knöpfe schweben als Glas über der Mitte. Grenzen
- * wie in src/ui/desk-mode.js. Dialoge und das Auftauchen von Dialogen und
- * Eingabefeld stehen in styles/desk-overlays.css; Überfahren, Drücken und
- * Tastatur-Rahmen in styles/desk-hover.css.
+ * Fenster — links Wortmarke, Suche und Seitenleiste, rechts daneben oben die
+ * Reiterzeile und darunter die Seite, ab 1280px rechts „Heute und zuletzt“.
+ * Die Seitenleiste lässt sich zuklappen (.is-nav-closed, gesetzt von
+ * src/shell/desk-head.js). Die Handy-Navigation entfällt, Eingabefeld, Meldung
+ * und Knöpfe schweben als Glas über der Mitte. Grenzen wie in
+ * src/ui/desk-mode.js. Wortmarke und Reiterzeile selbst stehen in
+ * styles/desk-head.css, Dialoge in styles/desk-overlays.css, Überfahren,
+ * Drücken und Tastatur-Rahmen in styles/desk-hover.css.
  * Pfad: styles/desk.css
  *
  * ANPASSBARE WERTE IN DIESER DATEI (auf .device, nur am Desktop)
  * -----------------------------------
- * --frame-bar-top / --frame-bar-bottom -> Luft über und unter Level, Suche und Profil
+ * --frame-search-height / --frame-search-radius -> Höhe und Rundung des Suchfelds links oben
+ * --frame-search-gap    -> Luft unter dem Suchfeld bis zum Knopf „Neu“
  * --frame-composer-width / --frame-toast-width -> größte Breite von Eingabefeld und Meldung
  * Einzelwerte stehen bei ihrer Regel: Medien-Knöpfe (12px Abstand nach unten,
- * 4px Fuge, 6px Innenrand), „Abbrechen“ (18px Innenrand seitlich) und die
- * Breite des Rollbalkens in Safari (6px).
+ * 4px Fuge, 6px Innenrand), „Abbrechen“ (18px Innenrand seitlich), das
+ * Tasten-Schild im Suchfeld (8px Abstand), Such-Icon 18px und die Breite des
+ * Rollbalkens in Safari (6px).
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
  * -----------------------------------
- * --desk-nav-width / --desk-rail-width -> Breite von Seitenleiste und rechter Spalte
- * --desk-gutter        -> Rand der Kopfzeile links und Abstand der Knöpfe zum unteren Rand
- * --desk-panel         -> Fläche des Suchfelds links oben
+ * --desk-nav-width / --desk-nav-open / --desk-rail-width -> Breite von Seitenleiste
+ *                        (zugeklappt 0), ihre offene Breite und die rechte Spalte
+ * --desk-top-height    -> Höhe der ersten Rasterzeile (Wortmarke, Reiterzeile)
+ * --desk-nav-pad       -> Rand der Suche links und rechts, bündig mit der Seitenleiste
+ * --desk-fold / --desk-ease -> Dauer und Kurve beim Auf- und Zuklappen
+ * --desk-gutter        -> Abstand der Knöpfe zum unteren Rand
+ * --desk-edge / --card -> Haarlinie und Fläche des Suchfelds
  * --desk-glass / --desk-glass-blur -> Glas und Unschärfe von Eingabefeld, Meldung und Knöpfen unten
- * --desk-edge          -> Haarlinie um das Glas
  * --desk-scroll-thumb  -> Farbe des Rollbalkens, solange die Maus über einer Spalte steht
  * --bg                 -> Fläche des Fensters
  * --content-top / --safe-top / --safe-bottom -> Abstand oben und unten (Tablets: plus Statusleiste)
  * --shadow             -> wird am Desktop abgeschaltet: Tiefe kommt aus Flächen und Glas
  */
 
-/* Am Handy gibt es weder Seitenleiste noch rechte Spalte. src/shell/desk.js hängt
-   sie nur bei breitem Fenster ein; wird es danach schmal, verschwinden sie hier. */
+/* Am Handy gibt es weder Seitenleiste, Wortmarke, Reiterzeile noch rechte
+   Spalte. src/shell/desk.js hängt sie nur bei breitem Fenster ein; wird es
+   danach schmal, verschwinden sie hier — samt dem Tasten-Schild im Suchfeld. */
 .desk-nav,
-.desk-rail {
+.desk-rail,
+.desk-brand,
+.desk-tabs,
+.search-kbd {
   display: none;
 }
 
@@ -45,11 +56,13 @@
     padding: 0;
   }
 
-  /* Das Gerätefenster wird zum ganzen Fenster und zum Raster: oben links die
-     Kopfzeile (bar), darunter die Seitenleiste (nav), die Seite (main) daneben. */
+  /* Das Gerätefenster wird zum ganzen Fenster und zum Raster: links oben die
+     Wortmarke (brand), darunter die Suche (bar) und die Seitenleiste (nav),
+     rechts daneben oben die Reiterzeile (top) und darunter die Seite (main). */
   .device {
-    --frame-bar-top: 16px;
-    --frame-bar-bottom: 12px;
+    --frame-search-height: 36px;
+    --frame-search-radius: 10px;
+    --frame-search-gap: 12px;
     --frame-composer-width: 680px;
     --frame-toast-width: 420px;
     --shadow: none; /* --shadow: am Desktop werfen Karten, Knöpfe und Leisten keine Schatten */
@@ -60,14 +73,44 @@
     border-radius: 0;
     box-shadow: none;
     background: var(--bg);
+    overflow: hidden; /* overflow: beim Zuklappen gleitet die Seitenleiste links aus dem Fenster, statt über die Seite zu ragen */
     display: grid;
     /* grid-template: feste Seitenleiste, die Mitte nimmt den Rest; minmax(0, …)
        lässt Mitte und untere Zeile schrumpfen, statt das Fenster zu sprengen */
     grid-template-columns: var(--desk-nav-width) minmax(0, 1fr);
-    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-rows: var(--desk-top-height) auto minmax(0, 1fr);
     grid-template-areas:
+      "brand top"
       "bar main"
       "nav main";
+  }
+
+  /* Zugeklappt: die Spalte wird 0 breit. Alles, was --desk-nav-width liest
+     (Eingabefeld unten, Karte „Ansicht konfigurieren“), rückt von selbst mit. */
+  .device.is-nav-closed {
+    --desk-nav-width: 0px;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .device {
+      transition: grid-template-columns var(--desk-fold) var(--desk-ease); /* transition: die Seitenleiste gleitet auf und zu, statt zu springen */
+    }
+  }
+
+  /* Die drei Teile links behalten beim Zuklappen ihre volle Breite und stehen
+     am rechten Rand ihrer Spalte: so gleiten sie als Ganzes hinaus, statt
+     unterwegs umzubrechen. Zu sind sie unsichtbar und für die Tab-Taste weg. */
+  .desk-brand,
+  .top-bar,
+  .desk-nav {
+    width: var(--desk-nav-open);
+    justify-self: end; /* justify-self: am rechten Rand der schrumpfenden Spalte */
+    transition: visibility 0s linear 0s; /* transition: beim Aufklappen sofort sichtbar */
+  }
+
+  .device.is-nav-closed :is(.desk-brand, .top-bar, .desk-nav) {
+    visibility: hidden; /* visibility: zugeklappt nicht mehr zu sehen und nicht mehr mit der Tab-Taste erreichbar */
+    transition: visibility 0s linear var(--desk-fold); /* transition: erst unsichtbar, wenn das Gleiten vorbei ist */
   }
 
   /* Am Desktop ohne Aufgabe: der Verlauf hinter der Handy-Navigation und der
@@ -79,24 +122,62 @@
     display: none;
   }
 
-  /* Kopfzeile oben in der Seitenleiste: ohne Ausblend-Verlauf (nichts rollt mehr
-     unter ihr durch) und auch auf Unterseiten da — nur die Mitte wechselt. */
+  /* Kopfzeile unter der Wortmarke: nur noch das Suchfeld. Level und Profil
+     stehen am Desktop unten in der Seitenleiste (styles/desk-nav-foot.css).
+     Ohne Ausblend-Verlauf (nichts rollt mehr unter ihr durch) und auch auf
+     Unterseiten da — nur die Mitte wechselt. */
   .top-bar,
   body.is-subpage .top-bar {
     grid-area: bar;
     display: flex;
     mask-image: none; /* mask-image: der Handy-Verlauf würde hier die Suche anschneiden */
     margin-bottom: 0;
-    padding: calc(var(--frame-bar-top) + var(--safe-top)) var(--desk-gutter) var(--frame-bar-bottom);
+    padding: 0 var(--desk-nav-pad) var(--frame-search-gap);
+  }
+
+  .top-bar :is(.level-btn, .avatar) {
+    display: none;
   }
 
   .top-bar .search {
-    background: var(--desk-panel);
+    height: var(--frame-search-height);
+    border-radius: var(--frame-search-radius);
+    padding: 0 8px 0 10px;
+    background: var(--card);
+    border: 0.5px solid var(--desk-edge);
+  }
+
+  /* Am Handy groß, damit iOS beim Tippen nicht heranzoomt; am Desktop so groß
+     wie die Zeilen der Seitenleiste darunter. */
+  .top-bar .search input {
+    font-size: var(--desk-nav-item-size);
+  }
+
+  .top-bar .search-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Das Schild „⌘K“ rechts im Feld — es tritt zurück, sobald man tippt */
+  .search-kbd {
+    display: inline-grid;
+    margin-left: 8px;
+  }
+
+  .search:focus-within .search-kbd {
+    display: none;
   }
 
   .desk-nav {
     grid-area: nav;
-    display: block;
+  }
+
+  .desk-brand {
+    grid-area: brand;
+  }
+
+  .desk-tabs {
+    grid-area: top;
   }
 
   /* Tablets: sonst begänne die Mitte unter der Statusleiste. Unterseiten behalten
@@ -214,8 +295,9 @@
 
 @media (min-width: 1280px) {
   .device {
-    grid-template-columns: var(--desk-nav-width) minmax(0, 1fr) var(--desk-rail-width); /* grid-template: dritte Spalte rechts */
+    grid-template-columns: var(--desk-nav-width) minmax(0, 1fr) var(--desk-rail-width); /* grid-template: dritte Spalte rechts, die Reiterzeile reicht darüber */
     grid-template-areas:
+      "brand top top"
       "bar main rail"
       "nav main rail";
   }

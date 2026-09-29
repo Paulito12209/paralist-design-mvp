@@ -1,0 +1,363 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Paralist Desktop Wireframes</title>
+<link rel="stylesheet" href="desktop-wireframes.css" />
+</head>
+<body>
+<div class="page">
+  <h1>Paralist am Desktop: Wireframes</h1>
+  <p class="lead">Neun Zustände in einem Fenster von 1440 × 900. Oben die Reiterzeile mit Zurück, Vorwärts und den vier Sichten; links die Orte, die Suche und das Konto; rechts die Kontextspalte, die mit der Seite wechselt. Der Plan dazu steht in <code>docs/desktop-redesign-plan.md</code>.</p>
+  <ul class="legend">
+    <li class="l-nav">Seitenleiste (nur Wege und Zahlen)</li>
+    <li class="l-main">Mitte (die Seite)</li>
+    <li class="l-side">Kontextspalte (gestrichelt, je Seite anders)</li>
+    <li class="l-new">Blau = Auswahl, Jetzt, Termine</li>
+  </ul>
+
+  <!-- ========== 1 · Übersicht ========== -->
+  <h2>1 · Übersicht</h2>
+  <ul class="diff">
+    <li><b>Die vier Reiter oben, zentriert über der Mitte,</b> sind Sichten, die Seitenleiste zeigt Orte: alle Sammlungen auf einmal, auch Lesezeichen und Archiv.</li>
+    <li><b>Wortmarke oben links, Klapp-Knopf rechts daneben, Suche darunter</b> mit ⌘K. Kürzel-Schilder in Blau an jeder Zeile.</li>
+    <li><b>Tabs sind Gruppen</b> unter „Arbeitsbereiche“, wie die Abschnitte in Codex: „Meine“ offen, „Arbeit“ zugeklappt mit Zahl. Kein Wechseln, kein Kürzel nötig.</li>
+    <li><b>Stufe und Profil</b> stehen fest unten; Profil und Einstellungen sind eine Zeile. Die Tipp-Karte entfällt.</li>
+    <li><b>Rechts nur „Heute“ und „Zuletzt“</b>: Eingang und Fortschritt kommen nicht mehr doppelt vor.</li>
+    <li>Drei Kennzahlen statt vier; das Aktivitätsband ohne Stufen-Pille. <b>Das Datum</b> steht in der Heute-Karte, die Überschrift bleibt allein.</li>
+  </ul>
+  <div class="frame-wrap"><div class="frame" data-nav="home" data-tab="home" data-actions="Ansicht">
+    <div class="main">
+      <h3 class="title">Übersicht</h3>
+      <div class="stats">
+        <div class="stat"><span class="pill on">Einträge</span><div class="num">128<small>insgesamt</small></div></div>
+        <div class="stat"><span class="pill">Offen</span><div class="num">12<small>Aufgaben</small></div></div>
+        <div class="stat"><span class="pill">Erledigt</span><div class="num">9<small>7 Tage</small></div></div>
+      </div>
+      <div class="muted" style="font-size:10px;margin-top:2px">Aktivität · 12 Wochen</div>
+      <div class="dots"></div>
+      <div class="hero">
+        <div class="card"><span class="lab">Diese Woche</span><div class="num big">340<small>XP</small></div><div class="muted">Stufe 3 · noch 160 bis Stufe 4</div></div>
+        <div class="card"><span class="lab">Serie</span><div class="num big">7<small>Tage</small></div><div class="muted">Längste Serie: 19 Tage</div></div>
+      </div>
+      <div class="tiles">
+        <div class="card">Eingang<div class="num">4</div><span class="muted">zu sortieren</span></div>
+        <div class="card">Favoriten<div class="num">6</div><span class="muted">markiert</span></div>
+        <div class="card">Projekte<div class="num">3</div><span class="muted">laufend</span></div>
+        <div class="card">Ressourcen<div class="num">41</div><span class="muted">Dateien</span></div>
+      </div>
+    </div>
+    <aside class="side">
+      <div class="card"><h4>Heute <span class="lnk">Kalender →</span></h4><div class="muted" style="margin:-4px 0 8px">Dienstag, 29. September</div>
+        <div class="row"><span class="ico" style="background:var(--accent);opacity:1"></span><span class="t">Design-Review</span><span class="m">14:00</span></div>
+        <div class="dayline"></div><div class="muted" style="display:flex;justify-content:space-between;font-size:9px"><span>06</span><span>22</span></div>
+        <div class="list-head" style="margin-top:10px">Fällig <span class="muted">3</span></div>
+        <div class="row"><span class="chk"></span><span class="t">Angebot an Müller schicken</span><span class="tag hot">Hoch</span></div>
+        <div class="row"><span class="chk"></span><span class="t">Fotos für Website sichten</span><span class="tag">Mittel</span></div>
+        <div class="row"><span class="chk"></span><span class="t">Wochenplan schreiben</span><span class="tag">Niedrig</span></div>
+      </div>
+      <div class="card"><h4>Zuletzt geöffnet</h4>
+        <div class="row"><span class="ico"></span><span class="t">Marketing · Arbeitsbereich</span><span class="m">vor 2 Std</span></div>
+        <div class="row"><span class="ico"></span><span class="t">Reise nach Lissabon · Notiz</span><span class="m">gestern</span></div>
+      </div>
+    </aside>
+  </div></div>
+
+  <!-- ========== 2 · Kalender ========== -->
+  <h2>2 · Kalender</h2>
+  <ul class="diff">
+    <li><b>Woche als sieben Spalten</b> mit Stundenzeilen und Jetzt-Linie; Segment Tag / Woche / Monat in der Werkzeugzeile.</li>
+    <li>Rechts ein <b>kleiner Monat zum Springen</b> und der <b>gewählte Termin</b>. Keine Aufgaben-Karte, kein Eingang.</li>
+    <li>Klick in eine freie Stunde legt einen Termin an; das Eingabefeld unten bleibt für „N“.</li>
+  </ul>
+  <div class="frame-wrap"><div class="frame" data-nav="" data-tab="calendar" data-actions="Heute|Tag·Woche·Monat|+">
+    <div class="main">
+      <h3 class="title">Kalender<span class="alt">September 2026 · KW 40</span></h3>
+      <div class="week">
+        <div class="hours"><br>08:00<br>09:00<br>10:00<br>11:00<br>12:00<br>13:00<br>14:00<br>15:00<br>16:00</div>
+        <div class="col"><div class="h">Mo 28</div><div class="ev grey" style="top:74px;height:38px">Stand-up</div></div>
+        <div class="col"><div class="h today">Di 29</div><div class="now"></div><div class="ev" style="top:274px;height:78px">Design-Review<br><span class="muted">14:00 – 16:00</span></div></div>
+        <div class="col"><div class="h">Mi 30</div><div class="ev grey" style="top:154px;height:38px">Zahnarzt</div></div>
+        <div class="col"><div class="h">Do 1</div></div>
+        <div class="col"><div class="h">Fr 2</div><div class="ev grey" style="top:114px;height:118px">Workshop Marketing</div></div>
+        <div class="col"><div class="h">Sa 3</div></div>
+        <div class="col"><div class="h">So 4</div></div>
+      </div>
+    </div>
+    <aside class="side">
+      <div class="card"><h4>September <span class="lnk">‹ ›</span></h4>
+        <div class="mini"><span>M</span><span>D</span><span>M</span><span>D</span><span>F</span><span>S</span><span>S</span>
+          <span class="d">31</span><span class="d">1</span><span class="d">2</span><span class="d">3</span><span class="d">4</span><span class="d">5</span><span class="d">6</span>
+          <span class="d">7</span><span class="d">8</span><span class="d">9</span><span class="d">10</span><span class="d">11</span><span class="d">12</span><span class="d">13</span>
+          <span class="d">14</span><span class="d">15</span><span class="d">16</span><span class="d">17</span><span class="d">18</span><span class="d">19</span><span class="d">20</span>
+          <span class="d">21</span><span class="d">22</span><span class="d">23</span><span class="d">24</span><span class="d">25</span><span class="d">26</span><span class="d">27</span>
+          <span class="d">28</span><span class="d today">29</span><span class="d">30</span><span class="d">1</span><span class="d">2</span><span class="d">3</span><span class="d">4</span>
+        </div>
+      </div>
+      <div class="card"><h4>Design-Review <span class="lnk">Öffnen →</span></h4>
+        <div class="kv"><span>Wann</span><span>Di 29. Sep, 14:00 – 16:00</span><span>Ablageort</span><span>Marketing</span><span>Erinnerung</span><span>15 Min vorher</span></div>
+        <p class="muted" style="margin:8px 0 0">Feedback zur zweiten Runde der Startseite, Nina bringt die Prototypen mit.</p>
+      </div>
+    </aside>
+  </div></div>
+
+  <!-- ========== 3 · Aufgaben ========== -->
+  <h2>3 · Aufgaben</h2>
+  <ul class="diff">
+    <li>Werkzeugzeile: <b>Ansichts-Pillen links, Liste / Board und Filter rechts</b>.</li>
+    <li>Die Liste hat <b>ruhige Spalten</b>: Haken, Titel, Fälligkeit, Dringlichkeit, Ablageort.</li>
+    <li><b>„Ansicht konfigurieren“ wandert nach rechts</b>; darunter die Details der markierten Aufgabe. Kein Blatt mehr in der Mitte.</li>
+  </ul>
+  <div class="frame-wrap"><div class="frame" data-nav="" data-tab="tasks" data-actions="Liste·Board|Filter">
+    <div class="main">
+      <h3 class="title">Aufgaben<span class="alt">12 offen</span></h3>
+      <div class="tools"><span class="pill on">Alle</span><span class="pill">Diese Woche</span><span class="pill">Marketing</span><span class="pill ghost">+ Ansicht</span></div>
+      <div class="thead"><span style="width:13px"></span><span class="t">Aufgabe</span><span class="m">Fällig</span><span class="m">Dringlich</span><span class="m">Ablageort</span></div>
+      <div class="row"><span class="chk"></span><span class="t">Angebot an Müller schicken</span><span class="m w">Heute</span><span class="m w"><span class="tag hot">Hoch</span></span><span class="m w">Vertrieb</span></div>
+      <div class="row sel"><span class="chk"></span><span class="t">Fotos für Website sichten</span><span class="m w">Heute</span><span class="m w"><span class="tag">Mittel</span></span><span class="m w">Marketing</span></div>
+      <div class="row"><span class="chk"></span><span class="t">Wochenplan schreiben</span><span class="m w">Heute</span><span class="m w"><span class="tag">Niedrig</span></span><span class="m w">Eingang</span></div>
+      <div class="list-head">Morgen <span class="muted">2</span></div>
+      <div class="row"><span class="chk"></span><span class="t">Rechnung Q3 prüfen</span><span class="m w">Mi 30.</span><span class="m w"><span class="tag">Mittel</span></span><span class="m w">Finanzen</span></div>
+      <div class="row"><span class="chk"></span><span class="t">Nina Prototypen zurückgeben</span><span class="m w">Mi 30.</span><span class="m w"><span class="tag">Niedrig</span></span><span class="m w">Marketing</span></div>
+      <div class="list-head">Später <span class="muted">7</span></div>
+      <div class="row"><span class="chk"></span><span class="t">Flug nach Lissabon buchen</span><span class="m w">12. Okt</span><span class="m w"><span class="tag">Mittel</span></span><span class="m w">Reise</span></div>
+      <div class="row muted"><span class="chk"></span><span class="t">Neue Aufgabe …</span></div>
+    </div>
+    <aside class="side">
+      <div class="card"><h4>Ansicht</h4>
+        <div class="kv"><span>Gruppieren</span><span>Fälligkeit ▾</span><span>Sortieren</span><span>Dringlichkeit ▾</span><span>Erledigte</span><span>ausblenden ○</span></div>
+      </div>
+      <div class="card strong"><h4>Fotos für Website sichten <span class="lnk">Öffnen →</span></h4>
+        <div class="kv"><span>Fällig</span><span>Heute</span><span>Status</span><span>Offen · Jetzt</span><span>Dringlichkeit</span><span>Mittel</span><span>Ablageort</span><span>Marketing</span></div>
+        <p class="muted" style="margin:8px 0 0">Aus dem Shooting vom 12. die zehn besten für die Startseite aussuchen.</p>
+      </div>
+    </aside>
+  </div></div>
+
+  <!-- ========== 4 · Medien ========== -->
+  <h2>4 · Medien</h2>
+  <ul class="diff">
+    <li>Werkzeugzeile: <b>Typ-Pillen links, Raster / Liste und Kachelgröße rechts</b> (wie in Drive).</li>
+    <li>Rechts die <b>Details der markierten Datei</b> mit Vorschau, Größe, Ablageort und „Öffnen“.</li>
+    <li>Die vier Glas-Knöpfe unten (Importieren, Aufnahme, Video, Foto) bleiben aus der Handy-Fassung.</li>
+  </ul>
+  <div class="frame-wrap"><div class="frame" data-nav="" data-tab="media" data-actions="Raster·Liste|Größe">
+    <div class="main">
+      <h3 class="title">Medien<span class="alt">Ressourcen</span></h3>
+      <div class="tools"><span class="pill on">Zuletzt</span><span class="pill">Bilder</span><span class="pill">Videos</span><span class="pill">Audio</span><span class="pill">Dokumente</span></div>
+      <div class="list-head">September <span class="muted">18</span></div>
+      <div class="mgrid"><div></div><div class="sel"></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div></div>
+      <div class="list-head" style="margin-top:12px">August <span class="muted">23</span></div>
+      <div class="mgrid"><div></div><div></div><div></div><div></div><div></div><div></div></div>
+      <div class="glass"><span class="dot"></span><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+    </div>
+    <aside class="side">
+      <div class="card strong"><div class="thumb"></div><h4 style="margin-top:8px">shooting-12-04.jpg <span class="lnk">Öffnen →</span></h4>
+        <div class="kv"><span>Typ</span><span>Bild · JPEG</span><span>Größe</span><span>2,4 MB · 4032 × 3024</span><span>Aufgenommen</span><span>12. Sep, 10:41</span><span>Ablageort</span><span>Marketing</span><span>Verknüpft mit</span><span>Fotos sichten</span></div>
+      </div>
+      <div class="card"><h4>Speicher</h4><div class="kv"><span>Bilder</span><span>210 MB</span><span>Videos</span><span>1,1 GB</span><span>Audio</span><span>48 MB</span><span>Dokumente</span><span>12 MB</span></div></div>
+    </aside>
+  </div></div>
+
+  <!-- ========== 5 · Suche ========== -->
+  <h2>5 · Suche</h2>
+  <ul class="diff">
+    <li><b>⌘K oder das Feld links öffnet die Palette</b> in der Mitte: Gruppen, Pfeiltasten, Enter. Die Seite dahinter bleibt stehen, abgedunkelt.</li>
+    <li><b>„Alle Ergebnisse“</b> öffnet die Suchseite: Treffer in voller Breite, Filter-Pillen, rechts die Vorschau (hier hinter der Palette angedeutet).</li>
+    <li>Keine Pillen „Suchen / Abbrechen“ unten mehr. Esc schließt.</li>
+  </ul>
+  <div class="frame-wrap"><div class="frame" data-nav="" data-tab="" data-actions="">
+    <div class="main results">
+      <div class="backdrop"></div>
+      <div class="palette center">
+        <div class="field"><span class="ico"></span>Design<span class="kbd">Esc</span></div>
+        <div class="g">Einträge</div>
+        <div class="row sel"><span class="ico"></span><span class="t"><b>Design</b>-Review</span><span class="m">Termin · Di 14:00</span></div>
+        <div class="row"><span class="ico"></span><span class="t"><b>Design</b>-System Notizen</span><span class="t muted">Notiz · Marketing</span></div>
+        <div class="g">Arbeitsbereiche</div>
+        <div class="row"><span class="ico"></span><span class="t"><b>Design</b></span><span class="m">4 Einträge</span></div>
+        <div class="g">Aufgaben</div>
+        <div class="row"><span class="chk"></span><span class="t">Nina Prototypen zurückgeben</span><span class="m">Mi 30.</span></div>
+        <div class="row muted"><span class="t">Alle 9 Ergebnisse anzeigen</span><span class="kbd">Enter</span></div>
+      </div>
+      <h3 class="title" style="margin-top:150px">Suche<span class="alt">9 Treffer für „Design“</span></h3>
+      <div class="tools"><span class="pill on">Alle</span><span class="pill">Aufgaben</span><span class="pill">Notizen</span><span class="pill">Termine</span><span class="pill">Medien</span></div>
+      <div class="row"><span class="ico"></span><span class="t"><b>Design</b>-Review · Feedback zur zweiten Runde</span><span class="m">Termin</span></div>
+      <div class="row"><span class="ico"></span><span class="t"><b>Design</b>-System Notizen · Abstände, Farben, Typo</span><span class="m">Notiz</span></div>
+      <div class="row"><span class="ico"></span><span class="t">Arbeitsbereich <b>Design</b></span><span class="m">4 Einträge</span></div>
+    </div>
+    <aside class="side">
+      <div class="card strong"><h4>Design-Review <span class="lnk">Öffnen →</span></h4>
+        <div class="kv"><span>Typ</span><span>Termin</span><span>Wann</span><span>Di 29. Sep, 14:00</span><span>Ablageort</span><span>Marketing</span></div>
+        <p class="muted" style="margin:8px 0 0">Feedback zur zweiten Runde der Startseite, Nina bringt die Prototypen mit.</p>
+      </div>
+    </aside>
+  </div></div>
+
+  <!-- ========== 6 · Eintrag ========== -->
+  <h2>6 · Eintrag und Arbeitsbereich</h2>
+  <ul class="diff">
+    <li>Mitte in <b>Lesebreite</b>: Cover, Titel, Text. Nichts lenkt ab.</li>
+    <li><b>Details rechts</b> statt der Karte am Textende: Kennzahlen, Ablageort, Verknüpfte Einträge, Cover und Icon.</li>
+    <li><b>Kein Reiter leuchtet</b>; der Pfad über dem Titel sagt, wo man ist (wie in Drive), ‹ › oben links sind der Verlauf.</li>
+    <li>Werkzeuge (Favorit, Typ, Menü) rechts in der Reiterzeile.</li>
+  </ul>
+  <div class="frame-wrap"><div class="frame" data-nav="ws" data-tab="" data-fwd="1" data-actions="☆|Notiz ▾|⋯">
+    <div class="main read">
+      <div class="crumb"><span>Übersicht</span><span>›</span><span>Marketing</span><span>›</span><b>Design-System Notizen</b></div>
+      <div class="cover"></div>
+      <div class="tools"><span class="pill on">Inhalt</span><span class="pill">Verknüpfte Einträge <span class="muted">3</span></span></div>
+      <div class="etitle">Design-System Notizen</div>
+      <p>Abstände auf einem 4-px-Raster, Rundungen 14 / 24 / 32. Die großen Zahlen bleiben dünn (250), Titel fett.</p>
+      <p>Offen: wie wir die Glas-Fläche des Eingabefelds im Dunkeln lesbar halten, ohne den Rand härter zu machen.</p>
+      <p class="muted">Tippen zum Weiterschreiben …</p>
+    </div>
+    <aside class="side">
+      <div class="card"><h4>Details</h4>
+        <div class="kv"><span>Typ</span><span>Notiz</span><span>Erstellt</span><span>12. Sep</span><span>Geändert</span><span>heute, 09:12</span><span>Ablageort</span><span>Marketing, Design</span><span>Wörter</span><span>184</span></div>
+      </div>
+      <div class="card"><h4>Verknüpfte Einträge <span class="lnk">+</span></h4>
+        <div class="row"><span class="chk"></span><span class="t">Fotos für Website sichten</span></div>
+        <div class="row"><span class="ico"></span><span class="t">Design-Review</span></div>
+        <div class="row"><span class="ico"></span><span class="t">shooting-12-04.jpg</span></div>
+      </div>
+      <div class="card"><h4>Cover und Icon</h4><div class="muted">Verlauf „Morgen“ · Icon: Pinsel</div></div>
+    </aside>
+  </div></div>
+
+  <!-- ========== 7 · Einstellungen ========== -->
+  <h2>7 · Profil und Einstellungen</h2>
+  <ul class="diff">
+    <li><b>Profil und Einstellungen sind eine Seite</b>, erreichbar über die Konto-Zeile unten links oder mit ⌘,.</li>
+    <li><b>Untermenü links</b>: Konto, Darstellung, Navigation, Analyse, Feedback, Kurzbefehle, Hilfe.</li>
+    <li>Die Karten aus dem Handy-Blatt bleiben inhaltlich gleich, nur breiter und in Abschnitten.</li>
+  </ul>
+  <div class="frame-wrap"><div class="frame settings-nav" data-nav="account" data-tab="" data-actions="">
+    <div class="sub">
+      <div class="nav-row active"><span class="ico"></span>Konto</div>
+      <div class="nav-row"><span class="ico"></span>Darstellung</div>
+      <div class="nav-row"><span class="ico"></span>Navigation</div>
+      <div class="nav-row"><span class="ico"></span>Analyse</div>
+      <div class="nav-row"><span class="ico"></span>Feedback</div>
+      <div class="nav-row"><span class="ico"></span>Kurzbefehle</div>
+      <div class="nav-row"><span class="ico"></span>Hilfe</div>
+    </div>
+    <div class="main read">
+      <div class="crumb"><span>Profil</span><span>›</span><b>Konto</b></div>
+      <h3 class="title">Konto</h3>
+      <div class="row" style="border:0"><span class="ico avatar" style="width:40px;height:40px"></span><div><b>Paul Angeles</b><br><span class="muted">paul@paralist.app · Pro seit Juni 2025</span></div><span class="btn" style="margin-left:auto">Bild ändern</span></div>
+      <div class="section-h">Analyse</div>
+      <div class="set-grid"><div class="card">Nutzungszeit<div class="num">42<small>Min heute</small></div></div><div class="card">Serie<div class="num">7<small>Tage</small></div></div></div>
+      <div class="section-h">Darstellung</div>
+      <div class="set-list"><div class="row"><span class="t">System</span><span class="m" style="color:var(--accent)">✓</span></div><div class="row"><span class="t">Hell</span></div><div class="row"><span class="t">Dunkel</span></div></div>
+      <div class="section-h">Konto</div>
+      <div class="set-list"><div class="row"><span class="t">Abmelden</span></div><div class="row"><span class="t" style="color:#c8321a">Konto löschen</span></div></div>
+    </div>
+  </div></div>
+
+  <!-- ========== 8 · Eingeklappt ========== -->
+  <h2>8 · Seitenleiste eingeklappt</h2>
+  <ul class="diff">
+    <li><b>Der Klapp-Knopf bleibt oben links</b>, an derselben Stelle wie in der offenen Leiste, nur jetzt am Rand der Reiterzeile.</li>
+    <li>Die Reiter bleiben; unter 1280 px nur als Icons. <b>Die Suche wird ein runder Knopf</b> rechts.</li>
+    <li>Jede Sammlung ist per Kürzel erreichbar (G, dann Buchstabe), darum fehlt ohne Leiste nichts.</li>
+  </ul>
+  <div class="frame-wrap"><div class="frame collapsed icons" data-nav="" data-tab="tasks" data-actions="Liste·Board|Filter|🔍">
+    <div class="main">
+      <h3 class="title">Aufgaben<span class="alt">12 offen</span></h3>
+      <div class="tools"><span class="pill on">Alle</span><span class="pill">Diese Woche</span><span class="pill">Marketing</span><span class="pill ghost">+ Ansicht</span></div>
+      <div class="thead"><span style="width:13px"></span><span class="t">Aufgabe</span><span class="m">Fällig</span><span class="m">Dringlich</span><span class="m">Ablageort</span></div>
+      <div class="row"><span class="chk"></span><span class="t">Angebot an Müller schicken</span><span class="m w">Heute</span><span class="m w"><span class="tag hot">Hoch</span></span><span class="m w">Vertrieb</span></div>
+      <div class="row"><span class="chk"></span><span class="t">Fotos für Website sichten</span><span class="m w">Heute</span><span class="m w"><span class="tag">Mittel</span></span><span class="m w">Marketing</span></div>
+      <div class="row"><span class="chk"></span><span class="t">Wochenplan schreiben</span><span class="m w">Heute</span><span class="m w"><span class="tag">Niedrig</span></span><span class="m w">Eingang</span></div>
+      <div class="list-head">Morgen <span class="muted">2</span></div>
+      <div class="row"><span class="chk"></span><span class="t">Rechnung Q3 prüfen</span><span class="m w">Mi 30.</span><span class="m w"><span class="tag">Mittel</span></span><span class="m w">Finanzen</span></div>
+      <div class="row muted"><span class="chk"></span><span class="t">Neue Aufgabe …</span></div>
+    </div>
+    <aside class="side">
+      <div class="card"><h4>Ansicht</h4><div class="kv"><span>Gruppieren</span><span>Fälligkeit ▾</span><span>Sortieren</span><span>Dringlichkeit ▾</span><span>Erledigte</span><span>ausblenden ○</span></div></div>
+      <div class="card"><h4>Kürzel <span class="lnk">?</span></h4><div class="kv"><span>Eingang</span><span><span class="kbd">G I</span></span><span>Favoriten</span><span><span class="kbd">G F</span></span><span>Projekte</span><span><span class="kbd">G P</span></span><span>Lesezeichen</span><span><span class="kbd">G L</span></span><span>Archiv</span><span><span class="kbd">G A</span></span><span>Leiste</span><span><span class="kbd">⌘\\</span></span></div></div>
+    </aside>
+  </div></div>
+
+  <!-- ========== 9 · Kurzbefehle ========== -->
+  <h2>9 · Profil › Kurzbefehle</h2>
+  <ul class="diff">
+    <li><b>Alle Kürzel auf einer Seite</b>, nach Gruppen. Die Taste ? öffnet genau diese Seite.</li>
+    <li><b>Schilder ein- und ausblenden</b>: in der Seitenleiste, in der Reiterzeile, oder beide aus. Wer die Kürzel kennt, bekommt eine ruhigere Leiste.</li>
+    <li>Ein Akkord wie <span class="kbd">G I</span> heißt: G drücken, loslassen, dann innerhalb einer Sekunde I.</li>
+  </ul>
+  <div class="frame-wrap"><div class="frame settings-nav" data-nav="account" data-tab="" data-actions="">
+    <div class="sub">
+      <div class="nav-row"><span class="ico"></span>Konto</div>
+      <div class="nav-row"><span class="ico"></span>Darstellung</div>
+      <div class="nav-row"><span class="ico"></span>Navigation</div>
+      <div class="nav-row"><span class="ico"></span>Analyse</div>
+      <div class="nav-row"><span class="ico"></span>Feedback</div>
+      <div class="nav-row active"><span class="ico"></span>Kurzbefehle</div>
+      <div class="nav-row"><span class="ico"></span>Hilfe</div>
+    </div>
+    <div class="main read">
+      <div class="crumb"><span>Profil</span><span>›</span><b>Kurzbefehle</b></div>
+      <h3 class="title">Kurzbefehle</h3>
+      <div class="section-h">Schilder zeigen</div>
+      <div class="set-list"><div class="row"><span class="t">In der Seitenleiste</span><span class="m" style="color:var(--accent)">●</span></div><div class="row"><span class="t">In der Reiterzeile</span><span class="m" style="color:var(--accent)">●</span></div></div>
+      <div class="section-h">Seiten</div>
+      <div class="set-list"><div class="row"><span class="t">Übersicht · Kalender · Aufgaben · Medien</span><span class="m"><span class="kbd">1</span> <span class="kbd">2</span> <span class="kbd">3</span> <span class="kbd">4</span></span></div><div class="row"><span class="t">Zurück · Vorwärts</span><span class="m"><span class="kbd">⌘[</span> <span class="kbd">⌘]</span></span></div></div>
+      <div class="section-h">Sammlungen · erst G, dann der Buchstabe</div>
+      <div class="set-list"><div class="row"><span class="t">Eingang · Favoriten · Projekte</span><span class="m"><span class="kbd">G I</span> <span class="kbd">G F</span> <span class="kbd">G P</span></span></div><div class="row"><span class="t">Ressourcen · Lesezeichen · Archiv</span><span class="m"><span class="kbd">G R</span> <span class="kbd">G L</span> <span class="kbd">G A</span></span></div></div>
+      <div class="section-h">Überall</div>
+      <div class="set-list"><div class="row"><span class="t">Neu · Suche · Seitenleiste</span><span class="m"><span class="kbd">N</span> <span class="kbd">⌘K</span> <span class="kbd">⌘\</span></span></div><div class="row"><span class="t">Profil · Diese Seite · Schließen</span><span class="m"><span class="kbd">⌘,</span> <span class="kbd">?</span> <span class="kbd">Esc</span></span></div></div>
+    </div>
+  </div></div>
+
+  <p class="note" style="margin-top:40px">Alle Namen und Zahlen in den Rahmen sind Beispieldaten.</p>
+</div>
+
+<script>
+/* Seitenleiste und Reiterzeile sind in jedem Rahmen gleich: hier einmal gebaut. */
+(function () {
+  const tabs = [["home", "Übersicht", "1"], ["calendar", "Kalender", "2"], ["tasks", "Aufgaben", "3"], ["media", "Medien", "4"]];
+  const sets = [["inbox", "Eingang", "4", "I"], ["fav", "Favoriten", "", "F"], ["proj", "Projekte", "", "P"], ["res", "Ressourcen", "", "R"], ["bm", "Lesezeichen", "", "L"], ["arch", "Archiv", "", "A"]];
+  const soon = [["planner", "Planer"], ["people", "Personen"], ["tags", "Tags"]];
+  /* Jeder Tab ist eine auf- und zuklappbare Gruppe unter „Arbeitsbereiche“. */
+  const groups = [["Meine", true, [["ws", "Marketing"], ["ws2", "Vertrieb"], ["ws3", "Reise"]]], ["Arbeit", false, [["ws4", "Kunden"], ["ws5", "Intern"]]]];
+  const kbd = (k) => `<span class="kbd">${k}</span>`;
+  const row = (id, label, count, active, extra = "", icon = "ico", cls = "") =>
+    `<div class="nav-row${active === id ? " active" : ""}${cls}"><span class="${icon}"></span><span class="lbl">${label}</span>${count ? `<span class="count">${count}</span>` : ""}${extra ? `<span class="keys">${extra}</span>` : ""}</div>`;
+  function nav(active) {
+    return `<aside class="nav">
+      <div class="nav-tab"><span>Paralist</span><span class="toggle" title="Seitenleiste einklappen ⌘\\"></span></div>
+      <div class="nav-search"><span class="ico"></span>Suchen${kbd("⌘K")}</div>
+      <div class="nav-new"><span>+ Neu</span>${kbd("N")}</div>
+      <div class="nav-scroll">
+      <div class="nav-h"><span>Sammlungen</span></div>
+      ${sets.map(([id, l, c, k]) => row(id, l, c, active, kbd("G " + k), "ico", id === "arch" ? " faint" : "")).join("")}
+      ${soon.map(([id, l]) => row(id, l, "", active, kbd("bald"), "ico", " soon")).join("")}
+      <div class="nav-h"><span>Arbeitsbereiche</span><span>+ Tab</span></div>
+      ${groups.map(([name, open, list]) => `<div class="nav-group${open ? "" : " closed"}"><div class="nav-group-head"><span class="chev">${open ? "▾" : "▸"}</span>${name}<span class="keys">${open ? "+" : `<span class="count">${list.length}</span>`}</span></div>${open ? list.map(([id, l]) => row(id, l, "", active)).join("") : ""}</div>`).join("")}
+      </div>
+      <div class="nav-foot">
+        ${row("level", "Stufe 3<span class=\"hint\">160 XP bis Stufe 4</span>", "", active, "", "ico ring")}
+        ${row("account", "Paul Angeles<span class=\"hint\">Pro</span>", "", active, '<span class="ico gear"></span>' + kbd("⌘,"), "ico avatar")}
+      </div></aside>`;
+  }
+  function top(frame) {
+    const collapsed = frame.classList.contains("collapsed");
+    const actions = (frame.dataset.actions || "").split("|").filter(Boolean).map((a) =>
+      a.includes("·") ? `<span class="seg">${a.split("·").map((s, i) => `<span class="${i === 1 ? "on" : ""}">${s}</span>`).join("")}</span>`
+        : a === "🔍" ? `<span class="btn round" title="Suchen ⌘K"></span>`
+        : /^[+☆⋯]$/.test(a) ? `<span class="btn icon" title="${a}"></span>` : `<span class="btn">${a}</span>`).join("");
+    const toggle = collapsed ? `<span class="toggle" title="Seitenleiste ausklappen ⌘\\"></span>` : "";
+    const hist = `<span class="hist"><span title="Zurück ⌘[">‹</span><span class="${frame.dataset.fwd ? "" : "off"}" title="Vorwärts ⌘]">›</span></span>`;
+    const strip = `<div class="tabs">${tabs.map(([id, l, k]) => `<span class="pill${frame.dataset.tab === id ? " on" : ""}"><span class="ico"></span><span class="lbl">${l}</span>${kbd(k)}</span>`).join("")}</div>`;
+    return `<div class="top"><div class="top-lead">${toggle}${hist}</div>${strip}<div class="top-actions">${actions}</div></div>`;
+  }
+  document.querySelectorAll(".frame").forEach((frame) => {
+    frame.insertAdjacentHTML("afterbegin", nav(frame.dataset.nav) + top(frame));
+  });
+})();
+</script>
+</body>
+</html>

@@ -206,4 +206,9 @@
   <symbol id="icon-panel-open" viewBox="0 0 24 24" fill="none">
     <path fill="currentColor" d="M19 3c1.1046 0 2 0.89543 2 2v14c0 1.1046 -0.8954 2 -2 2H5c-1.10457 0 -2 -0.8954 -2 -2V5c0 -1.10457 0.89543 -2 2 -2zM5 16v3h14v-3zm0 -2h14V5H5zm6.293 -5.79297c0.3905 -0.39042 1.0235 -0.39042 1.414 0l2.4395 2.43947c0.3149 0.315 0.0919 0.8534 -0.3535 0.8535H9.20703c-0.44538 -0.0001 -0.66842 -0.5385 -0.35351 -0.8535z" />
   </symbol>
+  <!-- svg/symbol: Fenster mit schmaler Spalte links — Seitenleiste am Desktop ein- und ausklappen -->
+  <symbol id="icon-sidebar" viewBox="0 0 24 24" fill="none">
+    <rect x="3.5" y="4.5" width="17" height="15" rx="3" stroke="currentColor" stroke-width="1.6" />
+    <path d="M9.5 4.5v15" stroke="currentColor" stroke-width="1.6" />
+  </symbol>
 </svg>

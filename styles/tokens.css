@@ -64,12 +64,13 @@
  * styles/drawing.css         -> Zeichenfläche und Werkzeugleiste
  * styles/video-player.css    -> YouTube-Player als dunkler Block an der Stelle einer Video-Karte (Eintrag, Lesezeichen)
  * styles/tokens-desk.css     -> die Werte der Desktop-Fassung (Spalten, Flächen, große Zahlen)
- * styles/desk.css            -> Desktop: Raster aus Seitenleiste, Seite und rechter Spalte; Kopfzeile, Eingabefeld unten
+ * styles/desk.css            -> Desktop: Raster aus Seitenleiste, Reiterzeile, Seite und rechter Spalte; Zuklappen, Suchfeld, Eingabefeld unten
+ * styles/desk-head.css       -> Desktop: Wortmarke mit Klapp-Knopf; Reiterzeile mit Zurück, Vorwärts und den vier Reitern
  * styles/desk-overlays.css   -> Desktop: große Blätter, Auswahl-Blatt, Menü und Update-Fenster als Dialoge in der Mitte, samt Auftauchen
  * styles/desk-views.css      -> Desktop: wie Übersicht, Kalender, Aufgaben, Medien und Eintrag die Breite nutzen
  * styles/desk-hover.css      -> Desktop: Überfahren, Drücken und Tastatur-Rahmen für Seite, Kopfzeile und Dialoge
- * styles/desk-nav.css        -> Desktop: Seitenleiste links mit Seiten, Sammlungen und Arbeitsbereichen
- * styles/desk-nav-tip.css    -> Desktop: Tasten-Schilder, Tipp-Karte am Ende der Seitenleiste und das Auftauchen ihrer Blöcke
+ * styles/desk-nav.css        -> Desktop: Seitenleiste mit „Neu“, Sammlungen, Tab-Gruppen; ihr Fuß (Stufe, Konto) in styles/desk-nav-foot.css
+ * styles/desk-kbd.css        -> Desktop: blaue Tasten-Schilder und das Auftauchen der Blöcke der Seitenleiste
  * styles/desk-rail.css       -> Desktop: rechte Spalte mit nächstem Termin, Aufgaben und zuletzt Geöffnetem
  * styles/desk-rail-tiles.css -> Desktop: die zwei Kacheln oben rechts (Eingang-Stapel, Stufen-Ring) und die Tagesleiste
  * styles/dashboard.css       -> Desktop: Kopf der Übersicht mit Zahlen, Aktivitätsband und zwei großen Karten
@@ -84,8 +85,7 @@
  * --text                    -> Textfarbe für Überschriften und normale Schrift
  * --muted                   -> hellere Textfarbe für Hinweise und das Add-Icon
  * --title-alt               -> Grauton des zweiten Wortes in der großen Überschrift
- * --title-alt-gap           -> Luft zwischen dem ersten und dem grauen zweiten Wort
-                               („Medien“ neben „Ressourcen“ und umgekehrt)
+ * --title-alt-gap           -> Luft zwischen dem ersten und dem grauen zweiten Wort („Medien“ neben „Ressourcen“)
  * --line                    -> Farbe der dünnen Trennlinie unter Arbeitsbereichen
  * --shadow                  -> weicher Schatten unter Karten und Suche
  * --icon-strong             -> dunkle Icon-Farbe oben (Profil)

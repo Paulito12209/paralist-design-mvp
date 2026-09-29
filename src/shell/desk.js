@@ -1,8 +1,8 @@
 /*
- * Die Desktop-Fassung: hängt die Seitenleiste links und die Spalte rechts ins
- * Gerätefenster, hält beide aktuell und kennt die Tastenkürzel. Das Modul wird
- * erst geladen, wenn das Fenster breit genug ist (src/main.js) — am Handy
- * kommt es gar nicht erst an.
+ * Die Desktop-Fassung: hängt Wortmarke und Reiterzeile, die Seitenleiste
+ * links und die Spalte rechts ins Gerätefenster, hält alles aktuell und kennt
+ * die Tastenkürzel. Das Modul wird erst geladen, wenn das Fenster breit genug
+ * ist (src/main.js) — am Handy kommt es gar nicht erst an.
  * Pfad: src/shell/desk.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -10,31 +10,39 @@
  * clockTick   -> wie oft die rechte Spalte „jetzt“ nachstellt und der Tageswechsel
  *                geprüft wird (Millisekunden)
  *
- * Welche Zifferntaste welche Hauptseite öffnet, steht bei den Zeilen der
- * Seitenleiste (pageLinks in src/shell/desk-nav-parts.js) — so können Taste
- * und Hinweis-Schild daneben nie auseinanderlaufen.
+ * Welche Taste welchen Reiter und welche Sammlung öffnet, steht in
+ * src/shell/desk-links.js (pageLinks, collectionLinks, chordWindow) — so können
+ * Taste und Schild daneben nie auseinanderlaufen.
  *
  * Tastenkürzel (nur, solange nicht in ein Feld getippt wird und kein Blatt offen ist):
- *   N            -> Eingabefeld zum Anlegen öffnen
- *   /  oder ⌘K   -> ins Suchfeld springen
- *   1 bis 4      -> Übersicht, Kalender, Aufgaben, Medien
- *   Escape       -> schließt, was obenauf liegt: Menü, Auswahl-Blatt, Dialog,
- *                   Dateiansicht, zuletzt das Eingabefeld — auch beim Tippen darin
+ *   N              -> Eingabefeld zum Anlegen öffnen
+ *   /  oder ⌘K     -> ins Suchfeld springen (klappt die Seitenleiste dafür auf)
+ *   1 bis 4        -> Übersicht, Kalender, Aufgaben, Medien
+ *   G, dann I F P R L A -> Eingang, Favoriten, Projekte, Ressourcen, Lesezeichen, Archiv
+ *   ⌘[  und  ⌘]    -> zurück und vor
+ *   ⌘\             -> Seitenleiste ein- und ausklappen
+ *   ⌘,             -> Profil und Einstellungen
+ *   Escape         -> schließt, was obenauf liegt: Menü, Auswahl-Blatt, Dialog,
+ *                     Dateiansicht, zuletzt das Eingabefeld — auch beim Tippen darin
+ * Statt ⌘ gilt außerhalb des Macs Strg.
  */
 
 import { emit, events, on } from "../core/bus.js";
 import { dayKey } from "../core/dates.js";
 import { dom, el } from "../core/dom.js";
+import { load } from "../core/lazy.js";
 import { closeCtxMenu } from "../ui/ctx-menu.js";
 import { isDesk, isRailShown, onDeskChange } from "../ui/desk-mode.js";
-import { showTab } from "../ui/router.js";
+import { goBack, goForward, showTab } from "../ui/router.js";
 import { closeSheet } from "../ui/sheet.js";
-import { pageLinks } from "./desk-nav-parts.js";
-import { mountDeskNav, renderDeskNav } from "./desk-nav.js";
+import { isNavClosed, mountDeskHead, renderDeskHead, setNavClosed } from "./desk-head.js";
+import { chordKey, chordWindow, collectionLinks, pageLinks } from "./desk-links.js";
+import { mountDeskNav, openCollection, renderDeskNav } from "./desk-nav.js";
 import { mountDeskRail, renderDeskRail } from "./desk-rail.js";
 
 const clockTick = 60000;
 const navKeys = Object.fromEntries(pageLinks.map((link) => [link.key, link.tab]));
+const chordTargets = Object.fromEntries(collectionLinks.map((link) => [link.key.toLowerCase(), link.id]));
 
 /* Offene Ebenen, über denen kein Kürzel etwas auslösen darf. */
 const openLayers =
@@ -45,9 +53,14 @@ let clock = null;
 /* Tag der letzten Zeichnung: wechselt er über Nacht, stimmen „heute“-Zahlen nicht mehr. */
 let shownDay = dayKey(new Date());
 
-/* Seitenleiste neu zeichnen — nur, wenn sie gerade zu sehen ist. */
+/* „G“ wurde gedrückt: bis zu diesem Zeitpunkt zählt der nächste Buchstabe als Sammlung. */
+let chordUntil = 0;
+
+/* Seitenleiste und Reiterzeile neu zeichnen — nur, wenn sie gerade zu sehen sind. */
 function refreshNav() {
-  if (isDesk()) renderDeskNav();
+  if (!isDesk()) return;
+  renderDeskNav();
+  renderDeskHead();
 }
 
 /* Rechte Spalte neu zeichnen — nur, wenn sie gerade zu sehen ist. */
@@ -136,6 +149,47 @@ function dropStaleFocus() {
   if (active && active !== document.body && !isTyping(active)) active.blur();
 }
 
+/* Ins Suchfeld springen. Es liegt in der Seitenleiste — ist sie zu, klappt sie auf. */
+function focusSearch() {
+  if (isNavClosed()) setNavClosed(false);
+  dom.searchInput.focus();
+}
+
+/*
+ * Kürzel mit der Befehlstaste (⌘ am Mac, Strg sonst). Sie gelten auch beim
+ * Tippen in einem Feld nur für die Suche — die übrigen gehören dann dem Feld.
+ * Gibt `true` zurück, wenn die Taste hier etwas getan hat.
+ */
+function onCommandKey(event) {
+  const key = event.key.toLowerCase();
+  if (key === "k") {
+    focusSearch();
+    return true;
+  }
+  if (isTyping(event.target)) return false;
+  if (key === "\\") setNavClosed(!isNavClosed());
+  else if (key === "[") goBack();
+  else if (key === "]") goForward();
+  else if (key === ",") load("profile").then((module) => module.open());
+  else return false;
+  return true;
+}
+
+/* „G“ öffnet das Fenster für den Buchstaben einer Sammlung; der Buchstabe schließt es wieder. */
+function onChordKey(event) {
+  const key = event.key.toLowerCase();
+  if (Date.now() < chordUntil) {
+    chordUntil = 0;
+    if (!chordTargets[key]) return false;
+    dropStaleFocus();
+    openCollection(chordTargets[key]);
+    return true;
+  }
+  if (key !== chordKey.toLowerCase()) return false;
+  chordUntil = Date.now() + chordWindow;
+  return true;
+}
+
 function onKeyDown(event) {
   if (!isDesk() || event.defaultPrevented) return;
   if (event.key === "Escape") {
@@ -146,13 +200,23 @@ function onKeyDown(event) {
     if (closeTopLayer()) event.preventDefault();
     return;
   }
-  const commandK = (event.metaKey || event.ctrlKey) && event.key.toLowerCase() === "k";
-  if (!commandK && (event.metaKey || event.ctrlKey || event.altKey || isTyping(event.target))) return;
+  /* Alt und Umschalt sind erlaubt: auf deutschen Tastaturen braucht „\“, „[“
+     und „]“ eine davon. Es zählt das Zeichen, nicht die Taste. */
+  const command = event.metaKey || event.ctrlKey;
+  if (command && !document.querySelector(openLayers)) {
+    if (onCommandKey(event)) event.preventDefault();
+    return;
+  }
+  if (event.metaKey || event.ctrlKey || event.altKey || isTyping(event.target)) return;
   if (document.querySelector(openLayers)) return;
 
-  if (commandK || event.key === "/") {
+  if (onChordKey(event)) {
     event.preventDefault();
-    dom.searchInput.focus();
+    return;
+  }
+  if (event.key === "/") {
+    event.preventDefault();
+    focusSearch();
     return;
   }
   if (event.key === "n" || event.key === "N") {
@@ -179,7 +243,8 @@ function createColumn(className, label) {
  * Seitenleiste und rechte Spalte einhängen. Darf mehrmals aufgerufen werden —
  * etwa bei jedem Wechsel über die Breitengrenze; eingehängt wird nur einmal,
  * danach hält onDeskChange unten alles aktuell.
- * @param handlers { openWorkspaceMenu } aus den Seiten, von src/main.js hereingegeben.
+ * @param handlers { openWorkspaceMenu, openTabMenu, profilePhoto } aus den
+ *   Seiten, von src/main.js hereingegeben.
  */
 export function initDesk(handlers = {}) {
   if (mounted) return;
@@ -187,13 +252,16 @@ export function initDesk(handlers = {}) {
 
   const nav = createColumn("desk-nav", "Seitenleiste");
   const rail = createColumn("desk-rail", "Heute und zuletzt");
-  /* Reihenfolge im Gerätefenster: Kopfzeile, Seitenleiste, Inhalt, rechte
-     Spalte — so springt die Tab-Taste in derselben Folge, in der man liest. */
+  /* Reihenfolge im Gerätefenster: Wortmarke, Suche, Seitenleiste, Reiterzeile,
+     Inhalt, rechte Spalte — so springt die Tab-Taste in derselben Folge, in
+     der man liest. Die Reiterzeile hängt sich selbst vor den Inhalt. */
   document.querySelector(".top-bar").after(nav);
   dom.content.after(rail);
 
+  mountDeskHead();
   mountDeskNav(nav, handlers);
   mountDeskRail(rail);
+  on(events.profileChanged, refreshNav);
 
   on(events.dataChanged, refreshAll);
   on(events.xpChanged, refreshAll);

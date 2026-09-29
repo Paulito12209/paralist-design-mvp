@@ -332,6 +332,23 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   „1 Std 20 Min“ (nicht als `m:ss`), Zeitraum umschalten, Darstellung wechseln,
   Bild groß ansehen und mit Browser-Zurück schließen.
 
+**Desktop (ab 1024 px)**
+- Reiter oben anklicken und mit 1–4 wechseln; der gewählte ist gefüllt, auf
+  einer Sammlung oder einem Eintrag keiner. Unter 1280 px nur Icon und Taste.
+- ‹ und › oben links, ⌘[ und ⌘] (Strg außerhalb des Macs) und Browser-Zurück
+  führen durch denselben Verlauf.
+- Alle sechs Sammlungen links öffnen, auch per G und Buchstabe (G I, G F, G P,
+  G R, G L, G A); die offene ist markiert.
+- Seitenleiste mit dem Knopf und mit ⌘\ zu- und aufklappen, neu laden: der
+  Zustand bleibt. Der Klapp-Knopf steht dann links in der Reiterzeile, die
+  Suche als runder Knopf rechts; das Eingabefeld und „Ansicht konfigurieren“
+  rücken mit.
+- Tab-Gruppe unter „Arbeitsbereiche“ zuklappen (Zahl erscheint), Plus am Kopf
+  legt einen Arbeitsbereich darin an, „+ Tab“ einen Tab — benannt wird auf der
+  Übersicht. Rechtsklick auf Kopf oder Zeile öffnet das Menü, „Umbenennen“
+  springt zur Übersicht.
+- Unten: Stufe öffnet Fortschritt, Konto und ⌘, öffnen die Einstellungen.
+
 **Immer**
 - `python3 tools/version.py` ausführen, dann meldet `python3 tools/check.py` „alles in Ordnung“.
 - Konsole muss leer sein.

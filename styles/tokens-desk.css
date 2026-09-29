@@ -1,6 +1,6 @@
 /*
  * Die Werte der Desktop-Fassung (ab 1024px Fensterbreite: Seitenleiste links,
- * Seite in der Mitte, ab 1280px zusätzlich die Spalte rechts).
+ * Reiterzeile und Seite in der Mitte, ab 1280px zusätzlich die Spalte rechts).
  * Pfad: styles/tokens-desk.css
  *
  * Es gibt hier absichtlich KEINE neuen Farbtöne: jede Fläche und jede Tinte
@@ -13,7 +13,12 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * MASSE DER SPALTEN
- * --desk-nav-width          -> Breite der Seitenleiste links
+ * --desk-nav-open           -> Breite der Seitenleiste links, wenn sie offen ist
+ * --desk-nav-width          -> ihre Breite gerade jetzt: offen wie --desk-nav-open, zugeklappt
+ *                              setzt styles/desk.css sie auf 0 (daran richtet sich alles, was
+ *                              neben der Leiste steht)
+ * --desk-top-height         -> Höhe der Reiterzeile und der Wortmarke links daneben
+ * --desk-nav-pad            -> Rand der Seitenleiste links und rechts
  * --desk-rail-width         -> Breite der Spalte rechts
  * --desk-gutter             -> Luft zwischen den Spalten und zum Fensterrand
  * --desk-read-width         -> größte Breite von Lese-Seiten (Eintrag, Sammlung, Suche)
@@ -37,7 +42,9 @@
  * TINTE (für Punkte, Striche und Balken)
  * --desk-ink                -> volle Tinte: Text-Ton als Farbe für Grafiken
  * --desk-level-0 … -4       -> fünf Helligkeiten der Punkte im Aktivitätsband, 0 = nichts, 4 = viel
- * --desk-kbd-bg             -> Fläche der kleinen Tasten-Schilder („N“, „/“)
+ * --desk-chip-bg            -> graue Fläche kleiner Pillen und runder Pfeile (Kopf der Übersicht)
+ * --desk-kbd-bg / --desk-kbd-fg -> Fläche und Schrift der Tasten-Schilder („N“, „G I“, „1“):
+ *                              eine Tönung des Verknüpfen-Blaus, damit alle Kürzel eine Familie sind
  * --desk-scroll-thumb       -> Farbe des Rollbalkens, solange die Maus über einer Spalte steht
  *
  * RUNDUNGEN
@@ -54,6 +61,7 @@
  * --desk-label-size         -> kleine Beschriftungen (Kartentitel, Chips)
  * --desk-nav-item-size      -> Schrift der Zeilen in der Seitenleiste
  * --desk-nav-item-height    -> Höhe einer Zeile in der Seitenleiste
+ * --desk-nav-group-gap      -> Luft über „Sammlungen“ und „Arbeitsbereiche“
  *
  * BEWEGUNG
  * --desk-ease               -> Kurve aller Übergänge (weich auslaufend)
@@ -61,13 +69,17 @@
  * --desk-enter              -> Dauer des Auftauchens von Karten
  * --desk-enter-rise         -> aus welcher Tiefe Karten beim Auftauchen kommen
  * --desk-enter-step         -> Verzögerung von Karte zu Karte beim Auftauchen
+ * --desk-fold               -> Dauer, mit der die Seitenleiste auf- und zuklappt
  *
  * Die Grundwerte des Handys, die am Desktop anders sind (Seitenrand, Titel,
  * Platz am Seitenende), werden unten in der @media-Abfrage überschrieben.
  */
 
 :root {
-  --desk-nav-width: 288px;
+  --desk-nav-open: 264px;
+  --desk-nav-width: var(--desk-nav-open);
+  --desk-top-height: 60px;
+  --desk-nav-pad: 14px;
   --desk-rail-width: 360px;
   --desk-gutter: 24px;
   --desk-read-width: 820px;
@@ -90,7 +102,9 @@
   --desk-level-2: rgba(var(--nav-glow-color), 0.42);
   --desk-level-3: rgba(var(--nav-glow-color), 0.64);
   --desk-level-4: rgba(var(--nav-glow-color), 0.9);
-  --desk-kbd-bg: rgba(var(--nav-glow-color), 0.08);
+  --desk-chip-bg: rgba(var(--nav-glow-color), 0.08);
+  --desk-kbd-bg: color-mix(in srgb, var(--link-color) 12%, transparent);
+  --desk-kbd-fg: var(--link-color);
   --desk-scroll-thumb: rgba(var(--nav-glow-color), 0.2);
   --desk-tint: linear-gradient(var(--desk-hover), var(--desk-hover));
   --desk-tint-on-dark: linear-gradient(color-mix(in srgb, var(--nav-bg) 12%, transparent), color-mix(in srgb, var(--nav-bg) 12%, transparent));
@@ -105,14 +119,16 @@
   --desk-hero-num-size: 104px;
   --desk-tile-num-size: 34px;
   --desk-label-size: 13px;
-  --desk-nav-item-size: 15px;
-  --desk-nav-item-height: 40px;
+  --desk-nav-item-size: 14px;
+  --desk-nav-item-height: 34px;
+  --desk-nav-group-gap: 20px;
 
   --desk-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --desk-fast: 0.16s;
   --desk-enter: 0.6s;
   --desk-enter-rise: 12px;
   --desk-enter-step: 60ms;
+  --desk-fold: 0.28s;
 }
 
 /* Dunkelmodus, vom System gewählt: die ruhige Fläche ist die Kartenfarbe
@@ -129,6 +145,9 @@
     --desk-sheen: rgba(var(--nav-glow-color), 0.14);
     --desk-backdrop: color-mix(in srgb, var(--bg) 60%, transparent);
     --desk-tint-on-dark: linear-gradient(rgba(var(--nav-glow-color), 0.14), rgba(var(--nav-glow-color), 0.14));
+    /* Tasten-Schilder: helleres Blau, auf Schwarz wäre das volle zu dunkel */
+    --desk-kbd-bg: color-mix(in srgb, var(--link-color) 22%, transparent);
+    --desk-kbd-fg: color-mix(in srgb, var(--link-color) 55%, white);
   }
 }
 
@@ -143,6 +162,8 @@
   --desk-sheen: rgba(var(--nav-glow-color), 0.14);
   --desk-backdrop: color-mix(in srgb, var(--bg) 60%, transparent);
   --desk-tint-on-dark: linear-gradient(rgba(var(--nav-glow-color), 0.14), rgba(var(--nav-glow-color), 0.14));
+  --desk-kbd-bg: color-mix(in srgb, var(--link-color) 22%, transparent);
+  --desk-kbd-fg: color-mix(in srgb, var(--link-color) 55%, white);
 }
 
 /* Am Desktop mehr Luft: breiterer Seitenrand, größerer Titel, und am
