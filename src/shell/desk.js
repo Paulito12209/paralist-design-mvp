@@ -16,13 +16,14 @@
  *
  * Tastenkürzel (nur, solange nicht in ein Feld getippt wird und kein Blatt offen ist):
  *   N              -> Eingabefeld zum Anlegen öffnen
- *   /  oder ⌘K     -> ins Suchfeld springen (klappt die Seitenleiste dafür auf)
+ *   /  oder ⌘K     -> Such-Palette öffnen (src/shell/search-palette.js); bei offener
+ *                     Palette markiert ⌘K das Suchwort, alle anderen Kürzel ruhen
  *   1 bis 4        -> Übersicht, Kalender, Aufgaben, Medien
  *   G, dann I F P R L A -> Eingang, Favoriten, Projekte, Ressourcen, Lesezeichen, Archiv
  *   ⌘[  und  ⌘]    -> zurück und vor
  *   ⌘\             -> Seitenleiste ein- und ausklappen
  *   ⌘,             -> Profil und Einstellungen
- *   Escape         -> schließt, was obenauf liegt: Menü, Auswahl-Blatt, Dialog,
+ *   Escape         -> schließt, was obenauf liegt: Palette, Menü, Auswahl-Blatt, Dialog,
  *                     Dateiansicht, zuletzt das Eingabefeld — auch beim Tippen darin
  * Statt ⌘ gilt außerhalb des Macs Strg.
  */
@@ -39,6 +40,8 @@ import { isNavClosed, mountDeskHead, renderDeskHead, setNavClosed } from "./desk
 import { chordKey, chordWindow, collectionLinks, pageLinks } from "./desk-links.js";
 import { mountDeskNav, openCollection, renderDeskNav } from "./desk-nav.js";
 import { mountDeskRail, renderDeskRail } from "./desk-rail.js";
+import { setSearchTakeover } from "./search-bar.js";
+import { closePalette, isPaletteOpen, openPalette, takeOverSearchField } from "./search-palette.js";
 
 const clockTick = 60000;
 const navKeys = Object.fromEntries(pageLinks.map((link) => [link.key, link.tab]));
@@ -46,7 +49,7 @@ const chordTargets = Object.fromEntries(collectionLinks.map((link) => [link.key.
 
 /* Offene Ebenen, über denen kein Kürzel etwas auslösen darf. */
 const openLayers =
-  ".modal-backdrop:not([hidden]), .sheet-backdrop:not([hidden]), .ctx-backdrop:not([hidden]), .viewer-backdrop:not([hidden]), .update-backdrop:not([hidden])";
+  ".palette-backdrop:not([hidden]), .modal-backdrop:not([hidden]), .sheet-backdrop:not([hidden]), .ctx-backdrop:not([hidden]), .viewer-backdrop:not([hidden]), .update-backdrop:not([hidden])";
 
 let mounted = false;
 let clock = null;
@@ -72,6 +75,17 @@ function refreshAll() {
   refreshNav();
   refreshRail();
   syncClock();
+  syncSearchField();
+}
+
+/*
+ * Am Desktop tippt man nur in der Palette; das Feld der Seitenleiste öffnet
+ * sie bloß und nimmt selbst keine Zeichen an. Unter 1024px ist es wieder das
+ * gewohnte Suchfeld, und eine offene Palette verschwindet.
+ */
+function syncSearchField() {
+  dom.searchInput.readOnly = isDesk();
+  if (!isDesk()) closePalette();
 }
 
 /*
@@ -118,6 +132,12 @@ function isTyping(target) {
  */
 function closeTopLayer() {
   if (document.querySelector(".update-backdrop:not([hidden])")) return false;
+  /* Die Palette öffnet nur, wenn sonst nichts offen ist — oder über dem
+     Eingabefeld. Sie liegt darum immer obenauf. */
+  if (isPaletteOpen()) {
+    closePalette();
+    return true;
+  }
   if (!dom.ctxMenu.hidden) {
     closeCtxMenu();
     return true;
@@ -149,10 +169,9 @@ function dropStaleFocus() {
   if (active && active !== document.body && !isTyping(active)) active.blur();
 }
 
-/* Ins Suchfeld springen. Es liegt in der Seitenleiste — ist sie zu, klappt sie auf. */
+/* Die Such-Palette öffnen — auch bei zugeklappter Seitenleiste, die bleibt zu. */
 function focusSearch() {
-  if (isNavClosed()) setNavClosed(false);
-  dom.searchInput.focus();
+  openPalette();
 }
 
 /*
@@ -279,6 +298,10 @@ export function initDesk(handlers = {}) {
     syncClock();
   });
   document.addEventListener("keydown", onKeyDown);
+  setSearchTakeover((event) => takeOverSearchField(event, isDesk()));
+  /* Die Palette hat keinen Verlaufsschritt. Geht es im Verlauf zurück oder
+     vor, wechselt die Seite darunter — die Palette gehört nicht mehr dazu. */
+  window.addEventListener("popstate", closePalette);
 
   refreshAll();
 }

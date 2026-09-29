@@ -17,6 +17,7 @@
  * --search-cancel-color     -> Rot der Schrift des Abbrechen-Knopfs
  * --search-fade             -> wie schnell die Liste ab der Oberkante der Knöpfe ganz verschwindet
  * --bg                      -> Farbe, in die die Liste unten ausgeblendet wird
+ * Am Desktop (ab 1024px, ganz unten) entfallen die Knöpfe unten samt Verlauf.
 
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
@@ -236,4 +237,18 @@ body.is-search .search-actions:not([hidden]) {
 
 .search-cancel:active {
   opacity: 0.55;
+}
+
+/* Desktop ab 1024px: gesucht wird in der Palette (styles/search-palette.css),
+   zurück geht es über die Pfeile der Reiterzeile. Die Knöpfe unten, der
+   Verlauf unter ihnen und ihr Platz am Seitenende entfallen. */
+@media (min-width: 1024px) {
+  body.is-search .search-actions:not([hidden]),
+  body.is-search .device::after {
+    display: none;
+  }
+
+  body.is-search .content {
+    padding-bottom: var(--tab-space);
+  }
 }

@@ -11,8 +11,7 @@
  * Nicht alles steht hier: die Schriftgröße eines einzelnen Elements — etwa die
  * Stundenbeschriftung im Kalender oder eine Überschrift im Profil-Blatt — steht
  * direkt bei ihrer Regel in der Datei des jeweiligen Bereichs. Welche Datei das
- * ist, sagt die Liste unten; oben in jeder Datei steht dann, was sich darin
- * einstellen lässt.
+ * ist, sagt die Liste unten; oben in jeder Datei steht, was sich darin einstellen lässt.
  *
  * WELCHE DATEI MACHT WAS
  * -----------------------------------
@@ -71,6 +70,7 @@
  * styles/desk-hover.css      -> Desktop: Überfahren, Drücken und Tastatur-Rahmen für Seite, Kopfzeile und Dialoge
  * styles/desk-nav.css        -> Desktop: Seitenleiste mit „Neu“, Sammlungen, Tab-Gruppen; ihr Fuß (Stufe, Konto) in styles/desk-nav-foot.css
  * styles/desk-kbd.css        -> Desktop: blaue Tasten-Schilder und das Auftauchen der Blöcke der Seitenleiste
+ * styles/search-palette.css  -> Desktop: Such-Palette in der Fenstermitte (⌘K, „/“, Suchfeld, Such-Knopf)
  * styles/desk-rail.css       -> Desktop: rechte Spalte mit nächstem Termin, Aufgaben und zuletzt Geöffnetem
  * styles/desk-rail-tiles.css -> Desktop: die zwei Kacheln oben rechts (Eingang-Stapel, Stufen-Ring) und die Tagesleiste
  * styles/dashboard.css       -> Desktop: Kopf der Übersicht mit Zahlen, Aktivitätsband und zwei großen Karten

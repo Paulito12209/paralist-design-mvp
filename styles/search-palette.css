@@ -1,0 +1,204 @@
+/*
+ * Desktop: die Such-Palette — ein Dialog oben in der Fenstermitte mit
+ * Suchfeld und Treffern in Gruppen, über leicht abgedunkelter Seite. Die
+ * gewählte Zeile ist getönt und trägt das Schild „Enter“; ohne Wahl trägt es
+ * die letzte Zeile („Alle Ergebnisse anzeigen“). Gebaut von
+ * src/shell/search-palette.js. Gilt erst ab 1024px Fensterbreite — am Handy
+ * gibt es die Palette nicht.
+ * Pfad: styles/search-palette.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (oben bei .palette-backdrop)
+ * -----------------------------------
+ * --palette-width      -> größte Breite der Palette
+ * --palette-top        -> Abstand vom oberen Fensterrand (die Palette hängt oben, nicht mittig:
+ *                         so springt das Feld nicht, wenn die Trefferliste wächst)
+ * --palette-field-height -> Höhe des Suchfelds
+ * --palette-row-height -> Höhe einer Trefferzeile
+ * --palette-pad        -> Innenrand der Palette
+ * Einzelne Größen stehen bei ihrer Regel: Schrift im Feld 17px, Zeilen 14px,
+ * Angabe rechts und Gruppen-Überschrift 12px.
+ *
+ * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * -----------------------------------
+ * --desk-backdrop  -> Abdunklung der Seite dahinter
+ * --desk-edge      -> Haarlinie um die Palette und unter dem Feld
+ * --desk-radius / --desk-item-radius -> Rundung der Palette und der Zeilen
+ * --desk-hover     -> Tönung der gewählten Zeile
+ * --bg / --text / --muted -> Fläche, Schrift, graue Angaben und Icons
+ * --link-color     -> Farbe des hervorgehobenen Suchworts
+ * --desk-gutter    -> Mindestabstand zum Fensterrand links, rechts und unten
+ * --frame-dialog-anim / --desk-ease -> Dauer und Kurve des Auftauchens, wie bei den
+ *                     übrigen Dialogen (Bewegung selbst in styles/desk-overlays.css)
+ */
+
+.palette-backdrop {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .palette-backdrop {
+    --palette-width: 640px;
+    --palette-top: 12vh;
+    --palette-field-height: 56px;
+    --palette-row-height: 40px;
+    --palette-pad: 8px;
+
+    position: fixed; /* position: deckt das ganze Fenster, die Seite dahinter bleibt stehen */
+    inset: 0;
+    z-index: 48; /* z-index: über Dialogen (44) und Dateiansicht (46), unter Auswahl-Blatt (50) und Update-Fenster (60) */
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: var(--palette-top) var(--desk-gutter) var(--desk-gutter);
+    background: var(--desk-backdrop);
+  }
+
+  .palette-backdrop[hidden] {
+    display: none;
+  }
+
+  .palette {
+    display: flex;
+    flex-direction: column;
+    width: min(var(--palette-width), 100%);
+    max-height: 100%;
+    overflow: hidden; /* overflow: die Rundung schneidet die Liste ab, gerollt wird innen */
+    border: 0.5px solid var(--desk-edge);
+    border-radius: var(--desk-radius);
+    background: var(--bg);
+  }
+
+  /* ---------- Suchfeld ---------- */
+
+  .palette-field {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 0 0 auto; /* flex: das Feld bleibt stehen, nur die Liste darunter schrumpft */
+    height: var(--palette-field-height);
+    padding: 0 16px 0 18px;
+    border-bottom: 0.5px solid var(--desk-edge);
+  }
+
+  .palette-field-icon {
+    width: 20px;
+    height: 20px;
+    color: var(--muted);
+  }
+
+  .palette-input {
+    flex: 1;
+    min-width: 0;
+    height: 100%;
+    border: 0;
+    background: transparent;
+    color: var(--text);
+    font: inherit;
+    font-size: 17px;
+    outline: none; /* outline: das Feld ist allein in der Palette, der Cursor zeigt den Fokus */
+  }
+
+  .palette-input::placeholder {
+    color: var(--muted);
+  }
+
+  /* ---------- Trefferliste ---------- */
+
+  .palette-list {
+    overflow-y: auto; /* overflow-y: lange Listen rollen innerhalb der Palette */
+    overscroll-behavior: contain; /* overscroll-behavior: die Seite dahinter rollt nicht mit */
+    padding: var(--palette-pad);
+  }
+
+  .palette-group + .palette-group,
+  .palette-group + .palette-all {
+    margin-top: 6px;
+  }
+
+  .palette-heading {
+    padding: 8px 10px 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .palette-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: var(--palette-row-height);
+    padding: 0 10px;
+    border-radius: var(--desk-item-radius);
+    text-align: left;
+    color: var(--text);
+    font-size: 14px;
+  }
+
+  .palette-row > .icon {
+    flex: 0 0 auto; /* flex: das Icon schrumpft nie, der Titel weicht */
+    width: 18px;
+    height: 18px;
+    color: var(--muted);
+  }
+
+  .palette-title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis; /* text-overflow: lange Titel enden mit Punkten statt umzubrechen */
+    white-space: nowrap;
+  }
+
+  .palette-title .search-hit {
+    color: var(--link-color);
+  }
+
+  .palette-meta {
+    flex: 0 1 auto;
+    max-width: 40%;
+    overflow: hidden;
+    text-overflow: ellipsis; /* text-overflow: s. o. */
+    white-space: nowrap;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .palette-row.is-selected {
+    background: var(--desk-hover);
+  }
+
+  /* Das Schild „Enter“ zeigt, wohin Enter gerade führt: zur gewählten Zeile
+     oder, ohne Wahl, zu „Alle Ergebnisse anzeigen“. */
+  .palette-enter {
+    display: none;
+  }
+
+  .palette-row.is-selected .palette-enter,
+  .palette-list.is-unselected .palette-all .palette-enter {
+    display: inline-grid;
+  }
+
+  .palette-all {
+    border-top: 0.5px solid var(--desk-edge);
+    border-radius: 0 0 var(--desk-item-radius) var(--desk-item-radius); /* border-radius: oben gerade, unter der Trennlinie */
+    color: var(--muted);
+  }
+
+  .palette-empty {
+    padding: 18px 10px;
+    font-size: 14px;
+    color: var(--muted);
+  }
+}
+
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  /* :not([hidden]): eine Animation startet neu, sobald ein Element aus display:none auftaucht */
+  .palette-backdrop:not([hidden]) {
+    animation: desk-frame-fade var(--frame-dialog-anim) var(--desk-ease); /* animation: Abdunklung blendet ein (styles/desk-overlays.css) */
+  }
+
+  .palette-backdrop:not([hidden]) .palette {
+    animation: desk-frame-dialog-in var(--frame-dialog-anim) var(--desk-ease); /* animation: steigt auf wie die übrigen Dialoge */
+  }
+}

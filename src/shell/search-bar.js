@@ -8,6 +8,8 @@
  * Solange die Tastatur offen ist (ui.searchTyping), sind sie weg; die Zeilen
  * darüber lassen sich trotzdem direkt antippen
  * (src/features/search/search-tap.js).
+ * Am Desktop öffnet das Feld stattdessen die Such-Palette
+ * (src/shell/search-palette.js, angemeldet über setSearchTakeover).
  * Pfad: src/shell/search-bar.js
  *
  * Keine anpassbaren visuellen Werte: Höhe und Rundung stehen in
@@ -24,13 +26,26 @@ import { closeSearch, showSearch } from "../ui/router.js";
 import { isViewActive } from "../ui/views.js";
 import { initSearchVoice } from "./search-voice.js";
 
+/*
+ * Wer das Feld übernehmen will — am Desktop die Such-Palette. Wird von
+ * src/shell/desk.js hereingegeben; gibt sie `true` zurück, ist das Ereignis
+ * erledigt und die Suchseite bleibt zu.
+ */
+let takeOver = () => false;
+
+/** Feld an jemand anderen abgeben (siehe `takeOver`). */
+export function setSearchTakeover(handler) {
+  takeOver = handler;
+}
+
 /* Neu zeichnen, sobald das Modul da ist. */
 function redrawSearch() {
   load("search").then((module) => module.renderSearch());
 }
 
 /* Tastatur öffnet sich: Navigation bleibt unten, Suchen-Pille verschwindet. */
-function onFocus() {
+function onFocus(event) {
+  if (takeOver(event)) return;
   ui.searchTyping = true;
   document.body.classList.add("is-search-typing");
   showSearch();
@@ -44,7 +59,9 @@ function onBlur() {
 
 /** Suchfeld und Lupe anmelden. */
 export function initSearchBar() {
-  el("search-entry").addEventListener("click", () => showSearch());
+  el("search-entry").addEventListener("click", (event) => {
+    if (!takeOver(event)) showSearch();
+  });
   dom.searchInput.addEventListener("focus", onFocus);
   dom.searchInput.addEventListener("blur", onBlur);
 
@@ -81,6 +98,7 @@ export function initSearchBar() {
   dom.searchInput.addEventListener("change", () => noteSearch(dom.searchInput.value));
 
   dom.searchInput.addEventListener("keydown", (event) => {
+    if (takeOver(event)) return;
     if (event.key === "Enter") {
       event.preventDefault();
       noteSearch(ui.searchQuery);

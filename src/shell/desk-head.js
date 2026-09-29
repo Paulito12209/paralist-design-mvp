@@ -23,6 +23,7 @@ import { deskStats } from "../data/insights.js";
 import { goBack, goForward, showTab } from "../ui/router.js";
 import { currentView } from "../ui/views.js";
 import { pageLinks, withCommand } from "./desk-links.js";
+import { openPalette } from "./search-palette.js";
 
 const wordmark = "Paralist";
 const closedTag = "1";
@@ -137,11 +138,8 @@ function onClick(event) {
   if (action === "toggle") setNavClosed(!closed);
   else if (action === "back") goBack();
   else if (action === "forward") goForward();
-  else if (action === "search") {
-    /* Die Suche liegt in der Seitenleiste: sie klappt dafür wieder auf. */
-    setNavClosed(false);
-    dom.searchInput.focus();
-  }
+  /* Die Palette öffnet in der Mitte; die Seitenleiste bleibt, wie sie ist. */
+  else if (action === "search") openPalette();
 }
 
 /**
