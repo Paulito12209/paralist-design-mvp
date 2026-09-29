@@ -14,10 +14,10 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * daysPerWeek    -> Tage einer Woche, für „12 Wochen“ über dem Band
- * statOrder      -> Reihenfolge, Beschriftung und Ziel der vier Zahlen
+ * statOrder      -> Reihenfolge, Beschriftung (Pille oben, Zeile darunter) und Ziel der vier Zahlen
  * legendLevels   -> welche Stufen die Legende über dem Band zeigt (0 = nichts … 4 = viel)
  *
- * Den Zeitraum unter „Erledigt“ gibt weekDays in src/data/insights.js vor —
+ * Den Zeitraum unter „Erledigt“ (die letzten Tage bis einschließlich heute) gibt weekDays in src/data/insights.js vor —
  * dieselbe Zahl, mit der deskStats() zählt.
  */
 
@@ -40,14 +40,7 @@ function countText(value, one, many) {
  * Vorlesehilfen — in Worten statt „12 Offen“.
  */
 const statOrder = [
-  { key: "entries", label: "Einträge", sub: "insgesamt" },
-  {
-    key: "openTasks",
-    label: "Offen",
-    sub: "Aufgaben",
-    action: "tasks",
-    say: (n) => `${countText(n, "offene Aufgabe", "offene Aufgaben")}. Aufgaben öffnen`,
-  },
+  { key: "entries", label: "Gesamt", sub: "Einträge" },
   {
     key: "today",
     label: "Heute",
@@ -56,9 +49,16 @@ const statOrder = [
     say: (n) => `${countText(n, "Termin", "Termine")} heute. Kalender öffnen`,
   },
   {
+    key: "openTasks",
+    label: "Offen",
+    sub: "Aufgaben",
+    action: "tasks",
+    say: (n) => `${countText(n, "offene Aufgabe", "offene Aufgaben")}. Aufgaben öffnen`,
+  },
+  {
     key: "doneWeek",
     label: "Erledigt",
-    sub: `${weekDays} Tage`,
+    sub: `letzte ${weekDays} Tage`,
     action: "progress",
     say: (n) => `${countText(n, "erledigte Aufgabe", "erledigte Aufgaben")} in den letzten ${weekDays} Tagen. Fortschritt öffnen`,
   },
