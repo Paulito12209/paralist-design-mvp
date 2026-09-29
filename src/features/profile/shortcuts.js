@@ -19,6 +19,7 @@ import { emit, events } from "../../core/bus.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { hintsShown, setHintsShown } from "../../data/shortcut-hints.js";
 import { chordKey, collectionLinks, pageLinks, withCommand } from "../../ui/desk-links.js";
+import { keyCap } from "../../ui/dot-keys.js";
 
 /* Kürzel, die auf jeder Seite gelten. Die Befehlstaste heißt je nach Rechner ⌘ oder Strg. */
 const everywhere = [
@@ -39,7 +40,7 @@ const hintToggles = [
 
 /* Eine Zeile: links wofür, rechts die Schilder. Mehrere Tasten sind Alternativen. */
 function shortcutRow(label, keys) {
-  const chips = keys.map((key) => `<kbd class="desk-kbd">${escapeHtml(key)}</kbd>`).join('<span class="shortcut-or">oder</span>');
+  const chips = keys.map((key) => keyCap(key, "", true)).join('<span class="shortcut-or">oder</span>');
   return `<li class="shortcut-row"><span>${escapeHtml(label)}</span><span class="shortcut-keys">${chips}</span></li>`;
 }
 

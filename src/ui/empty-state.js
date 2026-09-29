@@ -12,6 +12,9 @@
  * WAVE_TINT     -> wie hell die Welle auf der vorderen Karte liegt
  * MARK_OPACITY  -> Deckkraft der gezeichneten Striche links und rechts oben
  *
+ * neutralTones -> Farben, die als „ohne Thema“ gelten: deren Pille trägt das
+ *                 Silber von Paralist statt eines Graus
+ *
  * Größe, Farben und Abstände stehen in styles/empty-state.css
  * (--empty-art-width, --empty-accent, --empty-badge-bg, --empty-badge-ink).
  */
@@ -30,6 +33,16 @@ const WAVE_TINT = 0.22;
 
 /* Deckkraft der beiden gezeichneten Striche (Pfeil links, Funken rechts). */
 const MARK_OPACITY = 0.5;
+
+/* Graue Töne ohne eigenes Thema — ihre Pille bekommt das Silber von Paralist. */
+const neutralTones = ["--muted", "--chevron", "--placeholder", "--avatar-btn-bg"];
+const silver = "var(--avatar-btn-bg)";
+
+/* Ton der Pille: die Farbe des Themas, bei neutralem Thema das Silber. */
+function pillTone(accent) {
+  const neutral = !accent || neutralTones.some((name) => accent.includes(name));
+  return neutral ? silver : accent;
+}
 
 /*
  * Das Emblem: zwei angedeutete Karten hinten, vorne ein Ordner in der Farbe des
@@ -108,7 +121,7 @@ export function emptyState({
     : "";
 
   return `
-    <div class="empty-state${compact ? " is-compact" : ""}${art ? "" : " is-bare"}" style="--empty-accent:${accent}">
+    <div class="empty-state${compact ? " is-compact" : ""}${art ? "" : " is-bare"}" style="--empty-accent:${accent}; --empty-add-accent:${pillTone(accent)}">
       ${
         art
           ? `<div class="empty-art">

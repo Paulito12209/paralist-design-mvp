@@ -1,9 +1,11 @@
 /*
  * Der Kopf der Desktop-Fassung: links über der Seitenleiste die Wortmarke mit
  * dem Klapp-Knopf, über der Mitte die Reiterzeile — links Zurück und Vorwärts,
- * mittig die vier Reiter als Segment-Leiste, rechts der runde Such-Knopf, sobald die Seitenleiste
- * zu ist. Diese Datei hängt beide Teile ein, hält den gewählten Reiter und die
- * Pfeile aktuell und merkt sich, ob die Seitenleiste zu ist.
+ * mittig die vier Reiter und die Suche als Segment-Leiste wie in Apple Arcade,
+ * rechts oben die Level-Anzeige (derselbe Knopf wie am Handy, hierher
+ * umgesetzt). Diese Datei hängt die Teile ein, hält den gewählten Reiter, die
+ * Pfeile und den Hinweis der Stufe aktuell und merkt sich, ob die Seitenleiste
+ * zu ist.
  * Pfad: src/shell/desk-head.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -19,10 +21,13 @@
 import { dom } from "../core/dom.js";
 import { escapeHtml, icon } from "../core/html.js";
 import { readText, storageKeys, writeText } from "../core/storage.js";
+import { formatNumber } from "../core/format.js";
 import { deskStats } from "../data/insights.js";
+import { levelInfo, totalXp } from "../data/xp.js";
 import { closeOverlay, goBack, goForward, showTab } from "../ui/router.js";
 import { currentView, isViewActive } from "../ui/views.js";
 import { pageLinks, withCommand } from "../ui/desk-links.js";
+import { keyCap } from "../ui/dot-keys.js";
 import { coveringPage } from "./desk-nav.js";
 import { openPalette } from "./search-palette.js";
 
@@ -57,7 +62,17 @@ function tabMarkup(link) {
   return `
     <button class="desk-tab" type="button" data-head-tab="${link.tab}" aria-keyshortcuts="${link.key}">
       <span class="desk-tab-label">${link.label}</span>
-      <span class="desk-tab-hint" aria-hidden="true">Taste <kbd class="desk-kbd desk-kbd-inverse">${link.key}</kbd></span>
+      <span class="desk-tab-hint" aria-hidden="true">Taste ${keyCap(link.key, " desk-kbd-inverse")}</span>
+    </button>`;
+}
+
+/* Die Suche als letztes Segment der Leiste, nur mit Lupe; öffnet die Palette. */
+function searchSegmentMarkup() {
+  const key = withCommand("K");
+  return `
+    <button class="desk-tab desk-tab-search" type="button" data-head="search" aria-label="Suchen" aria-keyshortcuts="${escapeHtml(key.replace("⌘", "Meta+").replace("Strg ", "Control+"))}">
+      ${icon("search", "desk-tab-icon")}
+      <span class="desk-tab-hint" aria-hidden="true">Suchen ${keyCap(key, " desk-kbd-inverse")}</span>
     </button>`;
 }
 
@@ -77,9 +92,8 @@ function stripMarkup() {
       ${headButton("back", "back", "Zurück", withCommand("["))}
       ${headButton("forward", "chevron", "Vorwärts", withCommand("]"))}
     </div>
-    <nav class="desk-tabs-list" aria-label="Reiter">${pageLinks.map(tabMarkup).join("")}</nav>
+    <nav class="desk-tabs-list" aria-label="Reiter">${pageLinks.map(tabMarkup).join("")}${searchSegmentMarkup()}</nav>
     <div class="desk-tabs-end">
-      ${headButton("search", "search", "Suchen", withCommand("K"), " desk-tabs-search")}
     </div>`;
 }
 
@@ -110,9 +124,37 @@ export function renderDeskHead() {
     const value = link.count ? link.count(stats) : 0;
     button.setAttribute("aria-label", value ? `${link.label}, ${link.spoken(value)}` : link.label);
   });
+  parts.search.classList.toggle("is-active", view === "search");
   const reach = historyReach();
   setEnabled(parts.back, reach.back);
   setEnabled(parts.forward, reach.forward);
+  renderLevelHint();
+}
+
+/* Der Hinweis unter der Level-Anzeige: welche Stufe und wie weit noch. */
+function renderLevelHint() {
+  const xp = totalXp();
+  const info = levelInfo(xp);
+  const text = `Stufe ${info.level} · noch ${formatNumber(Math.max(0, info.to - xp))} XP`;
+  if (parts.levelHint.textContent !== text) parts.levelHint.textContent = text;
+}
+
+/**
+ * Die Level-Anzeige (#level-btn, gezeichnet von src/shell/level-gauge.js)
+ * steht am Desktop oben rechts in der Reiterzeile, darunter ihr Hinweis; unter
+ * 1024px kehrt sie an den Anfang der Kopfzeile des Handys zurück. Ein Knopf an
+ * zwei Orten statt zwei Knöpfen: Skala, Stufen-Meldung und Klick bleiben eins.
+ */
+export function placeLevelButton(desk) {
+  if (!strip) return;
+  const button = dom.levelBtn;
+  if (desk && button.parentElement !== parts.end) {
+    parts.end.append(button);
+    button.append(parts.levelHint);
+  } else if (!desk && button.parentElement === parts.end) {
+    parts.levelHint.remove();
+    document.querySelector(".top-bar").prepend(button);
+  }
 }
 
 /** Ist die Seitenleiste gerade zugeklappt? */
@@ -128,7 +170,7 @@ export function isNavClosed() {
 export function setNavClosed(value) {
   closed = value;
   writeText(storageKeys.deskNav, value ? closedTag : "");
-  const hadFocus = value && Boolean(document.activeElement?.closest(".desk-nav, .desk-brand, .top-bar"));
+  const hadFocus = value && Boolean(document.activeElement?.closest(".desk-nav, .desk-brand"));
   dom.device.classList.toggle("is-nav-closed", value);
   if (hadFocus) parts.stripToggle.focus();
   onToggle(value);
@@ -160,8 +202,9 @@ function onClick(event) {
 }
 
 /**
- * Wortmarke und Reiterzeile einhängen: die Wortmarke vor die Kopfzeile mit
- * der Suche, die Reiterzeile vor die Mitte. Weitere Aufrufe tun nichts.
+ * Wortmarke und Reiterzeile einhängen: die Wortmarke vor die Kopfzeile des
+ * Handys (am Desktop ausgeblendet, styles/desk.css), die Reiterzeile vor die
+ * Mitte. Weitere Aufrufe tun nichts.
  * @param handlers { onToggle } wird nach jedem Auf- und Zuklappen gerufen.
  */
 export function mountDeskHead(handlers = {}) {
@@ -184,15 +227,12 @@ export function mountDeskHead(handlers = {}) {
     back: strip.querySelector('[data-head="back"]'),
     forward: strip.querySelector('[data-head="forward"]'),
     stripToggle: strip.querySelector(".desk-tabs-toggle"),
+    search: strip.querySelector(".desk-tab-search"),
+    end: strip.querySelector(".desk-tabs-end"),
+    levelHint: document.createElement("span"),
   };
-
-  /* Das Schild „⌘K“ rechts im Suchfeld. Am Handy blendet styles/desk.css es aus. */
-  const searchKey = document.createElement("kbd");
-  searchKey.className = "desk-kbd search-kbd";
-  searchKey.setAttribute("aria-hidden", "true");
-  searchKey.textContent = withCommand("K");
-  dom.searchInput.after(searchKey);
-  dom.searchInput.setAttribute("aria-keyshortcuts", withCommand("K").replace("⌘", "Meta+").replace("Strg ", "Control+"));
+  parts.levelHint.className = "desk-level-hint";
+  parts.levelHint.setAttribute("aria-hidden", "true");
 
   brand.addEventListener("click", onClick);
   strip.addEventListener("click", onClick);

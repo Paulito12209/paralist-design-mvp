@@ -1,69 +1,92 @@
 /*
- * Desktop: die Tasten-Schilder — „1“ bis „4“ im Hinweis unter den Reitern
- * (erscheint beim Überfahren, styles/desk-head.css), „N“ im Knopf
- * „Neu“, „G I“ an den Sammlungen, „⌘K“ im Suchfeld, „⌘,“ am Konto — und das
- * ruhige Auftauchen der Blöcke der Seitenleiste beim ersten Zeigen. Alle
- * Schilder tragen dieselbe Tönung des Verknüpfen-Blaus, damit man sie als
- * eine Familie liest und nicht mit Zahlen wie „4 im Eingang“ verwechselt.
- * Gilt erst ab 1024px Fensterbreite.
+ * Desktop: die Tasten-Schilder — „1“ bis „4“ und „⌘K“ im Hinweis unter den
+ * Reitern (erscheint beim Überfahren, styles/desk-head.css), „N“ im Knopf
+ * „Neu“, „G I“ an den Sammlungen, „⌘,“ am Konto, „Enter“ und „Esc“ in der
+ * Such-Palette und die Liste unter Profil › Kurzbefehle. Keine Kachel mehr:
+ * die Zeichen stehen als Punktmatrix frei (src/ui/dot-keys.js) und leuchten im
+ * Dunkeln silbern, im Hellen umgekehrt graphitfarben — so liest man sie nie
+ * als Zahl wie „4 im Eingang“. Dazu das Schild „Bald“ an Sammlungen, die noch
+ * kommen, und das ruhige Auftauchen der Blöcke der Seitenleiste. Das Schild
+ * selbst gilt in jeder Breite, alles Übrige erst ab 1024px Fensterbreite.
  * Pfad: styles/desk-kbd.css
  *
  * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-kbd)
  * -----------------------------------
- * --kbd-height -> Höhe eines Schilds
- * --kbd-pad    -> Innenrand links und rechts (ein Akkord wie „G I“ wird dadurch breiter, nicht höher)
- * Einzelne Größen stehen bei ihrer Regel: Schrift der Schilder 11px, Rundung 6px.
+ * --kbd-height -> Höhe der Punktmatrix (sieben Punkte hoch; breiter wird sie von selbst)
+ * --kbd-dot    -> Dicke eines Punktes im Verhältnis zum Raster (1 = Punkte berühren sich)
+ * --kbd-blur   -> wie weit das Leuchten um die Punkte reicht
+ * Einzelne Größen stehen bei ihrer Regel: Schild „Bald“ 11px Schrift, 20px hoch, Rundung 6px.
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
- * --desk-kbd-bg / --desk-kbd-fg -> Fläche und Schrift der Schilder (hell und dunkel eigene Mischung)
+ * --desk-kbd-dot / --desk-kbd-glow -> Farbe der Punkte und ihr Leuchten (Silber im
+ *                 Dunkeln, Graphit im Hellen — die Grundfarben sind dort über Kreuz getauscht)
  * --desk-chip-bg / --muted -> graues Schild „Bald“ an Sammlungen, die noch kommen
- * --bg         -> Schild „N“ auf dem dunklen Knopf „Neu“
+ * --bg         -> Punkte auf dunklen Flächen (Knopf „Neu“, Hinweis unter den Reitern)
  * --desk-enter / --desk-enter-rise / --desk-enter-step / --desk-ease -> Dauer, Tiefe,
  *                 Staffelung und Kurve beim Auftauchen der Blöcke
  * --i          -> Reihenfolge beim Auftauchen; setzt src/shell/desk-nav-parts.js je Block
+ * --dots       -> Breite der Matrix im Verhältnis zur Höhe; setzt src/ui/dot-keys.js je Schild
  *
- * Profil › Kurzbefehle blendet die Schilder aus: .hide-nav-kbd (Seitenleiste
- * samt Suchfeld und Konto) und .hide-tabs-kbd (Reiterzeile) setzt
- * src/shell/desk.js auf das Gerätefenster.
+ * Profil › Kurzbefehle blendet die Schilder aus: .hide-nav-kbd (Seitenleiste)
+ * und .hide-tabs-kbd (Reiterzeile) setzt src/shell/desk.js auf das Gerätefenster.
  */
 
-@media (min-width: 1024px) {
-  .desk-kbd {
-    --kbd-height: 20px;
-    --kbd-pad: 6px;
+/* Das Schild selbst gilt in jeder Breite: die Liste unter Profil › Kurzbefehle
+   bleibt auch offen, wenn das Fenster schmal gezogen wird — ohne diese Regeln
+   stünde die Punktmatrix dort riesengroß. */
+.desk-kbd {
+  --kbd-height: 10px;
+  --kbd-dot: 0.8;
+  --kbd-blur: 3px;
 
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto; /* flex: das Schild schrumpft nie, der Name davor weicht */
+  color: var(--desk-kbd-dot);
+  /* filter: das Leuchten folgt jedem Punkt, statt als Rechteck um das Schild zu liegen */
+  filter: drop-shadow(0 0 var(--kbd-blur) var(--desk-kbd-glow));
+}
+
+.desk-kbd-dots {
+  display: block;
+  width: calc(var(--kbd-height) * var(--dots, 1));
+  height: var(--kbd-height);
+  overflow: visible; /* overflow: die runden Enden der Randpunkte dürfen über die Zeichenfläche ragen */
+}
+
+.desk-kbd-dots path {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: var(--kbd-dot);
+  stroke-linecap: round; /* stroke-linecap: aus einem Strich der Länge null wird ein runder Punkt */
+}
+
+/* Auf dunklen Flächen (Knopf „Neu“, Hinweis unter den Reitern): Punkte in der Grundfarbe, ohne Leuchten */
+.desk-kbd-inverse {
+  color: var(--bg);
+  filter: none;
+}
+
+@media (min-width: 1024px) {
+  .desk-nav-new .desk-kbd-inverse {
+    margin-left: auto; /* margin-left: schiebt das Schild an das rechte Ende der Pille */
+  }
+
+  /* „Bald“ an Sammlungen, die noch nicht gehen: ein graues Schild mit Text, keine Taste */
+  .desk-soon {
     display: inline-grid;
     place-items: center;
-    flex: 0 0 auto; /* flex: das Schild schrumpft nie, der Name davor weicht */
-    min-width: var(--kbd-height);
-    height: var(--kbd-height);
-    padding: 0 var(--kbd-pad);
+    height: 20px;
+    padding: 0 6px;
     border-radius: 6px;
-    background: var(--desk-kbd-bg);
-    font-family: inherit; /* font-family: kbd nähme sonst die Schreibmaschinenschrift des Browsers */
+    background: var(--desk-chip-bg);
     font-size: 11px;
     font-weight: 600;
-    line-height: 1;
-    letter-spacing: 0.02em;
-    white-space: nowrap; /* white-space: „G I“ und „Strg K“ bleiben in einer Zeile */
-    color: var(--desk-kbd-fg);
-  }
-
-  /* Das Schild „N“ im dunklen Knopf „Neu“ und im dunklen Tasten-Hinweis der Reiter */
-  .desk-kbd-inverse {
-    margin-left: auto; /* margin-left: schiebt das Schild an das rechte Ende der Pille */
-    background: color-mix(in srgb, var(--bg) 18%, transparent); /* color-mix: ein Hauch der hellen Grundfarbe auf der dunklen Fläche, kein neuer Farbton */
-    color: var(--bg);
-  }
-
-  /* „Bald“ an Sammlungen, die noch nicht gehen: grau statt blau */
-  .desk-kbd-soon {
-    background: var(--desk-chip-bg);
     color: var(--muted);
   }
 
   /* Ausgeblendet unter Profil › Kurzbefehle; die Tasten selbst gehen weiter. */
-  .device.hide-nav-kbd :is(.desk-nav, .top-bar) .desk-kbd,
+  .device.hide-nav-kbd .desk-nav .desk-kbd,
   .device.hide-tabs-kbd .desk-tabs .desk-tab-hint {
     display: none;
   }

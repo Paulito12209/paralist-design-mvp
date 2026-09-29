@@ -15,11 +15,15 @@
  * --empty-text-width     -> ab welcher Breite der Erklärsatz umbricht
  * --empty-badge-bg       -> Fläche des runden Plus-Abzeichens am Emblem
  * --empty-badge-ink      -> Farbe des Pluszeichens darin
- * --empty-add-bg         -> Fläche der Pille „… hinzufügen“
- * --empty-add-color      -> Schrift- und Icon-Farbe der Pille
+ * --empty-add-tint       -> wie kräftig die Farbe der Kategorie die Pille „… anlegen“ füllt
+ * --empty-add-ink        -> wie viel Farbe der Kategorie in Schrift und Icon der Pille steckt
+ *                           (der Rest ist Schriftfarbe — so bleibt sie hell wie dunkel lesbar)
  *
  * Die Farbe des Emblems selbst (--empty-accent) gibt die jeweilige Seite mit,
- * damit jedes Thema seinen eigenen Ton behält.
+ * damit jedes Thema seinen eigenen Ton behält. Die Pille nimmt denselben Ton
+ * (--empty-add-accent, gesetzt in src/ui/empty-state.js); neutrale Themen und
+ * Pillen ohne Thema tragen das Silber von Paralist (--avatar-btn-bg: im
+ * Dunkeln Silber, im Hellen umgekehrt Graphit).
  */
 
 /*
@@ -38,8 +42,8 @@
   --empty-text-width: 270px;
   --empty-badge-bg: #1c1c1e;
   --empty-badge-ink: #ffffff;
-  --empty-add-bg: rgba(0, 122, 255, 0.1);
-  --empty-add-color: #007aff;
+  --empty-add-tint: 16%;
+  --empty-add-ink: 78%;
 }
 
 .empty-state {
@@ -56,8 +60,6 @@
   :root:not([data-theme="light"]) {
     --empty-badge-bg: #f2f2f7;
     --empty-badge-ink: #1c1c1e;
-    --empty-add-bg: rgba(10, 132, 255, 0.18);
-    --empty-add-color: #4aa3ff;
   }
 }
 
@@ -65,8 +67,6 @@
 :root[data-theme="dark"] {
   --empty-badge-bg: #f2f2f7;
   --empty-badge-ink: #1c1c1e;
-  --empty-add-bg: rgba(10, 132, 255, 0.18);
-  --empty-add-color: #4aa3ff;
 }
 
 /* position: das Themen-Icon liegt frei auf der vorderen Karte des Emblems */
@@ -113,8 +113,10 @@
   margin-top: 6px;
   padding: 10px 18px;
   border-radius: 22px;
-  background: var(--empty-add-bg);
-  color: var(--empty-add-color);
+  /* color-mix: Fläche und Schrift aus dem Ton der Kategorie — Schrift mit der
+     Schriftfarbe gemischt, damit Gelb im Hellen und Dunkelrot im Dunkeln lesbar bleiben */
+  background: color-mix(in srgb, var(--empty-add-accent, var(--avatar-btn-bg)) var(--empty-add-tint), transparent);
+  color: color-mix(in srgb, var(--empty-add-accent, var(--avatar-btn-bg)) var(--empty-add-ink), var(--text));
   font-size: 15px;
   font-weight: 600;
 }

@@ -75,9 +75,19 @@ export function renderLevel() {
   shownLevel = info.level;
 }
 
-/** Den Knopf anmelden; das Fortschritt-Blatt wird beim ersten Tippen nachgeladen. */
+/**
+ * Den Knopf anmelden; das Fortschritt-Blatt wird beim ersten Tippen
+ * nachgeladen. Am Desktop steht der Knopf oben rechts in der Reiterzeile
+ * (src/shell/desk-head.js) — ist Fortschritt dort schon als Seite offen,
+ * rollt ein Klick sie nur nach oben, statt einen doppelten Schritt in den
+ * Verlauf zu legen.
+ */
 export function initLevelGauge() {
   dom.levelBtn.addEventListener("click", () => {
+    if (!dom.progressModal.hidden) {
+      dom.progressBody.scrollTo({ top: 0, behavior: "smooth" });
+      return;
+    }
     load("progress").then((module) => module.open());
   });
   on(events.xpChanged, renderLevel);

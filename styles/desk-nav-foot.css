@@ -1,32 +1,28 @@
 /*
- * Desktop: der Fuß der Seitenleiste — fest unten, rollt nicht mit. Oben die
- * Stufe mit einem kleinen Ring, der den Weg zur nächsten Stufe zeigt, darunter
- * das Konto mit rundem Bild, Name, Plan, Zahnrad und dem Schild „⌘,“. Profil
- * und Einstellungen sind dasselbe: beide Wege öffnen dasselbe Blatt. Gilt erst
+ * Desktop: der Fuß der Seitenleiste — fest unten, rollt nicht mit: das Konto
+ * mit rundem Bild, Name, Plan, Zahnrad und dem Schild „⌘,“. Profil und
+ * Einstellungen sind dasselbe: beide Wege öffnen dasselbe Blatt. Die Stufe
+ * steht oben rechts in der Reiterzeile (styles/desk-head.css). Gilt erst
  * ab 1024px Fensterbreite; das Markup entsteht in src/shell/desk-nav-parts.js.
  * Pfad: styles/desk-nav-foot.css
  *
  * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-nav-foot)
  * -----------------------------------
- * --foot-disc      -> Größe von Ring und Profilbild
- * --foot-ring      -> Dicke des Rings um die Zahl der Stufe
+ * --foot-disc      -> Größe des Profilbilds
  * --foot-row-height -> Höhe einer Zeile im Fuß
- * Einzelne Größen stehen bei ihrer Regel: Zahl im Ring 12px, Initialen 11px,
+ * Einzelne Größen stehen bei ihrer Regel: Initialen 11px,
  * Zeile unter dem Namen 12px, Zahnrad 16px.
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
  * --desk-nav-pad   -> Rand links, rechts und unten
  * --desk-edge      -> Haarlinie über dem Fuß
- * --level-color / --level-dim -> erreichter und offener Teil des Rings (wie die Level-Anzeige am Handy)
  * --avatar-gradient-from / --avatar-gradient-to -> Verlauf hinter den Initialen, wie im Profil
  * --text / --muted -> Name und die leise Zeile darunter
- * --progress       -> Anteil bis zur nächsten Stufe (0 bis 1); setzt src/shell/desk-nav-parts.js
  */
 
 @media (min-width: 1024px) {
   .desk-nav-foot {
     --foot-disc: 28px;
-    --foot-ring: 3px;
     --foot-row-height: 46px;
 
     flex: 0 0 auto; /* flex: der Fuß behält seine Höhe, die Liste darüber rollt */
@@ -67,31 +63,6 @@
     font-size: 12px;
     font-weight: 500;
     color: var(--muted);
-  }
-
-  /* Ring der Stufe: die Zahl in der Mitte, der Kreis darum als eigene Ebene */
-  .desk-foot-ring {
-    position: relative; /* position: Bezugspunkt für den Ring darüber */
-    display: grid;
-    place-items: center;
-    width: var(--foot-disc);
-    height: var(--foot-disc);
-    font-size: 12px;
-    font-weight: 700;
-    color: var(--level-color);
-    font-variant-numeric: tabular-nums; /* font-variant-numeric: Ziffern gleich breit */
-  }
-
-  .desk-foot-ring::before {
-    content: "";
-    position: absolute; /* position: der Ring liegt genau über der Fläche des Knopfs */
-    inset: 0;
-    border-radius: 50%;
-    /* conic-gradient: erreichter Teil im Uhrzeigersinn ab oben, der Rest blass */
-    background: conic-gradient(var(--level-color) calc(var(--progress, 0) * 1turn), var(--level-dim) 0);
-    /* mask: nur ein schmaler Rand bleibt stehen, die Mitte ist frei für die Zahl */
-    -webkit-mask: radial-gradient(farthest-side, transparent calc(100% - var(--foot-ring)), var(--text) calc(100% - var(--foot-ring) + 0.5px));
-    mask: radial-gradient(farthest-side, transparent calc(100% - var(--foot-ring)), var(--text) calc(100% - var(--foot-ring) + 0.5px));
   }
 
   /* Profilbild: Foto oder Initialen auf dem Verlauf des Profils */

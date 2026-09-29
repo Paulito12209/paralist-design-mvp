@@ -15,32 +15,40 @@ muss alles wie am Handy aussehen.
   grauen Spur, der gewählte ist ein helles Segment, auf einer Sammlung, einem
   Eintrag, Profil oder Fortschritt keiner. Kurz darüber verweilen zeigt
   „Taste 1“ darunter. Liegen Profil oder Fortschritt über dem gewählten Reiter,
-  schließt ein Klick darauf sie.
+  schließt ein Klick darauf sie. Letztes Segment ist die Lupe (Hinweis
+  „Suchen ⌘K“); ein Suchfeld links gibt es am Desktop nicht mehr.
+- Oben rechts die Level-Anzeige wie am Handy: Verweilen zeigt „Stufe 1 · noch
+  … XP“, Klick öffnet Fortschritt als Seite (die Anzeige ist dann hinterlegt),
+  ein zweiter Klick rollt nur nach oben. Unter 1024 px steht sie wieder oben
+  links in der Kopfzeile.
+- Tasten-Schilder („N“, „G I“, „⌘,“, Palette, Profil › Kurzbefehle) sind eine
+  Punktmatrix ohne Kachel: dunkel silbern leuchtend, hell graphitfarben.
 - ‹ und › oben links, ⌘[ und ⌘] (Strg außerhalb des Macs) und Browser-Zurück
   führen durch denselben Verlauf.
 - Alle sechs Sammlungen links öffnen, auch per G und Buchstabe (G I, G F, G P,
-  G R, G L, G A); die offene ist markiert. Archiv, Personen und Pläne stehen
-  unter „Mehr anzeigen“ (bleibt nach neu laden offen oder zu); G A klappt es
-  von selbst auf.
+  G R, G L, G A); die offene ist markiert. Nur Personen und Pläne (noch nicht
+  fertig) stehen unter „Mehr anzeigen“ (bleibt nach neu laden offen oder zu).
 - Seitenleiste mit dem Knopf und mit ⌘\ zu- und aufklappen, neu laden: der
-  Zustand bleibt. Der Klapp-Knopf steht dann links in der Reiterzeile, die
-  Suche als runder Knopf rechts; das Eingabefeld und „Ansicht konfigurieren“
-  rücken mit.
+  Zustand bleibt. Der Klapp-Knopf steht dann links in der Reiterzeile; das
+  Eingabefeld und „Ansicht konfigurieren“ rücken mit.
 - Tab-Gruppe unter „Arbeitsbereiche“ zuklappen (Zahl erscheint), Plus am Kopf
   legt einen Arbeitsbereich darin an, „+ Tab“ einen Tab — benannt wird auf der
   Übersicht, deren Arbeitsbereiche nur dafür kurz auftauchen. Rechtsklick auf Kopf oder Zeile öffnet das Menü, „Umbenennen“
   springt zur Übersicht.
-- Unten: Stufe öffnet Fortschritt als Seite (Karten „Diese Woche“ und „Serie“,
-  Aktivitätsband, darunter die Karten in zwei Spalten; „Serie“ öffnet ihre
-  Karte in den Einstellungen), Konto und ⌘, öffnen die Einstellungen.
+- Fortschritt (über die Level-Anzeige oben rechts) ist eine Seite: Karten
+  „Diese Woche“ und „Serie“, Aktivitätsband, darunter die Karten in zwei
+  Spalten; „Serie“ öffnet ihre Karte in den Einstellungen. Unten links öffnen
+  Konto und ⌘, die Einstellungen.
+- Leere Sammlung mit Pille zum Anlegen (Lesezeichen, Projekte …): die Pille
+  trägt die Farbe der Kategorie, neutrale Themen das Silber, nie Blau.
 - Übersicht: vier Zahlen, darunter die Bühne mit den zuletzt geöffneten Seiten
   (Punkte, Pfeile, ←/→ und waagerechtes Wischen blättern; „Öffnen“), darunter
   die Kacheln der verknüpften Einträge (bei Projekt und Arbeitsbereich:
   „Inhalt“). Leerer Speicher zeigt „Willkommen“ mit „Neu anlegen“. Keine
   Sammlungs-Karten, keine Arbeitsbereiche, rechts kein „Zuletzt geöffnet“.
-- Such-Palette: ⌘K (Strg K), „/“, Klick ins Suchfeld links und bei
-  zugeklappter Leiste der runde Such-Knopf öffnen sie in der Mitte; die Leiste
-  bleibt zu. Leer zeigt sie „Zuletzt geöffnet / Am häufigsten / Zuletzt
+- Such-Palette: ⌘K (Strg K), „/“ und die Lupe in der Reiterzeile öffnen sie
+  in der Mitte; eine zugeklappte Leiste bleibt zu. Die Suchseite nennt das
+  Suchwort in „Ergebnisse für „…““. Leer zeigt sie „Zuletzt geöffnet / Am häufigsten / Zuletzt
   gesucht“, beim Tippen Einträge, Aufgaben, Termine, Arbeitsbereiche mit
   hervorgehobenem Wort. Pfeiltasten wählen, Enter öffnet, Esc schließt (über
   dem Eingabefeld zuerst nur die Palette); Tasten wie 1–4 oder G I landen im

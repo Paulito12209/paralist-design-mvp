@@ -104,7 +104,7 @@ function renderHits() {
     `<h1 class="screen-title">Suchen</h1>` +
     (hits.length
       ? `
-        <div class="section-head"><h2>Ergebnisse</h2></div>
+        <div class="section-head"><h2>Ergebnisse für „${escapeHtml(ui.searchQuery)}“</h2></div>
         <div class="workspace-list">${hits
           .map((item) => resultRow(item, item.note ? `${item.label} · ${item.note}` : item.label, ui.searchQuery))
           .join("")}</div>

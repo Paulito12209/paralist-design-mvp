@@ -21,7 +21,7 @@
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
  * --desk-wide-width / --desk-gutter / --content-top -> größte Breite, Seitenrand und Luft oben
- * --desk-panel / --desk-panel-strong / --desk-radius -> Fläche und Rundung der Karten, gewählte Zeile „Stufe“ links
+ * --desk-panel / --desk-radius -> Fläche und Rundung der Karten
  * --bg -> Grund der Seite
  */
 
@@ -103,11 +103,6 @@
     padding: var(--progress-card-pad);
     border-radius: var(--desk-radius);
     background: var(--desk-panel);
-  }
-
-  /* Links unten ist „Stufe“ die gewählte Zeile, solange diese Seite offen ist */
-  .device:has(#progress:not([hidden])) .desk-foot-row[data-nav-level] {
-    background: var(--desk-panel-strong);
   }
 }
 

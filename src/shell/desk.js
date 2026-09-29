@@ -38,7 +38,7 @@ import { closeCtxMenu } from "../ui/ctx-menu.js";
 import { isDesk, isRailShown, onDeskChange } from "../ui/desk-mode.js";
 import { goBack, goForward } from "../ui/router.js";
 import { closeSheet } from "../ui/sheet.js";
-import { isNavClosed, mountDeskHead, openPageTab, renderDeskHead, setNavClosed } from "./desk-head.js";
+import { isNavClosed, mountDeskHead, openPageTab, placeLevelButton, renderDeskHead, setNavClosed } from "./desk-head.js";
 import { chordKey, chordWindow, collectionLinks, pageLinks } from "../ui/desk-links.js";
 import { mountDeskNav, openCollection, renderDeskNav } from "./desk-nav.js";
 import { mountDeskRail, registerRailCards, renderDeskRail } from "./desk-rail.js";
@@ -76,6 +76,7 @@ function refreshRail() {
 }
 
 function refreshAll() {
+  placeLevelButton(isDesk());
   refreshNav();
   refreshRail();
   syncClock();
@@ -83,9 +84,10 @@ function refreshAll() {
 }
 
 /*
- * Am Desktop tippt man nur in der Palette; das Feld der Seitenleiste öffnet
- * sie bloß und nimmt selbst keine Zeichen an. Unter 1024px ist es wieder das
- * gewohnte Suchfeld, und eine offene Palette verschwindet.
+ * Am Desktop tippt man nur in der Palette (Segment „Suchen“ der Reiterzeile,
+ * ⌘K, „/“); das Suchfeld des Handys ist dort ausgeblendet und nimmt keine
+ * Zeichen an. Unter 1024px ist es wieder das gewohnte Suchfeld, und eine
+ * offene Palette verschwindet.
  */
 function syncSearchField() {
   dom.searchInput.readOnly = isDesk();

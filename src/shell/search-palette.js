@@ -27,6 +27,7 @@ import { escapeHtml, icon } from "../core/html.js";
 import { load } from "../core/lazy.js";
 import { noteSearch } from "../data/opens.js";
 import { ui } from "../data/state.js";
+import { keyCap } from "../ui/dot-keys.js";
 import { openEntryOrFile, openTarget, showSearch } from "../ui/router.js";
 import { isViewActive } from "../ui/views.js";
 
@@ -67,7 +68,7 @@ function rowMarkup(item, index, text) {
       ${icon(item.icon)}
       <span class="palette-title">${title}</span>
       <span class="palette-meta">${escapeHtml(item.meta || "")}</span>
-      <kbd class="desk-kbd palette-enter" aria-hidden="true">Enter</kbd>
+      ${keyCap("Enter", " palette-enter")}
     </button>`;
 }
 
@@ -77,7 +78,7 @@ function footerMarkup(index, text, total) {
     <button class="palette-row palette-all" type="button" role="option" id="palette-opt-${index}" data-palette-index="${index}" tabindex="-1">
       ${icon("search")}
       <span class="palette-title">${escapeHtml(label)}</span>
-      <kbd class="desk-kbd palette-enter" aria-hidden="true">Enter</kbd>
+      ${keyCap("Enter", " palette-enter")}
     </button>`;
 }
 
@@ -200,7 +201,7 @@ function mount() {
         ${icon("search", "palette-field-icon")}
         <input class="palette-input" type="text" placeholder="${escapeHtml(placeholder)}" form="no-history"
           role="combobox" aria-expanded="true" aria-controls="palette-list" aria-autocomplete="list" spellcheck="false" />
-        <kbd class="desk-kbd" aria-hidden="true">Esc</kbd>
+        ${keyCap("Esc")}
       </div>
       <div class="palette-list" id="palette-list" role="listbox" aria-label="Treffer"></div>
     </div>`;

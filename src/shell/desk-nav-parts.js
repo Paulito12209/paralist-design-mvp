@@ -1,7 +1,7 @@
 /*
  * Bausteine der Seitenleiste am Desktop: das feste Gerüst (Knopf „Neu“,
  * Sammlungen, Arbeitsbereiche, Fuß) und die Teile, die sich mit den Daten
- * ändern (die Tab-Gruppen mit ihren Arbeitsbereichen und der Fuß mit Stufe und
+ * ändern (die Tab-Gruppen mit ihren Arbeitsbereichen und der Fuß mit dem
  * Konto). Hier steht nur Markup und was gerade gewählt ist — was ein Klick
  * auslöst, entscheidet src/shell/desk-nav.js.
  * Pfad: src/shell/desk-nav-parts.js
@@ -20,22 +20,16 @@ import { overviewPages } from "../data/config.js";
 import { entriesOf, workspaceIcon, workspaceLabel, workspacesOfTab } from "../data/queries.js";
 import { workspaceRef } from "../data/refs.js";
 import { state, ui } from "../data/state.js";
-import { levelInfo, totalXp } from "../data/xp.js";
 import { currentView } from "../ui/views.js";
 import { chordKey, collectionLinks, pageLinks, soonLinks, withCommand } from "../ui/desk-links.js";
-
-/* kbd: eine Taste der Tastatur. Für Vorlesehilfen ausgeblendet — dort sagt
-   aria-keyshortcuts am Knopf schon dasselbe. */
-function kbd(key, extraClass = "") {
-  return `<kbd class="desk-kbd${extraClass}" aria-hidden="true">${escapeHtml(key)}</kbd>`;
-}
+import { keyCap } from "../ui/dot-keys.js";
 
 function newButtonMarkup() {
   return `
     <button class="desk-nav-new" type="button" data-nav-new="1" aria-keyshortcuts="N">
       ${icon("plus", "desk-nav-new-icon")}
       <span>Neu</span>
-      ${kbd("N", " desk-kbd-inverse")}
+      ${keyCap("N", " desk-kbd-inverse")}
     </button>`;
 }
 
@@ -55,7 +49,7 @@ function collectionRowMarkup(link) {
     <button class="desk-nav-row${quiet}" type="button" data-nav-collection="${link.id}" aria-keyshortcuts="${chordKey} ${link.key}">
       ${icon(link.icon, `desk-nav-icon desk-nav-tone desk-nav-icon-${link.tone}`)}
       <span class="desk-nav-label"><span class="desk-nav-text">${escapeHtml(link.title)}</span>${counted}</span>
-      ${kbd(`${chordKey} ${link.key}`)}
+      ${keyCap(`${chordKey} ${link.key}`)}
     </button>`;
 }
 
@@ -65,24 +59,22 @@ function soonRowMarkup(card) {
     <div class="desk-nav-row is-soon" aria-disabled="true">
       ${icon(card.icon, "desk-nav-icon")}
       <span class="desk-nav-text">${escapeHtml(card.title)}</span>
-      <span class="desk-kbd desk-kbd-soon">Bald</span>
+      <span class="desk-soon">Bald</span>
     </div>`;
 }
 
 /*
- * Die Sammlungen: die täglichen offen, die seltenen (Archiv und was noch
- * kommt) unter „Mehr anzeigen“ — die Leiste bleibt kurz und ruhig. Auf- und
- * zugeklappt wird in src/shell/desk-nav.js (setMoreOpen).
+ * Die Sammlungen: alle, die es schon gibt, offen — auch das Archiv. Nur was
+ * noch kommt (Personen, Pläne), steht unter „Mehr anzeigen“; die Leiste
+ * bleibt so kurz und ruhig. Auf- und zugeklappt wird in src/shell/desk-nav.js.
  */
 function collectionsMarkup() {
-  const daily = collectionLinks.filter((link) => !link.quiet);
-  const rare = collectionLinks.filter((link) => link.quiet);
   return `
     <section class="desk-nav-group" aria-label="Sammlungen">
       ${headMarkup("Sammlungen")}
       <div class="desk-nav-list">
-        ${daily.map(collectionRowMarkup).join("")}
-        <div class="desk-nav-more" id="desk-nav-more" hidden>${rare.map(collectionRowMarkup).join("")}${soonLinks.map(soonRowMarkup).join("")}</div>
+        ${collectionLinks.map(collectionRowMarkup).join("")}
+        <div class="desk-nav-more" id="desk-nav-more" hidden>${soonLinks.map(soonRowMarkup).join("")}</div>
         <button class="desk-nav-row desk-nav-more-toggle" type="button" data-nav-more="1" aria-expanded="false" aria-controls="desk-nav-more">
           ${icon("dots", "desk-nav-icon")}
           <span class="desk-nav-text">Mehr anzeigen</span>
@@ -172,21 +164,17 @@ function avatarMarkup(photo) {
   return photo ? `<img class="desk-foot-photo" src="${photo}" alt="">` : escapeHtml(account.initials);
 }
 
-/** Der Fuß: Stufe mit Ring, darunter Konto mit Zahnrad — beides öffnet sein Blatt. */
+/*
+ * Der Fuß: das Konto mit Zahnrad, öffnet Profil und Einstellungen. Die Stufe
+ * steht oben rechts in der Reiterzeile (src/shell/desk-head.js).
+ */
 export function footMarkup(photo) {
-  const xp = totalXp();
-  const info = levelInfo(xp);
-  const missing = Math.max(0, info.to - xp);
   return `
-    <button class="desk-nav-row desk-foot-row" type="button" data-nav-level="1" aria-label="Stufe ${info.level}, noch ${formatNumber(missing)} XP bis Stufe ${info.level + 1}. Fortschritt öffnen">
-      <span class="desk-foot-ring" style="--progress: ${info.progress.toFixed(3)}" aria-hidden="true"><span>${info.level}</span></span>
-      <span class="desk-foot-copy"><span class="desk-foot-title">Stufe ${info.level}</span><span class="desk-foot-hint">${formatNumber(missing)} XP bis Stufe ${info.level + 1}</span></span>
-    </button>
     <button class="desk-nav-row desk-foot-row" type="button" data-nav-profile="1" aria-label="Profil und Einstellungen" aria-keyshortcuts="Meta+Comma">
       <span class="desk-foot-avatar" aria-hidden="true">${avatarMarkup(photo)}</span>
       <span class="desk-foot-copy"><span class="desk-foot-title">${escapeHtml(account.name)}</span><span class="desk-foot-hint">${escapeHtml(account.plan)}</span></span>
       ${icon("settings", "desk-foot-gear")}
-      ${kbd(withCommand(","))}
+      ${keyCap(withCommand(","))}
     </button>`;
 }
 

@@ -43,8 +43,8 @@
  * --desk-ink                -> volle Tinte: Text-Ton als Farbe für Grafiken
  * --desk-level-0 … -4       -> fünf Helligkeiten der Punkte im Aktivitätsband, 0 = nichts, 4 = viel
  * --desk-chip-bg            -> graue Fläche kleiner Pillen und runder Pfeile (Kopf der Übersicht)
- * --desk-kbd-bg / --desk-kbd-fg -> Fläche und Schrift der Tasten-Schilder („N“, „G I“, „1“):
- *                              eine Tönung des Verknüpfen-Blaus, damit alle Kürzel eine Familie sind
+ * --desk-kbd-dot / --desk-kbd-glow -> Punkte der Tasten-Schilder („N“, „G I“, „1“) und ihr
+ *                              Leuchten: Silber im Dunkeln, Graphit im Hellen (folgt --avatar-btn-bg)
  * --desk-scroll-thumb       -> Farbe des Rollbalkens, solange die Maus über einer Spalte steht
  *
  * RUNDUNGEN
@@ -103,8 +103,8 @@
   --desk-level-3: rgba(var(--nav-glow-color), 0.64);
   --desk-level-4: rgba(var(--nav-glow-color), 0.9);
   --desk-chip-bg: rgba(var(--nav-glow-color), 0.08);
-  --desk-kbd-bg: color-mix(in srgb, var(--link-color) 12%, transparent);
-  --desk-kbd-fg: var(--link-color);
+  --desk-kbd-dot: var(--avatar-btn-bg);
+  --desk-kbd-glow: color-mix(in srgb, var(--avatar-btn-bg) 45%, transparent);
   --desk-scroll-thumb: rgba(var(--nav-glow-color), 0.2);
   --desk-tint: linear-gradient(var(--desk-hover), var(--desk-hover));
   --desk-tint-on-dark: linear-gradient(color-mix(in srgb, var(--nav-bg) 12%, transparent), color-mix(in srgb, var(--nav-bg) 12%, transparent));
@@ -145,9 +145,6 @@
     --desk-sheen: rgba(var(--nav-glow-color), 0.14);
     --desk-backdrop: color-mix(in srgb, var(--bg) 60%, transparent);
     --desk-tint-on-dark: linear-gradient(rgba(var(--nav-glow-color), 0.14), rgba(var(--nav-glow-color), 0.14));
-    /* Tasten-Schilder: helleres Blau, auf Schwarz wäre das volle zu dunkel */
-    --desk-kbd-bg: color-mix(in srgb, var(--link-color) 22%, transparent);
-    --desk-kbd-fg: color-mix(in srgb, var(--link-color) 55%, white);
   }
 }
 
@@ -162,8 +159,6 @@
   --desk-sheen: rgba(var(--nav-glow-color), 0.14);
   --desk-backdrop: color-mix(in srgb, var(--bg) 60%, transparent);
   --desk-tint-on-dark: linear-gradient(rgba(var(--nav-glow-color), 0.14), rgba(var(--nav-glow-color), 0.14));
-  --desk-kbd-bg: color-mix(in srgb, var(--link-color) 22%, transparent);
-  --desk-kbd-fg: color-mix(in srgb, var(--link-color) 55%, white);
 }
 
 /* Am Desktop mehr Luft: breiterer Seitenrand, größerer Titel, und am

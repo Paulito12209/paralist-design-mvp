@@ -1,28 +1,30 @@
 /*
  * Desktop: der Kopf — links über der Seitenleiste die Wortmarke „Paralist“
  * mit dem Klapp-Knopf, über der Mitte die Reiterzeile mit Zurück und
- * Vorwärts, den vier Reitern in der Mitte und rechts dem runden Such-Knopf,
- * der nur bei zugeklappter Seitenleiste erscheint. Gilt erst ab 1024px
+ * Vorwärts, in der Mitte den vier Reitern und der Lupe als Segment-Leiste
+ * (wie Apple Arcade) und rechts oben der Level-Anzeige. Gilt erst ab 1024px
  * Fensterbreite; das Markup entsteht in src/shell/desk-head.js, der Platz im
  * Raster in styles/desk.css.
  * Pfad: styles/desk-head.css
  *
  * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-brand und .desk-tabs)
  * -----------------------------------
- * --head-btn / --head-icon -> Größe der runden Knöpfe (Klapp-Knopf, Pfeile, Suche) und ihrer Icons
+ * --head-btn / --head-icon -> Größe der runden Knöpfe (Klapp-Knopf, Pfeile) und ihrer Icons
  * --head-tab-height        -> Höhe eines Reiters
  * --head-tab-gap           -> Luft zwischen den Reitern
  * --head-tab-pad           -> Innenrand eines Reiters links und rechts (unter 1280px enger)
  * --head-track-pad         -> Rand der grauen Spur um die Reiter
- * Einzelwerte stehen bei ihrer Regel: Wortmarke 19px, Reiter-Schrift 14px;
- * Tasten-Hinweis unter dem Reiter: Schrift 12px, Abstand 8px,
- * Verzögerung 400ms bis er erscheint.
+ * --head-level             -> Größe der Level-Anzeige oben rechts
+ * Einzelwerte stehen bei ihrer Regel: Wortmarke 19px, Reiter-Schrift 14px,
+ * Lupe 18px; Hinweis unter Reiter und Level-Anzeige: Schrift 12px, Abstand
+ * 8px, Verzögerung 400ms bis er erscheint.
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
  * --desk-top-height -> Höhe von Wortmarke und Reiterzeile
  * --desk-nav-pad / --desk-gutter -> Rand links (Wortmarke) und seitlich der Reiterzeile
  * --desk-hover / --desk-fast / --desk-ease -> Tönung beim Überfahren, Dauer und Kurve
  * --desk-chip-bg / --card / --desk-edge -> Spur der Reiter, gewähltes Segment und seine Haarlinie
+ * --desk-panel-strong -> Fläche der Level-Anzeige, solange Fortschritt offen ist
  * --text / --bg / --muted / --avatar-btn-bg -> Schrift, Grund, leise Reiter und Icons der Knöpfe
  */
 
@@ -35,6 +37,7 @@
     --head-tab-gap: 2px;
     --head-tab-pad: 16px;
     --head-track-pad: 3px;
+    --head-level: 40px;
   }
 
   /* ---------- Wortmarke links ---------- */
@@ -77,13 +80,13 @@
     justify-content: flex-end;
   }
 
-  /* Klapp-Knopf und Such-Knopf gibt es hier nur bei zugeklappter Seitenleiste:
-     dann steht der Klapp-Knopf auf derselben Höhe wie vorher in der Leiste. */
-  .desk-tabs :is(.desk-tabs-toggle, .desk-tabs-search) {
+  /* Den Klapp-Knopf gibt es hier nur bei zugeklappter Seitenleiste: dann
+     steht er auf derselben Höhe wie vorher in der Leiste. */
+  .desk-tabs .desk-tabs-toggle {
     display: none;
   }
 
-  .device.is-nav-closed .desk-tabs :is(.desk-tabs-toggle, .desk-tabs-search) {
+  .device.is-nav-closed .desk-tabs .desk-tabs-toggle {
     display: grid;
   }
 
@@ -143,9 +146,20 @@
     color: var(--text);
   }
 
+  /* Die Suche: letztes Segment, nur die Lupe */
+  .desk-tab-search {
+    padding: 0 12px;
+  }
+
+  .desk-tab-icon {
+    width: 18px;
+    height: 18px;
+  }
+
   /* Tasten-Hinweis: erst beim Überfahren (kurz verzögert, damit er beim
-     Darüberstreifen nicht aufblitzt) oder bei Tastatur-Fokus sichtbar. */
-  .desk-tab-hint {
+     Darüberstreifen nicht aufblitzt) oder bei Tastatur-Fokus sichtbar. Der
+     Hinweis unter der Level-Anzeige rechts sieht genauso aus. */
+  :is(.desk-tab-hint, .desk-level-hint) {
     position: absolute; /* position: schwebt unter dem Reiter, ohne die Zeile zu verschieben */
     top: calc(100% + 8px);
     left: 50%;
@@ -153,7 +167,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    padding: 5px 6px 5px 10px;
+    padding: 5px 10px;
     border-radius: 999px;
     background: var(--text);
     color: var(--bg);
@@ -176,6 +190,49 @@
       opacity: 1;
       transform: translate(-50%, 0); /* transform: an seinen Platz */
       transition-delay: 400ms; /* transition-delay: erst nach kurzem Verweilen */
+    }
+  }
+
+  /* ---------- Level-Anzeige oben rechts ---------- */
+  /* Derselbe Knopf wie am Handy (styles/top-bar.css), hier etwas kleiner; der
+     Hinweis darunter steht rechtsbündig, damit er nicht aus dem Fenster ragt. */
+  .desk-tabs .level-btn {
+    position: relative; /* position: Bezug für den Hinweis darunter */
+    width: var(--head-level);
+    height: var(--head-level);
+    transition: background-color var(--desk-fast) var(--desk-ease); /* transition: Tönung gleitet */
+  }
+
+  .desk-tabs .level-gauge {
+    width: var(--head-level);
+    height: var(--head-level);
+  }
+
+  .desk-level-hint {
+    left: auto;
+    right: 0;
+    transform: translateY(-2px); /* transform: beim Erscheinen gleitet er ein Stück herab */
+  }
+
+  .desk-tabs .level-btn:focus-visible .desk-level-hint {
+    opacity: 1;
+    transform: none;
+  }
+
+  /* Solange Fortschritt als Seite offen ist, ist die Level-Anzeige „gewählt“ */
+  .device:has(#progress:not([hidden])) .desk-tabs .level-btn {
+    background: var(--desk-panel-strong);
+  }
+
+  @media (hover: hover) {
+    .desk-tabs .level-btn:hover {
+      background: var(--desk-hover);
+    }
+
+    .desk-tabs .level-btn:hover .desk-level-hint {
+      opacity: 1;
+      transform: none;
+      transition-delay: 400ms; /* transition-delay: s. o. */
     }
   }
 

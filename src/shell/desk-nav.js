@@ -1,15 +1,16 @@
 /*
  * Die Seitenleiste am Desktop: oben „Neu“, darunter die Sammlungen und die
  * Arbeitsbereiche — jeder Tab eine eigene Gruppe zum Auf- und Zuklappen —,
- * unten fest Stufe und Konto. Die vier Reiter stehen nicht hier, sondern in
- * der Reiterzeile (src/shell/desk-head.js). Eingehängt und aufgefrischt wird
- * die Leiste von src/shell/desk.js; das Markup steht in src/shell/desk-nav-parts.js.
+ * unten fest das Konto. Die vier Reiter, die Suche und die Stufe stehen
+ * nicht hier, sondern in der Reiterzeile (src/shell/desk-head.js). Eingehängt
+ * und aufgefrischt wird die Leiste von src/shell/desk.js; das Markup steht in
+ * src/shell/desk-nav-parts.js.
  * Pfad: src/shell/desk-nav.js
  *
  * Keine anpassbaren visuellen Werte: Aussehen, Abstände und Größen stehen in
  * styles/desk-nav.css und styles/desk-nav-foot.css. Welche Tab-Gruppen
  * zugeklappt sind, merkt sich der Browser unter storageKeys.deskGroups, ob
- * „Mehr anzeigen“ offen ist unter storageKeys.deskMore.
+ * „Mehr anzeigen“ (Personen, Pläne) offen ist unter storageKeys.deskMore.
  */
 
 import { emit, events, on } from "../core/bus.js";
@@ -38,7 +39,7 @@ const lastMarkup = new Map();
 let menuSource = null;
 /* Die zugeklappten Tab-Gruppen, als Text-Ids. */
 let closedGroups = [];
-/* Steht „Mehr anzeigen“ offen (Archiv, Personen, Pläne)? */
+/* Steht „Mehr anzeigen“ offen (Personen, Pläne)? */
 let moreOpen = false;
 
 function collectParts() {
@@ -62,9 +63,9 @@ function setActive(row, chosen) {
 
 /* Selektor, der nach dem Neuzeichnen denselben Knopf wiederfindet. */
 function focusSelector(node) {
-  const button = node.closest("[data-open-workspace], [data-nav-tab-toggle], [data-nav-add-workspace], [data-nav-level], [data-nav-profile]");
+  const button = node.closest("[data-open-workspace], [data-nav-tab-toggle], [data-nav-add-workspace], [data-nav-profile]");
   if (!button) return "";
-  const attribute = ["openWorkspace", "navTabToggle", "navAddWorkspace", "navLevel", "navProfile"].find((key) => button.dataset[key]);
+  const attribute = ["openWorkspace", "navTabToggle", "navAddWorkspace", "navProfile"].find((key) => button.dataset[key]);
   const name = attribute.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
   return `[data-${name}="${CSS.escape(button.dataset[attribute])}"]`;
 }
@@ -102,21 +103,17 @@ function addTabFromNav() {
   addTab();
 }
 
-/*
- * „Mehr anzeigen“ auf- oder zuklappen. Ist das Archiv die offene Seite, steht
- * der Teil immer offen — sonst wäre die gewählte Zeile versteckt.
- */
-function syncMore(active) {
-  const open = moreOpen || active.collection === "archive";
-  parts.more.hidden = !open;
-  parts.moreToggle.setAttribute("aria-expanded", String(open));
-  parts.moreToggle.querySelector(".desk-nav-text").textContent = open ? "Weniger anzeigen" : "Mehr anzeigen";
+/* „Mehr anzeigen“ auf- oder zuklappen und den Knopf beschriften. */
+function syncMore() {
+  parts.more.hidden = !moreOpen;
+  parts.moreToggle.setAttribute("aria-expanded", String(moreOpen));
+  parts.moreToggle.querySelector(".desk-nav-text").textContent = moreOpen ? "Weniger anzeigen" : "Mehr anzeigen";
 }
 
 function toggleMore() {
-  moreOpen = parts.more.hidden;
+  moreOpen = !moreOpen;
   writeText(storageKeys.deskMore, moreOpen ? "1" : "");
-  syncMore(activeTargets());
+  syncMore();
 }
 
 function toggleGroup(tabId) {
@@ -148,11 +145,7 @@ function reselect() {
   else dom.content.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-/* „Stufe“ links: öffnet Fortschritt; steht die Seite schon offen, rollt sie nach oben. */
-function openProgressPage() {
-  if (coveringPage() === "progress") dom.progressBody.scrollTo({ top: 0, behavior: "smooth" });
-  else load("progress").then((module) => module.open());
-}
+
 
 /** Eine Sammlung öffnen — auch über das Kürzel „G“ und Buchstabe. */
 export function openCollection(id) {
@@ -181,7 +174,6 @@ const clickActions = [
   ["[data-nav-add-workspace]", (node) => addWorkspaceIn(node.dataset.navAddWorkspace)],
   ["[data-nav-tab-toggle]", (node) => toggleGroup(node.dataset.navTabToggle)],
   ["[data-open-workspace]", openWorkspace],
-  ["[data-nav-level]", openProgressPage],
   ["[data-nav-profile]", () => load("profile").then((module) => module.openPane("konto"))],
 ];
 
@@ -277,7 +269,7 @@ export function renderDeskNav() {
     count.hidden = !value;
     row.setAttribute("aria-label", value ? `${link.title}, ${value === 1 ? "1 Eintrag" : `${value} Einträge`}` : link.title);
   });
-  syncMore(active);
+  syncMore();
 
   swapMarkup(parts.spaces, tabGroupsMarkup(closedGroups, active.workspace));
   swapMarkup(parts.foot, footMarkup(handlers.profilePhoto()));
