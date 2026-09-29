@@ -13,6 +13,7 @@
  * lazyViews     -> welche Ansichten dabei eine eigene Seite sind
  * prefetchOrder -> in welcher Reihenfolge sie in Ruhephasen vorgeladen werden
  *                  (das erste Öffnen geht dann ohne Warten)
+ * railCards     -> welche Ansicht am Desktop eigene Karten in der rechten Spalte hat
  */
 
 import { events, on } from "./core/bus.js";
@@ -69,6 +70,18 @@ const lazyModules = {
   files: () => import("./data/files.js"),
   desk: () => import("./shell/desk.js"),
   dashboard: () => import("./features/dashboard/dashboard.js"),
+};
+
+/*
+ * Eigene Karten der Ansichten für die rechte Spalte am Desktop
+ * (src/shell/desk-rail.js). Sie laden erst, wenn die Ansicht bei breitem
+ * Fenster offen ist; alle übrigen Seiten zeigen die Karten der Übersicht.
+ */
+const railCards = {
+  calendar: () => import("./features/calendar/calendar-rail.js"),
+  tasks: () => import("./features/tasks/tasks-rail.js"),
+  media: () => import("./features/media/media-rail.js"),
+  search: () => import("./features/search/search-rail.js"),
 };
 
 /* Von den nachladbaren Bereichen sind das die, die eine eigene Ansicht haben. */
@@ -141,7 +154,7 @@ function initLazyViews() {
 function initDeskWhenWide() {
   const mount = () => {
     if (!isDesk()) return;
-    load("desk").then((module) => module.initDesk({ openWorkspaceMenu, openTabMenu, profilePhoto: savedPhoto }));
+    load("desk").then((module) => module.initDesk({ openWorkspaceMenu, openTabMenu, profilePhoto: savedPhoto, railCards }));
     load("dashboard").then((module) => module.initDashboard());
   };
   mount();

@@ -8,9 +8,8 @@
  * Aufgaben, Medien, Suche, Zeichnung, Profil, Einstellungen —, steht in
  * styles/tokens-pages.css.
  *
- * Nicht alles steht hier: die Schriftgröße eines einzelnen Elements — etwa die
- * Stundenbeschriftung im Kalender oder eine Überschrift im Profil-Blatt — steht
- * direkt bei ihrer Regel in der Datei des jeweiligen Bereichs. Welche Datei das
+ * Nicht alles steht hier: die Schriftgröße eines einzelnen Elements (etwa die
+ * Stundenbeschriftung im Kalender) steht direkt bei ihrer Regel in der Datei des jeweiligen Bereichs. Welche Datei das
  * ist, sagt die Liste unten; oben in jeder Datei steht, was sich darin einstellen lässt.
  *
  * WELCHE DATEI MACHT WAS
@@ -73,6 +72,7 @@
  * styles/search-palette.css  -> Desktop: Such-Palette in der Fenstermitte (⌘K, „/“, Suchfeld, Such-Knopf)
  * styles/desk-rail.css       -> Desktop: rechte Spalte mit nächstem Termin, Aufgaben und zuletzt Geöffnetem
  * styles/desk-rail-tiles.css -> Desktop: die zwei Kacheln oben rechts (Eingang-Stapel, Stufen-Ring) und die Tagesleiste
+ * styles/desk-rail-views.css -> Desktop: Karten der rechten Spalte je Seite (Monat, Tag, Zahlen, Balken, Vorschau)
  * styles/dashboard.css       -> Desktop: Kopf der Übersicht mit Zahlen, Aktivitätsband und zwei großen Karten
  * styles/dashboard-motion.css -> Desktop: Überfahren, Drücken und Auftauchen im Kopf der Übersicht
  *

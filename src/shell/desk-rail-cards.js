@@ -21,7 +21,7 @@
 import { dayKey, dayShift, parseDay, startOfDay } from "../core/dates.js";
 import { formatNumber, formatSpan, shortDay, shortOpenTime } from "../core/format.js";
 import { escapeHtml, icon } from "../core/html.js";
-import { inboxPick, isTaskDone, taskPriorityOf, typeSingular } from "../data/config.js";
+import { inboxPick, isTaskDone, typeSingular } from "../data/config.js";
 import {
   eventStart,
   eventsOfDay,
@@ -32,6 +32,7 @@ import {
   recentEntries,
 } from "../data/insights.js";
 import { inboxEntries, taskEntries } from "../data/queries.js";
+import { cardHead, createPill, railTaskRow, railTitle } from "../ui/rail-parts.js";
 import { entryGlyph } from "../ui/rows.js";
 import { dayPassed, dayTrack, levelRing, paperPile, pileSize } from "./desk-rail-visuals.js";
 
@@ -44,11 +45,6 @@ const secondsPerMinute = 60;
 
 /* Wochentag kurz („Fr.“) für Termine ab übermorgen — einmal angelegt, weil teuer. */
 const weekdayShort = new Intl.DateTimeFormat("de-DE", { weekday: "short" });
-
-/* Titel für die Ausgabe: immer abgesichert, ein leerer Titel bekommt einen Platzhalter. */
-function titleOf(entry) {
-  return escapeHtml(entry.title || "Ohne Titel");
-}
 
 /* „1 Termin“ oder „3 Termine“ — die Mehrzahl hängt an der Zahl. */
 function eventCount(count) {
@@ -65,17 +61,6 @@ function untilLabel(next, now, todayKey) {
   const tomorrowKey = dayKey(new Date(dayShift(startOfDay(now), 1)));
   const day = next.key === tomorrowKey ? "morgen" : weekdayShort.format(parseDay(next.key));
   return next.time ? `${day} ${next.time}` : day;
-}
-
-/* Kopfzeile einer Karte: Titel links, rechts ein Chip oder eine Pille. */
-function cardHead(title, end = "") {
-  return `<div class="rail-head"><h2 class="rail-title">${title}</h2>${end}</div>`;
-}
-
-/* Pille, die etwas anlegt — für leere Karten. `action` sind die data-Angaben, an
-   denen src/shell/desk-rail.js erkennt, was angelegt wird (fester Text, nie Eingaben). */
-function createPill(action, label) {
-  return `<button class="rail-pill" type="button" ${action}>${icon("plus")}${label}</button>`;
 }
 
 /** Kachel „Eingang“: Papierstapel der neuesten Einträge, Zahl darunter, Plus oben rechts. */
@@ -119,7 +104,7 @@ export function levelTile() {
 
 /* Der nächste Termin als großer Knopf: Uhrzeit groß, Titel darunter, Tag daneben, wenn nicht heute. */
 function eventButton(next, todayKey) {
-  const title = titleOf(next.entry);
+  const title = railTitle(next.entry);
   const day = next.key === todayKey ? "" : escapeHtml(shortDay(next.key));
   const time = next.time ? escapeHtml(next.time) : "ganztags";
   const label = `${title}, ${day || "heute"}, ${next.time ? `${time} Uhr` : time}`;
@@ -165,25 +150,6 @@ export function nextCard(now) {
   `;
 }
 
-/* Eine Aufgabe: runder Haken zum Erledigen, daneben der Titel, rechts Fälligkeit und Dringlichkeit. */
-function taskRow(entry) {
-  const id = escapeHtml(entry.id);
-  const title = titleOf(entry);
-  const prio = taskPriorityOf(entry.priority);
-  const due = entry.date ? escapeHtml(shortDay(entry.date)) : "";
-  const label = `${title}${due ? `, fällig ${due}` : ""}, Dringlichkeit ${escapeHtml(prio.label)}`;
-  return `
-    <li class="rail-task">
-      <button class="rail-check" type="button" data-rail="done" data-id="${id}" aria-label="${title} erledigen">${icon("check")}</button>
-      <button class="rail-task-title" type="button" data-rail="entry" data-id="${id}" aria-label="${label}">
-        <span class="rail-task-text">${title}</span>
-        ${due ? `<span class="rail-task-day">${due}</span>` : ""}
-        <span class="rail-prio" style="background:${prio.color}"></span>
-      </button>
-    </li>
-  `;
-}
-
 /** Karte „Aufgaben“: die dringendsten offenen Aufgaben, zum Abhaken direkt hier. */
 export function tasksCard() {
   const open = taskEntries().filter((entry) => !isTaskDone(entry)).length;
@@ -193,14 +159,14 @@ export function tasksCard() {
     <button class="rail-pill rail-head-end" type="button" data-rail="tasks">Alle</button>
   `;
   const body = tasks.length
-    ? `<ul class="rail-task-list">${tasks.map(taskRow).join("")}</ul>`
+    ? `<ul class="rail-task-list">${tasks.map(railTaskRow).join("")}</ul>`
     : `<p class="rail-empty">Nichts offen.</p>${createPill('data-rail="create" data-pick="aufgabe"', "Aufgabe anlegen")}`;
   return cardHead("Aufgaben", end) + body;
 }
 
 /* Kleine Karte eines zuletzt geöffneten Eintrags: Typ oben, Vorschau oder Icon in der Mitte, Titel und Zeit unten. */
 function recentCard({ entry, ts }) {
-  const title = titleOf(entry);
+  const title = railTitle(entry);
   const kind = escapeHtml(typeSingular(entry.type));
   const time = shortOpenTime(ts);
   return `

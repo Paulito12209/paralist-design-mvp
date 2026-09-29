@@ -18,7 +18,7 @@
  * Platzhalter steht in styles/empty-state.css.
  */
 
-import { events, on } from "../../core/bus.js";
+import { emit, events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { historyDayHeading, shortOpenTime } from "../../core/format.js";
 import { escapeHtml, icon } from "../../core/html.js";
@@ -186,11 +186,17 @@ function renderOverviewLists() {
 function selectTab(id) {
   if (ui.searchTab === id) return;
   ui.searchTab = id;
-  renderOverviewLists();
+  renderSearch();
 }
 
 /** Die Suchseite passend zum Zustand zeichnen. */
 export function renderSearch() {
+  drawSearch();
+  /* Am Desktop zeigt die Spalte rechts eine Vorschau des ersten Treffers (search-rail.js). */
+  emit(events.contextChanged);
+}
+
+function drawSearch() {
   if (ui.searchQuery) {
     renderHits();
     return;

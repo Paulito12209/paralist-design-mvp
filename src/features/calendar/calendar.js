@@ -39,10 +39,14 @@ const tickSeconds = 30;
 
 let tickTimer = null;
 
+/* Der Tag, den der Kalender zuletzt gezeigt hat — wechselt er, zieht die Spalte rechts nach. */
+let shownDay = null;
+
 /**
  * Die ganze Seite neu zeichnen.
  * @param jumpToNow true, wenn das Raster zur aktuellen Uhrzeit rollen soll.
  */
+
 export function renderCalendar(jumpToNow = false) {
   /* Der Scrollstand des Rasters geht beim Neuzeichnen verloren: erst merken,
      danach wiederherstellen — sonst springt der Tag bei jeder Änderung auf
@@ -64,6 +68,11 @@ export function renderCalendar(jumpToNow = false) {
   /* rAF: die Sichtbarkeit der Jetzt-Linie erst messen, wenn das Rollen im
      Raster übernommen wurde. */
   requestAnimationFrame(updateTodayPill);
+  /* Am Desktop zeigt die rechte Spalte den gewählten Tag (calendar-rail.js). */
+  if (ui.calendarDay !== shownDay) {
+    shownDay = ui.calendarDay;
+    emit(events.contextChanged);
+  }
 }
 
 /* Ob der gewählte Tag der heutige ist. */

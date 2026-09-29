@@ -46,6 +46,10 @@ export const events = {
   /* Das Profilbild wurde neu gesetzt oder entfernt: alles, was es zeigt (die
      Konto-Zeile unten in der Seitenleiste am Desktop), zeichnet sich neu. */
   profileChanged: "profile:changed",
+  /* Was die Kontextspalte rechts am Desktop zeigt, hat sich geändert, ohne dass
+     sich Daten geändert hätten: ein anderer Tag im Kalender, ein anderer
+     markierter Treffer in der Suche. Die Spalte zeichnet sich neu. */
+  contextChanged: "context:changed",
 };
 
 const listeners = new Map();

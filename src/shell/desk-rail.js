@@ -1,10 +1,14 @@
 /*
- * Die rechte Spalte am Desktop (ab 1280px Fensterbreite): oben die Kacheln
- * „Eingang“ und „Fortschritt“, darunter „Als Nächstes“, die dringendsten
- * Aufgaben und was zuletzt geöffnet wurde. Diese Datei baut das Gerüst einmal,
- * setzt bei jedem Neuzeichnen nur die Karten neu ein, deren Inhalt sich
- * wirklich geändert hat, und hört mit EINEM Klick-Empfänger auf die ganze
- * Spalte. Wann gezeichnet wird, entscheidet src/shell/desk.js.
+ * Die rechte Spalte am Desktop (ab 1280px Fensterbreite), die Kontextspalte.
+ * Ihre Karten wechseln mit der Seite: Kalender, Aufgaben, Medien und Suche
+ * bringen eigene mit (src/features/<bereich>/<bereich>-rail.js, angemeldet in
+ * src/main.js über registerRailCards). Alle anderen Seiten zeigen die Karten
+ * der Übersicht: oben die Kacheln „Eingang“ und „Fortschritt“, darunter „Als
+ * Nächstes“, die dringendsten Aufgaben und was zuletzt geöffnet wurde.
+ * Diese Datei baut je Kartensatz das Gerüst einmal, setzt bei jedem
+ * Neuzeichnen nur die Karten neu ein, deren Inhalt sich wirklich geändert hat,
+ * und hört mit EINEM Klick-Empfänger auf die ganze Spalte. Wann gezeichnet
+ * wird, entscheidet src/shell/desk.js.
  * Pfad: src/shell/desk-rail.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -29,7 +33,7 @@ import { load } from "../core/lazy.js";
 import { ui } from "../data/state.js";
 import { openEntry, openTarget, showSearch, showTab } from "../ui/router.js";
 import { toggleTaskFromCheck } from "../ui/task-status.js";
-import { isViewActive } from "../ui/views.js";
+import { currentView, isViewActive } from "../ui/views.js";
 import { inboxTile, levelTile, nextCard, recentSection, tasksCard } from "./desk-rail-cards.js";
 
 const checkDelay = 220;
@@ -40,7 +44,7 @@ const hoursAhead = 1;
 const entranceMotions = ["desk-rail-rise", "desk-rail-tick"];
 
 /*
- * Die Plätze der Spalte von oben nach unten. `group` legt die beiden Kacheln
+ * Die Plätze der Übersicht von oben nach unten. `group` legt die beiden Kacheln
  * nebeneinander in eine Zeile; `tag` ist das Element des Platzes. Die
  * Reihenfolge bestimmt auch, in welcher Folge die Karten beim ersten Zeigen
  * auftauchen.
@@ -55,8 +59,15 @@ const slots = [
 
 let root = null;
 let rendered = false;
-const boxes = new Map();
-const shown = new Map();
+/* Je Kartensatz („overview“ oder der Name einer Ansicht): sein Element, die
+   Plätze und was zuletzt darin stand. */
+const sets = new Map();
+/* Angemeldete Kartensätze der Ansichten: erst die Funktion, die sie lädt,
+   nach dem Laden das Modul mit `railCards` und `railActions`. */
+const loaders = new Map();
+const modules = new Map();
+/* Der Kartensatz, der gerade zu sehen ist. */
+let active = null;
 /* Aufgaben, deren Haken gerade gefüllt wird — ein zweiter Klick in der kurzen Pause zählt nicht. */
 const checking = new Set();
 
@@ -142,10 +153,12 @@ function checkTask(button) {
   }, checkDelay);
 }
 
+/* Erst die Knöpfe des sichtbaren Bereichs, dann die gemeinsamen (Eintrag öffnen, abhaken …). */
 function onClick(event) {
   const button = event.target.closest("[data-rail]");
   if (!button || !root.contains(button)) return;
-  const action = actions[button.dataset.rail];
+  const own = modules.get(active?.name)?.railActions || {};
+  const action = own[button.dataset.rail] || actions[button.dataset.rail];
   if (action) action(button);
 }
 
@@ -175,10 +188,10 @@ function restoreFocus(box, focus) {
 }
 
 /* Einen Platz füllen — nur, wenn sich sein Inhalt geändert hat. Ein leerer Platz wird ausgeblendet. */
-function fill(slot, html) {
-  if (shown.get(slot.name) === html) return;
-  shown.set(slot.name, html);
-  const box = boxes.get(slot.name);
+function fill(set, slot, html) {
+  if (set.shown.get(slot.name) === html) return;
+  set.shown.set(slot.name, html);
+  const box = set.boxes.get(slot.name);
   const focus = focusIn(box);
   box.innerHTML = html;
   box.hidden = !html;
@@ -203,20 +216,73 @@ function endEntrance() {
   root.removeEventListener("animationcancel", endEntrance);
 }
 
-/* Das leere Gerüst: ein Element je Platz, die zwei Kacheln gemeinsam in einer Zeile. */
-function buildSkeleton() {
-  const tiles = document.createElement("div");
-  tiles.className = "rail-tiles";
-  root.append(tiles);
-  slots.forEach((slot, index) => {
-    const box = document.createElement(slot.tag);
+/*
+ * Das leere Gerüst eines Kartensatzes: ein Element je Platz, Plätze mit
+ * `group` gemeinsam in einer Zeile (die zwei Kacheln der Übersicht). Der Satz
+ * steht in einem eigenen Element, das die Spalte selbst nicht verändert
+ * (display: contents in styles/desk-rail-views.css).
+ */
+function buildSet(name, cards) {
+  const element = document.createElement("div");
+  element.className = "rail-set";
+  element.dataset.railSet = name;
+  const set = { name, cards, element, boxes: new Map(), shown: new Map() };
+  const groups = new Map();
+  cards.forEach((slot, index) => {
+    const box = document.createElement(slot.tag || "section");
     box.className = slot.className;
     box.dataset.slot = slot.name;
     /* --i: Platz in der Reihe, daraus rechnet das Stylesheet die Verzögerung beim Auftauchen. */
     box.style.setProperty("--i", String(index));
-    boxes.set(slot.name, box);
-    (slot.group === "tiles" ? tiles : root).append(box);
+    set.boxes.set(slot.name, box);
+    if (!slot.group) {
+      element.append(box);
+      return;
+    }
+    if (!groups.has(slot.group)) {
+      const row = document.createElement("div");
+      row.className = `rail-${slot.group}`;
+      groups.set(slot.group, row);
+      element.append(row);
+    }
+    groups.get(slot.group).append(box);
   });
+  root.append(element);
+  sets.set(name, set);
+  return set;
+}
+
+/**
+ * Eigene Karten für eine Ansicht anmelden. Wird von src/main.js über
+ * src/shell/desk.js hereingegeben — so kennt src/shell/ keinen Bereich.
+ * @param view Name der Ansicht, z.B. "calendar".
+ * @param importFn holt das Modul; es exportiert `railCards` (Plätze wie
+ *   `slots` oben, mit `render(now)`) und wahlweise `railActions` (Name →
+ *   Funktion(Knopf)) für seine eigenen data-rail-Knöpfe.
+ */
+export function registerRailCards(view, importFn) {
+  loaders.set(view, importFn);
+}
+
+/*
+ * Der Kartensatz für die offene Ansicht. Ist ihr Modul noch nicht geladen,
+ * wird es jetzt geholt; bis dahin bleibt der bisherige Satz stehen (oder die
+ * Übersicht), danach zeichnet sich die Spalte neu.
+ */
+function setForView() {
+  const view = currentView();
+  const module = modules.get(view);
+  if (module) return sets.get(view) || buildSet(view, module.railCards);
+  if (loaders.has(view)) {
+    const importFn = loaders.get(view);
+    loaders.delete(view);
+    importFn().then((loaded) => {
+      modules.set(view, loaded);
+      if (currentView() === view) renderDeskRail();
+    });
+    return active || sets.get("overview");
+  }
+  return sets.get("overview");
 }
 
 /**
@@ -228,7 +294,7 @@ function buildSkeleton() {
 export function mountDeskRail(element) {
   if (root) return;
   root = element;
-  buildSkeleton();
+  buildSet("overview", slots);
   root.addEventListener("click", onClick);
 }
 
@@ -245,6 +311,13 @@ export function renderDeskRail() {
     root.addEventListener("animationend", endEntrance);
     root.addEventListener("animationcancel", endEntrance);
   }
+  const set = setForView();
+  if (set !== active) {
+    sets.forEach((each) => {
+      each.element.hidden = each !== set;
+    });
+    active = set;
+  }
   const now = Date.now();
-  slots.forEach((slot) => fill(slot, slot.render(now)));
+  set.cards.forEach((slot) => fill(set, slot, slot.render(now)));
 }
