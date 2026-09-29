@@ -44,10 +44,12 @@ später als Zeilen in die Seitenleiste; die Reiterzeile wächst nie.
 │ ≡ 🔍 Suchen ⌘K│ ‹ ›     Übersicht Kalender Aufgaben Medien   ⋯│              │
 │ + Neu      N ├──────────────────────────────────────────┤  Kontext     │
 │ SAMMLUNGEN   │  Übersicht › Marketing › Notiz  (Pfad)   │  (je Seite   │
-│ SAMMLUNGEN   │                                          │  anders,     │
-│  …    G I    │  Seite                                   │  einklappbar)│
+│  Eingang G I │                                          │  anders,     │
+│  …           │  Seite                                   │  einklappbar)│
 │ ARBEITSBER.  │                                          │              │
+│  Meine ▾  +  │                                          │              │
 │   Marketing  │                                          │              │
+│  Arbeit ▸ 2  │                                          │              │
 │ Stufe 3      │  Eingabefeld (Glas, schwebt)             │              │
 │ Paul · ⚙  ⌘, │                                          │              │
 └──────────────┴──────────────────────────────────────────┴──────────────┘
