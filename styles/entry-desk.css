@@ -1,0 +1,89 @@
+/*
+ * Desktop: Eintragsseite und Unterseiten in der Breite. Ab 1024px entfällt
+ * der eigene Zurück-Pfeil der Unterseiten — zurück geht es über die Pfeile
+ * der Reiterzeile, ⌘[ und Browser-Zurück —, und die Werkzeuge des Eintrags
+ * stehen rechts in der Kopfzeile: Kategorie, Favorit, Cover, Menü
+ * (src/features/entry/entry-head.js). Ab 1280px stehen Details, verknüpfte
+ * Einträge und Gestaltung in der rechten Spalte (entry-rail.js); die Karte am
+ * Textende und „Mehr anzeigen“ entfallen, der Text steht allein. Am Handy
+ * gilt hier nichts.
+ * Pfad: styles/entry-desk.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * Einzelne Größen stehen bei ihrer Regel: Abstand zwischen Kategorie und
+ * Knöpfen 6px, Knöpfe der Gestaltung 8px Fuge, runder Knopf „Verknüpfen“ 28px.
+ *
+ * WERTE AUS styles/tokens.css UND styles/tokens-desk.css
+ * -----------------------------------
+ * --star-color      -> Gold des Sterns, solange der Eintrag Favorit ist
+ * --text / --bg     -> gefüllte Pille „Cover“, solange ein Cover gesetzt ist
+ * --desk-hover      -> Tönung des runden Knopfs unter der Maus
+ * --rail-pill-height -> Größe des runden Knopfs (styles/desk-rail.css)
+ */
+
+/* Am Handy stehen Favorit und Cover im Menü hinter den drei Punkten. */
+.entry-head-tool {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  .content .page-head .back-btn {
+    display: none;
+  }
+
+  /* Kategorie und Werkzeuge rücken zusammen an den rechten Rand. */
+  #view-entry .entry-crumb {
+    text-align: right;
+    margin-right: 6px;
+  }
+
+  #entry-head .entry-head-tool {
+    display: grid;
+    margin-left: 0; /* margin-left: nur das Menü ganz rechts darf sich nach außen schieben (styles/entry.css) */
+  }
+
+  #entry-head .entry-head-fav.is-on .icon {
+    color: var(--star-color);
+  }
+
+  #entry-head .entry-head-cover.is-on {
+    color: var(--star-color);
+  }
+}
+
+@media (min-width: 1280px) {
+  /* Die Details stehen rechts — die Karte am Textende und das Kürzen entfallen. */
+  #view-entry .details-card,
+  #view-entry .entry-more {
+    display: none;
+  }
+
+  /* In der Spalte sind Kennzahlen und Zeilen gleich zu sehen (am Handy blenden
+     sie erst beim Hochscrollen ein, styles/entry-details.css). */
+  .rail-entry-details :is(.details-stats, .details-list) {
+    opacity: 1;
+  }
+
+  .rail-entry-design {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .rail-entry-design .rail-pill.is-on {
+    background: var(--text);
+    color: var(--bg);
+  }
+
+  .rail-round-btn {
+    display: grid;
+    place-items: center;
+    width: var(--rail-pill-height);
+    height: var(--rail-pill-height);
+    border-radius: 50%;
+  }
+
+  .rail-round-btn .icon { width: 16px; height: 16px; }
+  .rail-round-btn:hover { background: var(--desk-hover); }
+}

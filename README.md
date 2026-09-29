@@ -384,6 +384,12 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   neu laden); Liste mit Art, Ort, Datum, Größe; Kachel oder Zeile überfahren →
   „Details“ rechts, Klick öffnet die Datei. Pillen und Werkzeuge überlappen
   nicht, auch bei 1024 px.
+- Eintrag: kein eigener Zurück-Pfeil (auch auf Sammlungen), zurück über ‹ der
+  Reiterzeile oder Browser-Zurück. Rechts oben Kategorie, Stern (Favorit),
+  Cover, Menü. Ab 1280 px rechts „Details“ (Status/Dringlichkeit antippen,
+  Link-Zeile beim Lesezeichen ändern), verknüpfte Einträge (Klick öffnet,
+  „Alle“ wechselt die Pille) und „Gestaltung“; langer Text ohne „Mehr
+  anzeigen“. Zwischen 1024 und 1279 px bleibt die Karte am Textende.
 
 **Immer**
 - `python3 tools/version.py` ausführen, dann meldet `python3 tools/check.py` „alles in Ordnung“.

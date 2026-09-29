@@ -74,6 +74,15 @@ function groupMarkup(group) {
   return `<p class="details-heading">${escapeHtml(group.heading)}</p>${rows}`;
 }
 
+/**
+ * Kennzahlen und Abschnitte als HTML — für die Karte hier und für die
+ * Karte „Details“ in der rechten Spalte am Desktop (entry-rail.js).
+ */
+export function detailsBodyMarkup(entry) {
+  const facts = entryFacts(entry);
+  return `<div class="details-stats">${facts.stats.map(statMarkup).join("")}</div><div class="details-list">${facts.groups.map(groupMarkup).join("")}</div>`;
+}
+
 /** Kennzahlen und Abschnitte für den offenen Eintrag neu schreiben. */
 export function renderEntryDetails(entry) {
   if (!card || !entry) return;
@@ -84,7 +93,7 @@ export function renderEntryDetails(entry) {
 
 /* Die Adresse an Ort und Stelle ändern: ein Feld statt des Werts. Enter oder
    Wegtippen übernimmt, Escape lässt alles wie es war. */
-function editLink(entry, row) {
+function editLink(entry, row, done = renderEntryDetails) {
   const value = row.querySelector(".details-row-value");
   /* input type=url: die Tastatur am Handy zeigt „.“ und „/“; kein eigenes
      autocomplete, das Formular no-history hält Chromes Verlaufs-Chips fern */
@@ -100,17 +109,20 @@ function editLink(entry, row) {
   value.replaceWith(input);
   input.focus();
   input.select();
-  let done = false;
+  let finished = false;
   const finish = (apply) => {
-    if (done) return;
-    done = true;
+    if (finished) return;
+    finished = true;
     if (apply && input.value.trim() !== before && setBookmarkUrl(entry, input.value)) {
       markEdited(entry);
       saveState();
       emit(events.dataChanged);
       fillVideoTitle(entry);
     }
-    renderEntryDetails(entry);
+    /* Erst den Wert zurück an seinen Platz, dann neu zeichnen — so steht auch
+       dort, wo nicht neu gezeichnet wird, kein verwaistes Feld mehr. */
+    input.replaceWith(value);
+    done(entry);
   };
   input.addEventListener("blur", () => finish(true));
   input.addEventListener("keydown", (event) => {
@@ -161,9 +173,23 @@ export function initEntryDetails() {
       openLinkSheet(entry);
       return;
     }
-    const stat = event.target.closest("[data-details-field]");
-    if (stat) openTaskSheet(entry, stat.dataset.detailsField);
-    const row = event.target.closest("[data-details-edit]");
-    if (row && !row.querySelector("input")) editLink(entry, row);
+    handleDetailsClick(event, entry);
   });
+}
+
+/**
+ * Tipps auf Kennzahlen (Status, Dringlichkeit) und die Link-Zeile — hier und
+ * in der Karte rechts am Desktop. Gibt `true` zurück, wenn der Tipp etwas tat.
+ * @param done nach dem Ändern des Links: die Karte, in der er stand, neu zeichnen.
+ */
+export function handleDetailsClick(event, entry, done = renderEntryDetails) {
+  const stat = event.target.closest("[data-details-field]");
+  if (stat) {
+    openTaskSheet(entry, stat.dataset.detailsField);
+    return true;
+  }
+  const row = event.target.closest("[data-details-edit]");
+  if (!row) return false;
+  if (!row.querySelector("input")) editLink(entry, row, done);
+  return true;
 }

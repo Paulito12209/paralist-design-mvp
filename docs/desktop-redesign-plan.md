@@ -252,8 +252,8 @@ Jeder Schritt ist für sich lauffähig, wird geprüft (`tools/version.py`,
    Konto in `styles/desk-nav-foot.css`. Ziele und Tasten an einer Stelle in
    `src/shell/desk-links.js` (seit Schritt 4 `src/ui/desk-links.js`); Kürzel in `src/shell/desk.js`; blaue Schilder in
    `styles/desk-kbd.css` (ersetzt die Tipp-Karte). Kontodaten liegen jetzt in
-   `src/data/account.js`, `goForward()` im Router. Übergang bis Schritt 7:
-   Unterseiten zeigen noch ihren eigenen Zurück-Pfeil unter der Reiterzeile.
+   `src/data/account.js`, `goForward()` im Router. Der eigene Zurück-Pfeil
+   der Unterseiten entfiel mit Schritt 7.
 2. **Suche** — *umgesetzt.* `src/shell/search-palette.js` mit
    `styles/search-palette.css`: Dialog oben in der Mitte mit Feld und Gruppen,
    Pfeiltasten, Enter, Esc, Schild „Enter“ an der gewählten Zeile bzw. an
@@ -321,7 +321,18 @@ Jeder Schritt ist für sich lauffähig, wird geprüft (`tools/version.py`,
    `prefs.media.deskLayout` und `prefs.media.tileSize`); rechts die Details
    der markierten Datei mit Vorschau (`media-rail.js`). `formatBytes` liegt
    jetzt in `src/core/format.js`.
-7. **Eintrag** — Details in die Kontextspalte, Werkzeuge in die Kopfzeile.
+7. **Eintrag** — *umgesetzt.* Ab 1024 px entfällt der eigene Zurück-Pfeil
+   aller Unterseiten (zurück über die Reiterzeile, `⌘[`, Browser-Zurück); in
+   der Kopfzeile des Eintrags stehen rechts Kategorie, Favorit, Cover und
+   Menü (`src/features/entry/entry-head.js`). Ab 1280 px stehen „Details“
+   (dieselben Kennzahlen und Abschnitte, Status und Dringlichkeit antippbar,
+   Link änderbar, „Verknüpfen“), die verknüpften Einträge (bei einem Projekt
+   sein Inhalt, „Alle“ öffnet die Pille) und „Gestaltung“ (Cover, Icon) in
+   der rechten Spalte (`src/features/entry/entry-rail.js`); die Karte am
+   Textende und „Mehr anzeigen“ entfallen, der Text steht ganz
+   (`entry-fold.js`, `styles/entry-desk.css`). Offen für später: die Seite
+   eines Arbeitsbereichs behält ihre Karten der Übersicht, und der Pfad über
+   dem Titel (Abschnitt 3a) fehlt noch.
 8. **Feinschliff** — Seitenleiste einklappen, `?` für Kürzel, Bewegungen,
    Rollbalken, Dunkelmodus in allen Zuständen, 1024 / 1280 / 1440 prüfen.
 
