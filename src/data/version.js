@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "6c58274a20f3";
+export const appVersion = "a05928b1daac";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -120,6 +120,7 @@ export const appFiles = [
   "src/features/overview/tabs.js",
   "src/features/overview/workspace-collection.js",
   "src/features/overview/workspace-page.js",
+  "src/features/overview/workspace-rail.js",
   "src/features/overview/workspace-title.js",
   "src/features/overview/workspaces.js",
   "src/features/profile/account.js",
@@ -200,6 +201,7 @@ export const appFiles = [
   "src/ui/modal-top.js",
   "src/ui/move-menu.js",
   "src/ui/page-cover.js",
+  "src/ui/page-path.js",
   "src/ui/page-tools.js",
   "src/ui/pickers.js",
   "src/ui/pill-input.js",

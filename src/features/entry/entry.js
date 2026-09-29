@@ -60,6 +60,7 @@ import { entryMenuOptions } from "../../ui/entry-menu.js";
 import { initEntryCover, renderEntryCover } from "./entry-cover.js";
 import { initEntryDetails, renderEntryDetails } from "./entry-details.js";
 import { initEntryHead, renderEntryHead } from "./entry-head.js";
+import { entrySteps, mountPath, renderPath } from "../../ui/page-path.js";
 import { expandEntryFold, initEntryFold, layoutEntryFold, resetEntryFold } from "./entry-fold.js";
 import { initEntryTitle, showEntryTitle } from "./entry-title.js";
 import { initEntryTools, linkFilterFor, renderEntryTools } from "./entry-tools.js";
@@ -73,6 +74,9 @@ import { isViewActive } from "../../ui/views.js";
 import { addWritePage } from "../../ui/write-tap.js";
 import { createBlockEditor } from "../../ui/block-editor.js";
 import { fillVideoTitle } from "../../ui/bookmark-title.js";
+
+/* Der Pfad oben links in der Kopfzeile am Desktop (src/ui/page-path.js), angelegt in initEntry. */
+let path = null;
 
 /* Der Baustein-Editor unter „Inhalt“ (src/ui/block-editor.js), angelegt in initEntry. */
 let bodyEditor = null;
@@ -160,6 +164,7 @@ function renderEntry() {
      man zuletzt war — nicht zwingend an den Ort des Eintrags. */
   renderCrumb(entry);
   renderEntryHead(entry);
+  renderPath(path, entrySteps(entry));
   setHeadTitle(el("entry-head"), entry.title || "Ohne Titel", entryTypeName(entry));
 
   /* Zeichnungen zeigen statt des Textes die Zeichenfläche. */
@@ -203,6 +208,7 @@ export function initEntry() {
   initEntryFold();
   initEntryDetails();
   initEntryHead();
+  path = mountPath(el("entry-head"));
   initEntryTitle();
   bodyEditor = createBlockEditor(dom.entryBody, {
     onChange: saveBody,
@@ -297,6 +303,7 @@ export function initEntry() {
     renderEntryDetails(entry);
     renderCrumb(entry);
     renderEntryHead(entry);
+    renderPath(path, entrySteps(entry));
     syncHeadSub(entry);
     renderLinks(entry);
     renderEntryPills(entry);

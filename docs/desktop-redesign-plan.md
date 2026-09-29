@@ -330,11 +330,22 @@ Jeder Schritt ist für sich lauffähig, wird geprüft (`tools/version.py`,
    sein Inhalt, „Alle“ öffnet die Pille) und „Gestaltung“ (Cover, Icon) in
    der rechten Spalte (`src/features/entry/entry-rail.js`); die Karte am
    Textende und „Mehr anzeigen“ entfallen, der Text steht ganz
-   (`entry-fold.js`, `styles/entry-desk.css`). Offen für später: die Seite
-   eines Arbeitsbereichs behält ihre Karten der Übersicht, und der Pfad über
-   dem Titel (Abschnitt 3a) fehlt noch.
-8. **Feinschliff** — Seitenleiste einklappen, `?` für Kürzel, Bewegungen,
-   Rollbalken, Dunkelmodus in allen Zuständen, 1024 / 1280 / 1440 prüfen.
+   (`entry-fold.js`, `styles/entry-desk.css`). Arbeitsbereich und Pfad kamen in
+   Schritt 8 dazu.
+8. **Feinschliff** — *umgesetzt.* Einklappen und `?` gab es schon (Schritte
+   1 und 4). Neu: der **Pfad** oben links auf Eintrag, Sammlung und
+   Arbeitsbereich (`src/ui/page-path.js`; Sammlungen beginnen bei der
+   Übersicht, ein Eintrag beim Reiter, aus dem er direkt geöffnet wurde);
+   der kleine Titel beim Rollen entfällt am Desktop. **Arbeitsbereich** ab
+   1280 px mit eigenen Karten rechts (`src/features/overview/workspace-rail.js`,
+   `railApplies` in `src/shell/desk-rail.js`). **Bewegungen:** bei „Bewegung
+   reduzieren“ keine Übergänge mehr (auch nicht das verzögerte Ausblenden der
+   Leiste). **Rollbalken:** auch das Stundenraster und die Palette zeigen den
+   blassen Griff unter der Maus. Durchgesehen bei 1024 / 1280 / 1440 px, hell
+   und dunkel, zugeklappt; behoben: Werkzeugzeile des Kalenders bei 1280 px
+   (Monat brach um, Plus wurde oval), Medien-Pillen laufen vor den Werkzeugen
+   weich aus. Die Desktop-Flows stehen jetzt in `docs/desktop-flows.md`
+   (README über der Zeilengrenze).
 
 Neue Werte kommen nach `styles/tokens-desk.css`: `--desk-top-height`,
 `--desk-search-width`, `--desk-nav-collapsed`, `--desk-foot-height`.

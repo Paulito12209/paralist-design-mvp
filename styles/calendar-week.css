@@ -14,7 +14,8 @@
  * --cw-head-height -> Höhe des Kopfs über den sieben Spalten
  * --cm-cell-min    -> Mindesthöhe eines Tags im Monat
  * --cal-tool-btn   -> Größe der runden Knöpfe der Werkzeugzeile
- * Einzelne Größen stehen bei ihrer Regel: Monat in der Werkzeugzeile 22px,
+ * Einzelne Größen stehen bei ihrer Regel: Monat in der Werkzeugzeile 22px
+ * (zwischen 1280 und 1439px 18px),
  * Segment und „Heute“ 14px, Datum im Wochenkopf 20px, Termine 12–13px,
  * Stunden 12px.
  *
@@ -64,6 +65,7 @@
     display: flex;
     align-items: center;
     gap: 2px;
+    min-width: 0; /* min-width: bei knapper Breite schrumpft nur der Monat, nicht die Knöpfe */
     margin-right: auto; /* margin-right: Heute, Segment und Plus rücken nach rechts */
   }
 
@@ -79,6 +81,10 @@
   .cal-tool-round .icon { width: 18px; height: 18px; }
 
   .cal-tool-month {
+    white-space: nowrap; /* white-space: „September 2026“ bleibt in einer Zeile, auch bei 1280px */
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis; /* text-overflow: wird es sehr eng, endet der Monat mit „…“ */
     margin-left: 8px;
     padding: 4px 8px;
     border-radius: var(--desk-item-radius);
@@ -97,6 +103,21 @@
   }
 
   .cal-tool-pill { padding: 0 16px; }
+
+  /* Zwischen 1280 und 1439px ist die Mitte am schmalsten (rechte Spalte schon
+     da): Monat kleiner, Segment enger, damit „September 2026“ ganz bleibt. */
+  @media (min-width: 1280px) and (max-width: 1439px) {
+    .cal-toolbar { gap: 8px; }
+    .cal-tool-month { font-size: 18px; margin-left: 4px; }
+    .cal-views-btn { padding: 0 10px; }
+    .cal-tool-pill { padding: 0 12px; }
+  }
+
+  /* Knöpfe, Segment und „Heute“ behalten ihre Größe — sonst würde der runde Plus-Knopf zum Oval */
+  .cal-toolbar > :not(.cal-tool-nav),
+  .cal-tool-nav > .cal-tool-round {
+    flex-shrink: 0;
+  }
 
   .cal-views {
     display: flex;
