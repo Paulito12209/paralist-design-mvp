@@ -1,28 +1,38 @@
 /*
  * Desktop: Fortschritt als Seite statt als Dialog — wie das Profil
  * (styles/desk-settings.css). Oben links der Titel wie jeder Seitentitel,
- * darunter die Karten „Diese Woche“ und „Serie“ in ruhiger Höhe, das
- * Aktivitätsband und die Karten des Blatts (Ring, Meilensteine, Verlauf,
- * Stufen, Historie) in zwei Spalten. Die Meilensteine bleiben eine Spalte.
- * Kopf mit Karten und Band: src/features/progress/progress-desk.js.
- * Gilt erst ab 1024px Fensterbreite.
+ * darunter ein Raster aus zwei Spalten: zuerst das Aktivitätsband über die
+ * ganze Breite, dann die Karten „Diese Woche“ und „Serie“, dann der Ring mit
+ * seinen Zeilen neben den Meilensteinen, der Verlauf neben den nächsten
+ * Stufen und zuletzt die Historie über die ganze Breite. Karten einer Reihe
+ * sind gleich hoch. Die Meilensteine-Seite bleibt eine Spalte.
+ * Kopf mit Band und Karten: src/features/progress/progress-desk.js.
+ * Gilt erst ab 1024px Fensterbreite; ab 1280px teilen sich die Spalten 7:5
+ * und der Ring rückt neben seine Zeilen.
  * Pfad: styles/desk-progress.css
  *
  * ANPASSBARE WERTE IN DIESER DATEI (oben bei #progress)
  * -----------------------------------
- * --progress-gap        -> Fuge zwischen den Karten
+ * --progress-gap        -> Fuge zwischen den Karten (waagerecht wie senkrecht)
  * --progress-card-pad   -> Innenrand der Karten des Blatts
+ * --progress-ring       -> Durchmesser des Rings neben seinen Zeilen
+ * --progress-ring-gap   -> Luft zwischen Ring und Zeilen
+ * --progress-text       -> Schrift der Zeilen in Ring, Stufen und Historie
+ * --progress-head       -> Schrift der Kartentitel
  * --progress-side       -> Rand, der den Inhalt mittig auf der größten Breite hält (nicht verstellen)
- * --dash-gap-band      -> Luft zwischen den zwei Karten und dem Band (styles/dashboard.css)
  * Auf .progress-hero neu gesetzt (Grundwerte in styles/dashboard.css und tokens-desk.css):
  * --dash-card-height    -> Höhe der Karten „Diese Woche“ und „Serie“ — hier bewusst niedrig
  * --desk-hero-num-size  -> größte Größe der Zahl darin
- * Einzelne Größen stehen bei ihrer Regel: Titel 34px.
+ * --dash-gap-band       -> Luft zwischen Band und den zwei Karten
+ * Auf #progress neu gesetzt (Grundwert in styles/tokens-pages.css):
+ * --ms-medal-small      -> Durchmesser der Plaketten auf der Karte „Meilensteine“
+ * Einzelne Größen stehen bei ihrer Regel: Titel 34px, Zeitraum-Schalter 13px,
+ * Zeile unter dem Verlauf 13px, Kleingedrucktes der Historie 13px.
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
  * --desk-wide-width / --desk-gutter / --content-top -> größte Breite, Seitenrand und Luft oben
- * --desk-panel / --desk-radius -> Fläche und Rundung der Karten
- * --bg -> Grund der Seite
+ * --desk-panel / --desk-radius / --desk-edge -> Fläche, Rundung und Haarlinie der Karten
+ * --bg / --muted -> Grund der Seite, kleine Schrift
  */
 
 @media (min-width: 1024px) {
@@ -30,7 +40,12 @@
   .device #progress {
     --progress-gap: 16px;
     --progress-card-pad: 22px;
+    --progress-ring: 168px;
+    --progress-ring-gap: 28px;
+    --progress-text: 15px;
+    --progress-head: 17px;
     --progress-side: max(0px, calc((100% - var(--desk-wide-width)) / 2));
+    --ms-medal-small: 40px;
     grid-area: main; /* grid-area: s. o. */
     z-index: 15; /* z-index: wie das Profil — über der Seite, unter Eingabefeld und Dialogen */
     padding: 0;
@@ -75,41 +90,211 @@
     padding: 4px var(--progress-side) var(--desk-gutter);
   }
 
-  /* Die Karten in zwei Spalten; Kopf mit Karten und Band über die ganze Breite */
+  /* ---------- Das Raster ---------- */
+
+  /* Zwei gleich breite Spalten; jede Karte hat ihren festen Platz. Der Verlauf
+     bekommt hier die ganze Breite, sonst wäre seine Kurve zu flach. */
   .device #progress .modal-body.is-cards {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
-    align-items: start;
+    /* grid-template-areas: Reihenfolge und Breite jeder Karte an einer Stelle */
+    grid-template-areas:
+      "hero hero"
+      "ring ms"
+      "trend trend"
+      "levels log";
+    align-items: stretch;
     gap: var(--progress-gap);
   }
 
   .device #progress .modal-body.is-cards > * {
     margin: 0;
+    min-width: 0; /* min-width: eine Karte drückt ihre Spalte nie breiter */
   }
+
+  .device #progress .progress-hero { grid-area: hero; }
+  .device #progress .pcard-ring { grid-area: ring; }
+  .device #progress .ms-teaser { grid-area: ms; }
+  .device #progress .pcard-trend { grid-area: trend; }
+  .device #progress .pcard-levels { grid-area: levels; }
+  .device #progress .pcard-log { grid-area: log; }
+
+  /* ---------- Band und die zwei Karten ---------- */
 
   .device #progress .progress-hero {
-    --dash-card-height: 196px;
-    --desk-hero-num-size: 64px;
-    grid-column: 1 / -1; /* grid-column: der Kopf reicht über beide Spalten */
-    margin-bottom: 12px;
+    --dash-card-height: 172px;
+    --desk-hero-num-size: 56px;
+    --dash-gap-band: 20px;
   }
 
-  /* Auf der Übersicht stand das Band über den Karten, hier darunter: die Luft dazwischen */
+  /* Die zwei Karten teilen die Spalten des Rasters, so fluchten die Fugen */
   .device #progress .progress-hero .dash-cards {
-    margin-bottom: var(--dash-gap-band);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--progress-gap);
   }
+
+  /* ---------- Karten des Blatts ---------- */
 
   .device #progress .pcard {
     padding: var(--progress-card-pad);
+    border: 0.5px solid var(--desk-edge);
     border-radius: var(--desk-radius);
     background: var(--desk-panel);
   }
+
+  .device #progress .pcard-head {
+    font-size: var(--progress-head);
+    margin-bottom: 12px;
+  }
+
+  .device #progress .pcard-head .icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .device #progress .pcard-head.is-desk-only {
+    display: flex;
+  }
+
+  /* Ring: bis 1279px wie am Handy übereinander (Kopf, Ring, Zeilen), nur
+     kleiner — nebeneinander passt er erst in die breite Spalte ab 1280px */
+  .device #progress .donut-wrap {
+    margin: 4px 0 12px;
+  }
+
+  .device #progress .donut {
+    width: var(--progress-ring);
+    height: var(--progress-ring);
+  }
+
+  .device #progress .xp-row {
+    min-height: 40px;
+    font-size: var(--progress-text);
+  }
+
+  .device #progress .xp-row-pct { min-width: 44px; }
+  .device #progress .xp-row-xp { min-width: 56px; }
+
+  /* Meilensteine: Kopf oben, Plaketten in der Mitte, Summe unten — die
+     Karte füllt die Höhe des Rings daneben */
+  .device #progress .ms-teaser {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .device #progress .ms-shelf {
+    flex: 1;
+    align-content: center;
+  }
+
+  .device #progress .ms-teaser-sum {
+    margin-top: 12px;
+    font-size: var(--progress-text);
+  }
+
+  /* Verlauf: Kopf links und Zeitraum-Schalter rechts in einer Zeile, die
+     Kurve darunter über die ganze Karte, die Summe zuletzt */
+  .device #progress .pcard-trend {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas: "head seg" "chart chart" "note note"; /* grid-template-areas: s. o. */
+    align-items: center;
+  }
+
+  .device #progress .pcard-trend .pcard-head {
+    grid-area: head;
+    margin-bottom: 0;
+  }
+
+  .device #progress .pcard-trend .seg {
+    grid-area: seg;
+    margin-bottom: 0;
+    padding: 2px;
+  }
+
+  .device #progress .pcard-trend .seg button {
+    flex: 0 0 auto;
+    padding: 6px 14px;
+    font-size: 13px;
+  }
+
+  .device #progress .pcard-trend .chart {
+    grid-area: chart;
+    margin-top: 16px;
+  }
+
+  .device #progress .chart-note {
+    grid-area: note;
+    font-size: 13px;
+    margin-top: 8px;
+  }
+
+  /* Nächste Stufen: die drei Zeilen teilen sich die Höhe der Karte daneben */
+  .device #progress .pcard-levels {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .device #progress .level-row {
+    flex: 1;
+    align-items: center;
+    padding: 10px 0;
+    font-size: var(--progress-text);
+  }
+
+  .device #progress .level-row:last-child { padding-bottom: 0; }
+
+  /* Historie: ruhigere Zeilen als am Handy */
+  .device #progress .hist-row { padding: 6px 0; }
+
+  .device #progress .hist-row .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .device #progress :is(.hist-title, .hist-xp, .hist-more) { font-size: var(--progress-text); }
+  .device #progress .hist-meta { font-size: 13px; }
+  .device #progress .hist-group { padding-top: 12px; }
 }
 
 /* Ab 1280px: die Seite reicht über die rechte Spalte — deren Kachel
-   „Fortschritt“ wäre hier nur doppelt. */
+   „Fortschritt“ wäre hier nur doppelt. Mit der Breite teilen sich die
+   Spalten 7:5, der Verlauf rückt neben die nächsten Stufen und die Historie
+   bekommt die ganze Breite. */
 @media (min-width: 1280px) {
   .device #progress {
     grid-column: main / rail; /* grid-column: von der Mitte bis zum rechten Rand */
   }
+
+  .device #progress .modal-body.is-cards {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+    grid-template-areas:
+      "hero hero"
+      "ring ms"
+      "trend levels"
+      "log log";
+  }
+
+  .device #progress .progress-hero .dash-cards {
+    grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+  }
+
+  /* Ring: Kopf oben, darunter der Ring links und seine zwei Zeilen rechts,
+     senkrecht mittig — so bleibt die Karte niedrig */
+  .device #progress .pcard-ring {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    grid-template-areas: "head head" "donut rows"; /* grid-template-areas: Kopf über beiden, Ring neben Zeilen */
+    align-items: center;
+    column-gap: var(--progress-ring-gap);
+  }
+
+  .device #progress .pcard-ring .pcard-head { grid-area: head; }
+
+  .device #progress .donut-wrap {
+    grid-area: donut;
+    margin: 0;
+  }
+
+  .device #progress .xp-rows { grid-area: rows; }
 }

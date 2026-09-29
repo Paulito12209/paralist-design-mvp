@@ -1,16 +1,16 @@
 /*
- * Der Kopf der Seite Fortschritt am Desktop: die Karten „Diese Woche“ und
- * „Serie“ und darunter das Aktivitätsband der letzten zwölf Wochen — dieselben
- * Bausteine wie früher oben auf der Übersicht (src/ui/dash-parts.js), hier
- * niedriger und dort, wo man nach seinem Fortschritt sucht. Am Handy bleibt
- * das Blatt, wie es war: dort gibt diese Datei nichts zurück.
+ * Der Kopf der Seite Fortschritt am Desktop: zuerst das Aktivitätsband der
+ * letzten zwölf Wochen, darunter die Karten „Diese Woche“ und „Serie“ —
+ * dieselben Bausteine wie früher oben auf der Übersicht (src/ui/dash-parts.js),
+ * hier niedriger und dort, wo man nach seinem Fortschritt sucht. Am Handy
+ * bleibt das Blatt, wie es war: dort gibt diese Datei nichts zurück.
  * Pfad: src/features/progress/progress-desk.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * bandDays   -> wie viele Tage das Aktivitätsband zeigt (84 = 12 Wochen)
  * streakDays -> wie viele Tage die Punktsäulen in der Karte „Serie“ zeigen
- * bandOrder  -> Platz des Bands beim Auftauchen, nach den zwei Karten (0 und 1)
+ * bandOrder  -> Platz des Bands beim Auftauchen (0 = zuerst); die zwei Karten folgen
  *
  * Aussehen und Höhe der Karten auf dieser Seite: styles/desk-progress.css.
  */
@@ -23,7 +23,7 @@ import { isDesk } from "../../ui/desk-mode.js";
 
 const bandDays = 84;
 const streakDays = 28;
-const bandOrder = 2;
+const bandOrder = 0;
 
 /** Karten und Band als HTML — am Handy leer. */
 export function progressDeskHead() {
@@ -34,10 +34,10 @@ export function progressDeskHead() {
     level,
     streak: usageStreaks(),
     usage: usageByDay(streakDays),
-    order: 0,
+    order: bandOrder + 1,
     onPage: true,
   });
-  return `<div class="desk-hero progress-hero">${cards}${bandBlock(xpByDay(bandDays), level, bandOrder, true)}</div>`;
+  return `<div class="desk-hero progress-hero">${bandBlock(xpByDay(bandDays), level, bandOrder, true)}${cards}</div>`;
 }
 
 /*

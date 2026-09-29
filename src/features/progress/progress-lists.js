@@ -10,7 +10,9 @@
  * emptyLog        -> Platzhalter in der Historie, solange nichts passiert ist
  *
  * Farben und Abstände stehen in styles/progress.css (.level-row, .hist-row),
- * der Platzhalter steht in styles/empty-state.css.
+ * der Platzhalter steht in styles/empty-state.css. Die Klassen pcard-levels
+ * und pcard-log geben den Karten am Desktop ihren Platz im Raster
+ * (styles/desk-progress.css).
  */
 
 import { startOfDay } from "../../core/dates.js";
@@ -41,7 +43,7 @@ export function levelsCard() {
   }).join("");
 
   return `
-    <section class="pcard">
+    <section class="pcard pcard-levels">
       <div class="pcard-head">${icon("stairs")}<span>Nächste Stufen</span></div>
       ${rows}
     </section>
@@ -114,7 +116,7 @@ export function logCard() {
       : "";
 
   return `
-    <section class="pcard">
+    <section class="pcard pcard-log">
       <div class="pcard-head">${icon("history")}<span>Historie</span></div>
       ${body}${more}
     </section>

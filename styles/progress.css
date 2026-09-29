@@ -36,6 +36,12 @@
   height: 22px;
 }
 
+/* Kopf „Punkte“ über dem Ring: am Handy trägt der Ring seine Zahl selbst,
+   erst am Desktop (styles/desk-progress.css) steht der Kopf über ihm */
+.pcard-head.is-desk-only {
+  display: none;
+}
+
 /* Ring: Anteil je XP-Art */
 .donut-wrap {
   display: grid;

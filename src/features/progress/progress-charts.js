@@ -10,6 +10,8 @@
  * headroom             -> wie viel Luft über der Kurve bleibt (1.15 = 15 %)
  *
  * Farben stehen in styles/progress.css und in src/data/config.js (xpKinds).
+ * Am Desktop liegt der Ring links neben seinen Zeilen und die Kurve nimmt die
+ * breite Fläche (wideChartBox): styles/desk-progress.css.
  */
 
 import { MS_PER_DAY, startOfDay } from "../../core/dates.js";
@@ -18,7 +20,8 @@ import { icon } from "../../core/html.js";
 import { chartRanges, xpKinds } from "../../data/config.js";
 import { state, ui } from "../../data/state.js";
 import { totalXp, xpTotals } from "../../data/xp.js";
-import { chartBox, dateMarks, gridLines, niceStep, rangeSwitch, yAxis } from "../../ui/chart.js";
+import { chartBox, dateMarks, gridLines, niceStep, rangeSwitch, wideChartBox, yAxis } from "../../ui/chart.js";
+import { isDesk } from "../../ui/desk-mode.js";
 
 const ringRadius = 80;
 const ringGap = 4;
@@ -66,8 +69,11 @@ export function donutCard() {
     })
     .join("");
 
+  /* Der Kopf „Punkte“ ist nur am Desktop zu sehen, wo der Ring neben den
+     Karten mit Kopfzeile steht; am Handy trägt der Ring seine Zahl selbst. */
   return `
-    <section class="pcard">
+    <section class="pcard pcard-ring">
+      <div class="pcard-head is-desk-only">${icon("plus-circle")}<span>Punkte</span></div>
       <div class="donut-wrap">
         <svg class="donut" viewBox="0 0 210 210" aria-hidden="true">
           ${ring}
@@ -75,7 +81,7 @@ export function donutCard() {
           <text class="donut-sub" x="105" y="122" text-anchor="middle">insgesamt</text>
         </svg>
       </div>
-      ${rows}
+      <div class="xp-rows">${rows}</div>
     </section>
   `;
 }
@@ -111,23 +117,24 @@ function runningTotals(days) {
 export function historyCard() {
   const days = ui.progressRange;
   const { values, inRange, start } = runningTotals(days);
+  const box = isDesk() ? wideChartBox : chartBox;
 
   const step = niceStep(Math.max(...values, 1), stepSizes);
-  const { yMax, y } = yAxis(Math.max(...values, 1), step, headroom);
-  const x = (index) => chartBox.left + (index / Math.max(1, days - 1)) * (chartBox.right - chartBox.left);
+  const { yMax, y } = yAxis(Math.max(...values, 1), step, headroom, box);
+  const x = (index) => box.left + (index / Math.max(1, days - 1)) * (box.right - box.left);
 
   const format = axisDateFormat(days);
-  const grid = gridLines(yMax, step, y, formatNumber);
-  const marks = dateMarks(days, x, (index) => format.format(new Date(start + index * MS_PER_DAY)), true);
+  const grid = gridLines(yMax, step, y, formatNumber, box);
+  const marks = dateMarks(days, x, (index) => format.format(new Date(start + index * MS_PER_DAY)), true, box);
 
   const points = values.map((value, index) => `${x(index).toFixed(1)},${y(value).toFixed(1)}`).join(" ");
-  const area = `${x(0).toFixed(1)},${chartBox.bottom} ${points} ${x(days - 1).toFixed(1)},${chartBox.bottom}`;
+  const area = `${x(0).toFixed(1)},${box.bottom} ${points} ${x(days - 1).toFixed(1)},${box.bottom}`;
 
   return `
-    <section class="pcard">
+    <section class="pcard pcard-trend">
       <div class="pcard-head">${icon("trend")}<span>Verlauf</span></div>
       ${rangeSwitch("progress-range", chartRanges, days, "data-range")}
-      <svg class="chart" viewBox="0 0 ${chartBox.width} ${chartBox.height}" aria-hidden="true">
+      <svg class="chart" viewBox="0 0 ${box.width} ${box.height}" aria-hidden="true">
         ${grid}
         ${marks}
         <polygon class="chart-area" points="${area}" />
