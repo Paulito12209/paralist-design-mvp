@@ -14,7 +14,8 @@
  * --head-tab-gap           -> Luft zwischen den Reitern
  * --head-tab-pad           -> Innenrand eines Reiters links und rechts
  * Einzelwerte stehen bei ihrer Regel: Wortmarke 19px, Reiter-Schrift 14px,
- * Reiter-Icon 18px.
+ * Reiter-Icon 18px; Tasten-Hinweis unter dem Reiter: Schrift 12px, Abstand 8px,
+ * Verzögerung 400ms bis er erscheint.
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
  * --desk-top-height -> Höhe von Wortmarke und Reiterzeile
@@ -115,11 +116,12 @@
   }
 
   .desk-tab {
+    position: relative; /* position: Bezug für den Tasten-Hinweis darunter */
     display: inline-flex;
     align-items: center;
     gap: 8px;
     height: var(--head-tab-height);
-    padding: 0 10px 0 var(--head-tab-pad);
+    padding: 0 var(--head-tab-pad);
     border-radius: 999px;
     font-size: 14px;
     font-weight: 600;
@@ -139,9 +141,44 @@
     color: var(--bg);
   }
 
-  .desk-tab.is-active .desk-kbd {
-    background: color-mix(in srgb, var(--bg) 20%, transparent); /* color-mix: ein Hauch der hellen Grundfarbe auf der gefüllten Pille */
+  /* Tasten-Hinweis: erst beim Überfahren (kurz verzögert, damit er beim
+     Darüberstreifen nicht aufblitzt) oder bei Tastatur-Fokus sichtbar. */
+  .desk-tab-hint {
+    position: absolute; /* position: schwebt unter dem Reiter, ohne die Zeile zu verschieben */
+    top: calc(100% + 8px);
+    left: 50%;
+    z-index: 16; /* z-index: über der Mitte und der Einstellungs-Seite (15), unter Eingabefeld und Dialogen (20) */
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 6px 5px 10px;
+    border-radius: 999px;
+    background: var(--text);
     color: var(--bg);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap; /* white-space: der Hinweis bleibt eine Zeile */
+    opacity: 0;
+    transform: translate(-50%, -2px); /* transform: mittig unter dem Reiter, beim Erscheinen gleitet er ein Stück herab */
+    pointer-events: none; /* pointer-events: der Hinweis fängt keine Klicks ab */
+    transition: opacity var(--desk-fast) var(--desk-ease), transform var(--desk-fast) var(--desk-ease); /* transition: sanft ein- und ausblenden */
+  }
+
+  .desk-tab-hint-name {
+    display: none;
+  }
+
+  .desk-tab:focus-visible .desk-tab-hint {
+    opacity: 1;
+    transform: translate(-50%, 0); /* transform: an seinen Platz */
+  }
+
+  @media (hover: hover) {
+    .desk-tab:hover .desk-tab-hint {
+      opacity: 1;
+      transform: translate(-50%, 0); /* transform: an seinen Platz */
+      transition-delay: 400ms; /* transition-delay: erst nach kurzem Verweilen */
+    }
   }
 
   @media (hover: hover) {
@@ -164,14 +201,18 @@
   }
 }
 
-/* Unter 1280px ist die Mitte schmaler: die Reiter zeigen nur Icon und Taste,
-   der Name steht im Tooltip und für Vorlesehilfen im aria-label. */
+/* Unter 1280px ist die Mitte schmaler: die Reiter zeigen nur das Icon, der
+   Name steht im Tasten-Hinweis und für Vorlesehilfen im aria-label. */
 @media (min-width: 1024px) and (max-width: 1279px) {
   .desk-tab-label {
     display: none;
   }
 
+  .desk-tab-hint-name {
+    display: inline;
+  }
+
   .desk-tab {
-    padding: 0 8px 0 12px;
+    padding: 0 10px;
   }
 }

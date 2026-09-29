@@ -20,9 +20,10 @@ import { dom } from "../core/dom.js";
 import { escapeHtml, icon } from "../core/html.js";
 import { readText, storageKeys, writeText } from "../core/storage.js";
 import { deskStats } from "../data/insights.js";
-import { goBack, goForward, showTab } from "../ui/router.js";
-import { currentView } from "../ui/views.js";
+import { closeOverlay, goBack, goForward, showTab } from "../ui/router.js";
+import { currentView, isViewActive } from "../ui/views.js";
 import { pageLinks, withCommand } from "../ui/desk-links.js";
+import { isSettingsOpen } from "./desk-nav.js";
 import { openPalette } from "./search-palette.js";
 
 const wordmark = "Paralist";
@@ -46,12 +47,21 @@ function toggleButton(extraClass = "") {
   return headButton("toggle", "sidebar", "Seitenleiste ein- oder ausklappen", withCommand("\\"), extraClass);
 }
 
+/*
+ * Ein Reiter: Icon und Name. Die Taste steht nicht als Schild in der Pille —
+ * eine Ziffer dort liest man als Anzahl. Sie erscheint erst beim Überfahren
+ * als kleiner Hinweis „Taste 1“ unter dem Reiter; wird es eng und der Name
+ * fällt weg, steht er im Hinweis mit. Kein title: sonst käme der Hinweis doppelt.
+ */
 function tabMarkup(link) {
   return `
-    <button class="desk-tab" type="button" data-head-tab="${link.tab}" aria-keyshortcuts="${link.key}" title="${link.label} (${link.key})">
+    <button class="desk-tab" type="button" data-head-tab="${link.tab}" aria-keyshortcuts="${link.key}">
       ${icon(link.icon, "desk-tab-icon")}
       <span class="desk-tab-label">${link.label}</span>
-      <kbd class="desk-kbd" aria-hidden="true">${link.key}</kbd>
+      <span class="desk-tab-hint" aria-hidden="true">
+        <span class="desk-tab-hint-name">${link.label} ·</span>
+        Taste <kbd class="desk-kbd desk-kbd-inverse">${link.key}</kbd>
+      </span>
     </button>`;
 }
 
@@ -128,10 +138,20 @@ export function setNavClosed(value) {
   onToggle(value);
 }
 
+/**
+ * Einen der vier Reiter öffnen — per Klick und über die Tasten 1 bis 4. Liegen
+ * die Einstellungen über genau diesem Reiter, gehen sie zu; sonst bliebe man
+ * dort stecken, weil der Reiter darunter schon als offen gilt.
+ */
+export function openPageTab(tab) {
+  if (isSettingsOpen() && isViewActive(tab)) closeOverlay("profile");
+  else showTab(tab);
+}
+
 function onClick(event) {
   const tab = event.target.closest("[data-head-tab]");
   if (tab) {
-    showTab(tab.dataset.headTab);
+    openPageTab(tab.dataset.headTab);
     return;
   }
   const action = event.target.closest("[data-head]")?.dataset.head;

@@ -351,7 +351,7 @@ function init() {
   bindModalPull(dom.profileModal, close);
   bindModalPull(dom.avatarView, closeAvatarView);
 
-  registerOverlay("profile", { open, hide });
+  registerOverlay("profile", { open, hide, close });
   initProfilePage({ render: renderProfile, hide });
   registerOverlay("avatar", { open: openAvatarView, hide: hideAvatarView });
   /* Den Editor holt der Verlauf nicht zurück — das gewählte Foto ist dann nicht mehr da. */

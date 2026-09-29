@@ -21,7 +21,7 @@ import { overviewPages } from "../data/config.js";
 import { addTab, addWorkspace, selectTab } from "../data/mutations.js";
 import { findWorkspace, pageCount } from "../data/queries.js";
 import { state, ui } from "../data/state.js";
-import { openArchive, openBookmarks, openTarget, restoreFrom, showTab } from "../ui/router.js";
+import { closeOverlay, openArchive, openBookmarks, openTarget, restoreFrom, showTab } from "../ui/router.js";
 import { isViewActive } from "../ui/views.js";
 import { collectionLinks } from "../ui/desk-links.js";
 import { activeTargets, footMarkup, skeletonMarkup, tabGroupsMarkup } from "./desk-nav-parts.js";
@@ -104,15 +104,30 @@ function toggleGroup(tabId) {
 }
 
 /**
- * Eine Sammlung öffnen — auch über das Kürzel „G“ und Buchstabe. Ist sie
- * schon offen, rollt die Seite nur nach oben, statt einen doppelten Schritt
- * in den Verlauf zu legen.
+ * Liegt am Desktop gerade die Einstellungs-Seite über der Mitte? Die Seite
+ * darunter bleibt dabei die „offene“ — ein Klick auf genau sie muss deshalb
+ * die Einstellungen schließen, statt nur unsichtbar nach oben zu rollen.
  */
+export function isSettingsOpen() {
+  return !dom.profileModal.hidden;
+}
+
+/*
+ * Das schon offene Ziel noch einmal gewählt: liegen die Einstellungen
+ * darüber, gehen sie zu (ein Schritt zurück, wie ihr Kreuz) — sonst rollt die
+ * Seite nach oben, statt einen doppelten Schritt in den Verlauf zu legen.
+ */
+function reselect() {
+  if (isSettingsOpen()) closeOverlay("profile");
+  else dom.content.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/** Eine Sammlung öffnen — auch über das Kürzel „G“ und Buchstabe. */
 export function openCollection(id) {
   const link = collectionLinks.find((item) => item.id === id);
   if (!link) return;
   if (activeTargets().collection === id) {
-    dom.content.scrollTo({ top: 0, behavior: "smooth" });
+    reselect();
     return;
   }
   if (link.target === "bookmarks") openBookmarks();
@@ -121,7 +136,7 @@ export function openCollection(id) {
 }
 
 function openWorkspace(row) {
-  if (row.classList.contains("is-active")) dom.content.scrollTo({ top: 0, behavior: "smooth" });
+  if (row.classList.contains("is-active")) reselect();
   else openTarget("workspace", row.dataset.openWorkspace);
 }
 

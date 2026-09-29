@@ -134,9 +134,9 @@
     color: var(--avatar-btn-bg);
   }
 
-  .device:has(#profile:not([hidden])) .desk-tab.is-active .desk-kbd {
-    background: var(--desk-kbd-bg);
-    color: var(--desk-kbd-fg);
+  /* … und auch keine Sammlung und kein Arbeitsbereich links. */
+  .device:has(#profile:not([hidden])) .desk-nav-row.is-active:not(:hover) {
+    background: transparent;
   }
 }
 

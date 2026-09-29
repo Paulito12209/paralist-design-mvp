@@ -1,6 +1,6 @@
 /*
- * Desktop: Kopf der Übersicht — graues Datum neben „Übersicht“, vier große
- * Zahlen, das Aktivitätsband mit gläsernem Stufen-Chip und die zwei großen
+ * Desktop: Kopf der Übersicht — der Titel „Übersicht“ steht allein, darunter
+ * vier große Zahlen, das Aktivitätsband mit gläsernem Stufen-Chip und die zwei großen
  * Karten „Diese Woche“ und „Serie“ (Markup: src/features/dashboard/), nur
  * Aufbau und Aussehen in Ruhe — Überfahren, Drücken, Tastatur-Rahmen und
  * Auftauchen: styles/dashboard-motion.css. Am Handy ist nichts davon zu sehen.
@@ -18,7 +18,7 @@
  * --desk-glass / --desk-glass-blur -> Glas des Stufen-Chips über dem Band
  * --desk-chip-bg            -> helle Pillen und Pfeil-Kreis in den Karten
  * --desk-level-0 … --desk-level-4 -> Helligkeiten der Punkte (0 = nichts, 4 = viel)
- * --title-alt / --title-alt-gap / --title-side -> graues Datum wie der graue Zweittitel; Einzug der Zahlen
+ * --title-side             -> Einzug der Zahlen
  * --text / --bg / --muted / --avatar-btn-bg -> Schrift, umgekehrte erste Pille, leise Schrift, Akzent
  * --level-color / --level-dim -> erreichte und offene Striche der Stufen-Skala (wie oben links)
  *
@@ -30,28 +30,18 @@
  * --dash-pill / --dash-go-size -> Rundung der Pillen / Größe des Pfeil-Kreises in den Karten
  * --dash-tone               -> Helligkeit eines Punktes; ohne Stufe „nichts“, je Stufe heller
  *
- * Direkt bei ihrer Regel: Pillen 12px, „XP“/„Tage“ 24px, Icons 16px, 0.25em
- * (etwa ein Leerzeichen vor dem Datum) und die Breite 760px der @container-
+ * Direkt bei ihrer Regel: Pillen 12px, „XP“/„Tage“ 24px, Icons 16px und die
+ * Breite 760px der @container-
  * Abfrage (darunter Pille über der Zahl — Abfragen lesen keine CSS-Variablen).
  */
 
-/* Am Handy weder Kopf noch Datum — auch nicht, wenn man das Fenster schmal zieht. */
-.desk-hero,
-.desk-title-date {
+/* Am Handy kein Kopf — auch nicht, wenn man das Fenster schmal zieht. */
+.desk-hero {
   display: none;
 }
 
 /* Diese Grenze steht auch in src/ui/desk-mode.js (deskQuery). */
 @media (min-width: 1024px) {
-  .desk-title-date {
-    display: inline;
-    /* calc: davor steht ein echtes Leerzeichen — der Rand zieht dessen Breite ab, Abstand wie beim Zweittitel */
-    margin-left: calc(var(--title-alt-gap) - 0.25em);
-    color: var(--title-alt);
-    /* white-space: wird es eng, bricht der Titel am Leerzeichen davor — das Datum rückt als Ganzes nach unten */
-    white-space: nowrap;
-  }
-
   .desk-hero {
     --dash-gap-stats: 28px;
     --dash-gap-band: 28px;

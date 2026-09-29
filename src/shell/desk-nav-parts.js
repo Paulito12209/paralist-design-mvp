@@ -43,15 +43,18 @@ function headMarkup(title, tool = "") {
   return `<div class="desk-nav-head"><h2 class="desk-nav-heading">${title}</h2>${tool}</div>`;
 }
 
-/* Eine Sammlung: Icon in ihrer Farbe, Name, beim Eingang die Zahl, dann das Kürzel. */
+/*
+ * Eine Sammlung: Icon in ihrer Farbe, Name, beim Eingang die Zahl direkt am
+ * Namen, rechts das Kürzel. Name und Zahl teilen sich eine Spalte — so stehen
+ * alle Kürzel untereinander, egal ob eine Zeile eine Zahl hat.
+ */
 function collectionRowMarkup(link) {
   const quiet = link.quiet ? " is-quiet" : "";
   const counted = link.id === "1" ? '<span class="desk-nav-count" hidden></span>' : "";
   return `
     <button class="desk-nav-row${quiet}" type="button" data-nav-collection="${link.id}" aria-keyshortcuts="${chordKey} ${link.key}">
       ${icon(link.icon, `desk-nav-icon desk-nav-tone desk-nav-icon-${link.tone}`)}
-      <span class="desk-nav-text">${escapeHtml(link.title)}</span>
-      ${counted}
+      <span class="desk-nav-label"><span class="desk-nav-text">${escapeHtml(link.title)}</span>${counted}</span>
       ${kbd(`${chordKey} ${link.key}`)}
     </button>`;
 }

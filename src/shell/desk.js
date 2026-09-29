@@ -36,9 +36,9 @@ import { load } from "../core/lazy.js";
 import { hintPlaces, hintsShown } from "../data/shortcut-hints.js";
 import { closeCtxMenu } from "../ui/ctx-menu.js";
 import { isDesk, isRailShown, onDeskChange } from "../ui/desk-mode.js";
-import { goBack, goForward, showTab } from "../ui/router.js";
+import { goBack, goForward } from "../ui/router.js";
 import { closeSheet } from "../ui/sheet.js";
-import { isNavClosed, mountDeskHead, renderDeskHead, setNavClosed } from "./desk-head.js";
+import { isNavClosed, mountDeskHead, openPageTab, renderDeskHead, setNavClosed } from "./desk-head.js";
 import { chordKey, chordWindow, collectionLinks, pageLinks } from "../ui/desk-links.js";
 import { mountDeskNav, openCollection, renderDeskNav } from "./desk-nav.js";
 import { mountDeskRail, registerRailCards, renderDeskRail } from "./desk-rail.js";
@@ -269,7 +269,7 @@ function onKeyDown(event) {
   if (navKeys[event.key]) {
     event.preventDefault();
     dropStaleFocus();
-    showTab(navKeys[event.key]);
+    openPageTab(navKeys[event.key]);
   }
 }
 

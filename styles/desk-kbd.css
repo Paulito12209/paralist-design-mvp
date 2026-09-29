@@ -1,5 +1,6 @@
 /*
- * Desktop: die Tasten-Schilder — „1“ bis „4“ an den Reitern, „N“ im Knopf
+ * Desktop: die Tasten-Schilder — „1“ bis „4“ im Hinweis unter den Reitern
+ * (erscheint beim Überfahren, styles/desk-head.css), „N“ im Knopf
  * „Neu“, „G I“ an den Sammlungen, „⌘K“ im Suchfeld, „⌘,“ am Konto — und das
  * ruhige Auftauchen der Blöcke der Seitenleiste beim ersten Zeigen. Alle
  * Schilder tragen dieselbe Tönung des Verknüpfen-Blaus, damit man sie als
@@ -48,7 +49,7 @@
     color: var(--desk-kbd-fg);
   }
 
-  /* Das Schild „N“ im dunklen Knopf „Neu“ */
+  /* Das Schild „N“ im dunklen Knopf „Neu“ und im dunklen Tasten-Hinweis der Reiter */
   .desk-kbd-inverse {
     margin-left: auto; /* margin-left: schiebt das Schild an das rechte Ende der Pille */
     background: color-mix(in srgb, var(--bg) 18%, transparent); /* color-mix: ein Hauch der hellen Grundfarbe auf der dunklen Fläche, kein neuer Farbton */
@@ -63,7 +64,7 @@
 
   /* Ausgeblendet unter Profil › Kurzbefehle; die Tasten selbst gehen weiter. */
   .device.hide-nav-kbd :is(.desk-nav, .top-bar) .desk-kbd,
-  .device.hide-tabs-kbd .desk-tabs .desk-kbd {
+  .device.hide-tabs-kbd .desk-tabs .desk-tab-hint {
     display: none;
   }
 

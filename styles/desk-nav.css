@@ -118,10 +118,11 @@
 
   /* ---------- Zeilen ---------- */
 
-  /* Icon | Name | Zahl | Tasten-Schild — leere Zellen fallen weg */
+  /* Icon | Name (bei Sammlungen samt Zahl direkt dahinter) | Tasten-Schild oder
+     Zahl eines Arbeitsbereichs. Drei feste Spalten: alle Schilder stehen bündig. */
   .desk-nav-row {
     display: grid;
-    grid-template-columns: var(--sidebar-icon) minmax(0, 1fr) auto auto;
+    grid-template-columns: var(--sidebar-icon) minmax(0, 1fr) auto;
     align-items: center;
     column-gap: 10px;
     width: 100%;
@@ -196,6 +197,7 @@
   }
 
   .desk-nav-count {
+    flex: 0 0 auto; /* flex: direkt am Namen schrumpft die Zahl nie, der Name endet vorher mit „…“ */
     font-size: var(--desk-label-size);
     font-weight: 500;
     color: var(--muted);

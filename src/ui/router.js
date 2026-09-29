@@ -252,9 +252,18 @@ function writeHistory(state, url, replace) {
    damit der Zurück-Pfeil des Browsers sie schließen kann. */
 const overlays = new Map();
 
-/** Ein Blatt anmelden: `open(push, eintrag)` öffnet es, `hide()` schließt es ohne Verlauf. */
+/**
+ * Ein Blatt anmelden: `open(push, eintrag)` öffnet es, `hide()` schließt es
+ * ohne Verlauf, `close()` (freiwillig) schließt es wie das Kreuz — mit dem
+ * Schritt zurück im Verlauf.
+ */
 export function registerOverlay(name, handlers) {
   overlays.set(name, handlers);
+}
+
+/** Ein angemeldetes Blatt wie mit seinem Kreuz schließen; zurück steht die Seite darunter. */
+export function closeOverlay(name) {
+  overlays.get(name)?.close?.();
 }
 
 function hideAllOverlays() {

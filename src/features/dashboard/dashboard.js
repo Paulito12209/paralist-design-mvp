@@ -1,19 +1,18 @@
 /*
- * Kopf der Übersicht in der Desktop-Fassung: neben „Übersicht“ das heutige
- * Datum in Grau, darunter vier große Zahlen, das Aktivitätsband der letzten
+ * Kopf der Übersicht in der Desktop-Fassung: unter dem Titel „Übersicht“, der
+ * allein steht, vier große Zahlen, das Aktivitätsband der letzten
  * zwölf Wochen mit dem gläsernen Stufen-Chip und die zwei großen Karten
  * „Diese Woche“ und „Serie“. Die vier Übersichtskarten und die
  * Arbeitsbereiche folgen darunter wie gehabt.
  *
  * Das Modul wird nur geladen, wenn das Fenster breit genug ist (src/main.js);
- * am Handy blendet styles/dashboard.css Kopf und Datum ohnehin aus.
+ * am Handy blendet styles/dashboard.css den Kopf ohnehin aus.
  * Pfad: src/features/dashboard/dashboard.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * bandDays        -> wie viele Tage das Aktivitätsband zeigt (84 = 12 Wochen)
  * streakDays      -> wie viele Tage die Punktsäulen in der Karte „Serie“ zeigen
- * titleDate       -> wie das Datum neben „Übersicht“ geschrieben wird („Mittwoch, 23. September“)
  * enterOrder      -> in welcher Reihenfolge Zahlen, Band und Karten auftauchen
  *
  * Aussehen und Abstände: styles/dashboard.css; Überfahren, Drücken und
@@ -33,14 +32,12 @@ import { bandBlock, heroCards, statRow } from "./dashboard-parts.js";
 
 const bandDays = 84;
 const streakDays = 28;
-const titleDate = new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "numeric", month: "long" });
 
 /* Platz beim Auftauchen: die vier Zahlen nehmen 0–3, danach das Band, dann die Karten. */
 const enterOrder = { band: 4, cards: 5 };
 
-/* Beim ersten Aufruf angelegt und dann behalten — beide hängen fest in der Startseite. */
+/* Beim ersten Aufruf angelegt und dann behalten — hängt fest in der Startseite. */
 let hero = null;
-let dateLabel = null;
 
 function openProgress() {
   load("progress").then((module) => module.open());
@@ -88,7 +85,6 @@ function onHeroClick(event) {
  */
 function render(entrance) {
   if (!hero || !isDesk() || !isViewActive("home")) return;
-  dateLabel.textContent = titleDate.format(new Date());
 
   const level = levelSummary();
   /* Die Klasse vor dem Austausch setzen oder nehmen: nur neu eingesetzte
@@ -106,16 +102,10 @@ function render(entrance) {
     });
 }
 
-/* Datum und Kopf einmal in die Startseite einhängen und die Zuhörer anmelden. */
+/* Den Kopf einmal in die Startseite einhängen und die Zuhörer anmelden. */
 function mount() {
   const title = document.querySelector("#view-home .screen-title");
   if (!title) return false;
-
-  dateLabel = document.createElement("span");
-  dateLabel.className = "desk-title-date";
-  /* Ein echtes Leerzeichen davor: dort darf der Titel umbrechen, und
-     Vorlesehilfen lesen „Übersicht Mittwoch, …“ statt eines zusammengeklebten Wortes. */
-  title.append(" ", dateLabel);
 
   hero = document.createElement("div");
   hero.className = "desk-hero";
@@ -123,7 +113,7 @@ function mount() {
   hero.addEventListener("click", onHeroClick);
 
   /* dataChanged kommt auch nach Mitternacht (src/shell/desk.js): dann stimmen
-     Datum, „Heute“ und die Säule ganz rechts wieder. */
+     „Heute“ und die Säule ganz rechts wieder. */
   on(events.dataChanged, () => render(false));
   on(events.xpChanged, () => render(false));
   on(events.viewOpened, (name) => {
