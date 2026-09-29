@@ -73,6 +73,7 @@
     place-items: center;
     width: 100%;
     aspect-ratio: 1; /* aspect-ratio: s. Cover */
+    min-height: 0; /* min-height: sonst dehnt das Icon die Kachel über die Breite hinaus — sie wurde hochkant statt quadratisch */
     border: 0.5px solid var(--desk-edge);
     border-radius: 26%;
     background: color-mix(in srgb, var(--tile-accent) 16%, var(--card));

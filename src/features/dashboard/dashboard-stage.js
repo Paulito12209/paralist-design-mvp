@@ -198,7 +198,7 @@ function shelfMarkup(page) {
   if (!shown.length) {
     const linkable = page.kind === "entry" && page.linked && canLink(page.item);
     body = linkable
-      ? `<button class="showcase-tile is-add" type="button" data-showcase-link="${escapeHtml(page.item.id)}"><span class="showcase-tile-art">${icon("link")}</span><span class="showcase-tile-title">Verknüpfen</span></button>`
+      ? `<button class="showcase-tile is-add" type="button" data-showcase-link="${escapeHtml(page.item.id)}" aria-label="Eintrag verknüpfen"><span class="showcase-tile-art">${icon("plus")}</span></button>`
       : '<p class="showcase-shelf-empty">Hier liegt noch nichts.</p>';
   }
   return `<h2 class="showcase-shelf-title">${heading}<span>${describe(page).title}</span></h2>${body}`;
