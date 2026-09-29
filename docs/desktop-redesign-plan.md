@@ -41,7 +41,7 @@ später als Zeilen in die Seitenleiste; die Reiterzeile wächst nie.
 
 ```
 ┌──────────────┬──────────────────────────────────────────┬──────────────┐
-│ ≡  Meine ▾   │ ‹ ›  Übersicht Kalender Aufgaben Medien  ⋯│              │
+│ ≡  Meine ▾   │ ‹ ›     Übersicht Kalender Aufgaben Medien   ⋯│              │
 │ 🔍 Suchen ⌘K ├──────────────────────────────────────────┤  Kontext     │
 │ + Neu      N │  Übersicht › Marketing › Notiz  (Pfad)   │  (je Seite   │
 │ SAMMLUNGEN   │                                          │  anders,     │
@@ -99,8 +99,9 @@ sichtbar, und jede Sammlung hat ein Kürzel, damit man ohne Leiste überall hink
 - **Links** das Pfeilpaar `‹ ›` für den Verlauf (Zurück `⌘[`, Vorwärts `⌘]`),
   wie in Finder, Codex und VS Code. Ist die Leiste zu, steht davor der
   Klapp-Knopf.
-- **Mitte-links** die vier Reiter als Pillen: Übersicht, Kalender, Aufgaben,
-  Medien (`1–4`). Unter 1280 px nur Icons mit Tooltip. Ist eine Sammlung, ein
+- **Zentriert** über der Mitte die vier Reiter als Pillen: Übersicht, Kalender,
+  Aufgaben, Medien (`1–4`). Links und rechts davon je eine gleich breite
+  Zone, damit die Reiter unabhängig von Pfeilen und Werkzeugen mittig stehen. Unter 1280 px nur Icons mit Tooltip. Ist eine Sammlung, ein
   Arbeitsbereich oder ein Eintrag offen, leuchtet kein Reiter; der Ort zeigt
   sich in der Seitenleiste und im Pfad.
 - **Rechts** die Werkzeuge der offenen Seite (Ansicht, Filter, Menü) und der

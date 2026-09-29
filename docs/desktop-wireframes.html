@@ -20,7 +20,7 @@
   <!-- ========== 1 · Übersicht ========== -->
   <h2>1 · Übersicht</h2>
   <ul class="diff">
-    <li><b>Die vier Reiter oben</b> sind Sichten, die Seitenleiste zeigt Orte: alle Sammlungen auf einmal, auch Lesezeichen und Archiv.</li>
+    <li><b>Die vier Reiter oben, zentriert über der Mitte,</b> sind Sichten, die Seitenleiste zeigt Orte: alle Sammlungen auf einmal, auch Lesezeichen und Archiv.</li>
     <li><b>Suche in der Seitenleiste</b> unter dem Tab-Namen, mit ⌘K. Kürzel-Schilder in Blau an jeder Zeile.</li>
     <li><b>Stufe und Profil</b> stehen fest unten; Profil und Einstellungen sind eine Zeile. Die Tipp-Karte entfällt.</li>
     <li><b>Rechts nur „Heute“ und „Zuletzt“</b>: Eingang und Fortschritt kommen nicht mehr doppelt vor.</li>
@@ -348,7 +348,7 @@
     const toggle = collapsed ? `<span class="toggle" title="Seitenleiste ausklappen ⌘\\"></span>` : "";
     const hist = `<span class="hist"><span title="Zurück ⌘[">‹</span><span class="${frame.dataset.fwd ? "" : "off"}" title="Vorwärts ⌘]">›</span></span>`;
     const strip = `<div class="tabs">${tabs.map(([id, l, k]) => `<span class="pill${frame.dataset.tab === id ? " on" : ""}"><span class="ico"></span><span class="lbl">${l}</span>${kbd(k)}</span>`).join("")}</div>`;
-    return `<div class="top">${toggle}${hist}${strip}<div class="top-actions">${actions}</div></div>`;
+    return `<div class="top"><div class="top-lead">${toggle}${hist}</div>${strip}<div class="top-actions">${actions}</div></div>`;
   }
   document.querySelectorAll(".frame").forEach((frame) => {
     frame.insertAdjacentHTML("afterbegin", nav(frame.dataset.nav) + top(frame));

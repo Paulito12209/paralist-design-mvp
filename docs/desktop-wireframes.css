@@ -94,7 +94,9 @@ h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; margin: 56px 0 
 .nav-foot .hint { font-size: 10px; color: var(--muted); font-weight: 400; }
 
 /* Reiterzeile über der Mitte: Zurück/Vorwärts, die vier Reiter, Werkzeuge der Seite */
-.top { grid-area: top; display: flex; align-items: center; gap: 8px; padding: 0 14px; border-bottom: 1px solid var(--line); background: var(--bg); }
+.top { grid-area: top; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 8px; padding: 0 14px; border-bottom: 1px solid var(--line); background: var(--bg); }
+.top-lead { display: flex; align-items: center; gap: 6px; }
+.tabs { justify-self: center; }
 .hist { display: inline-flex; gap: 2px; margin-right: 6px; }
 .hist span { width: 22px; height: 22px; border-radius: 6px; display: grid; place-items: center; color: var(--muted); font-size: 13px; }
 .hist span.off { opacity: 0.35; }
@@ -104,7 +106,7 @@ h2 { font-size: 22px; font-weight: 700; letter-spacing: -0.01em; margin: 56px 0 
 .tabs .pill .kbd { font-size: 8px; padding: 0 4px; }
 .frame.icons .tabs .pill span.lbl { display: none; }
 .frame.icons .tabs .pill { padding: 5px 8px; }
-.top-actions { margin-left: auto; display: flex; gap: 6px; align-items: center; }
+.top-actions { justify-self: end; display: flex; gap: 6px; align-items: center; }
 .btn.round { width: 26px; height: 26px; border-radius: 50%; padding: 0; display: inline-grid; place-items: center; }
 .btn.round::before { content: ""; width: 9px; height: 9px; border: 1.5px solid var(--text); border-radius: 50%; }
 .crumb { display: flex; gap: 6px; color: var(--muted); font-size: 11px; margin-bottom: 2px; }
