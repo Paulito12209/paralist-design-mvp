@@ -21,7 +21,7 @@
   <h2>1 · Übersicht</h2>
   <ul class="diff">
     <li><b>Die vier Reiter oben, zentriert über der Mitte,</b> sind Sichten, die Seitenleiste zeigt Orte: alle Sammlungen auf einmal, auch Lesezeichen und Archiv.</li>
-    <li><b>Suche in der Seitenleiste</b> neben dem Klapp-Knopf, mit ⌘K. Kürzel-Schilder in Blau an jeder Zeile.</li>
+    <li><b>Wortmarke oben links, Klapp-Knopf rechts daneben, Suche darunter</b> mit ⌘K. Kürzel-Schilder in Blau an jeder Zeile.</li>
     <li><b>Tabs sind Gruppen</b> unter „Arbeitsbereiche“, wie die Abschnitte in Codex: „Meine“ offen, „Arbeit“ zugeklappt mit Zahl. Kein Wechseln, kein Kürzel nötig.</li>
     <li><b>Stufe und Profil</b> stehen fest unten; Profil und Einstellungen sind eine Zeile. Die Tipp-Karte entfällt.</li>
     <li><b>Rechts nur „Heute“ und „Zuletzt“</b>: Eingang und Fortschritt kommen nicht mehr doppelt vor.</li>
@@ -35,7 +35,7 @@
         <div class="stat"><span class="pill">Offen</span><div class="num">12<small>Aufgaben</small></div></div>
         <div class="stat"><span class="pill">Erledigt</span><div class="num">9<small>7 Tage</small></div></div>
       </div>
-      <div class="muted" style="font-size:10px">Aktivität · 12 Wochen</div>
+      <div class="muted" style="font-size:10px;margin-top:2px">Aktivität · 12 Wochen</div>
       <div class="dots"></div>
       <div class="hero">
         <div class="card"><span class="lab">Diese Woche</span><div class="num big">340<small>XP</small></div><div class="muted">Stufe 3 · noch 160 bis Stufe 4</div></div>
@@ -328,13 +328,16 @@
     `<div class="nav-row${active === id ? " active" : ""}${cls}"><span class="${icon}"></span><span class="lbl">${label}</span>${count ? `<span class="count">${count}</span>` : ""}${extra ? `<span class="keys">${extra}</span>` : ""}</div>`;
   function nav(active) {
     return `<aside class="nav">
-      <div class="nav-tab"><span class="toggle" title="Seitenleiste einklappen ⌘\\"></span><div class="nav-search grow"><span class="ico"></span>Suchen${kbd("⌘K")}</div></div>
+      <div class="nav-tab"><span>Paralist</span><span class="toggle" title="Seitenleiste einklappen ⌘\\"></span></div>
+      <div class="nav-search"><span class="ico"></span>Suchen${kbd("⌘K")}</div>
       <div class="nav-new"><span>+ Neu</span>${kbd("N")}</div>
+      <div class="nav-scroll">
       <div class="nav-h"><span>Sammlungen</span></div>
       ${sets.map(([id, l, c, k]) => row(id, l, c, active, kbd("G " + k), "ico", id === "arch" ? " faint" : "")).join("")}
       ${soon.map(([id, l]) => row(id, l, "", active, kbd("bald"), "ico", " soon")).join("")}
       <div class="nav-h"><span>Arbeitsbereiche</span><span>+ Tab</span></div>
       ${groups.map(([name, open, list]) => `<div class="nav-group${open ? "" : " closed"}"><div class="nav-group-head"><span class="chev">${open ? "▾" : "▸"}</span>${name}<span class="keys">${open ? "+" : `<span class="count">${list.length}</span>`}</span></div>${open ? list.map(([id, l]) => row(id, l, "", active)).join("") : ""}</div>`).join("")}
+      </div>
       <div class="nav-foot">
         ${row("level", "Stufe 3<span class=\"hint\">160 XP bis Stufe 4</span>", "", active, "", "ico ring")}
         ${row("account", "Paul Angeles<span class=\"hint\">Pro</span>", "", active, '<span class="ico gear"></span>' + kbd("⌘,"), "ico avatar")}

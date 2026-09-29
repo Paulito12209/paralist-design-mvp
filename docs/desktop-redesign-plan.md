@@ -41,11 +41,11 @@ später als Zeilen in die Seitenleiste; die Reiterzeile wächst nie.
 
 ```
 ┌──────────────┬──────────────────────────────────────────┬──────────────┐
-│ ≡ 🔍 Suchen ⌘K│ ‹ ›     Übersicht Kalender Aufgaben Medien   ⋯│              │
-│ + Neu      N ├──────────────────────────────────────────┤  Kontext     │
-│ SAMMLUNGEN   │  Übersicht › Marketing › Notiz  (Pfad)   │  (je Seite   │
-│  Eingang G I │                                          │  anders,     │
-│  …           │  Seite                                   │  einklappbar)│
+│ Paralist   ≡ │ ‹ ›     Übersicht Kalender Aufgaben Medien   ⋯│              │
+│ 🔍 Suchen ⌘K ├──────────────────────────────────────────┤  Kontext     │
+│ + Neu      N │  Übersicht › Marketing › Notiz  (Pfad)   │  (je Seite   │
+│ SAMMLUNGEN   │                                          │  anders,     │
+│  Eingang G I │  Seite                                   │  einklappbar)│
 │ ARBEITSBER.  │                                          │              │
 │  Meine ▾  +  │                                          │              │
 │   Marketing  │                                          │              │
@@ -69,13 +69,13 @@ später als Zeilen in die Seitenleiste; die Reiterzeile wächst nie.
 
 Von oben nach unten:
 
-1. **Klapp-Knopf und Suchfeld** in einer Zeile. Ganz links der Knopf zum
-   Einklappen (`⌘\`), daneben das Suchfeld mit dem Schild `⌘K`. Der
-   Klapp-Knopf steht immer an derselben Stelle oben links: bei offener Leiste
-   in ihr, bei geschlossener am linken Rand der Reiterzeile (wie in ChatGPT
-   und Codex). Das Suchfeld ist nur der Einstieg; die Suche selbst ist die
-   Palette (Abschnitt 4).
-2. *(entfällt, siehe Punkt 5: die Tabs sind Gruppen der Arbeitsbereiche)*
+1. **Wortmarke und Klapp-Knopf.** Oben links steht „Paralist“, rechts daneben
+   der Knopf zum Einklappen (`⌘\`). Der Klapp-Knopf hält seine Höhe: bei
+   offener Leiste in ihr, bei geschlossener am linken Rand der Reiterzeile
+   (wie in ChatGPT und Codex).
+2. **Suchfeld** darunter mit Luft, in voller Leistenbreite, rechts das Schild
+   `⌘K`. Es ist nur der Einstieg; die Suche selbst ist die Palette
+   (Abschnitt 4).
 3. **Neu** — ein Knopf, schwarz, mit `N`. Das Menü dahinter nennt die Typen.
 4. **Sammlungen**, alle auf einmal: Eingang, Favoriten, Projekte,
    Ressourcen, Lesezeichen, Archiv (blass, immer zuletzt). Heute fehlen
@@ -211,6 +211,22 @@ führt dorthin, woher man kam.
 (Seiten, Sammlungen, Überall) und zwei Schaltern: „Schilder in der
 Seitenleiste“ und „Schilder in der Reiterzeile“. Die Wahl wird gespeichert
 (`ui.shortcutHints` in `src/data/state.js`). Die Taste `?` öffnet diese Seite.
+
+## 6a. Abstände
+
+Ein Raster von 4 px, und zwischen Dingen, die nicht zusammengehören, immer
+mehr Luft als innerhalb einer Gruppe:
+
+- **Seitenleiste:** 14 px Rand, 14 px zwischen Wortmarke und Suchfeld, 12 px
+  unter „Neu“, 16 px über jeder Gruppenüberschrift, Zeilen 32 px hoch, Fuß mit
+  10 px über der ersten Zeile.
+- **Mitte:** 26 px oben, 30 px seitlich, 20 px unter dem Titel und unter der
+  Werkzeugzeile. Kennzahlen: 24 px zwischen den Spalten, 10 px zwischen Pille
+  und Zahl, 26 px unter der Reihe. Karten mit 16 px Fuge, 14 / 16 px innen.
+- **Kontextspalte:** 18 px oben, 16 px seitlich, 12 px zwischen Karten.
+
+Die Werte werden zu `--desk-*`-Variablen in `styles/tokens-desk.css`; nichts
+davon steht als nackte Zahl in einer Stil-Datei.
 
 ## 7. Copy
 
