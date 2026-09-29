@@ -362,6 +362,13 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   Medien „Speicher“ und „Zuletzt hinzugefügt“; die Suche eine Vorschau des
   Treffers unter der Maus mit „Öffnen“. Übersicht und alle anderen Seiten
   behalten „Als Nächstes“, „Aufgaben“, „Zuletzt geöffnet“.
+- Profil als Seite: ⌘, (Strg ,) und das Konto unten links öffnen „Profil“ auf
+  „Konto“, `?` auf „Kurzbefehle“. Alle Punkte links anklicken; Kachel unter
+  „Analyse“ öffnen, Pfeil zurück; Punkt wechseln, während eine Kachel offen
+  ist; Esc und Zurück schließen. Reiter 1–4 wechseln die Seite, Browser-Zurück
+  holt das Profil wieder. Unter „Kurzbefehle“ die zwei Schalter: Schilder in
+  Seitenleiste bzw. Reiterzeile verschwinden, auch nach neu laden. Unter 1024 px
+  bleibt es das gewohnte Blatt.
 
 **Immer**
 - `python3 tools/version.py` ausführen, dann meldet `python3 tools/check.py` „alles in Ordnung“.

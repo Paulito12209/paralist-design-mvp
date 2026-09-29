@@ -260,8 +260,18 @@ export function accountInfo() {
  */
 export function listsMarkup() {
   const sections = listSections.map((section) => sectionMarkup(section.title, section.rows)).join("");
+  return sections + closingMarkup();
+}
+
+/** Ein einzelner Abschnitt der Listen („Konto“, „Support“, „Mehr“) — für die Profilseite am Desktop. */
+export function listSection(title) {
+  const section = listSections.find((item) => item.title === title);
+  return section ? sectionMarkup(section.title, section.rows) : "";
+}
+
+/** „Abmelden“ und die Versionszeile, der Schluss der Seite. */
+export function closingMarkup() {
   return `
-    ${sections}
     <button class="profile-signout" type="button">Abmelden</button>
     <p class="profile-version">${escapeHtml(profile.version)}</p>
   `;

@@ -7,7 +7,7 @@
  * Pfad: src/shell/desk-nav-parts.js
  *
  * Keine anpassbaren visuellen Werte: welche Sammlung welche Taste und Farbe
- * hat, steht in src/shell/desk-links.js; Aussehen, Abstände und Größen stehen
+ * hat, steht in src/ui/desk-links.js; Aussehen, Abstände und Größen stehen
  * in styles/desk-nav.css, der Fuß in styles/desk-nav-foot.css und die
  * Tasten-Schilder in styles/desk-kbd.css.
  */
@@ -22,7 +22,7 @@ import { workspaceRef } from "../data/refs.js";
 import { state, ui } from "../data/state.js";
 import { levelInfo, totalXp } from "../data/xp.js";
 import { currentView } from "../ui/views.js";
-import { chordKey, collectionLinks, pageLinks, soonLinks, withCommand } from "./desk-links.js";
+import { chordKey, collectionLinks, pageLinks, soonLinks, withCommand } from "../ui/desk-links.js";
 
 /* kbd: eine Taste der Tastatur. Für Vorlesehilfen ausgeblendet — dort sagt
    aria-keyshortcuts am Knopf schon dasselbe. */

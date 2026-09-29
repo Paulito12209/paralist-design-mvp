@@ -23,7 +23,7 @@ import { findWorkspace, pageCount } from "../data/queries.js";
 import { state, ui } from "../data/state.js";
 import { openArchive, openBookmarks, openTarget, restoreFrom, showTab } from "../ui/router.js";
 import { isViewActive } from "../ui/views.js";
-import { collectionLinks } from "./desk-links.js";
+import { collectionLinks } from "../ui/desk-links.js";
 import { activeTargets, footMarkup, skeletonMarkup, tabGroupsMarkup } from "./desk-nav-parts.js";
 
 /* Die Seitenleiste selbst und ihre Teile — einmal beim Einhängen gesucht. */
@@ -134,7 +134,7 @@ const clickActions = [
   ["[data-nav-tab-toggle]", (node) => toggleGroup(node.dataset.navTabToggle)],
   ["[data-open-workspace]", openWorkspace],
   ["[data-nav-level]", () => load("progress").then((module) => module.open())],
-  ["[data-nav-profile]", () => load("profile").then((module) => module.open())],
+  ["[data-nav-profile]", () => load("profile").then((module) => module.openPane("konto"))],
 ];
 
 function onClick(event) {

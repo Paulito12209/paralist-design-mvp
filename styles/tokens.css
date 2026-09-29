@@ -4,13 +4,11 @@
  * -----------------------------------
  * Hier stehen die Werte, die auf jeder Seite wirken: die Grundfarben, die Maße
  * der Bedienelemente und die wiederkehrenden Abstände. Ändert man einen davon,
- * ändert sich die ganze App. Was nur eine einzelne Seite betrifft — Kalender,
- * Aufgaben, Medien, Suche, Zeichnung, Profil, Einstellungen —, steht in
- * styles/tokens-pages.css.
+ * ändert sich die ganze App. Was nur eine einzelne Seite betrifft (Kalender,
+ * Aufgaben, Medien, Suche, Zeichnung, Profil), steht in styles/tokens-pages.css.
  *
- * Nicht alles steht hier: die Schriftgröße eines einzelnen Elements (etwa die
- * Stundenbeschriftung im Kalender) steht direkt bei ihrer Regel in der Datei des jeweiligen Bereichs. Welche Datei das
- * ist, sagt die Liste unten; oben in jeder Datei steht, was sich darin einstellen lässt.
+ * Schriftgrößen einzelner Elemente stehen bei ihrer Regel in der Datei ihres
+ * Bereichs (Liste unten); oben in jeder Datei steht, was sich darin einstellen lässt.
  *
  * WELCHE DATEI MACHT WAS
  * -----------------------------------
@@ -70,6 +68,7 @@
  * styles/desk-nav.css        -> Desktop: Seitenleiste mit „Neu“, Sammlungen, Tab-Gruppen; ihr Fuß (Stufe, Konto) in styles/desk-nav-foot.css
  * styles/desk-kbd.css        -> Desktop: blaue Tasten-Schilder und das Auftauchen der Blöcke der Seitenleiste
  * styles/search-palette.css  -> Desktop: Such-Palette in der Fenstermitte (⌘K, „/“, Suchfeld, Such-Knopf)
+ * styles/desk-settings.css   -> Desktop: Profil als Seite mit Untermenü; styles/shortcuts.css: Liste der Kurzbefehle
  * styles/desk-rail.css       -> Desktop: rechte Spalte mit nächstem Termin, Aufgaben und zuletzt Geöffnetem
  * styles/desk-rail-tiles.css -> Desktop: die zwei Kacheln oben rechts (Eingang-Stapel, Stufen-Ring) und die Tagesleiste
  * styles/desk-rail-views.css -> Desktop: Karten der rechten Spalte je Seite (Monat, Tag, Zahlen, Balken, Vorschau)

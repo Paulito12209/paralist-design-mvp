@@ -104,6 +104,8 @@ export const ui = {
   usageRange: 30,
   /* Einstellungs-Blatt: welche Kachel aufgeklappt ist — null, "usage" oder "streak" */
   settingsDetail: null,
+  /* Profilseite am Desktop: welcher Punkt des Untermenüs gewählt ist (src/features/profile/settings-nav.js) */
+  settingsPane: "konto",
 };
 
 /* Auf `true` gesetzt, sobald die Beispielmedien einmal angelegt wurden. */

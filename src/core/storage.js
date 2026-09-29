@@ -20,6 +20,7 @@ export const storageKeys = {
   milestones: "paralist-milestones",
   deskNav: "paralist-desk-nav",
   deskGroups: "paralist-desk-groups",
+  deskHints: "paralist-desk-hints",
 };
 
 /** Liest gespeichertes JSON. Fehlt es oder ist es kaputt, kommt `fallback` zurück. */

@@ -7,11 +7,13 @@
  * „Support“ zwei auf das Feedback-Formular und die Danksagungen; „Roadmap“
  * ist dagegen ein Link nach draußen und braucht hier nichts (Adresse in
  * profile-cards.js). „Nach Updates suchen“ unter „Mehr“ bittet die Hülle, die
- * neueste Fassung zu laden. Wird erst beim ersten Öffnen nachgeladen.
+ * neueste Fassung zu laden. Am Desktop wird das Blatt eine Seite mit
+ * Untermenü (src/features/profile/profile-page.js); dann steht rechts nur der
+ * gewählte Punkt. Wird erst beim ersten Öffnen nachgeladen.
  * Pfad: src/features/profile/profile.js
  *
  * Keine anpassbaren visuellen Werte: siehe styles/profile.css,
- * styles/settings.css und styles/overlays.css.
+ * styles/settings.css, styles/overlays.css und am Desktop styles/desk-settings.css.
  */
 
 import { emit, events } from "../../core/bus.js";
@@ -20,6 +22,7 @@ import { ui } from "../../data/state.js";
 import { flushUsage, trackUsage } from "../../data/usage.js";
 import { bindModalPull, clearModalPull } from "../../ui/modal-pull.js";
 import { closeCtxMenu } from "../../ui/ctx-menu.js";
+import { isDesk } from "../../ui/desk-mode.js";
 import { registerOverlay } from "../../ui/router.js";
 import { closeSheet, openSheet } from "../../ui/sheet.js";
 import { hideCropper, openCropper } from "./avatar-crop.js";
@@ -36,6 +39,7 @@ import {
 } from "./avatar.js";
 import { noteFeedbackInput, onFeedbackClick } from "./feedback.js";
 import { toggleNavLabels } from "./nav-labels.js";
+import { initProfilePage, renderPageChrome, selectPane } from "./profile-page.js";
 import { identityCard, listsMarkup } from "./profile-cards.js";
 import {
   appearanceSection,
@@ -46,17 +50,25 @@ import {
   isDetail,
   settleDetail,
 } from "./settings-cards.js";
+import { defaultPane, isPane, paneMarkup } from "./settings-nav.js";
+import { toggleHints } from "./shortcuts.js";
 import { setTheme } from "./theme.js";
 
-/* Welche große Ansicht zuletzt gezeichnet wurde — null steht für die Liste. */
+/* Welche große Ansicht zuletzt gezeichnet wurde — null steht für die Liste —
+   und welcher Punkt des Untermenüs (nur am Desktop sichtbar). */
 let shownDetail = null;
+let shownPane = null;
 
 /** Das Blatt zeichnen: entweder die Liste oder die aufgeklappte Kachel. */
 export function renderProfile() {
   shownDetail = ui.settingsDetail;
-  dom.profileBody.innerHTML = shownDetail
-    ? detailMarkup(shownDetail)
+  shownPane = ui.settingsPane;
+  /* Am Handy die ganze Liste, am Desktop nur der Punkt aus dem Untermenü. */
+  const list = isDesk()
+    ? paneMarkup(ui.settingsPane)
     : identityCard() + insightsSection() + appearanceSection() + listsMarkup();
+  dom.profileBody.innerHTML = shownDetail ? detailMarkup(shownDetail) : list;
+  renderPageChrome();
   /* Nur auf einer Unterseite: der Pfeil erscheint und „Einstellungen“ rückt
      neben ihn — zusammen sind sie der Weg zurück zur Liste. Auf der Liste
      selbst führt das Kreuz allein aus dem Blatt heraus. */
@@ -95,7 +107,12 @@ function openDetail(key) {
   ui.settingsDetail = key;
   renderProfile();
   dom.profileBody.scrollTop = 0;
-  history.pushState({ view: "profile", detail: key, from: ui.sourceView }, "", `#/einstellungen/${detailHash(key)}`);
+  /* stack: wie viele Schritte das Schließen zurückgehen muss (Liste und Unterseite) */
+  history.pushState(
+    { view: "profile", detail: key, pane: ui.settingsPane, stack: 2, from: ui.sourceView },
+    "",
+    `#/einstellungen/${detailHash(key)}`
+  );
 }
 
 /** Von der vollen Karte zurück zur Liste. */
@@ -134,9 +151,11 @@ export function open(push = true, entry = null) {
   flushUsage();
 
   ui.settingsDetail = entry && isDetail(entry.detail) ? entry.detail : null;
+  /* Punkt des Untermenüs: aus dem Verlauf oder dem Aufruf, sonst „Konto“. */
+  ui.settingsPane = entry && isPane(entry.pane) ? entry.pane : defaultPane;
   /* Neu gezeichnet wird nur, wenn das Blatt zu war oder eine andere Ebene dran
      ist — sonst bliebe die Liste stehen, wo die Kachel hingehört. */
-  if (dom.profileModal.hidden || ui.settingsDetail !== shownDetail) {
+  if (dom.profileModal.hidden || ui.settingsDetail !== shownDetail || ui.settingsPane !== shownPane) {
     renderProfile();
     dom.profileBody.scrollTop = 0;
   }
@@ -145,8 +164,20 @@ export function open(push = true, entry = null) {
 
   if (push) {
     dom.avatarView.hidden = true;
-    history.pushState({ view: "profile", from: ui.sourceView }, "", "#/einstellungen");
+    history.pushState({ view: "profile", pane: ui.settingsPane, from: ui.sourceView }, "", "#/einstellungen");
   }
+}
+
+/**
+ * Profil auf einem Punkt des Untermenüs öffnen (⌘, auf „Konto“, ? auf
+ * „Kurzbefehle“). Steht es schon offen, wechselt nur der Punkt.
+ */
+export function openPane(id) {
+  if (!dom.profileModal.hidden) {
+    selectPane(id);
+    return;
+  }
+  open(true, { pane: id });
 }
 
 /** Das Blatt schließen; der Verlauf geht dabei einen Schritt zurück. */
@@ -156,7 +187,7 @@ export function close() {
   if (entry && entry.view === "profile") {
     /* Bei aufgeklappter Kachel liegen zwei Schritte im Verlauf: das Kreuz
        schließt beide, sonst stünde danach wieder die Liste offen. */
-    history.go(entry.detail ? -2 : -1);
+    history.go(-(entry.stack || (entry.detail ? 2 : 1)));
     return;
   }
   hide();
@@ -270,6 +301,12 @@ function onBodyClick(event) {
     rerenderKeepingScroll();
     return;
   }
+  const hints = event.target.closest("[data-hints-toggle]");
+  if (hints) {
+    toggleHints(hints.dataset.hintsToggle);
+    rerenderKeepingScroll();
+    return;
+  }
   if (event.target.closest("[data-nav-labels-toggle]")) {
     toggleNavLabels();
     rerenderKeepingScroll();
@@ -315,6 +352,7 @@ function init() {
   bindModalPull(dom.avatarView, closeAvatarView);
 
   registerOverlay("profile", { open, hide });
+  initProfilePage({ render: renderProfile, hide });
   registerOverlay("avatar", { open: openAvatarView, hide: hideAvatarView });
   /* Den Editor holt der Verlauf nicht zurück — das gewählte Foto ist dann nicht mehr da. */
   registerOverlay("crop", { open: () => {}, hide: hideCropper });

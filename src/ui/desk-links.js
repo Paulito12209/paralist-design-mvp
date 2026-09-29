@@ -1,9 +1,10 @@
 /*
  * Die Ziele der Desktop-Fassung an einer Stelle: die vier Reiter oben und die
  * Sammlungen in der Seitenleiste, jeweils mit ihrer Taste. Reiterzeile,
- * Seitenleiste und die Tastenkürzel lesen alle von hier — so können Schild und
- * Kürzel nie auseinanderlaufen.
- * Pfad: src/shell/desk-links.js
+ * Seitenleiste, die Tastenkürzel und die Liste unter Profil › Kurzbefehle
+ * lesen alle von hier — so können Schild, Kürzel und Liste nie
+ * auseinanderlaufen. Liegt in src/ui/, weil Hülle und Profil sie brauchen.
+ * Pfad: src/ui/desk-links.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------

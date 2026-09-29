@@ -50,6 +50,9 @@ export const events = {
      sich Daten geändert hätten: ein anderer Tag im Kalender, ein anderer
      markierter Treffer in der Suche. Die Spalte zeichnet sich neu. */
   contextChanged: "context:changed",
+  /* Unter Profil › Kurzbefehle wurden die Tasten-Schilder ein- oder
+     ausgeblendet: Seitenleiste und Reiterzeile passen sich an. */
+  shortcutHintsChanged: "shortcut-hints:changed",
 };
 
 const listeners = new Map();
