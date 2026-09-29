@@ -43,12 +43,15 @@
  * Aussehen (Auslaufen des Textes, Knopf) in styles/entry-details.css.
  *
  * Am Desktop mit rechter Spalte (ab 1280px) gilt nichts davon: die Details
- * stehen rechts (entry-rail.js), der Text bleibt ganz.
+ * stehen rechts (entry-rail.js), der Text bleibt ganz. Nur die Zeichenfläche
+ * bekommt dort eine Höhe: sie reicht bis zum Seitenende, darunter stehen die
+ * Werkzeugleiste und der Freiraum am Seitenende (--tab-space in styles/tokens-desk.css).
  */
 
 import { events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
+import { cssNumber } from "../../core/css-vars.js";
 import { ui } from "../../data/state.js";
 import { isRailShown } from "../../ui/desk-mode.js";
 import { isViewActive } from "../../ui/views.js";
@@ -108,6 +111,19 @@ function watchReveal(card, coveredTop) {
   reveal.observe(card.querySelector(".details-stats"));
 }
 
+/*
+ * Höhe der Zeichenfläche am Desktop mit rechter Spalte: bis zum unteren Rand
+ * der Seite, abzüglich Werkzeugleiste und Freiraum am Seitenende. Ohne diese
+ * Höhe bliebe die Leinwand bei ihrer Grundhöhe von 150px stehen.
+ */
+function railDrawRoom() {
+  const foldRect = fold.getBoundingClientRect();
+  const top = foldRect.top + dom.content.scrollTop;
+  const tools = dom.drawTools.getBoundingClientRect().bottom - foldRect.bottom;
+  const bottom = dom.content.getBoundingClientRect().bottom - cssNumber("--tab-space", 64);
+  return Math.max(MIN_ROOM_PX, Math.round(bottom - tools - top));
+}
+
 function setMore(show, open) {
   more.hidden = !show;
   if (show) more.innerHTML = `<span>${open ? lessLabel : moreLabel}</span>${icon("chevron", open ? "is-up" : "")}`;
@@ -131,7 +147,10 @@ export function layoutEntryFold() {
   setMore(false);
   /* Am Desktop mit rechter Spalte stehen die Details dort (entry-rail.js):
      der Text bleibt ganz, nichts wird gekürzt oder für die Karte freigehalten. */
-  if (isRailShown()) return;
+  if (isRailShown()) {
+    if (drawing) fold.style.height = `${railDrawRoom()}px`;
+    return;
+  }
 
   const foldRect = fold.getBoundingClientRect();
   /* Oberkante des Rahmens, als stünde die Seite ganz oben */
