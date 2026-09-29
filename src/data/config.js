@@ -27,7 +27,8 @@
  * taskSorts               -> wonach die Aufgaben-Seite sortieren kann
  * taskDefaults            -> womit eine neue Ansicht der Aufgaben-Seite startet
  * calendarSegments[*].add -> Beschriftung der Pille am leeren Kalendertag
- * stageModes              -> die drei Modi der Bühne auf der Übersicht (Desktop) und ihre Beschriftung
+ * stageModes              -> die drei Modi der Bühne auf der Übersicht (Desktop): Icon im Schalter und
+ *                            Beschriftung, die beim Überfahren erscheint
  */
 
 /*
@@ -251,9 +252,9 @@ export const calendarSegments = [
 
 /** Der Schalter über der Bühne der Übersicht (src/features/dashboard/dashboard-stage.js). */
 export const stageModes = [
-  { id: "created", label: "Zuletzt erstellt" },
-  { id: "opened", label: "Zuletzt geöffnet" },
-  { id: "favorites", label: "Favorisiert" },
+  { id: "created", label: "Zuletzt erstellt", icon: "plus-circle" },
+  { id: "opened", label: "Zuletzt geöffnet", icon: "history" },
+  { id: "favorites", label: "Favorisiert", icon: "star-outline" },
 ];
 
 /** Pillen oben auf der Medien-Seite: „Zuletzt erstellt“ zeigt alles, die anderen je eine Art. */

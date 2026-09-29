@@ -1,7 +1,8 @@
 /*
  * Desktop: die Bühne der Übersicht — gebaut wie der Kopf von Apple Arcade.
- * Darüber der Schalter „Zuletzt erstellt | Zuletzt geöffnet | Favorisiert“ in
- * derselben Pille wie Liste | Board auf der Aufgaben-Seite. Ohne Kartenrahmen: links Art, großer Titel, ein Satz und die Pille
+ * Darüber rechtsbündig der Schalter „Zuletzt erstellt | Zuletzt geöffnet |
+ * Favorisiert“ als drei Icons in derselben Pille wie Liste | Board auf der
+ * Aufgaben-Seite; der Name steht im Tooltip. Ohne Kartenrahmen: links Art, großer Titel, ein Satz und die Pille
  * „Öffnen“, rechts das Cover der Seite in ihrem Farbton mit leuchtender
  * Umlaufbahn. Die Seiten liegen übereinander und blenden ineinander über.
  * Darunter die Punkte (der aktive wird lang) mit zwei Pfeilen; die Reihe der
@@ -22,7 +23,7 @@
  * --showcase-float-reach  -> wie weit sie dabei auf und ab treiben
  * Platz, Größe, Farbe und Startzeit jeder Kugel setzt das Skript (--sat-x, --sat-y,
  * --sat-size, --sat-color, --sat-delay; Liste `satellites` in dashboard-stage.js).
- * Einzelne Größen stehen bei ihrer Regel: Schalter 13px Schrift und 16px Luft
+ * Einzelne Größen stehen bei ihrer Regel: Schalter-Icons 18px und 16px Luft
  * zur Bühne, Art 13px, Satz 15px, Pille 15px und
  * 44px hoch, Pfeile 32px, Rundung des Covers 26% der Kante (wie ein App-Icon).
  *
@@ -73,23 +74,29 @@
   /* ---------- Schalter über der Bühne ---------- */
 
   .showcase-modes {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    margin-bottom: 16px;
+    width: fit-content;
+    margin: 0 0 16px auto; /* margin-left: auto schiebt die Pille an den rechten Rand der Bühne */
     padding: 2px;
     border-radius: 999px; /* border-radius: macht aus den Knöpfen eine Pille */
     background: var(--tab-pill-active-bg);
   }
 
   .showcase-mode {
+    display: grid;
+    place-items: center;
+    min-width: calc(var(--tasks-seg-h) - 4px);
     height: calc(var(--tasks-seg-h) - 4px);
-    padding: 0 14px;
+    padding: 0 10px;
     border-radius: 999px; /* border-radius: der gefüllte Knopf ist rund wie die Pille */
     color: var(--muted);
-    font-size: 13px;
-    font-weight: 600;
-    white-space: nowrap;
     transition: background-color var(--desk-fast) var(--desk-ease), color var(--desk-fast) var(--desk-ease); /* transition: der Wechsel gleitet */
+  }
+
+  .showcase-mode .icon {
+    width: 18px;
+    height: 18px;
   }
 
   .showcase-mode.is-on {

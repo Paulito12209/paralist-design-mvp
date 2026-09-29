@@ -2,7 +2,7 @@
  * Die Bühne der Übersicht am Desktop — gebaut wie der Kopf von Apple Arcade:
  * groß die zuletzt erstellten, zuletzt geöffneten oder favorisierten Seiten,
  * eine nach der anderen; welche, wählt der Schalter darüber (gemerkt in
- * state.prefs.dashboard.stage). Links Art der
+ * state.prefs.dashboard.mode, Vorgabe „Zuletzt erstellt“). Links Art der
  * Seite, Titel, ein Satz und „Öffnen“, rechts ihr Cover im Farbton der Seite
  * mit leuchtender Umlaufbahn. Darunter die Punkte zum Blättern und eine Reihe
  * Kacheln mit dem, was mit der gezeigten Seite verknüpft ist — bei
@@ -97,7 +97,7 @@ const satellites = [
 
 let modes = null;
 let stage = null;
-let mode = "opened";
+let mode = "created";
 let shelf = null;
 let pages = [];
 let index = 0;
@@ -200,12 +200,14 @@ function welcomeMarkup() {
     </article>`;
 }
 
-/* Die Knöpfe des Schalters über der Bühne — dieselbe Pille wie Liste | Board auf der Aufgaben-Seite. */
+/* Die Knöpfe des Schalters über der Bühne — dieselbe Pille wie Liste | Board
+   auf der Aufgaben-Seite: nur Icons, der Name steht im Tooltip und für Vorlesehilfen. */
 function modesMarkup() {
   return stageModes
-    .map(
-      (item) => `<button class="showcase-mode${item.id === mode ? " is-on" : ""}" type="button" data-showcase-mode="${item.id}" aria-pressed="${item.id === mode}">${escapeHtml(item.label)}</button>`
-    )
+    .map((item) => {
+      const label = escapeHtml(item.label);
+      return `<button class="showcase-mode${item.id === mode ? " is-on" : ""}" type="button" data-showcase-mode="${item.id}" aria-pressed="${item.id === mode}" aria-label="${label}" title="${label}">${icon(item.icon)}</button>`;
+    })
     .join("");
 }
 
@@ -281,7 +283,7 @@ function select(position) {
 export function renderStage(reset) {
   if (!stage) return;
   const shownKey = !reset && pages[index] ? describe(pages[index]).key : null;
-  mode = state.prefs.dashboard.stage;
+  mode = state.prefs.dashboard.mode;
   pages = stagePages(mode, slideLimit);
   stage.setAttribute("aria-label", stageModes.find((item) => item.id === mode).label);
   modes.innerHTML = modesMarkup();
@@ -300,7 +302,7 @@ export function renderStage(reset) {
 /* Einen Modus wählen und merken; die Bühne beginnt dann wieder bei ihrer ersten Seite. */
 function selectMode(id) {
   if (id === mode) return;
-  state.prefs.dashboard.stage = id;
+  state.prefs.dashboard.mode = id;
   saveState();
   renderStage(true);
 }

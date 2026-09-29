@@ -220,7 +220,7 @@ const stageSources = { opened: openedPages, created: createdPages, favorites: fa
  * @returns [{ kind: "entry"|"workspace", item, ts, related, linked }] — höchstens `limit` Stück.
  */
 export function stagePages(mode, limit) {
-  const source = stageSources[mode] || openedPages;
+  const source = stageSources[mode] || createdPages;
   return source()
     .filter(({ item }) => item && !item.archived)
     .slice(0, limit)

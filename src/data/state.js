@@ -56,7 +56,7 @@ export const state = {
     resources: { filter: "all" },
     /* Aufgaben-Seite: Ansicht, Gruppierung der Spalten, Sortierung und die Filter */
     /* Bühne der Übersicht am Desktop: welcher Modus gewählt ist (stageModes in config.js) */
-    dashboard: { stage: "opened" },
+    dashboard: { mode: "created" },
     /* Welche Sammlung ihren großen Kopf zeigt, z.B. { bookmarks: true }; fehlt = einfacher Titel */
     pageHeads: {},
   },
@@ -256,9 +256,6 @@ function adoptPrefs(saved) {
   if (saved.resources && typeof saved.resources === "object") {
     state.prefs.resources = { ...state.prefs.resources, ...saved.resources };
   }
-  if (saved.dashboard && typeof saved.dashboard === "object") {
-    state.prefs.dashboard = { ...state.prefs.dashboard, ...saved.dashboard };
-  }
   if (saved.pageHeads && typeof saved.pageHeads === "object") {
     state.prefs.pageHeads = Object.fromEntries(Object.entries(saved.pageHeads).filter(([, on]) => on === true));
   }
@@ -268,7 +265,9 @@ function adoptPrefs(saved) {
   calendar.seg = pickValid(calendar.seg, calendarSegments.map((seg) => seg.id), "termine");
   state.prefs.media.filter = pickValid(state.prefs.media.filter, mediaFilters.map((item) => item.id), "recent");
   state.prefs.resources.filter = pickValid(state.prefs.resources.filter, resourceFilters.map((item) => item.id), "all");
-  state.prefs.dashboard.stage = pickValid(state.prefs.dashboard.stage, stageModes.map((item) => item.id), "opened");
+  /* Von der Bühne nur `mode` übernehmen; alles andere darin verwirft die App, fehlt es, gilt „Zuletzt erstellt“ */
+  const savedMode = saved.dashboard && saved.dashboard.mode;
+  state.prefs.dashboard = { mode: pickValid(savedMode, stageModes.map((item) => item.id), "created") };
 
   /* Ansichten der Aufgaben-Seite: die erste ist immer „Alle“ (fest,
      ungefiltert); jede Angabe fällt auf die Vorgabe zurück, wenn sie nichts
