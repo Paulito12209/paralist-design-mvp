@@ -39,7 +39,7 @@ import { closeSheet } from "../ui/sheet.js";
 import { isNavClosed, mountDeskHead, renderDeskHead, setNavClosed } from "./desk-head.js";
 import { chordKey, chordWindow, collectionLinks, pageLinks } from "./desk-links.js";
 import { mountDeskNav, openCollection, renderDeskNav } from "./desk-nav.js";
-import { mountDeskRail, renderDeskRail } from "./desk-rail.js";
+import { mountDeskRail, registerRailCards, renderDeskRail } from "./desk-rail.js";
 import { setSearchTakeover } from "./search-bar.js";
 import { closePalette, isPaletteOpen, openPalette, takeOverSearchField } from "./search-palette.js";
 
@@ -262,8 +262,9 @@ function createColumn(className, label) {
  * Seitenleiste und rechte Spalte einhängen. Darf mehrmals aufgerufen werden —
  * etwa bei jedem Wechsel über die Breitengrenze; eingehängt wird nur einmal,
  * danach hält onDeskChange unten alles aktuell.
- * @param handlers { openWorkspaceMenu, openTabMenu, profilePhoto } aus den
- *   Seiten, von src/main.js hereingegeben.
+ * @param handlers { openWorkspaceMenu, openTabMenu, profilePhoto, railCards } aus
+ *   den Seiten, von src/main.js hereingegeben; `railCards` ordnet einer Ansicht
+ *   die Funktion zu, die ihre Karten für die rechte Spalte lädt.
  */
 export function initDesk(handlers = {}) {
   if (mounted) return;
@@ -280,6 +281,9 @@ export function initDesk(handlers = {}) {
   mountDeskHead();
   mountDeskNav(nav, handlers);
   mountDeskRail(rail);
+  Object.entries(handlers.railCards || {}).forEach(([view, importFn]) => registerRailCards(view, importFn));
+  /* Anderer Tag im Kalender, anderer markierter Treffer: nur die Spalte rechts. */
+  on(events.contextChanged, refreshRail);
   on(events.profileChanged, refreshNav);
 
   on(events.dataChanged, refreshAll);

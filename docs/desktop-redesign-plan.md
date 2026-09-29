@@ -265,11 +265,20 @@ Jeder Schritt ist für sich lauffähig, wird geprüft (`tools/version.py`,
    oberste Ebene für Esc und sperrt alle Kürzel; sie legt keinen
    Verlaufsschritt an und schließt bei Browser-Zurück mit. `styles/search.css`:
    am Desktop keine Knöpfe unten.
-3. **Kontextspalte** — `src/shell/desk-rail.js` bekommt Karten je Ansicht:
-   `registerRailCards(view, cards)` wird von `src/main.js` gefüllt, damit
-   `shell/` keine `features/` importiert. Karten in
-   `src/shell/desk-rail-cards.js` (Übersicht) und je Bereich eine Datei
-   `src/features/<bereich>/<bereich>-rail.js`.
+3. **Kontextspalte** — *umgesetzt.* `src/shell/desk-rail.js` führt je Ansicht
+   einen Kartensatz: `registerRailCards(view, importFn)`, die Importe gibt
+   `src/main.js` (`railCards`) über `initDesk` herein, damit `shell/` keine
+   `features/` importiert; geladen wird erst, wenn die Ansicht offen ist.
+   Übersicht und alle übrigen Seiten behalten die Karten aus
+   `src/shell/desk-rail-cards.js`. Neu: `calendar-rail.js` (kleiner Monat zum
+   Springen, gewählter Tag), `tasks-rail.js` (Stand, Dringlichkeit,
+   Demnächst fällig), `media-rail.js` (Speicher nach Art, zuletzt
+   hinzugefügt), `search-rail.js` (Vorschau des Treffers unter Maus oder
+   Fokus). Gemeinsame Bausteine in `src/ui/rail-parts.js`, Stile in
+   `styles/desk-rail-views.css`; Tag- und Trefferwechsel melden sich über
+   `events.contextChanged`. Noch offen und in den späteren Schritten: Details
+   der markierten Aufgabe und „Ansicht konfigurieren“ (6), Details einer
+   markierten Datei (6), Eintrag und Arbeitsbereich (7).
 4. **Profil als Seite** — `styles/desk-overlays.css`: das Einstellungs-Blatt
    wird am Desktop eine Ansicht `settings` mit Untermenü
    (`src/features/profile/settings-nav.js`). Neue Unterseite Kurzbefehle

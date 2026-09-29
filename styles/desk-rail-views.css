@@ -1,0 +1,249 @@
+/*
+ * Desktop: die Karten der Kontextspalte rechts, die mit der Seite wechseln —
+ * kleiner Monat und gewählter Tag (Kalender), Zahlen und Balken (Aufgaben,
+ * Medien), Vorschau des markierten Treffers (Suche). Dazu der Rahmen der
+ * Kartensätze und die Tönung des markierten Treffers in der Suchliste.
+ * Karten, Köpfe, Pillen und Aufgabenzeilen selbst stehen in styles/desk-rail.css.
+ * Gebaut von src/features/<bereich>/<bereich>-rail.js. Unter 1280px gilt hier nichts.
+ * Pfad: styles/desk-rail-views.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-rail)
+ * -----------------------------------
+ * --rail-day-size  -> Größe eines Tags im kleinen Monat
+ * --rail-bar-height -> Dicke der Balken (Dringlichkeit, Speicher)
+ * --rail-row-height -> Höhe einer Zeile unter dem gewählten Tag und „Zuletzt hinzugefügt“
+ * Einzelne Größen stehen bei ihrer Regel: Wochentage 11px, Tage und Zeilen
+ * 13px, große Zahlen 26px, Titel der Vorschau 17px, Icon der Vorschau 22px.
+ *
+ * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * -----------------------------------
+ * --desk-hover / --desk-ink / --desk-chip-bg -> Tönung unter der Maus, gewählter Tag, leere Balken
+ * --desk-num-weight -> Strichstärke der großen Zahlen
+ * --desk-item-radius -> Rundung der Zeilen
+ * --rail-pill-height -> Größe der runden Monatspfeile (styles/desk-rail.css)
+ * --text / --muted / --bg / --line -> Schrift, blasse Schrift, Schrift auf dem gewählten Tag, Trennlinie
+ * --avatar-btn-bg  -> Punkt unter Tagen mit Einträgen, Farbe der Balken ohne eigene Farbe
+ * --prio-jetzt     -> Zahl „überfällig“
+ *
+ * VON JAVASCRIPT GESETZT
+ * -----------------------------------
+ * --share -> Länge eines Balkens in Prozent; --tone -> seine Farbe (Dringlichkeit)
+ */
+
+@media (min-width: 1280px) {
+  .desk-rail {
+    --rail-day-size: 34px;
+    --rail-bar-height: 6px;
+    --rail-row-height: 34px;
+  }
+
+  /* Ein Kartensatz ist nur ein Behälter: seine Karten stehen in der Spalte, als
+     lägen sie direkt darin — Abstand und Rollen bleiben die der Spalte. */
+  .rail-set { display: contents; } /* display: contents — s. o. */
+  .rail-set > * { flex-shrink: 0; }
+
+  /* ---------- Kalender: kleiner Monat ---------- */
+
+  .rail-month-arrows {
+    display: flex;
+    gap: 2px;
+  }
+
+  .rail-round {
+    display: grid;
+    place-items: center;
+    width: var(--rail-pill-height);
+    height: var(--rail-pill-height);
+    border-radius: 50%;
+    color: var(--muted);
+  }
+
+  .rail-round .icon { width: 16px; height: 16px; }
+
+  .rail-month {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr); /* grid-template-columns: sieben Wochentage */
+    justify-items: center;
+    row-gap: 2px;
+  }
+
+  .rail-month-weekday {
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .rail-month-day {
+    position: relative; /* position: Bezug für den Punkt darunter */
+    width: var(--rail-day-size);
+    height: var(--rail-day-size);
+    border-radius: 50%;
+    font-size: 13px;
+    font-variant-numeric: tabular-nums; /* font-variant-numeric: Ziffern gleich breit, die Spalten bleiben gerade */
+    color: var(--text);
+  }
+
+  .rail-month-day.is-outside { color: var(--muted); }
+  .rail-month-day.is-today { font-weight: 700; }
+
+  .rail-month-day.is-selected {
+    background: var(--desk-ink);
+    color: var(--bg);
+  }
+
+  /* Punkt unter Tagen, an denen etwas steht */
+  .rail-month-day.has-entries::after {
+    content: "";
+    position: absolute; /* position: unter der Ziffer, ohne sie zu verschieben */
+    left: 50%;
+    bottom: 4px;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--avatar-btn-bg);
+    transform: translateX(-50%); /* transform: genau mittig unter der Ziffer */
+  }
+
+  .rail-month-day.is-selected.has-entries::after { background: var(--bg); }
+
+  /* ---------- Zeilen: gewählter Tag, zuletzt hinzugefügt ---------- */
+
+  .rail-day-list {
+    display: flex;
+    flex-direction: column;
+    margin: -4px 0;
+    list-style: none; /* list-style: Zeilen ohne Aufzählungspunkt */
+  }
+
+  .rail-day-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: calc(100% + 16px);
+    height: var(--rail-row-height);
+    margin: 0 -8px; /* margin: die Tönung unter der Maus reicht über den Text hinaus */
+    padding: 0 8px;
+    border-radius: var(--desk-item-radius);
+    font-size: 13px;
+    text-align: left;
+  }
+
+  .rail-day-row .icon {
+    flex: 0 0 auto; /* flex: das Icon schrumpft nie */
+    width: 16px;
+    height: 16px;
+    color: var(--muted);
+  }
+
+  .rail-day-time {
+    flex: 0 0 auto;
+    min-width: 38px;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums; /* font-variant-numeric: Uhrzeiten gleich breit */
+  }
+
+  .rail-day-row .rail-day-time:last-child { min-width: 0; }
+
+  .rail-day-title {
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden; /* overflow + text-overflow: zu lange Titel enden mit „…“ */
+    text-overflow: ellipsis;
+  }
+
+  /* ---------- Zahlen und Balken: Aufgaben, Medien ---------- */
+
+  .rail-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* grid-template-columns: zwei mal zwei Zahlen */
+    gap: 14px 12px;
+  }
+
+  .rail-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .rail-stat-num {
+    font-size: 26px;
+    font-weight: var(--desk-num-weight);
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums; /* font-variant-numeric: s. o. */
+  }
+
+  .rail-stat.is-late .rail-stat-num { color: var(--prio-jetzt); }
+
+  .rail-bars {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    list-style: none; /* list-style: s. o. */
+  }
+
+  .rail-bar-row {
+    display: grid;
+    grid-template-columns: 96px 1fr auto; /* grid-template-columns: Name, Balken, Zahl */
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+  }
+
+  .rail-bar {
+    height: var(--rail-bar-height);
+    border-radius: 999px;
+    /* background: gefüllter Anteil vorn, der Rest als ruhige Fläche */
+    background:
+      linear-gradient(to right, var(--tone, var(--avatar-btn-bg)) var(--share), transparent var(--share)),
+      var(--desk-chip-bg);
+  }
+
+  .rail-bar-num {
+    color: var(--muted);
+    font-variant-numeric: tabular-nums; /* font-variant-numeric: s. o. */
+  }
+
+  /* ---------- Suche: Vorschau ---------- */
+
+  .rail-preview {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .rail-preview-icon {
+    flex: 0 0 auto;
+    width: 22px;
+    height: 22px;
+    color: var(--muted);
+  }
+
+  .rail-preview-title {
+    min-width: 0;
+    font-size: 17px;
+    font-weight: 600;
+    overflow-wrap: anywhere; /* overflow-wrap: lange Wörter brechen statt die Karte zu sprengen */
+  }
+
+  .rail-facts {
+    display: grid;
+    grid-template-columns: auto 1fr; /* grid-template-columns: Angabe links, Wert rechts */
+    gap: 6px 14px;
+    font-size: 13px;
+  }
+
+  .rail-preview-text {
+    padding-top: 12px;
+    border-top: 0.5px solid var(--line);
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted);
+  }
+
+  /* ---------- Überfahren ---------- */
+
+  .rail-round:hover, .rail-day-row:hover, .rail-month-day:not(.is-selected):hover { background-color: var(--desk-hover); }
+
+  /* Der Treffer, den die Vorschau rechts zeigt */
+  .search-row.is-marked { background-color: var(--desk-hover); }
+}

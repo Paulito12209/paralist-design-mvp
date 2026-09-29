@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "9a9c51dc4f61";
+export const appVersion = "9676afb2380a";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -78,6 +78,7 @@ export const appFiles = [
   "src/features/calendar/calendar-grid.js",
   "src/features/calendar/calendar-list.js",
   "src/features/calendar/calendar-nav.js",
+  "src/features/calendar/calendar-rail.js",
   "src/features/calendar/calendar-rings.js",
   "src/features/calendar/calendar-state.js",
   "src/features/calendar/calendar-strip.js",
@@ -100,6 +101,7 @@ export const appFiles = [
   "src/features/entry/entry-tools.js",
   "src/features/entry/entry.js",
   "src/features/media/media-import.js",
+  "src/features/media/media-rail.js",
   "src/features/media/media.js",
   "src/features/media/viewer-menu.js",
   "src/features/media/viewer-nav.js",
@@ -133,6 +135,7 @@ export const appFiles = [
   "src/features/resources/resources.js",
   "src/features/search/search-data.js",
   "src/features/search/search-palette-data.js",
+  "src/features/search/search-rail.js",
   "src/features/search/search-tap.js",
   "src/features/search/search.js",
   "src/features/tasks/tasks-board.js",
@@ -141,6 +144,7 @@ export const appFiles = [
   "src/features/tasks/tasks-list.js",
   "src/features/tasks/tasks-panel.js",
   "src/features/tasks/tasks-parts.js",
+  "src/features/tasks/tasks-rail.js",
   "src/features/tasks/tasks-settings.js",
   "src/features/tasks/tasks-views.js",
   "src/features/tasks/tasks.js",
@@ -193,6 +197,7 @@ export const appFiles = [
   "src/ui/pill-input.js",
   "src/ui/pill-swipe.js",
   "src/ui/pull-search.js",
+  "src/ui/rail-parts.js",
   "src/ui/router.js",
   "src/ui/rows.js",
   "src/ui/sheet.js",
@@ -222,6 +227,7 @@ export const appFiles = [
   "styles/desk-nav.css",
   "styles/desk-overlays.css",
   "styles/desk-rail-tiles.css",
+  "styles/desk-rail-views.css",
   "styles/desk-rail.css",
   "styles/desk-views.css",
   "styles/desk.css",

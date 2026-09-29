@@ -356,6 +356,12 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   dem Eingabefeld zuerst nur die Palette); Tasten wie 1–4 oder G I landen im
   Feld. „Alle Ergebnisse“ oder Enter ohne Wahl öffnet die Suchseite — ohne
   Knöpfe „Suchen / Abbrechen“ unten. Browser-Zurück schließt die Palette mit.
+- Rechte Spalte (ab 1280 px) wechselt mit der Seite: Kalender zeigt den
+  kleinen Monat (Tag anklicken, Pfeile, „Heute“) und den gewählten Tag;
+  Aufgaben „Stand“, „Dringlichkeit“ und „Demnächst fällig“ (Haken abhaken);
+  Medien „Speicher“ und „Zuletzt hinzugefügt“; die Suche eine Vorschau des
+  Treffers unter der Maus mit „Öffnen“. Übersicht und alle anderen Seiten
+  behalten „Als Nächstes“, „Aufgaben“, „Zuletzt geöffnet“.
 
 **Immer**
 - `python3 tools/version.py` ausführen, dann meldet `python3 tools/check.py` „alles in Ordnung“.
