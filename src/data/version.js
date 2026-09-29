@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "9d3f5eceae65";
+export const appVersion = "8a3d8389017e";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -83,6 +83,7 @@ export const appFiles = [
   "src/features/calendar/calendar-rings.js",
   "src/features/calendar/calendar-state.js",
   "src/features/calendar/calendar-strip.js",
+  "src/features/calendar/calendar-week.js",
   "src/features/calendar/calendar.js",
   "src/features/composer/attachments.js",
   "src/features/composer/composer-defaults.js",
@@ -101,6 +102,7 @@ export const appFiles = [
   "src/features/entry/entry-title.js",
   "src/features/entry/entry-tools.js",
   "src/features/entry/entry.js",
+  "src/features/media/media-desk.js",
   "src/features/media/media-import.js",
   "src/features/media/media-rail.js",
   "src/features/media/media.js",
@@ -219,6 +221,7 @@ export const appFiles = [
   "styles/bookmarks.css",
   "styles/calendar-panel.css",
   "styles/calendar-rings.css",
+  "styles/calendar-week.css",
   "styles/calendar.css",
   "styles/composer-attachments.css",
   "styles/composer.css",
@@ -242,6 +245,7 @@ export const appFiles = [
   "styles/empty-state.css",
   "styles/entry-details.css",
   "styles/entry.css",
+  "styles/media-desk.css",
   "styles/media.css",
   "styles/milestones.css",
   "styles/modal-top.css",
@@ -265,6 +269,7 @@ export const appFiles = [
   "styles/swipe-rows.css",
   "styles/task-status.css",
   "styles/tasks-board.css",
+  "styles/tasks-desk.css",
   "styles/tasks-settings.css",
   "styles/tasks.css",
   "styles/toast.css",

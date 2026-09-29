@@ -1,6 +1,7 @@
 /*
  * Die Medien-Seite: Filter-Pillen oben, darunter das Kachelraster nach Monaten.
- * Waagerecht wischen wechselt die Pille (src/ui/pill-swipe.js).
+ * Waagerecht wischen wechselt die Pille (src/ui/pill-swipe.js). Am Desktop
+ * kommen rechts Raster | Liste und die Kachelgröße dazu (media-desk.js).
  * Wird erst beim ersten Öffnen nachgeladen.
  * Pfad: src/features/media/media.js
  *
@@ -24,7 +25,9 @@ import { saveState, state } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { mediaCell } from "../../ui/media-cell.js";
 import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
+import { onDeskChange } from "../../ui/desk-mode.js";
 import { isViewActive } from "../../ui/views.js";
+import { isMediaList, mediaListMarkup, mountMediaTools, renderMediaTools } from "./media-desk.js";
 import { bindMediaPicks, initMediaImport } from "./media-import.js";
 
 /* Platzhalter je Filter-Pille: Icon und Farbe passen zu der fehlenden Art. */
@@ -88,9 +91,9 @@ function renderFilters() {
 /* Das Raster: neueste zuerst, nach Monat gruppiert. */
 function renderGrid() {
   const active = state.prefs.media.filter;
-  const list = filtered(active);
+  const items = filtered(active);
 
-  if (!list.length) {
+  if (!items.length) {
     dom.mediaBody.innerHTML = emptyState({
       ...(emptyArt[active] || emptyArt.recent),
       action: emptyAction,
@@ -99,10 +102,14 @@ function renderGrid() {
     return;
   }
 
-  dom.mediaBody.innerHTML = groupByMonth(list)
+  /* Am Desktop wahlweise als Liste (media-desk.js) — gruppiert wird genauso. */
+  const list = isMediaList();
+  dom.mediaBody.innerHTML = groupByMonth(items)
     .map(
       (group) =>
-        `<h2 class="media-month">${group.heading}</h2><div class="media-grid">${group.items.map(mediaCell).join("")}</div>`
+        `<h2 class="media-month">${group.heading}</h2>${
+          list ? mediaListMarkup(group.items) : `<div class="media-grid">${group.items.map(mediaCell).join("")}</div>`
+        }`
     )
     .join("");
 }
@@ -127,6 +134,7 @@ function onCellClick(event) {
 /** Die ganze Seite neu zeichnen. */
 export function renderMedia() {
   renderFilters();
+  renderMediaTools();
   renderGrid();
 }
 
@@ -154,6 +162,11 @@ function init() {
   dom.mediaBody.addEventListener("click", onCellClick, true);
 
   initMediaImport(dom.mediaActions);
+  mountMediaTools(renderMedia);
+  /* Über die Breitengrenze gezogen: Liste wird Raster und umgekehrt. */
+  onDeskChange(() => {
+    if (isViewActive("media")) renderMedia();
+  });
   bindMediaPicks(dom.mediaBody);
 
   on(events.viewOpened, (name) => {

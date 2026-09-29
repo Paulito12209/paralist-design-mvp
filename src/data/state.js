@@ -48,8 +48,10 @@ export const state = {
   /* zuletzt getippte Suchbegriffe */
   recentSearches: [],
   prefs: {
-    calendar: { span: 1, mode: "grid", seg: "termine" },
-    media: { filter: "recent" },
+    /* deskView: Tag, Woche oder Monat am Desktop (src/features/calendar/calendar-week.js) */
+    calendar: { span: 1, mode: "grid", seg: "termine", deskView: "week" },
+    /* deskLayout und tileSize: Raster | Liste und Kachelbreite am Desktop (src/features/media/media-desk.js) */
+    media: { filter: "recent", deskLayout: "grid", tileSize: 150 },
     resources: { filter: "all" },
     /* Aufgaben-Seite: Ansicht, Gruppierung der Spalten, Sortierung und die Filter */
     /* Welche Sammlung ihren großen Kopf zeigt, z.B. { bookmarks: true }; fehlt = einfacher Titel */
