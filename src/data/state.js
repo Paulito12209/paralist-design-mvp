@@ -18,6 +18,7 @@ import {
   isTaskDone,
   mediaFilters,
   resourceFilters,
+  stageModes,
   taskDefaults,
   taskGroupings,
   taskLayouts,
@@ -54,6 +55,8 @@ export const state = {
     media: { filter: "recent", deskLayout: "grid", tileSize: 150 },
     resources: { filter: "all" },
     /* Aufgaben-Seite: Ansicht, Gruppierung der Spalten, Sortierung und die Filter */
+    /* Bühne der Übersicht am Desktop: welcher Modus gewählt ist (stageModes in config.js) */
+    dashboard: { stage: "opened" },
     /* Welche Sammlung ihren großen Kopf zeigt, z.B. { bookmarks: true }; fehlt = einfacher Titel */
     pageHeads: {},
   },
@@ -128,6 +131,7 @@ function snapshot() {
     calendar: state.prefs.calendar,
     media: state.prefs.media,
     resources: state.prefs.resources,
+    dashboard: state.prefs.dashboard,
     taskViews: state.taskViews,
     activeTaskViewId: state.activeTaskViewId,
     pageHeads: state.prefs.pageHeads,
@@ -252,6 +256,9 @@ function adoptPrefs(saved) {
   if (saved.resources && typeof saved.resources === "object") {
     state.prefs.resources = { ...state.prefs.resources, ...saved.resources };
   }
+  if (saved.dashboard && typeof saved.dashboard === "object") {
+    state.prefs.dashboard = { ...state.prefs.dashboard, ...saved.dashboard };
+  }
   if (saved.pageHeads && typeof saved.pageHeads === "object") {
     state.prefs.pageHeads = Object.fromEntries(Object.entries(saved.pageHeads).filter(([, on]) => on === true));
   }
@@ -261,6 +268,7 @@ function adoptPrefs(saved) {
   calendar.seg = pickValid(calendar.seg, calendarSegments.map((seg) => seg.id), "termine");
   state.prefs.media.filter = pickValid(state.prefs.media.filter, mediaFilters.map((item) => item.id), "recent");
   state.prefs.resources.filter = pickValid(state.prefs.resources.filter, resourceFilters.map((item) => item.id), "all");
+  state.prefs.dashboard.stage = pickValid(state.prefs.dashboard.stage, stageModes.map((item) => item.id), "opened");
 
   /* Ansichten der Aufgaben-Seite: die erste ist immer „Alle“ (fest,
      ungefiltert); jede Angabe fällt auf die Vorgabe zurück, wenn sie nichts

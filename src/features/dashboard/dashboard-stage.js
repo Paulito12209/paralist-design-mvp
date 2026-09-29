@@ -1,6 +1,8 @@
 /*
  * Die Bühne der Übersicht am Desktop — gebaut wie der Kopf von Apple Arcade:
- * groß die zuletzt geöffneten Seiten, eine nach der anderen. Links Art der
+ * groß die zuletzt erstellten, zuletzt geöffneten oder favorisierten Seiten,
+ * eine nach der anderen; welche, wählt der Schalter darüber (gemerkt in
+ * state.prefs.dashboard.stage). Links Art der
  * Seite, Titel, ein Satz und „Öffnen“, rechts ihr Cover im Farbton der Seite
  * mit leuchtender Umlaufbahn. Darunter die Punkte zum Blättern und eine Reihe
  * Kacheln mit dem, was mit der gezeigten Seite verknüpft ist — bei
@@ -19,6 +21,9 @@
  * swipeDistance -> wie weit man auf dem Trackpad waagerecht wischen muss, bis die Seite wechselt (Pixel)
  * swipePause    -> Ruhe nach einem Wechsel per Wischen, damit ein Schwung nicht mehrere Seiten weiterblättert (ms)
  * enterOrder    -> Platz von Bühne und Punkten beim Auftauchen, nach den vier Zahlen (0–3)
+ * welcomes      -> was die Bühne je Modus zeigt, solange sie leer ist: Art, Titel, Satz,
+ *                  Icon im Cover und die Pille darunter (ohne `action` keine Pille)
+ * stampLabels   -> das Wort vor der Zeit im Satz unter dem Titel („geöffnet 14:20“)
  * satellites    -> die Kugeln rund ums Cover der Willkommensseite: welche Kategorie (Icon und Farbe),
  *                  wo sie sitzt (x/y in Prozent der Fläche), wie groß (size in Pixel) und wann sie
  *                  im Schweben beginnt (delay in Sekunden)
@@ -29,10 +34,11 @@
 import { emit, events } from "../../core/bus.js";
 import { formatNumber, shortOpenTime } from "../../core/format.js";
 import { escapeHtml, icon } from "../../core/html.js";
-import { typeIcon, typeSingular, xpItems } from "../../data/config.js";
-import { recentPages } from "../../data/insights.js";
+import { stageModes, typeIcon, typeSingular, xpItems } from "../../data/config.js";
+import { stagePages } from "../../data/insights.js";
 import { canLink } from "../../data/links.js";
 import { entryColor, findEntry, workspaceColor, workspaceIcon, workspaceLabel } from "../../data/queries.js";
+import { saveState, state } from "../../data/state.js";
 import { openLinkSheet } from "../../ui/link-sheet.js";
 import { openEntry, openEntryOrFile, openTarget } from "../../ui/router.js";
 
@@ -41,6 +47,33 @@ const tileLimit = 7;
 const swipeDistance = 60;
 const swipePause = 600;
 const enterOrder = 4;
+
+/* Die leere Bühne je Modus: eine Einladung statt einer leeren Fläche. */
+const welcomes = {
+  created: {
+    kicker: "Willkommen",
+    title: "Hier erscheint, was du neu anlegst",
+    text: "Leg eine Seite an — die neueste steht hier vorn, samt allem, was mit ihr verknüpft ist.",
+    art: "layers",
+    action: "Neu anlegen",
+  },
+  opened: {
+    kicker: "Willkommen",
+    title: "Hier erscheint, woran du arbeitest",
+    text: "Öffne eine Seite — sie landet hier, samt allem, was mit ihr verknüpft ist.",
+    art: "layers",
+    action: "Neu anlegen",
+  },
+  favorites: {
+    kicker: "Favoriten",
+    title: "Hier stehen deine Favoriten",
+    text: "Markiere eine Seite mit dem Stern — sie bleibt hier griffbereit.",
+    art: "star-outline",
+  },
+};
+
+/* Favoriten nennen, wann man sie zuletzt geöffnet hat; nie geöffnete nur ihren Inhalt. */
+const stampLabels = { created: "erstellt", opened: "geöffnet", favorites: "geöffnet" };
 
 /*
  * Die Kategorien, die um das Cover der Willkommensseite kreisen — verschieden
@@ -62,7 +95,9 @@ const satellites = [
   { icon: "cube", x: 40, y: 93, size: 24, delay: 3.3 },
 ];
 
+let modes = null;
 let stage = null;
+let mode = "opened";
 let shelf = null;
 let pages = [];
 let index = 0;
@@ -129,6 +164,12 @@ function artMarkup(art, swarm = "") {
     </div>`;
 }
 
+/* „3 Einträge darin · erstellt 14:20“ — ohne Zeitpunkt nur der erste Teil. */
+function slideText(page) {
+  const stamp = page.ts ? ` · ${stampLabels[mode]} ${shortOpenTime(page.ts)}` : "";
+  return `${relatedSentence(page)}${stamp}`;
+}
+
 function slideMarkup(page, position, count) {
   const info = describe(page);
   return `
@@ -136,25 +177,36 @@ function slideMarkup(page, position, count) {
       <div class="showcase-copy">
         <p class="showcase-kicker">${info.kicker}</p>
         <h2 class="showcase-title">${info.title}</h2>
-        <p class="showcase-text">${relatedSentence(page)} · geöffnet ${shortOpenTime(page.ts)}</p>
+        <p class="showcase-text">${slideText(page)}</p>
         <button class="showcase-open" type="button" data-showcase-open="${position}">Öffnen</button>
       </div>
       ${artMarkup(info.art)}
     </article>`;
 }
 
-/* Noch nichts geöffnet: eine einladende Seite statt einer leeren Fläche. */
+/* Nichts da im gewählten Modus: eine einladende Seite statt einer leeren Fläche. */
 function welcomeMarkup() {
+  const copy = welcomes[mode];
+  const action = copy.action ? `<button class="showcase-open" type="button" data-showcase-new="1">${copy.action}</button>` : "";
   return `
     <article class="showcase-slide is-active" style="--showcase-accent: var(--avatar-btn-bg)">
       <div class="showcase-copy">
-        <p class="showcase-kicker">Willkommen</p>
-        <h2 class="showcase-title">Hier erscheint, woran du arbeitest</h2>
-        <p class="showcase-text">Öffne eine Seite — sie landet hier, samt allem, was mit ihr verknüpft ist.</p>
-        <button class="showcase-open" type="button" data-showcase-new="1">Neu anlegen</button>
+        <p class="showcase-kicker">${copy.kicker}</p>
+        <h2 class="showcase-title">${copy.title}</h2>
+        <p class="showcase-text">${copy.text}</p>
+        ${action}
       </div>
-      ${artMarkup(icon("layers"), satellites.map(satelliteMarkup).join(""))}
+      ${artMarkup(icon(copy.art), satellites.map(satelliteMarkup).join(""))}
     </article>`;
+}
+
+/* Die Knöpfe des Schalters über der Bühne — dieselbe Pille wie Liste | Board auf der Aufgaben-Seite. */
+function modesMarkup() {
+  return stageModes
+    .map(
+      (item) => `<button class="showcase-mode${item.id === mode ? " is-on" : ""}" type="button" data-showcase-mode="${item.id}" aria-pressed="${item.id === mode}">${escapeHtml(item.label)}</button>`
+    )
+    .join("");
 }
 
 /* Punkte zum Blättern und rechts daneben die beiden Pfeile. */
@@ -223,13 +275,16 @@ function select(position) {
 
 /**
  * Bühne und Reihe neu aufbauen.
- * @param reset true beim Öffnen der Übersicht: die zuletzt geöffnete Seite
- *   steht vorn. Sonst bleibt die gezeigte Seite stehen, wo sie war.
+ * @param reset true beim Öffnen der Übersicht und beim Wechsel des Modus:
+ *   die erste Seite des Modus steht vorn. Sonst bleibt die gezeigte Seite stehen, wo sie war.
  */
 export function renderStage(reset) {
   if (!stage) return;
   const shownKey = !reset && pages[index] ? describe(pages[index]).key : null;
-  pages = recentPages(slideLimit);
+  mode = state.prefs.dashboard.stage;
+  pages = stagePages(mode, slideLimit);
+  stage.setAttribute("aria-label", stageModes.find((item) => item.id === mode).label);
+  modes.innerHTML = modesMarkup();
   const kept = shownKey ? pages.findIndex((page) => describe(page).key === shownKey) : -1;
   stage.classList.toggle("is-single", pages.length < 2);
   shelf.hidden = !pages.length;
@@ -242,6 +297,14 @@ export function renderStage(reset) {
   select(Math.max(0, kept));
 }
 
+/* Einen Modus wählen und merken; die Bühne beginnt dann wieder bei ihrer ersten Seite. */
+function selectMode(id) {
+  if (id === mode) return;
+  state.prefs.dashboard.stage = id;
+  saveState();
+  renderStage(true);
+}
+
 function openPage(position) {
   const page = pages[position];
   if (!page) return;
@@ -251,10 +314,11 @@ function openPage(position) {
 
 /* Ein Klick-Empfänger für Bühne und Reihe; das Merkmal am Knopf sagt, was passiert. */
 function onClick(event) {
-  const target = event.target.closest("[data-showcase-open], [data-showcase-dot], [data-showcase-step], [data-showcase-entry], [data-showcase-link], [data-showcase-new]");
+  const target = event.target.closest("[data-showcase-open], [data-showcase-dot], [data-showcase-step], [data-showcase-entry], [data-showcase-link], [data-showcase-new], [data-showcase-mode]");
   if (!target) return;
   const data = target.dataset;
-  if (data.showcaseOpen !== undefined) openPage(Number(data.showcaseOpen));
+  if (data.showcaseMode !== undefined) selectMode(data.showcaseMode);
+  else if (data.showcaseOpen !== undefined) openPage(Number(data.showcaseOpen));
   else if (data.showcaseDot !== undefined) select(Number(data.showcaseDot));
   else if (data.showcaseStep !== undefined) select(index + Number(data.showcaseStep));
   else if (data.showcaseEntry !== undefined) openEntryOrFile(data.showcaseEntry);
@@ -282,20 +346,26 @@ function onWheel(event) {
 }
 
 /**
- * Bühne und Reihe ans Ende von `container` (dem Kopf der Übersicht) hängen und
- * die Zuhörer anmelden. Einmal. Aufgetaucht wird mit dem Kopf: dessen
+ * Schalter, Bühne und Reihe ans Ende von `container` (dem Kopf der Übersicht)
+ * hängen und die Zuhörer anmelden. Der Schalter bleibt stehen, wenn die Bühne
+ * neu gezeichnet wird — so taucht beim Umschalten nur die Bühne neu auf. Einmal. Aufgetaucht wird mit dem Kopf: dessen
  * .is-entering lässt die neu gesetzten Teile mit .dash-enter aufsteigen.
  */
 export function mountStage(container) {
   /* section: die Bühne ist ein eigener, benannter Bereich — Vorlesehilfen kündigen ihn als Karussell an */
+  modes = document.createElement("div");
+  modes.className = "showcase-modes dash-enter";
+  modes.style.setProperty("--i", enterOrder);
+  modes.setAttribute("role", "group");
+  modes.setAttribute("aria-label", "Was die Bühne zeigt");
   stage = document.createElement("section");
   stage.className = "showcase";
   stage.setAttribute("aria-roledescription", "Karussell");
-  stage.setAttribute("aria-label", "Zuletzt geöffnet");
   shelf = document.createElement("section");
   shelf.className = "showcase-shelf";
   shelf.setAttribute("aria-live", "polite");
-  container.append(stage, shelf);
+  container.append(modes, stage, shelf);
+  modes.addEventListener("click", onClick);
   stage.addEventListener("click", onClick);
   shelf.addEventListener("click", onClick);
   stage.addEventListener("keydown", onKeyDown);

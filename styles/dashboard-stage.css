@@ -1,6 +1,7 @@
 /*
  * Desktop: die Bühne der Übersicht — gebaut wie der Kopf von Apple Arcade.
- * Ohne Kartenrahmen: links Art, großer Titel, ein Satz und die Pille
+ * Darüber der Schalter „Zuletzt erstellt | Zuletzt geöffnet | Favorisiert“ in
+ * derselben Pille wie Liste | Board auf der Aufgaben-Seite. Ohne Kartenrahmen: links Art, großer Titel, ein Satz und die Pille
  * „Öffnen“, rechts das Cover der Seite in ihrem Farbton mit leuchtender
  * Umlaufbahn. Die Seiten liegen übereinander und blenden ineinander über.
  * Darunter die Punkte (der aktive wird lang) mit zwei Pfeilen; die Reihe der
@@ -21,7 +22,8 @@
  * --showcase-float-reach  -> wie weit sie dabei auf und ab treiben
  * Platz, Größe, Farbe und Startzeit jeder Kugel setzt das Skript (--sat-x, --sat-y,
  * --sat-size, --sat-color, --sat-delay; Liste `satellites` in dashboard-stage.js).
- * Einzelne Größen stehen bei ihrer Regel: Art 13px, Satz 15px, Pille 15px und
+ * Einzelne Größen stehen bei ihrer Regel: Schalter 13px Schrift und 16px Luft
+ * zur Bühne, Art 13px, Satz 15px, Pille 15px und
  * 44px hoch, Pfeile 32px, Rundung des Covers 26% der Kante (wie ein App-Icon).
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
@@ -29,6 +31,7 @@
  * --desk-chip-bg / --desk-edge / --desk-hover -> Pfeile, Haarlinie um das Cover, Tönung beim Überfahren
  * --desk-ease / --desk-fast -> Kurve und Dauer der kleinen Übergänge
  * --text / --bg / --muted / --avatar-btn-bg / --nav-glow-color -> Schrift, Grund, leise Schrift, Fokus-Ring, Punkte
+ * --tab-pill-active-bg / --tasks-seg-h -> Grund und Höhe des Schalters (wie Liste | Board, styles/tokens-pages.css)
  */
 
 @media (min-width: 1024px) {
@@ -65,6 +68,41 @@
     opacity: 1;
     visibility: visible;
     transition: opacity var(--showcase-fade) var(--desk-ease);
+  }
+
+  /* ---------- Schalter über der Bühne ---------- */
+
+  .showcase-modes {
+    display: inline-flex;
+    align-items: center;
+    margin-bottom: 16px;
+    padding: 2px;
+    border-radius: 999px; /* border-radius: macht aus den Knöpfen eine Pille */
+    background: var(--tab-pill-active-bg);
+  }
+
+  .showcase-mode {
+    height: calc(var(--tasks-seg-h) - 4px);
+    padding: 0 14px;
+    border-radius: 999px; /* border-radius: der gefüllte Knopf ist rund wie die Pille */
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background-color var(--desk-fast) var(--desk-ease), color var(--desk-fast) var(--desk-ease); /* transition: der Wechsel gleitet */
+  }
+
+  .showcase-mode.is-on {
+    background: var(--bg);
+    color: var(--text);
+  }
+
+  .showcase-mode:not(.is-on):hover {
+    color: var(--text);
+  }
+
+  .showcase-mode:active {
+    opacity: 0.55;
   }
 
   /* ---------- Links: Art, Titel, Satz, Pille ---------- */
@@ -285,6 +323,7 @@
     opacity: 0.6;
   }
 
+  .showcase-mode:focus-visible,
   .showcase :is(.showcase-open, .showcase-dot, .showcase-step):focus-visible {
     outline: 2px solid var(--avatar-btn-bg); /* outline: sichtbarer Ring nur bei Bedienung mit der Tastatur */
     outline-offset: 3px;

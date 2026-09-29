@@ -2,7 +2,8 @@
  * Kennzahlen für die Desktop-Fassung: die Zahlenreihe oben auf der Übersicht,
  * das Punkteband der letzten Wochen, der Termin, der als Nächstes kommt, die
  * dringendsten Aufgaben, was zuletzt geöffnet wurde und die Seiten der Bühne
- * auf der Übersicht samt ihren verknüpften Einträgen. Diese Datei liest nur —
+ * auf der Übersicht (zuletzt erstellt, zuletzt geöffnet oder favorisiert)
+ * samt ihren verknüpften Einträgen. Diese Datei liest nur —
  * sie ändert nichts und fasst die Seite nicht an.
  * Pfad: src/data/insights.js
  *
@@ -19,6 +20,7 @@
 import { MS_PER_DAY, dayKey, dayShift, parseDay, startOfDay } from "../core/dates.js";
 import { isTaskDone } from "./config.js";
 import { linkedEntries } from "./links.js";
+import { openStats } from "./opens.js";
 import {
   entriesOf,
   entriesOfDay,
@@ -176,19 +178,51 @@ function relatedOf(kind, item) {
   return { related: linkedEntries(item), linked: true };
 }
 
-/**
- * Die zuletzt geöffneten Seiten für die Bühne der Übersicht, die jüngste
- * zuerst: Einträge und Arbeitsbereiche gemischt, Archiviertes bleibt draußen.
- * @returns [{ kind: "entry"|"workspace", item, ts, related, linked }] — höchstens `limit` Stück.
- */
-export function recentPages(limit) {
+/* Die Quellen der Bühne liefern nur { kind, item, ts } — was dazugehört, rechnet
+   stagePages() erst für die paar Seiten, die wirklich auf die Bühne kommen. */
+const stageItem = (kind, item, ts) => ({ kind, item, ts });
+
+/* Die zuletzt geöffneten Seiten, die jüngste zuerst. */
+function openedPages() {
   return state.opens
     .filter((open) => open.kind === "entry" || open.kind === "workspace")
     .sort((a, b) => b.ts - a.ts)
-    .map((open) => {
-      const item = open.kind === "workspace" ? findWorkspace(open.id) : findEntry(open.id);
-      return item && !item.archived ? { kind: open.kind, item, ts: open.ts, ...relatedOf(open.kind, item) } : null;
-    })
-    .filter(Boolean)
-    .slice(0, limit);
+    .map((open) => stageItem(open.kind, open.kind === "workspace" ? findWorkspace(open.id) : findEntry(open.id), open.ts));
+}
+
+/* Die neuesten Seiten, die jüngste zuerst. Arbeitsbereiche aus der Zeit vor
+   `createdAt` haben kein Datum und bleiben hier draußen. */
+function createdPages() {
+  return state.entries
+    .map((entry) => stageItem("entry", entry, entry.createdAt))
+    .concat(state.workspaces.map((workspace) => stageItem("workspace", workspace, workspace.createdAt)))
+    .filter((found) => found.ts)
+    .sort((a, b) => b.ts - a.ts);
+}
+
+/* Die Favoriten, der zuletzt geöffnete zuerst; nie geöffnete dahinter nach Alter. */
+function favoritePages() {
+  const lastOpen = (kind, id) => openStats(kind, id)?.ts;
+  return state.workspaces
+    .filter((workspace) => workspace.favorite)
+    .map((workspace) => stageItem("workspace", workspace, lastOpen("workspace", workspace.id)))
+    .concat(state.entries.filter((entry) => entry.favorite).map((entry) => stageItem("entry", entry, lastOpen("entry", entry.id))))
+    .sort((a, b) => (b.ts || 0) - (a.ts || 0) || (b.item.createdAt || 0) - (a.item.createdAt || 0));
+}
+
+const stageSources = { opened: openedPages, created: createdPages, favorites: favoritePages };
+
+/**
+ * Die Seiten für die Bühne der Übersicht — Einträge und Arbeitsbereiche
+ * gemischt, Archiviertes bleibt draußen.
+ * @param mode  "opened" (zuletzt geöffnet), "created" (zuletzt erstellt) oder
+ *   "favorites" (favorisiert; `ts` ist dort das letzte Öffnen oder leer)
+ * @returns [{ kind: "entry"|"workspace", item, ts, related, linked }] — höchstens `limit` Stück.
+ */
+export function stagePages(mode, limit) {
+  const source = stageSources[mode] || openedPages;
+  return source()
+    .filter(({ item }) => item && !item.archived)
+    .slice(0, limit)
+    .map((found) => ({ ...found, ...relatedOf(found.kind, found.item) }));
 }

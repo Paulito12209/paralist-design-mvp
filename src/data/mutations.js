@@ -82,6 +82,8 @@ export function addWorkspace() {
     favorite: false,
     cover: false,
     body: "",
+    /* für „Zuletzt erstellt“ auf der Bühne der Übersicht */
+    createdAt: Date.now(),
     /* Punkte gibt es erst, wenn der Name steht */
     awarded: false,
   };

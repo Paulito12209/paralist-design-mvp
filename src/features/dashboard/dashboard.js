@@ -1,8 +1,8 @@
 /*
  * Kopf der Übersicht in der Desktop-Fassung: unter dem Titel „Übersicht“, der
  * allein steht, die vier großen Zahlen und darunter die Bühne mit den zuletzt
- * geöffneten Seiten samt der Reihe ihrer verknüpften Einträge
- * (dashboard-stage.js). Das Aktivitätsband und die Karten „Diese Woche“ und
+ * erstellten, zuletzt geöffneten oder favorisierten Seiten samt der Reihe
+ * ihrer verknüpften Einträge (dashboard-stage.js). Das Aktivitätsband und die Karten „Diese Woche“ und
  * „Serie“ stehen auf der Seite Fortschritt; die vier Sammlungs-Karten und die
  * Arbeitsbereiche blendet styles/desk-views.css aus — beides steht schon in
  * der Seitenleiste.
