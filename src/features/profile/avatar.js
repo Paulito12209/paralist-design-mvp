@@ -15,6 +15,7 @@
  * Größe der Anzeige steht in styles/profile.css (--profile-avatar-size).
  */
 
+import { emit, events } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { readJson, readText, storageKeys, writeJson, writeText } from "../../core/storage.js";
 
@@ -119,11 +120,13 @@ export function fileToPhoto(file) {
   });
 }
 
-/** Der runde Knopf oben rechts: Bild oder Standard-Icon. */
+/** Der runde Knopf oben rechts: Bild oder Standard-Icon. Meldet es weiter,
+    damit auch die Konto-Zeile der Seitenleiste das neue Bild zeigt. */
 export function renderProfileButton() {
   dom.profileBtn.innerHTML = photo
     ? `<img class="avatar-photo" src="${photo}" alt="">`
     : `<svg class="icon"><use href="#icon-profile"></use></svg>`;
+  emit(events.profileChanged);
 }
 
 /** Die große Ansicht des Bildes füllen. */

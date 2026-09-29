@@ -43,6 +43,9 @@ export const events = {
      Seite schon ganz oben steht: der Bereich stellt seinen Ausgangszustand
      her (Übersicht: erste Kartenseite, Kalender: wie „Heute“). */
   tabReselected: "tab:reselected",
+  /* Das Profilbild wurde neu gesetzt oder entfernt: alles, was es zeigt (die
+     Konto-Zeile unten in der Seitenleiste am Desktop), zeichnet sich neu. */
+  profileChanged: "profile:changed",
 };
 
 const listeners = new Map();

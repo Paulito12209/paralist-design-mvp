@@ -152,11 +152,14 @@ export function placeOptionsFor(entry = null) {
   return options;
 }
 
+/** Arbeitsbereiche eines Tabs, ohne die archivierten. */
+export function workspacesOfTab(tabId) {
+  return state.workspaces.filter((workspace) => !workspace.archived && sameId(workspace.tab, tabId));
+}
+
 /** Arbeitsbereiche des gerade gewählten Tabs. */
 export function tabWorkspaces() {
-  return state.workspaces.filter(
-    (workspace) => !workspace.archived && sameId(workspace.tab, state.activeTabId)
-  );
+  return workspacesOfTab(state.activeTabId);
 }
 
 /** Was im Archiv liegt: erst die Arbeitsbereiche, dann die Einträge. */

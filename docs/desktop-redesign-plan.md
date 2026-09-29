@@ -81,14 +81,14 @@ Von oben nach unten:
    Ressourcen, Lesezeichen, Archiv (blass, immer zuletzt). Heute fehlen
    Lesezeichen und Archiv am Desktop ganz — am Handy liegen sie auf der
    zweiten Kartenseite bzw. an der Pille unter den Arbeitsbereichen.
-   Planer, Personen und Tags kommen später als weitere Zeilen dazu; wird die
-   Liste lang, klappen die Gruppen ein und merken sich den Zustand.
+   Personen und Pläne stehen blass mit „Bald“ darunter, wie die Karten
+   „Demnächst verfügbar“ am Handy; Tags kommt später dazu.
 5. **Arbeitsbereiche, nach Tabs gruppiert.** Jeder Tab ist eine auf- und
    zuklappbare Gruppe wie die Abschnitte in der Codex-Seitenleiste: Kopf mit
    Pfeil und Name („Meine ▾“), darunter eingerückt seine Arbeitsbereiche. Alle
    Tabs sind auf einmal sichtbar, nichts muss gewechselt werden, darum braucht
    es kein Kürzel. Zugeklappt zeigt der Kopf die Zahl seiner Arbeitsbereiche;
-   der Zustand wird gemerkt (`ui.collapsedTabs`). Das Plus am Kopf legt einen
+   der Zustand wird gemerkt (`storageKeys.deskGroups`). Das Plus am Kopf legt einen
    Arbeitsbereich in diesem Tab an, Rechtsklick auf den Kopf gibt Umbenennen,
    Icon, Verschieben und Löschen (dasselbe Menü wie die Tab-Pille am Handy).
    „+ Tab“ neben der Überschrift legt eine neue Gruppe an. Am Handy bleiben
@@ -241,14 +241,20 @@ davon steht als nackte Zahl in einer Stil-Datei.
 Jeder Schritt ist für sich lauffähig, wird geprüft (`tools/version.py`,
 `tools/check.py`, Browser) und einzeln committet.
 
-1. **Gerüst** — `styles/desk.css`: Raster `nav | top | rail`; Reiterzeile mit
-   `‹ ›`, den vier Reitern und den Seitenwerkzeugen über der Mitte
-   (`src/shell/desk-tabs.js`, `styles/desk-tabs.css`). Level-Ring und
-   Profil-Knopf oben aus. `src/shell/desk-nav-parts.js`: Klapp-Knopf, Suchfeld,
-   alle sechs Sammlungen, Fuß mit Stufe und Profil; Tipp-Karte raus.
-   Neue Dateien `styles/desk-nav-foot.css`, Kürzel-Schilder in Blau in
-   `styles/desk-nav-tip.css`. Verlauf vorwärts: `src/ui/router.js` bekommt
-   `goForward()` neben dem bestehenden Zurück.
+1. **Gerüst** — *umgesetzt.* Raster in `styles/desk.css` mit den Bereichen
+   `brand | top` / `bar | main | rail` / `nav | main | rail`, Zuklappen über
+   `.is-nav-closed` (Spalte gleitet auf 0, Stand im Browser gemerkt).
+   Wortmarke, Klapp-Knopf und Reiterzeile in `src/shell/desk-head.js` und
+   `styles/desk-head.css`. Seitenleiste in `src/shell/desk-nav-parts.js` und
+   `src/shell/desk-nav.js`: „Neu“, alle sechs Sammlungen, „Personen“ und
+   „Pläne“ als „Bald“ (dieselben Karten wie „Demnächst verfügbar“ am Handy),
+   Tab-Gruppen (zugeklappte unter `storageKeys.deskGroups`), Fuß mit Stufe und
+   Konto in `styles/desk-nav-foot.css`. Ziele und Tasten an einer Stelle in
+   `src/shell/desk-links.js`; Kürzel in `src/shell/desk.js`; blaue Schilder in
+   `styles/desk-kbd.css` (ersetzt die Tipp-Karte). Kontodaten liegen jetzt in
+   `src/data/account.js`, `goForward()` im Router. Übergang bis Schritt 2:
+   Suche bei zugeklappter Leiste klappt sie wieder auf. Übergang bis Schritt 7:
+   Unterseiten zeigen noch ihren eigenen Zurück-Pfeil unter der Reiterzeile.
 2. **Suche** — neue Datei `src/shell/search-palette.js`: Dialog in der Mitte
    mit Feld und Gruppen (nutzt `src/features/search/search-data.js` über
    `load("search")`); `styles/search.css`: keine Pillen unten.

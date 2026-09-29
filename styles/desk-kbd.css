@@ -1,0 +1,77 @@
+/*
+ * Desktop: die Tasten-Schilder — „1“ bis „4“ an den Reitern, „N“ im Knopf
+ * „Neu“, „G I“ an den Sammlungen, „⌘K“ im Suchfeld, „⌘,“ am Konto — und das
+ * ruhige Auftauchen der Blöcke der Seitenleiste beim ersten Zeigen. Alle
+ * Schilder tragen dieselbe Tönung des Verknüpfen-Blaus, damit man sie als
+ * eine Familie liest und nicht mit Zahlen wie „4 im Eingang“ verwechselt.
+ * Gilt erst ab 1024px Fensterbreite.
+ * Pfad: styles/desk-kbd.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-kbd)
+ * -----------------------------------
+ * --kbd-height -> Höhe eines Schilds
+ * --kbd-pad    -> Innenrand links und rechts (ein Akkord wie „G I“ wird dadurch breiter, nicht höher)
+ * Einzelne Größen stehen bei ihrer Regel: Schrift der Schilder 11px, Rundung 6px.
+ *
+ * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * --desk-kbd-bg / --desk-kbd-fg -> Fläche und Schrift der Schilder (hell und dunkel eigene Mischung)
+ * --desk-chip-bg / --muted -> graues Schild „Bald“ an Sammlungen, die noch kommen
+ * --bg         -> Schild „N“ auf dem dunklen Knopf „Neu“
+ * --desk-enter / --desk-enter-rise / --desk-enter-step / --desk-ease -> Dauer, Tiefe,
+ *                 Staffelung und Kurve beim Auftauchen der Blöcke
+ * --i          -> Reihenfolge beim Auftauchen; setzt src/shell/desk-nav-parts.js je Block
+ */
+
+@media (min-width: 1024px) {
+  .desk-kbd {
+    --kbd-height: 20px;
+    --kbd-pad: 6px;
+
+    display: inline-grid;
+    place-items: center;
+    flex: 0 0 auto; /* flex: das Schild schrumpft nie, der Name davor weicht */
+    min-width: var(--kbd-height);
+    height: var(--kbd-height);
+    padding: 0 var(--kbd-pad);
+    border-radius: 6px;
+    background: var(--desk-kbd-bg);
+    font-family: inherit; /* font-family: kbd nähme sonst die Schreibmaschinenschrift des Browsers */
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    white-space: nowrap; /* white-space: „G I“ und „Strg K“ bleiben in einer Zeile */
+    color: var(--desk-kbd-fg);
+  }
+
+  /* Das Schild „N“ im dunklen Knopf „Neu“ */
+  .desk-kbd-inverse {
+    margin-left: auto; /* margin-left: schiebt das Schild an das rechte Ende der Pille */
+    background: color-mix(in srgb, var(--bg) 18%, transparent); /* color-mix: ein Hauch der hellen Grundfarbe auf der dunklen Fläche, kein neuer Farbton */
+    color: var(--bg);
+  }
+
+  /* „Bald“ an Sammlungen, die noch nicht gehen: grau statt blau */
+  .desk-kbd-soon {
+    background: var(--desk-chip-bg);
+    color: var(--muted);
+  }
+
+  /* ---------- Auftauchen ---------- */
+
+  /* Nur die festen Blöcke tauchen auf — sie entstehen ein einziges Mal. Die
+     Listen darin werden bei Änderungen neu gesetzt und dürfen nicht flackern. */
+  @media (prefers-reduced-motion: no-preference) {
+    .desk-nav-block {
+      animation: desk-nav-rise var(--desk-enter) var(--desk-ease) both; /* animation: die Leiste baut sich ruhig von oben nach unten auf */
+      animation-delay: calc(var(--i, 0) * var(--desk-enter-step)); /* animation-delay: jeder Block ein wenig nach dem vorigen */
+    }
+
+    @keyframes desk-nav-rise {
+      from {
+        opacity: 0;
+        transform: translateY(var(--desk-enter-rise)); /* transform: jeder Block kommt ein Stück von unten */
+      }
+    }
+  }
+}

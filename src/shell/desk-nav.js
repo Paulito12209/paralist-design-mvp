@@ -1,77 +1,52 @@
 /*
- * Die Seitenleiste am Desktop: oben die vier Hauptseiten und der Knopf
- * „Neu anlegen“, darunter die Sammlungen und die Arbeitsbereiche des gewählten
- * Tabs, am Ende eine Tipp-Karte zu den Tastenkürzeln (sie rollt mit und
- * verdeckt so nie die Arbeitsbereiche). Sie ersetzt am Desktop die
- * Navigationsleiste unten. Eingehängt und aufgefrischt wird sie von
- * src/shell/desk.js; das Markup steht in src/shell/desk-nav-parts.js.
+ * Die Seitenleiste am Desktop: oben „Neu“, darunter die Sammlungen und die
+ * Arbeitsbereiche — jeder Tab eine eigene Gruppe zum Auf- und Zuklappen —,
+ * unten fest Stufe und Konto. Die vier Reiter stehen nicht hier, sondern in
+ * der Reiterzeile (src/shell/desk-head.js). Eingehängt und aufgefrischt wird
+ * die Leiste von src/shell/desk.js; das Markup steht in src/shell/desk-nav-parts.js.
  * Pfad: src/shell/desk-nav.js
  *
- * ANPASSBARE WERTE IN DIESER DATEI
- * -----------------------------------
- * tipStorageKey -> unter welchem Namen sich der Browser merkt, dass die
- *                  Tipp-Karte weggeklickt wurde (löscht man ihn, ist sie wieder da)
- * tipDismissed  -> der Wert, der dort dann steht
- *
- * Aussehen, Abstände und Größen stehen in styles/desk-nav.css, die der
- * Tasten-Schilder und der Tipp-Karte in styles/desk-nav-tip.css.
+ * Keine anpassbaren visuellen Werte: Aussehen, Abstände und Größen stehen in
+ * styles/desk-nav.css und styles/desk-nav-foot.css. Welche Tab-Gruppen
+ * zugeklappt sind, merkt sich der Browser unter storageKeys.deskGroups.
  */
 
 import { emit, events, on } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { formatNumber } from "../core/format.js";
 import { sameId } from "../core/ids.js";
-import { readText, writeText } from "../core/storage.js";
+import { load } from "../core/lazy.js";
+import { readJson, storageKeys, writeJson } from "../core/storage.js";
 import { overviewPages } from "../data/config.js";
-import { deskStats } from "../data/insights.js";
-import { addWorkspace, selectTab } from "../data/mutations.js";
+import { addTab, addWorkspace, selectTab } from "../data/mutations.js";
 import { findWorkspace, pageCount } from "../data/queries.js";
 import { state, ui } from "../data/state.js";
-import { openTarget, restoreFrom, showTab } from "../ui/router.js";
+import { openArchive, openBookmarks, openTarget, restoreFrom, showTab } from "../ui/router.js";
 import { isViewActive } from "../ui/views.js";
-import { activeTargets, pageLinks, skeletonMarkup, tabsMarkup, workspaceRowsMarkup } from "./desk-nav-parts.js";
-
-const tipStorageKey = "paralist-desk-tip";
-const tipDismissed = "1";
+import { collectionLinks } from "./desk-links.js";
+import { activeTargets, footMarkup, skeletonMarkup, tabGroupsMarkup } from "./desk-nav-parts.js";
 
 /* Die Seitenleiste selbst und ihre Teile — einmal beim Einhängen gesucht. */
 let root = null;
 let parts = null;
-let tipHidden = false;
-/* Von src/main.js über src/shell/desk.js hereingegeben: das Menü eines Arbeitsbereichs. */
-let menus = { openWorkspaceMenu: null };
+/* Von src/main.js über src/shell/desk.js hereingegeben. */
+let handlers = { openWorkspaceMenu: null, openTabMenu: null, profilePhoto: () => "" };
 /* Zuletzt geschriebenes Markup je Behälter: Gleiches wird nicht neu gesetzt. */
 const lastMarkup = new Map();
-/* Arbeitsbereich, dessen Menü gerade aus der Seitenleiste geöffnet wurde. */
-let menuWorkspaceId = null;
+/* Arbeitsbereich oder Tab, dessen Menü gerade aus der Seitenleiste geöffnet wurde. */
+let menuSource = null;
+/* Die zugeklappten Tab-Gruppen, als Text-Ids. */
+let closedGroups = [];
 
-function isTipStoredAway() {
-  return readText(tipStorageKey) === tipDismissed;
-}
-
-/* Die festen Teile einmal suchen, damit das Auffrischen nicht jedes Mal sucht. */
 function collectParts() {
   return {
-    pages: pageLinks.map((link) => {
-      const row = root.querySelector(`[data-nav-page="${link.tab}"]`);
+    collections: collectionLinks.map((link) => {
+      const row = root.querySelector(`[data-nav-collection="${link.id}"]`);
       return { link, row, count: row.querySelector(".desk-nav-count") };
     }),
-    collections: Object.entries(overviewPages).map(([id, page]) => {
-      const row = root.querySelector(`[data-nav-overview="${id}"]`);
-      return { id, page, row, badge: row.querySelector(".desk-nav-badge") };
-    }),
-    tabs: root.querySelector('[data-nav-slot="tabs"]'),
     spaces: root.querySelector('[data-nav-slot="spaces"]'),
-    tip: root.querySelector('[data-nav-slot="tip"]'),
-    newButton: root.querySelector("[data-nav-new]"),
+    foot: root.querySelector('[data-nav-slot="foot"]'),
   };
-}
-
-/* Eine Zahl rechts in der Zeile; eine 0 wird gar nicht erst gezeigt. */
-function setCount(node, value) {
-  const text = value ? formatNumber(value) : "";
-  if (node.textContent !== text) node.textContent = text;
-  node.hidden = !value;
 }
 
 function setActive(row, chosen) {
@@ -82,17 +57,17 @@ function setActive(row, chosen) {
 
 /* Selektor, der nach dem Neuzeichnen denselben Knopf wiederfindet. */
 function focusSelector(node) {
-  const button = node.closest("[data-open-workspace], [data-nav-tab-id]");
+  const button = node.closest("[data-open-workspace], [data-nav-tab-toggle], [data-nav-add-workspace], [data-nav-level], [data-nav-profile]");
   if (!button) return "";
-  if (button.dataset.openWorkspace) return `[data-open-workspace="${CSS.escape(button.dataset.openWorkspace)}"]`;
-  return `[data-nav-tab-id="${CSS.escape(button.dataset.navTabId)}"]`;
+  const attribute = ["openWorkspace", "navTabToggle", "navAddWorkspace", "navLevel", "navProfile"].find((key) => button.dataset[key]);
+  const name = attribute.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
+  return `[data-${name}="${CSS.escape(button.dataset[attribute])}"]`;
 }
 
 /*
  * Markup nur tauschen, wenn es sich wirklich geändert hat — sonst flackerte
  * die Leiste bei jedem Seitenwechsel. Stand die Tastatur-Auswahl in diesem
- * Teil, bekommt derselbe Knopf sie danach zurück: Wer mit Tab durch die
- * Leiste geht, verliert beim Auffrischen nicht seinen Platz.
+ * Teil, bekommt derselbe Knopf sie danach zurück.
  */
 function swapMarkup(container, html) {
   if (lastMarkup.get(container) === html) return;
@@ -105,102 +80,112 @@ function swapMarkup(container, html) {
 }
 
 /*
- * Ein neuer Arbeitsbereich wird in der Liste der Übersicht benannt — nur
- * dort gibt es das Namensfeld (src/ui/rows.js, nur bei offener Übersicht).
- * Darum erst dorthin wechseln, dann anlegen: addWorkspace() meldet die
- * Änderung, die Liste zeichnet sich neu und das Namensfeld bekommt den Fokus
- * (src/features/overview/workspaces.js) — genau wie beim Ordner-Plus dort.
+ * Ein neuer Arbeitsbereich oder Tab wird auf der Übersicht benannt — nur
+ * dort gibt es das Namensfeld. Darum erst dorthin wechseln, dann anlegen:
+ * die Liste zeichnet sich neu und das Feld bekommt den Fokus.
  */
-function addWorkspaceFromNav() {
+function addWorkspaceIn(tabId) {
+  closedGroups = closedGroups.filter((id) => id !== tabId);
+  writeJson(storageKeys.deskGroups, closedGroups);
+  if (!sameId(tabId, state.activeTabId)) selectTab(tabId);
   if (!isViewActive("home")) showTab("home");
   addWorkspace();
 }
 
-/* Eine schon offene Seite noch einmal wählen rollt nur nach oben — wie
-   showTab() es für die Hauptseiten tut, statt einen doppelten Verlaufsschritt. */
-function openOrScroll(row, open) {
-  if (row.classList.contains("is-active")) {
+function addTabFromNav() {
+  if (!isViewActive("home")) showTab("home");
+  addTab();
+}
+
+function toggleGroup(tabId) {
+  closedGroups = closedGroups.includes(tabId) ? closedGroups.filter((id) => id !== tabId) : [...closedGroups, tabId];
+  writeJson(storageKeys.deskGroups, closedGroups);
+  renderDeskNav();
+}
+
+/**
+ * Eine Sammlung öffnen — auch über das Kürzel „G“ und Buchstabe. Ist sie
+ * schon offen, rollt die Seite nur nach oben, statt einen doppelten Schritt
+ * in den Verlauf zu legen.
+ */
+export function openCollection(id) {
+  const link = collectionLinks.find((item) => item.id === id);
+  if (!link) return;
+  if (activeTargets().collection === id) {
     dom.content.scrollTo({ top: 0, behavior: "smooth" });
     return;
   }
-  open();
+  if (link.target === "bookmarks") openBookmarks();
+  else if (link.target === "archive") openArchive("all");
+  else openTarget("overview", link.overview);
 }
 
-function dismissTip() {
-  const hadFocus = parts.tip.contains(document.activeElement);
-  writeText(tipStorageKey, tipDismissed);
-  tipHidden = true;
-  parts.tip.hidden = true;
-  /* Der Schließen-Knopf ist weg: die Tastatur-Auswahl landet auf „Neu anlegen“
-     statt irgendwo am Anfang der Seite. */
-  if (hadFocus) parts.newButton.focus();
+function openWorkspace(row) {
+  if (row.classList.contains("is-active")) dom.content.scrollTo({ top: 0, behavior: "smooth" });
+  else openTarget("workspace", row.dataset.openWorkspace);
 }
+
+/* Jeder Knopf der Leiste trägt genau ein data-Merkmal; das erste passende gewinnt. */
+const clickActions = [
+  ["[data-nav-new]", () => emit(events.createRequested)],
+  ["[data-nav-collection]", (node) => openCollection(node.dataset.navCollection)],
+  ["[data-nav-add-tab]", addTabFromNav],
+  ["[data-nav-add-workspace]", (node) => addWorkspaceIn(node.dataset.navAddWorkspace)],
+  ["[data-nav-tab-toggle]", (node) => toggleGroup(node.dataset.navTabToggle)],
+  ["[data-open-workspace]", openWorkspace],
+  ["[data-nav-level]", () => load("progress").then((module) => module.open())],
+  ["[data-nav-profile]", () => load("profile").then((module) => module.open())],
+];
 
 function onClick(event) {
-  const target = event.target;
   /* Jeder Klick hier bedeutet: ein Menü aus der Leiste ist nicht mehr offen. */
-  menuWorkspaceId = null;
-
-  const page = target.closest("[data-nav-page]");
-  if (page) {
-    showTab(page.dataset.navPage);
-    return;
+  menuSource = null;
+  for (const [selector, action] of clickActions) {
+    const node = event.target.closest(selector);
+    if (node) {
+      action(node);
+      return;
+    }
   }
-  if (target.closest("[data-nav-new]")) {
-    emit(events.createRequested);
-    return;
-  }
-  const collection = target.closest("[data-nav-overview]");
-  if (collection) {
-    openOrScroll(collection, () => openTarget("overview", collection.dataset.navOverview));
-    return;
-  }
-  if (target.closest("[data-nav-add-workspace]")) {
-    addWorkspaceFromNav();
-    return;
-  }
-  const tabPill = target.closest("[data-nav-tab-id]");
-  if (tabPill) {
-    if (!sameId(tabPill.dataset.navTabId, state.activeTabId)) selectTab(tabPill.dataset.navTabId);
-    return;
-  }
-  const space = target.closest("[data-open-workspace]");
-  if (space) {
-    openOrScroll(space, () => openTarget("workspace", space.dataset.openWorkspace));
-    return;
-  }
-  if (target.closest("[data-tip-close]")) dismissTip();
 }
 
-/* Rechtsklick auf einen Arbeitsbereich öffnet dasselbe Menü wie auf der Übersicht. */
+/* Rechtsklick: auf einem Arbeitsbereich sein Menü, auf einem Gruppenkopf das des Tabs. */
 function onContextMenu(event) {
   const space = event.target.closest("[data-open-workspace]");
-  if (!space || !menus.openWorkspaceMenu) return;
-  event.preventDefault();
-  menuWorkspaceId = space.dataset.openWorkspace;
-  menus.openWorkspaceMenu(space);
+  if (space && handlers.openWorkspaceMenu) {
+    event.preventDefault();
+    menuSource = { kind: "workspace", id: space.dataset.openWorkspace };
+    handlers.openWorkspaceMenu(space);
+    return;
+  }
+  const head = event.target.closest("[data-nav-tab-toggle]");
+  if (head && handlers.openTabMenu) {
+    event.preventDefault();
+    menuSource = { kind: "tab", id: head.dataset.navTabToggle };
+    handlers.openTabMenu(head);
+  }
 }
 
 /*
- * Nach einer Wahl im Menü, das aus der Seitenleiste kam. Das Menü selbst ist
- * für die Liste der Übersicht gebaut; zwei Fälle brauchen hier einen Schritt mehr:
- * - „Umbenennen“: das Namensfeld gibt es nur in der Liste der Übersicht —
- *   also dorthin wechseln; sie zeichnet sich dabei mit dem Feld neu.
+ * Nach einer Wahl im Menü, das aus der Seitenleiste kam. Die Menüs sind für
+ * die Übersicht gebaut; zwei Fälle brauchen hier einen Schritt mehr:
+ * - „Umbenennen“: das Namensfeld gibt es nur auf der Übersicht — also dorthin.
  * - „Archivieren“ oder „Löschen“ des gerade offenen Arbeitsbereichs: seine
- *   Seite gibt es nicht mehr — zurück, woher man kam, wie beim Seitenmenü
- *   (src/features/overview/page.js).
+ *   Seite gibt es nicht mehr — zurück, woher man kam.
  */
 function followNavMenu() {
-  const id = menuWorkspaceId;
-  if (id === null) return;
-  menuWorkspaceId = null;
+  const source = menuSource;
+  if (!source) return;
+  menuSource = null;
 
-  if (sameId(ui.editingWorkspaceId, id)) {
+  const renaming = source.kind === "tab" ? sameId(ui.editingTabId, source.id) : sameId(ui.editingWorkspaceId, source.id);
+  if (renaming) {
     if (!isViewActive("home")) showTab("home");
     return;
   }
-  const workspace = findWorkspace(id);
-  const isOpen = isViewActive("page") && ui.currentPage && sameId(ui.currentPage.workspaceId, id);
+  if (source.kind !== "workspace") return;
+  const workspace = findWorkspace(source.id);
+  const isOpen = isViewActive("page") && ui.currentPage && sameId(ui.currentPage.workspaceId, source.id);
   if (isOpen && (!workspace || workspace.archived)) restoreFrom(ui.sourceView);
 }
 
@@ -208,14 +193,14 @@ function followNavMenu() {
  * Das feste Gerüst einmal in die Seitenleiste schreiben und die Klicks
  * anmelden (ein Empfänger für die ganze Leiste). Weitere Aufrufe tun nichts.
  * @param target   das <aside class="desk-nav"> aus src/shell/desk.js
- * @param handlers { openWorkspaceMenu } aus den Seiten, von src/main.js hereingegeben
+ * @param given    { openWorkspaceMenu, openTabMenu, profilePhoto } von src/main.js
  */
-export function mountDeskNav(target, handlers = {}) {
+export function mountDeskNav(target, given = {}) {
   if (root) return;
   root = target;
-  menus = { ...menus, ...handlers };
-  tipHidden = isTipStoredAway();
-  root.innerHTML = skeletonMarkup(tipHidden);
+  handlers = { ...handlers, ...given };
+  closedGroups = readJson(storageKeys.deskGroups, []).map(String);
+  root.innerHTML = skeletonMarkup();
   parts = collectParts();
 
   root.addEventListener("click", onClick);
@@ -226,31 +211,24 @@ export function mountDeskNav(target, handlers = {}) {
 }
 
 /**
- * Zahlen, gewählte Zeile, Tab-Pillen und Arbeitsbereiche auffrischen. Billig
- * genug für jeden Seitenwechsel: die festen Zeilen werden nur umgeschaltet,
- * und die beiden Listen nur neu gesetzt, wenn sich ihr Inhalt geändert hat.
- * Nimmt niemandem den Fokus weg.
+ * Zahlen, gewählte Zeile, Tab-Gruppen und Fuß auffrischen. Billig genug für
+ * jeden Seitenwechsel: die festen Zeilen werden nur umgeschaltet, alles
+ * andere nur neu gesetzt, wenn sich sein Inhalt geändert hat.
  */
 export function renderDeskNav() {
   if (!root) return;
   const active = activeTargets();
-  const stats = deskStats();
 
-  parts.pages.forEach(({ link, row, count }) => {
-    const value = link.count ? link.count(stats) : 0;
-    setCount(count, value);
-    row.setAttribute("aria-label", value ? `${link.label}, ${link.spoken(value)}` : link.label);
-    setActive(row, link.tab === active.tab);
+  parts.collections.forEach(({ link, row, count }) => {
+    setActive(row, link.id === active.collection);
+    if (!count) return;
+    const value = pageCount(overviewPages[link.overview]);
+    const text = value ? formatNumber(value) : "";
+    if (count.textContent !== text) count.textContent = text;
+    count.hidden = !value;
+    row.setAttribute("aria-label", value ? `${link.title}, ${value === 1 ? "1 Eintrag" : `${value} Einträge`}` : link.title);
   });
 
-  parts.collections.forEach(({ id, page, row, badge }) => {
-    const value = pageCount(page);
-    setCount(badge, value);
-    row.setAttribute("aria-label", `${page.title}, ${value === 1 ? "1 Eintrag" : `${value} Einträge`}`);
-    setActive(row, sameId(id, active.collection));
-  });
-
-  swapMarkup(parts.tabs, tabsMarkup());
-  swapMarkup(parts.spaces, workspaceRowsMarkup(active.workspace));
-  parts.tip.hidden = tipHidden;
+  swapMarkup(parts.spaces, tabGroupsMarkup(closedGroups, active.workspace));
+  swapMarkup(parts.foot, footMarkup(handlers.profilePhoto()));
 }
