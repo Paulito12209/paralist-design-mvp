@@ -1,0 +1,120 @@
+/*
+ * Desktop: Fortschritt als Seite statt als Dialog — wie das Profil
+ * (styles/desk-settings.css). Oben links der Titel wie jeder Seitentitel,
+ * darunter die Karten „Diese Woche“ und „Serie“ in ruhiger Höhe, das
+ * Aktivitätsband und die Karten des Blatts (Ring, Meilensteine, Verlauf,
+ * Stufen, Historie) in zwei Spalten. Die Meilensteine bleiben eine Spalte.
+ * Kopf mit Karten und Band: src/features/progress/progress-desk.js.
+ * Gilt erst ab 1024px Fensterbreite.
+ * Pfad: styles/desk-progress.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (oben bei #progress)
+ * -----------------------------------
+ * --progress-gap        -> Fuge zwischen den Karten
+ * --progress-card-pad   -> Innenrand der Karten des Blatts
+ * --progress-side       -> Rand, der den Inhalt mittig auf der größten Breite hält (nicht verstellen)
+ * --dash-gap-band      -> Luft zwischen den zwei Karten und dem Band (styles/dashboard.css)
+ * Auf .progress-hero neu gesetzt (Grundwerte in styles/dashboard.css und tokens-desk.css):
+ * --dash-card-height    -> Höhe der Karten „Diese Woche“ und „Serie“ — hier bewusst niedrig
+ * --desk-hero-num-size  -> größte Größe der Zahl darin
+ * Einzelne Größen stehen bei ihrer Regel: Titel 34px.
+ *
+ * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * --desk-wide-width / --desk-gutter / --content-top -> größte Breite, Seitenrand und Luft oben
+ * --desk-panel / --desk-panel-strong / --desk-radius -> Fläche und Rundung der Karten, gewählte Zeile „Stufe“ links
+ * --bg -> Grund der Seite
+ */
+
+@media (min-width: 1024px) {
+  /* #progress: das Blatt wird Seite und deckt nur die Mitte, nicht Seitenleiste und Reiterzeile */
+  .device #progress {
+    --progress-gap: 16px;
+    --progress-card-pad: 22px;
+    --progress-side: max(0px, calc((100% - var(--desk-wide-width)) / 2));
+    grid-area: main; /* grid-area: s. o. */
+    z-index: 15; /* z-index: wie das Profil — über der Seite, unter Eingabefeld und Dialogen */
+    padding: 0;
+    background: var(--bg);
+    -webkit-backdrop-filter: none; /* backdrop-filter: eine Seite verwischt nichts */
+    backdrop-filter: none;
+    animation: none; /* animation: eine Seite taucht nicht auf, sie ist da */
+  }
+
+  .device #progress .modal {
+    display: grid;
+    grid-template-rows: auto minmax(0, 1fr); /* grid-template-rows: Kopf | Inhalt rollt */
+    width: 100%;
+    height: 100%;
+    padding: 0 var(--desk-gutter);
+    border: 0;
+    border-radius: 0;
+    background: var(--bg);
+    animation: none; /* animation: s. o. */
+  }
+
+  /* Kopf: Titel links wie jeder Seitentitel, ohne Griff und Kreuz — zurück
+     geht es über den Pfeil der Reiterzeile oder Esc. Auf den Meilensteinen
+     steht der Pfeil zurück zu den Karten davor. */
+  .device #progress .modal-head {
+    justify-content: flex-start;
+    gap: 8px;
+    padding: var(--content-top) var(--progress-side) 12px;
+    touch-action: auto; /* touch-action: am Desktop zieht niemand das Blatt herunter */
+  }
+
+  .device #progress .modal-head h2 {
+    font-size: 34px;
+    font-weight: 700;
+  }
+
+  .device #progress :is(.modal-grip, .modal-close) {
+    display: none;
+  }
+
+  .device #progress .modal-body {
+    padding: 4px var(--progress-side) var(--desk-gutter);
+  }
+
+  /* Die Karten in zwei Spalten; Kopf mit Karten und Band über die ganze Breite */
+  .device #progress .modal-body.is-cards {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+    gap: var(--progress-gap);
+  }
+
+  .device #progress .modal-body.is-cards > * {
+    margin: 0;
+  }
+
+  .device #progress .progress-hero {
+    --dash-card-height: 196px;
+    --desk-hero-num-size: 64px;
+    grid-column: 1 / -1; /* grid-column: der Kopf reicht über beide Spalten */
+    margin-bottom: 12px;
+  }
+
+  /* Auf der Übersicht stand das Band über den Karten, hier darunter: die Luft dazwischen */
+  .device #progress .progress-hero .dash-cards {
+    margin-bottom: var(--dash-gap-band);
+  }
+
+  .device #progress .pcard {
+    padding: var(--progress-card-pad);
+    border-radius: var(--desk-radius);
+    background: var(--desk-panel);
+  }
+
+  /* Links unten ist „Stufe“ die gewählte Zeile, solange diese Seite offen ist */
+  .device:has(#progress:not([hidden])) .desk-foot-row[data-nav-level] {
+    background: var(--desk-panel-strong);
+  }
+}
+
+/* Ab 1280px: die Seite reicht über die rechte Spalte — deren Kachel
+   „Fortschritt“ wäre hier nur doppelt. */
+@media (min-width: 1280px) {
+  .device #progress {
+    grid-column: main / rail; /* grid-column: von der Mitte bis zum rechten Rand */
+  }
+}

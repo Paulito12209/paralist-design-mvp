@@ -11,21 +11,33 @@ muss alles wie am Handy aussehen.
 
 ## Seitenleiste, Reiterzeile, Kürzel
 
-- Reiter oben anklicken und mit 1–4 wechseln; der gewählte ist gefüllt, auf
-  einer Sammlung oder einem Eintrag keiner. Unter 1280 px nur Icon und Taste.
+- Reiter oben anklicken und mit 1–4 wechseln; sie stehen ohne Icons in einer
+  grauen Spur, der gewählte ist ein helles Segment, auf einer Sammlung, einem
+  Eintrag, Profil oder Fortschritt keiner. Kurz darüber verweilen zeigt
+  „Taste 1“ darunter. Liegen Profil oder Fortschritt über dem gewählten Reiter,
+  schließt ein Klick darauf sie.
 - ‹ und › oben links, ⌘[ und ⌘] (Strg außerhalb des Macs) und Browser-Zurück
   führen durch denselben Verlauf.
 - Alle sechs Sammlungen links öffnen, auch per G und Buchstabe (G I, G F, G P,
-  G R, G L, G A); die offene ist markiert.
+  G R, G L, G A); die offene ist markiert. Archiv, Personen und Pläne stehen
+  unter „Mehr anzeigen“ (bleibt nach neu laden offen oder zu); G A klappt es
+  von selbst auf.
 - Seitenleiste mit dem Knopf und mit ⌘\ zu- und aufklappen, neu laden: der
   Zustand bleibt. Der Klapp-Knopf steht dann links in der Reiterzeile, die
   Suche als runder Knopf rechts; das Eingabefeld und „Ansicht konfigurieren“
   rücken mit.
 - Tab-Gruppe unter „Arbeitsbereiche“ zuklappen (Zahl erscheint), Plus am Kopf
   legt einen Arbeitsbereich darin an, „+ Tab“ einen Tab — benannt wird auf der
-  Übersicht. Rechtsklick auf Kopf oder Zeile öffnet das Menü, „Umbenennen“
+  Übersicht, deren Arbeitsbereiche nur dafür kurz auftauchen. Rechtsklick auf Kopf oder Zeile öffnet das Menü, „Umbenennen“
   springt zur Übersicht.
-- Unten: Stufe öffnet Fortschritt, Konto und ⌘, öffnen die Einstellungen.
+- Unten: Stufe öffnet Fortschritt als Seite (Karten „Diese Woche“ und „Serie“,
+  Aktivitätsband, darunter die Karten in zwei Spalten; „Serie“ öffnet ihre
+  Karte in den Einstellungen), Konto und ⌘, öffnen die Einstellungen.
+- Übersicht: vier Zahlen, darunter die Bühne mit den zuletzt geöffneten Seiten
+  (Punkte, Pfeile, ←/→ und waagerechtes Wischen blättern; „Öffnen“), darunter
+  die Kacheln der verknüpften Einträge (bei Projekt und Arbeitsbereich:
+  „Inhalt“). Leerer Speicher zeigt „Willkommen“ mit „Neu anlegen“. Keine
+  Sammlungs-Karten, keine Arbeitsbereiche, rechts kein „Zuletzt geöffnet“.
 - Such-Palette: ⌘K (Strg K), „/“, Klick ins Suchfeld links und bei
   zugeklappter Leiste der runde Such-Knopf öffnen sie in der Mitte; die Leiste
   bleibt zu. Leer zeigt sie „Zuletzt geöffnet / Am häufigsten / Zuletzt

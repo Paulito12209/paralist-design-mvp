@@ -1,10 +1,10 @@
 /*
- * Die Grafiken im Kopf der Übersicht am Desktop: das Punkteband der letzten
- * Wochen, die gerade abgerollte Strich-Skala der Stufe (dieselben Striche wie
+ * Die Grafiken der Auswertungs-Bausteine am Desktop (src/ui/dash-parts.js):
+ * das Punkteband der letzten Wochen, die gerade abgerollte Strich-Skala der Stufe (dieselben Striche wie
  * die runde Level-Anzeige oben links) und die Punktsäulen der Nutzungszeit.
  * Alles einfarbig: Punkte in den Tinten-Tönen aus styles/tokens-desk.css,
  * Striche in den Farben der Level-Anzeige — die Farben setzt styles/dashboard.css.
- * Pfad: src/features/dashboard/dashboard-charts.js
+ * Pfad: src/ui/dash-charts.js
  *
  * Die Grafiken haben absichtlich keine viewBox: waagerecht stehen die Säulen
  * in Prozent der Breite, senkrecht in Pixeln. So füllen sie jede Breite, und
@@ -39,7 +39,7 @@
  *                      in Punktabständen; muss zwischen 0 und 1 liegen (nicht sichtbar)
  */
 
-import { escapeHtml } from "../../core/html.js";
+import { escapeHtml } from "../core/html.js";
 
 const bandRows = 5;
 const bandHeight = 72;

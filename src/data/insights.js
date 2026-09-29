@@ -1,7 +1,8 @@
 /*
  * Kennzahlen für die Desktop-Fassung: die Zahlenreihe oben auf der Übersicht,
  * das Punkteband der letzten Wochen, der Termin, der als Nächstes kommt, die
- * dringendsten Aufgaben und was zuletzt geöffnet wurde. Diese Datei liest nur —
+ * dringendsten Aufgaben, was zuletzt geöffnet wurde und die Seiten der Bühne
+ * auf der Übersicht samt ihren verknüpften Einträgen. Diese Datei liest nur —
  * sie ändert nichts und fasst die Seite nicht an.
  * Pfad: src/data/insights.js
  *
@@ -17,7 +18,19 @@
 
 import { MS_PER_DAY, dayKey, dayShift, parseDay, startOfDay } from "../core/dates.js";
 import { isTaskDone } from "./config.js";
-import { entriesOfDay, entryTime, findEntry, inboxEntries, sortTasks, taskEntries } from "./queries.js";
+import { linkedEntries } from "./links.js";
+import {
+  entriesOf,
+  entriesOfDay,
+  entryTime,
+  findEntry,
+  findWorkspace,
+  inboxEntries,
+  isContainer,
+  sortTasks,
+  taskEntries,
+} from "./queries.js";
+import { entryRef, workspaceRef } from "./refs.js";
 import { state } from "./state.js";
 import { usageOfDay } from "./usage.js";
 import { levelInfo, totalXp } from "./xp.js";
@@ -150,4 +163,32 @@ export function recentEntries(limit) {
 /** Die neuesten Einträge im Eingang, der jüngste zuerst: höchstens `limit` Stück. */
 export function newestInbox(limit) {
   return [...inboxEntries()].sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0)).slice(0, limit);
+}
+
+/*
+ * Was zu einer Seite gehört: bei einem Arbeitsbereich oder Projekt der Inhalt,
+ * bei jedem anderen Eintrag die verknüpften Einträge. `linked` sagt, welches
+ * von beiden — die Übersicht schreibt „Verknüpft“ oder „Inhalt“ darüber.
+ */
+function relatedOf(kind, item) {
+  if (kind === "workspace") return { related: entriesOf(workspaceRef(item.id)), linked: false };
+  if (isContainer(item)) return { related: entriesOf(entryRef(item.id)), linked: false };
+  return { related: linkedEntries(item), linked: true };
+}
+
+/**
+ * Die zuletzt geöffneten Seiten für die Bühne der Übersicht, die jüngste
+ * zuerst: Einträge und Arbeitsbereiche gemischt, Archiviertes bleibt draußen.
+ * @returns [{ kind: "entry"|"workspace", item, ts, related, linked }] — höchstens `limit` Stück.
+ */
+export function recentPages(limit) {
+  return state.opens
+    .filter((open) => open.kind === "entry" || open.kind === "workspace")
+    .sort((a, b) => b.ts - a.ts)
+    .map((open) => {
+      const item = open.kind === "workspace" ? findWorkspace(open.id) : findEntry(open.id);
+      return item && !item.archived ? { kind: open.kind, item, ts: open.ts, ...relatedOf(open.kind, item) } : null;
+    })
+    .filter(Boolean)
+    .slice(0, limit);
 }

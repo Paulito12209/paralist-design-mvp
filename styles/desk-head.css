@@ -12,16 +12,18 @@
  * --head-btn / --head-icon -> Größe der runden Knöpfe (Klapp-Knopf, Pfeile, Suche) und ihrer Icons
  * --head-tab-height        -> Höhe eines Reiters
  * --head-tab-gap           -> Luft zwischen den Reitern
- * --head-tab-pad           -> Innenrand eines Reiters links und rechts
- * Einzelwerte stehen bei ihrer Regel: Wortmarke 19px, Reiter-Schrift 14px,
- * Reiter-Icon 18px; Tasten-Hinweis unter dem Reiter: Schrift 12px, Abstand 8px,
+ * --head-tab-pad           -> Innenrand eines Reiters links und rechts (unter 1280px enger)
+ * --head-track-pad         -> Rand der grauen Spur um die Reiter
+ * Einzelwerte stehen bei ihrer Regel: Wortmarke 19px, Reiter-Schrift 14px;
+ * Tasten-Hinweis unter dem Reiter: Schrift 12px, Abstand 8px,
  * Verzögerung 400ms bis er erscheint.
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
  * --desk-top-height -> Höhe von Wortmarke und Reiterzeile
  * --desk-nav-pad / --desk-gutter -> Rand links (Wortmarke) und seitlich der Reiterzeile
  * --desk-hover / --desk-fast / --desk-ease -> Tönung beim Überfahren, Dauer und Kurve
- * --text / --bg / --muted / --avatar-btn-bg -> Schrift, Fläche des gewählten Reiters (vertauscht), Icons
+ * --desk-chip-bg / --card / --desk-edge -> Spur der Reiter, gewähltes Segment und seine Haarlinie
+ * --text / --bg / --muted / --avatar-btn-bg -> Schrift, Grund, leise Reiter und Icons der Knöpfe
  */
 
 @media (min-width: 1024px) {
@@ -29,9 +31,10 @@
   .desk-tabs {
     --head-btn: 32px;
     --head-icon: 20px;
-    --head-tab-height: 36px;
-    --head-tab-gap: 4px;
-    --head-tab-pad: 14px;
+    --head-tab-height: 34px;
+    --head-tab-gap: 2px;
+    --head-tab-pad: 16px;
+    --head-track-pad: 3px;
   }
 
   /* ---------- Wortmarke links ---------- */
@@ -109,17 +112,20 @@
     cursor: default;
   }
 
-  /* Die Reiter: Pillen wie am Handy, der gewählte gefüllt */
+  /* Die Reiter als Segment-Leiste wie in Apple Arcade: eine ruhige graue
+     Spur, darin der gewählte Reiter als helles Segment. Nur Namen, keine Icons. */
   .desk-tabs-list {
     display: flex;
     gap: var(--head-tab-gap);
+    padding: var(--head-track-pad);
+    border-radius: 999px;
+    background: var(--desk-chip-bg);
   }
 
   .desk-tab {
     position: relative; /* position: Bezug für den Tasten-Hinweis darunter */
     display: inline-flex;
     align-items: center;
-    gap: 8px;
     height: var(--head-tab-height);
     padding: 0 var(--head-tab-pad);
     border-radius: 999px;
@@ -130,15 +136,11 @@
     transition: background-color var(--desk-fast) var(--desk-ease), color var(--desk-fast) var(--desk-ease); /* transition: Tönung gleitet statt zu springen */
   }
 
-  .desk-tab-icon {
-    width: 18px;
-    height: 18px;
-    flex: 0 0 auto; /* flex: das Icon schrumpft nie */
-  }
-
+  /* Das gewählte Segment: Kartenfläche mit Haarlinie statt Schatten */
   .desk-tab.is-active {
-    background: var(--text);
-    color: var(--bg);
+    background: var(--card);
+    box-shadow: inset 0 0 0 0.5px var(--desk-edge); /* box-shadow: nur die Haarlinie, ohne die Pille größer zu machen */
+    color: var(--text);
   }
 
   /* Tasten-Hinweis: erst beim Überfahren (kurz verzögert, damit er beim
@@ -162,10 +164,6 @@
     transform: translate(-50%, -2px); /* transform: mittig unter dem Reiter, beim Erscheinen gleitet er ein Stück herab */
     pointer-events: none; /* pointer-events: der Hinweis fängt keine Klicks ab */
     transition: opacity var(--desk-fast) var(--desk-ease), transform var(--desk-fast) var(--desk-ease); /* transition: sanft ein- und ausblenden */
-  }
-
-  .desk-tab-hint-name {
-    display: none;
   }
 
   .desk-tab:focus-visible .desk-tab-hint {
@@ -201,18 +199,9 @@
   }
 }
 
-/* Unter 1280px ist die Mitte schmaler: die Reiter zeigen nur das Icon, der
-   Name steht im Tasten-Hinweis und für Vorlesehilfen im aria-label. */
+/* Unter 1280px ist die Mitte schmaler: die Segmente rücken enger zusammen. */
 @media (min-width: 1024px) and (max-width: 1279px) {
-  .desk-tab-label {
-    display: none;
-  }
-
-  .desk-tab-hint-name {
-    display: inline;
-  }
-
-  .desk-tab {
-    padding: 0 10px;
+  .desk-tabs {
+    --head-tab-pad: 12px;
   }
 }

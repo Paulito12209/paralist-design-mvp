@@ -227,7 +227,7 @@
   }
 
   .dash-month {
-    /* position/left: --at setzt dashboard-charts.js auf die Säule, mit der der Monat beginnt */
+    /* position/left: --at setzt src/ui/dash-charts.js auf die Säule, mit der der Monat beginnt */
     position: absolute;
     top: 0;
     left: var(--at);
@@ -306,7 +306,7 @@
 
   .dash-foot-svg { margin-top: 10px; }
 
-  /* Grafiken (dashboard-charts.js). stroke-linecap: runde Enden machen aus den fast null langen
+  /* Grafiken (src/ui/dash-charts.js). stroke-linecap: runde Enden machen aus den fast null langen
      Strichen einer Punktsäule Punkte und runden die Striche der Stufen-Skala ab wie oben links. */
   .dash-dots,
   .dash-tick {

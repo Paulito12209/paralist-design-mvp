@@ -72,8 +72,9 @@
  * styles/desk-rail.css       -> Desktop: rechte Spalte mit nächstem Termin, Aufgaben und zuletzt Geöffnetem
  * styles/desk-rail-tiles.css -> Desktop: die zwei Kacheln oben rechts (Eingang-Stapel, Stufen-Ring) und die Tagesleiste
  * styles/desk-rail-views.css -> Desktop: Karten der rechten Spalte je Seite (Monat, Tag, Zahlen, Balken, Vorschau)
- * styles/dashboard.css       -> Desktop: Kopf der Übersicht mit Zahlen, Aktivitätsband und zwei großen Karten
- * styles/dashboard-motion.css -> Desktop: Überfahren, Drücken und Auftauchen im Kopf der Übersicht
+ * styles/dashboard.css       -> Desktop: Zahlen der Übersicht, Band und zwei Karten (Fortschritt); Bewegung in dashboard-motion.css
+ * styles/dashboard-stage.css -> Desktop: Bühne der Übersicht wie Apple Arcade; ihre Reihe verknüpfter Einträge in
+ *                               styles/dashboard-shelf.css; styles/desk-progress.css: Fortschritt als Seite
  *
  * WERTE IN DIESER DATEI
  * -----------------------------------

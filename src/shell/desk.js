@@ -49,10 +49,11 @@ const clockTick = 60000;
 const navKeys = Object.fromEntries(pageLinks.map((link) => [link.key, link.tab]));
 const chordTargets = Object.fromEntries(collectionLinks.map((link) => [link.key.toLowerCase(), link.id]));
 
-/* Offene Ebenen, über denen kein Kürzel etwas auslösen darf. Das Profil
-   zählt nicht: am Desktop ist es eine Seite (src/features/profile/profile-page.js). */
+/* Offene Ebenen, über denen kein Kürzel etwas auslösen darf. Profil und
+   Fortschritt zählen nicht: am Desktop sind sie Seiten
+   (src/features/profile/profile-page.js, src/features/progress/progress.js). */
 const openLayers =
-  ".palette-backdrop:not([hidden]), .modal-backdrop:not([hidden]):not(#profile), .sheet-backdrop:not([hidden]), .ctx-backdrop:not([hidden]), .viewer-backdrop:not([hidden]), .update-backdrop:not([hidden])";
+  ".palette-backdrop:not([hidden]), .modal-backdrop:not([hidden]):not(#profile):not(#progress), .sheet-backdrop:not([hidden]), .ctx-backdrop:not([hidden]), .viewer-backdrop:not([hidden]), .update-backdrop:not([hidden])";
 
 let mounted = false;
 let clock = null;

@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "85b7d28a41a4";
+export const appVersion = "fc8e256b258c";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -91,8 +91,7 @@ export const appFiles = [
   "src/features/composer/composer-types.js",
   "src/features/composer/composer.js",
   "src/features/composer/dictation.js",
-  "src/features/dashboard/dashboard-charts.js",
-  "src/features/dashboard/dashboard-parts.js",
+  "src/features/dashboard/dashboard-stage.js",
   "src/features/dashboard/dashboard.js",
   "src/features/drawing/drawing-tools.js",
   "src/features/drawing/drawing.js",
@@ -138,6 +137,7 @@ export const appFiles = [
   "src/features/profile/theme.js",
   "src/features/profile/usage-split.js",
   "src/features/progress/progress-charts.js",
+  "src/features/progress/progress-desk.js",
   "src/features/progress/progress-lists.js",
   "src/features/progress/progress-milestones.js",
   "src/features/progress/progress.js",
@@ -184,6 +184,8 @@ export const appFiles = [
   "src/ui/chart.js",
   "src/ui/copy-page.js",
   "src/ui/ctx-menu.js",
+  "src/ui/dash-charts.js",
+  "src/ui/dash-parts.js",
   "src/ui/desk-links.js",
   "src/ui/desk-mode.js",
   "src/ui/details.js",
@@ -230,6 +232,8 @@ export const appFiles = [
   "styles/composer-attachments.css",
   "styles/composer.css",
   "styles/dashboard-motion.css",
+  "styles/dashboard-shelf.css",
+  "styles/dashboard-stage.css",
   "styles/dashboard.css",
   "styles/desk-head.css",
   "styles/desk-hover.css",
@@ -237,6 +241,7 @@ export const appFiles = [
   "styles/desk-nav-foot.css",
   "styles/desk-nav.css",
   "styles/desk-overlays.css",
+  "styles/desk-progress.css",
   "styles/desk-rail-tiles.css",
   "styles/desk-rail-views.css",
   "styles/desk-rail.css",

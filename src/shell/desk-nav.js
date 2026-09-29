@@ -8,7 +8,8 @@
  *
  * Keine anpassbaren visuellen Werte: Aussehen, Abstände und Größen stehen in
  * styles/desk-nav.css und styles/desk-nav-foot.css. Welche Tab-Gruppen
- * zugeklappt sind, merkt sich der Browser unter storageKeys.deskGroups.
+ * zugeklappt sind, merkt sich der Browser unter storageKeys.deskGroups, ob
+ * „Mehr anzeigen“ offen ist unter storageKeys.deskMore.
  */
 
 import { emit, events, on } from "../core/bus.js";
@@ -16,7 +17,7 @@ import { dom } from "../core/dom.js";
 import { formatNumber } from "../core/format.js";
 import { sameId } from "../core/ids.js";
 import { load } from "../core/lazy.js";
-import { readJson, storageKeys, writeJson } from "../core/storage.js";
+import { readJson, readText, storageKeys, writeJson, writeText } from "../core/storage.js";
 import { overviewPages } from "../data/config.js";
 import { addTab, addWorkspace, selectTab } from "../data/mutations.js";
 import { findWorkspace, pageCount } from "../data/queries.js";
@@ -37,6 +38,8 @@ const lastMarkup = new Map();
 let menuSource = null;
 /* Die zugeklappten Tab-Gruppen, als Text-Ids. */
 let closedGroups = [];
+/* Steht „Mehr anzeigen“ offen (Archiv, Personen, Pläne)? */
+let moreOpen = false;
 
 function collectParts() {
   return {
@@ -44,6 +47,8 @@ function collectParts() {
       const row = root.querySelector(`[data-nav-collection="${link.id}"]`);
       return { link, row, count: row.querySelector(".desk-nav-count") };
     }),
+    more: root.querySelector("#desk-nav-more"),
+    moreToggle: root.querySelector("[data-nav-more]"),
     spaces: root.querySelector('[data-nav-slot="spaces"]'),
     foot: root.querySelector('[data-nav-slot="foot"]'),
   };
@@ -97,6 +102,23 @@ function addTabFromNav() {
   addTab();
 }
 
+/*
+ * „Mehr anzeigen“ auf- oder zuklappen. Ist das Archiv die offene Seite, steht
+ * der Teil immer offen — sonst wäre die gewählte Zeile versteckt.
+ */
+function syncMore(active) {
+  const open = moreOpen || active.collection === "archive";
+  parts.more.hidden = !open;
+  parts.moreToggle.setAttribute("aria-expanded", String(open));
+  parts.moreToggle.querySelector(".desk-nav-text").textContent = open ? "Weniger anzeigen" : "Mehr anzeigen";
+}
+
+function toggleMore() {
+  moreOpen = parts.more.hidden;
+  writeText(storageKeys.deskMore, moreOpen ? "1" : "");
+  syncMore(activeTargets());
+}
+
 function toggleGroup(tabId) {
   closedGroups = closedGroups.includes(tabId) ? closedGroups.filter((id) => id !== tabId) : [...closedGroups, tabId];
   writeJson(storageKeys.deskGroups, closedGroups);
@@ -104,22 +126,32 @@ function toggleGroup(tabId) {
 }
 
 /**
- * Liegt am Desktop gerade die Einstellungs-Seite über der Mitte? Die Seite
- * darunter bleibt dabei die „offene“ — ein Klick auf genau sie muss deshalb
- * die Einstellungen schließen, statt nur unsichtbar nach oben zu rollen.
+ * Welche Seite liegt am Desktop gerade über der Mitte — "profile",
+ * "progress" oder null? Die Seite darunter bleibt dabei die „offene“: ein
+ * Klick auf genau sie muss deshalb die obere schließen, statt nur unsichtbar
+ * nach oben zu rollen.
  */
-export function isSettingsOpen() {
-  return !dom.profileModal.hidden;
+export function coveringPage() {
+  if (!dom.profileModal.hidden) return "profile";
+  if (!dom.progressModal.hidden) return "progress";
+  return null;
 }
 
 /*
- * Das schon offene Ziel noch einmal gewählt: liegen die Einstellungen
- * darüber, gehen sie zu (ein Schritt zurück, wie ihr Kreuz) — sonst rollt die
- * Seite nach oben, statt einen doppelten Schritt in den Verlauf zu legen.
+ * Das schon offene Ziel noch einmal gewählt: liegt eine Seite darüber, geht
+ * sie zu (ein Schritt zurück, wie ihr Kreuz) — sonst rollt die Seite nach
+ * oben, statt einen doppelten Schritt in den Verlauf zu legen.
  */
 function reselect() {
-  if (isSettingsOpen()) closeOverlay("profile");
+  const covering = coveringPage();
+  if (covering) closeOverlay(covering);
   else dom.content.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+/* „Stufe“ links: öffnet Fortschritt; steht die Seite schon offen, rollt sie nach oben. */
+function openProgressPage() {
+  if (coveringPage() === "progress") dom.progressBody.scrollTo({ top: 0, behavior: "smooth" });
+  else load("progress").then((module) => module.open());
 }
 
 /** Eine Sammlung öffnen — auch über das Kürzel „G“ und Buchstabe. */
@@ -144,11 +176,12 @@ function openWorkspace(row) {
 const clickActions = [
   ["[data-nav-new]", () => emit(events.createRequested)],
   ["[data-nav-collection]", (node) => openCollection(node.dataset.navCollection)],
+  ["[data-nav-more]", toggleMore],
   ["[data-nav-add-tab]", addTabFromNav],
   ["[data-nav-add-workspace]", (node) => addWorkspaceIn(node.dataset.navAddWorkspace)],
   ["[data-nav-tab-toggle]", (node) => toggleGroup(node.dataset.navTabToggle)],
   ["[data-open-workspace]", openWorkspace],
-  ["[data-nav-level]", () => load("progress").then((module) => module.open())],
+  ["[data-nav-level]", openProgressPage],
   ["[data-nav-profile]", () => load("profile").then((module) => module.openPane("konto"))],
 ];
 
@@ -215,6 +248,7 @@ export function mountDeskNav(target, given = {}) {
   root = target;
   handlers = { ...handlers, ...given };
   closedGroups = readJson(storageKeys.deskGroups, []).map(String);
+  moreOpen = readText(storageKeys.deskMore) === "1";
   root.innerHTML = skeletonMarkup();
   parts = collectParts();
 
@@ -243,6 +277,7 @@ export function renderDeskNav() {
     count.hidden = !value;
     row.setAttribute("aria-label", value ? `${link.title}, ${value === 1 ? "1 Eintrag" : `${value} Einträge`}` : link.title);
   });
+  syncMore(active);
 
   swapMarkup(parts.spaces, tabGroupsMarkup(closedGroups, active.workspace));
   swapMarkup(parts.foot, footMarkup(handlers.profilePhoto()));

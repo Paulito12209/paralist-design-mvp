@@ -128,14 +128,16 @@
     color: var(--muted);
   }
 
-  /* Solange das Profil offen ist, ist keiner der vier Reiter die offene Seite. */
-  .device:has(#profile:not([hidden])) .desk-tab.is-active {
+  /* Solange Profil oder Fortschritt als Seite offen sind, ist keiner der vier
+     Reiter die offene Seite … */
+  .device:has(:is(#profile, #progress):not([hidden])) .desk-tab.is-active {
     background: transparent;
+    box-shadow: none;
     color: var(--avatar-btn-bg);
   }
 
   /* … und auch keine Sammlung und kein Arbeitsbereich links. */
-  .device:has(#profile:not([hidden])) .desk-nav-row.is-active:not(:hover) {
+  .device:has(:is(#profile, #progress):not([hidden])) .desk-nav-row.is-active:not(:hover) {
     background: transparent;
   }
 }

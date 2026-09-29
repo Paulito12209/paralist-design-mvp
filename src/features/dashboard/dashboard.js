@@ -1,57 +1,39 @@
 /*
  * Kopf der Übersicht in der Desktop-Fassung: unter dem Titel „Übersicht“, der
- * allein steht, vier große Zahlen, das Aktivitätsband der letzten
- * zwölf Wochen mit dem gläsernen Stufen-Chip und die zwei großen Karten
- * „Diese Woche“ und „Serie“. Die vier Übersichtskarten und die
- * Arbeitsbereiche folgen darunter wie gehabt.
+ * allein steht, die vier großen Zahlen und darunter die Bühne mit den zuletzt
+ * geöffneten Seiten samt der Reihe ihrer verknüpften Einträge
+ * (dashboard-stage.js). Das Aktivitätsband und die Karten „Diese Woche“ und
+ * „Serie“ stehen auf der Seite Fortschritt; die vier Sammlungs-Karten und die
+ * Arbeitsbereiche blendet styles/desk-views.css aus — beides steht schon in
+ * der Seitenleiste.
  *
  * Das Modul wird nur geladen, wenn das Fenster breit genug ist (src/main.js);
  * am Handy blendet styles/dashboard.css den Kopf ohnehin aus.
  * Pfad: src/features/dashboard/dashboard.js
  *
- * ANPASSBARE WERTE IN DIESER DATEI
- * -----------------------------------
- * bandDays        -> wie viele Tage das Aktivitätsband zeigt (84 = 12 Wochen)
- * streakDays      -> wie viele Tage die Punktsäulen in der Karte „Serie“ zeigen
- * enterOrder      -> in welcher Reihenfolge Zahlen, Band und Karten auftauchen
- *
- * Aussehen und Abstände: styles/dashboard.css; Überfahren, Drücken und
- * Auftauchen: styles/dashboard-motion.css; die Werte: styles/tokens-desk.css.
+ * Keine anpassbaren visuellen Werte: die Zahlen stehen in src/ui/dash-parts.js
+ * (statOrder), die Bühne in dashboard-stage.js; Aussehen und Abstände in
+ * styles/dashboard.css und styles/dashboard-stage.css; Überfahren, Drücken und
+ * Auftauchen in styles/dashboard-motion.css; die Werte in styles/tokens-desk.css.
  */
 
 import { events, on } from "../../core/bus.js";
 import { dayKey } from "../../core/dates.js";
 import { load } from "../../core/lazy.js";
-import { deskStats, levelSummary, usageByDay, xpByDay, xpThisWeek } from "../../data/insights.js";
+import { deskStats } from "../../data/insights.js";
 import { ui } from "../../data/state.js";
-import { usageStreaks } from "../../data/usage.js";
+import { statRow } from "../../ui/dash-parts.js";
 import { isDesk, onDeskChange } from "../../ui/desk-mode.js";
 import { showTab } from "../../ui/router.js";
 import { isViewActive } from "../../ui/views.js";
-import { bandBlock, heroCards, statRow } from "./dashboard-parts.js";
+import { mountStage, renderStage } from "./dashboard-stage.js";
 
-const bandDays = 84;
-const streakDays = 28;
-
-/* Platz beim Auftauchen: die vier Zahlen nehmen 0–3, danach das Band, dann die Karten. */
-const enterOrder = { band: 4, cards: 5 };
-
-/* Beim ersten Aufruf angelegt und dann behalten — hängt fest in der Startseite. */
+/* Beim ersten Aufruf angelegt und dann behalten — hängen fest in der Startseite. */
 let hero = null;
+let stats = null;
 
 function openProgress() {
   load("progress").then((module) => module.open());
-}
-
-/*
- * Die Karte „Serie“ öffnet das Einstellungs-Blatt gleich mit der vollen Karte
- * „Serie“ statt mit der Liste: open() nimmt die aufzuklappende Kachel als
- * zweiten Wert. Im Verlauf liegt dabei nur ein Schritt — der Pfeil im Blatt
- * führt zur Liste der Einstellungen, das Kreuz und Browser-Zurück schließen
- * das Blatt und man steht wieder auf der Übersicht.
- */
-function openStreak() {
-  load("profile").then((module) => module.open(true, { detail: "streak" }));
 }
 
 /* „Heute“ zählt die Termine von heute — also auch den heutigen Tag zeigen,
@@ -61,16 +43,15 @@ function openToday() {
   showTab("calendar");
 }
 
-/* Was ein Klick auf einen Knopf mit `data-dash` öffnet. */
+/* Was ein Klick auf eine der vier Zahlen (`data-dash`) öffnet. */
 const actions = {
   tasks: () => showTab("tasks"),
   calendar: openToday,
   progress: openProgress,
-  streak: openStreak,
 };
 
-/* Ein Empfänger für den ganzen Kopf statt einer an jedem Knopf. */
-function onHeroClick(event) {
+/* Ein Empfänger für die Zahlenreihe statt einer an jedem Knopf. */
+function onStatsClick(event) {
   const target = event.target.closest("[data-dash]");
   if (!target) return;
   const action = actions[target.dataset.dash];
@@ -79,27 +60,18 @@ function onHeroClick(event) {
 
 /**
  * Den Kopf neu zeichnen — nur, wenn er zu sehen ist: Desktop und Übersicht offen.
- * @param entrance `true` lässt Zahlen, Band und Karten nacheinander auftauchen.
- *   Nur beim ersten Zeichnen und beim Öffnen der Übersicht; bei geänderten
- *   Daten nicht, sonst flackerte der Kopf bei jedem Haken.
+ * @param entrance `true` lässt Zahlen und Bühne nacheinander auftauchen und
+ *   stellt die zuletzt geöffnete Seite nach vorn. Nur beim ersten Zeichnen und
+ *   beim Öffnen der Übersicht; bei geänderten Daten nicht, sonst flackerte der
+ *   Kopf bei jedem Haken.
  */
 function render(entrance) {
   if (!hero || !isDesk() || !isViewActive("home")) return;
-
-  const level = levelSummary();
   /* Die Klasse vor dem Austausch setzen oder nehmen: nur neu eingesetzte
      Elemente mit der Klasse spielen die Bewegung ab, alle anderen stehen sofort. */
   hero.classList.toggle("is-entering", entrance);
-  hero.innerHTML =
-    statRow(deskStats()) +
-    bandBlock(xpByDay(bandDays), level, enterOrder.band) +
-    heroCards({
-      week: xpThisWeek(),
-      level,
-      streak: usageStreaks(),
-      usage: usageByDay(streakDays),
-      order: enterOrder.cards,
-    });
+  stats.innerHTML = statRow(deskStats());
+  renderStage(entrance);
 }
 
 /* Den Kopf einmal in die Startseite einhängen und die Zuhörer anmelden. */
@@ -109,11 +81,14 @@ function mount() {
 
   hero = document.createElement("div");
   hero.className = "desk-hero";
+  stats = document.createElement("div");
+  stats.addEventListener("click", onStatsClick);
+  hero.append(stats);
+  mountStage(hero);
   title.after(hero);
-  hero.addEventListener("click", onHeroClick);
 
-  /* dataChanged kommt auch nach Mitternacht (src/shell/desk.js): dann stimmen
-     „Heute“ und die Säule ganz rechts wieder. */
+  /* dataChanged kommt auch nach Mitternacht (src/shell/desk.js): dann stimmt
+     die Zahl „Heute“ wieder. */
   on(events.dataChanged, () => render(false));
   on(events.xpChanged, () => render(false));
   on(events.viewOpened, (name) => {

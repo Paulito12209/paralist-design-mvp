@@ -2,9 +2,9 @@
  * Desktop: wie die Seiten die Breite nutzen — Übersicht, Sammlung, Eintrag,
  * Suche, Kalender, Aufgaben und Medien. Ab 1024px steht die Seite in der
  * mittleren Spalte (Raster in styles/desk.css). Hier bekommt jede Seite ihre
- * größte Breite, die vier Übersichtskarten werden zu ruhigen Kennzahl-Kacheln
- * mit großer, dünner Zahl, und Aufgaben-Liste, Board und Medien-Raster ordnen
- * sich für die Breite neu. Nur Anordnung: was unter der Maus, beim Drücken und
+ * größte Breite, die Übersicht blendet ihre Sammlungs-Karten und
+ * Arbeitsbereiche aus (die stehen in der Seitenleiste), und Aufgaben-Liste,
+ * Board und Medien-Raster ordnen sich für die Breite neu. Nur Anordnung: was unter der Maus, beim Drücken und
  * beim Tastatur-Fokus passiert, steht für die ganze mittlere Spalte in
  * styles/desk-hover.css. Unter 1024px gilt nichts davon.
  * Pfad: styles/desk-views.css
@@ -12,9 +12,7 @@
  * ANPASSBARE WERTE
  * -----------------------------------
  * IN DIESER DATEI (stehen an .view und gelten nur am Desktop)
- * --views-card-min-h / --views-card-pad / --views-card-gap -> Mindesthöhe,
- *                          Innenabstand und Fuge der vier Übersichtskarten
- * --views-section-gap    -> Luft über der Zeile „Arbeitsbereiche“
+ * --views-section-gap    -> Luft über der Zeile „Arbeitsbereiche“ (nur beim Benennen zu sehen)
  * --views-cal-stick-gap  -> Luft über dem eingerasteten Wochenstreifen im Kalender
  * --views-board-col-min  -> schmalste Board-Spalte; passen nicht alle Spalten
  *                          mindestens so breit hinein, rollt das Board seitlich
@@ -32,23 +30,19 @@
  *
  * GELESEN (styles/tokens-desk.css und die übrigen Wert-Dateien)
  * --desk-wide-width / --desk-read-width -> größte Breite der breiten Seiten und der Lese-Seiten
- * --desk-radius / --desk-radius-sm -> Rundung der Übersichtskarten und der Medien-Kacheln
- * --desk-num-weight / --desk-tile-num-size -> Strichstärke und Größe der Zahl auf den Karten
+ * --desk-radius-sm       -> Rundung der Medien-Kacheln
  * --desk-edge            -> Haarlinie um die Zeichenfläche
  * --desk-scroll-thumb    -> Farbe des Rollbalkens unter dem Board
  * --desk-ease / --desk-enter-rise -> Kurve und Tiefe beim Aufblenden einer Seite
- * --text / --muted / --avatar-btn-bg -> Zahl, blasse Null und Kartentitel
+ * --text                 -> Überschrift „Arbeitsbereiche“
  * --content-side / --content-top -> Seitenrand und Luft oben
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel:
- * Kartentitel 15px, Überschrift „Arbeitsbereiche“ 19px.
+ * Überschrift „Arbeitsbereiche“ 19px.
  */
 
 @media (min-width: 1024px) {
   .view {
-    --views-card-min-h: 150px;
-    --views-card-pad: 18px;
-    --views-card-gap: 16px;
     --views-section-gap: 56px;
     --views-cal-stick-gap: 16px;
     --views-board-col-min: 220px;
@@ -87,88 +81,20 @@
     max-width: var(--desk-read-width);
   }
 
-  /* ---------- Übersicht: vier Kennzahl-Karten ---------- */
-  /* Der negative Rand am Handy schafft nur Platz für Kartenschatten; die
-     Desktop-Karten haben keinen, sonst stünde das Raster 12px über dem Rand. */
-  #view-home .overview-grid {
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    gap: var(--views-card-gap);
-    margin-inline: 0;
-    padding-inline: 0;
-    /* overflow: am Desktop wird nicht geschoben, beide Kartenseiten stehen als zwei Reihen untereinander */
-    overflow: visible;
-  }
-
-  /* Am Desktop stehen beide Seiten untereinander: nichts zu wischen, keine Seitenlinie */
-  #view-home .overview-pager {
+  /* ---------- Übersicht ---------- */
+  /* Die Sammlungs-Karten und die Arbeitsbereiche stehen am Desktop schon in
+     der Seitenleiste — die Übersicht zeigt stattdessen die Bühne
+     (styles/dashboard-stage.css). Nur während ein Tab oder Arbeitsbereich
+     benannt wird, kommt der Teil zurück: das Namensfeld wohnt dort.
+     :has: kennt ein Browser es nicht, bleibt der Teil einfach sichtbar. */
+  #view-home :is(.overview-grid, .overview-pager) {
     display: none;
   }
 
-  /* display: contents — die Kartenseiten lösen sich auf, ihre Karten füllen das Raster direkt */
-  #view-home .overview-page {
-    display: contents;
+  #view-home:not(:has(#tab-name-input, #workspace-name-input)) :is(.section-head, .tab-pills-row, .workspace-list) {
+    display: none;
   }
 
-  #view-home .overview-card {
-    min-height: var(--views-card-min-h);
-    padding: var(--views-card-pad);
-    border-radius: var(--desk-radius);
-    gap: 0;
-    font-size: 15px;
-  }
-
-  /* margin-bottom: auto schiebt das Icon nach oben links; Zahl und Titel bleiben unten */
-  #view-home .overview-card .card-icon {
-    margin-bottom: auto;
-  }
-
-  /* column-reverse: im Markup steht der Titel vor der Zahl — am Desktop steht
-     die große Zahl darüber, ohne das Markup des Handys anzufassen. */
-  #view-home .card-label {
-    flex-direction: column-reverse;
-    align-items: flex-start;
-    gap: 8px;
-    width: 100%;
-  }
-
-  /* Karten „Demnächst verfügbar“ haben keine Zahl: das „i“ steht neben dem Namen */
-  #view-home .is-soon .card-label {
-    flex-direction: row;
-    align-items: center;
-    gap: 6px;
-  }
-
-  #view-home .card-title {
-    max-width: 100%;
-    color: var(--avatar-btn-bg);
-    font-weight: 500;
-    letter-spacing: -0.01em;
-  }
-
-  /* font-variant-numeric: alle Ziffern gleich breit, damit nichts springt, wenn sich die Zahl ändert */
-  #view-home .card-count {
-    font-size: var(--desk-tile-num-size);
-    font-weight: var(--desk-num-weight);
-    letter-spacing: -0.05em;
-    line-height: 1;
-    font-variant-numeric: tabular-nums;
-    color: var(--text);
-  }
-
-  /* Ohne Einträge zeigt das Handy keine Zahl; hier steht statt eines Lochs eine
-     blasse Null. content: nur Zierde, die Anzahl steht im aria-label der Karte.
-     Eigene Regel: kennt ein Browser :has nicht, fällt nur sie weg. */
-  #view-home .overview-card:not(.is-soon) .card-label:not(:has(.card-count))::after {
-    content: "0";
-    font-size: var(--desk-tile-num-size);
-    font-weight: var(--desk-num-weight);
-    letter-spacing: -0.05em;
-    line-height: 1;
-    color: var(--muted);
-  }
-
-  /* Die Arbeitsbereiche bekommen mehr Luft und eine Überschrift, die zur Breite passt */
   #view-home .section-head {
     margin-top: var(--views-section-gap);
   }

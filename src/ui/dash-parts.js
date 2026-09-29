@@ -1,14 +1,14 @@
 /*
- * Die Bausteine im Kopf der Übersicht am Desktop als HTML-Schnipsel: die
- * Reihe der vier großen Zahlen, das Aktivitätsband mit dem gläsernen Chip
- * und die zwei großen Karten „Diese Woche“ und „Serie“. Hier wird nur
- * zusammengesetzt — gezeichnet wird in dashboard.js, die Grafiken kommen aus
- * dashboard-charts.js, das Aussehen aus styles/dashboard.css und
- * styles/dashboard-motion.css.
- * Pfad: src/features/dashboard/dashboard-parts.js
+ * Die Auswertungs-Bausteine der Desktop-Fassung als HTML-Schnipsel: die
+ * Reihe der vier großen Zahlen (Kopf der Übersicht), das Aktivitätsband mit
+ * dem gläsernen Chip und die zwei Karten „Diese Woche“ und „Serie“ (Kopf der
+ * Seite Fortschritt). Liegt in src/ui/, weil beide Bereiche sie brauchen.
+ * Hier wird nur zusammengesetzt — die Grafiken kommen aus dash-charts.js, das
+ * Aussehen aus styles/dashboard.css und styles/dashboard-motion.css.
+ * Pfad: src/ui/dash-parts.js
  *
- * Jeder Knopf trägt `data-dash` mit dem, was ein Klick öffnet; dashboard.js
- * fängt alle Klicks an einer Stelle ab. `--i` ist die Reihenfolge beim
+ * Jeder Knopf trägt `data-dash` mit dem, was ein Klick öffnet; die Seite,
+ * die ihn zeigt, fängt alle Klicks an einer Stelle ab. `--i` ist die Reihenfolge beim
  * Auftauchen (0 kommt zuerst).
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -21,10 +21,10 @@
  * dieselbe Zahl, mit der deskStats() zählt.
  */
 
-import { formatNumber } from "../../core/format.js";
-import { icon } from "../../core/html.js";
-import { weekDays } from "../../data/insights.js";
-import { bandLabels, bandSvg, gaugeSvg, streakSvg } from "./dashboard-charts.js";
+import { formatNumber } from "../core/format.js";
+import { icon } from "../core/html.js";
+import { weekDays } from "../data/insights.js";
+import { bandLabels, bandSvg, gaugeSvg, streakSvg } from "./dash-charts.js";
 
 const daysPerWeek = 7;
 const legendLevels = [0, 1, 2, 3, 4];
@@ -89,8 +89,10 @@ function legendMarkup() {
  * Das Aktivitätsband: Überschrift, Legende, die Punktsäulen und darüber
  * schwebend der gläserne Chip mit der Stufe.
  * @param days aus xpByDay(), @param level aus levelSummary(), @param order Platz beim Auftauchen.
+ * @param onPage true auf der Seite Fortschritt selbst: der Chip ist dann nur
+ *   Anzeige — ein Weg zu der Seite, auf der man schon steht, führte ins Leere.
  */
-export function bandBlock(days, level, order) {
+export function bandBlock(days, level, order, onPage = false) {
   const weeks = Math.round(days.length / daysPerWeek);
   const active = days.filter((day) => day.xp > 0).length;
   const sum = days.reduce((total, day) => total + day.xp, 0);
@@ -104,42 +106,56 @@ export function bandBlock(days, level, order) {
       </div>
       <div class="dash-band-field">
         ${bandSvg(days, summary)}
-        <button class="dash-chip" type="button" data-dash="progress" aria-label="${chipSay}">
-          ${icon("stairs", "dash-chip-icon")}
-          <span class="dash-chip-strong">Stufe ${level.level}</span>
-          <span>noch ${formatNumber(level.missing)} XP</span>
-        </button>
+        ${chipMarkup(level, chipSay, onPage)}
       </div>
       ${bandLabels(days)}
     </section>`;
 }
 
-/* Eine große Karte: Kopf mit Icon und Pfeil-Kreis rechts, große Zahl, Zeile darunter, Grafik unten. */
+/* Der gläserne Chip mit der Stufe: ein Knopf zum Fortschritt, auf dessen Seite nur Anzeige. */
+function chipMarkup(level, say, onPage) {
+  const inner = `
+    ${icon("stairs", "dash-chip-icon")}
+    <span class="dash-chip-strong">Stufe ${level.level}</span>
+    <span>noch ${formatNumber(level.missing)} XP</span>`;
+  if (onPage) return `<span class="dash-chip">${inner}</span>`;
+  return `<button class="dash-chip" type="button" data-dash="progress" aria-label="${say}">${inner}</button>`;
+}
+
+/*
+ * Eine große Karte: Kopf mit Icon und Pfeil-Kreis rechts, große Zahl, Zeile
+ * darunter, Grafik unten. Ohne `action` ist sie nur Anzeige: kein Knopf,
+ * kein Pfeil-Kreis.
+ */
 function cardMarkup({ action, say, iconName, title, value, unit, sub, foot, order }) {
+  const tag = action ? "button" : "div";
+  const attrs = action ? ` type="button" data-dash="${action}" aria-label="${say}"` : "";
   return `
-    <button class="dash-card dash-enter" type="button" data-dash="${action}" aria-label="${say}" style="--i: ${order}">
+    <${tag} class="dash-card dash-enter"${attrs} style="--i: ${order}">
       <span class="dash-card-head">
         ${icon(iconName, "dash-card-icon")}<span>${title}</span>
-        <span class="dash-card-go">${icon("arrow-right")}</span>
+        ${action ? `<span class="dash-card-go">${icon("arrow-right")}</span>` : ""}
       </span>
       <span class="dash-card-body">
         <span class="dash-hero-num">${value}<span class="dash-hero-unit">${unit}</span></span>
         <span class="dash-card-sub">${sub}</span>
       </span>
       ${foot}
-    </button>`;
+    </${tag}>`;
 }
 
 /**
  * Die zwei großen Karten nebeneinander.
- * @param data { week, level, streak, usage, order } — Punkte dieser Woche,
- *   levelSummary(), usageStreaks(), usageByDay() und der Platz der ersten Karte beim Auftauchen.
+ * @param data { week, level, streak, usage, order, onPage } — Punkte dieser
+ *   Woche, levelSummary(), usageStreaks(), usageByDay(), der Platz der ersten
+ *   Karte beim Auftauchen und ob sie auf der Seite Fortschritt selbst stehen
+ *   (dann ist „Diese Woche“ nur Anzeige).
  */
-export function heroCards({ week, level, streak, usage, order }) {
+export function heroCards({ week, level, streak, usage, order, onPage = false }) {
   const next = level.level + 1;
   const dayWord = (n) => (n === 1 ? "Tag" : "Tage");
   const weekCard = cardMarkup({
-    action: "progress",
+    action: onPage ? "" : "progress",
     say: `Diese Woche ${formatNumber(week)} XP, Stufe ${level.level}, noch ${formatNumber(level.missing)} XP bis Stufe ${next}. Fortschritt öffnen`,
     iconName: "trend",
     title: "Diese Woche",

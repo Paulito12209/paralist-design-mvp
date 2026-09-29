@@ -69,11 +69,26 @@ function soonRowMarkup(card) {
     </div>`;
 }
 
+/*
+ * Die Sammlungen: die täglichen offen, die seltenen (Archiv und was noch
+ * kommt) unter „Mehr anzeigen“ — die Leiste bleibt kurz und ruhig. Auf- und
+ * zugeklappt wird in src/shell/desk-nav.js (setMoreOpen).
+ */
 function collectionsMarkup() {
+  const daily = collectionLinks.filter((link) => !link.quiet);
+  const rare = collectionLinks.filter((link) => link.quiet);
   return `
     <section class="desk-nav-group" aria-label="Sammlungen">
       ${headMarkup("Sammlungen")}
-      <div class="desk-nav-list">${collectionLinks.map(collectionRowMarkup).join("")}${soonLinks.map(soonRowMarkup).join("")}</div>
+      <div class="desk-nav-list">
+        ${daily.map(collectionRowMarkup).join("")}
+        <div class="desk-nav-more" id="desk-nav-more" hidden>${rare.map(collectionRowMarkup).join("")}${soonLinks.map(soonRowMarkup).join("")}</div>
+        <button class="desk-nav-row desk-nav-more-toggle" type="button" data-nav-more="1" aria-expanded="false" aria-controls="desk-nav-more">
+          ${icon("dots", "desk-nav-icon")}
+          <span class="desk-nav-text">Mehr anzeigen</span>
+          ${icon("chevron", "desk-nav-more-chevron")}
+        </button>
+      </div>
     </section>`;
 }
 

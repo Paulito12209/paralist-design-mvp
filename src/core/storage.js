@@ -21,6 +21,7 @@ export const storageKeys = {
   deskNav: "paralist-desk-nav",
   deskGroups: "paralist-desk-groups",
   deskHints: "paralist-desk-hints",
+  deskMore: "paralist-desk-more",
 };
 
 /** Liest gespeichertes JSON. Fehlt es oder ist es kaputt, kommt `fallback` zurück. */

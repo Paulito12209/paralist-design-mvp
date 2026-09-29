@@ -1,0 +1,282 @@
+/*
+ * Desktop: die Bühne der Übersicht — gebaut wie der Kopf von Apple Arcade.
+ * Ohne Kartenrahmen: links Art, großer Titel, ein Satz und die Pille
+ * „Öffnen“, rechts das Cover der Seite in ihrem Farbton mit leuchtender
+ * Umlaufbahn. Die Seiten liegen übereinander und blenden ineinander über.
+ * Darunter die Punkte (der aktive wird lang) mit zwei Pfeilen; die Reihe der
+ * Kacheln darunter steht in styles/dashboard-shelf.css
+ * (Markup: src/features/dashboard/dashboard-stage.js).
+ * Gilt erst ab 1024px Fensterbreite.
+ * Pfad: styles/dashboard-stage.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (oben bei .showcase)
+ * -----------------------------------
+ * --showcase-height       -> Höhe der Bühne (wächst mit dem Fenster zwischen zwei Grenzen)
+ * --showcase-cover        -> Kantenlänge des Covers rechts
+ * --showcase-title-size   -> Schriftgröße des großen Titels
+ * --showcase-fade         -> Dauer der Überblendung beim Blättern
+ * --showcase-sway         -> Dauer eines ruhigen Hin und Hers der Umlaufbahn
+ * --showcase-dot          -> Durchmesser eines Punktes; der aktive ist --showcase-dot-wide lang
+ * Einzelne Größen stehen bei ihrer Regel: Art 13px, Satz 15px, Pille 15px und
+ * 44px hoch, Pfeile 32px, Rundung des Covers 26% der Kante (wie ein App-Icon).
+ *
+ * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * --showcase-accent -> Farbton der Seite; setzt das Skript je Seite
+ * --desk-chip-bg / --desk-edge / --desk-hover -> Pfeile, Haarlinie um das Cover, Tönung beim Überfahren
+ * --desk-ease / --desk-fast -> Kurve und Dauer der kleinen Übergänge
+ * --text / --bg / --muted / --avatar-btn-bg / --nav-glow-color -> Schrift, Grund, leise Schrift, Fokus-Ring, Punkte
+ */
+
+@media (min-width: 1024px) {
+  .showcase {
+    --showcase-height: clamp(260px, 28vw, 340px);
+    --showcase-cover: clamp(132px, 12vw, 176px);
+    --showcase-title-size: 40px;
+    --showcase-fade: 0.5s;
+    --showcase-sway: 9s;
+    --showcase-dot: 7px;
+    --showcase-dot-wide: 24px;
+  }
+
+  /* Die Seiten liegen im selben Rasterfeld übereinander: kein Springen der Höhe beim Blättern */
+  .showcase-slides {
+    display: grid;
+    height: var(--showcase-height);
+  }
+
+  .showcase-slide {
+    grid-area: 1 / 1;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    align-items: center;
+    column-gap: 32px;
+    opacity: 0;
+    visibility: hidden; /* visibility: verdeckte Seiten fangen keine Klicks ab */
+    transition: opacity var(--showcase-fade) var(--desk-ease), visibility 0s linear var(--showcase-fade); /* transition: erst ausblenden, dann verstecken */
+  }
+
+  .showcase-slide.is-active {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity var(--showcase-fade) var(--desk-ease);
+  }
+
+  /* ---------- Links: Art, Titel, Satz, Pille ---------- */
+
+  .showcase-copy {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0;
+    transform: translateY(10px); /* transform: der Text steigt beim Erscheinen ein Stück auf */
+    transition: transform var(--showcase-fade) var(--desk-ease); /* transition: s. o. */
+  }
+
+  .showcase-slide.is-active .showcase-copy {
+    transform: none;
+  }
+
+  .showcase-kicker {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    /* color-mix: die Art trägt einen Hauch des Seiten-Farbtons, bleibt aber lesbar */
+    color: color-mix(in srgb, var(--showcase-accent) 60%, var(--text));
+  }
+
+  .showcase-title {
+    display: -webkit-box; /* display/-webkit-box-orient/-webkit-line-clamp: höchstens zwei Zeilen, dann „…“ */
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    font-size: var(--showcase-title-size);
+    font-weight: 700;
+    line-height: 1.08;
+    letter-spacing: -0.025em;
+    color: var(--text);
+    overflow-wrap: anywhere; /* overflow-wrap: ein sehr langes Wort bricht, statt über die Art zu ragen */
+  }
+
+  .showcase-text {
+    font-size: 15px;
+    color: var(--muted);
+  }
+
+  .showcase-open {
+    height: 44px;
+    margin-top: 12px;
+    padding: 0 26px;
+    border-radius: 999px;
+    /* color-mix: graue Pille aus der Schriftfarbe wie in Arcade — hell und dunkel ohne eigenen Wert */
+    background: color-mix(in srgb, var(--text) 10%, transparent);
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+    transition: background-color var(--desk-fast) var(--desk-ease), transform var(--desk-fast) var(--desk-ease); /* transition: Tönung und Drücken gleiten */
+  }
+
+  /* ---------- Rechts: Cover mit Umlaufbahn ---------- */
+
+  .showcase-art {
+    position: relative; /* position: Bezug für Leuchten und Umlaufbahn */
+    display: grid;
+    place-items: center;
+    height: 100%;
+    pointer-events: none; /* pointer-events: reine Zier, Klicks gehen auf die Seite */
+  }
+
+  /* Weiches Leuchten im Farbton hinter allem */
+  .showcase-glow {
+    position: absolute; /* position: liegt hinter Cover und Bahn, nimmt keinen Platz */
+    inset: -10% 0;
+    background: radial-gradient(closest-side, color-mix(in srgb, var(--showcase-accent) 28%, transparent), transparent);
+  }
+
+  /* Drei schräge Ellipsen als leuchtende Bahn um das Cover */
+  .showcase-orbit {
+    position: absolute; /* position: s. o. */
+    width: min(100%, calc(var(--showcase-cover) * 2.6));
+    height: calc(var(--showcase-cover) * 1.05);
+    transform: rotate(-14deg); /* transform: die Bahn liegt schräg wie in Arcade */
+  }
+
+  .showcase-orbit span {
+    position: absolute; /* position: alle drei Ellipsen im selben Rahmen, je anders groß */
+    inset: 0;
+    border: 1.5px solid color-mix(in srgb, var(--showcase-accent) 70%, transparent);
+    border-radius: 50%;
+    /* box-shadow: das Leuchten der Bahn — innen und außen im Farbton, kein Schatten */
+    box-shadow: 0 0 16px color-mix(in srgb, var(--showcase-accent) 45%, transparent), inset 0 0 12px color-mix(in srgb, var(--showcase-accent) 30%, transparent);
+  }
+
+  .showcase-orbit span:nth-child(2) {
+    inset: 9% 6%;
+    opacity: 0.6;
+  }
+
+  .showcase-orbit span:nth-child(3) {
+    inset: 19% 13%;
+    opacity: 0.35;
+  }
+
+  .showcase-cover {
+    position: relative; /* position: liegt über der Bahn */
+    display: grid;
+    place-items: center;
+    width: var(--showcase-cover);
+    aspect-ratio: 1; /* aspect-ratio: immer ein Quadrat wie ein App-Icon */
+    overflow: hidden; /* overflow: ein Vorschaubild folgt der Rundung */
+    border: 0.5px solid var(--desk-edge);
+    border-radius: 26%;
+    background: linear-gradient(150deg, color-mix(in srgb, var(--showcase-accent) 18%, var(--bg)), color-mix(in srgb, var(--showcase-accent) 36%, var(--bg)));
+    color: color-mix(in srgb, var(--showcase-accent) 82%, var(--text));
+  }
+
+  .showcase-cover .icon {
+    width: 44%;
+    height: 44%;
+  }
+
+  .showcase-cover .entry-thumb {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  /* ---------- Punkte und Pfeile ---------- */
+
+  .showcase-pager {
+    position: relative; /* position: Bezug für die Pfeile rechts */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 32px;
+    margin-top: 6px;
+  }
+
+  .showcase.is-single .showcase-pager {
+    display: none;
+  }
+
+  .showcase-dots {
+    display: flex;
+  }
+
+  /* Der Knopf ist größer als sein Punkt: leichter zu treffen */
+  .showcase-dot {
+    padding: 8px 4px;
+  }
+
+  .showcase-dot::before {
+    content: "";
+    display: block;
+    width: var(--showcase-dot);
+    height: var(--showcase-dot);
+    border-radius: 999px;
+    background: rgba(var(--nav-glow-color), 0.22);
+    transition: width var(--showcase-fade) var(--desk-ease), background-color var(--showcase-fade) var(--desk-ease); /* transition: der aktive Punkt wächst weich in die Länge */
+  }
+
+  .showcase-dot[aria-current]::before {
+    width: var(--showcase-dot-wide);
+    background: var(--text);
+  }
+
+  .showcase-steps {
+    position: absolute; /* position: Pfeile rechts, die Punkte bleiben genau mittig */
+    right: 0;
+    display: flex;
+    gap: 6px;
+  }
+
+  .showcase-step {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--desk-chip-bg);
+    color: var(--text);
+    transition: background-color var(--desk-fast) var(--desk-ease); /* transition: Tönung gleitet */
+  }
+
+  .showcase-step .icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* ---------- Überfahren, Drücken, Tastatur ---------- */
+
+  @media (hover: hover) {
+    .showcase-open:hover {
+      background: color-mix(in srgb, var(--text) 16%, transparent);
+    }
+
+    .showcase-step:hover {
+      background: var(--desk-hover);
+    }
+  }
+
+  .showcase-open:active,
+  .showcase-step:active {
+    opacity: 0.6;
+  }
+
+  .showcase :is(.showcase-open, .showcase-dot, .showcase-step):focus-visible {
+    outline: 2px solid var(--avatar-btn-bg); /* outline: sichtbarer Ring nur bei Bedienung mit der Tastatur */
+    outline-offset: 3px;
+  }
+}
+
+/* Bewegung nur, wenn sie nicht abgeschaltet ist: die Bahn schwingt ruhig hin und her. */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .showcase-slide.is-active .showcase-orbit {
+    animation: showcase-sway var(--showcase-sway) ease-in-out infinite alternate; /* animation: s. o. */
+  }
+}
+
+@keyframes showcase-sway {
+  from { transform: rotate(-16deg) scale(0.98); }
+  to { transform: rotate(-10deg) scale(1.02); }
+}

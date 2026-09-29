@@ -1,0 +1,167 @@
+/*
+ * Desktop: die Reihe unter der Bühne der Übersicht — was mit der gerade
+ * gezeigten Seite verknüpft ist (bei Arbeitsbereichen und Projekten ihr
+ * Inhalt), als quadratische Kacheln wie App-Icons in Apple Arcade unter
+ * „Weiterspielen“. Die Bühne selbst: styles/dashboard-stage.css; Markup:
+ * src/features/dashboard/dashboard-stage.js. Gilt erst ab 1024px Fensterbreite.
+ * Pfad: styles/dashboard-shelf.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (oben bei .showcase-shelf)
+ * -----------------------------------
+ * --showcase-tile       -> kleinste Breite einer Kachel (breiteres Fenster = mehr Kacheln in der Reihe)
+ * --showcase-shelf-gap  -> Luft zwischen Bühne und Reihe
+ * Einzelne Größen stehen bei ihrer Regel: Überschrift 21px, Seitenname 15px,
+ * Kacheltitel 14px, Kachel-Art 12px, „+ n“ 22px, Fuge 20px, Rundung 26% der
+ * Kante (wie ein App-Icon), Anheben beim Überfahren 3px.
+ *
+ * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * --tile-accent -> Farbton des Eintrags; setzt das Skript je Kachel
+ * --desk-chip-bg / --desk-edge -> Kachel „+ n“, Haarlinie um die Kacheln
+ * --desk-ease / --desk-fast / --desk-enter -> Kurve und Dauer von Anheben und Einblenden
+ * --text / --card / --muted / --avatar-btn-bg / --nav-glow-color -> Schrift, Kachelfläche, leise Schrift, Fokus-Ring, gestrichelter Rand
+ */
+
+@media (min-width: 1024px) {
+  .showcase-shelf {
+    --showcase-tile: 108px;
+    --showcase-shelf-gap: 28px;
+    margin-top: var(--showcase-shelf-gap);
+  }
+
+  .showcase-shelf-title {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    margin-bottom: 14px;
+    font-size: 21px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--text);
+  }
+
+  .showcase-shelf-title span {
+    min-width: 0;
+    overflow: hidden; /* overflow/text-overflow/white-space: ein langer Seitenname endet mit „…“ */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 15px;
+    font-weight: 500;
+    letter-spacing: 0;
+    color: var(--muted);
+  }
+
+  .showcase-tiles {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--showcase-tile), 1fr));
+    gap: 20px;
+  }
+
+  .showcase-tile {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    text-align: left;
+  }
+
+  .showcase-tile.is-add {
+    width: var(--showcase-tile);
+  }
+
+  .showcase-tile-art {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    aspect-ratio: 1; /* aspect-ratio: s. Cover */
+    overflow: hidden; /* overflow: s. Cover */
+    border: 0.5px solid var(--desk-edge);
+    border-radius: 26%;
+    background: color-mix(in srgb, var(--tile-accent) 16%, var(--card));
+    color: color-mix(in srgb, var(--tile-accent) 82%, var(--text));
+    transition: transform var(--desk-fast) var(--desk-ease); /* transition: die Kachel hebt sich beim Überfahren weich */
+  }
+
+  /* Vorschaubild (Foto, Zeichnung) füllt die ganze Kachel */
+  .showcase-tile-art .entry-thumb {
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+  }
+
+  .showcase-tile-art .icon {
+    width: 38%;
+    height: 38%;
+  }
+
+  .showcase-tile.is-more .showcase-tile-art {
+    background: var(--desk-chip-bg);
+    font-size: 22px;
+    font-weight: 300;
+    color: var(--text);
+  }
+
+  .showcase-tile.is-add .showcase-tile-art {
+    border: 1.5px dashed rgba(var(--nav-glow-color), 0.22);
+    background: transparent;
+    color: var(--muted);
+  }
+
+  .showcase-tile-title {
+    display: -webkit-box; /* display/-webkit-box-orient/-webkit-line-clamp: höchstens zwei Zeilen */
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 1.25;
+    color: var(--text);
+  }
+
+  .showcase-tile-kind {
+    margin-top: -4px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .showcase-shelf-empty {
+    font-size: 15px;
+    color: var(--muted);
+  }
+
+  @media (hover: hover) {
+    .showcase-tile:hover .showcase-tile-art {
+      transform: translateY(-3px); /* transform: s. o. */
+    }
+  }
+
+  .showcase-tile:active {
+    opacity: 0.6;
+  }
+
+  .showcase-tile:focus-visible {
+    outline: 2px solid var(--avatar-btn-bg); /* outline: sichtbarer Ring nur bei Bedienung mit der Tastatur */
+    outline-offset: 3px;
+  }
+
+  /* Die Übersicht zeigt die zuletzt geöffneten Seiten schon groß — rechts
+     nicht noch einmal klein. :has: fehlt es, stehen sie eben doppelt. */
+  .device:has(#view-home.is-active) .rail-recent {
+    display: none;
+  }
+}
+
+/* Bewegung nur, wenn sie nicht abgeschaltet ist: eine neue Reihe Kacheln blendet weich ein. */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .showcase-tiles,
+  .showcase-tile.is-add,
+  .showcase-shelf-empty {
+    animation: showcase-swap var(--desk-enter) var(--desk-ease) both; /* animation: jede neu gesetzte Reihe steigt weich auf */
+  }
+}
+
+@keyframes showcase-swap {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}

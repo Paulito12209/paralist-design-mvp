@@ -1,7 +1,7 @@
 /*
  * Der Kopf der Desktop-Fassung: links über der Seitenleiste die Wortmarke mit
  * dem Klapp-Knopf, über der Mitte die Reiterzeile — links Zurück und Vorwärts,
- * mittig die vier Reiter, rechts der runde Such-Knopf, sobald die Seitenleiste
+ * mittig die vier Reiter als Segment-Leiste, rechts der runde Such-Knopf, sobald die Seitenleiste
  * zu ist. Diese Datei hängt beide Teile ein, hält den gewählten Reiter und die
  * Pfeile aktuell und merkt sich, ob die Seitenleiste zu ist.
  * Pfad: src/shell/desk-head.js
@@ -23,7 +23,7 @@ import { deskStats } from "../data/insights.js";
 import { closeOverlay, goBack, goForward, showTab } from "../ui/router.js";
 import { currentView, isViewActive } from "../ui/views.js";
 import { pageLinks, withCommand } from "../ui/desk-links.js";
-import { isSettingsOpen } from "./desk-nav.js";
+import { coveringPage } from "./desk-nav.js";
 import { openPalette } from "./search-palette.js";
 
 const wordmark = "Paralist";
@@ -48,20 +48,16 @@ function toggleButton(extraClass = "") {
 }
 
 /*
- * Ein Reiter: Icon und Name. Die Taste steht nicht als Schild in der Pille —
- * eine Ziffer dort liest man als Anzahl. Sie erscheint erst beim Überfahren
- * als kleiner Hinweis „Taste 1“ unter dem Reiter; wird es eng und der Name
- * fällt weg, steht er im Hinweis mit. Kein title: sonst käme der Hinweis doppelt.
+ * Ein Reiter: nur sein Name, ohne Icon — ruhig wie die Leiste in Apple Arcade.
+ * Die Taste steht nicht als Schild in der Pille — eine Ziffer dort liest man
+ * als Anzahl. Sie erscheint erst beim Überfahren als kleiner Hinweis
+ * „Taste 1“ unter dem Reiter. Kein title: sonst käme der Hinweis doppelt.
  */
 function tabMarkup(link) {
   return `
     <button class="desk-tab" type="button" data-head-tab="${link.tab}" aria-keyshortcuts="${link.key}">
-      ${icon(link.icon, "desk-tab-icon")}
       <span class="desk-tab-label">${link.label}</span>
-      <span class="desk-tab-hint" aria-hidden="true">
-        <span class="desk-tab-hint-name">${link.label} ·</span>
-        Taste <kbd class="desk-kbd desk-kbd-inverse">${link.key}</kbd>
-      </span>
+      <span class="desk-tab-hint" aria-hidden="true">Taste <kbd class="desk-kbd desk-kbd-inverse">${link.key}</kbd></span>
     </button>`;
 }
 
@@ -139,12 +135,13 @@ export function setNavClosed(value) {
 }
 
 /**
- * Einen der vier Reiter öffnen — per Klick und über die Tasten 1 bis 4. Liegen
- * die Einstellungen über genau diesem Reiter, gehen sie zu; sonst bliebe man
- * dort stecken, weil der Reiter darunter schon als offen gilt.
+ * Einen der vier Reiter öffnen — per Klick und über die Tasten 1 bis 4. Liegt
+ * Profil oder Fortschritt über genau diesem Reiter, geht die Seite zu; sonst
+ * bliebe man dort stecken, weil der Reiter darunter schon als offen gilt.
  */
 export function openPageTab(tab) {
-  if (isSettingsOpen() && isViewActive(tab)) closeOverlay("profile");
+  const covering = coveringPage();
+  if (covering && isViewActive(tab)) closeOverlay(covering);
   else showTab(tab);
 }
 
