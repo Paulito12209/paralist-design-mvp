@@ -20,6 +20,10 @@
  * --desk-enter / --desk-enter-rise / --desk-enter-step / --desk-ease -> Dauer, Tiefe,
  *                 Staffelung und Kurve beim Auftauchen der Blöcke
  * --i          -> Reihenfolge beim Auftauchen; setzt src/shell/desk-nav-parts.js je Block
+ *
+ * Profil › Kurzbefehle blendet die Schilder aus: .hide-nav-kbd (Seitenleiste
+ * samt Suchfeld und Konto) und .hide-tabs-kbd (Reiterzeile) setzt
+ * src/shell/desk.js auf das Gerätefenster.
  */
 
 @media (min-width: 1024px) {
@@ -55,6 +59,12 @@
   .desk-kbd-soon {
     background: var(--desk-chip-bg);
     color: var(--muted);
+  }
+
+  /* Ausgeblendet unter Profil › Kurzbefehle; die Tasten selbst gehen weiter. */
+  .device.hide-nav-kbd :is(.desk-nav, .top-bar) .desk-kbd,
+  .device.hide-tabs-kbd .desk-tabs .desk-kbd {
+    display: none;
   }
 
   /* ---------- Auftauchen ---------- */

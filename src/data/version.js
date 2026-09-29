@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "9676afb2380a";
+export const appVersion = "9d3f5eceae65";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -65,6 +65,7 @@ export const appFiles = [
   "src/data/queries.js",
   "src/data/refs.js",
   "src/data/seed.js",
+  "src/data/shortcut-hints.js",
   "src/data/state.js",
   "src/data/task-archive.js",
   "src/data/task-views.js",
@@ -124,8 +125,11 @@ export const appFiles = [
   "src/features/profile/feedback.js",
   "src/features/profile/nav-labels.js",
   "src/features/profile/profile-cards.js",
+  "src/features/profile/profile-page.js",
   "src/features/profile/profile.js",
   "src/features/profile/settings-cards.js",
+  "src/features/profile/settings-nav.js",
+  "src/features/profile/shortcuts.js",
   "src/features/profile/theme.js",
   "src/features/profile/usage-split.js",
   "src/features/progress/progress-charts.js",
@@ -150,7 +154,6 @@ export const appFiles = [
   "src/features/tasks/tasks.js",
   "src/main.js",
   "src/shell/desk-head.js",
-  "src/shell/desk-links.js",
   "src/shell/desk-nav-parts.js",
   "src/shell/desk-nav.js",
   "src/shell/desk-rail-cards.js",
@@ -176,6 +179,7 @@ export const appFiles = [
   "src/ui/chart.js",
   "src/ui/copy-page.js",
   "src/ui/ctx-menu.js",
+  "src/ui/desk-links.js",
   "src/ui/desk-mode.js",
   "src/ui/details.js",
   "src/ui/drawing-export.js",
@@ -229,6 +233,7 @@ export const appFiles = [
   "styles/desk-rail-tiles.css",
   "styles/desk-rail-views.css",
   "styles/desk-rail.css",
+  "styles/desk-settings.css",
   "styles/desk-views.css",
   "styles/desk.css",
   "styles/details.css",
@@ -254,6 +259,7 @@ export const appFiles = [
   "styles/settings.css",
   "styles/sheet-tabs.css",
   "styles/sheet-tiles.css",
+  "styles/shortcuts.css",
   "styles/slash-menu.css",
   "styles/support.css",
   "styles/swipe-rows.css",

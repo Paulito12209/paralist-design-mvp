@@ -13,7 +13,7 @@
  *
  * Aussehen und Maße stehen in styles/desk-head.css, das Ein- und Ausklappen
  * des Rasters in styles/desk.css. Die Reiter selbst kommen aus pageLinks in
- * src/shell/desk-links.js.
+ * src/ui/desk-links.js.
  */
 
 import { dom } from "../core/dom.js";
@@ -22,7 +22,7 @@ import { readText, storageKeys, writeText } from "../core/storage.js";
 import { deskStats } from "../data/insights.js";
 import { goBack, goForward, showTab } from "../ui/router.js";
 import { currentView } from "../ui/views.js";
-import { pageLinks, withCommand } from "./desk-links.js";
+import { pageLinks, withCommand } from "../ui/desk-links.js";
 import { openPalette } from "./search-palette.js";
 
 const wordmark = "Paralist";

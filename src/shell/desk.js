@@ -11,7 +11,7 @@
  *                geprüft wird (Millisekunden)
  *
  * Welche Taste welchen Reiter und welche Sammlung öffnet, steht in
- * src/shell/desk-links.js (pageLinks, collectionLinks, chordWindow) — so können
+ * src/ui/desk-links.js (pageLinks, collectionLinks, chordWindow) — so können
  * Taste und Schild daneben nie auseinanderlaufen.
  *
  * Tastenkürzel (nur, solange nicht in ein Feld getippt wird und kein Blatt offen ist):
@@ -22,7 +22,8 @@
  *   G, dann I F P R L A -> Eingang, Favoriten, Projekte, Ressourcen, Lesezeichen, Archiv
  *   ⌘[  und  ⌘]    -> zurück und vor
  *   ⌘\             -> Seitenleiste ein- und ausklappen
- *   ⌘,             -> Profil und Einstellungen
+ *   ⌘,             -> Profil und Einstellungen (Punkt „Konto“)
+ *   ?              -> Profil › Kurzbefehle
  *   Escape         -> schließt, was obenauf liegt: Palette, Menü, Auswahl-Blatt, Dialog,
  *                     Dateiansicht, zuletzt das Eingabefeld — auch beim Tippen darin
  * Statt ⌘ gilt außerhalb des Macs Strg.
@@ -32,12 +33,13 @@ import { emit, events, on } from "../core/bus.js";
 import { dayKey } from "../core/dates.js";
 import { dom, el } from "../core/dom.js";
 import { load } from "../core/lazy.js";
+import { hintPlaces, hintsShown } from "../data/shortcut-hints.js";
 import { closeCtxMenu } from "../ui/ctx-menu.js";
 import { isDesk, isRailShown, onDeskChange } from "../ui/desk-mode.js";
 import { goBack, goForward, showTab } from "../ui/router.js";
 import { closeSheet } from "../ui/sheet.js";
 import { isNavClosed, mountDeskHead, renderDeskHead, setNavClosed } from "./desk-head.js";
-import { chordKey, chordWindow, collectionLinks, pageLinks } from "./desk-links.js";
+import { chordKey, chordWindow, collectionLinks, pageLinks } from "../ui/desk-links.js";
 import { mountDeskNav, openCollection, renderDeskNav } from "./desk-nav.js";
 import { mountDeskRail, registerRailCards, renderDeskRail } from "./desk-rail.js";
 import { setSearchTakeover } from "./search-bar.js";
@@ -47,9 +49,10 @@ const clockTick = 60000;
 const navKeys = Object.fromEntries(pageLinks.map((link) => [link.key, link.tab]));
 const chordTargets = Object.fromEntries(collectionLinks.map((link) => [link.key.toLowerCase(), link.id]));
 
-/* Offene Ebenen, über denen kein Kürzel etwas auslösen darf. */
+/* Offene Ebenen, über denen kein Kürzel etwas auslösen darf. Das Profil
+   zählt nicht: am Desktop ist es eine Seite (src/features/profile/profile-page.js). */
 const openLayers =
-  ".palette-backdrop:not([hidden]), .modal-backdrop:not([hidden]), .sheet-backdrop:not([hidden]), .ctx-backdrop:not([hidden]), .viewer-backdrop:not([hidden]), .update-backdrop:not([hidden])";
+  ".palette-backdrop:not([hidden]), .modal-backdrop:not([hidden]):not(#profile), .sheet-backdrop:not([hidden]), .ctx-backdrop:not([hidden]), .viewer-backdrop:not([hidden]), .update-backdrop:not([hidden])";
 
 let mounted = false;
 let clock = null;
@@ -189,9 +192,24 @@ function onCommandKey(event) {
   if (key === "\\") setNavClosed(!isNavClosed());
   else if (key === "[") goBack();
   else if (key === "]") goForward();
-  else if (key === ",") load("profile").then((module) => module.open());
+  else if (key === ",") openProfile("konto");
   else return false;
   return true;
+}
+
+/* Die Profilseite auf einem Punkt ihres Untermenüs öffnen. */
+function openProfile(pane) {
+  dropStaleFocus();
+  load("profile").then((module) => module.openPane(pane));
+}
+
+/*
+ * Die Tasten-Schilder ausblenden, wo Profil › Kurzbefehle sie abgeschaltet
+ * hat: .hide-nav-kbd (Seitenleiste samt Suchfeld) und .hide-tabs-kbd
+ * (Reiterzeile) wirken in styles/desk-kbd.css.
+ */
+function applyHints() {
+  hintPlaces.forEach((place) => dom.device.classList.toggle(`hide-${place}-kbd`, !hintsShown(place)));
 }
 
 /* „G“ öffnet das Fenster für den Buchstaben einer Sammlung; der Buchstabe schließt es wieder. */
@@ -236,6 +254,11 @@ function onKeyDown(event) {
   if (event.key === "/") {
     event.preventDefault();
     focusSearch();
+    return;
+  }
+  if (event.key === "?") {
+    event.preventDefault();
+    openProfile("kurzbefehle");
     return;
   }
   if (event.key === "n" || event.key === "N") {
@@ -284,6 +307,8 @@ export function initDesk(handlers = {}) {
   Object.entries(handlers.railCards || {}).forEach(([view, importFn]) => registerRailCards(view, importFn));
   /* Anderer Tag im Kalender, anderer markierter Treffer: nur die Spalte rechts. */
   on(events.contextChanged, refreshRail);
+  on(events.shortcutHintsChanged, applyHints);
+  applyHints();
   on(events.profileChanged, refreshNav);
 
   on(events.dataChanged, refreshAll);

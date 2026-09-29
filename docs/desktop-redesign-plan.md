@@ -210,7 +210,7 @@ führt dorthin, woher man kam.
 **Profil › Kurzbefehle.** Eine Unterseite mit allen Kürzeln nach Gruppen
 (Seiten, Sammlungen, Überall) und zwei Schaltern: „Schilder in der
 Seitenleiste“ und „Schilder in der Reiterzeile“. Die Wahl wird gespeichert
-(`ui.shortcutHints` in `src/data/state.js`). Die Taste `?` öffnet diese Seite.
+(`src/data/shortcut-hints.js`). Die Taste `?` öffnet diese Seite.
 
 ## 6a. Abstände
 
@@ -250,7 +250,7 @@ Jeder Schritt ist für sich lauffähig, wird geprüft (`tools/version.py`,
    „Pläne“ als „Bald“ (dieselben Karten wie „Demnächst verfügbar“ am Handy),
    Tab-Gruppen (zugeklappte unter `storageKeys.deskGroups`), Fuß mit Stufe und
    Konto in `styles/desk-nav-foot.css`. Ziele und Tasten an einer Stelle in
-   `src/shell/desk-links.js`; Kürzel in `src/shell/desk.js`; blaue Schilder in
+   `src/shell/desk-links.js` (seit Schritt 4 `src/ui/desk-links.js`); Kürzel in `src/shell/desk.js`; blaue Schilder in
    `styles/desk-kbd.css` (ersetzt die Tipp-Karte). Kontodaten liegen jetzt in
    `src/data/account.js`, `goForward()` im Router. Übergang bis Schritt 7:
    Unterseiten zeigen noch ihren eigenen Zurück-Pfeil unter der Reiterzeile.
@@ -279,12 +279,21 @@ Jeder Schritt ist für sich lauffähig, wird geprüft (`tools/version.py`,
    `events.contextChanged`. Noch offen und in den späteren Schritten: Details
    der markierten Aufgabe und „Ansicht konfigurieren“ (6), Details einer
    markierten Datei (6), Eintrag und Arbeitsbereich (7).
-4. **Profil als Seite** — `styles/desk-overlays.css`: das Einstellungs-Blatt
-   wird am Desktop eine Ansicht `settings` mit Untermenü
-   (`src/features/profile/settings-nav.js`). Neue Unterseite Kurzbefehle
-   (`src/features/profile/shortcuts.js`, `styles/shortcuts.css`) mit der
-   Liste und den zwei Schaltern; die Seitenleiste liest den Schalter und
-   blendet ihre Schilder aus.
+4. **Profil als Seite** — *umgesetzt.* Das Einstellungs-Blatt bleibt ein
+   Blatt (Verlauf `#/einstellungen`, Zurück wie bisher), liegt am Desktop aber
+   als Seite „Profil“ in der Mitte (`styles/desk-settings.css`, ab 1280 px
+   auch über der rechten Spalte) — eine eigene Ansicht `settings` war dafür
+   nicht nötig. Links das Untermenü (`src/features/profile/settings-nav.js`:
+   Konto, Darstellung, Navigation, Analyse, Feedback, Kurzbefehle, Hilfe),
+   Wechsel ohne neuen Verlaufsschritt (`src/features/profile/profile-page.js`).
+   Öffnet man daneben eine andere Seite, tritt das Profil zurück; Zurück holt
+   es wieder. Kürzel gelten auf der Seite weiter, `⌘,` und das Konto unten
+   links öffnen „Konto“, `?` „Kurzbefehle“. Kurzbefehle
+   (`src/features/profile/shortcuts.js`, `styles/shortcuts.css`) listet alle
+   Kürzel aus `src/ui/desk-links.js` (dafür von `shell/` nach `ui/`
+   verschoben) und hat die zwei Schalter; gespeichert in
+   `src/data/shortcut-hints.js`, angewandt von `src/shell/desk.js` über
+   `.hide-nav-kbd` / `.hide-tabs-kbd`.
 5. **Kalender-Woche** — `src/features/calendar/calendar-week.js` und
    `styles/calendar-week.css`: Sieben-Spalten-Raster ab 1024 px, Segment
    Tag / Woche / Monat in der Werkzeugzeile.

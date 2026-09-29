@@ -1,0 +1,50 @@
+/*
+ * Profil › Kurzbefehle (nur am Desktop): die Listen der Tastenkürzel mit
+ * ihren Schildern rechts. Die Schilder selbst (Farbe, Größe) stehen in
+ * styles/desk-kbd.css, die zwei Schalter nutzen die Zeilen aus
+ * styles/settings.css. Gebaut von src/features/profile/shortcuts.js.
+ * Pfad: styles/shortcuts.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * Einzelne Größen stehen bei ihrer Regel: Zeilenhöhe 44px, Schrift 15px,
+ * „oder“ zwischen zwei Schildern 12px.
+ *
+ * WERTE AUS styles/tokens.css
+ * -----------------------------------
+ * --card / --radius-lg -> Fläche und Rundung der Liste, wie die übrigen Karten
+ * --line / --muted -> Trennlinie zwischen den Zeilen, blasses „oder“
+ */
+
+@media (min-width: 1024px) {
+  .shortcut-list {
+    list-style: none; /* list-style: Zeilen ohne Aufzählungspunkt */
+    padding: 0 16px;
+    border-radius: var(--radius-lg);
+    background: var(--card);
+  }
+
+  .shortcut-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 44px;
+    font-size: 15px;
+  }
+
+  .shortcut-row + .shortcut-row {
+    border-top: 0.5px solid var(--line);
+  }
+
+  .shortcut-keys {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .shortcut-or {
+    font-size: 12px;
+    color: var(--muted);
+  }
+}
