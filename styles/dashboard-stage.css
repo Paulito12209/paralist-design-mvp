@@ -17,6 +17,10 @@
  * --showcase-fade         -> Dauer der Überblendung beim Blättern
  * --showcase-sway         -> Dauer eines ruhigen Hin und Hers der Umlaufbahn
  * --showcase-dot          -> Durchmesser eines Punktes; der aktive ist --showcase-dot-wide lang
+ * --showcase-float        -> Dauer eines Schwebens der Kategorie-Kugeln auf der Willkommensseite
+ * --showcase-float-reach  -> wie weit sie dabei auf und ab treiben
+ * Platz, Größe, Farbe und Startzeit jeder Kugel setzt das Skript (--sat-x, --sat-y,
+ * --sat-size, --sat-color, --sat-delay; Liste `satellites` in dashboard-stage.js).
  * Einzelne Größen stehen bei ihrer Regel: Art 13px, Satz 15px, Pille 15px und
  * 44px hoch, Pfeile 32px, Rundung des Covers 26% der Kante (wie ein App-Icon).
  *
@@ -36,6 +40,8 @@
     --showcase-sway: 9s;
     --showcase-dot: 7px;
     --showcase-dot-wide: 24px;
+    --showcase-float: 7s;
+    --showcase-float-reach: 6px;
   }
 
   /* Die Seiten liegen im selben Rasterfeld übereinander: kein Springen der Höhe beim Blättern */
@@ -177,6 +183,29 @@
     height: 44%;
   }
 
+  /* Kategorie-Kugeln der Willkommensseite: kleine Cover im Ton ihrer Eintragsart, verschieden groß */
+  .showcase-sat {
+    position: absolute; /* position: frei um das Cover verteilt, in Prozent der Fläche */
+    left: var(--sat-x);
+    top: var(--sat-y);
+    translate: -50% -50%; /* translate: Mitte der Kugel sitzt auf dem Punkt; eigene Eigenschaft, damit das Schweben (transform) nicht stört */
+    display: grid;
+    place-items: center;
+    width: var(--sat-size);
+    aspect-ratio: 1; /* aspect-ratio: immer rund, egal wie groß */
+    border: 0.5px solid var(--desk-edge);
+    border-radius: 50%;
+    background: linear-gradient(150deg, color-mix(in srgb, var(--sat-color) 14%, var(--bg)), color-mix(in srgb, var(--sat-color) 30%, var(--bg)));
+    color: color-mix(in srgb, var(--sat-color) 85%, var(--text));
+    /* box-shadow: ein Hauch Leuchten im Ton der Kugel, damit sie sich vom Grund löst */
+    box-shadow: 0 0 calc(var(--sat-size) * 0.5) color-mix(in srgb, var(--sat-color) 22%, transparent);
+  }
+
+  .showcase-sat .icon {
+    width: 50%;
+    height: 50%;
+  }
+
   /* ---------- Punkte und Pfeile ---------- */
 
   .showcase-pager {
@@ -267,6 +296,18 @@
   .showcase-slide.is-active .showcase-orbit {
     animation: showcase-sway var(--showcase-sway) ease-in-out infinite alternate; /* animation: s. o. */
   }
+}
+
+/* Die Kugeln treiben leicht auf und ab, jede zu ihrer eigenen Zeit (--sat-delay). */
+@media (min-width: 1024px) and (prefers-reduced-motion: no-preference) {
+  .showcase-slide.is-active .showcase-sat {
+    animation: showcase-float var(--showcase-float) ease-in-out var(--sat-delay) infinite alternate; /* animation: s. o. */
+  }
+}
+
+@keyframes showcase-float {
+  from { transform: translateY(calc(var(--showcase-float-reach) * -1)); }
+  to { transform: translateY(var(--showcase-float-reach)); }
 }
 
 @keyframes showcase-sway {

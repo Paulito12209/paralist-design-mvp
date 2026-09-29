@@ -19,6 +19,9 @@
  * swipeDistance -> wie weit man auf dem Trackpad waagerecht wischen muss, bis die Seite wechselt (Pixel)
  * swipePause    -> Ruhe nach einem Wechsel per Wischen, damit ein Schwung nicht mehrere Seiten weiterblättert (ms)
  * enterOrder    -> Platz von Bühne und Punkten beim Auftauchen, nach den vier Zahlen (0–3)
+ * satellites    -> die Kugeln rund ums Cover der Willkommensseite: welche Kategorie (Icon und Farbe),
+ *                  wo sie sitzt (x/y in Prozent der Fläche), wie groß (size in Pixel) und wann sie
+ *                  im Schweben beginnt (delay in Sekunden)
  *
  * Aussehen, Größen und Bewegung: styles/dashboard-stage.css.
  */
@@ -26,7 +29,7 @@
 import { emit, events } from "../../core/bus.js";
 import { formatNumber, shortOpenTime } from "../../core/format.js";
 import { escapeHtml, icon } from "../../core/html.js";
-import { typeIcon, typeSingular } from "../../data/config.js";
+import { typeIcon, typeSingular, xpItems } from "../../data/config.js";
 import { recentPages } from "../../data/insights.js";
 import { canLink } from "../../data/links.js";
 import { entryColor, findEntry, workspaceColor, workspaceIcon, workspaceLabel } from "../../data/queries.js";
@@ -38,6 +41,26 @@ const tileLimit = 7;
 const swipeDistance = 60;
 const swipePause = 600;
 const enterOrder = 4;
+
+/*
+ * Die Kategorien, die um das Cover der Willkommensseite kreisen — verschieden
+ * groß, damit es wie ein Schwarm wirkt. `type` nimmt Icon und Farbe der
+ * Eintragsart aus src/data/config.js; `icon` ohne `type` ist eine der festen
+ * Sammlungen der Seitenleiste (dann ohne Farbe, im Ton der Seite).
+ */
+const satellites = [
+  { type: "aufgabe", x: 27, y: 21, size: 46, delay: 0 },
+  { type: "termin", x: 85, y: 38, size: 52, delay: 1.2 },
+  { type: "projekt", x: 75, y: 79, size: 42, delay: 2.4 },
+  { type: "dokument", x: 21, y: 74, size: 38, delay: 0.6 },
+  { type: "notiz", x: 71, y: 14, size: 32, delay: 1.8 },
+  { type: "zeichnung", x: 9, y: 46, size: 28, delay: 3 },
+  { type: "lesezeichen", x: 40, y: 8, size: 24, delay: 2.1 },
+  { type: "medien", x: 58, y: 92, size: 28, delay: 0.9 },
+  { icon: "star-outline", x: 92, y: 13, size: 22, delay: 2.7 },
+  { icon: "inbox", x: 93, y: 74, size: 22, delay: 1.5 },
+  { icon: "cube", x: 40, y: 93, size: 24, delay: 3.3 },
+];
 
 let stage = null;
 let shelf = null;
@@ -88,12 +111,20 @@ function describe(page) {
   };
 }
 
+/* Eine Kategorie-Kugel: Icon im Ton ihrer Eintragsart, Platz und Größe aus `satellites`. */
+function satelliteMarkup(item) {
+  const color = item.type ? xpItems[item.type].color : "var(--showcase-accent)";
+  const glyph = icon(item.type ? typeIcon(item.type) : item.icon);
+  return `<span class="showcase-sat" style="--sat-x: ${item.x}%; --sat-y: ${item.y}%; --sat-size: ${item.size}px; --sat-color: ${color}; --sat-delay: ${item.delay}s">${glyph}</span>`;
+}
+
 /* Die Kunst rechts: drei Bahnen, die um das Cover kreisen, und das Cover selbst. */
-function artMarkup(art) {
+function artMarkup(art, swarm = "") {
   return `
     <div class="showcase-art" aria-hidden="true">
       <span class="showcase-glow"></span>
       <span class="showcase-orbit"><span></span><span></span><span></span></span>
+      ${swarm}
       <span class="showcase-cover">${art}</span>
     </div>`;
 }
@@ -122,7 +153,7 @@ function welcomeMarkup() {
         <p class="showcase-text">Öffne eine Seite — sie landet hier, samt allem, was mit ihr verknüpft ist.</p>
         <button class="showcase-open" type="button" data-showcase-new="1">Neu anlegen</button>
       </div>
-      ${artMarkup(icon("layers"))}
+      ${artMarkup(icon("layers"), satellites.map(satelliteMarkup).join(""))}
     </article>`;
 }
 
