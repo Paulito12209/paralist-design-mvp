@@ -30,6 +30,9 @@ import { isViewActive } from "../../ui/views.js";
 import { knownOpens, mostOpened, searchHits } from "./search-data.js";
 import { initSearchTap } from "./search-tap.js";
 
+/* Für die Such-Palette am Desktop, die dieses Modul über load("search") holt. */
+export { paletteGroups } from "./search-palette-data.js";
+
 const mostOpenedCount = 15;
 const recentOpenedCount = 15;
 
@@ -54,8 +57,8 @@ const emptyHits = {
   title: "Keine Treffer",
 };
 
-/* Treffer im Titel hervorheben; der Rest bleibt abgesichert. */
-function markHit(text, query) {
+/** Treffer im Titel hervorheben; der Rest bleibt abgesichert. Auch für die Such-Palette. */
+export function markHit(text, query) {
   const safe = escapeHtml(text);
   if (!query) return safe;
   const needle = escapeHtml(query);

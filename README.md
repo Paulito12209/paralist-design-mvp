@@ -348,6 +348,14 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   Übersicht. Rechtsklick auf Kopf oder Zeile öffnet das Menü, „Umbenennen“
   springt zur Übersicht.
 - Unten: Stufe öffnet Fortschritt, Konto und ⌘, öffnen die Einstellungen.
+- Such-Palette: ⌘K (Strg K), „/“, Klick ins Suchfeld links und bei
+  zugeklappter Leiste der runde Such-Knopf öffnen sie in der Mitte; die Leiste
+  bleibt zu. Leer zeigt sie „Zuletzt geöffnet / Am häufigsten / Zuletzt
+  gesucht“, beim Tippen Einträge, Aufgaben, Termine, Arbeitsbereiche mit
+  hervorgehobenem Wort. Pfeiltasten wählen, Enter öffnet, Esc schließt (über
+  dem Eingabefeld zuerst nur die Palette); Tasten wie 1–4 oder G I landen im
+  Feld. „Alle Ergebnisse“ oder Enter ohne Wahl öffnet die Suchseite — ohne
+  Knöpfe „Suchen / Abbrechen“ unten. Browser-Zurück schließt die Palette mit.
 
 **Immer**
 - `python3 tools/version.py` ausführen, dann meldet `python3 tools/check.py` „alles in Ordnung“.

@@ -21,6 +21,7 @@ export function itemOfEntry(entry) {
   return {
     kind: "entry",
     id: entry.id,
+    type: entry.type,
     title: entry.title || "Ohne Titel",
     icon: typeIcon(entry.type),
     label: typeLabel(entry.type),
@@ -87,10 +88,11 @@ function searchPool() {
 }
 
 /**
- * Die Treffer zu einem Suchbegriff. Zuerst kommen Titel, die mit dem Begriff
- * beginnen, danach das, was am häufigsten geöffnet wurde.
+ * Alle Treffer zu einem Suchbegriff, ohne Obergrenze. Zuerst kommen Titel, die
+ * mit dem Begriff beginnen, danach das, was am häufigsten geöffnet wurde.
+ * Die Such-Palette am Desktop teilt sie in Gruppen und zählt sie.
  */
-export function searchHits(query) {
+export function matchingItems(query) {
   const needle = query.toLowerCase();
   /* Die Anzahlen einmal nachschlagen, nicht für jeden Vergleich neu suchen. */
   const counts = openCounts();
@@ -104,6 +106,10 @@ export function searchHits(query) {
       const startB = b.title.toLowerCase().startsWith(needle) ? 0 : 1;
       if (startA !== startB) return startA - startB;
       return countOf(b) - countOf(a);
-    })
-    .slice(0, maxHits);
+    });
+}
+
+/** Die Treffer für die Suchseite: dieselbe Reihenfolge, höchstens `maxHits`. */
+export function searchHits(query) {
+  return matchingItems(query).slice(0, maxHits);
 }

@@ -252,12 +252,19 @@ Jeder Schritt ist für sich lauffähig, wird geprüft (`tools/version.py`,
    Konto in `styles/desk-nav-foot.css`. Ziele und Tasten an einer Stelle in
    `src/shell/desk-links.js`; Kürzel in `src/shell/desk.js`; blaue Schilder in
    `styles/desk-kbd.css` (ersetzt die Tipp-Karte). Kontodaten liegen jetzt in
-   `src/data/account.js`, `goForward()` im Router. Übergang bis Schritt 2:
-   Suche bei zugeklappter Leiste klappt sie wieder auf. Übergang bis Schritt 7:
+   `src/data/account.js`, `goForward()` im Router. Übergang bis Schritt 7:
    Unterseiten zeigen noch ihren eigenen Zurück-Pfeil unter der Reiterzeile.
-2. **Suche** — neue Datei `src/shell/search-palette.js`: Dialog in der Mitte
-   mit Feld und Gruppen (nutzt `src/features/search/search-data.js` über
-   `load("search")`); `styles/search.css`: keine Pillen unten.
+2. **Suche** — *umgesetzt.* `src/shell/search-palette.js` mit
+   `styles/search-palette.css`: Dialog oben in der Mitte mit Feld und Gruppen,
+   Pfeiltasten, Enter, Esc, Schild „Enter“ an der gewählten Zeile bzw. an
+   „Alle Ergebnisse anzeigen“. Die Gruppen baut
+   `src/features/search/search-palette-data.js` (über `load("search")`, Suche
+   selbst in `search-data.js`). Öffnen über ⌘K, `/`, das Feld der Seitenleiste
+   (am Desktop nur lesbar, `setSearchTakeover` in `src/shell/search-bar.js`)
+   und den Such-Knopf — die Leiste bleibt dabei zu. Die Palette ist die
+   oberste Ebene für Esc und sperrt alle Kürzel; sie legt keinen
+   Verlaufsschritt an und schließt bei Browser-Zurück mit. `styles/search.css`:
+   am Desktop keine Knöpfe unten.
 3. **Kontextspalte** — `src/shell/desk-rail.js` bekommt Karten je Ansicht:
    `registerRailCards(view, cards)` wird von `src/main.js` gefüllt, damit
    `shell/` keine `features/` importiert. Karten in

@@ -16,9 +16,10 @@
  * --frame-search-gap    -> Luft unter dem Suchfeld bis zum Knopf „Neu“
  * --frame-composer-width / --frame-toast-width -> größte Breite von Eingabefeld und Meldung
  * Einzelwerte stehen bei ihrer Regel: Medien-Knöpfe (12px Abstand nach unten,
- * 4px Fuge, 6px Innenrand), „Abbrechen“ (18px Innenrand seitlich), das
- * Tasten-Schild im Suchfeld (8px Abstand), Such-Icon 18px und die Breite des
- * Rollbalkens in Safari (6px).
+ * 4px Fuge, 6px Innenrand), das Tasten-Schild im Suchfeld (8px Abstand),
+ * Such-Icon 18px und die Breite des Rollbalkens in Safari (6px). Die
+ * Suchknöpfe unten gibt es am Desktop nicht (styles/search.css), gesucht wird
+ * in der Palette (styles/search-palette.css).
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
  * -----------------------------------
@@ -151,6 +152,7 @@
      wie die Zeilen der Seitenleiste darunter. */
   .top-bar .search input {
     font-size: var(--desk-nav-item-size);
+    cursor: pointer; /* cursor: das Feld öffnet nur die Such-Palette, getippt wird dort */
   }
 
   .top-bar .search-icon {
@@ -239,7 +241,7 @@
     pointer-events: none; /* pointer-events: die meist leere Leiste lässt Klicks zur Seite durch */
   }
 
-  .bottom-bar :is(.toast, .media-actions, .search-combo, .search-cancel, .nav-shell) {
+  .bottom-bar :is(.toast, .media-actions, .nav-shell) {
     pointer-events: auto; /* pointer-events: die sichtbaren Flächen sind wieder anklickbar */
   }
 
@@ -268,21 +270,10 @@
     background: transparent;
   }
 
-  /* Die Suchknöpfe bleiben (Mikrofon, und „Abbrechen“ als Weg mit der Maus zurück).
-     Volle Breite, damit das Gehäuse wie am Handy genau in der Mitte steht. */
-  .search-actions {
-    align-self: stretch; /* align-self: volle Breite für die drei Spalten aus styles/search.css */
-  }
-
-  .search-cancel {
-    padding: 0 18px;
-    border-radius: 999px; /* border-radius: eigene Glaspille, damit das Wort über der Liste lesbar bleibt */
-  }
-
   /* Glas für alles, was unten über der Seite schwebt. .device und :is() machen
      die Regel so stark wie die Dunkelmodus-Schatten in styles/toast.css.
      Auswahl-Dialog und Menü bekommen dasselbe Glas in styles/desk-overlays.css. */
-  .device :is(.nav-shell.is-composing, .media-actions, .search-combo, .search-cancel, .bottom-bar .toast) {
+  .device :is(.nav-shell.is-composing, .media-actions, .bottom-bar .toast) {
     background: var(--desk-glass);
     -webkit-backdrop-filter: blur(var(--desk-glass-blur)); /* backdrop-filter: ältere Safari kennen nur die Vorsilbe */
     backdrop-filter: blur(var(--desk-glass-blur)); /* backdrop-filter: die Seite scheint verwischt durch das Glas */
