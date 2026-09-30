@@ -5,9 +5,11 @@
  *
  * - Layout: Liste | Board
  * - Sortieren: Zeile mit der Wahl, ein Tipp öffnet das Blatt
- * - Filtern: rechts „Keine“; ist etwas gefiltert, bleibt rechts nichts
- *   stehen und die gewählten Werte stehen darunter als Chips. Ein Tipp auf Zeile oder
- *   Chips öffnet das Blatt „Filtern“ (src/features/tasks/tasks-filter.js).
+ * - Filtern: rechts „Keine“ oder die Zahl der gefilterten Abschnitte; darunter
+ *   je Abschnitt ein Chip — der Ort mit Namen, Status und Dringlichkeit mit
+ *   der Zahl ihrer Haken, bei „ist nicht“ mit „nicht | 1“. Ein Tipp auf die
+ *   Zeile öffnet das Blatt „Filtern“ (src/features/tasks/tasks-filter.js),
+ *   ein Tipp auf einen Chip gleich dessen Unterseite.
  *   Auch „Alle“ lässt sich filtern, nur nicht nach Ort
  * - Gruppieren: Schalter; an, dann darunter „Abschnitte nach“ Status | Dringlichkeit.
  *   Im Board gibt es keinen Schalter — ein Board hat immer Spalten —, dort
@@ -19,6 +21,7 @@
  * -----------------------------------
  * rowLabels    -> Beschriftungen der Zeilen („groupBy“ je Layout: Liste hat Abschnitte, Board Spalten)
  * noFilter     -> was rechts in der Zeile „Filtern“ steht, solange nichts gefiltert ist
+ * notLabel     -> Wort im Zähler eines Chips, wenn der Abschnitt „ist nicht“ filtert
  * deskFiltered -> Aufschrift des Filter-Knopfs am Desktop, wenn etwas gefiltert ist
  *
  * Was in der Filter-Zeile steht und was das Blatt „Filtern“ anbietet, steht
@@ -44,14 +47,22 @@ const rowLabels = {
   done: "Erledigte zeigen",
 };
 const noFilter = "Keine";
+const notLabel = "nicht";
 const deskFiltered = "Gefiltert";
 
-/* Die Chips unter der Zeile „Filtern“ — in der Farbe ihres Status bzw. ihrer Dringlichkeit */
+/* Der Zähler in einem Chip: „2“ oder „nicht | 1“ mit Strich dazwischen */
+function countMarkup(chip) {
+  if (chip.count === undefined) return "";
+  const not = chip.not ? `${escapeHtml(notLabel)}<span class="tasks-filter-sep"></span>` : "";
+  return `<span class="tasks-filter-count">${not}${chip.count}</span>`;
+}
+
+/* Die Chips unter der Zeile „Filtern“, einer je Abschnitt; jeder öffnet seine Unterseite */
 function chipsMarkup(chips) {
   if (!chips.length) return "";
   const chip = (item) =>
-    `<span class="tasks-filter-chip"${item.color ? ` style="--chip-color:${item.color}"` : ""}>${icon(item.icon)}<span>${escapeHtml(item.label)}</span></span>`;
-  return `<button class="tasks-filter-chips" type="button" data-settings="filter" aria-label="${escapeHtml(rowLabels.place)}">${chips.map(chip).join("")}</button>`;
+    `<button class="tasks-filter-chip" type="button" data-settings="filter" data-value="${escapeHtml(item.page)}">${icon(item.icon)}<span>${escapeHtml(item.label)}</span>${countMarkup(item)}</button>`;
+  return `<div class="tasks-filter-chips">${chips.map(chip).join("")}</div>`;
 }
 const layouts = [
   { id: "list", label: "Liste", icon: "list" },
@@ -100,7 +111,7 @@ export function taskSettingsMarkup(view) {
           <span class="details-row-label">${rowLabels.sort}</span><span class="details-row-value">${escapeHtml(sortValue(view))}</span>
         </button>
         <button class="details-row is-editable" type="button" data-settings="filter">
-          <span class="details-row-label">${rowLabels.place}</span><span class="details-row-value">${chips.length ? "" : noFilter}</span>
+          <span class="details-row-label">${rowLabels.place}</span><span class="details-row-value">${chips.length || noFilter}</span>
         </button>
         ${chipsMarkup(chips)}
         ${
@@ -137,7 +148,7 @@ export function handleSettingsClick(event, view) {
   const { settings, value } = button.dataset;
   if (settings === "layout") updateTaskView({ layout: value });
   else if (settings === "sort") openTaskSort(view);
-  else if (settings === "filter") openTaskFilter();
+  else if (settings === "filter") openTaskFilter(value);
   else if (settings === "group-toggle") updateTaskView({ group: view.group === "none" ? taskGroupings[0].id : "none" });
   else if (settings === "group") updateTaskView({ group: value });
   else if (settings === "done") updateTaskView({ hideDone: !view.hideDone });

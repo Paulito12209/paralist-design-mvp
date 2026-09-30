@@ -320,6 +320,9 @@ function adoptPrefs(saved) {
     hiddenStatuses: knownIds(view.hiddenStatuses, taskStatuses.filter((item) => !item.done)),
     hiddenPriorities: knownIds(view.hiddenPriorities, taskPriorities),
     showArchived: view.showArchived === true,
+    /* „ist nicht“ im Blatt „Filtern“; ältere Stände kennen es nicht und zeigen „ist“ */
+    statusNot: view.statusNot === true,
+    priorityNot: view.priorityNot === true,
   }));
   const active = Number(saved.activeTaskViewId);
   state.activeTaskViewId = state.taskViews.some((view) => view.id === active) ? active : state.taskViews[0].id;

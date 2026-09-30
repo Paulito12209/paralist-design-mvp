@@ -97,6 +97,10 @@ export const taskSorts = [
  * allein `hideDone` (der Schalter „Erledigte zeigen“), deshalb steht der
  * Status „erledigt“ nie in `hiddenStatuses`. `showArchived` holt auch die
  * archivierten Aufgaben auf die Seite (im Board als eigene Spalte).
+ * `statusNot` und `priorityNot` sagen, wie das Blatt „Filtern“ den Abschnitt
+ * zeigt: false heißt „ist“ (Haken an dem, was zu sehen ist), true heißt
+ * „ist nicht“ (Haken an dem, was ausgeblendet ist) — was die Liste zeigt,
+ * steht in beiden Fällen allein in den Feldern darüber.
  */
 export const taskDefaults = {
   layout: "list",
@@ -108,6 +112,8 @@ export const taskDefaults = {
   hiddenStatuses: [],
   hiddenPriorities: [],
   showArchived: false,
+  statusNot: false,
+  priorityNot: false,
 };
 
 /** Beschreibung eines Status; unbekannte Werte aus alten Ständen gelten als offen. */

@@ -1,91 +1,68 @@
 /*
- * Ein Filter-Blatt, gebaut wie das Blatt „Sortieren“ (src/ui/sort-sheet.js):
- * Titel mit ✕ oben, darunter zwei Spalten nebeneinander mit je einer kleinen
- * Überschrift, unten „Fertig“. Anders als dort sind die Spalten keine Rollen,
- * sondern Mehrfachwahl: jede Zeile schaltet ein und aus, gewählte Zeilen
- * tragen das Band in der Pillenfarbe und einen Haken am äußeren Rand. Die
- * linke Spalte steht rechtsbündig, die rechte linksbündig — wie beim
- * Sortieren treffen sich beide in der Mitte.
+ * Das Filter-Blatt: ein Blatt von unten wie „Sortieren“ (Titel mit ✕, unten
+ * „Fertig“), aber mit zwei Ebenen wie die Einstellungen. Die Übersicht
+ * zeigt je Abschnitt eine Zeile (Ort, Status, Dringlichkeit …); ein Tipp
+ * öffnet dessen Unterseite im selben Blatt, oben links steht dann der
+ * Zurück-Pfeil neben dem Titel — genau wie auf einer Unterseite der
+ * Einstellungen. Eine Unterseite lässt sich auch direkt öffnen (ein Tipp auf
+ * einen Chip in der Karte „Ansicht“).
  *
- * Optional steht darüber eine Zeile „Ort“ mit Pillen (Einfachwahl), die
- * waagerecht rollt, wenn es viele Orte gibt.
+ * Das Blatt hält keinen eigenen Filterstand: nach jeder Wahl ruft der
+ * Aufrufer openFilterSheet mit dem neuen Stand erneut auf, das Blatt bleibt
+ * offen, merkt sich die offene Unterseite und zeichnet sich neu.
  *
- * Eine Spalte ist { heading, items, onToggle(id) }, ein Eintrag
- * { id, label, icon, color?, active, info?: { title, text } }. Der Ort ist
- * { heading, options: [{ id, label, icon }], chosen, onPick(id) } oder null.
- * Nach jeder Wahl ruft der Aufrufer openFilterSheet mit dem neuen Stand
- * erneut auf — das Blatt bleibt offen und zeichnet sich neu.
+ * Ein Abschnitt ist { id, label, icon, summary, active, mode?, onMode?,
+ * items, onToggle(id), note? }: `summary` steht rechts in der Übersicht,
+ * `active` sagt, ob darin gefiltert wird, `mode` ist "is" oder "not" (nur
+ * bei Mehrfachwahl; dann gibt es das Segment und `onMode(mode)`), `items`
+ * sind [{ id, label, icon, color?, active, info?: { title, text } }],
+ * `note` ein Satz unter der Liste. Das Markup baut src/ui/filter-sheet-markup.js.
  * Pfad: src/ui/filter-sheet.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * doneLabel -> Aufschrift des Knopfs unten
+ * doneLabel  -> Aufschrift des Knopfs unten
+ * resetLabel -> Aufschrift von „Alle Filter zurücksetzen“ in der Übersicht
  *
- * Aussehen: Blatt, Überschriften und „Fertig“ teilen sich die Stile mit
- * „Sortieren“ (styles/calendar.css, styles/sort-wheels.css); Spalten, Band,
- * Haken und Ort-Pillen stehen in styles/filter-sheet.css.
+ * Aussehen: Blatt und „Fertig“ teilen sich die Stile mit „Sortieren“
+ * (styles/calendar.css, styles/overlays.css); Zeilen, Segment, Haken und
+ * Hinweis stehen in styles/filter-sheet.css.
  */
 
 import { events, on } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { escapeHtml, icon } from "../core/html.js";
+import { overviewMarkup, pageMarkup } from "./filter-sheet-markup.js";
 import { openInfoDialog } from "./info-dialog.js";
 import { bindModalPull, clearModalPull } from "./modal-pull.js";
 
 const doneLabel = "Fertig";
+const resetLabel = "Alle Filter zurücksetzen";
 
 let root = null;
 /* Das offene Blatt, wie es openFilterSheet bekommen hat — oder null */
 let open = null;
+/* id der offenen Unterseite — null ist die Übersicht */
+let pageId = null;
 
-/* Kein Knopf im Knopf: das ⓘ ist ein span, den der Klick-Empfänger zuerst prüft */
-function infoMarkup(item, col, index) {
-  if (!item.info) return "";
-  return `<span class="sheet-info" role="button" tabindex="0" data-filter-info="${col}:${index}" aria-label="Was heißt „${escapeHtml(item.label)}“?">${icon("info")}</span>`;
+/* Der Abschnitt der offenen Unterseite; null in der Übersicht oder wenn es ihn nicht mehr gibt */
+function currentSection() {
+  return (pageId && open.sections.find((section) => section.id === pageId)) || null;
 }
 
-/* Eine Zeile: Haken außen, Name, ⓘ, Icon zur Mitte hin. Die Reihenfolge im
-   Markup ist immer gleich; die linke Spalte dreht sie per CSS um. */
-function itemMarkup(item, col, index) {
-  const on = item.active ? " is-on" : "";
-  /* --item-color: Farbe des Icons, wenn die Zeile gewählt ist (Status- bzw. Dringlichkeitsfarbe) */
-  const color = item.color ? ` style="--item-color:${item.color}"` : "";
-  return `
-    <button class="filter-item${on}" type="button" data-filter-item="${col}:${index}" aria-pressed="${Boolean(item.active)}"${color}>
-      ${icon("check", "filter-check")}
-      <span class="filter-label"><span class="filter-name">${escapeHtml(item.label)}</span>${infoMarkup(item, col, index)}</span>
-      ${icon(item.icon, "filter-icon")}
-    </button>`;
-}
-
-function columnMarkup(column, col) {
-  return `<div class="filter-col" role="group" aria-label="${escapeHtml(column.heading)}">${column.items
-    .map((item, index) => itemMarkup(item, col, index))
-    .join("")}</div>`;
-}
-
-function placeMarkup(place) {
-  if (!place) return "";
-  const pill = (option) => {
-    const on = option.id === place.chosen;
-    return `<button class="tab-pill${on ? " is-active" : ""}" type="button" data-filter-place="${escapeHtml(option.id)}" aria-pressed="${on}">${icon(option.icon, "tab-pill-icon")}${escapeHtml(option.label)}</button>`;
-  };
-  return `
-    <p class="filter-place-head">${escapeHtml(place.heading)}</p>
-    <div class="filter-place" role="group" aria-label="${escapeHtml(place.heading)}">${place.options.map(pill).join("")}</div>`;
-}
-
-/* Den Inhalt neu zeichnen; die Ort-Pillen behalten ihre waagerechte Lage. */
+/* Kopf und Inhalt neu zeichnen; die Rolllage des Inhalts bleibt beim Neuzeichnen stehen */
 function render() {
-  const body = root.querySelector(".filter-content");
-  const scroll = body.querySelector(".filter-place")?.scrollLeft || 0;
+  const section = currentSection();
+  if (pageId && !section) pageId = null;
+  const body = root.querySelector(".modal-body");
+  const scroll = body.scrollTop;
+  root.querySelector(".modal-head").classList.toggle("is-back", Boolean(section));
+  root.querySelector("[data-filter-back]").hidden = !section;
   root.querySelector("#filter-modal-title").textContent = open.title;
-  body.innerHTML = `
-    ${placeMarkup(open.place)}
-    <div class="sort-wheel-heads" aria-hidden="true">${open.columns.map((column) => `<span>${escapeHtml(column.heading)}</span>`).join("")}</div>
-    <div class="filter-cols">${open.columns.map(columnMarkup).join("")}</div>`;
-  const pills = body.querySelector(".filter-place");
-  if (pills) pills.scrollLeft = scroll;
+  root.querySelector(".filter-content").innerHTML = section
+    ? pageMarkup(section)
+    : overviewMarkup(open.sections, resetLabel, open.resetActive);
+  body.scrollTop = scroll;
 }
 
 /** Das Blatt schließen. */
@@ -93,35 +70,52 @@ export function closeFilterSheet() {
   if (!root || root.hidden) return;
   root.hidden = true;
   open = null;
+  pageId = null;
   clearModalPull(root);
 }
 
-/* „Spalte:Zeile“ aus einem data-Attribut in den Eintrag übersetzen */
-function itemAt(key) {
-  const [col, index] = key.split(":").map(Number);
-  return { column: open.columns[col], item: open.columns[col].items[index] };
+/* Auf eine Unterseite wechseln oder zurück; der Inhalt beginnt dort oben */
+function goTo(id) {
+  pageId = id;
+  render();
+  root.querySelector(".modal-body").scrollTop = 0;
 }
 
 function onClick(event) {
-  if (event.target === root || event.target.closest("[data-filter-close]")) {
+  const target = event.target;
+  if (target === root || target.closest("[data-filter-close]")) {
     closeFilterSheet();
     return;
   }
   if (!open) return;
-  const info = event.target.closest("[data-filter-info]");
+  if (target.closest("[data-filter-back]")) {
+    goTo(null);
+    return;
+  }
+  const row = target.closest("[data-filter-page]");
+  if (row) {
+    goTo(row.dataset.filterPage);
+    return;
+  }
+  if (target.closest("[data-filter-reset]")) {
+    if (open.resetActive) open.onReset();
+    return;
+  }
+  const section = currentSection();
+  if (!section) return;
+  const info = target.closest("[data-filter-info]");
   if (info) {
-    const { item } = itemAt(info.dataset.filterInfo);
+    const item = section.items[Number(info.dataset.filterInfo)];
     openInfoDialog(item.info.title, item.info.text);
     return;
   }
-  const row = event.target.closest("[data-filter-item]");
-  if (row) {
-    const { column, item } = itemAt(row.dataset.filterItem);
-    column.onToggle(item.id);
+  const mode = target.closest("[data-filter-mode]");
+  if (mode) {
+    if (mode.dataset.filterMode !== section.mode) section.onMode(mode.dataset.filterMode);
     return;
   }
-  const pill = event.target.closest("[data-filter-place]");
-  if (pill && pill.dataset.filterPlace !== open.place.chosen) open.place.onPick(pill.dataset.filterPlace);
+  const item = target.closest("[data-filter-item]");
+  if (item) section.onToggle(section.items[Number(item.dataset.filterItem)].id);
 }
 
 /* Das Blatt einmal bauen und an das Gerät hängen; index.html bleibt unberührt. */
@@ -130,9 +124,10 @@ function build() {
   root.className = "modal-backdrop date-backdrop";
   root.hidden = true;
   root.innerHTML = `
-    <div class="modal date-modal sort-modal filter-modal" role="dialog" aria-modal="true" aria-labelledby="filter-modal-title">
+    <div class="modal date-modal filter-modal" role="dialog" aria-modal="true" aria-labelledby="filter-modal-title">
       <header class="modal-head">
         <div class="modal-grip"></div>
+        <button class="modal-back" type="button" data-filter-back aria-label="Zurück zur Übersicht" hidden>${icon("back")}</button>
         <h2 id="filter-modal-title"></h2>
         <button class="modal-close" type="button" data-filter-close aria-label="Schließen">${icon("close")}</button>
       </header>
@@ -150,14 +145,20 @@ function build() {
 
 /**
  * Das Blatt öffnen oder mit neuem Stand neu zeichnen.
- * @param title   Überschrift, z.B. „Filtern“
- * @param place   Zeile „Ort“ wie oben beschrieben — oder null
- * @param columns genau zwei Spalten wie oben beschrieben
+ * @param title       Überschrift, z.B. „Filtern“
+ * @param sections    Abschnitte wie oben beschrieben
+ * @param resetActive gibt es etwas zurückzusetzen?
+ * @param onReset     setzt alle Filter zurück
+ * @param page        id der Unterseite, die gleich offen sein soll; null für
+ *                    die Übersicht; weggelassen: beim Öffnen die Übersicht,
+ *                    beim Neuzeichnen bleibt die offene Seite
  */
-export function openFilterSheet({ title, place = null, columns }) {
+export function openFilterSheet({ title, sections, resetActive = false, onReset = () => {}, page }) {
   if (!root) build();
   const opening = root.hidden;
-  open = { title, place, columns };
+  open = { title, sections, resetActive, onReset };
+  if (page !== undefined) pageId = page;
+  else if (opening) pageId = null;
   if (opening) clearModalPull(root);
   root.hidden = false;
   render();

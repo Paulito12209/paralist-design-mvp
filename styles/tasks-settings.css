@@ -28,11 +28,13 @@
  * --add                      -> Schalter „an“ (styles/tokens.css)
  * --text / --muted           -> Schrift im Segment, gewählt und nicht gewählt
  * --icon-soft                -> das ⓘ neben der gesperrten Filter-Zeile
- * --tab-pill-active-bg       -> Fläche eines Filter-Chips ohne eigene Farbe (Ort)
+ * --tab-pill-active-bg       -> Fläche eines Filter-Chips
+ * --chevron                  -> der Strich zwischen „nicht“ und der Zahl im Zähler (styles/tokens.css)
  *
  * Direkt bei ihrer Regel:
- * .tasks-filter-chip height / font-size -> Höhe und Schrift der Filter-Chips (26px, 13px)
- * .tasks-filter-chip color-mix 16%      -> wie kräftig die Farbe eines Chips hinterlegt ist
+ * .tasks-filter-chip height / font-size  -> Höhe und Schrift der Filter-Chips (26px, 13px)
+ * .tasks-filter-count height / font-size -> Höhe und Schrift des Zählers im Chip (18px, 11px)
+ * .tasks-filter-count color-mix 14%      -> wie kräftig der Zähler im Chip hinterlegt ist
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -278,21 +280,16 @@ body:has(.nav-shell.is-composing) .view-panel {
   gap: 6px;
   width: 100%;
   padding: 0 0 8px;
-  text-align: left;
 }
 
-.tasks-filter-chips:active {
-  opacity: 0.55;
-}
-
-/* Ein Chip in der Farbe seines Status bzw. seiner Dringlichkeit; der Ort bleibt grau */
+/* Ein Chip je Abschnitt: Icon, Name, Zähler — neutral, weil ein Abschnitt keine eigene Farbe hat */
 .tasks-filter-chip {
   display: inline-flex;
   align-items: center;
   gap: 5px;
   max-width: 100%;
   height: 26px;
-  padding: 0 10px 0 8px;
+  padding: 0 4px 0 8px;
   border-radius: 999px;
   background: var(--tab-pill-active-bg);
   color: var(--text);
@@ -300,13 +297,11 @@ body:has(.nav-shell.is-composing) .view-panel {
   font-weight: 600;
 }
 
-.tasks-filter-chip[style] {
-  /* color-mix: dieselbe Farbe wie das Icon, nur blass hinterlegt */
-  background: color-mix(in srgb, var(--chip-color) 16%, transparent);
-  color: var(--chip-color);
+.tasks-filter-chip:active {
+  opacity: 0.55;
 }
 
-.tasks-filter-chip span {
+.tasks-filter-chip > span:first-of-type {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis; /* text-overflow: lange Ortsnamen enden mit „…“ */
@@ -317,4 +312,25 @@ body:has(.nav-shell.is-composing) .view-panel {
   flex: 0 0 auto;
   width: 14px;
   height: 14px;
+}
+
+/* Der Zähler: eine kleine Pille im Chip, „2“ oder „nicht | 1“ */
+.tasks-filter-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  height: 18px;
+  padding: 0 6px;
+  border-radius: 9px;
+  /* color-mix: die Schriftfarbe des Chips, blass hinterlegt — passt so in hell wie dunkel */
+  background: color-mix(in srgb, currentColor 14%, transparent);
+  font-size: 11px;
+  white-space: nowrap;
+}
+
+/* Der Strich zwischen „nicht“ und der Zahl */
+.tasks-filter-sep {
+  width: 1px;
+  height: 10px;
+  background: var(--chevron);
 }

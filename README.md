@@ -284,8 +284,15 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   Symbol rechts (oder Kopf ziehen) klappt sie aus und wieder ein, die Liste
   bleibt dabei stehen. Beim Umstellen bleibt der Inhalt sichtbar. Layout Liste | Board, Sortieren (Blatt „Sortieren
   nach“ Erstellt / Fällig / Titel, darunter „Sortierungsrichtung“ mit eigenem
-  Wortlaut je Option; die Zeile zeigt z.B. „Titel · A bis Z“), Filtern (Blatt „Aufgaben von“ — bei „Alle“
-  gesperrt, das ⓘ erklärt die eigene Ansicht), Gruppieren als Schalter (an:
+  Wortlaut je Option; die Zeile zeigt z.B. „Titel · A bis Z“), Filtern (rechts „Keine“ oder die Zahl der
+  gefilterten Abschnitte, darunter je Abschnitt ein Chip: Ort mit Namen, Status
+  und Dringlichkeit mit Zähler, bei „ist nicht“ mit „nicht | 1“; das Blatt zeigt
+  erst die Übersicht Ort / Status / Dringlichkeit mit Zusammenfassung rechts,
+  dann je Abschnitt eine Unterseite mit Zurück-Pfeil, bei Status und
+  Dringlichkeit mit Segment „ist | ist nicht“ — Wechsel dreht die Liste um,
+  die Haken bleiben; Erledigt und Archiviert sind Werte im Status, „Erledigte
+  zeigen“ ist derselbe Schalter; „Alle Filter zurücksetzen“ zeigt wieder alles;
+  bei „Alle“ fehlt der Ort), Gruppieren als Schalter (an:
   „Spalten nach“ Dringlichkeit | Status), Erledigte zeigen. Jede Ansicht
   merkt sich das für sich. Standard: alle Aufgaben als eine Liste, älteste
   zuerst. Gruppiert zeigt die Liste dieselben Gruppen wie das Board Spalten;
