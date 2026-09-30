@@ -27,6 +27,7 @@ import { taskGroupings, taskSorts } from "../../data/config-tasks.js";
 import { parentName, taskPlaces } from "../../data/queries.js";
 import { updateTaskView } from "../../data/task-views.js";
 import { openSheet } from "../../ui/sheet.js";
+import { openSortSheet, sortSummary } from "../../ui/sort-sheet.js";
 
 const rowLabels = {
   layout: "Layout",
@@ -67,10 +68,9 @@ function toggle(setting, on, label) {
     data-settings="${setting}" aria-label="${escapeHtml(label)}"><span class="tasks-switch-knob"></span></button>`;
 }
 
-/* Was in der Sortier-Zeile steht: „Erstellt ↑“. */
+/* Was in der Sortier-Zeile steht: „Erstellt · Älteste zuerst“. */
 function sortValue(view) {
-  const sort = taskSorts.find((item) => item.id === view.sort) || taskSorts[0];
-  return `${sort.label} ${view.sortAsc ? "↑" : "↓"}`;
+  return sortSummary(taskSorts, view.sort, view.sortAsc);
 }
 
 /* Was in der Filter-Zeile steht. */
@@ -128,20 +128,15 @@ export function taskSettingsMarkup(view) {
   `;
 }
 
-/* Blatt „Sortieren“: wonach, darunter die Richtung. Bleibt offen, bis man es zuzieht. */
-function openSortSheet(view) {
-  const options = taskSorts.map((item) => ({
-    label: item.label,
-    icon: item.icon,
-    active: view.sort === item.id,
-    onSelect: () => updateTaskView({ sort: item.id }),
-  }));
-  options.push({
-    label: view.sortAsc ? "Aufsteigend" : "Absteigend",
-    icon: view.sortAsc ? "arrow-up" : "arrow-down",
-    onSelect: () => updateTaskView({ sortAsc: !view.sortAsc }),
+/* Blatt „Sortieren“: wonach, darunter die Richtung (src/ui/sort-sheet.js). */
+function openTaskSort(view) {
+  openSortSheet({
+    title: sortTitle,
+    options: taskSorts,
+    sort: view.sort,
+    asc: view.sortAsc,
+    onChange: (sort, sortAsc) => updateTaskView({ sort, sortAsc }),
   });
-  openSheet(sortTitle, options);
 }
 
 /* Blatt „Aufgaben von“: alle Orte, an denen Aufgaben liegen oder verknüpft sind. */
@@ -165,7 +160,7 @@ export function handleSettingsClick(event, view) {
   if (!button) return;
   const { settings, value } = button.dataset;
   if (settings === "layout") updateTaskView({ layout: value });
-  else if (settings === "sort") openSortSheet(view);
+  else if (settings === "sort") openTaskSort(view);
   else if (settings === "place") openPlaceSheet(view);
   else if (settings === "info") openSheet(infoTitle, [{ lead: true, label: infoText }]);
   else if (settings === "group-toggle") updateTaskView({ group: view.group === "none" ? taskGroupings[0].id : "none" });

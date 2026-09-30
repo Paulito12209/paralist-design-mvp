@@ -12,7 +12,7 @@
  * defaultTaskStatus       -> Status, mit dem eine neue Aufgabe startet („Offen“)
  * taskStatuses            -> Name, Icon und Farbe der Status-Chips
  * taskGroupings           -> wonach sich Liste und Board gruppieren lassen (Dringlichkeit oder Status)
- * taskSorts               -> wonach die Aufgaben-Seite sortieren kann
+ * taskSorts               -> wonach die Aufgaben-Seite sortieren kann, samt Wortlaut beider Richtungen
  * taskDefaults            -> womit eine neue Ansicht der Aufgaben-Seite startet
  */
 
@@ -67,12 +67,14 @@ export const taskGroupings = [
 /**
  * Sortierarten der Aufgaben-Seite. Welche Regel dahintersteckt, steht in
  * `sortTasks` in src/data/queries.js; „erstellt“ ist zugleich die von Hand
- * im Board gezogene Reihenfolge.
+ * im Board gezogene Reihenfolge. `up` und `down` sind der Wortlaut der beiden
+ * Richtungen im Blatt „Sortieren“ (src/ui/sort-sheet.js), `asc` die
+ * Richtung, die beim Wechsel auf diese Option gilt.
  */
 export const taskSorts = [
-  { id: "erstellt", label: "Erstellt", icon: "history" },
-  { id: "faellig", label: "Fällig", icon: "calendar" },
-  { id: "titel", label: "Titel", icon: "text" },
+  { id: "erstellt", label: "Erstellt", icon: "history", up: "Älteste zuerst", down: "Neueste zuerst", asc: true },
+  { id: "faellig", label: "Fällig", icon: "calendar", up: "Früheste zuerst", down: "Späteste zuerst", asc: true },
+  { id: "titel", label: "Titel", icon: "text", up: "A bis Z", down: "Z bis A", asc: true },
 ];
 
 /**
