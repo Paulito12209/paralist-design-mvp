@@ -36,13 +36,14 @@ export function workspaceRowsMarkup(canEdit) {
 }
 
 /**
- * Unter der Liste: die Zeile „Arbeitsbereich hinzufügen“ und — sobald etwas
+ * Unter der Liste: die Zeile „Arbeitsbereich hinzufügen“ (ohne sie, wenn
+ * `withAdd` false ist — dann legt die Pille im Platzhalter an) und — sobald etwas
  * im Archiv liegt — die Pille „Zum Archiv“ mit der Pille Arbeitsbereiche.
  * Die Pille steht mit festem Abstand unter der Liste — nicht am unteren
  * Bildschirmrand: auf kleinen Geräten hinge sie sonst hinter der
  * Navigationsleiste, auf großen stünde sie einsam weit unten.
  */
-export function workspaceTailMarkup() {
+export function workspaceTailMarkup(withAdd = true) {
   const hasArchived = archivedWorkspaces().length > 0 || archivedEntries().length > 0;
   const archiveButton = hasArchived
     ? `<div class="archive-link-row">
@@ -52,11 +53,14 @@ export function workspaceTailMarkup() {
       </button>
     </div>`
     : "";
-  return `
-    <button class="workspace-row workspace-add" type="button" data-add-workspace="1">
+  const addRow = withAdd
+    ? `<button class="workspace-row workspace-add" type="button" data-add-workspace="1">
       ${icon("folder-plus")}
       <span>Arbeitsbereich hinzufügen</span>
-    </button>
+    </button>`
+    : "";
+  return `
+    ${addRow}
     ${archiveButton}`;
 }
 

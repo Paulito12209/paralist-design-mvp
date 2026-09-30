@@ -4,6 +4,8 @@
  * (Meine, Arbeit, …), dahinter das kleine Plus für einen neuen Tab, rechts
  * hinter der Trennlinie der Ordner-Plus-Knopf. Darunter die Arbeitsbereiche
  * des gewählten Tabs, die Zeile „Arbeitsbereich hinzufügen“ und „Zum Archiv“.
+ * Ist der Tab leer, steht statt der Zeile der Platzhalter mit einer Pille
+ * zum Anlegen in der Mitte — wie auf den übrigen Seiten.
  * Die gewählte Pille ist der Tab der App (state.activeTabId) — so legt „neu“
  * dort an, wo man hinsieht, und Browser-Zurück findet dieselbe Pille wieder.
  * Waagerecht wischen wechselt den Tab. Antippen, Halten und Rechtsklick
@@ -12,7 +14,8 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * emptyTab   -> was ein Tab ohne Arbeitsbereiche zeigt
+ * emptyTab   -> was ein Tab ohne Arbeitsbereiche zeigt: Emblem, Farbe, Satz und
+ *               Beschriftung der Pille in der Mitte
  * addLabel   -> Vorlesetext des Ordner-Plus-Knopfs rechts
  *
  * Aussehen: Pillenzeile in styles/overview.css, die Zeilen in styles/rows.css,
@@ -34,12 +37,16 @@ import {
   workspaceTailMarkup,
 } from "./workspaces.js";
 
-/* Ein leerer Tab: angelegt wird direkt hier, über die Zeile unter der Liste. */
+/* Ein leerer Tab: Emblem im Orange der Karte Arbeitsbereiche und die Pille
+   zum Anlegen. Sie trägt data-add-workspace wie der Ordner-Plus-Knopf oben,
+   damit src/ui/list-clicks.js beide gleich behandelt. */
 const emptyTab = {
-  icon: "folder",
-  accent: "var(--chevron)",
+  icon: "layers",
+  accent: "var(--workspace-icon-color)",
   title: "Noch keine Arbeitsbereiche",
-  text: "Tippe unten auf „Arbeitsbereich hinzufügen“.",
+  text: "Ein Arbeitsbereich sammelt Einträge zu einem Thema — Notizen, Aufgaben, Termine.",
+  action: { label: "Arbeitsbereich anlegen" },
+  data: 'data-add-workspace="1"',
 };
 const addLabel = "Arbeitsbereich hinzufügen";
 
@@ -70,8 +77,10 @@ export function renderWorkspaceCollection() {
   const rows = workspaceRowsMarkup(true);
   /* Rollstellung der Leiste mitnehmen, sonst springt sie an den Anfang zurück. */
   const scrolled = dom.pageBody.querySelector(".collection-pills")?.scrollLeft || 0;
+  /* Leerer Tab: die Pille im Platzhalter legt an, die Zeile darunter sagte
+     dasselbe noch einmal und entfällt. */
   dom.pageBody.innerHTML = `${pillsRowMarkup()}${rows ? "" : emptyState(emptyTab)}
-    <div class="workspace-list">${rows}${workspaceTailMarkup()}</div>`;
+    <div class="workspace-list">${rows}${workspaceTailMarkup(Boolean(rows))}</div>`;
   dom.pageBody.querySelector(".collection-pills").scrollLeft = scrolled;
   afterTabsRender();
   focusWorkspaceName();
