@@ -11,9 +11,9 @@
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg: #000000;
-    --card: #111318; /* dunkle Version von #AAB2BD (Suchleiste, Karten, Navbar) */
-    --overview-card-bg: #111318;
+    --bg: #0f1013; /* fast schwarz mit leichtem Blaustich wie #F2F2F7 — die Navigation bleibt schwarz und hebt sich so ab, wie Weiß im Hellmodus */
+    --card: #202227; /* eine Stufe heller als der Grund, so weit weg wie #D1D5DB im Hellmodus (Suchleiste, Karten) */
+    --overview-card-bg: #202227;
     --composer-mic-bg: #09090a;
     --text: #f2f2f7;
     --muted: #8e8e93;
@@ -27,7 +27,7 @@
     --nav-glow-opacity: 0.6;
     --media-strip-bg: rgba(255, 255, 255, 0.1);
     --star-color: #f5c518; /* helles Gold auf der dunklen Karte */
-    --update-bg: #1c1c1e; /* etwas heller als der schwarze Grund, damit das Fenster sich abhebt */
+    --update-bg: #1c1c1e; /* etwas heller als der Grund, damit das Fenster sich abhebt */
     --inbox-icon-color: #9fc4dc;
     --project-icon-color: #e8848d;
     --resource-icon-color: #a3d39b;
@@ -70,9 +70,9 @@
 
 /* Dunkelmodus: in den Einstellungen fest gewählt */
 :root[data-theme="dark"] {
-  --bg: #000000;
-  --card: #111318; /* dunkle Version von #AAB2BD (Suchleiste, Karten, Navbar) */
-  --overview-card-bg: #111318;
+  --bg: #0f1013; /* fast schwarz mit leichtem Blaustich wie #F2F2F7 — die Navigation bleibt schwarz und hebt sich so ab, wie Weiß im Hellmodus */
+  --card: #202227; /* eine Stufe heller als der Grund, so weit weg wie #D1D5DB im Hellmodus (Suchleiste, Karten) */
+  --overview-card-bg: #202227;
   --composer-mic-bg: #0e0e0f;
   --text: #f2f2f7;
   --muted: #8e8e93;
@@ -86,7 +86,7 @@
   --nav-glow-opacity: 0.6;
   --media-strip-bg: rgba(255, 255, 255, 0.1);
   --star-color: #f5c518; /* helles Gold auf der dunklen Karte */
-  --update-bg: #1c1c1e; /* etwas heller als der schwarze Grund, damit das Fenster sich abhebt */
+  --update-bg: #1c1c1e; /* etwas heller als der Grund, damit das Fenster sich abhebt */
   --inbox-icon-color: #9fc4dc;
   --project-icon-color: #e8848d;
   --resource-icon-color: #a3d39b;
