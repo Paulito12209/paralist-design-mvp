@@ -8,7 +8,7 @@
  * in src/data/config-tasks.js.
  */
 
-import { defaultTaskPriority, defaultTaskStatus, isTaskDone } from "./config-tasks.js";
+import { adoptStatusFields, defaultTaskPriority, defaultTaskStatus, isTaskDone } from "./config-tasks.js";
 import { sanitizeLinks } from "./links.js";
 import { normalizeRef, workspaceRef } from "./refs.js";
 
@@ -69,6 +69,11 @@ export function migrate(state) {
        gelten als heute erledigt, damit sie nicht ohne Vorwarnung auf einen
        Schlag im Archiv verschwinden — ab Mitternacht greift die Regel. */
     if (isTaskDone(entry) && !Number.isFinite(entry.doneAt)) entry.doneAt = Date.now();
+  });
+  /* Termin, Projekt und Dokument hatten früher weder Status noch
+     Dringlichkeit — nur die Aufgabe. Sie starten auf den Vorgaben. */
+  state.entries.forEach((entry) => {
+    if (entry.type !== "aufgabe") adoptStatusFields(entry);
   });
   /* Ein Verweis auf etwas, das es nicht mehr gibt, fällt weg; ohne Ort heißt Eingang. */
   const workspaceRefs = new Set(state.workspaces.map((workspace) => workspaceRef(workspace.id)));

@@ -15,7 +15,14 @@
 
 import { BOOKMARK_TYPE, fillBookmarkEntry } from "./bookmarks.js";
 import { typeIcon } from "./config.js";
-import { archiveColumn, defaultTaskPriority, defaultTaskStatus, doneTaskStatus, isTaskDone } from "./config-tasks.js";
+import {
+  adoptStatusFields,
+  archiveColumn,
+  defaultTaskPriority,
+  defaultTaskStatus,
+  doneTaskStatus,
+  isTaskDone,
+} from "./config-tasks.js";
 import { applyPageHead } from "./design-prefs.js";
 import { commit } from "./mutations.js";
 import { applyProjectDraft } from "./project-views.js";
@@ -33,7 +40,9 @@ const orderGap = 1000;
 
 /**
  * Einem frisch angelegten Eintrag seine Aufgaben-Felder geben (und einem
- * Lesezeichen seine Karte, wenn der Titel ein Link ist). Ruft das
+ * Lesezeichen seine Karte, wenn der Titel ein Link ist). Termin, Projekt und
+ * Dokument bekommen ihren Status, Termin und Projekt ihre Dringlichkeit
+ * (adoptStatusFields in config-tasks.js). Ruft das
  * Eingabefeld auf, sobald der Eintrag in der Liste steht. Eine neue Aufgabe
  * startet auf `defaultTaskStatus` und `defaultTaskPriority` (siehe config.js)
  * und stellt sich mit ihrer Sortiernummer ans Ende. Jeder neue Eintrag
@@ -45,6 +54,8 @@ export function applyEntryDefaults(entry) {
   if (entry.type === BOOKMARK_TYPE) fillBookmarkEntry(entry);
   /* Ein Projekt aus „Projekt hinzufügen“ gehört in die Ansicht, aus der es kam */
   applyProjectDraft(entry);
+  /* Termin, Projekt und Dokument tragen Status (und Dringlichkeit) wie eine Aufgabe */
+  adoptStatusFields(entry);
   if (entry.type !== "aufgabe") return;
   entry.status = defaultTaskStatus;
   entry.priority = defaultTaskPriority;
@@ -94,6 +105,9 @@ export function createTaskInline(title, column) {
  */
 function noteDone(entry, wasDone) {
   noteDoneTime(entry, wasDone);
+  /* Punkte gibt es nur fürs Abhaken einer Aufgabe — ein vergangener Termin
+     oder ein abgeschlossenes Projekt zählt dort nicht (xpKinds.done). */
+  if (entry.type !== "aufgabe") return;
   if (wasDone || !isTaskDone(entry) || entry.doneAwarded) return;
   entry.doneAwarded = true;
   awardXp("done", "aufgabe", entry.title);
@@ -109,12 +123,13 @@ export function applyTaskStatus(entry, status) {
   const wasDone = isTaskDone(entry);
   entry.status = status;
   noteDone(entry, wasDone);
-  /* Wieder geöffnet heißt: sie gehört nicht mehr ins Archiv */
-  if (entry.archived && !isTaskDone(entry)) entry.archived = false;
+  /* Wieder geöffnet heißt: sie gehört nicht mehr ins Archiv. Nur bei der
+     Aufgabe — ein archiviertes Projekt bleibt, wo es ist. */
+  if (entry.type === "aufgabe" && entry.archived && !isTaskDone(entry)) entry.archived = false;
   return true;
 }
 
-/** Status einer Aufgabe setzen. */
+/** Status setzen — bei Aufgabe, Termin, Projekt und Dokument. */
 export function setTaskStatus(entry, status) {
   if (applyTaskStatus(entry, status)) commit();
 }
@@ -124,7 +139,7 @@ export function toggleTaskDone(entry) {
   setTaskStatus(entry, isTaskDone(entry) ? defaultTaskStatus : doneTaskStatus);
 }
 
-/** Priorität einer Aufgabe setzen. */
+/** Dringlichkeit setzen — bei Aufgabe, Termin und Projekt. */
 export function setTaskPriority(entry, priority) {
   if (entry.priority === priority) return;
   entry.priority = priority;

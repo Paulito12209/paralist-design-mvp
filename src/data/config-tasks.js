@@ -15,6 +15,9 @@
  * taskGroupings           -> wonach sich Liste und Board gruppieren lassen (Dringlichkeit oder Status)
  * taskSorts               -> wonach die Aufgaben-Seite sortieren kann, samt Wortlaut beider Richtungen
  * taskDefaults            -> womit eine neue Ansicht der Aufgaben-Seite startet
+ * timeTypes               -> Kategorien mit Dringlichkeit, Fälligkeit und Status wie eine Aufgabe
+ * docStatuses             -> Name, Icon und Farbe des Status eines Dokuments (Entwurf, Fertig, Geprüft)
+ * defaultDocStatus        -> Status, mit dem ein neues Dokument startet („Entwurf“)
  */
 
 /**
@@ -35,6 +38,28 @@ export const taskStatuses = [
  * holt zurück.
  */
 export const archiveColumn = { id: "archiviert", label: "Archiviert", icon: "archive", color: "var(--status-open)" };
+
+/**
+ * Diese Kategorien haben eine Zeit, bis zu der sie dran sind: sie tragen
+ * Dringlichkeit, Fälligkeit (beim Termin: seinen Tag) und Status mit
+ * denselben Listen wie die Aufgabe. Auf der Aufgaben-Seite stehen trotzdem
+ * nur Aufgaben — hier geht es um die Karte „Details“ und das Blatt dazu.
+ */
+export const timeTypes = ["aufgabe", "projekt", "termin"];
+
+/**
+ * Status eines Dokuments: es wird nicht abgehakt, es wird fertig. Keins davon
+ * zählt als erledigt. „Entwurf“ hat keine Farbe — der Wert steht dann in der
+ * normalen Schriftfarbe.
+ */
+export const docStatuses = [
+  { id: "entwurf", label: "Entwurf", icon: "pencil", color: "" },
+  { id: "fertig", label: "Fertig", icon: "check", color: "var(--cal-accent)" },
+  { id: "geprueft", label: "Geprüft", icon: "check-circle", color: "var(--xp-done)" },
+];
+
+/** Status eines neu angelegten Dokuments. */
+export const defaultDocStatus = "entwurf";
 
 /** Status einer neu angelegten Aufgabe. */
 export const defaultTaskStatus = "offen";
@@ -132,4 +157,47 @@ export function taskPriorityOf(id) {
 /** Gilt diese Aufgabe als erledigt? */
 export function isTaskDone(entry) {
   return Boolean(taskStatusOf(entry && entry.status).done);
+}
+
+/** Hat diese Kategorie Dringlichkeit und Fälligkeit (Aufgabe, Projekt, Termin)? */
+export function isTimeType(type) {
+  return timeTypes.includes(type);
+}
+
+/** Hat diese Kategorie einen Status? Die drei Zeit-Kategorien und das Dokument. */
+export function hasStatus(type) {
+  return isTimeType(type) || type === "dokument";
+}
+
+/** Die Status-Liste einer Kategorie: beim Dokument Entwurf/Fertig/Geprüft, sonst die der Aufgabe. */
+export function statusListFor(type) {
+  return type === "dokument" ? docStatuses : taskStatuses;
+}
+
+/** Vorgabe-Status einer Kategorie. */
+export function defaultStatusFor(type) {
+  return type === "dokument" ? defaultDocStatus : defaultTaskStatus;
+}
+
+/** Beschreibung des Status eines Eintrags; unbekannte Werte gelten als die erste Stufe. */
+export function statusOf(entry) {
+  const list = statusListFor(entry.type);
+  return list.find((item) => item.id === entry.status) || list[0];
+}
+
+/**
+ * Status und Dringlichkeit geben, die der Kategorie fehlen, und wegnehmen,
+ * was sie nicht hat. Für neue Einträge, das Umwandeln und alte Speicherstände.
+ * Ein Status aus der falschen Liste (aus einer Aufgabe wird ein Dokument)
+ * fällt auf die Vorgabe zurück. Gibt zurück, ob sich etwas geändert hat.
+ */
+export function adoptStatusFields(entry) {
+  const before = `${entry.status}|${entry.priority}`;
+  if (hasStatus(entry.type)) {
+    if (!statusListFor(entry.type).some((item) => item.id === entry.status)) entry.status = defaultStatusFor(entry.type);
+  } else delete entry.status;
+  if (isTimeType(entry.type)) {
+    if (typeof entry.priority !== "string") entry.priority = defaultTaskPriority;
+  } else delete entry.priority;
+  return `${entry.status}|${entry.priority}` !== before;
 }

@@ -22,7 +22,7 @@
 import { dayKey, timeKey } from "../core/dates.js";
 import { nextId } from "../core/ids.js";
 import { typeIcon, workspaceDefaultName } from "./config.js";
-import { defaultTaskPriority, defaultTaskStatus } from "./config-tasks.js";
+import { adoptStatusFields, isTaskDone } from "./config-tasks.js";
 import { connectEntries, disconnectEntries, dropLinksTo } from "./links.js";
 import { commit, liftChildren } from "./mutations.js";
 import { moveOpen } from "./opens.js";
@@ -65,19 +65,20 @@ export function typeSnapshot(entry) {
   return snap;
 }
 
-/* Aufgaben-Felder geben oder wegnehmen, je nachdem, wohin der Wechsel geht. */
+/*
+ * Felder geben oder wegnehmen, je nachdem, wohin der Wechsel geht: Status
+ * und Dringlichkeit regelt adoptStatusFields (config-tasks.js) — aus einer
+ * Aufgabe wird ein Projekt und behält „In Arbeit | Jetzt“, aus einer Aufgabe
+ * wird ein Dokument und startet als „Entwurf“. Nur die Aufgabe hat eine
+ * eigene Reihenfolge auf der Aufgaben-Seite.
+ */
 function adoptTaskFields(entry, wasTask) {
   const isTask = entry.type === "aufgabe";
-  if (isTask && !wasTask) {
-    entry.status = defaultTaskStatus;
-    entry.priority = defaultTaskPriority;
-    entry.order = -(entry.createdAt || Date.now());
-  }
+  adoptStatusFields(entry);
+  if (!isTaskDone(entry)) delete entry.doneAt;
+  if (isTask && !wasTask) entry.order = -(entry.createdAt || Date.now());
   if (!isTask && wasTask) {
-    delete entry.status;
-    delete entry.priority;
     delete entry.order;
-    delete entry.doneAt;
     /* `doneAwarded` bleibt stehen: sonst brächte Hin- und Herwandeln und
        erneutes Abhaken beliebig viele Punkte. */
   }

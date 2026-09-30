@@ -6,7 +6,9 @@
  *   anderen Listen trägt eine Aufgabe ihr Icon und wird über den grünen
  *   Wisch-Knopf abgehakt (src/ui/rows.js), der dieselbe Funktion ruft,
  * - auf der Seite der Aufgabe in der Karte „Details“: ein Tipp auf Status
- *   oder Dringlichkeit öffnet von unten das Blatt dazu,
+ *   oder Dringlichkeit öffnet von unten das Blatt dazu — ebenso bei Termin
+ *   und Projekt (Status und Dringlichkeit wie die Aufgabe) und beim Dokument
+ *   (nur Status: Entwurf, Fertig, Geprüft),
  * - die kurze Meldung „Erledigt“ mit „Rückgängig“ — ein Tipp auf den
  *   Haken lässt die Zeile oft verschwinden (Filter „Erledigte ausblenden“), und
  *   ein versehentlicher Tipp soll sich ohne Suchen zurücknehmen lassen.
@@ -25,15 +27,18 @@
  */
 
 import { icon } from "../core/html.js";
-import { typeIcon, xpItemStyle, xpKinds } from "../data/config.js";
+import { typeIcon, typeSingular, xpItemStyle, xpKinds } from "../data/config.js";
 import {
   defaultTaskStatus,
   isTaskDone,
+  isTimeType,
+  statusListFor,
+  statusOf,
   taskPriorities,
   taskPriorityOf,
-  taskStatuses,
   taskStatusOf,
 } from "../data/config-tasks.js";
+import { canChangeType } from "../data/convert.js";
 import { setTaskPriority, setTaskStatus, toggleTaskDone } from "../data/mutations-tasks.js";
 import { findEntry } from "../data/queries.js";
 import { openSheet } from "./sheet.js";
@@ -47,13 +52,15 @@ const prioTitle = "Dringlichkeit";
 const typeTitle = "Typ";
 
 /*
- * Die beiden Felder, die sich im Blatt der Aufgabe wählen lassen. Die
- * Reihenfolge hier ist die Reihenfolge im Blatt.
+ * Die beiden Felder, die sich im Blatt wählen lassen: der Status aus der
+ * Liste der Kategorie (Dokument: Entwurf/Fertig/Geprüft, sonst die der
+ * Aufgabe) und die Dringlichkeit.
  */
-const taskFields = {
-  status: { list: taskStatuses, of: taskStatusOf, set: setTaskStatus },
-  priority: { list: taskPriorities, of: taskPriorityOf, set: setTaskPriority },
-};
+function fieldSpec(entry, field) {
+  return field === "status"
+    ? { list: statusListFor(entry.type), current: statusOf(entry).id, set: setTaskStatus }
+    : { list: taskPriorities, current: taskPriorityOf(entry.priority).id, set: setTaskPriority };
+}
 
 /**
  * Der runde Haken-Knopf. Er sitzt als eigener Knopf neben der Zeile, damit ein
@@ -79,48 +86,49 @@ export function taskCheck(entry) {
    Blatt bleibt offen (`stay`), damit man Status und Dringlichkeit in einem
    Zug setzen kann, und zeichnet sich nach jeder Wahl im selben Tab neu. */
 function fieldOptions(entry, field) {
-  const spec = taskFields[field];
-  const current = spec.of(entry[field]).id;
-  return [
-    ...spec.list.map((item) => ({
-      label: item.label,
-      icon: item.icon,
-      active: item.id === current,
-      stay: true,
-      onSelect: () => {
-        const wasDone = isTaskDone(entry);
-        const firstTime = !entry.doneAwarded;
-        const before = entry[field];
-        spec.set(entry, item.id);
-        if (field === "status" && !wasDone && isTaskDone(entry)) announceDone(entry, before, firstTime);
-        openTaskSheet(entry, field);
-      },
-    })),
-  ];
+  const spec = fieldSpec(entry, field);
+  return spec.list.map((item) => ({
+    label: item.label,
+    icon: item.icon,
+    active: item.id === spec.current,
+    stay: true,
+    onSelect: () => {
+      const wasDone = isTaskDone(entry);
+      const firstTime = !entry.doneAwarded;
+      const before = entry[field];
+      spec.set(entry, item.id);
+      if (field === "status" && !wasDone && isTaskDone(entry)) announceDone(entry, before, firstTime);
+      openTaskSheet(entry, field);
+    },
+  }));
 }
 
 /*
- * Die Tabs des Blatts: Status, Dringlichkeit und die Typen zum Umwandeln
- * (src/ui/type-menu.js). Ein Tipp auf einen Typ schließt das Blatt — die
- * Aufgabe ist danach keine mehr, oder es folgt die Rückfrage.
+ * Die Tabs des Blatts: Status, Dringlichkeit (nur Aufgabe, Projekt, Termin)
+ * und die Typen zum Umwandeln (src/ui/type-menu.js). Ein Tipp auf einen Typ
+ * schließt das Blatt — der Eintrag ist danach etwas anderes, oder es folgt
+ * die Rückfrage.
  */
-const sheetTabs = [
-  { id: "status", label: statusTitle, options: (entry) => fieldOptions(entry, "status") },
-  { id: "priority", label: prioTitle, options: (entry) => fieldOptions(entry, "priority") },
-  { id: "type", label: typeTitle, options: (entry) => typeChangeOptions({ entry }) },
-];
+function sheetTabs(entry) {
+  const tabs = [{ id: "status", label: statusTitle, options: (item) => fieldOptions(item, "status") }];
+  if (isTimeType(entry.type)) tabs.push({ id: "priority", label: prioTitle, options: (item) => fieldOptions(item, "priority") });
+  if (canChangeType(entry)) tabs.push({ id: "type", label: typeTitle, options: (item) => typeChangeOptions({ entry: item }) });
+  return tabs;
+}
 
 /**
- * Blatt von unten für eine Aufgabe: oben ihr Name mit dem Icon der Kategorie,
- * darunter die Tabs Status | Dringlichkeit | Typ — antippen oder waagerecht
- * wischen wechselt. Die Karte „Details“ öffnet es beim angetippten Feld.
+ * Blatt von unten für Aufgabe, Termin, Projekt oder Dokument: oben der Name
+ * mit dem Icon der Kategorie, darunter die Tabs Status | Dringlichkeit | Typ
+ * (beim Dokument Status | Typ) — antippen oder waagerecht wischen wechselt.
+ * Die Karte „Details“ öffnet es beim angetippten Feld.
  */
-export function openTaskSheet(entry, tab = sheetTabs[0].id) {
-  const current = sheetTabs.find((item) => item.id === tab) || sheetTabs[0];
-  openSheet(entry.title || "Aufgabe", current.options(entry), {
+export function openTaskSheet(entry, tab = "status") {
+  const tabs = sheetTabs(entry);
+  const current = tabs.find((item) => item.id === tab) || tabs[0];
+  openSheet(entry.title || typeSingular(entry.type), current.options(entry), {
     icon: typeIcon(entry.type),
     iconColor: xpItemStyle(entry.type).color,
-    tabs: sheetTabs,
+    tabs,
     tab: current.id,
     onTab: (id) => {
       const fresh = findEntry(entry.id);
@@ -137,7 +145,8 @@ function announceDone(entry, before, awarded) {
     icon: "check-circle",
     accent: "var(--xp-done)",
     title: doneTitle,
-    note: awarded ? `+${xpKinds.done.amount} XP` : "",
+    /* Punkte bringt nur die Aufgabe (noteDone in src/data/mutations-tasks.js) */
+    note: awarded && entry.type === "aufgabe" ? `+${xpKinds.done.amount} XP` : "",
     action: {
       label: undoLabel,
       icon: "undo",
