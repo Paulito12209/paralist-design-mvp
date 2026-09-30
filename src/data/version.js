@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "f3398704bd50";
+export const appVersion = "829d3066a874";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -193,6 +193,8 @@ export const appFiles = [
   "src/shell/update-prompt.js",
   "src/shell/week-fill.js",
   "src/shell/writing.js",
+  "src/ui/block-bar.js",
+  "src/ui/block-choices.js",
   "src/ui/block-editor.js",
   "src/ui/block-embeds.js",
   "src/ui/block-keys.js",
@@ -253,6 +255,7 @@ export const appFiles = [
   "src/ui/write-tap.js",
   "styles/avatar-crop.css",
   "styles/base.css",
+  "styles/block-bar.css",
   "styles/blocks.css",
   "styles/bookmarks.css",
   "styles/calendar-panel.css",

@@ -9,6 +9,8 @@
  * -----------------------------------
  * --keyboard-inset (styles/tokens.css) -> wird hier gesetzt und in
  *   styles/navigation.css und styles/composer.css verwendet
+ * --keyboard-height -> Höhe der zuletzt offenen Tastatur; so hoch wird die
+ *   Auswahl, die beim Schreiben an ihre Stelle tritt (styles/block-bar.css)
  * KEYBOARD_MIN_PX -> ab so viel verdeckter Höhe gilt die Tastatur als offen;
  *   weniger ist nur eine Vorschlagsleiste (Tastatur am Kabel) oder ein Rundungsrest
  */
@@ -32,7 +34,11 @@ export function initKeyboardInset() {
        der Browser die Seite hoch, bis ihr unterer Rand über der Tastatur steht —
        dann ist `inset` 0, obwohl die Tastatur noch da ist. Die verdeckte Höhe
        selbst bleibt dabei gleich; `scale` rechnet ein Heranzoomen heraus. */
-    const open = window.innerHeight - viewport.height * viewport.scale > KEYBOARD_MIN_PX;
+    const covered = window.innerHeight - viewport.height * viewport.scale;
+    const open = covered > KEYBOARD_MIN_PX;
+    /* Die Höhe merken, solange die Tastatur da ist: die Auswahl der Bausteine
+       nimmt später genau ihren Platz ein, auch wenn sie dann zu ist */
+    if (open) document.documentElement.style.setProperty("--keyboard-height", `${Math.round(covered)}px`);
     if (open === ui.keyboardOpen) return;
     ui.keyboardOpen = open;
     /* Wird die Tastatur weggewischt statt mit einem Tipp geschlossen, bleibt

@@ -69,7 +69,10 @@
    setzt src/shell/writing.js und nimmt sie erst weg, wenn die Tastatur wieder
    zu ist. Nur auf Touch-Geräten — dort öffnet ein Feld die Bildschirmtastatur. */
 @media (hover: none) and (pointer: coarse) {
-  body.is-writing .bottom-bar {
+  /* is-block-bar: die Leiste über der Tastatur steht (src/ui/block-bar.js) —
+     auch, während ihre Auswahl die Tastatur ersetzt und die Tastatur zu ist */
+  body.is-writing .bottom-bar,
+  body.is-block-bar .bottom-bar {
     visibility: hidden; /* visibility: unsichtbar und nicht antippbar, ohne dass sich etwas verschiebt */
   }
 }

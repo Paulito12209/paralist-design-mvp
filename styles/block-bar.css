@@ -1,0 +1,113 @@
+/*
+ * Leiste über der Bildschirmtastatur beim Schreiben im Inhalt einer Notiz
+ * (Handy): links Plus und die Icons aller Bausteine, rechts hinter einem
+ * Strich „Tastatur schließen“ bzw. ✕. Darunter die Auswahl mit den Kacheln,
+ * die an Stelle der Tastatur steht. Markup in src/ui/block-bar.js, die
+ * Kacheln selbst in styles/slash-menu.css.
+ * Pfad: styles/block-bar.css
+ *
+ * ANPASSBARE WERTE (in styles/tokens-pages.css bzw. styles/tokens.css)
+ * -----------------------------------
+ * --block-bar-h       -> Höhe der Leiste (48px = Material-Tippfläche)
+ * --block-bar-icon    -> Größe der Icons in der Leiste
+ * --block-picker-h    -> Höhe der Auswahl, solange die Tastatur noch nie offen war
+ * --keyboard-height   -> Höhe der zuletzt offenen Tastatur, gesetzt von
+ *                        src/shell/keyboard-inset.js: so hoch ist die Auswahl
+ * --keyboard-inset    -> wie weit die Tastatur gerade hereinragt (tokens.css)
+ * --slash-bg          -> Fläche von Leiste und Auswahl (wie das „/“-Menü)
+ * --slash-tile-bg     -> Grund hinter dem Plus, solange die Auswahl offen ist
+ * --line              -> Haarlinie über der Leiste und vor dem Knopf rechts (tokens.css)
+ *
+ * Direkt bei ihrer Regel:
+ * .block-bar-btn min-width -> schmalste Breite eines Knopfs (36px); passen nicht
+ *                             alle nebeneinander, lässt sich die Reihe wischen
+ * .block-picker max-height -> höchstens so viel der Anzeige nimmt die Auswahl ein (60dvh)
+ */
+
+.block-dock {
+  /* position: liegt über der Seite, statt sie zu verschieben — die Karte
+     „Details“ und der Text bleiben stehen, wenn Leiste oder Auswahl kommen */
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: var(--keyboard-inset); /* bottom: sitzt direkt auf der Tastatur */
+  z-index: 30; /* z-index: über der Navigation (20), unter allen Blättern (ab 36) */
+  display: flex;
+  flex-direction: column;
+  background: var(--slash-bg);
+}
+
+/* Mit offener Auswahl ist die Tastatur zu: die Auswahl steht ganz unten */
+.block-dock.is-picking {
+  bottom: 0;
+}
+
+.block-dock[hidden],
+.block-picker[hidden] {
+  display: none;
+}
+
+.block-bar {
+  display: flex;
+  align-items: stretch;
+  height: var(--block-bar-h);
+  border-top: 0.5px solid var(--line);
+}
+
+/* Plus und Bausteine: verteilen sich über die Breite; zu schmal, wird gewischt */
+.block-bar-row {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none; /* scrollbar-width: die Reihe lässt sich wischen, ohne einen Balken zu zeigen */
+  padding: 0 4px;
+}
+
+/* In der Adresse einer Karte: nur der Knopf rechts (visibility: die Leiste behält ihre Form) */
+.block-dock.is-link .block-bar-row {
+  visibility: hidden;
+}
+
+.block-bar-row::-webkit-scrollbar {
+  display: none;
+}
+
+.block-bar-btn {
+  flex: 1 1 0;
+  min-width: 36px;
+  display: grid;
+  place-items: center;
+  color: var(--text);
+}
+
+.block-bar-btn .icon {
+  width: var(--block-bar-icon);
+  height: var(--block-bar-icon);
+}
+
+.block-bar-btn:active {
+  opacity: 0.5;
+}
+
+/* Auswahl offen: das Plus steht auf grauem Grund, wie bei Notion */
+.block-dock.is-picking .block-bar-pick .icon {
+  box-sizing: content-box;
+  padding: 5px;
+  border-radius: 10px;
+  background: var(--slash-tile-bg);
+}
+
+.block-bar-end {
+  flex: 0 0 var(--block-bar-h);
+  border-left: 0.5px solid var(--line);
+}
+
+.block-picker {
+  height: var(--keyboard-height, var(--block-picker-h));
+  max-height: 60dvh;
+  overflow-y: auto;
+  overscroll-behavior: contain; /* overscroll-behavior: am Ende der Auswahl rollt nicht die Seite mit */
+  padding: 4px 12px calc(12px + var(--safe-bottom));
+  border-top: 0.5px solid var(--line);
+}

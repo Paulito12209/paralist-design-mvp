@@ -27,7 +27,7 @@
  * styles/entry-details.css   -> Eintrag: gekürzter Text mit „Mehr anzeigen“ und die Karte „Details“ am Ende von „Inhalt“
  * styles/blocks.css          -> Inhalt eines Eintrags: Stichpunkte, Zahlen, runde Checkboxen, Trennlinie
  * styles/embeds.css          -> Inhalt eines Eintrags: Karten für Standort, Video und Web-Lesezeichen
- * styles/slash-menu.css      -> Inhalt eines Eintrags: das „/“-Menü mit Gruppen und Kacheln
+ * styles/slash-menu.css      -> Inhalt eines Eintrags: das „/“-Menü mit Gruppen und Kacheln; styles/block-bar.css: Leiste über der Tastatur (Handy), Auswahl an Stelle der Tastatur
  * styles/navigation.css      -> untere Navigationsleiste
  * styles/composer.css        -> Eingabefeld zum Anlegen
  * styles/composer-attachments.css -> Kachelreihe der Anhänge im Eingabefeld

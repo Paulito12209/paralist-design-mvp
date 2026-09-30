@@ -62,6 +62,10 @@
  * --slash-tile-bg           -> Fläche einer Kachel im Menü
  * --slash-radius            -> Rundung des Menüs
  * --slash-max-h             -> ab dieser Höhe scrollt das Menü
+ * --block-bar-h             -> Höhe der Leiste über der Tastatur (Plus, Bausteine, Tastatur zu)
+ * --block-bar-icon          -> Größe der Icons in dieser Leiste
+ * --block-picker-h          -> Höhe der Auswahl an Stelle der Tastatur, solange die Tastatur
+ *                              noch nie offen war (sonst genau die Höhe der Tastatur)
  *
  * MEILENSTEINE (Seite im Fortschritt-Blatt)
  * --ms-tasks … --ms-streak  -> Farbe der Plakette je Abzeichen (Task Master, Ehrgeizling, Dichter,
@@ -237,6 +241,9 @@
   --slash-tile-bg: color-mix(in srgb, var(--text) 6%, transparent);
   --slash-radius: 20px;
   --slash-max-h: 320px;
+  --block-bar-h: 48px;
+  --block-bar-icon: 22px;
+  --block-picker-h: 320px;
 
   /* Meilensteine: Farben der Abzeichen, Plaketten, Ring und Balken */
   --ms-tasks: #34c759;

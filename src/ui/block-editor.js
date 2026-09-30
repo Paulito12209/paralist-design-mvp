@@ -3,7 +3,9 @@
  * eigener Block (Absatz, Stichpunkt, Zahl, Checkbox, Trennlinie, Karte).
  * „/“ am Anfang einer Zeile oder nach einem Leerzeichen öffnet das Menü mit
  * allen Bausteinen (src/ui/slash-menu.js); „- “, „1. “, „[] “ und „---“
- * am Zeilenanfang wandeln die Zeile direkt um.
+ * am Zeilenanfang wandeln die Zeile direkt um. Auf dem Handy steht beim
+ * Schreiben eine Leiste mit allen Bausteinen über der Tastatur
+ * (src/ui/block-bar.js).
  *
  * Gespeichert wird weiter reiner Text (src/data/note-blocks.js). Beim
  * Tippen gehört der Text dem Block auf der Seite; nur wer die Reihe der
@@ -19,6 +21,7 @@
 
 import { caretOffset, setCaret } from "../core/caret.js";
 import { isTextKind, makeBlock, numberAt, parseBlocks, serializeBlocks, shortcutFor } from "../data/note-blocks.js";
+import { attachBlockBar } from "./block-bar.js";
 import { bindBlockEmbeds, fillMissingColors } from "./block-embeds.js";
 import { bindBlockKeys } from "./block-keys.js";
 import { blockClass, blockInner } from "./block-markup.js";
@@ -165,6 +168,7 @@ export function createBlockEditor(root, { onChange, onVideo = null, emptyHint = 
   });
 
   createSlashMenu(ed);
+  attachBlockBar(ed);
   bindBlockKeys(ed);
   bindBlockEmbeds(ed, { onVideo });
 
