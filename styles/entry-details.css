@@ -9,7 +9,8 @@
  * mit der Seite; Kennzahlen und Abschnitte blenden erst ein, wenn sie über
  * der Navigation auftauchen (Klasse is-revealed, gesetzt von entry-fold.js).
  * Hochgeklappt (Klasse is-lifted, src/features/entry/entry-lift.js) gleitet
- * sie über den Text und scrollt, wenn nötig, in sich. Ganz unten das
+ * sie über den Text und scrollt, wenn nötig, in sich; nach unten wischen legt
+ * sie zurück (Klasse is-dragging, solange der Finger zieht). Ganz unten das
  * unsichtbare Feld für Datum und Uhrzeit (src/ui/date-field.js).
  * Pfad: styles/entry-details.css
  *
@@ -152,6 +153,19 @@
   z-index: 5; /* z-index: über dem Text (0), unter Kopfzeile und Navigation */
   overflow-y: auto; /* overflow-y: passt die Karte nicht unter den Titel, scrollt sie in sich */
   overscroll-behavior: contain; /* overscroll-behavior: am Ende der Karte scrollt nicht die Seite weiter */
+}
+
+/* Beim Ziehen mit dem Finger folgt die Karte ohne Nachgleiten */
+#entry-panel-notes > .details-card.is-dragging {
+  transition: none;
+}
+
+/* Hochgeklappt ist alles zu sehen. Das Einblenden hängt sonst an einem
+   Beobachter, der beim Scrollen in der Karte die Kennzahlen aus ihrem
+   Ausschnitt laufen sieht — und die ganze Karte leer machen würde. */
+.details-card.is-lifted .details-stats,
+.details-card.is-lifted .details-list {
+  opacity: 1;
 }
 
 /* Das Symbol dreht sich mit: hochgeklappt zeigt es nach unten, hier geht es zu */

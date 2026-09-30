@@ -9,6 +9,11 @@
  * weggescrollt, unter der Kopfzeile. Passt sie nicht ganz dazwischen, wird sie
  * so hoch wie der Platz und scrollt in sich.
  *
+ * Zurück geht sie auch mit dem Finger: steht ihr Inhalt ganz oben, zieht ein
+ * Wischen nach unten die Karte mit und legt sie ab einer Strecke zurück —
+ * wie ein Blatt von unten. Steht der Inhalt weiter unten, scrollt dasselbe
+ * Wischen erst den Inhalt nach oben.
+ *
  * Wer die Seite scrollt, in den Text tippt oder die Pille wechselt, legt die
  * Karte wieder zurück — sie hinge sonst losgelöst über einer anderen Stelle.
  * Gemessen wird nur beim Umschalten und wenn sich der Inhalt der Karte
@@ -19,6 +24,8 @@
  * -----------------------------------
  * TITLE_GAP_PX  -> so viel Luft bleibt mindestens zwischen Titel und hochgeklappter Karte
  * SCROLL_DROP_PX -> so weit darf die Seite bei hochgeklappter Karte scrollen, bevor sie zurückgeht
+ * DRAG_START_PX  -> so weit muss der Finger nach unten wandern, bevor die Karte ihm folgt
+ * SNAP_PX        -> so weit muss man sie nach unten ziehen, damit sie zurückgeht (sonst springt sie wieder hoch)
  *
  * Luft zur Navigation und Geschwindigkeit teilt sich die Karte mit der
  * Aufgaben-Seite: --tasks-panel-gap und --tasks-panel-slide in
@@ -30,11 +37,17 @@ import { dom, el } from "../../core/dom.js";
 
 const TITLE_GAP_PX = 12;
 const SCROLL_DROP_PX = 4;
+const DRAG_START_PX = 6;
+const SNAP_PX = 60;
 
 let card = null;
 let lifted = false;
 /* Scrollstand beim Hochklappen — weicht er ab, geht die Karte zurück */
 let liftScroll = 0;
+/* Wie weit die Karte hochgeschoben ist, in px — der Finger zieht von hier aus */
+let shift = 0;
+/* Beim Wischen: { y, atTop, dy, active } — atTop: Inhalt stand beim Aufsetzen ganz oben */
+let pull = null;
 
 /* Oberkante dessen, was unten über der Seite liegt: die Navigation — am
    Desktop ohne Navigation der untere Rand der Anzeigefläche. */
@@ -61,7 +74,7 @@ function place() {
   const bottom = coveredFrom() - cssNumber("--tasks-panel-gap", 12);
   const limit = ceiling();
   const target = Math.max(limit, bottom - full);
-  const shift = Math.max(0, top - target);
+  shift = Math.max(0, top - target);
   const room = Math.max(0, bottom - target);
   /* Zu hoch für den Platz: die Karte wird kürzer und scrollt in sich. Der
      Rand darunter gleicht die fehlende Höhe aus — die Seite wird nicht
@@ -81,6 +94,7 @@ function setLifted(next) {
     place();
     return;
   }
+  shift = 0;
   card.scrollTop = 0;
   card.style.transform = "";
   /* Höhe erst nach dem Zurückgleiten freigeben — sonst springt die Karte
@@ -96,6 +110,41 @@ function release(event) {
   if (lifted) return;
   card.style.maxHeight = "";
   card.style.marginBottom = "";
+}
+
+function onTouchStart(event) {
+  pull = lifted && event.touches.length === 1
+    ? { y: event.touches[0].clientY, atTop: card.scrollTop <= 0, dy: 0, active: false }
+    : null;
+}
+
+/* Nach unten bei Inhalt ganz oben: die Karte folgt dem Finger. Alles andere
+   (nach oben, oder Inhalt nicht oben) bleibt normales Scrollen in der Karte. */
+function onTouchMove(event) {
+  if (!pull) return;
+  const dy = event.touches[0].clientY - pull.y;
+  if (!pull.active) {
+    if (!pull.atTop || dy < 0) {
+      pull = null;
+      return;
+    }
+    if (dy < DRAG_START_PX) return;
+    pull.active = true;
+    card.classList.add("is-dragging");
+  }
+  /* Sonst scrollt der Browser zugleich die Seite oder federt die Karte */
+  event.preventDefault();
+  pull.dy = Math.max(0, dy);
+  card.style.transform = `translateY(${pull.dy - shift}px)`;
+}
+
+function onTouchEnd() {
+  const done = pull;
+  pull = null;
+  if (!done || !done.active) return;
+  card.classList.remove("is-dragging");
+  if (done.dy >= SNAP_PX) setLifted(false);
+  else card.style.transform = `translateY(${-shift}px)`;
 }
 
 /** Karte hoch- bzw. zurückklappen. */
@@ -116,6 +165,11 @@ export function refreshLift() {
 /** Die Karte übernehmen und die Anlässe zum Zurücklegen anmelden. */
 export function initEntryLift(detailsCard) {
   card = detailsCard;
+  card.addEventListener("touchstart", onTouchStart, { passive: true });
+  /* passive: false — nur so darf onTouchMove das Scrollen beim Ziehen anhalten */
+  card.addEventListener("touchmove", onTouchMove, { passive: false });
+  card.addEventListener("touchend", onTouchEnd);
+  card.addEventListener("touchcancel", onTouchEnd);
   /* passive: der Zuhörer hält das Scrollen nie auf */
   dom.content.addEventListener(
     "scroll",
