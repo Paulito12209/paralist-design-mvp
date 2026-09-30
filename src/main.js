@@ -51,6 +51,7 @@ import { initModalPull } from "./ui/modal-pull.js";
 import { initModalTop } from "./ui/modal-top.js";
 import { initPillTapReveal } from "./ui/pill-swipe.js";
 import { initPullSearch } from "./ui/pull-search.js";
+import { initHistoryRestore } from "./ui/router-restore.js";
 import { initSheet } from "./ui/sheet.js";
 import { initSwipe } from "./ui/swipe.js";
 
@@ -107,6 +108,7 @@ function loadEverything() {
 function initShell() {
   initSheet();
   initCtxMenu();
+  initHistoryRestore();
   initModalPull();
   initModalTop();
   initPullSearch();

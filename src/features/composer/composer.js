@@ -14,7 +14,7 @@ import { dom, el } from "../../core/dom.js";
 import { dayKey, timeKey } from "../../core/dates.js";
 import { overviewPages, typeIcon, typePlurals, typeSingular, xpKinds } from "../../data/config.js";
 import { connectEntries } from "../../data/links.js";
-import { applyEntryDefaults } from "../../data/mutations.js";
+import { applyEntryDefaults } from "../../data/mutations-tasks.js";
 import { findEntry, mainPlace, parentName } from "../../data/queries.js";
 import { entryRef } from "../../data/refs.js";
 import { state, ui } from "../../data/state.js";

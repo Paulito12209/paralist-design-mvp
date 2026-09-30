@@ -21,7 +21,8 @@
 
 import { dayKey, timeKey } from "../core/dates.js";
 import { nextId } from "../core/ids.js";
-import { defaultTaskPriority, defaultTaskStatus, workspaceDefaultName } from "./config.js";
+import { workspaceDefaultName } from "./config.js";
+import { defaultTaskPriority, defaultTaskStatus } from "./config-tasks.js";
 import { connectEntries, disconnectEntries, dropLinksTo } from "./links.js";
 import { commit, liftChildren } from "./mutations.js";
 import { moveOpen } from "./opens.js";

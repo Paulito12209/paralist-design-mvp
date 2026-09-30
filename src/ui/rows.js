@@ -12,7 +12,8 @@
 import { escapeHtml, icon } from "../core/html.js";
 import { sameId } from "../core/ids.js";
 import { noHistoryForm } from "../core/no-history.js";
-import { isTaskDone, typeIcon } from "../data/config.js";
+import { typeIcon } from "../data/config.js";
+import { isTaskDone } from "../data/config-tasks.js";
 import { mediaKindOf, workspaceIcon, workspaceLabel } from "../data/queries.js";
 import { ui } from "../data/state.js";
 import { thumbOf } from "../data/thumbs.js";

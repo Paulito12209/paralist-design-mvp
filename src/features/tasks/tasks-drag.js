@@ -20,7 +20,7 @@
 
 import { cssNumber } from "../../core/css-vars.js";
 import { dom } from "../../core/dom.js";
-import { moveTask } from "../../data/mutations.js";
+import { moveTask } from "../../data/mutations-tasks.js";
 import { findEntry } from "../../data/queries.js";
 import { saveState } from "../../data/state.js";
 import { activeTaskView } from "../../data/task-views.js";

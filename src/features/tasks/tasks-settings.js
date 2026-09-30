@@ -23,7 +23,7 @@
  */
 
 import { escapeHtml, icon } from "../../core/html.js";
-import { taskGroupings, taskSorts } from "../../data/config.js";
+import { taskGroupings, taskSorts } from "../../data/config-tasks.js";
 import { parentName, taskPlaces } from "../../data/queries.js";
 import { updateTaskView } from "../../data/task-views.js";
 import { openSheet } from "../../ui/sheet.js";

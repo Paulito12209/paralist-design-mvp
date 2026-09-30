@@ -3,7 +3,7 @@
  * Es liegt mittig über allem und dunkelt den Rest des Geräts ab.
  * Pfad: styles/update.css
  *
- * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * ANPASSBARE WERTE (die Werte des Fensters in styles/tokens-pages.css, die übrigen in styles/tokens.css)
  * -----------------------------------
  * --update-bg          -> Fläche des Fensters (im Dunkeln eigener Wert in tokens-dark.css)
  * --update-radius      -> Rundung des Fensters

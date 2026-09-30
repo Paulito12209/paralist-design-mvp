@@ -13,17 +13,19 @@ import {
   calendarModes,
   calendarSegments,
   calendarSpans,
-  defaultTaskPriority,
-  defaultTaskStatus,
-  isTaskDone,
   mediaFilters,
   resourceFilters,
   stageModes,
+} from "./config.js";
+import {
+  defaultTaskPriority,
+  defaultTaskStatus,
+  isTaskDone,
   taskDefaults,
   taskGroupings,
   taskLayouts,
   taskSorts,
-} from "./config.js";
+} from "./config-tasks.js";
 import { sanitizeLinks } from "./links.js";
 import { entryRef, normalizeRef, workspaceRef } from "./refs.js";
 import { seedMedia, seedXpFromExisting } from "./seed.js";

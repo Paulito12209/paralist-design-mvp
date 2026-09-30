@@ -18,7 +18,7 @@
  */
 
 import { icon } from "../../core/html.js";
-import { isTaskDone } from "../../data/config.js";
+import { isTaskDone } from "../../data/config-tasks.js";
 import { taskColumns } from "../../data/queries.js";
 import { taskCheck } from "../../ui/task-status.js";
 import { taskMeta, taskTitle } from "./tasks-parts.js";

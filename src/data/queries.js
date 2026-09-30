@@ -16,17 +16,15 @@ import { dayKey, timeKey } from "../core/dates.js";
 import { sameId } from "../core/ids.js";
 import {
   containerTypes,
-  isTaskDone,
   overviewPages,
   resourceTypes,
-  taskGroupings,
-  taskPriorities,
   typeIcon,
   typeSingular,
   typeOrder,
   typePlurals,
   xpItems,
 } from "./config.js";
+import { isTaskDone, taskGroupings, taskPriorities } from "./config-tasks.js";
 import { entryRef, isEntryRef, isWorkspaceRef, refId, workspaceRef } from "./refs.js";
 import { state } from "./state.js";
 

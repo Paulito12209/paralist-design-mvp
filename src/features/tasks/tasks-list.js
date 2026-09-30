@@ -21,7 +21,7 @@
  */
 
 import { icon } from "../../core/html.js";
-import { isTaskDone } from "../../data/config.js";
+import { isTaskDone } from "../../data/config-tasks.js";
 import { taskEntries, taskGroups } from "../../data/queries.js";
 import { entryActions, swipeRow } from "../../ui/rows.js";
 import { taskCheck } from "../../ui/task-status.js";

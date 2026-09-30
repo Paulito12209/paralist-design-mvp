@@ -18,7 +18,7 @@
  * photoKinds            -> welche Medienarten für „Fotograf“ zählen
  */
 
-import { isTaskDone } from "./config.js";
+import { isTaskDone } from "./config-tasks.js";
 import { charCount } from "./page-text.js";
 import { state } from "./state.js";
 import { usageStreaks } from "./usage.js";

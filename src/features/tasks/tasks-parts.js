@@ -19,7 +19,7 @@
 import { dayKey } from "../../core/dates.js";
 import { escapeHtml } from "../../core/html.js";
 import { shortDay } from "../../core/format.js";
-import { isTaskDone, taskPriorityOf } from "../../data/config.js";
+import { isTaskDone, taskPriorityOf } from "../../data/config-tasks.js";
 import { placesLabel } from "../../data/queries.js";
 
 const untitledTask = "Ohne Titel";

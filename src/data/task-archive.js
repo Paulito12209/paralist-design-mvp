@@ -14,7 +14,7 @@
  */
 
 import { dayKey } from "../core/dates.js";
-import { isTaskDone } from "./config.js";
+import { isTaskDone } from "./config-tasks.js";
 
 /**
  * Zeitpunkt des Erledigens pflegen, nachdem sich der Status geändert hat.

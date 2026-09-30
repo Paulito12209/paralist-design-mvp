@@ -1,7 +1,9 @@
 /*
  * Navigation: welche Seite offen ist, was der Zurück-Pfeil tut und wie die
  * Adresse (#/…) dazu passt. Diese Datei füllt keine Inhalte — sie schaltet nur
- * um und meldet es; die Bereiche zeichnen sich selbst.
+ * um und meldet es; die Bereiche zeichnen sich selbst. Was Browser-Zurück und
+ * -Vor aus einem Verlaufseintrag wiederherstellen, steht in
+ * src/ui/router-restore.js.
  * Pfad: src/ui/router.js
  *
  * Keine anpassbaren visuellen Werte.
@@ -16,10 +18,10 @@ import { noteOpen } from "../data/opens.js";
 import { findEntry, findWorkspace, workspaceLabel } from "../data/queries.js";
 import { workspaceRef } from "../data/refs.js";
 import { ui } from "../data/state.js";
-import { currentView, isViewActive, setActiveTab, showView } from "./views.js";
+import { isViewActive, setActiveTab, showView } from "./views.js";
 
 /* Die Ansichten, die unten in der Navigationsleiste einen Knopf haben. */
-const navViews = ["home", "calendar", "tasks", "media"];
+export const navViews = ["home", "calendar", "tasks", "media"];
 
 function hashOfTab(tab) {
   return tab === "home" ? "#/" : `#/${tab}`;
@@ -266,7 +268,13 @@ export function closeOverlay(name) {
   overlays.get(name)?.close?.();
 }
 
-function hideAllOverlays() {
+/** Ein angemeldetes Blatt ohne Verlaufsschritt schließen (Browser-Zurück). */
+export function hideOverlay(name) {
+  overlays.get(name)?.hide();
+}
+
+/** Alle angemeldeten Blätter ohne Verlaufsschritt schließen. */
+export function hideAllOverlays() {
   overlays.forEach((handlers) => handlers.hide());
 }
 
@@ -274,13 +282,13 @@ function hideAllOverlays() {
    hier, heißt sein Bereich genauso. */
 const overlayModules = { avatar: "profile", crop: "profile", file: "viewer" };
 
-/*
+/**
  * Ein Blatt aus dem Verlauf wiederherstellen; bei Bedarf wird sein Bereich
  * nachgeladen. `entry` ist der gespeicherte Verlaufseintrag — das
  * Einstellungs-Blatt liest daraus, ob eine Kachel aufgeklappt war, die
  * Dateiansicht, welche Datei offen war.
  */
-function restoreOverlay(name, entry = null, extra = "") {
+export function restoreOverlay(name, entry = null, extra = "") {
   withOverlay(name, (handlers) => {
     handlers.open(false, entry);
     if (extra) restoreOverlay(extra);
@@ -298,97 +306,3 @@ function withOverlay(name, run) {
   if (loadedModule(moduleName)) go();
   else load(moduleName).then(go);
 }
-
-window.addEventListener("popstate", (event) => {
-  const entry = event.state;
-  emit(events.viewWillChange, currentView());
-
-  /* Erst alles schließen, was über der Seite liegt; was der Verlauf verlangt,
-     geht gleich danach wieder auf. Ohne das bliebe z.B. die große Bildansicht
-     stehen, wenn man von ihr zum Profil zurückgeht. */
-  overlays.get("progress")?.hide();
-  overlays.get("avatar")?.hide();
-  overlays.get("crop")?.hide();
-  overlays.get("file")?.hide();
-
-  if (entry && entry.view === "file") {
-    restoreOverlay("file", entry);
-    return;
-  }
-
-  if (entry && entry.view === "progress") {
-    overlays.get("profile")?.hide();
-    restoreOverlay("progress", entry);
-    return;
-  }
-  if (entry && entry.view === "avatar") {
-    restoreOverlay("profile", null, "avatar");
-    return;
-  }
-  /* Der Ausschnitt-Editor kommt nicht zurück (siehe profile.js) — dafür das Profil */
-  if (entry && (entry.view === "profile" || entry.view === "avatar-crop")) {
-    restoreOverlay("profile", entry);
-    return;
-  }
-
-  hideAllOverlays();
-
-  if (!entry || entry.view === "home") {
-    showHome(true);
-    return;
-  }
-  if (entry.view === "search") {
-    showSearch(true, entry.list || null);
-    return;
-  }
-  if (navViews.includes(entry.view)) {
-    showTab(entry.view, true);
-    return;
-  }
-  /* Zeigt ein Posten auf etwas, das es nicht mehr gibt (gelöscht oder in
-     einen Arbeitsbereich umgewandelt), geht es auf die Übersicht — sonst
-     bliebe die alte Seite stehen und Zurück täte sichtbar nichts. */
-  if (entry.view === "entry") {
-    ui.sourceView = entry.from || "home";
-    if (!findEntry(entry.id)) {
-      showHome(true);
-      return;
-    }
-    openEntry(entry.id, false);
-    return;
-  }
-  if (entry.view === "archive") {
-    ui.sourceView = entry.from || "home";
-    showPage({ ...archivePage, pill: entry.pill || "all" }, false);
-    return;
-  }
-  if (entry.view === "bookmarks") {
-    ui.sourceView = entry.from || "home";
-    showPage({ ...bookmarksPage, pill: entry.pill }, false);
-    return;
-  }
-  if (entry.view === "workspaces") {
-    ui.sourceView = entry.from || "home";
-    showPage({ ...workspacesPage, pill: entry.pill }, false);
-    return;
-  }
-  if (entry.view === "overview") {
-    const page = overviewPages[entry.id];
-    if (!page) return;
-    ui.sourceView = entry.from || "home";
-    showPage({ title: page.title, parent: page.parent, kind: page.kind }, false);
-    return;
-  }
-  if (entry.view === "workspace") {
-    const workspace = findWorkspace(entry.id);
-    ui.sourceView = entry.from || "home";
-    if (!workspace) {
-      showHome(true);
-      return;
-    }
-    showPage(
-      { title: workspaceLabel(workspace), parent: workspaceRef(workspace.id), isWorkspace: true, workspaceId: workspace.id },
-      false
-    );
-  }
-});
