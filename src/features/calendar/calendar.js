@@ -24,7 +24,15 @@ import { isViewActive } from "../../ui/views.js";
 import { openDatePicker } from "./calendar-date-picker.js";
 import { initCalendarSettings, renderCalendarSettings, setTodayActive } from "./calendar-settings.js";
 import { initCalendarGestures, setRedraw as setGestureRedraw } from "./calendar-gestures.js";
-import { moveNowLine, nowLineVisible, renderGrid, scrollToNow, sizeGrid } from "./calendar-grid.js";
+import {
+  moveNowLine,
+  nowLineVisible,
+  renderGrid,
+  scrollToNow,
+  sizeGrid,
+  sizeList,
+  unsizePanel,
+} from "./calendar-grid.js";
 import { renderList } from "./calendar-list.js";
 import {
   goToDay,
@@ -81,14 +89,19 @@ export function renderCalendar(jumpToNow = false) {
   dom.calPanel.classList.toggle("is-grid", grid);
   dom.calPanel.innerHTML = panelMarkup(wide, grid);
   if (grid) {
-    if (wide === "week") sizeWeek();
-    else sizeGrid();
+    if (wide === "week") {
+      /* Die Mindesthöhe der Liste darf die Woche nicht strecken. */
+      unsizePanel();
+      sizeWeek();
+    } else sizeGrid();
     if (jumpToNow && wide === "week") scrollWeekToNow();
     else if (jumpToNow) scrollToNow();
     else dom.calPanel.scrollTop = keepScroll;
     updateGridLock();
+  } else if (wide === "month") {
+    unsizePanel();
   } else {
-    dom.calPanel.style.height = "";
+    sizeList();
   }
   /* rAF: die Sichtbarkeit der Jetzt-Linie erst messen, wenn das Rollen im
      Raster übernommen wurde. */
@@ -224,11 +237,15 @@ function onToolbarClick(event) {
   else if (calAdd) emit(events.createRequested, "termin");
 }
 
-/* Neue Fenstergröße: das Raster (Tag oder Woche) misst seine Höhe neu. */
+/* Neue Fenstergröße: Raster (Tag oder Woche) und Liste messen ihre Höhe neu. */
 function onResize() {
   if (!isViewActive("calendar")) return;
   const wide = deskView();
-  if (wide === "month" || (wide !== "week" && state.prefs.calendar.mode !== "grid")) return;
+  if (wide === "month") return;
+  if (wide !== "week" && state.prefs.calendar.mode !== "grid") {
+    sizeList();
+    return;
+  }
   if (wide === "week") sizeWeek();
   else sizeGrid();
   updateGridLock();

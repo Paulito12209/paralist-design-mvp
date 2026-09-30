@@ -8,7 +8,7 @@
  * --cal-hour-h (styles/tokens.css) -> Höhe einer Stunde
  * overlapShift -> um wie viele Pixel gleichzeitige Termine versetzt werden
  * nowTopGap    -> Abstand der Jetzt-Linie zum oberen Rand des Rasters beim Öffnen
- * minGridHeight -> Mindesthöhe des Rasters, falls der Kopf einmal sehr hoch wird
+ * minGridHeight -> Mindesthöhe des Rasters (und der Liste), falls der Kopf einmal sehr hoch wird
  */
 
 import { dayKey, pad2, timeKey } from "../../core/dates.js";
@@ -95,9 +95,31 @@ export function renderGrid() {
  * Monat zum Wegscrollen brauchen.
  */
 export function sizeGrid() {
+  dom.calPanel.style.minHeight = "";
+  dom.calPanel.style.height = `${stuckPanelHeight()}px`;
+}
+
+/* Der Platz vom eingerasteten Kopf bis zum unteren Rand. */
+function stuckPanelHeight() {
   const stuckHead = dom.calHead.offsetHeight - cssNumber("--content-top", 40);
-  const height = Math.max(minGridHeight, dom.content.clientHeight - stuckHead);
-  dom.calPanel.style.height = `${height}px`;
+  return Math.max(minGridHeight, dom.content.clientHeight - stuckHead);
+}
+
+/*
+ * Die Liste wächst mit ihren Einträgen, reicht aber mindestens so weit wie
+ * das Raster: sonst hat die Seite an einem leeren oder kurzen Tag keinen
+ * Weg zum Scrollen, und Titel und Monat lassen sich nicht wegschieben, bis
+ * der Streifen unter der Suchleiste einrastet.
+ */
+export function sizeList() {
+  dom.calPanel.style.height = "";
+  dom.calPanel.style.minHeight = `${stuckPanelHeight()}px`;
+}
+
+/* Monat am Desktop: die Fläche richtet sich ganz nach ihrem Inhalt. */
+export function unsizePanel() {
+  dom.calPanel.style.height = "";
+  dom.calPanel.style.minHeight = "";
 }
 
 /*
