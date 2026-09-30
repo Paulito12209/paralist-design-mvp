@@ -13,11 +13,17 @@
  * (src/features/search/search-tap.js).
  * Am Desktop öffnet das Feld stattdessen die Such-Palette
  * (src/shell/search-palette.js, angemeldet über setSearchTakeover).
+ * Ob beim Öffnen gleich die Tastatur aufgeht, wählt man unter
+ * Einstellungen › App-Einstellungen (src/data/search-keyboard.js). Vorgabe
+ * ist aus: der erste Tipp ins Feld öffnet nur die Suchseite, erst der
+ * nächste Tipp ins Feld oder die Pille „Suchen“ holt die Tastatur.
  * Pfad: src/shell/search-bar.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * pillLabels -> Wort auf der Pille unten: ohne Eingabe, mit Eingabe
+ * pillLabels    -> Wort auf der Pille unten: ohne Eingabe, mit Eingabe
+ * quietWindowMs -> so lange nach dem Öffnen ohne Tastatur wird ein
+ *                  nachzüglerischer Klick oder Fokus des Browsers verschluckt
  *
  * Höhe und Rundung des Felds stehen in styles/top-bar.css (--search-bar-height,
  * --search-bar-radius, dort auch der Kreis mit dem ×); die Knöpfe unten
@@ -28,7 +34,9 @@ import { events, on } from "../core/bus.js";
 import { dom, el } from "../core/dom.js";
 import { load } from "../core/lazy.js";
 import { noteSearch } from "../data/opens.js";
+import { searchKeyboardOn } from "../data/search-keyboard.js";
 import { ui } from "../data/state.js";
+import { isDesk } from "../ui/desk-mode.js";
 import { closeSearch, showSearch } from "../ui/router.js";
 import { isViewActive } from "../ui/views.js";
 import { initSearchVoice } from "./search-voice.js";
@@ -43,6 +51,54 @@ let takeOver = () => false;
 /* „Neue Suche“ statt „Suche leeren“: sagt, was danach kommt, und klingt
    nicht danach, als würde der Verlauf der Suche gelöscht. */
 const pillLabels = { empty: "Suchen", filled: "Neue Suche" };
+
+const quietWindowMs = 600;
+/* Bis wann die Suche gerade ohne Tastatur geöffnet wurde (Zeitstempel). */
+let quietUntil = 0;
+
+/* Soll ein Tipp ins Feld nur die Suchseite öffnen? Am Desktop übernimmt die
+   Palette; steht die Suchseite schon offen, will man tippen. */
+function keepKeyboardClosed() {
+  return !isDesk() && !searchKeyboardOn() && !isViewActive("search");
+}
+
+function inQuietWindow() {
+  return Date.now() < quietUntil;
+}
+
+/* Suchseite öffnen und die Klick- und Fokus-Nachzügler dieses Tipps verschlucken. */
+function openQuietly() {
+  quietUntil = Date.now() + quietWindowMs;
+  showSearch();
+}
+
+/*
+ * Den Fokus verhindern, bevor er entsteht — danach ginge die Tastatur schon
+ * auf. Maus: der Fokus ist die Folge von mousedown. Finger: touchend
+ * unterbindet die nachgebildeten Maus-Ereignisse samt Klick, deshalb öffnet
+ * die Suche hier selbst. Das × im Feld bleibt außen vor.
+ */
+function holdKeyboard(event) {
+  if (event.target.closest("#search-clear") || !keepKeyboardClosed()) return;
+  event.preventDefault();
+  if (event.type === "touchend") openQuietly();
+}
+
+/* Tipp ins Feld: Suchseite öffnen; ohne Tastatur verhindert preventDefault,
+   dass das label den Fokus doch noch ans Feld weitergibt. */
+function onEntryClick(event) {
+  if (takeOver(event)) return;
+  if (inQuietWindow()) {
+    event.preventDefault();
+    return;
+  }
+  if (keepKeyboardClosed()) {
+    event.preventDefault();
+    openQuietly();
+    return;
+  }
+  showSearch();
+}
 
 /* Die Pille unten sagt, was sie tut: Tastatur holen oder das Feld leeren. */
 function syncPill() {
@@ -71,6 +127,12 @@ function redrawSearch() {
 /* Tastatur öffnet sich: Navigation bleibt unten, Suchen-Pille verschwindet. */
 function onFocus(event) {
   if (takeOver(event)) return;
+  /* Rückfall, falls ein Browser den Fokus trotzdem vergibt: gleich wieder weg. */
+  if (keepKeyboardClosed() || inQuietWindow()) {
+    showSearch();
+    dom.searchInput.blur();
+    return;
+  }
   ui.searchTyping = true;
   document.body.classList.add("is-search-typing");
   showSearch();
@@ -84,9 +146,11 @@ function onBlur() {
 
 /** Suchfeld und Lupe anmelden. */
 export function initSearchBar() {
-  el("search-entry").addEventListener("click", (event) => {
-    if (!takeOver(event)) showSearch();
-  });
+  const entry = el("search-entry");
+  entry.addEventListener("mousedown", holdKeyboard);
+  /* passive: false, sonst wäre preventDefault wirkungslos */
+  entry.addEventListener("touchend", holdKeyboard, { passive: false });
+  entry.addEventListener("click", onEntryClick);
   dom.searchInput.addEventListener("focus", onFocus);
   dom.searchInput.addEventListener("blur", onBlur);
 

@@ -1,6 +1,9 @@
 /*
  * Pull-to-Search: Durch Ziehen nach unten (mindestens 120px) bei oberstem
- * Scrollstand wird die Suchseite geöffnet und das Suchfeld fokussiert.
+ * Scrollstand wird die Suchseite geöffnet. Das Suchfeld bekommt den Fokus
+ * (Tastatur) nur, wenn das unter Einstellungen › App-Einstellungen gewählt
+ * ist (src/data/search-keyboard.js); sonst zeigt die Suche erst „Zuletzt
+ * geöffnet“.
  * Pfad: src/ui/pull-search.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -9,6 +12,7 @@
  * startSlack    -> ab wie vielen Pixeln die Bewegung als Ziehen gilt
  * resistance    -> Dämpfungsfaktor beim elastischen Mitziehen des Inhalts
  * resetAnimMs   -> Dauer des Zurückfederns beim Loslassen (Millisekunden)
+ * focusDelayMs  -> Wartezeit, bis die Suchseite steht und das Feld Fokus annimmt
  *
  * HINWEIS: Touch-Events statt Pointer-Events
  * Chrome Mobile fängt bei scrollTop === 0 die Wisch-Geste als natives
@@ -18,6 +22,7 @@
  */
 
 import { dom } from "../core/dom.js";
+import { searchKeyboardOn } from "../data/search-keyboard.js";
 import { isDesk } from "./desk-mode.js";
 import { showSearch } from "./router.js";
 import { isViewActive } from "./views.js";
@@ -26,9 +31,17 @@ const pullThreshold = 120;
 const startSlack = 8;
 const resistance = 0.45;
 const resetAnimMs = 220;
+const focusDelayMs = 60;
 
 let pull = null;
 let ignoreClicksUntil = 0;
+
+/* Suche öffnen; die Tastatur nur, wenn sie beim Öffnen gleich kommen soll. */
+function openSearchByPull() {
+  showSearch();
+  if (!searchKeyboardOn()) return;
+  setTimeout(() => dom.searchInput.focus(), focusDelayMs);
+}
 
 /* ───────── Bedingung: darf ein Pull starten? ───────── */
 
@@ -149,12 +162,7 @@ function onTouchEnd(event) {
   const triggered = distance >= pullThreshold;
   resetVisual();
 
-  if (triggered) {
-    showSearch();
-    setTimeout(() => {
-      dom.searchInput.focus();
-    }, 60);
-  }
+  if (triggered) openSearchByPull();
 }
 
 /* ───────── Pointer-basierte Geste (Maus / Desktop) ───────── */
@@ -224,12 +232,7 @@ function onPointerEnd(event) {
   const triggered = distance >= pullThreshold;
   resetVisual();
 
-  if (triggered) {
-    showSearch();
-    setTimeout(() => {
-      dom.searchInput.focus();
-    }, 60);
-  }
+  if (triggered) openSearchByPull();
 }
 
 /* ───────── Initialisierung ───────── */

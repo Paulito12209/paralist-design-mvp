@@ -28,6 +28,7 @@ import {
   toggleFavorite,
 } from "../../data/mutations.js";
 import { workspaceDetails } from "../../data/details.js";
+import { searchKeyboardOn } from "../../data/search-keyboard.js";
 import { findWorkspace, inboxEntries, workspaceColor } from "../../data/queries.js";
 import { saveState, state, ui } from "../../data/state.js";
 import { openDetails } from "../../ui/details.js";
@@ -265,7 +266,8 @@ export function initPage() {
      echten Suchfeld wieder da, und ein verstecktes Feld nimmt keinen Fokus an. */
   dom.pageSearchBtn.addEventListener("click", () => {
     showSearch();
-    dom.searchInput.focus();
+    /* Tastatur nur, wenn sie beim Öffnen gleich kommen soll (App-Einstellungen) */
+    if (searchKeyboardOn()) dom.searchInput.focus();
   });
   dom.content.addEventListener("scroll", updatePageHeadScroll, { passive: true });
   bindHeadTitle(dom.pageHead, dom.pageTitle, () => isViewActive("page"));
