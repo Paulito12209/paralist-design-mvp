@@ -87,8 +87,9 @@ body:has(.nav-shell.is-composing) .view-panel {
   }
 }
 
-/* Der Kopf ist Griff: ziehen statt die Seite zu bewegen */
-.view-panel-head {
+/* Die ganze Karte ist Griff (src/ui/view-panel.js): ziehen statt die Seite zu
+   bewegen. Die Karte scrollt nie in sich (overflow: hidden oben), es geht also nichts verloren. */
+.view-panel {
   touch-action: none; /* touch-action: der Browser soll das Ziehen nicht selbst als Geste nehmen */
 }
 

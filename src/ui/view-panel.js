@@ -9,8 +9,10 @@
  * jede Seite legt ihre eigene Karte an und füllt sie mit ihren Zeilen. Der
  * Kalender stellt zusätzlich „Heute“ in den Kopf (Parameter `actions`).
  *
- * Umschalten: Tipp auf den Kopf oder das Symbol rechts, oder den Kopf nach
- * oben bzw. unten ziehen. Kopf und Karte werden einmal angelegt; beim
+ * Umschalten: Tipp auf den Kopf oder das Symbol rechts, oder die Karte nach
+ * oben bzw. unten ziehen — am Kopf wie über den Zeilen. Über den Zeilen wird
+ * erst ab DRAG_START_PX gezogen, darunter bleibt es ein Tipp auf die Zeile.
+ * Kopf und Karte werden einmal angelegt; beim
  * Neuzeichnen wird nur der Inhalt ersetzt — so blinkt die Karte nie leer auf.
  * Pfad: src/ui/view-panel.js
  *
@@ -72,17 +74,21 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
     toggle.setAttribute("aria-expanded", String(next));
   };
 
-  head.addEventListener("pointerdown", (event) => {
+  /* Die ganze Karte ist Griff. Der Kopf hält den Zeiger selbst fest; über
+     den Zeilen hält ihn die angetippte Zeile — so erreicht jede Bewegung die
+     Karte, auch über der Navigation, und ein Tipp trifft weiter die Zeile.
+     (Ein Finger wird ohnehin so festgehalten, die Maus nicht.) */
+  panel.addEventListener("pointerdown", (event) => {
     if (event.button !== 0) return;
     /* Ein Knopf im Kopf ist kein Griff: sein Klick soll ihn selbst treffen. */
     if (event.target.closest(".view-panel-actions [data-settings]")) return;
     skipClick = false;
     drag = { y: event.clientY, from: expanded ? 0 : collapsedOffset(), moved: false, id: event.pointerId };
     /* Der Kopf behält den Finger, auch wenn er ihn beim Ziehen gleich verlässt. */
-    head.setPointerCapture(event.pointerId);
+    (head.contains(event.target) ? head : event.target).setPointerCapture(event.pointerId);
   });
 
-  head.addEventListener("pointermove", (event) => {
+  panel.addEventListener("pointermove", (event) => {
     if (!drag || event.pointerId !== drag.id) return;
     const dy = event.clientY - drag.y;
     if (!drag.moved) {
@@ -106,18 +112,26 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
     if (Math.abs(dy) >= SNAP_PX) setExpanded(dy < 0);
     skipClick = true;
   };
-  head.addEventListener("pointerup", onPointerUp);
-  head.addEventListener("pointercancel", onPointerUp);
+  panel.addEventListener("pointerup", onPointerUp);
+  panel.addEventListener("pointercancel", onPointerUp);
+
+  /* Nach einem Ziehen kommt noch ein Klick — weder die Zeile darunter noch
+     der Kopf sollen ihn bekommen. Capture: vor allen anderen Zuhörern. */
+  panel.addEventListener(
+    "click",
+    (event) => {
+      if (!skipClick) return;
+      skipClick = false;
+      event.stopPropagation();
+    },
+    true
+  );
 
   /* Der ganze Kopf schaltet um — mit festgehaltenem Zeiger trifft der Klick
      den Kopf selbst, nicht den Knopf darin. */
   head.addEventListener("click", (event) => {
     if (event.target.closest(".view-panel-actions [data-settings]")) {
       onClick(event);
-      return;
-    }
-    if (skipClick) {
-      skipClick = false;
       return;
     }
     setExpanded(!expanded);

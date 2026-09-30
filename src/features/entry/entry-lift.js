@@ -46,7 +46,7 @@ let lifted = false;
 let liftScroll = 0;
 /* Wie weit die Karte hochgeschoben ist, in px — der Finger zieht von hier aus */
 let shift = 0;
-/* Beim Wischen: { y, atTop, dy, active } — atTop: Inhalt stand beim Aufsetzen ganz oben */
+/* Beim Wischen: { x, y, atTop, dy, active } — atTop: Inhalt stand beim Aufsetzen ganz oben */
 let pull = null;
 
 /* Oberkante dessen, was unten über der Seite liegt: die Navigation — am
@@ -114,20 +114,25 @@ function release(event) {
 
 function onTouchStart(event) {
   pull = lifted && event.touches.length === 1
-    ? { y: event.touches[0].clientY, atTop: card.scrollTop <= 0, dy: 0, active: false }
+    ? { x: event.touches[0].clientX, y: event.touches[0].clientY, atTop: card.scrollTop <= 0, dy: 0, active: false }
     : null;
 }
 
 /* Nach unten bei Inhalt ganz oben: die Karte folgt dem Finger. Alles andere
-   (nach oben, oder Inhalt nicht oben) bleibt normales Scrollen in der Karte. */
+   (nach oben, seitlich, oder Inhalt nicht oben) bleibt normales Scrollen in der Karte. */
 function onTouchMove(event) {
   if (!pull) return;
-  const dy = event.touches[0].clientY - pull.y;
+  const touch = event.touches[0];
+  const dy = touch.clientY - pull.y;
   if (!pull.active) {
-    if (!pull.atTop || dy < 0) {
+    if (!pull.atTop || dy < 0 || Math.abs(touch.clientX - pull.x) > dy) {
       pull = null;
       return;
     }
+    /* Schon vor DRAG_START_PX festhalten: Safari entscheidet bei der ersten
+       Bewegung, ob es selbst scrollt — danach wirkt preventDefault nicht mehr,
+       und die Karte hinge halb gezogen, während darunter die Seite rollt. */
+    event.preventDefault();
     if (dy < DRAG_START_PX) return;
     pull.active = true;
     card.classList.add("is-dragging");
