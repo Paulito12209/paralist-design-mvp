@@ -342,6 +342,10 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 
 **Suchen, Fortschritt, Einstellungen**
 - Tippen, Treffer, „keine Treffer“, Escape, die beiden Unterlisten und zurück.
+- Öffnen ohne Tastatur (Vorgabe): Tipp ins Suchfeld, Ziehen nach unten und
+  der Suchknopf einer Seite zeigen „Zuletzt geöffnet“ und die Pille „Suchen“;
+  die Pille oder ein zweiter Tipp ins Feld holt die Tastatur. Mit Haken bei
+  „Tastatur sofort öffnen“ geht sie jedes Mal sofort auf, auch nach Neuladen.
 - Tastatur bleibt über der Navigation stehen (die Leiste rückt nicht mit
   hoch), daneben tippen schließt nur die Tastatur statt einen Eintrag zu
   öffnen, zugeklappt zeigt sich die Suchen-Pille rechts über der Navigation.
@@ -354,7 +358,9 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   öffnen die volle Karte — Zurück-Pfeil, Browser-Zurück und das Kreuz müssen
   sich unterscheiden (Kreuz schließt alles). Nutzungszeit steht als
   „1 Std 20 Min“ (nicht als `m:ss`), Zeitraum umschalten, Darstellung wechseln,
-  Bild groß ansehen und mit Browser-Zurück schließen.
+  Bild groß ansehen und mit Browser-Zurück schließen. „App › App-Einstellungen“:
+  beide Haken setzen und lösen (Namen unter den Reitern erscheinen sofort),
+  Pfeil und Browser-Zurück führen zur Liste, das Kreuz schließt alles.
 
 **Desktop (ab 1024 px)**
 - Alle Flows der Desktop-Fassung stehen in `docs/desktop-flows.md` —

@@ -1,6 +1,9 @@
 # Einstellungen: Unterseite „App-Einstellungen“ mit Reiter-Namen und Such-Tastatur
 
-Stand: 30. September 2026. Gilt für Handy und Desktop. Umsetzung nach den
+Stand: 30. September 2026, umgesetzt. Abweichung vom ersten Entwurf: der
+Fokus wird über `mousedown` und `touchend` verhindert statt über
+`pointerdown` (das hält den Fokus in Chrome nicht auf), und das
+Tastatur-Icon ist gleich mit eingebaut. Gilt für Handy und Desktop. Umsetzung nach den
 Regeln in `.claude/skills/paralist-clean-code/SKILL.md`: erst
 `python3 tools/version.py`, dann `python3 tools/check.py`, dann im Browser
 prüfen, dann committen — je Schritt aus Abschnitt 8 ein Commit.
