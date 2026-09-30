@@ -64,8 +64,9 @@ function boardColumn(column, field) {
 /** Das ganze Board als HTML. */
 export function taskBoardMarkup(prefs) {
   const { field, columns } = taskColumns(prefs);
-  /* data-own-swipe: seitlich schieben rollt das Board, wechselt nicht die Ansicht (src/ui/pill-swipe.js) */
-  return `<div class="board" id="tasks-board" data-own-swipe>${columns
+  /* data-edge-swipe: seitlich wischen rollt erst die Spalten; steht das Board
+     schon am Rand, wechselt es die Ansicht (src/ui/pill-swipe.js) */
+  return `<div class="board" id="tasks-board" data-edge-swipe>${columns
     .map((column) => boardColumn(column, field))
     .join("")}</div>`;
 }

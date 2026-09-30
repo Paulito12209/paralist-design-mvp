@@ -5,6 +5,10 @@
  * Übersicht für die Tabs der Arbeitsbereiche, auf Medien und Ressourcen.
  * Das gilt auch über Listenzeilen: deren Knöpfe kommen erst nach Halten und
  * Ziehen (src/ui/swipe.js) — eine solche Berührung wechselt keinen Tab.
+ * Flächen mit `data-edge-swipe` rollen selbst seitlich (das Kanban-Board):
+ * dort rollt Wischen erst die Fläche und wechselt die Pille nur, wenn sie in
+ * Wischrichtung schon am Rand stand — wie ein Karussell in einer Seite.
+ * Am Griff einer Zeile (`data-grip`) wechselt nie etwas, dort wird gezogen.
  * Nach dem Wechsel — per Wischen oder Antippen (initPillTapReveal) — rollt
  * eine seitlich laufende Pillen-Leiste (.tab-pills) so,
  * dass die neue Pille ganz sichtbar ist und den Randabstand aus
@@ -28,7 +32,17 @@ const EDGE_PX = 24;
 /* Dort hat Wischen schon eine eigene Bedeutung: zeichnen, Pillen-Leiste
    schieben, im Titel den Cursor setzen. `data-own-swipe` markiert weitere
    Flächen, die selbst seitlich rollen (die Karten der Übersicht). */
-const OWN_GESTURES = ".draw-pad, .tab-pills, input, [data-own-swipe]";
+const OWN_GESTURES = ".draw-pad, .tab-pills, input, [data-own-swipe], [data-grip]";
+
+/* Lässt eine seitlich rollende Fläche die Pille wechseln? Nur wenn sie beim
+   Aufsetzen in Wischrichtung schon am Rand stand und sich seitdem nicht
+   bewegt hat — sonst war die Bewegung Rollen. dx < 0 heißt: zur nächsten. */
+function edgeAllows(edge, dx) {
+  if (!edge) return true;
+  if (Math.abs(edge.el.scrollLeft - edge.left) > 1) return false;
+  const max = edge.el.scrollWidth - edge.el.clientWidth;
+  return dx < 0 ? edge.left >= max - 1 : edge.left <= 1;
+}
 
 /* Die gewählte Pille ins Bild rollen. „nearest“ rollt nur, wenn sie ganz oder
    halb außerhalb steht, und beachtet dabei den Randabstand aus scroll-padding. */
@@ -84,7 +98,8 @@ export function initPillSwipe(area, { order, current, select, enabled = () => tr
       const touch = event.touches[0];
       if (event.target.closest(OWN_GESTURES)) return;
       if (touch.clientX < EDGE_PX || touch.clientX > window.innerWidth - EDGE_PX) return;
-      start = { x: touch.clientX, y: touch.clientY };
+      const edgeEl = event.target.closest("[data-edge-swipe]");
+      start = { x: touch.clientX, y: touch.clientY, edge: edgeEl ? { el: edgeEl, left: edgeEl.scrollLeft } : null };
     },
     { passive: true }
   );
@@ -96,8 +111,10 @@ export function initPillSwipe(area, { order, current, select, enabled = () => tr
       const touch = event.changedTouches[0];
       const dx = touch.clientX - start.x;
       const dy = touch.clientY - start.y;
+      const edge = start.edge;
       start = null;
       if (Math.abs(dx) < SWIPE_MIN_PX || Math.abs(dx) < AXIS_RATIO * Math.abs(dy)) return;
+      if (!edgeAllows(edge, dx)) return;
       if (hasSelection() || isRowGesture()) return;
       const ids = typeof order === "function" ? order() : order;
       const next = ids.indexOf(current()) + (dx < 0 ? 1 : -1);
