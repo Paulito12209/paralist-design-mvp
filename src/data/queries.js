@@ -24,7 +24,7 @@ import {
   typePlurals,
   xpItems,
 } from "./config.js";
-import { isTaskDone, taskGroupings, taskPriorities } from "./config-tasks.js";
+import { isTaskDone, taskGroupings, taskPriorities, taskPriorityOf, taskStatusOf } from "./config-tasks.js";
 import { entryRef, isEntryRef, isWorkspaceRef, refId, workspaceRef } from "./refs.js";
 import { state } from "./state.js";
 
@@ -290,11 +290,16 @@ function matchesPlace(entry, place) {
   return isEntryRef(place) && (entry.links || []).some((id) => sameId(id, refId(place)));
 }
 
-/** Aufgaben der Seite: nach Ort gesiebt, ohne Erledigte (solange das Menü sie ausblendet), sortiert. */
+/* Lässt der Filter der Ansicht Status und Dringlichkeit dieser Aufgabe durch? */
+function matchesFilter(entry, prefs) {
+  if (isTaskDone(entry)) return !prefs.hideDone && !(prefs.hiddenPriorities || []).includes(taskPriorityOf(entry.priority).id);
+  if ((prefs.hiddenStatuses || []).includes(taskStatusOf(entry.status).id)) return false;
+  return !(prefs.hiddenPriorities || []).includes(taskPriorityOf(entry.priority).id);
+}
+
+/** Aufgaben der Seite: nach Ort, Status und Dringlichkeit gesiebt, sortiert. Archiviertes fehlt immer. */
 export function visibleTasks(prefs) {
-  const list = taskEntries().filter(
-    (entry) => !(prefs.hideDone && isTaskDone(entry)) && matchesPlace(entry, prefs.place)
-  );
+  const list = taskEntries().filter((entry) => matchesFilter(entry, prefs) && matchesPlace(entry, prefs.place));
   return sortTasks(list, prefs.sort, prefs.sortAsc);
 }
 

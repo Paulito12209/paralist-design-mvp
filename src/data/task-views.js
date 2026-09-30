@@ -3,8 +3,8 @@
  * über den Arbeitsbereichen. Jede Ansicht merkt sich ihr Layout (Liste oder
  * Board), Sortierung, Gruppierung, Ort-Filter und ob Erledigte zu sehen sind.
  * Die erste Ansicht „Alle“ ist fest: sie lässt sich nicht löschen, nicht
- * umbenennen und nicht filtern — Layout, Sortierung und Gruppierung darf
- * auch sie sich merken. Eine neue Ansicht beginnt als Kopie von „Alle“.
+ * umbenennen und nicht nach Ort filtern — Layout, Sortierung, Gruppierung
+ * und der Filter nach Status und Dringlichkeit darf auch sie sich merken. Eine neue Ansicht beginnt als Kopie von „Alle“.
  * Pfad: src/data/task-views.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -53,7 +53,7 @@ export function selectTaskView(id) {
   commit();
 }
 
-/** Einstellungen der gewählten Ansicht ändern; „Alle“ bleibt immer ungefiltert. */
+/** Einstellungen der gewählten Ansicht ändern; „Alle“ zeigt immer jeden Ort. */
 export function updateTaskView(changes) {
   const view = activeTaskView();
   Object.assign(view, changes);

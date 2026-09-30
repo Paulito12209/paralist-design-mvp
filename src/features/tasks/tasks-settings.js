@@ -5,8 +5,9 @@
  *
  * - Layout: Liste | Board
  * - Sortieren: Zeile mit der Wahl, ein Tipp öffnet das Blatt
- * - Filtern: Zeile mit dem Ort, ein Tipp öffnet das Blatt „Aufgaben von“ —
- *   bei „Alle“ gesperrt, der ⓘ daneben erklärt, wie man eine eigene Ansicht baut
+ * - Filtern: Zeile mit Ort, Status und Dringlichkeit in Kurzform; ein Tipp
+ *   öffnet das Blatt „Filtern“ (src/features/tasks/tasks-filter.js). Auch
+ *   „Alle“ lässt sich filtern, nur nicht nach Ort
  * - Gruppieren: Schalter; an, dann darunter „Abschnitte nach“ Status | Dringlichkeit.
  *   Im Board gibt es keinen Schalter — ein Board hat immer Spalten —, dort
  *   steht nur „Spalten nach“
@@ -16,9 +17,9 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * rowLabels    -> Beschriftungen der Zeilen („groupBy“ je Layout: Liste hat Abschnitte, Board Spalten)
- * allPlaces    -> was in der Filter-Zeile steht, solange kein Ort gewählt ist
- * infoTitle / infoText -> das Blatt hinter dem ⓘ
- * placeTitle   -> Überschrift des Blatts „Aufgaben von“ (das Blatt „Sortieren“ hat keinen Titel)
+ *
+ * Was in der Filter-Zeile steht und was das Blatt „Filtern“ anbietet, steht
+ * in src/features/tasks/tasks-filter.js.
  *
  * Aussehen: styles/tasks-settings.css (Schalter, Segmente) und
  * styles/entry-details.css (Karte, Zeilen).
@@ -27,10 +28,9 @@
 import { escapeHtml, icon } from "../../core/html.js";
 import { panelSegment as segment, panelToggle as toggle } from "../../ui/panel-rows.js";
 import { taskGroupings, taskSorts } from "../../data/config-tasks.js";
-import { parentName, taskPlaces } from "../../data/queries.js";
 import { updateTaskView } from "../../data/task-views.js";
-import { openSheet } from "../../ui/sheet.js";
 import { openSortSheet, sortSummary } from "../../ui/sort-sheet.js";
+import { filterSummary, openTaskFilter } from "./tasks-filter.js";
 
 const rowLabels = {
   layout: "Layout",
@@ -39,14 +39,7 @@ const rowLabels = {
   group: "Gruppieren",
   groupBy: { list: "Abschnitte nach", board: "Spalten nach" },
   done: "Erledigte zeigen",
-  info: "Warum lässt sich „Alle“ nicht filtern?",
 };
-const allPlaces = "Alle Orte";
-const inboxLabel = "Eingang";
-const placeTitle = "Aufgaben von";
-const infoTitle = "Eigene Ansicht";
-const infoText =
-  "„Alle“ zeigt immer jede Aufgabe. Tippe auf das kleine Plus neben den Pillen: die neue Ansicht beginnt als Kopie von „Alle“ und lässt sich filtern, sortieren und gruppieren, wie du willst.";
 const layouts = [
   { id: "list", label: "Liste", icon: "list" },
   { id: "board", label: "Board", icon: "board" },
@@ -57,23 +50,16 @@ function sortValue(view) {
   return sortSummary(taskSorts, view.sort, view.sortAsc);
 }
 
-/* Was in der Filter-Zeile steht. */
-function placeValue(view) {
-  if (view.place === "alle") return allPlaces;
-  if (view.place === "inbox") return inboxLabel;
-  return parentName(view.place);
-}
-
 /**
  * Rechts in der Werkzeugzeile am Desktop: Segment Liste | Board und der
- * Filter nach Ort — dieselben Schalter wie in der Karte, also dieselben Klicks.
+ * Filter — dieselben Schalter wie in der Karte, also dieselben Klicks.
  */
 export function deskToolsMarkup(view) {
   return `
     <span class="tasks-desk-tools">
       ${segment(layouts, view.layout, "layout")}
-      <button class="tasks-desk-filter" type="button" data-settings="place"${view.fixed ? " disabled" : ""} title="${escapeHtml(rowLabels.place)}">
-        ${icon("sliders")}<span>${escapeHtml(placeValue(view))}</span>
+      <button class="tasks-desk-filter" type="button" data-settings="filter" title="${escapeHtml(rowLabels.place)}">
+        ${icon("sliders")}<span>${escapeHtml(filterSummary(view))}</span>
       </button>
     </span>`;
 }
@@ -94,12 +80,9 @@ export function taskSettingsMarkup(view) {
         <button class="details-row is-editable" type="button" data-settings="sort">
           <span class="details-row-label">${rowLabels.sort}</span><span class="details-row-value">${escapeHtml(sortValue(view))}</span>
         </button>
-        <div class="details-row tasks-filter-row${view.fixed ? " is-locked" : ""}">
-          <button class="tasks-filter-btn" type="button" data-settings="place"${view.fixed ? " disabled" : ""}>
-            <span class="details-row-label">${rowLabels.place}</span><span class="details-row-value">${escapeHtml(placeValue(view))}</span>
-          </button>
-          ${view.fixed ? `<button class="tasks-info" type="button" data-settings="info" aria-label="${escapeHtml(rowLabels.info)}">${icon("info")}</button>` : ""}
-        </div>
+        <button class="details-row is-editable" type="button" data-settings="filter">
+          <span class="details-row-label">${rowLabels.place}</span><span class="details-row-value">${escapeHtml(filterSummary(view))}</span>
+        </button>
         ${
           board
             ? ""
@@ -127,21 +110,6 @@ function openTaskSort(view) {
   });
 }
 
-/* Blatt „Aufgaben von“: alle Orte, an denen Aufgaben liegen oder verknüpft sind. */
-function openPlaceSheet(view) {
-  const option = (ref, label, iconName) => ({
-    label,
-    icon: iconName,
-    active: view.place === ref,
-    onSelect: () => updateTaskView({ place: ref }),
-  });
-  openSheet(placeTitle, [
-    option("alle", allPlaces, "layers"),
-    option("inbox", inboxLabel, "inbox"),
-    ...taskPlaces().map((place) => option(place.ref, place.label, place.icon)),
-  ]);
-}
-
 /** Klicks in der Karte. `view` ist die gewählte Ansicht. */
 export function handleSettingsClick(event, view) {
   const button = event.target.closest("[data-settings]");
@@ -149,8 +117,7 @@ export function handleSettingsClick(event, view) {
   const { settings, value } = button.dataset;
   if (settings === "layout") updateTaskView({ layout: value });
   else if (settings === "sort") openTaskSort(view);
-  else if (settings === "place") openPlaceSheet(view);
-  else if (settings === "info") openSheet(infoTitle, [{ lead: true, label: infoText }]);
+  else if (settings === "filter") openTaskFilter();
   else if (settings === "group-toggle") updateTaskView({ group: view.group === "none" ? taskGroupings[0].id : "none" });
   else if (settings === "group") updateTaskView({ group: value });
   else if (settings === "done") updateTaskView({ hideDone: !view.hideDone });

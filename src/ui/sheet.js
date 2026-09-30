@@ -13,6 +13,9 @@
  * groß und ungekürzt) und `detail` (Bezeichnung oben, Wert darunter); „Typ
  * ändern“ nutzt dazu `note` (ein Satz in normaler Schrift, z.B. was beim
  * Umwandeln mit den verknüpften Einträgen passiert).
+ * Eine Option kann außerdem `hint` tragen (ein kleiner Satz unter dem Namen),
+ * `muted` (blass — sie filtert nicht, sondern führt woandershin) und `more`
+ * (rechts ein Pfeil statt des Hakens: das Antippen öffnet eine andere Seite).
  *
  * Eine gewählte Option (`active`) trägt rechts einen Haken — nicht nur die
  * Fläche, die man bei hellem Licht leicht übersieht.
@@ -68,11 +71,14 @@ function optionMarkup(option, index) {
   if (option.gap) classes.push("is-gap");
   /* pair: halbe Breite, damit zwei Optionen nebeneinander in eine Zeile passen */
   if (option.pair) classes.push("is-pair");
-  const check = option.active && !option.pair ? icon("check", "sheet-check") : "";
+  if (option.muted) classes.push("is-muted");
+  let end = option.active && !option.pair ? icon("check", "sheet-check") : "";
+  if (option.more) end = icon("chevron", "sheet-more");
+  const hint = option.hint ? `<span class="sheet-option-hint">${escapeHtml(option.hint)}</span>` : "";
   return `
     <button class="${classes.join(" ")}" type="button" data-sheet="${index}"${option.active ? ' aria-current="true"' : ""}>
       ${icon(option.icon)}
-      <span class="sheet-option-label">${escapeHtml(option.label)}</span>${check}
+      <span class="sheet-option-label">${escapeHtml(option.label)}${hint}</span>${end}
     </button>
   `;
 }

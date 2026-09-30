@@ -25,7 +25,9 @@ import {
   taskDefaults,
   taskGroupings,
   taskLayouts,
+  taskPriorities,
   taskSorts,
+  taskStatuses,
 } from "./config-tasks.js";
 import { sanitizeLinks } from "./links.js";
 import { adoptProjectViews } from "./project-views.js";
@@ -187,6 +189,12 @@ function pickValid(value, allowed, fallback) {
   return allowed.includes(value) ? value : fallback;
 }
 
+/** Aus einer gespeicherten Liste nur die ids behalten, die es in `items` noch gibt. */
+function knownIds(value, items) {
+  const ids = items.map((item) => item.id);
+  return Array.isArray(value) ? ids.filter((id) => value.includes(id)) : [];
+}
+
 /* Ältere Speicherstände auf die heutige Form bringen. Gibt zurück, ob sich etwas geändert hat. */
 function migrate() {
   const before = JSON.stringify({ workspaces: state.workspaces, entries: state.entries, tabs: state.tabs, opens: state.opens });
@@ -308,6 +316,9 @@ function adoptPrefs(saved) {
     sortAsc: typeof view.sortAsc === "boolean" ? view.sortAsc : taskDefaults.sortAsc,
     place: index === 0 ? "alle" : pickValid(view.place, places, taskDefaults.place),
     hideDone: typeof view.hideDone === "boolean" ? view.hideDone : taskDefaults.hideDone,
+    /* Filter nach Status und Dringlichkeit; ältere Stände kennen ihn nicht und zeigen alles */
+    hiddenStatuses: knownIds(view.hiddenStatuses, taskStatuses.filter((item) => !item.done)),
+    hiddenPriorities: knownIds(view.hiddenPriorities, taskPriorities),
   }));
   const active = Number(saved.activeTaskViewId);
   state.activeTaskViewId = state.taskViews.some((view) => view.id === active) ? active : state.taskViews[0].id;

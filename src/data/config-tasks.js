@@ -82,6 +82,10 @@ export const taskSorts = [
  * nicht gruppiert, älteste zuerst (Neues hängt sich unten an), Erledigtes
  * ausgeblendet. `group` ist "none" oder eine id aus taskGroupings; `place`
  * ist "alle", "inbox" oder ein Verweis wie „w:3“ / „e:12“.
+ * `hiddenStatuses` und `hiddenPriorities` zählen auf, was der Filter
+ * ausblendet — leer heißt: alles zu sehen. Ob Erledigtes zu sehen ist, sagt
+ * allein `hideDone` (der Schalter „Erledigte zeigen“), deshalb steht der
+ * Status „erledigt“ nie in `hiddenStatuses`.
  */
 export const taskDefaults = {
   layout: "list",
@@ -90,6 +94,8 @@ export const taskDefaults = {
   sortAsc: true,
   place: "alle",
   hideDone: true,
+  hiddenStatuses: [],
+  hiddenPriorities: [],
 };
 
 /** Beschreibung eines Status; unbekannte Werte aus alten Ständen gelten als offen. */
