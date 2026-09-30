@@ -110,10 +110,16 @@
     color: var(--muted);
   }
 
-  .media-row-glyph img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* object-fit: das Bild füllt das Quadrat, ohne sich zu verzerren */
+  /* Feste Maße wie die Zelle: 100% hätte in der Grid-Zelle keinen festen Bezug,
+     ein Hochformat würde die Zeile strecken. */
+  .media-row-glyph .entry-thumb-slot {
+    width: 36px;
+    height: 36px;
+  }
+
+  /* Fotos und Videos behalten ihre Form; der Rand kommt aus styles/rows.css */
+  .media-row-glyph .entry-thumb.is-fit {
+    border-radius: 4px;
   }
 
   .media-row-title,

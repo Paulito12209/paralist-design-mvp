@@ -243,6 +243,35 @@
   box-shadow: inset 0 0 0 0.5px var(--line);
 }
 
+/* Fotos und Videos: das Feld bleibt 22px breit, damit die Titel bündig stehen;
+   das Bild darin behält seine Form (hochkant schmal, quer flach). */
+.entry-thumb-slot {
+  display: flex; /* flex statt grid: nur so bezieht sich max-height des Bildes auf die feste Feldhöhe */
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+}
+
+/* Zwei Klassen, weil sonst „.workspace-row span“ das Feld über die Zeile wachsen lässt */
+.workspace-row .entry-thumb-slot {
+  flex: 0 0 auto;
+}
+
+.entry-thumb.is-fit {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: 100%;
+  min-width: 0;
+  min-height: 0;
+  border-radius: 3px;
+  background: none;
+  box-shadow: none;
+  outline: 0.5px solid var(--line); /* outline: liegt über dem Bild, sodass auch ein weißes Bild einen Rand hat */
+  outline-offset: -0.5px;
+}
+
 /* ---------- Seite eines Arbeitsbereichs oder Eintrags ---------- */
 
 /* Die beiden Pillen „Inhalt“ und „Verknüpfte Inhalte“ oben auf der Seite;

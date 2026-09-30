@@ -303,10 +303,18 @@
   }
 
   /* Vorschau einer Zeichnung oder eines Fotos: Papier und Haarlinie kommen aus styles/rows.css. */
-  .rail-recent-visual .entry-thumb {
+  .rail-recent-visual .entry-thumb,
+  .rail-recent-visual .entry-thumb-slot {
     width: 52px;
     height: 52px;
     border-radius: 12px;
+  }
+
+  /* Fotos und Videos behalten im 52px-Feld ihre Form */
+  .rail-recent-visual .entry-thumb.is-fit {
+    width: auto;
+    height: auto;
+    border-radius: 8px;
   }
 
   .rail-recent-title {

@@ -53,7 +53,12 @@ export function entryGlyph(entry) {
   const kind = mediaKindOf(entry);
   const hasPreview =
     entry.type === "zeichnung" || (entry.type === "medien" && (kind === "image" || kind === "video"));
-  if (thumb && hasPreview) return `<img class="entry-thumb" src="${thumb}" alt="" loading="lazy" decoding="async" />`;
+  if (thumb && entry.type === "zeichnung") return `<img class="entry-thumb" src="${thumb}" alt="" loading="lazy" decoding="async" />`;
+  /* Fotos und Videos stehen ganz im Icon-Feld, hochkant schmal und quer flach —
+     sonst zeigt das Quadrat nur die Mitte, und helle Screenshots wirken leer. */
+  if (thumb && hasPreview) {
+    return `<span class="entry-thumb-slot"><img class="entry-thumb is-fit" src="${thumb}" alt="" loading="lazy" decoding="async" /></span>`;
+  }
   if (entry.type === "medien") {
     const kindIcons = { image: "image", video: "video", audio: "wave", doc: "doc" };
     return icon(kindIcons[kind] || "doc", "entry-type");
@@ -69,7 +74,7 @@ export function entryGlyph(entry) {
  * Gold nicht, und ein Tipp darauf soll das Foto öffnen.
  */
 function favoriteGlyph(glyphHtml, isFavorite) {
-  if (glyphHtml.startsWith("<img")) return glyphHtml;
+  if (glyphHtml.includes("entry-thumb")) return glyphHtml;
   const label = isFavorite ? "Aus Favoriten entfernen" : "Zu Favoriten";
   return `<span class="row-glyph${isFavorite ? " is-favorite" : ""}" data-fav-toggle aria-label="${label}">${glyphHtml}</span>`;
 }
