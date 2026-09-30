@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "84cfcea5882b";
+export const appVersion = "4d5dd4d14a0a";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -197,6 +197,7 @@ export const appFiles = [
   "src/shell/level-gauge.js",
   "src/shell/lifecycle.js",
   "src/shell/nav-bar.js",
+  "src/shell/reminder-banner.js",
   "src/shell/search-bar.js",
   "src/shell/search-palette.js",
   "src/shell/search-voice.js",
@@ -316,6 +317,7 @@ export const appFiles = [
   "styles/page-hero.css",
   "styles/profile.css",
   "styles/progress.css",
+  "styles/reminder-banner.css",
   "styles/rows.css",
   "styles/search-palette.css",
   "styles/search-refine.css",

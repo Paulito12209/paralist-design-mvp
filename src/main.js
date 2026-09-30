@@ -37,6 +37,7 @@ import { initKeyboardInset } from "./shell/keyboard-inset.js";
 import { initLevelGauge } from "./shell/level-gauge.js";
 import { initLifecycle } from "./shell/lifecycle.js";
 import { initNavBar } from "./shell/nav-bar.js";
+import { checkReminders, initReminderBanner } from "./shell/reminder-banner.js";
 import { initSearchBar } from "./shell/search-bar.js";
 import { checkForUpdate, initUpdatePrompt } from "./shell/update-prompt.js";
 import { mountSprite } from "./shell/sprite.js";
@@ -185,8 +186,15 @@ function start() {
   initFeatures();
   showStartPage();
   initDeskWhenWide();
-  initLifecycle({ onShow: checkForUpdate });
+  /* Zurück in der App: nach einem Update und nach verpassten Erinnerungen schauen */
+  initLifecycle({
+    onShow: () => {
+      checkForUpdate();
+      checkReminders();
+    },
+  });
   initUpdatePrompt();
+  initReminderBanner();
   /* Die Icons kommen nach, das Gerüst steht schon. */
   mountSprite();
   prefetchWhenIdle(prefetchOrder);

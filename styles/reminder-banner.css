@@ -1,0 +1,149 @@
+/*
+ * Die Erinnerung als Banner von oben (src/shell/reminder-banner.js): eine
+ * Karte wie die Meldung unten über der Navigation, aber am oberen Rand des
+ * Geräts. Sie gleitet von oben herein, folgt dem Finger nach oben und
+ * gleitet beim Schließen wieder hinaus.
+ * Pfad: styles/reminder-banner.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css — dieselben wie bei der Meldung unten)
+ * -----------------------------------
+ * --toast-radius   -> Rundung des Banners
+ * --toast-gap      -> Abstand zum oberen Rand (unter der Statusleiste)
+ * --toast-anim     -> wie lange es herein- und hinausgleitet
+ * --content-side   -> Abstand zum linken und rechten Rand
+ * --head-btn-size  -> Tippfläche des Knopfes rechts (Material 3: 48dp)
+ * --head-icon-size -> Größe von Kategorie-Icon, Haken und ✕ (24dp)
+ * --card / --text / --muted -> Fläche, Titel und Nebenzeile
+ * --xp-done        -> Farbe des Hakens bei Aufgabe, Projekt und Termin
+ * --icon-soft      -> Farbe des ✕ bei allen anderen
+ *
+ * Einzelwerte direkt bei ihrer Regel:
+ * .reminder-host max-width     -> größte Breite, damit es am Desktop nicht über die ganze Breite läuft (420px)
+ * .reminder-title font-size    -> Titel (15px)
+ * .reminder-note font-size     -> Nebenzeile „Erinnerung“ / „Fällig: …“ (13px)
+ */
+
+.reminder-host {
+  position: absolute; /* position: liegt oben über der Gerätefläche, unabhängig von der Seite darunter */
+  top: calc(var(--safe-top) + var(--toast-gap));
+  left: var(--content-side);
+  right: var(--content-side);
+  z-index: 55; /* z-index: über dem Auswahl-Blatt (50) und der Such-Palette (48), unter dem Update-Fenster (60) */
+  max-width: 420px;
+  margin: 0 auto;
+  touch-action: none; /* touch-action: das Wischen nach oben bewegt das Banner, nicht die Seite darunter */
+  transition: transform var(--toast-anim) ease-out; /* transition: zurückschnappen und hinausgleiten */
+}
+
+.reminder-host[hidden] {
+  display: none;
+}
+
+/* Hinausgleiten: ganz nach oben aus dem Bild, samt Abstand und Statusleiste */
+.reminder-host.is-leaving {
+  transform: translateY(calc(-100% - var(--toast-gap) - var(--safe-top))); /* transform: aus dem Bild nach oben */
+}
+
+/* Hereingleiten von oben. Die Regel hängt an `:not([hidden])`, weil eine
+   Animation von selbst neu startet, sobald ein Element aus display:none
+   wieder auftaucht — wie bei der Meldung unten. */
+@keyframes reminder-in {
+  from {
+    transform: translateY(calc(-100% - var(--toast-gap) - var(--safe-top)));
+  }
+}
+
+.reminder-host:not([hidden]) .reminder-banner {
+  animation: reminder-in var(--toast-anim) ease-out;
+}
+
+.reminder-banner {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 4px 4px 14px;
+  border-radius: var(--toast-radius); /* border-radius: weiche Ecken wie bei der Meldung unten */
+  background: var(--card);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 12px 32px rgba(0, 0, 0, 0.16);
+}
+
+/* Icon und Text sind eine Tippfläche: sie öffnet den Eintrag */
+.reminder-open {
+  flex: 1;
+  min-width: 0; /* min-width: ohne das schrumpft der Text nicht und der Knopf rutscht heraus */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+  text-align: left;
+}
+
+.reminder-icon {
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+}
+
+.reminder-icon .icon {
+  width: var(--head-icon-size);
+  height: var(--head-icon-size);
+}
+
+.reminder-text {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0; /* min-width: lange Titel kürzen sich mit „…“ */
+}
+
+.reminder-title,
+.reminder-note {
+  white-space: nowrap;
+  overflow: hidden; /* overflow: nötig für text-overflow — das Banner bleibt immer gleich hoch */
+  text-overflow: ellipsis;
+}
+
+.reminder-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.reminder-note {
+  font-size: 13px;
+  color: var(--muted);
+}
+
+.reminder-act {
+  flex: 0 0 auto;
+  width: var(--head-btn-size);
+  height: var(--head-btn-size);
+  display: grid;
+  place-items: center;
+  border-radius: 999px; /* border-radius: runde Tippfläche */
+  color: var(--icon-soft);
+}
+
+.reminder-act.is-done {
+  color: var(--xp-done);
+}
+
+.reminder-act .icon {
+  width: var(--head-icon-size);
+  height: var(--head-icon-size);
+}
+
+.reminder-open:active,
+.reminder-act:active {
+  opacity: 0.55;
+}
+
+/* Dunkelmodus: heller Schein statt Schatten, wie bei der Meldung unten */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .reminder-banner {
+    box-shadow: 0 0 6px rgba(255, 255, 255, 0.07), 0 0 32px rgba(255, 255, 255, 0.13);
+  }
+}
+:root[data-theme="dark"] .reminder-banner {
+  box-shadow: 0 0 6px rgba(255, 255, 255, 0.07), 0 0 32px rgba(255, 255, 255, 0.13);
+}

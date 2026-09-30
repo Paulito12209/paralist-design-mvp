@@ -118,9 +118,9 @@ export function dueReminders(now = Date.now()) {
   return state.entries.filter((entry) => isLive(entry) && entry.remindAt <= now).sort((a, b) => a.remindAt - b.remindAt);
 }
 
-/** Gibt es überhaupt eine Erinnerung, die noch kommt? Sonst braucht es keinen Zeitgeber. */
-export function hasPendingReminders() {
-  return state.entries.some(isLive);
+/** Zeitpunkt der nächsten Erinnerung, die noch kommt — oder null, dann braucht es keinen Zeitgeber. */
+export function nextReminderAt() {
+  return state.entries.reduce((next, entry) => (isLive(entry) && (next === null || entry.remindAt < next) ? entry.remindAt : next), null);
 }
 
 /** Die Erinnerung hat sich gemeldet: sie ist verbraucht. */
