@@ -9,8 +9,10 @@
  * --composer-chip-size      -> Schriftgröße der beiden Pillen oben
  * --composer-type-off       -> wie blass ein gesperrter Typ-Knopf ist
  * --composer-btn-size       -> Größe der runden Knöpfe und Höhe der beiden Pillen
- * --composer-mic-bg         -> Fläche des Diktat-Knopfes und der unveränderten Pillen, nur zu 20% zu sehen
+ * --composer-mic-bg         -> Fläche der unveränderten Pillen, nur zu 20% zu sehen
  * --composer-mic-border     -> dünner Rand darum
+ * --composer-fill           -> Fläche von Medien-Plus und Diktat-Knopf (styles/tokens-pages.css, dunkel in tokens-dark.css)
+ * --level-color / --nav-bg  -> Anlegen-Knopf, sobald etwas drinsteht: Silberblau des Fortschritts, Pfeil in Leistenfarbe
  * --composer-close-angle    -> wie schief das Kreuz im Schließen-Knopf steht (45deg = X)
  * --composer-close-angle-from -> Winkel, mit dem das X beim Aufgehen startet
  * --composer-close-slide    -> aus welcher Entfernung der Schließen-Knopf heranrückt
@@ -57,12 +59,12 @@
 
 /*
  * Solange Ablageort und Typ noch genau so stehen, wie die Seite sie
- * vorgeschlagen hat, sind die Pillen nur angedeutet — dieselbe Fassung wie
- * beim Diktat-Knopf. Erst eine eigene Wahl füllt sie und macht damit sichtbar,
+ * vorgeschlagen hat, sind die Pillen nur angedeutet: blasse Fläche mit dünnem
+ * Rand. Erst eine eigene Wahl füllt sie und macht damit sichtbar,
  * dass hier nicht mehr die Vorgabe steht.
  */
 .composer-link.is-preset {
-  /* color-mix: dieselbe Fläche wie beim Diktat-Knopf, nur zu 20% zu sehen */
+  /* color-mix: die Fläche ist nur zu 20% zu sehen, der Container scheint durch */
   background: color-mix(in srgb, var(--composer-mic-bg) 20%, transparent);
   border-color: var(--composer-mic-border);
 }
@@ -191,15 +193,13 @@
   animation: composer-close-turn var(--composer-close-spin) ease-in-out;
 }
 
-/* Diktat-Knopf neben dem Schließen: gleicher grauer Kreis, beim Aufnehmen rot */
+/* Diktat-Knopf neben dem Anlegen: gefüllter Kreis ohne Rand wie das Medien-Plus
+   links, damit beide Seiten der Leiste gleich aussehen; beim Aufnehmen rot */
 .composer-mic {
   width: var(--composer-btn-size);
   height: var(--composer-btn-size);
   border-radius: 50%; /* border-radius: rund wie der Schließen-Knopf daneben */
-  /* color-mix: dieselbe Fläche wie zuvor, aber nur noch zu 20% zu sehen —
-     der Container scheint darunter durch */
-  background: color-mix(in srgb, var(--composer-mic-bg) 20%, transparent);
-  border: 1px solid var(--composer-mic-border); /* border: haelt den Knopf sichtbar, wo die Flaeche kaum noch traegt */
+  background: var(--composer-fill);
   color: var(--text);
   display: grid;
   place-items: center;
@@ -265,13 +265,14 @@
   flex: 0 0 auto;
 }
 
-/* Anlegen-Knopf: gefüllter Kreis wie der Plus-Knopf in der Navigation */
+/* Anlegen-Knopf: im Silberblau des Fortschritts — Anlegen bringt Punkte,
+   darum dieselbe Farbe wie Plus und Ring des Navigations-Knopfes */
 .composer-send {
   width: var(--composer-btn-size);
   height: var(--composer-btn-size);
   border-radius: 50%; /* border-radius: macht den Anlegen-Knopf rund */
-  background: var(--text);
-  color: var(--card);
+  background: var(--level-color);
+  color: var(--nav-bg);
   display: grid;
   place-items: center;
   flex: 0 0 auto;
@@ -282,9 +283,9 @@
   height: 20px;
 }
 
-/* Ohne Text und ohne Anhang gibt es nichts anzulegen: dann ist der Knopf grau statt schwarz */
+/* Ohne Text und ohne Anhang gibt es nichts anzulegen: dann ist der Knopf grau statt blau */
 .composer-send:disabled {
-  background: var(--bg);
+  background: var(--composer-fill);
   color: var(--placeholder);
   cursor: default;
 }
@@ -299,7 +300,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%; /* border-radius: gleiche runde Form wie die Typ-Knöpfe */
-  background: var(--bg);
+  background: var(--composer-fill);
   display: grid;
   place-items: center;
   color: var(--text);

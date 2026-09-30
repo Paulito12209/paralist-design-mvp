@@ -18,6 +18,10 @@
  * --archive-link-gap        -> Luft zwischen „Zum Archiv“ (bzw. Listenende) und Karte „Ansicht“ oder Navigation
  * --archive-link-height     -> Höhe der Pille „Zum Archiv“
  *
+ * EINGABEFELD
+ * --composer-fill           -> Fläche von Medien-Plus und Diktat-Knopf: im Hellen der graue Grund,
+ *                              im Dunkeln die Kartenfarbe, damit beide auf der schwarzen Leiste sichtbar sind
+ *
  * FORTSCHRITT UND PROFIL
  * --level-color / --level-dim / --level-glow -> Level-Anzeige oben links; --level-color färbt auch Plus und Ring des Navigations-Knopfes
  * --xp-created / --xp-done  -> Blau für „Angelegt“, Grün für „Erledigt“ (auch der Abhaken-Wischknopf)
@@ -184,6 +188,9 @@
   --soon-opacity: 0.45;
   --archive-link-gap: 8px;
   --archive-link-height: 36px;
+
+  /* Eingabefeld: Fläche der runden Knöpfe unten */
+  --composer-fill: var(--bg);
 
   /* Fortschritt und Profil: Level-Anzeige, Verlaufskurve und Punkte-Raster */
   --level-color: #4d72ad;

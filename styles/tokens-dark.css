@@ -34,6 +34,7 @@
     --icon-strong: #e5e5ea;
     --placeholder: #636366;
     --chevron: #48484a;
+    --composer-fill: var(--card); /* auf der schwarzen Leiste wäre der Grund #0f1013 kaum zu sehen */
     --level-color: #a9c9ff;
     --level-dim: rgba(169, 201, 255, 0.2);
     --level-glow: rgba(120, 170, 255, 0.75);
@@ -93,6 +94,7 @@
   --icon-strong: #e5e5ea;
   --placeholder: #636366;
   --chevron: #48484a;
+  --composer-fill: var(--card); /* auf der schwarzen Leiste wäre der Grund #0f1013 kaum zu sehen */
   --level-color: #a9c9ff;
   --level-dim: rgba(169, 201, 255, 0.2);
   --level-glow: rgba(120, 170, 255, 0.75);
