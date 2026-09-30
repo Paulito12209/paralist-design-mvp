@@ -29,6 +29,7 @@ import {
   setCover,
   toggleFavorite,
 } from "../../data/mutations.js";
+import { sortCollectionEntries, sortCollectionWorkspaces } from "../../data/collection-sorts.js";
 import { workspaceDetails } from "../../data/details.js";
 import { searchKeyboardOn } from "../../data/search-keyboard.js";
 import { findWorkspace, inboxEntries, workspaceColor } from "../../data/queries.js";
@@ -45,6 +46,7 @@ import { openSheet } from "../../ui/sheet.js";
 import { openTypeChangeSheet, typeChangeAction, typeCrumbMarkup } from "../../ui/type-menu.js";
 import { isViewActive } from "../../ui/views.js";
 import { initArchive, renderArchive } from "./archive.js";
+import { initCollectionPanel } from "./collection-panel.js";
 import { pageHeroOptions, renderPageHero } from "./page-hero.js";
 import { renderProjectsPage } from "./projects.js";
 import { initWorkspaceCollection, renderWorkspaceCollection } from "./workspace-collection.js";
@@ -100,8 +102,14 @@ function listMarkup(entries, empty) {
 /* Favoriten-Karte: erst die markierten Arbeitsbereiche, dann die markierten Einträge. */
 function renderFavorites() {
   commitStaleWorkspaceName();
-  const spaces = state.workspaces.filter((workspace) => workspace.favorite && !workspace.archived);
-  const entries = state.entries.filter((entry) => entry.favorite && !entry.archived);
+  const spaces = sortCollectionWorkspaces(
+    "favorites",
+    state.workspaces.filter((workspace) => workspace.favorite && !workspace.archived)
+  );
+  const entries = sortCollectionEntries(
+    "favorites",
+    state.entries.filter((entry) => entry.favorite && !entry.archived)
+  );
   const canEdit = isViewActive("page");
 
   dom.pageBody.innerHTML =
@@ -126,7 +134,7 @@ export function renderPageBody() {
   else if (page.kind === "resources") load("resources").then((module) => module.renderResources());
   else if (page.kind === "bookmarks") load("bookmarks").then((module) => module.renderBookmarks());
   else if (page.isWorkspace) renderWorkspacePage(page);
-  else dom.pageBody.innerHTML = listMarkup(inboxEntries(), emptyStates.inbox);
+  else dom.pageBody.innerHTML = listMarkup(sortCollectionEntries("inbox", inboxEntries()), emptyStates.inbox);
 }
 
 /* Das Cover gibt es nur auf einem Arbeitsbereich, nie auf den Sammlungen
@@ -278,6 +286,7 @@ export function initPage() {
   });
   initArchive();
   initWorkspaceCollection();
+  initCollectionPanel();
   /* Erst die Suchseite zeigen: dort ist die allgemeine Kopfzeile mit dem
      echten Suchfeld wieder da, und ein verstecktes Feld nimmt keinen Fokus an. */
   dom.pageSearchBtn.addEventListener("click", () => {

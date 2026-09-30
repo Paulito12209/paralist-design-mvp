@@ -42,7 +42,8 @@
 /* ---------- Die Ebene über der Liste ---------- */
 
 /* Jede Karte nur auf ihrer Seite: is-tasks setzt src/ui/views.js, is-projects
-   src/features/overview/projects.js (Übersicht am Handy und Seite Projekte). */
+   src/features/overview/projects.js (Übersicht am Handy und Seite Projekte),
+   is-collection src/features/overview/collection-panel.js (die übrigen Sammlungen). */
 .view-panel {
   display: none;
   position: absolute; /* position: liegt fest über der Liste, statt mit ihr zu scrollen */
@@ -63,7 +64,8 @@
 }
 
 body.is-tasks .tasks-panel,
-body.is-projects .project-panel {
+body.is-projects .project-panel,
+body.is-collection .collection-panel {
   display: block;
 }
 

@@ -23,6 +23,7 @@ import { dom, el } from "../../core/dom.js";
 import { load, loadedModule } from "../../core/lazy.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { colorFromText, faviconUrl } from "../../core/link-preview.js";
+import { sortCollectionItems } from "../../data/collection-sorts.js";
 import { BOOKMARK_TYPE, bookmarkCounts, bookmarkItems, bookmarkPills, validBookmarkPill } from "../../data/bookmarks.js";
 import { typeIcon, typeSingular } from "../../data/config.js";
 import { hostOf, youtubeId, youtubeThumb } from "../../data/link-kinds.js";
@@ -112,7 +113,7 @@ export function renderBookmarks() {
   if (!isBookmarksOpen()) return;
   const pill = activePill();
   const kind = bookmarkPills.find((item) => item.id === pill).kind;
-  const items = bookmarkItems(kind);
+  const items = sortCollectionItems("bookmarks", bookmarkItems(kind), (item) => item.entry, titleOf);
   const list = items.length
     ? `<div class="bookmark-list">${items.map(rowMarkup).join("")}</div>`
     : emptyState({ ...emptyArt[pill], accent: "var(--bookmark-color)", action: { label: EMPTY_ACTION } });

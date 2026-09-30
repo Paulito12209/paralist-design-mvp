@@ -5,7 +5,8 @@
  * ausgeklappt steht die ganze Karte darüber. Die Liste darunter scrollt dabei
  * nicht mit — man sieht die Einstellungen, ohne seinen Platz zu verlieren.
  * Genutzt als Karte „Ansicht“ von der Aufgaben-Seite, von den Projekten
- * auf Übersicht und Seite Projekte und vom Kalender — überall derselbe Titel;
+ * auf Übersicht und Seite Projekte, von den übrigen Sammlungen
+ * (src/features/overview/collection-panel.js) und vom Kalender — überall derselbe Titel;
  * jede Seite legt ihre eigene Karte an und füllt sie mit ihren Zeilen. Der
  * Kalender stellt zusätzlich „Heute“ in den Kopf (Parameter `actions`).
  *

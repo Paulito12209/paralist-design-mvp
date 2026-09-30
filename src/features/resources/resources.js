@@ -18,6 +18,7 @@
 import { dom, el } from "../../core/dom.js";
 import { groupByMonth } from "../../core/format.js";
 import { icon } from "../../core/html.js";
+import { collectionSort, sortCollectionEntries } from "../../data/collection-sorts.js";
 import { resourceFilters } from "../../data/config.js";
 import { resourceEntries } from "../../data/queries.js";
 import { saveState, state, ui } from "../../data/state.js";
@@ -91,20 +92,21 @@ export function renderResources() {
     })
     .join("");
 
-  const list = filtered(active);
-  const body = list.length
-    ? groupByMonth(list)
-        .map(
-          (group) =>
-            `<h2 class="media-month">${group.heading}</h2><div class="workspace-list">${group.items
-              .map((entry) => entryRow(entry))
-              .join("")}</div>`
-        )
-        .join("")
-    : emptyState({
-        ...(emptyArt[active] || emptyArt.all),
-        action: { label: emptyLabels[active] || emptyLabels.all },
-      });
+  const list = sortCollectionEntries("resources", filtered(active));
+  /* Monatsüberschriften nur, solange nach dem Anlegen sortiert ist — sonst
+     stünde derselbe Monat mehrmals zwischen den Zeilen. */
+  const byMonth = collectionSort("resources").sort === "erstellt";
+  const rows = (items) => `<div class="workspace-list">${items.map((entry) => entryRow(entry)).join("")}</div>`;
+  let body = emptyState({
+    ...(emptyArt[active] || emptyArt.all),
+    action: { label: emptyLabels[active] || emptyLabels.all },
+  });
+  if (list.length && !byMonth) body = rows(list);
+  else if (list.length) {
+    body = groupByMonth(list)
+      .map((group) => `<h2 class="media-month">${group.heading}</h2>${rows(group.items)}`)
+      .join("");
+  }
 
   /* Die Leiste wird mit ersetzt: ihre Rollstellung mitnehmen, sonst springt sie
      bei jedem Wechsel an den Anfang zurück. */

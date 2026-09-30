@@ -15,6 +15,7 @@
  */
 
 import { dom, el } from "../../core/dom.js";
+import { sortCollectionEntries, sortCollectionWorkspaces } from "../../data/collection-sorts.js";
 import { archivePills } from "../../data/collections.js";
 import { archivedEntries, archivedWorkspaces } from "../../data/queries.js";
 import { ui } from "../../data/state.js";
@@ -38,14 +39,20 @@ const workspaceArchiveRow = (workspace) =>
   workspaceRow(workspace, false, archiveActions("restore-workspace", "delete-workspace"));
 const entryArchiveRow = (entry) => entryRow(entry, "", archiveActions("restore", "delete"));
 
-/* Was unter einer Pille steht: Arbeitsbereiche nur unter „Alle“ und ihrer eigenen Pille. */
-function archivedFor(pill) {
+/* Was unter einer Pille steht: Arbeitsbereiche nur unter „Alle“ und ihrer
+   eigenen Pille. Die Zahlen auf den Pillen brauchen keine Reihenfolge —
+   sortiert wird nur, was die Liste zeigt (`sorted`). */
+function archivedFor(pill, sorted = false) {
   const spaces = pill === "all" || pill === "workspaces" ? archivedWorkspaces() : [];
   const entries =
     pill === "workspaces"
       ? []
       : archivedEntries().filter((entry) => pill === "all" || entry.type === pill);
-  return { spaces, entries };
+  if (!sorted) return { spaces, entries };
+  return {
+    spaces: sortCollectionWorkspaces("archive", spaces),
+    entries: sortCollectionEntries("archive", entries),
+  };
 }
 
 /* Die Pillen; die Zahl steht nur dort, wo etwas liegt. */
@@ -76,7 +83,7 @@ function activePill() {
 /** Pillen und Liste des Archivs in die Unterseite zeichnen. */
 export function renderArchive() {
   const pill = activePill();
-  const { spaces, entries } = archivedFor(pill);
+  const { spaces, entries } = archivedFor(pill, true);
   const list =
     spaces.length || entries.length
       ? `<div class="workspace-list">${spaces.map(workspaceArchiveRow).join("")}${entries

@@ -2,8 +2,8 @@
  * Wo eine Liste unten aufhört — und die Pille „Zum Archiv“ darüber.
  * Pfad: styles/view-end.css
  *
- * Gilt für die Übersicht am Handy, die Seite Projekte (beide mit der Karte
- * „Ansicht“) und jede Seite, auf der „Zum Archiv“ steht (z.B. Arbeitsbereiche).
+ * Gilt für die Übersicht am Handy, die Seite Projekte, die übrigen Sammlungen
+ * (alle mit der Karte „Ansicht“) und jede Seite, auf der „Zum Archiv“ steht (z.B. Arbeitsbereiche).
  * Der Scrollweg endet dort genau an dem, was unten fest steht: am Kopf der
  * Karte „Ansicht“ oder, ohne Karte, an der Oberkante der Navigation. Weiter
  * zu scrollen gäbe es nichts zu sehen.
@@ -35,7 +35,7 @@
  * Mindesthöhe lässt die Seite auch ohne Scrollen genau bis dorthin reichen.
  */
 .view:has(.archive-link-row),
-body.is-projects :is(#view-home, #view-page) {
+:is(body.is-projects, body.is-collection) :is(#view-home, #view-page) {
   --view-end: calc(var(--nav-height) + var(--nav-bottom) + var(--safe-bottom));
   min-height: calc(100% + var(--tab-space) - var(--view-end));
   margin-bottom: calc(var(--view-end) - var(--tab-space));
@@ -44,7 +44,7 @@ body.is-projects :is(#view-home, #view-page) {
 }
 
 /* Mit Karte „Ansicht“: sie schaut eingeklappt mit ihrem Kopf über der Navigation hervor */
-body.is-projects :is(#view-home, #view-page) {
+:is(body.is-projects, body.is-collection) :is(#view-home, #view-page) {
   --view-end: calc(var(--nav-height) + var(--nav-bottom) + var(--safe-bottom) + var(--details-head-h));
 }
 
@@ -55,7 +55,7 @@ body.is-projects :is(#view-home, #view-page) {
     --view-end: var(--tab-space);
   }
 
-  body.is-projects :is(#view-home, #view-page) {
+  :is(body.is-projects, body.is-collection) :is(#view-home, #view-page) {
     --view-end: calc(var(--desk-gutter) + var(--safe-bottom) + var(--details-head-h) - var(--tasks-panel-gap));
   }
 }

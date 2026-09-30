@@ -68,6 +68,8 @@ export const state = {
     dashboard: { mode: "created" },
     /* Welche Sammlung ihren großen Kopf zeigt, z.B. { bookmarks: true }; fehlt = einfacher Titel */
     pageHeads: {},
+    /* Sortierung je Sammlung, z.B. { inbox: { sort: "name", asc: true } } — geprüft in src/data/collection-sorts.js */
+    collectionSorts: {},
   },
 };
 
@@ -155,6 +157,7 @@ function snapshot() {
     projectViews: state.projectViews,
     activeProjectViewId: state.activeProjectViewId,
     pageHeads: state.prefs.pageHeads,
+    collectionSorts: state.prefs.collectionSorts,
     mediaSeeded,
   };
 }
@@ -284,6 +287,9 @@ function adoptPrefs(saved) {
   }
   if (saved.pageHeads && typeof saved.pageHeads === "object") {
     state.prefs.pageHeads = Object.fromEntries(Object.entries(saved.pageHeads).filter(([, on]) => on === true));
+  }
+  if (saved.collectionSorts && typeof saved.collectionSorts === "object") {
+    state.prefs.collectionSorts = { ...saved.collectionSorts };
   }
   const calendar = state.prefs.calendar;
   calendar.span = pickValid(Number(calendar.span), calendarSpans.map((span) => span.id), 1);

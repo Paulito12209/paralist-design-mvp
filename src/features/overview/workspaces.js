@@ -14,6 +14,7 @@ import { emit, events } from "../../core/bus.js";
 import { dom, el, focusAtEnd } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
 import { sameId } from "../../core/ids.js";
+import { sortCollectionWorkspaces } from "../../data/collection-sorts.js";
 import { archiveWorkspace, deleteWorkspace, nameWorkspace, restoreFromArchive, toggleFavorite } from "../../data/mutations.js";
 import { archivedEntries, archivedWorkspaces, findWorkspace, tabWorkspaces } from "../../data/queries.js";
 import { saveState, ui } from "../../data/state.js";
@@ -30,7 +31,7 @@ export function focusWorkspaceName() {
 
 /** Die Zeilen der Arbeitsbereiche im gewählten Tab; `canEdit` erlaubt das Namensfeld. */
 export function workspaceRowsMarkup(canEdit) {
-  return tabWorkspaces()
+  return sortCollectionWorkspaces("workspaces", tabWorkspaces())
     .map((workspace) => workspaceRow(workspace, canEdit))
     .join("");
 }

@@ -21,8 +21,8 @@
 
 import { emit, events } from "../core/bus.js";
 import { nextId, sameId } from "../core/ids.js";
+import { sortEntries } from "./collection-sorts.js";
 import { projectSorts, projectViewDefaults } from "./config.js";
-import { openStats } from "./opens.js";
 import { entriesOf, projectEntries } from "./queries.js";
 import { entryRef, isWorkspaceRef, workspaceRef } from "./refs.js";
 import { saveState, state, ui } from "./state.js";
@@ -162,30 +162,15 @@ export function toggleProjectInView(projectId, id = state.activeProjectViewId) {
 
 /* ---------- Welche Projekte eine Ansicht zeigt ---------- */
 
-/* Wann ein Projekt zuletzt geöffnet wurde; nie geöffnet zählt die letzte Änderung. */
-function openedAt(project) {
-  return openStats("entry", project.id)?.ts || project.editedAt || project.createdAt || 0;
-}
-
-/* Je Sortierart der Wert, nach dem verglichen wird; „name“ vergleicht Text. */
-const sortKeys = {
-  erstellt: (project) => project.createdAt || 0,
-  geaendert: (project) => project.editedAt || project.createdAt || 0,
-  geoeffnet: openedAt,
+/* Die Projekte zählen zusätzlich ihre Einträge; alles andere vergleicht
+   src/data/collection-sorts.js wie in den übrigen Sammlungen. */
+const projectKeys = {
   eintraege: (project) => entriesOf(entryRef(project.id)).length,
 };
 
-function byName(a, b) {
-  return String(a.title || "").localeCompare(String(b.title || ""), "de", { sensitivity: "base", numeric: true });
-}
-
 /** Projekte sortieren; bei Gleichstand entscheidet der Name. */
 export function sortProjects(list, sortId, asc) {
-  const sign = asc ? 1 : -1;
-  const key = sortKeys[sortId];
-  if (!key) return [...list].sort((a, b) => sign * byName(a, b));
-  const values = new Map(list.map((project) => [project, key(project)]));
-  return [...list].sort((a, b) => sign * (values.get(a) - values.get(b)) || byName(a, b));
+  return sortEntries(list, sortId, asc, projectKeys);
 }
 
 /* Liegt das Projekt an dem Ort, den der Filter verlangt? */
