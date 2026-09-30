@@ -1,7 +1,7 @@
 /*
  * Der Inhalt der Karte „Ansicht konfigurieren“ auf der Aufgaben-Seite: die
  * Einstellungen der gewählten Ansicht. Kopf, Lage und Aus- und Einklappen
- * der Karte stehen in tasks-panel.js — hier nur die Zeilen:
+ * der Karte stehen in src/ui/view-panel.js — hier nur die Zeilen:
  *
  * - Layout: Liste | Board
  * - Sortieren: Zeile mit der Wahl, ein Tipp öffnet das Blatt
@@ -23,6 +23,7 @@
  */
 
 import { escapeHtml, icon } from "../../core/html.js";
+import { panelSegment as segment, panelToggle as toggle } from "../../ui/panel-rows.js";
 import { taskGroupings, taskSorts } from "../../data/config-tasks.js";
 import { parentName, taskPlaces } from "../../data/queries.js";
 import { updateTaskView } from "../../data/task-views.js";
@@ -49,24 +50,6 @@ const layouts = [
   { id: "list", label: "Liste", icon: "list" },
   { id: "board", label: "Board", icon: "board" },
 ];
-
-/* Ein Segment aus zwei, drei Knöpfen; der gewählte ist gefüllt. */
-function segment(items, current, setting) {
-  return `<span class="tasks-seg">${items
-    .map(
-      (item) => `
-        <button class="tasks-seg-btn${item.id === current ? " is-on" : ""}" type="button"
-          data-settings="${setting}" data-value="${item.id}" aria-label="${escapeHtml(item.label)}" title="${escapeHtml(item.label)}"
-          aria-pressed="${item.id === current}">${item.icon ? icon(item.icon) : escapeHtml(item.label)}</button>`
-    )
-    .join("")}</span>`;
-}
-
-/* Ein Schalter, an oder aus. */
-function toggle(setting, on, label) {
-  return `<button class="tasks-switch${on ? " is-on" : ""}" type="button" role="switch" aria-checked="${on}"
-    data-settings="${setting}" aria-label="${escapeHtml(label)}"><span class="tasks-switch-knob"></span></button>`;
-}
 
 /* Was in der Sortier-Zeile steht: „Erstellt · Älteste zuerst“. */
 function sortValue(view) {

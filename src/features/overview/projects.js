@@ -4,8 +4,9 @@
  * ihren eigenen Behälter: oben die Pillen der Ansichten
  * (src/features/overview/project-views.js), darunter die Projekte der
  * gewählten Ansicht als schlichte Zeilen, die Zeile „Projekt hinzufügen“ und
- * „Zum Archiv“ mit der Pille Projekte. Am Desktop zeigt die Übersicht keine
- * Projekte — dort stehen sie in der Seitenleiste.
+ * „Zum Archiv“ mit der Pille Projekte. Über der Navigation hängt die Karte
+ * „Ansicht“ mit Sortieren und Filtern (src/features/overview/project-settings.js).
+ * Am Desktop zeigt die Übersicht keine Projekte — dort stehen sie in der Seitenleiste.
  * Pfad: src/features/overview/projects.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -27,8 +28,10 @@ import { archivedEntries, projectEntries } from "../../data/queries.js";
 import { isDesk, onDeskChange } from "../../ui/desk-mode.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { entryRow } from "../../ui/rows.js";
+import { createViewPanel } from "../../ui/view-panel.js";
 import { isViewActive } from "../../ui/views.js";
-import { afterProjectViewsRender, initProjectViews, projectViewsMarkup } from "./project-views.js";
+import { handleProjectSettingsClick, projectSettingsMarkup } from "./project-settings.js";
+import { afterProjectViewsRender, initProjectViews, isProjectsPageOpen, projectViewsMarkup } from "./project-views.js";
 
 /* Noch kein einziges Projekt: Emblem, Satz und die Pille zum Anlegen. Die
    Pille trägt data-project-add, damit das Projekt in der gewählten Ansicht landet. */
@@ -43,6 +46,22 @@ const emptyProjects = {
 const emptyViewText = "In dieser Ansicht liegt kein Projekt.";
 const addRowLabel = "Projekt hinzufügen";
 const archiveLabel = "Zum Archiv";
+const panelTitle = "Ansicht";
+
+/* Die Karte „Ansicht“ über der Navigation; angelegt in initProjects(). */
+let panel = null;
+
+/*
+ * Die Karte gehört zur Übersicht am Handy und zur Seite Projekte. Die Klasse
+ * is-projects am body schaltet sie sichtbar (styles/tasks-settings.css) und
+ * füllt die Karte mit der gewählten Ansicht.
+ */
+function syncPanel() {
+  if (!panel) return;
+  const shown = (isViewActive("home") && !isDesk()) || isProjectsPageOpen();
+  document.body.classList.toggle("is-projects", shown);
+  if (shown) panel.setContent(projectSettingsMarkup(activeProjectView()));
+}
 
 /* Die Pille „Zum Archiv“ — nur, wenn dort Projekte liegen; sie öffnet deren Pille. */
 function archiveMarkup() {
@@ -80,6 +99,8 @@ function withPillScroll(container, draw) {
 
 /** Die Projekte auf der Übersicht zeichnen — am Desktop bleibt die Stelle leer. */
 export function renderProjectSection() {
+  /* Auch beim Start: die Startseite kommt ohne „geöffnet“-Meldung. */
+  syncPanel();
   if (isDesk()) {
     dom.projectViews.innerHTML = "";
     dom.projectList.innerHTML = "";
@@ -103,13 +124,21 @@ export function renderProjectsPage() {
 /** Anmelden: die Übersicht frischt ihre Projekte auf, solange sie offen ist. */
 export function initProjects() {
   initProjectViews();
+  panel = createViewPanel({
+    title: panelTitle,
+    className: "project-panel",
+    onClick: (event) => handleProjectSettingsClick(event, activeProjectView()),
+  });
   on(events.dataChanged, () => {
     if (isViewActive("home")) renderProjectSection();
+    syncPanel();
   });
   on(events.viewOpened, (name) => {
     if (name === "home") renderProjectSection();
+    syncPanel();
   });
   onDeskChange(() => {
     if (isViewActive("home")) renderProjectSection();
+    syncPanel();
   });
 }

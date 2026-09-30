@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "14ae9469223c";
+export const appVersion = "2008e0ded7c7";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -120,6 +120,7 @@ export const appFiles = [
   "src/features/overview/overview.js",
   "src/features/overview/page-hero.js",
   "src/features/overview/page.js",
+  "src/features/overview/project-settings.js",
   "src/features/overview/project-views.js",
   "src/features/overview/projects.js",
   "src/features/overview/tabs.js",
@@ -159,7 +160,6 @@ export const appFiles = [
   "src/features/tasks/tasks-drag.js",
   "src/features/tasks/tasks-inline.js",
   "src/features/tasks/tasks-list.js",
-  "src/features/tasks/tasks-panel.js",
   "src/features/tasks/tasks-parts.js",
   "src/features/tasks/tasks-rail.js",
   "src/features/tasks/tasks-settings.js",
@@ -215,6 +215,7 @@ export const appFiles = [
   "src/ui/page-cover.js",
   "src/ui/page-path.js",
   "src/ui/page-tools.js",
+  "src/ui/panel-rows.js",
   "src/ui/pickers.js",
   "src/ui/pill-input.js",
   "src/ui/pill-swipe.js",
@@ -231,6 +232,7 @@ export const appFiles = [
   "src/ui/toast.js",
   "src/ui/type-menu.js",
   "src/ui/video-player.js",
+  "src/ui/view-panel.js",
   "src/ui/views.js",
   "src/ui/write-tap.js",
   "styles/avatar-crop.css",

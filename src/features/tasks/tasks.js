@@ -2,7 +2,7 @@
  * Die Aufgaben-Seite hinter dem dritten Reiter. Der Titel steht allein,
  * darunter die Pillen der Ansichten (tasks-views.js), darunter je nach
  * Ansicht die Liste oder das Kanban-Board. Über allem, aber unter der
- * Navigation, liegt die Karte „Ansicht konfigurieren“ (tasks-panel.js) mit
+ * Navigation, liegt die Karte „Ansicht konfigurieren“ (src/ui/view-panel.js) mit
  * den Einstellungen (tasks-settings.js). Diese Datei hält nur alles
  * zusammen: gezeichnet wird in tasks-list.js und tasks-board.js, das Ziehen
  * steht in tasks-drag.js, das Anlegen durch Tippen in die Fläche in
@@ -19,12 +19,12 @@ import { events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
 import { activeTaskView } from "../../data/task-views.js";
 import { openEntry } from "../../ui/router.js";
+import { createViewPanel } from "../../ui/view-panel.js";
 import { isViewActive } from "../../ui/views.js";
 import { taskBoardMarkup } from "./tasks-board.js";
 import { consumeDragClick, initTaskDrag } from "./tasks-drag.js";
 import { initTaskInline } from "./tasks-inline.js";
 import { taskListMarkup } from "./tasks-list.js";
-import { initTaskPanel, setTaskPanelContent } from "./tasks-panel.js";
 import { deskToolsMarkup, handleSettingsClick, taskSettingsMarkup } from "./tasks-settings.js";
 import { afterViewsRender, handleViewsClick, initTaskViews, taskViewsMarkup } from "./tasks-views.js";
 
@@ -40,7 +40,7 @@ export function renderTasks() {
   dom.tasksTools.innerHTML = taskViewsMarkup(deskToolsMarkup(view));
   afterViewsRender();
   dom.tasksBody.innerHTML = board ? taskBoardMarkup(view) : taskListMarkup(view);
-  setTaskPanelContent(taskSettingsMarkup(view));
+  panel.setContent(taskSettingsMarkup(view));
 
   const next = board ? dom.tasksBody.querySelector(".board") : null;
   if (next) next.scrollLeft = left;
@@ -60,9 +60,16 @@ function onBodyClick(event) {
   if (row) openEntry(row.dataset.boardRow);
 }
 
+/* Die Karte „Ansicht konfigurieren“; angelegt in init(). */
+let panel = null;
+
 /* Beim Laden des Moduls anmelden: die Seite frischt sich auf, solange sie offen ist. */
 function init() {
-  initTaskPanel((event) => handleSettingsClick(event, activeTaskView()));
+  panel = createViewPanel({
+    title: "Ansicht konfigurieren",
+    className: "tasks-panel",
+    onClick: (event) => handleSettingsClick(event, activeTaskView()),
+  });
   dom.tasksTools.addEventListener("click", (event) => {
     if (event.target.closest("[data-settings]")) handleSettingsClick(event, activeTaskView());
     else handleViewsClick(event);
