@@ -10,16 +10,15 @@
  * gibt es erst ab dem Stand, der sie misst (src/data/usage.js).
  * Pfad: src/data/entry-facts.js
  *
- * ANPASSBARE WERTE IN DIESER DATEI
- * -----------------------------------
- * statsByType -> welche drei Kennzahlen oben stehen, je Kategorie
- *                (Namen aus `stats` unten)
+ * Keine anpassbaren Werte: welche drei Kennzahlen oben stehen, legt
+ * src/data/entry-stats.js fest.
  */
 
 import { MS_PER_DAY, parseDay, startOfDay } from "../core/dates.js";
-import { dayMonth, formatNumber, formatSpan, relativeTime, shortDay } from "../core/format.js";
-import { isTaskDone, taskPriorityOf, taskStatusOf } from "./config-tasks.js";
+import { formatNumber, formatSpan, relativeTime } from "../core/format.js";
+import { isTaskDone } from "./config-tasks.js";
 import { entryTypeName } from "./details.js";
+import { statIdsOf, statsOf } from "./entry-stats.js";
 import { linkedEntries } from "./links.js";
 import { openStats } from "./opens.js";
 import { charCount, hasPageBody, readingMinutes, wordCount } from "./page-text.js";
@@ -28,19 +27,6 @@ import { BOOKMARK_TYPE } from "./bookmarks.js";
 import { parseBlocks } from "./note-blocks.js";
 import { entryRef } from "./refs.js";
 import { entryUsage } from "./usage.js";
-
-/* Oben stehen bei einer Aufgabe Dringlichkeit, Datum und Status — wie
-   gewünscht; die anderen Kategorien zeigen, was bei ihnen am meisten sagt. */
-const statsByType = {
-  aufgabe: ["priority", "date", "status"],
-  termin: ["date", "time", "links"],
-  projekt: ["entries", "openTasks", "doneTasks"],
-  notiz: ["words", "reading", "opens"],
-  dokument: ["words", "reading", "opens"],
-  zeichnung: ["created", "links", "opens"],
-  medien: ["created", "links", "opens"],
-  lesezeichen: ["created", "links", "opens"],
-};
 
 /* Ganze Tage zwischen zwei Zeitpunkten, nach Kalendertagen gezählt */
 function daysBetween(from, to) {
@@ -77,37 +63,6 @@ function collect(entry) {
     seconds: entryUsage(entry.id),
   };
 }
-
-/*
- * Die möglichen Kennzahlen: { value, label } und optional `color` (Farbe
- * des Wertes) und `field` (ein Tipp öffnet das Blatt bzw. die Datumsauswahl
- * dazu). Bei einer Aufgabe steht die Uhrzeit unter dem Datum, beim Termin hat
- * sie eine eigene Spalte — beide öffnen dieselbe Auswahl für Tag und Uhrzeit.
- */
-const stats = {
-  date: (entry) => ({
-    value: entry.date ? shortDay(entry.date) : "—",
-    label: entry.time && entry.type !== "termin" ? `${entry.time} Uhr` : entry.date ? "Datum" : "Kein Datum",
-    field: "date",
-  }),
-  time: (entry) => ({ value: entry.time || "Ganztägig", label: "Uhrzeit", field: "date" }),
-  status: (entry) => {
-    const status = taskStatusOf(entry.status);
-    return { value: status.label, label: "Status", color: status.color, field: "status" };
-  },
-  priority: (entry) => {
-    const priority = taskPriorityOf(entry.priority);
-    return { value: priority.label, label: "Dringlichkeit", color: priority.color, field: "priority" };
-  },
-  links: (entry, facts) => ({ value: formatNumber(facts.links), label: "Verknüpft" }),
-  entries: (entry, facts) => ({ value: formatNumber(facts.content.length), label: "Einträge" }),
-  openTasks: (entry, facts) => ({ value: formatNumber(facts.openTasks), label: "Offene Aufgaben" }),
-  doneTasks: (entry, facts) => ({ value: formatNumber(facts.doneTasks), label: "Erledigt" }),
-  words: (entry, facts) => ({ value: formatNumber(facts.words), label: facts.words === 1 ? "Wort" : "Wörter" }),
-  reading: (entry, facts) => ({ value: facts.minutes ? `${facts.minutes} Min` : "—", label: "Lesezeit" }),
-  opens: (entry, facts) => ({ value: formatNumber(facts.opens ? facts.opens.count : 0), label: "Mal geöffnet" }),
-  created: (entry) => ({ value: entry.createdAt ? dayMonth(entry.createdAt) : "—", label: "Erstellt" }),
-};
 
 /* Abschnitt „Text“: Zeichen, Wörter, Lesezeit — nur mit Text und nur, was oben noch fehlt */
 function textRows(facts, shown) {
@@ -178,7 +133,7 @@ function linkRows(entry) {
  */
 export function entryFacts(entry) {
   const facts = collect(entry);
-  const ids = statsByType[entry.type] || statsByType.notiz;
+  const ids = statIdsOf(entry);
   const shown = new Set(ids);
   const groups = [
     { heading: "Link", rows: linkRows(entry) },
@@ -187,5 +142,5 @@ export function entryFacts(entry) {
     { heading: "Verlauf", rows: historyRows(entry) },
     { heading: "Ablage", rows: placeRows(entry, facts, shown) },
   ].filter((group) => group.rows.length);
-  return { stats: ids.map((id) => stats[id](entry, facts)), groups };
+  return { stats: statsOf(entry, facts), groups };
 }

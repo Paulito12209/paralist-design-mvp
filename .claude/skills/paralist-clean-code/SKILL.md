@@ -143,7 +143,7 @@ Code als nackte Zahl.
 - Gewohnte HTML-Elemente: `div, section, nav, ul, li, header, footer, main,
   img, p, h1–h6, button, input, textarea, span`. Alles andere begründen.
 - Kein Kommentar, der beschreibt, was einmal war („früher hieß das …“) — außer
-  in `migrate()` in `src/data/state.js`, wo genau das die Aufgabe ist.
+  in `migrate()` in `src/data/migrate.js`, wo genau das die Aufgabe ist.
 
 ## 6. Performance ist eine Anforderung, kein Extra
 
