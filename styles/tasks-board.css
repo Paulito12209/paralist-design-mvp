@@ -5,6 +5,8 @@
  * ab. Angelegt wird durch Tippen in die freie Fläche einer Spalte. Die Farbe einer Spalte kommt als --col-color aus
  * src/features/tasks/tasks-board.js und stammt aus der Liste der
  * Dringlichkeiten bzw. Status in src/data/config.js.
+ * Am Handy rastet das Board beim Wischen an einer Spalte ein; seitlich wischen
+ * geht überall, auch über den Zeilen — nur am Griff wird gezogen.
  * Pfad: styles/tasks-board.css
  *
  * ANPASSBARE WERTE (in styles/tokens.css, die Board-Werte in styles/tokens-pages.css)
@@ -46,6 +48,28 @@
 .board-col {
   width: var(--board-col-width);
   flex: 0 0 auto;
+}
+
+/* Am Handy rastet das Board an einer Spalte ein: ein Wisch führt genau eine
+   Spalte weiter, statt irgendwo zwischen zwei Spalten stehen zu bleiben. Am
+   Desktop (Maus, Trackpad) bleibt das Rollen frei. */
+@media (hover: none) and (pointer: coarse) {
+  .board {
+    scroll-snap-type: x mandatory; /* scroll-snap: nach dem Wischen an einer Spalte einrasten */
+    scroll-padding-inline: var(--content-side); /* scroll-padding: die Spalte rastet mit Randabstand ein, nicht am Geräterand */
+  }
+
+  .board-col {
+    scroll-snap-align: start; /* scroll-snap-align: der linke Rand der Spalte ist der Rastpunkt */
+    scroll-snap-stop: always; /* scroll-snap-stop: auch ein schneller Wisch überspringt keine Spalte */
+  }
+
+  /* Beim Ziehen einer Zeile rollt das Board am Rand von selbst in kleinen
+     Schritten weiter (src/features/tasks/tasks-drag.js) — das Einrasten würde
+     jeden Schritt zurückholen. */
+  body.is-dragging-task .board {
+    scroll-snap-type: none;
+  }
 }
 
 /* Kopfzeile: ein blasser Streifen in der Farbe der Spalte */
@@ -113,7 +137,6 @@
   gap: 10px;
   padding: 8px 0 8px 4px;
   border-bottom: 0.5px solid var(--line);
-  touch-action: pan-y; /* touch-action: senkrecht scrollen bleibt möglich */
 }
 
 .board-row-main {
