@@ -138,8 +138,8 @@
  * --search-pill-height / --search-pill-side / --search-actions-space / --search-combo-inset -> die Knöpfe unten auf der Suche
  * --search-cancel-color     -> Rot der Schrift von „Abbrechen“ auf der Suche
  * --search-fade             -> Länge des Ausblendens ab der Oberkante der Knöpfe unten auf der Suche
- * --search-refine-height / --search-refine-size -> Höhe und Schrift von Sortier-Pille und Filter-Chips auf der Suche
- * --search-dot-size / --search-dot-color -> Punkt an der Sortier-Pille, wenn Filter oder Sortierung vom Standard abweichen
+ * --search-refine-height / --search-refine-size -> Höhe und Schrift der Pillen Sortieren/Filter und der Chips auf der Suche
+ * --search-dot-size / --search-dot-color -> Zahl-Blase an „Filter“ (Drittel ihrer Höhe) und Blau abweichender Pillen
  * --search-clear-size / --search-clear-icon -> Kreis mit dem × im Suchfeld und das × darin
  * --search-clear-bg / --search-clear-ink   -> Fläche des Kreises (helles Paralist-Silber) und Farbe des ×
  *

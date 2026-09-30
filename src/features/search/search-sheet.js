@@ -1,45 +1,63 @@
 /*
  * Die Bedienung zum Filtern und Sortieren auf der Suchseite:
  * - Art-Pillen unter dem Titel (Alle 24 · Aufgaben 8 · …)
- * - Zeile mit der Trefferzahl und rechts der Sortier-Pille; weicht etwas von
- *   der Vorgabe ab, trägt die Pille einen Punkt
- * - Chips für jede gesetzte Eingrenzung, × nimmt sie wieder weg
- * - das Blatt „Sortieren und filtern“: oben die Sortierung, darunter Ort,
- *   Zeitraum und zwei Schalter. Jede Wahl wirkt sofort, das Blatt bleibt
- *   offen, bis man es zuzieht; Ort und Zeitraum öffnen ein eigenes Blatt und
- *   führen danach zurück.
+ * - Zeile mit der Trefferzahl und rechts zwei Pillen: „Sortieren“ zeigt die
+ *   gewählte Sortierung mit einem Pfeil für die Richtung (↑ aufsteigend,
+ *   ↓ absteigend, wie in Google Drive) — der volle Wortlaut „Neueste zuerst“
+ *   passt bei 375px nicht daneben —, „Filter“ die Zahl der gefilterten Abschnitte
+ * - Chips für jede gesetzte Eingrenzung: ein Tipp auf den Namen öffnet deren
+ *   Unterseite im Filter-Blatt, × nimmt sie weg
+ * - Sortieren ist das gemeinsame Blatt mit zwei Rollen „Wonach“ und
+ *   „Reihenfolge“ (src/ui/sort-sheet.js), Filtern das gemeinsame Blatt mit
+ *   Übersicht und Unterseiten (src/ui/filter-sheet.js) — wie auf der
+ *   Aufgaben-Seite. Jede Wahl wirkt sofort, die Treffer ziehen dahinter mit.
  * Was die Wahl bewirkt, rechnet search-refine.js.
  * Pfad: src/features/search/search-sheet.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * words -> alle Beschriftungen: Blatt-Titel, Abschnitte, Zeilen, Chips,
- *          Trefferzahl
+ * words    -> Beschriftungen: Pillen, Trefferzahl, Blatt-Titel, Chips
+ * sections -> Name und Icon der vier Filter-Abschnitte
+ * scopes   -> die beiden Werte von „Suchen in“
+ * doneWays -> die beiden Werte von „Erledigte“
  *
- * Aussehen: styles/search-refine.css.
+ * Aussehen: styles/search-refine.css; die Blätter selbst in
+ * styles/sort-wheels.css und styles/filter-sheet.css.
  */
 
 import { escapeHtml, icon } from "../../core/html.js";
 import { parentName, placeOptionsFor } from "../../data/queries.js";
-import { openSheet } from "../../ui/sheet.js";
-import { defaultRefine, isRefined, refinePeriods, refineSorts } from "./search-refine.js";
+import { openFilterSheet } from "../../ui/filter-sheet.js";
+import { openSortSheet, sortSummary } from "../../ui/sort-sheet.js";
+import { defaultRefine, isSorted, naturalAsc, refinePeriods, refineSorts } from "./search-refine.js";
 
 const words = {
-  sheetTitle: "Sortieren und filtern",
-  sortHeading: "Sortieren",
-  limitHeading: "Eingrenzen",
-  place: "Ort",
+  sortPill: "Sortieren",
+  filterPill: "Filter",
+  filterTitle: "Filtern",
   anywhere: "Überall",
-  period: "Zeitraum",
-  titleOnly: "Nur im Titel",
-  showDone: "Erledigte zeigen",
-  reset: "Zurücksetzen",
   chipTitleOnly: "Nur Titel",
   chipHideDone: "Ohne Erledigte",
   hits: "Treffer",
-  sortAria: "Sortieren und filtern",
   removeAria: "entfernen",
 };
+
+const sections = {
+  place: { label: "Ort", icon: "folder" },
+  period: { label: "Bearbeitet", icon: "clock" },
+  scope: { label: "Suchen in", icon: "search" },
+  done: { label: "Erledigte", icon: "check-circle" },
+};
+
+const scopes = [
+  { id: "all", label: "Titel und Inhalt", icon: "note" },
+  { id: "title", label: "Nur Titel", icon: "text" },
+];
+
+const doneWays = [
+  { id: "show", label: "Zeigen", icon: "check-circle" },
+  { id: "hide", label: "Ausblenden", icon: "circle" },
+];
 
 /** Die Art-Pillen; `active` ist die gewählte Art. */
 export function kindPillsMarkup(pills, active) {
@@ -51,158 +69,151 @@ export function kindPillsMarkup(pills, active) {
     .join("")}</div>`;
 }
 
-/** Trefferzahl links, Sortier-Pille rechts. */
-export function countRowMarkup(total, refine) {
-  const sort = refineSorts.find((item) => item.id === refine.sort) || refineSorts[0];
-  const dot = isRefined(refine) ? `<span class="search-sort-dot"></span>` : "";
-  return `
-    <div class="search-count-row">
-      <span class="search-count">${total} ${words.hits}</span>
-      <button class="search-sort" type="button" data-search-refine aria-label="${words.sortAria}">
-        ${icon("sort")}<span>${escapeHtml(sort.short)}</span>${dot}
-      </button>
-    </div>`;
+/* Die Richtung der Sortierung; ein alter Stand ohne `asc` gilt als natürliche Richtung. */
+function ascOf(refine) {
+  return refine.asc ?? naturalAsc(refine.sort);
 }
 
-/* Name des gewählten Orts für Chip und Blatt. */
+/* Name des gewählten Orts für Chip und Übersicht. */
 function placeLabel(refine) {
   return refine.place === undefined ? words.anywhere : parentName(refine.place);
 }
 
-/** Ein Chip je gesetzter Eingrenzung; ohne Eingrenzung nichts. */
-export function chipsMarkup(refine) {
+/* Die gesetzten Eingrenzungen: [{ id, label }] — id ist zugleich die Unterseite im Blatt. */
+function limits(refine) {
   const period = refinePeriods.find((item) => item.id === refine.period);
-  const chips = [];
-  if (refine.place !== undefined) chips.push({ id: "place", label: placeLabel(refine) });
-  if (period && period.chip) chips.push({ id: "period", label: period.chip });
-  if (refine.titleOnly) chips.push({ id: "titleOnly", label: words.chipTitleOnly });
-  if (!refine.showDone) chips.push({ id: "showDone", label: words.chipHideDone });
+  const list = [];
+  if (refine.place !== undefined) list.push({ id: "place", label: placeLabel(refine) });
+  if (period && period.chip) list.push({ id: "period", label: period.chip });
+  if (refine.titleOnly) list.push({ id: "scope", label: words.chipTitleOnly });
+  if (!refine.showDone) list.push({ id: "done", label: words.chipHideDone });
+  return list;
+}
+
+/**
+ * Trefferzahl links, rechts „Sortieren“ und „Filter“. Weicht etwas von der
+ * Vorgabe ab, steht die Pille in Schriftfarbe mit blauem Rand; „Filter“
+ * trägt dann die Zahl der gefilterten Abschnitte.
+ */
+export function countRowMarkup(total, refine) {
+  const sorted = isSorted(refine);
+  const count = limits(refine).length;
+  const option = refineSorts.find((item) => item.id === refine.sort) || refineSorts[0];
+  const arrow = sorted ? icon(ascOf(refine) ? "arrow-up" : "arrow-down", "search-tool-dir") : "";
+  return `
+    <div class="search-count-row">
+      <span class="search-count">${total} ${words.hits}</span>
+      <div class="search-tools">
+        <button class="search-tool${sorted ? " is-on" : ""}" type="button" data-search-sort aria-label="${escapeHtml(`${words.sortPill}: ${sortSummary(refineSorts, refine.sort, ascOf(refine))}`)}">
+          ${icon("sort")}<span class="search-tool-text">${escapeHtml(sorted ? option.label : words.sortPill)}</span>${arrow}
+        </button>
+        <button class="search-tool${count ? " is-on" : ""}" type="button" data-search-filter>
+          ${icon("sliders")}<span class="search-tool-text">${words.filterPill}</span>${count ? `<span class="search-tool-count">${count}</span>` : ""}
+        </button>
+      </div>
+    </div>`;
+}
+
+/** Ein Chip je gesetzter Eingrenzung; ohne Eingrenzung nichts. Zwei Knöpfe nebeneinander, kein Knopf im Knopf. */
+export function chipsMarkup(refine) {
+  const chips = limits(refine);
   if (!chips.length) return "";
   return `<div class="search-chips">${chips
     .map(
       (chip) =>
-        `<button class="search-chip" type="button" data-search-chip="${chip.id}" aria-label="${escapeHtml(`${chip.label} ${words.removeAria}`)}">
-          <span>${escapeHtml(chip.label)}</span>${icon("close")}
-        </button>`
+        `<span class="search-chip">
+          <button class="search-chip-label" type="button" data-search-chip-open="${chip.id}">${escapeHtml(chip.label)}</button>
+          <button class="search-chip-remove" type="button" data-search-chip="${chip.id}" aria-label="${escapeHtml(`${chip.label} ${words.removeAria}`)}">${icon("close")}</button>
+        </span>`
     )
     .join("")}</div>`;
 }
 
+/* Welches Feld im Stand zu welchem Abschnitt gehört. */
+const fieldOf = { place: "place", period: "period", scope: "titleOnly", done: "showDone" };
+
 /** Eine Eingrenzung über ihren Chip zurücknehmen. */
 export function clearChip(refine, id) {
-  const base = defaultRefine();
-  refine[id] = base[id];
+  const field = fieldOf[id];
+  refine[field] = defaultRefine()[field];
 }
 
-/** Nur die Eingrenzungen zurücknehmen; Art und Sortierung bleiben (Knopf unter dem Platzhalter). */
+/** Nur die Eingrenzungen zurücknehmen; Art und Sortierung bleiben. */
 export function clearLimits(refine) {
-  ["place", "period", "titleOnly", "showDone"].forEach((id) => clearChip(refine, id));
+  Object.keys(fieldOf).forEach((id) => clearChip(refine, id));
 }
 
-/** Alles im Blatt auf die Vorgabe; die gewählte Art bleibt. */
-function resetRefine(refine) {
-  Object.assign(refine, { ...defaultRefine(), type: refine.type });
-}
-
-/*
- * Ein Unterblatt (Ort, Zeitraum): die Wahl setzt den Wert, zeichnet die
- * Seite neu und führt zurück ins Hauptblatt.
- */
-function openChoiceSheet(title, choices, refine, redraw) {
-  openSheet(
-    title,
-    choices.map((choice) => ({
-      label: choice.label,
-      icon: choice.icon,
-      active: choice.active,
-      onSelect: () => {
-        choice.apply();
-        redraw();
-        openRefineSheet(refine, redraw);
-      },
-    }))
-  );
-}
-
-function openPlaceSheet(refine, redraw) {
-  const everywhere = { ref: undefined, label: words.anywhere, icon: "layers" };
-  const choices = [everywhere, ...placeOptionsFor()].map((option) => ({
-    label: option.label,
-    icon: option.icon,
-    active: refine.place === option.ref,
-    apply: () => {
-      refine.place = option.ref;
+/** Blatt „Sortieren“: links wonach, rechts die Richtung — wie auf der Aufgaben-Seite. */
+export function openSearchSort(refine, redraw) {
+  openSortSheet({
+    options: refineSorts,
+    sort: refine.sort,
+    asc: ascOf(refine),
+    onChange: (sort, asc) => {
+      refine.sort = sort;
+      refine.asc = asc;
+      redraw();
     },
-  }));
-  openChoiceSheet(words.place, choices, refine, redraw);
+  });
 }
 
-function openPeriodSheet(refine, redraw) {
-  const choices = refinePeriods.map((period) => ({
-    label: period.label,
-    icon: "clock",
-    active: refine.period === period.id,
-    apply: () => {
-      refine.period = period.id;
+/* Ein Abschnitt mit Einfachwahl: `values` [{ id, label, icon }], `current` die gewählte id. */
+function singleSection(id, values, current, apply, redrawSheet) {
+  const chosen = values.find((value) => value.id === current) || values[0];
+  return {
+    id,
+    ...sections[id],
+    summary: chosen.label,
+    active: chosen !== values[0],
+    items: values.map((value) => ({ ...value, active: value === chosen })),
+    onToggle: (valueId) => {
+      if (valueId === chosen.id) return;
+      apply(valueId);
+      redrawSheet();
     },
-  }));
-  openChoiceSheet(words.period, choices, refine, redraw);
+  };
 }
 
 /**
- * Das Hauptblatt. `redraw` zeichnet die Suchseite neu; danach öffnet sich das
- * Blatt mit dem neuen Stand (Haken, Werte) an derselben Stelle wieder.
+ * Blatt „Filtern“: Übersicht mit Ort, Zeitraum der Bearbeitung, Suchen in
+ * und Erledigte; je Abschnitt eine Unterseite. Die erste Zeile jeder
+ * Unterseite ist die Vorgabe — alles andere zählt als Filter.
+ * @param page id der Unterseite, die gleich offen sein soll (Chip) — sonst weggelassen
  */
-export function openRefineSheet(refine, redraw) {
-  const change = (apply) => () => {
-    apply();
+export function openSearchFilter(refine, redraw, page) {
+  const again = () => {
     redraw();
-    openRefineSheet(refine, redraw);
+    openSearchFilter(refine, redraw);
   };
-  const period = refinePeriods.find((item) => item.id === refine.period) || refinePeriods[0];
-  const options = [
-    { heading: true, label: words.sortHeading },
-    ...refineSorts.map((sort) => ({
-      label: sort.label,
-      icon: sort.icon,
-      active: refine.sort === sort.id,
-      stay: true,
-      onSelect: change(() => {
-        refine.sort = sort.id;
-      }),
-    })),
-    { heading: true, label: words.limitHeading },
-    {
-      label: `${words.place}: ${placeLabel(refine)}`,
-      icon: "folder",
-      onSelect: () => openPlaceSheet(refine, redraw),
-    },
-    {
-      label: `${words.period}: ${period.label}`,
-      icon: "clock",
-      onSelect: () => openPeriodSheet(refine, redraw),
-    },
-    {
-      label: words.titleOnly,
-      icon: "text",
-      active: refine.titleOnly,
-      stay: true,
-      onSelect: change(() => {
-        refine.titleOnly = !refine.titleOnly;
-      }),
-    },
-    {
-      label: words.showDone,
-      icon: "check-circle",
-      active: refine.showDone,
-      stay: true,
-      onSelect: change(() => {
-        refine.showDone = !refine.showDone;
-      }),
-    },
+  /* Orte bekommen ihre Stelle als id — Verweise sind Objekte und taugen nicht zum Vergleichen im Blatt */
+  const places = [{ ref: undefined, label: words.anywhere, icon: "layers" }, ...placeOptionsFor()];
+  const placeIndex = Math.max(0, places.findIndex((option) => option.ref === refine.place));
+  const list = [
+    singleSection(
+      "place",
+      places.map((option, index) => ({ id: String(index), label: option.label, icon: option.icon })),
+      String(placeIndex),
+      (id) => (refine.place = places[Number(id)].ref),
+      again
+    ),
+    singleSection(
+      "period",
+      refinePeriods.map((period) => ({ id: period.id, label: period.label, icon: "clock" })),
+      refine.period,
+      (id) => (refine.period = id),
+      again
+    ),
+    singleSection("scope", scopes, refine.titleOnly ? "title" : "all", (id) => (refine.titleOnly = id === "title"), again),
+    singleSection("done", doneWays, refine.showDone ? "show" : "hide", (id) => (refine.showDone = id === "show"), again),
   ];
-  if (isRefined(refine)) {
-    options.push({ label: words.reset, icon: "undo", split: true, stay: true, onSelect: change(() => resetRefine(refine)) });
-  }
-  openSheet(words.sheetTitle, options);
+  openFilterSheet({
+    title: words.filterTitle,
+    sections: list,
+    resetActive: limits(refine).length > 0,
+    onReset: () => {
+      clearLimits(refine);
+      again();
+    },
+    page,
+  });
 }

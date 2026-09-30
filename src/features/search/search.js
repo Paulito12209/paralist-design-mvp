@@ -2,7 +2,7 @@
  * Die Suchseite. Ohne Eingabe zeigt sie drei Pillen: „Zuletzt geöffnet“
  * (Startpille, nach Tagen), „Am häufigsten“ (meistgeöffnet) und „Zuletzt
  * gesucht“ (die gemerkten Begriffe); mit Eingabe die Treffer, darüber die
- * Art-Pillen, die Trefferzahl mit der Sortier-Pille und die Chips der
+ * Art-Pillen, die Trefferzahl mit den Pillen Sortieren und Filter und die Chips der
  * Eingrenzungen (search-sheet.js). Ist das Feld leer, fallen Filter und
  * Sortierung auf die Vorgabe zurück — jede neue Suche beginnt bei „Relevanz“.
  * Die Zeilen
@@ -34,7 +34,7 @@ import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
 import { isViewActive } from "../../ui/views.js";
 import { knownOpens, mostOpened } from "./search-data.js";
 import { defaultRefine, refinedHits } from "./search-refine.js";
-import { chipsMarkup, clearChip, clearLimits, countRowMarkup, kindPillsMarkup, openRefineSheet } from "./search-sheet.js";
+import { chipsMarkup, clearChip, clearLimits, countRowMarkup, kindPillsMarkup, openSearchFilter, openSearchSort } from "./search-sheet.js";
 import { initSearchTap } from "./search-tap.js";
 
 /* Für die Such-Palette am Desktop, die dieses Modul über load("search") holt. */
@@ -120,7 +120,7 @@ function emptyHitsMarkup(hiddenByLimits) {
   return `${emptyState(emptyLimited)}<button class="search-reset" type="button" data-search-reset>${resetLabel}</button>`;
 }
 
-/* Treffer zum eingegebenen Begriff: Art-Pillen, Chips, Zähler mit Sortier-Pille, Liste. */
+/* Treffer zum eingegebenen Begriff: Art-Pillen, Chips, Zähler mit Sortieren und Filter, Liste. */
 function renderHits() {
   const refine = ui.searchRefine;
   const { pills, total, hits, hiddenByLimits } = refinedHits(ui.searchQuery, refine);
@@ -257,7 +257,7 @@ function kindOrder() {
   return [...el("view-search").querySelectorAll("[data-search-kind]")].map((pill) => pill.dataset.searchKind);
 }
 
-/* Klicks auf die Bedienung der Treffer: Art, Sortier-Pille, Chip, Zurücksetzen.
+/* Klicks auf die Bedienung der Treffer: Art, Sortieren, Filter, Chip, Zurücksetzen.
    Gibt true zurück, wenn der Klick erledigt ist. */
 function onRefineClick(event) {
   const kind = event.target.closest("[data-search-kind]");
@@ -265,10 +265,16 @@ function onRefineClick(event) {
     selectKind(kind.dataset.searchKind);
     return true;
   }
-  if (event.target.closest("[data-search-refine]")) {
-    /* Erst die Tastatur weg, sonst verdeckt sie das Blatt */
+  /* Erst die Tastatur weg, sonst verdeckt sie das Blatt */
+  if (event.target.closest("[data-search-sort]")) {
     dom.searchInput.blur();
-    openRefineSheet(ui.searchRefine, renderSearch);
+    openSearchSort(ui.searchRefine, renderSearch);
+    return true;
+  }
+  const filter = event.target.closest("[data-search-filter], [data-search-chip-open]");
+  if (filter) {
+    dom.searchInput.blur();
+    openSearchFilter(ui.searchRefine, renderSearch, filter.dataset.searchChipOpen);
     return true;
   }
   const chip = event.target.closest("[data-search-chip]");

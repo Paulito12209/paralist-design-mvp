@@ -6,7 +6,7 @@
  *
  * - Art: die Pillen unter dem Titel (Alle, Aufgaben, Notizen …) mit Anzahl
  * - Sortieren: Relevanz (wie die Palette), zuletzt bearbeitet, zuletzt
- *   geöffnet, Titel A–Z
+ *   geöffnet, Titel — jede in beide Richtungen (Blatt src/ui/sort-sheet.js)
  * - Eingrenzen: Ort, Zeitraum der letzten Bearbeitung, nur im Titel suchen,
  *   Erledigte zeigen. Ort und Zeitraum gibt es nur bei Einträgen — ist eins
  *   davon gesetzt, fallen Arbeitsbereiche und Übersichtskarten heraus.
@@ -15,7 +15,8 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * maxHits        -> wie viele Treffer die Ergebnisliste höchstens zeigt
- * refineSorts    -> Sortierungen: Name im Blatt, Kurzname auf der Pille, Icon
+ * refineSorts    -> Sortierungen: Name, Icon, Wortlaut beider Richtungen
+ *                   (up = aufsteigend, down = absteigend), natürliche Richtung
  * refinePeriods  -> Zeiträume: Name im Blatt, Wort auf dem Chip, Tage zurück
  *                   (0 = nur heute)
  * extraKinds     -> Namen der Pillen für Arbeitsbereiche und Übersichtskarten
@@ -34,11 +35,16 @@ const maxHits = 30;
 const dayMs = 24 * 60 * 60 * 1000;
 
 export const refineSorts = [
-  { id: "relevanz", label: "Relevanz", short: "Relevanz", icon: "search" },
-  { id: "bearbeitet", label: "Zuletzt bearbeitet", short: "Bearbeitet", icon: "pencil" },
-  { id: "geoeffnet", label: "Zuletzt geöffnet", short: "Geöffnet", icon: "history" },
-  { id: "titel", label: "Titel A–Z", short: "A–Z", icon: "list" },
+  { id: "relevanz", label: "Relevanz", icon: "search", up: "Beste zuerst", down: "Beste zuletzt", asc: true },
+  { id: "bearbeitet", label: "Bearbeitet", icon: "pencil", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
+  { id: "geoeffnet", label: "Geöffnet", icon: "history", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
+  { id: "titel", label: "Titel", icon: "text", up: "A bis Z", down: "Z bis A", asc: true },
 ];
+
+/* Die natürliche Richtung einer Sortierung — so steht sie nach dem Wechsel. */
+export function naturalAsc(sort) {
+  return (refineSorts.find((item) => item.id === sort) || refineSorts[0]).asc;
+}
 
 export const refinePeriods = [
   { id: "any", label: "Beliebig", chip: "", days: null },
@@ -53,9 +59,9 @@ const extraKinds = [
   { id: "overview", label: "Übersicht" },
 ];
 
-/** Die Vorgabe. `place`: undefined = überall, null = Eingang, sonst ein Verweis. */
+/** Die Vorgabe. `place`: undefined = überall, null = Eingang, sonst ein Verweis. `asc`: Richtung der Sortierung. */
 export function defaultRefine() {
-  return { type: "all", sort: "relevanz", place: undefined, period: "any", titleOnly: false, showDone: true };
+  return { type: "all", sort: "relevanz", asc: true, place: undefined, period: "any", titleOnly: false, showDone: true };
 }
 
 /** Grenzt irgendetwas die Treffer ein (ohne die Art-Pille)? */
@@ -63,9 +69,9 @@ export function hasLimits(refine) {
   return refine.place !== undefined || refine.period !== "any" || refine.titleOnly || !refine.showDone;
 }
 
-/** Weicht irgendetwas im Blatt von der Vorgabe ab? Dann trägt die Sortier-Pille einen Punkt. */
-export function isRefined(refine) {
-  return refine.sort !== "relevanz" || hasLimits(refine);
+/** Weicht die Sortierung von der Vorgabe ab (Relevanz, beste zuerst)? */
+export function isSorted(refine) {
+  return refine.sort !== "relevanz" || refine.asc === false;
 }
 
 /* Zu welcher Pille ein Treffer gehört. */
@@ -98,16 +104,23 @@ function passesLimits(item, refine) {
   return true;
 }
 
-/* Sortieren; „Relevanz“ lässt die Reihenfolge aus matchingItems stehen. */
-function sortItems(list, sort) {
-  if (sort === "bearbeitet") return [...list].sort((a, b) => editedTs(b) - editedTs(a));
+/* Aufsteigend sortieren; „Relevanz“ lässt die Reihenfolge aus matchingItems stehen (beste zuerst). */
+function sortAscending(list, sort) {
+  if (sort === "bearbeitet") return [...list].sort((a, b) => editedTs(a) - editedTs(b));
   if (sort === "titel") return [...list].sort((a, b) => a.title.localeCompare(b.title, "de"));
   if (sort === "geoeffnet") {
     const opened = new Map(state.opens.map((open) => [open.key, open.ts]));
     const ts = (item) => opened.get(`${item.kind}:${item.id}`) || 0;
-    return [...list].sort((a, b) => ts(b) - ts(a));
+    return [...list].sort((a, b) => ts(a) - ts(b));
   }
   return list;
+}
+
+/* Sortieren in der gewählten Richtung; ein alter Stand ohne `asc` gilt als natürliche Richtung. */
+function sortItems(list, refine) {
+  const asc = refine.asc ?? naturalAsc(refine.sort);
+  const sorted = sortAscending(list, refine.sort);
+  return asc ? sorted : [...sorted].reverse();
 }
 
 /* Die Art-Pillen: „Alle“ und jede Art mit Treffern, in fester Reihenfolge. */
@@ -136,7 +149,7 @@ export function refinedHits(query, refine) {
   return {
     pills,
     total: shown.length,
-    hits: sortItems(shown, refine.sort).slice(0, maxHits),
+    hits: sortItems(shown, refine).slice(0, maxHits),
     hiddenByLimits: !limited.length && unlimited > 0,
   };
 }

@@ -1,19 +1,19 @@
 /*
  * Suchseite: Filtern und Sortieren der Treffer — Art-Pillen mit Anzahl, die
- * Zeile mit Trefferzahl und Sortier-Pille, die Chips der Eingrenzungen und
- * der Knopf „Filter zurücksetzen“ unter dem Platzhalter.
- * Das Blatt „Sortieren und filtern“ selbst ist das gewohnte Auswahl-Blatt
- * (styles/overlays.css).
+ * Zeile mit Trefferzahl und den Pillen „Sortieren“ und „Filter“, die Chips
+ * der Eingrenzungen und der Knopf „Filter zurücksetzen“ unter dem Platzhalter.
+ * Die Blätter selbst sind die gemeinsamen von „Sortieren“
+ * (styles/sort-wheels.css) und „Filtern“ (styles/filter-sheet.css).
  * Pfad: styles/search-refine.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens-pages.css)
  * -----------------------------------
- * --search-refine-height    -> Höhe der Sortier-Pille und der Chips
- * --search-refine-size      -> Schriftgröße von Trefferzahl, Sortier-Pille und Chips
- * --search-dot-size         -> Größe des Punkts an der Sortier-Pille, wenn etwas vom Standard abweicht
- * --search-dot-color        -> Farbe dieses Punkts
+ * --search-refine-height    -> Höhe der Pillen „Sortieren“/„Filter“ und der Chips
+ * --search-refine-size      -> Schriftgröße von Trefferzahl, Pillen und Chips
+ * --search-dot-size         -> Größe der Zahl-Blase an „Filter“ (Blase = dreifacher Wert; Zahl darin fest 11px, weiß)
+ * --search-dot-color        -> Farbe von Rand und Zahl-Blase, wenn eine Pille vom Standard abweicht
  * Außerdem gelesen: --card (Fläche von Chips und Knopf), --line (Rand der
- * Sortier-Pille), --muted (Zahlen), --text.
+ * Pillen), --muted (Zahlen), --text.
  */
 
 /* Die Art-Pillen stehen dichter über der Trefferzahl als andere Pillenleisten
@@ -37,15 +37,25 @@
 }
 
 .search-count {
+  flex: 0 0 auto;
   font-size: var(--search-refine-size);
+  white-space: nowrap;
   color: var(--muted);
 }
 
-/* Die Sortier-Pille: nur ein feiner Rand, damit sie nicht wie eine gewählte Art aussieht. */
-.search-sort {
+/* Rechts die beiden Pillen; sie dürfen schrumpfen, damit die Trefferzahl bei 375px stehen bleibt. */
+.search-tools {
+  display: flex;
+  gap: 6px;
+  min-width: 0;
+}
+
+/* „Sortieren“ und „Filter“: nur ein feiner Rand, damit sie nicht wie eine gewählte Art aussehen. */
+.search-tool {
   display: inline-flex;
   align-items: center;
   gap: 6px;
+  min-width: 0;
   height: var(--search-refine-height);
   padding: 0 12px;
   border: 1px solid var(--line);
@@ -53,25 +63,54 @@
   /* border-radius: macht aus dem Knopf eine Pille */
   font-size: var(--search-refine-size);
   font-weight: 600;
-  color: var(--text);
+  color: var(--muted);
   white-space: nowrap;
 }
 
-.search-sort .icon {
+/* Weicht etwas vom Standard ab, steht die Pille in Schriftfarbe mit blauem Rand. */
+.search-tool.is-on {
+  border-color: var(--search-dot-color);
+  color: var(--text);
+}
+
+/* Lange Sortierung („Bearbeitet · Neueste zuerst“) kürzt sich, statt die Zeile zu sprengen. */
+.search-tool-text {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* text-overflow: setzt „…“ ans Ende, wenn der Platz nicht reicht */
+}
+
+.search-tool .icon {
+  flex: 0 0 auto;
   width: 16px;
   height: 16px;
   color: var(--muted);
 }
 
-.search-sort-dot {
-  width: var(--search-dot-size);
-  height: var(--search-dot-size);
-  border-radius: 50%;
-  background: var(--search-dot-color);
+/* Der Pfeil für die Richtung steht hinter dem Namen, in Schriftfarbe wie dieser. */
+.search-tool .search-tool-dir {
+  width: 14px;
+  height: 14px;
+  margin-left: -2px;
+  color: inherit;
 }
 
-.search-sort:active,
-.search-chip:active,
+/* Die Zahl der gefilterten Abschnitte, wie Notions „Filter 2“. */
+.search-tool-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: calc(var(--search-dot-size) * 3);
+  height: calc(var(--search-dot-size) * 3);
+  padding: 0 4px;
+  border-radius: 999px;
+  background: var(--search-dot-color);
+  font-size: 11px;
+  color: #fff;
+}
+
+.search-tool:active,
+.search-chip button:active,
 .search-reset:active {
   opacity: 0.55;
 }
@@ -87,30 +126,39 @@
 .search-chip {
   display: inline-flex;
   align-items: center;
-  gap: 4px;
   max-width: 100%;
   height: var(--search-refine-height);
-  padding: 0 8px 0 12px;
   border-radius: 999px;
   background: var(--card);
   font-size: var(--search-refine-size);
   color: var(--text);
 }
 
-/* Langer Ortsname: kürzt sich, statt die Zeile zu sprengen. */
-.search-chip span {
+/* Der Name öffnet die Unterseite im Filter-Blatt; langer Ortsname kürzt sich. */
+.search-chip-label {
   min-width: 0;
+  height: 100%;
+  padding: 0 4px 0 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   /* text-overflow: „Marketing-Kampagne Herbst“ wird zu „Marketing-Kamp…“ */
   white-space: nowrap;
+  color: inherit;
 }
 
-.search-chip .icon {
+/* Das × nimmt die Eingrenzung weg; eigene Tippfläche bis zum Rand der Pille. */
+.search-chip-remove {
+  display: grid;
+  place-items: center;
   flex: 0 0 auto;
+  height: 100%;
+  padding: 0 10px 0 4px;
+  color: var(--muted);
+}
+
+.search-chip-remove .icon {
   width: 14px;
   height: 14px;
-  color: var(--muted);
 }
 
 /* Unter dem Platzhalter, mittig wie dessen Überschrift. */
