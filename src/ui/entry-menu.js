@@ -129,13 +129,13 @@ export function entryMenuOptions(entry, { onPage = false, afterRemove = () => {}
 }
 
 /* Optionen, die eine Seite vor das Menü einer Zeile stellt — die
-   Aufgaben-Seite „Auswählen“. Die Seite gibt sie herein (setEntryMenuLead),
-   damit diese Datei keinen Bereich kennen muss. */
-let leadOptions = () => [];
+   Aufgaben-Seite und die Sammlungen „Auswählen“. Die Seiten geben sie
+   herein (addEntryMenuLead), damit diese Datei keinen Bereich kennen muss. */
+const leads = [];
 
-/** Festlegen, welche Optionen oben im Menü einer Zeile stehen: fn(entry, row) -> Optionen. */
-export function setEntryMenuLead(fn) {
-  leadOptions = fn;
+/** Optionen oben im Menü einer Zeile anmelden: fn(entry, row) -> Optionen (oft leer). */
+export function addEntryMenuLead(fn) {
+  leads.push(fn);
 }
 
 /**
@@ -144,5 +144,5 @@ export function setEntryMenuLead(fn) {
  */
 export function openEntryCtxMenu(row) {
   const entry = findEntry(row.dataset.openEntry || row.dataset.boardRow);
-  if (entry) openCtxMenu(row, [...leadOptions(entry, row), ...entryMenuOptions(entry)]);
+  if (entry) openCtxMenu(row, [...leads.flatMap((lead) => lead(entry, row)), ...entryMenuOptions(entry)]);
 }

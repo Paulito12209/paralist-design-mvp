@@ -49,6 +49,7 @@ import { openTypeChangeSheet, typeChangeAction, typeCrumbMarkup } from "../../ui
 import { isViewActive } from "../../ui/views.js";
 import { initArchive, renderArchive } from "./archive.js";
 import { initCollectionPanel } from "./collection-panel.js";
+import { initPageSelect } from "./page-select.js";
 import { pageHeroOptions, renderPageHero } from "./page-hero.js";
 import { renderProjectsPage } from "./projects.js";
 import { initWorkspaceCollection, renderWorkspaceCollection } from "./workspace-collection.js";
@@ -292,6 +293,8 @@ export function initPage() {
     title: dom.pageTitle,
     row: () => (ui.currentPage && ui.currentPage.isWorkspace ? dom.pageBody.querySelector(".page-pills-row") : null),
   });
+  /* Vor dem Archiv: im Auswahlmodus fängt sie die Klicks im Inhalt als Erste ab */
+  initPageSelect(renderPageBody);
   initArchive();
   initWorkspaceCollection();
   initCollectionPanel();

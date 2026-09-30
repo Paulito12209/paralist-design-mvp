@@ -100,7 +100,7 @@ function rowMarkup(item) {
   const { entry, block } = item;
   const site = block.url ? hostOf(block.url) : "Noch kein Link";
   return `
-    <button class="bookmark-row" type="button" data-open-entry="${entry.id}">
+    <button class="bookmark-row" type="button" data-open-entry="${entry.id}"${entry.type === BOOKMARK_TYPE ? " data-bookmark-own" : ""}>
       ${thumbMarkup(block)}
       <span class="bookmark-text">
         <span class="bookmark-title">${escapeHtml(titleOf(item))}</span>

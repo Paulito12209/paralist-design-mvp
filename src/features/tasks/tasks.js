@@ -28,7 +28,7 @@ import { initTaskInline } from "./tasks-inline.js";
 import { taskListMarkup } from "./tasks-list.js";
 import { isSelecting } from "./tasks-pick.js";
 import { afterSelectRender, handleSelectClick, initTaskSelect } from "./tasks-select.js";
-import { selectRowMarkup } from "./tasks-select-bar.js";
+import { selectRowMarkup } from "../../ui/select-bar.js";
 import { deskToolsMarkup, handleSettingsClick, taskSettingsMarkup } from "./tasks-settings.js";
 import { afterViewsRender, handleViewsClick, initTaskViews, taskViewsMarkup } from "./tasks-views.js";
 

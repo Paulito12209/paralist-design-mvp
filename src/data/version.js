@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "866169148708";
+export const appVersion = "a54591659304";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -61,6 +61,7 @@ export const appFiles = [
   "src/data/links.js",
   "src/data/milestone-tracks.js",
   "src/data/milestones.js",
+  "src/data/mutations-bulk-spaces.js",
   "src/data/mutations-bulk.js",
   "src/data/mutations-tasks.js",
   "src/data/mutations.js",
@@ -127,6 +128,8 @@ export const appFiles = [
   "src/features/overview/collection-panel.js",
   "src/features/overview/overview.js",
   "src/features/overview/page-hero.js",
+  "src/features/overview/page-select-actions.js",
+  "src/features/overview/page-select.js",
   "src/features/overview/page.js",
   "src/features/overview/project-settings.js",
   "src/features/overview/project-views.js",
@@ -245,6 +248,8 @@ export const appFiles = [
   "src/ui/router-restore.js",
   "src/ui/router.js",
   "src/ui/rows.js",
+  "src/ui/select-bar.js",
+  "src/ui/selection.js",
   "src/ui/sheet.js",
   "src/ui/slash-menu.js",
   "src/ui/sort-sheet.js",

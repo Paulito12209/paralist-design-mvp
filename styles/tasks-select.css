@@ -1,6 +1,7 @@
 /*
- * Aufgaben-Seite im Auswahlmodus (src/features/tasks/tasks-select.js), in
- * der Liste wie im Board: der Kreis vor jeder Zeile und im Kopf jeder Gruppe
+ * Der Auswahlmodus (src/ui/selection.js) auf der Aufgaben-Seite — Liste und
+ * Board — und auf allen Sammlungen der Unterseite
+ * (src/features/overview/page-select.js): der Kreis vor jeder Zeile und im Kopf jeder Gruppe
  * bzw. Spalte, die getönte gewählte Zeile, oben die Zählzeile an der Stelle
  * der Pillen, unten die Aktionsleiste an der Stelle der Navigation (am
  * Desktop eine schwebende Glaspille) und der Stapel, wenn man gewählte
@@ -93,7 +94,8 @@
 }
 
 [data-selecting] .swipe[data-picked] .swipe-body,
-[data-selecting] .board-row[data-picked] {
+[data-selecting] .board-row[data-picked],
+[data-selecting] .bookmark-row[data-picked] {
   background: color-mix(in srgb, var(--select-color) var(--select-tint), var(--bg));
 }
 
@@ -147,15 +149,45 @@
   opacity: 0.55;
 }
 
+/* ---------- Sammlungen: Zählzeile über der Liste, Kreis in jeder Zeile ---------- */
+
+.page-select-row[hidden] {
+  display: none;
+}
+
+.page-select-row {
+  margin: 0 0 12px;
+}
+
+/* Pillen samt ihren Werkzeugen, „Arbeitsbereich hinzufügen“ und „Zum Archiv“ treten zurück:
+   im Modus zählt nur die Liste */
+#page-body[data-selecting] :is(.tab-pills, .tab-pills-row, .page-pills-row, .project-views, .archive-link-row, .workspace-add) {
+  display: none;
+}
+
+/* Der Kreis steht vor der Zeile, die Zeile rückt dafür nach rechts */
+#page-body[data-selecting] .swipe-body {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#page-body[data-selecting] .swipe-body > .workspace-row {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 /* ---------- Leiste unten an der Stelle der Navigation ---------- */
 
 .select-bar[hidden] {
   display: none;
 }
 
-/* Die Navigation tritt zurück, solange die Leiste steht; die Karte „Ansicht“ auch */
+/* Die Navigation tritt zurück, solange die Leiste steht; die Karte „Ansicht“ jeder Seite auch.
+   html davor: stärker als body.is-collection .collection-panel in styles/tasks-settings.css,
+   das später geladen wird */
 body.is-selecting .nav-shell:not(.is-composing),
-body.is-tasks.is-selecting .tasks-panel {
+html body.is-selecting .view-panel {
   display: none;
 }
 

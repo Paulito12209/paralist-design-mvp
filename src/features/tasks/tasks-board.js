@@ -53,7 +53,7 @@ function boardRow(entry, field) {
 function boardColumn(column, field) {
   const rows = column.items.map((entry) => boardRow(entry, field)).join("");
   return `
-    <div class="board-col" data-column="${column.id}" data-section="${column.id}" data-field="${field}"${column.locked ? " data-no-add" : ""} style="--col-color:${column.color}">
+    <div class="board-col" data-pick-scope data-column="${column.id}" data-section="${column.id}" data-field="${field}"${column.locked ? " data-no-add" : ""} style="--col-color:${column.color}">
       <div class="board-head">
         ${groupPickMark(column.items.map((entry) => entry.id))}
         ${icon(column.icon, "board-head-icon")}

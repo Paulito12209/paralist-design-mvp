@@ -289,7 +289,7 @@ export function initListClicks(handlers) {
       menus.openWorkspaceMenu(workspaceBtn);
       return;
     }
-    const entryBtn = event.target.closest(".entry-row[data-open-entry], [data-board-row]");
+    const entryBtn = event.target.closest(".entry-row[data-open-entry], .bookmark-row[data-bookmark-own], [data-board-row]");
     if (entryBtn && !event.target.closest("[data-grip]")) {
       event.preventDefault();
       cancelHold();

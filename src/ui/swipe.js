@@ -113,7 +113,8 @@ function onPointerDown(event) {
   const projectPill = event.target.closest("[data-project-view]");
   const workspaceBtn = event.target.closest("[data-open-workspace]");
   /* Nur Eintrags-Zeilen, keine Kacheln oder Kalender-Termine: die haben eigene Gesten. */
-  const entryBtn = event.target.closest(".entry-row[data-open-entry]");
+  /* Ein eigenes Lesezeichen hat dasselbe Menü wie jede Eintrags-Zeile; eine Karte in einer Notiz nicht */
+  const entryBtn = event.target.closest(".entry-row[data-open-entry], .bookmark-row[data-bookmark-own]");
   /* Eine Zeile im Board der Aufgaben — aber nicht ihr Haken oder Griff, die haben eigene Aufgaben. */
   const boardRow = !event.target.closest("[data-grip], [data-task-done]") && event.target.closest("[data-board-row]");
   /* Kopier-Knopf und kleiner Kopfzeilen-Titel: halten fragt „Seite“ oder „Titel“. */

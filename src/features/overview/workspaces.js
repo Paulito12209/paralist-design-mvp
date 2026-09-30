@@ -24,6 +24,7 @@ import { moveWorkspaceAction } from "../../ui/move-menu.js";
 import { iconPickerAction } from "../../ui/pickers.js";
 import { typeChangeAction } from "../../ui/type-menu.js";
 import { workspaceRow } from "../../ui/rows.js";
+import { pageSelectLead } from "./page-select.js";
 
 /** Die Eingabe beim Umbenennen fokussieren, falls sie gerade im Dokument steht. */
 export function focusWorkspaceName() {
@@ -125,6 +126,8 @@ export function openWorkspaceMenu(button) {
   if (!workspace) return;
 
   openCtxMenu(button, [
+    /* Auf einer Sammlung steht „Auswählen“ ganz oben (src/features/overview/page-select.js) */
+    ...pageSelectLead(button),
     { label: "Umbenennen", icon: "pencil", onSelect: () => beginRenameWorkspace(workspace.id) },
     iconPickerAction(workspace.icon, (name) => {
       workspace.icon = name;

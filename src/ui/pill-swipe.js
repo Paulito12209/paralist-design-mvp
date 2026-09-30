@@ -95,6 +95,8 @@ export function initPillSwipe(area, { order, current, select, enabled = () => tr
     (event) => {
       start = null;
       if (event.touches.length !== 1 || !enabled()) return;
+      /* Im Auswahlmodus (src/ui/selection.js) stehen keine Pillen da: Wischen wechselt nichts */
+      if (area.querySelector("[data-selecting]")) return;
       const touch = event.touches[0];
       if (event.target.closest(OWN_GESTURES)) return;
       if (touch.clientX < EDGE_PX || touch.clientX > window.innerWidth - EDGE_PX) return;
