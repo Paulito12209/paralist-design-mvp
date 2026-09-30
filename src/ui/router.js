@@ -139,12 +139,12 @@ export function openBookmarks(pill = "") {
 }
 
 /**
- * Die Sammlung aller Arbeitsbereiche öffnen (Pfeil neben „Arbeitsbereiche“).
- * Sie beginnt bei dem Tab, der auf der Übersicht gerade gewählt ist.
+ * Die Seite Arbeitsbereiche öffnen. Ihre Pille ist der gewählte Tab der App
+ * (state.activeTabId) — darum merkt sich der Verlauf keine eigene.
  */
-export function openWorkspacesPage(pill) {
-  showPage({ ...workspacesPage, pill });
-  writeHistory({ view: "workspaces", pill, from: ui.sourceView }, "#/arbeitsbereiche", false);
+export function openWorkspacesPage() {
+  showPage({ ...workspacesPage });
+  writeHistory({ view: "workspaces", from: ui.sourceView }, "#/arbeitsbereiche", false);
 }
 
 /**

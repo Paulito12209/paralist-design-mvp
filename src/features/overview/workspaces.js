@@ -26,14 +26,21 @@ export function focusWorkspaceName() {
   focusAtEnd(el("workspace-name-input"));
 }
 
-/** Die Liste neu zeichnen. Umbenennen ist nur möglich, wenn die Startseite offen ist. */
-export function renderWorkspaces() {
-  commitStaleWorkspaceName();
-  const canEdit = isViewActive("home");
-  const rows = tabWorkspaces()
+/** Die Zeilen der Arbeitsbereiche im gewählten Tab; `canEdit` erlaubt das Namensfeld. */
+export function workspaceRowsMarkup(canEdit) {
+  return tabWorkspaces()
     .map((workspace) => workspaceRow(workspace, canEdit))
     .join("");
+}
 
+/**
+ * Unter der Liste: die Zeile „Arbeitsbereich hinzufügen“ und — sobald etwas
+ * im Archiv liegt — die Pille „Zum Archiv“ mit der Pille Arbeitsbereiche.
+ * Die Pille steht mit festem Abstand unter der Liste — nicht am unteren
+ * Bildschirmrand: auf kleinen Geräten hinge sie sonst hinter der
+ * Navigationsleiste, auf großen stünde sie einsam weit unten.
+ */
+export function workspaceTailMarkup() {
   const hasArchived = archivedWorkspaces().length > 0 || archivedEntries().length > 0;
   const archiveButton = hasArchived
     ? `<div class="archive-link-row">
@@ -43,17 +50,19 @@ export function renderWorkspaces() {
       </button>
     </div>`
     : "";
-
-  /* Die Pille zum Archiv steht mit festem Abstand unter der Liste — nicht am
-     unteren Bildschirmrand: auf kleinen Geräten hängt sie sonst hinter der
-     Navigationsleiste, auf großen stünde sie einsam weit unten. */
-  dom.workspaceList.innerHTML = `${rows}
+  return `
     <button class="workspace-row workspace-add" type="button" data-add-workspace="1">
       ${icon("folder-plus")}
       <span>Arbeitsbereich hinzufügen</span>
     </button>
     ${archiveButton}`;
+}
 
+/** Die Liste neu zeichnen. Umbenennen ist nur möglich, wenn die Startseite offen ist. */
+export function renderWorkspaces() {
+  commitStaleWorkspaceName();
+  const canEdit = isViewActive("home");
+  dom.workspaceList.innerHTML = workspaceRowsMarkup(canEdit) + workspaceTailMarkup();
   if (canEdit) focusWorkspaceName();
 }
 

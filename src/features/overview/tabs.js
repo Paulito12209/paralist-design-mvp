@@ -22,7 +22,7 @@ import { openCtxMenu } from "../../ui/ctx-menu.js";
 import { iconPickerAction } from "../../ui/pickers.js";
 import { fitPillInput } from "../../ui/pill-input.js";
 import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
-import { isViewActive } from "../../ui/views.js";
+import { currentView, isViewActive } from "../../ui/views.js";
 
 function pillMarkup(tab) {
   const glyph = tab.icon ? icon(tab.icon, "tab-pill-icon") : "";
@@ -45,22 +45,42 @@ function pillMarkup(tab) {
   `;
 }
 
-/** Die Pillen neu zeichnen. Beim Umbenennen bekommt die Eingabe den Fokus. */
-export function renderTabs() {
-  dom.workspaceTabs.innerHTML = `${state.tabs.map(pillMarkup).join("")}
+/** Alle Tab-Pillen samt kleinem Plus — auf der Übersicht und der Seite Arbeitsbereiche. */
+export function tabPillsMarkup() {
+  return `${state.tabs.map(pillMarkup).join("")}
     <button class="tab-pill-add" type="button" data-tab-add="1" aria-label="Tab hinzufügen">
       ${icon("plus")}
     </button>`;
+}
 
-  const input = el("tab-name-input");
+/* Die Seite, auf der gerade getippt wird — dort soll die Pille ins Bild rollen. */
+function activeViewSection() {
+  return el(`view-${currentView()}`);
+}
+
+/* Das Namensfeld der sichtbaren Seite. Nur dort suchen: eine verborgene Seite
+   kann noch ein altes Feld mit derselben id tragen, bis sie neu zeichnet. */
+function tabNameInput() {
+  return activeViewSection()?.querySelector("#tab-name-input") || null;
+}
+
+/** Nach dem Zeichnen: steht ein Namensfeld da, passt es sich an und bekommt den Fokus. */
+export function afterTabsRender() {
+  const input = tabNameInput();
   if (!input) return;
   fitPillInput(input);
   focusAtEnd(input);
 }
 
+/** Die Pillen neu zeichnen. Beim Umbenennen bekommt die Eingabe den Fokus. */
+export function renderTabs() {
+  dom.workspaceTabs.innerHTML = tabPillsMarkup();
+  afterTabsRender();
+}
+
 /** Den eingegebenen Namen übernehmen. Ein leerer Name behält den Platzhalter. */
 export function commitTabName() {
-  const input = el("tab-name-input");
+  const input = tabNameInput();
   if (!input) return;
   const tab = state.tabs.find((item) => sameId(item.id, ui.editingTabId));
   ui.editingTabId = null;
@@ -78,7 +98,7 @@ export function commitTabName() {
      der Zuhörer in initTabs() neu — wie beim Umbenennen eines Arbeitsbereichs. */
   emit(events.dataChanged);
   /* Als fertige Pille ist der Tab breiter als das Eingabefeld: ganz ins Bild holen */
-  revealActive(el("view-home"));
+  revealActive(activeViewSection());
 }
 
 /** Umbenennen einer Pille starten. */
@@ -114,31 +134,36 @@ export function openTabMenu(pill) {
   openCtxMenu(pill, options);
 }
 
-/** Tastatur und Fokus im Umbenennen-Feld, Wischen sowie das Auffrischen anmelden. */
-export function initTabs() {
-  const pills = dom.workspaceTabs;
-
-  pills.addEventListener("input", (event) => {
+/* Tippen, Enter und Fokusverlust im Namensfeld eines Tabs. Das Feld steht je
+   nach Seite in den Pillen der Übersicht oder der Seite Arbeitsbereiche. */
+function bindTabNameInput(container) {
+  container.addEventListener("input", (event) => {
     if (event.target.id !== "tab-name-input") return;
     fitPillInput(event.target);
     /* Der Tab wächst beim Tippen: sonst verschwände sein Ende unter Linie und Plus-Knopf */
-    revealActive(el("view-home"));
+    revealActive(activeViewSection());
   });
 
-  pills.addEventListener("keydown", (event) => {
+  container.addEventListener("keydown", (event) => {
     if (event.target.id !== "tab-name-input" || event.key !== "Enter") return;
     event.preventDefault();
     commitTabName();
   });
 
   /* blur in der Aufnahmephase: sonst erreicht das Ereignis den Zuhörer nicht */
-  pills.addEventListener(
+  container.addEventListener(
     "blur",
     (event) => {
       if (event.target.id === "tab-name-input") commitTabName();
     },
     true
   );
+}
+
+/** Tastatur und Fokus im Umbenennen-Feld, Wischen sowie das Auffrischen anmelden. */
+export function initTabs() {
+  bindTabNameInput(dom.workspaceTabs);
+  bindTabNameInput(dom.pageBody);
 
   /* Nicht während ein Tab umbenannt wird: dann gehört das Wischen dem Textfeld. */
   initPillSwipe(el("view-home"), {

@@ -11,9 +11,18 @@
 import { sameId } from "../core/ids.js";
 import { moveWorkspaceToTab, selectTab } from "../data/mutations.js";
 import { tabLabel } from "../data/queries.js";
-import { state } from "../data/state.js";
+import { state, ui } from "../data/state.js";
 import { openCtxMenu } from "./ctx-menu.js";
+import { openWorkspacesPage } from "./router.js";
 import { showToast } from "./toast.js";
+import { isViewActive } from "./views.js";
+
+/* „Zeigen“: den Ziel-Tab wählen und die Seite Arbeitsbereiche öffnen, wo er als Pille steht. */
+function showTabOnPage(tabId) {
+  selectTab(tabId);
+  const open = isViewActive("page") && ui.currentPage?.kind === "workspaces";
+  if (!open) openWorkspacesPage();
+}
 
 /* Nur mit mindestens zwei Tabs gibt es ein Ziel. */
 export function canMoveWorkspace() {
@@ -39,7 +48,7 @@ export function openMoveWorkspaceMenu(anchor, workspace) {
           icon: "folder-move",
           title: `Nach „${tabLabel(tab)}“ verschoben`,
           accent: "var(--move-color)",
-          action: { label: "Zeigen", onSelect: () => selectTab(tab.id) },
+          action: { label: "Zeigen", onSelect: () => showTabOnPage(tab.id) },
         });
       },
     }))

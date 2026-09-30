@@ -1,88 +1,88 @@
 /*
- * Die Sammlung „Arbeitsbereiche“ hinter dem Pfeil neben der Überschrift auf
- * der Übersicht: eine Unterseite wie Projekte oder Ressourcen. Oben je
- * angelegtem Tab (Meine, Arbeit, …) eine Pille, darunter die Arbeitsbereiche
- * dieses Tabs als Liste. Waagerecht wischen wechselt die Pille. Die Wahl hier
- * verstellt den Tab auf der Übersicht nicht.
+ * Die Seite „Arbeitsbereiche“ (#/arbeitsbereiche): hier werden Tabs und
+ * Arbeitsbereiche angelegt, umbenannt und verwaltet. Oben je Tab eine Pille
+ * (Meine, Arbeit, …), dahinter das kleine Plus für einen neuen Tab, rechts
+ * hinter der Trennlinie der Ordner-Plus-Knopf. Darunter die Arbeitsbereiche
+ * des gewählten Tabs, die Zeile „Arbeitsbereich hinzufügen“ und „Zum Archiv“.
+ * Die gewählte Pille ist der Tab der App (state.activeTabId) — so legt „neu“
+ * dort an, wo man hinsieht, und Browser-Zurück findet dieselbe Pille wieder.
+ * Waagerecht wischen wechselt den Tab. Antippen, Halten und Rechtsklick
+ * behandelt src/ui/list-clicks.js wie überall (data-tab-id, data-open-workspace).
  * Pfad: src/features/overview/workspace-collection.js
  *
- * Keine anpassbaren visuellen Werte: Pillen stehen in styles/overview.css,
- * die Zeilen in styles/rows.css, der Platzhalter in styles/empty-state.css.
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * emptyTab   -> was ein Tab ohne Arbeitsbereiche zeigt
+ * addLabel   -> Vorlesetext des Ordner-Plus-Knopfs rechts
+ *
+ * Aussehen: Pillenzeile in styles/overview.css, die Zeilen in styles/rows.css,
+ * der Platzhalter in styles/empty-state.css.
  */
 
 import { dom, el } from "../../core/dom.js";
-import { escapeHtml, icon } from "../../core/html.js";
-import { sameId } from "../../core/ids.js";
-import { tabLabel } from "../../data/queries.js";
+import { icon } from "../../core/html.js";
+import { selectTab } from "../../data/mutations.js";
 import { state, ui } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
-import { setPagePill } from "../../ui/router.js";
-import { workspaceRow } from "../../ui/rows.js";
 import { isViewActive } from "../../ui/views.js";
+import { afterTabsRender, tabPillsMarkup } from "./tabs.js";
+import {
+  commitStaleWorkspaceName,
+  focusWorkspaceName,
+  workspaceRowsMarkup,
+  workspaceTailMarkup,
+} from "./workspaces.js";
 
-/* Ein leerer Tab: anlegen geht auf der Übersicht, dort steht das Plus. */
+/* Ein leerer Tab: angelegt wird direkt hier, über die Zeile unter der Liste. */
 const emptyTab = {
   icon: "folder",
   accent: "var(--chevron)",
   title: "Noch keine Arbeitsbereiche",
-  text: "In diesem Tab liegt noch nichts. Leg auf der Übersicht einen Arbeitsbereich an.",
+  text: "Tippe unten auf „Arbeitsbereich hinzufügen“.",
 };
+const addLabel = "Arbeitsbereich hinzufügen";
 
-/* Die gewählte Pille; gibt es den Tab nicht mehr, gilt der erste. */
-function activeTabId() {
-  const pill = ui.currentPage?.pill;
-  const tab = state.tabs.find((item) => sameId(item.id, pill)) || state.tabs[0];
-  return tab ? tab.id : null;
+/** Ist gerade die Seite Arbeitsbereiche offen? */
+export function isWorkspacesPageOpen() {
+  return isViewActive("page") && ui.currentPage?.kind === "workspaces";
 }
 
-function pillsMarkup(active) {
-  return `<div class="tab-pills collection-pills">${state.tabs
-    .map((tab) => {
-      const mark = sameId(tab.id, active) ? " is-active" : "";
-      const glyph = tab.icon ? icon(tab.icon, "tab-pill-icon") : "";
-      return `
-        <button class="tab-pill${mark}" type="button" data-collection-tab="${tab.id}">
-          ${glyph}${escapeHtml(tabLabel(tab))}
-        </button>`;
-    })
-    .join("")}</div>`;
+/* Tabs links, kleines Plus; rechts fest Trennlinie und Ordner-Plus — wie früher auf der Übersicht. */
+function pillsRowMarkup() {
+  return `
+    <div class="tab-pills-row">
+      <div class="tab-pills collection-pills">${tabPillsMarkup()}</div>
+      <div class="tab-pills-tools">
+        <div class="tab-pills-fade"></div>
+        <div class="tab-pills-end">
+          <div class="tab-pills-split"></div>
+          <button class="add-btn" type="button" data-add-workspace="1" aria-label="${addLabel}">${icon("folder-plus")}</button>
+        </div>
+      </div>
+    </div>`;
 }
 
-/** Pillen und Liste der Sammlung in die Unterseite zeichnen. */
+/** Pillen, Liste und die Zeilen darunter in die Unterseite zeichnen. */
 export function renderWorkspaceCollection() {
-  const active = activeTabId();
-  const spaces = state.workspaces.filter(
-    (workspace) => !workspace.archived && sameId(workspace.tab, active)
-  );
-  const list = spaces.length
-    ? `<div class="workspace-list">${spaces.map((workspace) => workspaceRow(workspace)).join("")}</div>`
-    : emptyState(emptyTab);
-
+  /* Ein offenes Namensfeld nimmt seinen Text mit ins neue Feld (ui.nameDraft). */
+  commitStaleWorkspaceName();
+  const rows = workspaceRowsMarkup(true);
   /* Rollstellung der Leiste mitnehmen, sonst springt sie an den Anfang zurück. */
   const scrolled = dom.pageBody.querySelector(".collection-pills")?.scrollLeft || 0;
-  dom.pageBody.innerHTML = pillsMarkup(active) + list;
+  dom.pageBody.innerHTML = `${pillsRowMarkup()}${rows ? "" : emptyState(emptyTab)}
+    <div class="workspace-list">${rows}${workspaceTailMarkup()}</div>`;
   dom.pageBody.querySelector(".collection-pills").scrollLeft = scrolled;
+  afterTabsRender();
+  focusWorkspaceName();
 }
 
-const isCollectionOpen = () => isViewActive("page") && ui.currentPage?.kind === "workspaces";
-
-function selectCollectionTab(id) {
-  if (!isCollectionOpen()) return;
-  setPagePill(Number(id));
-  renderWorkspaceCollection();
-}
-
-/** Antippen und Wischen der Pillen anmelden. */
+/** Wischen über die Seite anmelden: es wechselt den Tab, nie während ein Name getippt wird. */
 export function initWorkspaceCollection() {
-  dom.pageBody.addEventListener("click", (event) => {
-    const pill = event.target.closest("[data-collection-tab]");
-    if (pill) selectCollectionTab(pill.dataset.collectionTab);
-  });
   initPillSwipe(el("view-page"), {
     order: () => state.tabs.map((tab) => tab.id),
-    current: activeTabId,
-    select: selectCollectionTab,
-    enabled: isCollectionOpen,
+    current: () => state.activeTabId,
+    select: selectTab,
+    enabled: () => isWorkspacesPageOpen() && ui.editingTabId == null && ui.editingWorkspaceId == null,
   });
 }

@@ -81,6 +81,7 @@ function restorePage(entry) {
     return;
   }
   if (collectionPages[entry.view]) {
+    /* Die Seite Arbeitsbereiche braucht keine Pille: sie zeigt den gewählten Tab. */
     const pill = entry.view === "archive" ? entry.pill || "all" : entry.pill;
     showPage({ ...collectionPages[entry.view], pill }, false);
     return;

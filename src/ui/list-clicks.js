@@ -175,9 +175,9 @@ function onClick(event) {
     return;
   }
 
-  /* Pfeil neben „Arbeitsbereiche“: die Sammlung beginnt beim gewählten Tab. */
+  /* Pfeil neben „Arbeitsbereiche“: die Seite zeigt den gewählten Tab. */
   if (event.target.closest("[data-open-workspaces]")) {
-    openWorkspacesPage(state.activeTabId);
+    openWorkspacesPage();
     return;
   }
 

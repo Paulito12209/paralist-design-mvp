@@ -170,7 +170,7 @@ const clickActions = [
   ["[data-nav-new]", () => emit(events.createRequested)],
   ["[data-nav-collection]", (node) => openCollection(node.dataset.navCollection)],
   ["[data-nav-more]", toggleMore],
-  ["[data-nav-workspaces]", () => openWorkspacesPage(state.activeTabId)],
+  ["[data-nav-workspaces]", () => openWorkspacesPage()],
   ["[data-nav-add-tab]", addTabFromNav],
   ["[data-nav-add-workspace]", (node) => addWorkspaceIn(node.dataset.navAddWorkspace)],
   ["[data-nav-tab-toggle]", (node) => toggleGroup(node.dataset.navTabToggle)],
