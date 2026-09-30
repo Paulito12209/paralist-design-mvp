@@ -1,24 +1,43 @@
 /*
- * Die Anhänge des Eingabefelds: die Kachelreihe über den Pillen und das kleine
- * Kreuz, mit dem eine Kachel wieder verschwindet.
+ * Die Anhänge des Eingabefelds: die Kachelreihe, die über dem Container
+ * schwebt, und das kleine Kreuz, mit dem eine Kachel wieder verschwindet.
  * Pfad: styles/composer-attachments.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens.css)
  * -----------------------------------
+ * --composer-attach-lift   -> Luft zwischen den Kacheln und der Oberkante des Containers
+ * --composer-attach-indent -> wie weit die Kacheln gegenüber dem Container nach rechts einrücken
  * --bg               -> Fläche einer Kachel, solange kein Bild darauf liegt
  * --card             -> Fläche des kleinen Kreuzes in der Ecke
  * --text             -> Farbe des Dateinamens und des Kreuzes
  * --media-doc-color  -> Farbe des Datei-Icons auf einer Dokument-Kachel
  *
  * Die Schriftgröße des Dateinamens steht direkt bei ihrer Regel in dieser Datei
- * (.attach-file-name, 10px) — sie betrifft nur dieses eine Element.
+ * (.attach-file-name, 10px) — sie betrifft nur dieses eine Element. Ebenso der
+ * Schatten der Kacheln (.attach-img, .attach-file) und die unsichtbar größere
+ * Tippfläche des Kreuzes (.composer-attachment-remove::after, 36px).
 */
 
-/* Reihe der Anhänge ganz oben im Eingabefeld, über den Pillen */
+/*
+ * Reihe der Anhänge: sie schwebt über dem Container, statt ihn nach oben zu
+ * dehnen — der Container bleibt so rund um Pillen, Text und Knöpfe.
+ * Die Reihe ist so breit wie der Container und reicht bis an seine Oberkante:
+ * ihr Innenabstand unten ist die Luft zu den Pillen. Weil sie über die ganze
+ * Breite und bis hinunter zum Container eine Fläche bildet, fängt sie jedes
+ * Tippen dort ab — wer ein Kreuz knapp verfehlt oder zwischen zwei Kacheln
+ * tippt, öffnet nicht versehentlich die Zeile dahinter.
+ */
 .composer-attachments {
+  position: absolute; /* position: hängt über dem Container (.nav-shell), ohne ihn höher zu machen */
+  left: 0;
+  right: 0;
+  bottom: 100%;
   display: flex;
   align-items: center;
   gap: 10px;
+  /* padding: oben und seitlich Platz für den Schatten der Kacheln, den das
+     Scrollen sonst abschneiden würde; links zugleich das Einrücken */
+  padding: 6px var(--composer-attach-indent) var(--composer-attach-lift);
   overflow-x: auto; /* overflow: viele Anhänge schieben sich seitlich, statt umzubrechen */
   scrollbar-width: none;
 }
@@ -45,6 +64,8 @@
   border-radius: 14px; /* border-radius: weiche Ecken wie bei Anhängen in Chat-Apps */
   background: var(--bg);
   overflow: hidden;
+  /* box-shadow: hebt die schwebende Kachel von den Zeilen der Seite dahinter ab */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.22);
 }
 
 .attach-img {
@@ -93,6 +114,14 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25); /* hebt den hellen Kreis auch auf hellen Fotos ab */
   display: grid;
   place-items: center;
+}
+
+/* Unsichtbar größere Tippfläche: das Kreuz ist klein, getroffen werden soll es trotzdem */
+.composer-attachment-remove::after {
+  content: "";
+  position: absolute; /* position: legt die Fläche mittig um das Kreuz */
+  inset: -7px;
+  border-radius: 50%; /* border-radius: rund wie das Kreuz selbst */
 }
 
 .composer-attachment-remove .icon {

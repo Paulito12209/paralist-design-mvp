@@ -132,6 +132,7 @@
 
 /* Gemeinsamer Container: trägt sowohl die Navigation als auch das Eingabefeld */
 .nav-shell {
+  position: relative; /* position: Bezug für die Anhänge, die über dem Container schweben (styles/composer-attachments.css) */
   background: var(--nav-bg);
   border-radius: var(--nav-radius); /* border-radius: macht die Leiste rund wie eine Pille */
   /* kein box-shadow: die Leiste hebt sich wie im Dunkelmodus allein durch
@@ -280,7 +281,7 @@
 /*
  * Solange der Finger liegt, rutscht der Kreis ein Stück nach rechts — dorthin,
  * wo gleich der Schließen-Knopf des Eingabefelds sitzt. Zusammen mit dem X,
- * das sich beim Aufgehen von 35 auf 45 Grad dreht (styles/composer.css), sieht
+ * das sich beim Aufgehen von 10 auf 45 Grad dreht (styles/composer.css), sieht
  * es aus, als wanderte derselbe Knopf hinüber.
  */
 .tab-add:active {

@@ -14,12 +14,15 @@
  * --composer-close-angle    -> wie schief das Kreuz im Schließen-Knopf steht (45deg = X)
  * --composer-close-angle-from -> Winkel, mit dem das X beim Aufgehen startet
  * --composer-close-slide    -> aus welcher Entfernung der Schließen-Knopf heranrückt
- * --composer-close-anim     -> wie lange dieses Heranrücken und Drehen dauert
+ * --composer-close-anim     -> wie lange dieses Heranrücken dauert
+ * --composer-close-spin     -> wie lange das Kreuz zum X dreht
  * --text / --card           -> gefüllter Schließen-Knopf: Körper hell, Kreuz dunkel (im Dunkeln umgekehrt)
  * --danger                  -> Rot des Diktat-Knopfes beim Aufnehmen
  * --placeholder             -> Farbe des Platzhaltertexts
  *
- * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei,
+ * ebenso die Größe des X im Schließen-Knopf (.composer-close .icon, 18px — die
+ * Form der Striche steht im Sprite bei icon-plus-full).
 */
 
 .composer {
@@ -154,15 +157,16 @@
 }
 
 .composer-close .icon {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
   transform: rotate(var(--composer-close-angle)); /* transform: aus dem Kreuz der Navigation wird so das X zum Schließen */
 }
 
 /*
- * Beim Aufgehen kommt der Knopf von links heran und das Kreuz dreht die
- * letzten Grad zum X — die Fortsetzung des Plus-Knopfes, der beim Drücken nach
- * rechts rutscht (styles/navigation.css). Die Regeln hängen an
+ * Beim Aufgehen kommt der Knopf von links heran und das Kreuz dreht von fast
+ * gerade (10 Grad) zum X — die Fortsetzung des Plus-Knopfes, der beim Drücken
+ * nach rechts rutscht (styles/navigation.css). Das Drehen läuft länger als das
+ * Heranrücken und ohne starkes Abbremsen am Anfang, damit man es wirklich sieht. Die Regeln hängen an
  * `.composer:not([hidden])`, weil eine Animation von selbst neu startet,
  * sobald ein Element aus display:none wieder auftaucht.
  */
@@ -184,7 +188,7 @@
 }
 
 .composer:not([hidden]) .composer-close .icon {
-  animation: composer-close-turn var(--composer-close-anim) ease-out;
+  animation: composer-close-turn var(--composer-close-spin) ease-in-out;
 }
 
 /* Diktat-Knopf neben dem Schließen: gleicher grauer Kreis, beim Aufnehmen rot */

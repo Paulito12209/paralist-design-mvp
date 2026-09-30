@@ -211,7 +211,10 @@
  * --composer-close-angle    -> wie schief das Kreuz des Schließen-Knopfes steht (45deg = X)
  * --composer-close-angle-from -> Winkel, mit dem das X beim Aufgehen startet
  * --composer-close-slide    -> aus welcher Entfernung der Schließen-Knopf dabei heranrückt
- * --composer-close-anim     -> wie lange dieses Heranrücken und Drehen dauert
+ * --composer-close-anim     -> wie lange dieses Heranrücken dauert
+ * --composer-close-spin     -> wie lange das Kreuz dabei zum X dreht (länger, damit man es sieht)
+ * --composer-attach-lift    -> Luft zwischen den schwebenden Anhängen und dem Eingabe-Container
+ * --composer-attach-indent  -> wie weit die Anhänge gegenüber dem Container nach rechts einrücken
  * --swipe-action-size / --swipe-action-gap -> Größe und Abstand der Wisch-Knöpfe
  * --swipe-grab-bg           -> Farbe einer Zeile, die nach dem Halten angefasst ist (Wischen zeigt die Knöpfe)
  * --swipe-grab-anim         -> wie schnell diese Farbe auftaucht
@@ -308,9 +311,12 @@
   --toast-rise: 12px;
   --autofill-hold: 600000s;
   --composer-close-angle: 45deg;
-  --composer-close-angle-from: 35deg;
+  --composer-close-angle-from: 10deg;
   --composer-close-slide: 14px;
   --composer-close-anim: 0.22s;
+  --composer-close-spin: 0.45s;
+  --composer-attach-lift: 12px;
+  --composer-attach-indent: 8px;
   --composer-mic-bg: #f9f9fa;
   --composer-mic-border: #48484a;
   --composer-input-size: 16px;
