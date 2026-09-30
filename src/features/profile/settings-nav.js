@@ -1,6 +1,6 @@
 /*
  * Das Untermenü der Profilseite am Desktop: links die Punkte Konto,
- * Darstellung, Navigation, Analyse, Feedback, Kurzbefehle, Hilfe; rechts
+ * Darstellung, App, Analyse, Feedback, Kurzbefehle, Hilfe; rechts
  * steht der Inhalt des gewählten Punkts — dieselben Karten, die am Handy
  * untereinander im Einstellungs-Blatt stehen. Am Handy gibt es kein
  * Untermenü; dort zeichnet src/features/profile/profile.js die ganze Liste.
@@ -15,8 +15,8 @@
  */
 
 import { icon } from "../../core/html.js";
+import { appSettingsCard } from "./app-settings.js";
 import { enterFeedback, feedbackCard } from "./feedback.js";
-import { navLabelsRowMarkup } from "./nav-labels.js";
 import { closingMarkup, identityCard, listSection } from "./profile-cards.js";
 import { insightsSection } from "./settings-cards.js";
 import { shortcutsMarkup } from "./shortcuts.js";
@@ -28,13 +28,7 @@ export const defaultPane = "konto";
 const panes = [
   { id: "konto", label: "Konto", icon: "person", render: () => identityCard() + listSection("Konto") + closingMarkup() },
   { id: "darstellung", label: "Darstellung", icon: "display", render: () => `<p class="psection">Darstellung</p>${themeListMarkup()}` },
-  {
-    id: "navigation",
-    label: "Navigation",
-    icon: "sidebar",
-    render: () =>
-      `<p class="psection">Navigation</p>${navLabelsRowMarkup()}<p class="settings-note">Gilt für die Leiste unten am Handy und Tablet.</p>`,
-  },
+  { id: "app", label: "App", icon: "settings", render: appSettingsCard },
   { id: "analyse", label: "Analyse", icon: "trend", render: insightsSection },
   { id: "feedback", label: "Feedback", icon: "note", render: feedbackCard, enter: enterFeedback },
   { id: "kurzbefehle", label: "Kurzbefehle", icon: "sliders", render: shortcutsMarkup },
