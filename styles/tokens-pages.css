@@ -126,6 +126,8 @@
  * --search-pill-height / --search-pill-side / --search-actions-space / --search-combo-inset -> die Knöpfe unten auf der Suche
  * --search-cancel-color     -> Rot der Schrift von „Abbrechen“ auf der Suche
  * --search-fade             -> Länge des Ausblendens ab der Oberkante der Knöpfe unten auf der Suche
+ * --search-refine-height / --search-refine-size -> Höhe und Schrift von Sortier-Pille und Filter-Chips auf der Suche
+ * --search-dot-size / --search-dot-color -> Punkt an der Sortier-Pille, wenn Filter oder Sortierung vom Standard abweichen
  *
  * DETAILSEITEN (EINTRAG UND ARBEITSBEREICH)
  * --page-cover-mix          -> wie kräftig die Kategoriefarbe ganz oben im Cover ist (im Dunkeln stärker, siehe styles/tokens-dark.css)
@@ -292,6 +294,10 @@
   --search-cancel-color: #ff2323; /* reines Rot; kräftiger als --danger, das einen Stich ins Orange hat */
   --search-actions-space: 60px;
   --search-fade: 20px; /* ab der Oberkante der Knöpfe: nach so vielen Pixeln ist die Liste ganz verdeckt */
+  --search-refine-height: 30px;
+  --search-refine-size: 13px;
+  --search-dot-size: 6px;
+  --search-dot-color: var(--link-color);
 
   /* Zeichnung: Werkzeug-Knöpfe und Farbpunkte */
   --draw-tool-size: 38px;

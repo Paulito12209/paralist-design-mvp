@@ -4,17 +4,14 @@
  * Übersichtskarten.
  * Pfad: src/features/search/search-data.js
  *
- * ANPASSBARE WERTE IN DIESER DATEI
- * -----------------------------------
- * maxHits -> wie viele Treffer die Ergebnisliste höchstens zeigt
+ * Keine anpassbaren visuellen Werte: wie viele Treffer die Suchseite zeigt
+ * und wie sie gefiltert werden, steht in search-refine.js.
  */
 
 import { overviewPages, typeIcon, typeLabel } from "../../data/config.js";
 import { openCounts } from "../../data/opens.js";
 import { findEntry, findWorkspace, placesLabel, workspaceIcon } from "../../data/queries.js";
 import { state } from "../../data/state.js";
-
-const maxHits = 30;
 
 /** Ein Eintrag als Such-Zeile. */
 export function itemOfEntry(entry) {
@@ -26,6 +23,8 @@ export function itemOfEntry(entry) {
     icon: typeIcon(entry.type),
     label: typeLabel(entry.type),
     note: placesLabel(entry),
+    /* Der Eintrag selbst: danach filtert und sortiert die Suchseite (search-refine.js) */
+    entry,
   };
 }
 
@@ -73,17 +72,29 @@ export function mostOpened() {
 }
 
 /*
- * Alles Durchsuchbare: der Text, in dem gesucht wird, und wie daraus eine
- * Zeile wird. Die Zeile entsteht erst für die Treffer — sonst würde bei jedem
+ * Alles Durchsuchbare: der Titel, der ganze Text, in dem gesucht wird, und
+ * wie daraus eine Zeile wird. Die Zeile entsteht erst für die Treffer — sonst würde bei jedem
  * getippten Buchstaben für jeden Eintrag der Ablageort nachgeschlagen.
  */
 function searchPool() {
   return [
     ...state.entries
       .filter((entry) => !entry.archived)
-      .map((entry) => ({ text: `${entry.title} ${entry.body || ""}`, make: () => itemOfEntry(entry) })),
-    ...state.workspaces.map((workspace) => ({ text: workspace.name, make: () => itemOfWorkspace(workspace) })),
-    ...Object.entries(overviewPages).map(([id, page]) => ({ text: page.title, make: () => itemOfPage(id, page) })),
+      .map((entry) => ({
+        title: entry.title || "",
+        text: `${entry.title} ${entry.body || ""}`,
+        make: () => itemOfEntry(entry),
+      })),
+    ...state.workspaces.map((workspace) => ({
+      title: workspace.name,
+      text: workspace.name,
+      make: () => itemOfWorkspace(workspace),
+    })),
+    ...Object.entries(overviewPages).map(([id, page]) => ({
+      title: page.title,
+      text: page.title,
+      make: () => itemOfPage(id, page),
+    })),
   ];
 }
 
@@ -91,15 +102,16 @@ function searchPool() {
  * Alle Treffer zu einem Suchbegriff, ohne Obergrenze. Zuerst kommen Titel, die
  * mit dem Begriff beginnen, danach das, was am häufigsten geöffnet wurde.
  * Die Such-Palette am Desktop teilt sie in Gruppen und zählt sie.
+ * `titleOnly` sucht nur im Titel, nicht im Text (Schalter „Nur im Titel“).
  */
-export function matchingItems(query) {
+export function matchingItems(query, { titleOnly = false } = {}) {
   const needle = query.toLowerCase();
   /* Die Anzahlen einmal nachschlagen, nicht für jeden Vergleich neu suchen. */
   const counts = openCounts();
   const countOf = (item) => counts.get(`${item.kind}:${item.id}`) || 0;
 
   return searchPool()
-    .filter((row) => row.text.toLowerCase().includes(needle))
+    .filter((row) => (titleOnly ? row.title : row.text).toLowerCase().includes(needle))
     .map((row) => row.make())
     .sort((a, b) => {
       const startA = a.title.toLowerCase().startsWith(needle) ? 0 : 1;
@@ -107,9 +119,4 @@ export function matchingItems(query) {
       if (startA !== startB) return startA - startB;
       return countOf(b) - countOf(a);
     });
-}
-
-/** Die Treffer für die Suchseite: dieselbe Reihenfolge, höchstens `maxHits`. */
-export function searchHits(query) {
-  return matchingItems(query).slice(0, maxHits);
 }

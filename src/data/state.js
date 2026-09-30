@@ -95,6 +95,10 @@ export const ui = {
   /* Gewählte Pille der Suchübersicht: "recent" (Zuletzt geöffnet), "most"
      (Am häufigsten) oder "searched" (Zuletzt gesucht) */
   searchTab: "recent",
+  /* Filter und Sortierung der Treffer: { type, sort, place, period, titleOnly,
+     showDone } — Vorgabe und Bedeutung in src/features/search/search-refine.js.
+     null, bis die Suchseite geladen ist; jede neue Suche setzt sie zurück. */
+  searchRefine: null,
   /* true, solange die Bildschirmtastatur im Suchfeld offen ist: dann bleibt die
      Navigation stehen; ein Tipp auf eine Zeile öffnet sie und schließt die Tastatur */
   searchTyping: false,

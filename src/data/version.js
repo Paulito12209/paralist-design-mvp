@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "ae3463576cd7";
+export const appVersion = "ca7943cd056d";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -145,6 +145,8 @@ export const appFiles = [
   "src/features/search/search-data.js",
   "src/features/search/search-palette-data.js",
   "src/features/search/search-rail.js",
+  "src/features/search/search-refine.js",
+  "src/features/search/search-sheet.js",
   "src/features/search/search-tap.js",
   "src/features/search/search.js",
   "src/features/tasks/tasks-board.js",
@@ -270,6 +272,7 @@ export const appFiles = [
   "styles/progress.css",
   "styles/rows.css",
   "styles/search-palette.css",
+  "styles/search-refine.css",
   "styles/search.css",
   "styles/settings.css",
   "styles/sheet-tabs.css",

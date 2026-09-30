@@ -1,7 +1,11 @@
 /*
  * Die Suchseite. Ohne Eingabe zeigt sie drei Pillen: „Zuletzt geöffnet“
  * (Startpille, nach Tagen), „Am häufigsten“ (meistgeöffnet) und „Zuletzt
- * gesucht“ (die gemerkten Begriffe); mit Eingabe die Treffer. Die Zeilen
+ * gesucht“ (die gemerkten Begriffe); mit Eingabe die Treffer, darüber die
+ * Art-Pillen, die Trefferzahl mit der Sortier-Pille und die Chips der
+ * Eingrenzungen (search-sheet.js). Ist das Feld leer, fallen Filter und
+ * Sortierung auf die Vorgabe zurück — jede neue Suche beginnt bei „Relevanz“.
+ * Die Zeilen
  * lassen sich auch bei offener Tastatur direkt antippen — ob getippt oder
  * gescrollt wurde, entscheidet src/features/search/search-tap.js.
  * Wird erst beim ersten Öffnen nachgeladen.
@@ -12,7 +16,8 @@
  * mostOpenedCount   -> wie viele Zeilen die Pille „Am häufigsten“ zeigt
  * recentOpenedCount -> wie viele geöffnete Seiten die Pille „Zuletzt geöffnet“ zeigt
  * searchTabs        -> Beschriftung und Reihenfolge der drei Pillen unter der Überschrift
- * emptySearches / emptyOpened / emptyHits -> die drei Platzhalter der Seite
+ * emptySearches / emptyOpened / emptyHits / emptyLimited -> die Platzhalter der Seite
+ * resetLabel        -> Knopf unter dem Platzhalter, wenn Filter alles ausblenden
  *
  * Schriftgrößen stehen in styles/search.css (--search-meta-size), der
  * Platzhalter steht in styles/empty-state.css.
@@ -25,9 +30,11 @@ import { escapeHtml, icon } from "../../core/html.js";
 import { noteSearch } from "../../data/opens.js";
 import { state, ui } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
-import { initPillSwipe } from "../../ui/pill-swipe.js";
+import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
 import { isViewActive } from "../../ui/views.js";
-import { knownOpens, mostOpened, searchHits } from "./search-data.js";
+import { knownOpens, mostOpened } from "./search-data.js";
+import { defaultRefine, refinedHits } from "./search-refine.js";
+import { chipsMarkup, clearChip, clearLimits, countRowMarkup, kindPillsMarkup, openRefineSheet } from "./search-sheet.js";
 import { initSearchTap } from "./search-tap.js";
 
 /* Für die Such-Palette am Desktop, die dieses Modul über load("search") holt. */
@@ -56,6 +63,14 @@ const emptyHits = {
   accent: "var(--prio-spaeter)",
   title: "Keine Treffer",
 };
+
+const emptyLimited = {
+  icon: "sliders",
+  accent: "var(--prio-spaeter)",
+  title: "Keine Treffer mit diesen Filtern",
+  text: "Ohne die Eingrenzungen gäbe es Treffer.",
+};
+const resetLabel = "Filter zurücksetzen";
 
 /** Treffer im Titel hervorheben; der Rest bleibt abgesichert. Auch für die Such-Palette. */
 export function markHit(text, query) {
@@ -97,19 +112,36 @@ function queryRow(query) {
   `;
 }
 
-/* Treffer zum eingegebenen Begriff. */
+/* Platzhalter, wenn nichts übrig bleibt: mit Filtern bietet er das Zurücksetzen an. */
+function emptyHitsMarkup(hiddenByLimits) {
+  if (!hiddenByLimits) {
+    return emptyState({ ...emptyHits, text: `Zu „${ui.searchQuery}“ gibt es nichts. Versuch ein kürzeres Wort.` });
+  }
+  return `${emptyState(emptyLimited)}<button class="search-reset" type="button" data-search-reset>${resetLabel}</button>`;
+}
+
+/* Treffer zum eingegebenen Begriff: Art-Pillen, Chips, Zähler mit Sortier-Pille, Liste. */
 function renderHits() {
-  const hits = searchHits(ui.searchQuery);
+  const refine = ui.searchRefine;
+  const { pills, total, hits, hiddenByLimits } = refinedHits(ui.searchQuery, refine);
+  /* Nur eine Art? Dann sagt „Alle“ dasselbe wie die zweite Pille — die Zeile entfällt. */
+  const kinds = pills.length > 2 ? kindPillsMarkup(pills, refine.type) : "";
+  const list = hits.length
+    ? `<div class="workspace-list">${hits
+        .map((item) => resultRow(item, item.note ? `${item.label} · ${item.note}` : item.label, ui.searchQuery))
+        .join("")}</div>`
+    : emptyHitsMarkup(hiddenByLimits);
+  /* Die Art-Pillen stehen nach dem Neuzeichnen dort, wo man sie hingeschoben
+     hat — sonst sprängen sie bei jeder Wahl im Blatt an den Anfang zurück. */
+  const shift = dom.searchResults.querySelector(".search-kinds")?.scrollLeft || 0;
   dom.searchResults.innerHTML =
     `<h1 class="screen-title">Suchen</h1>` +
-    (hits.length
-      ? `
-        <div class="section-head"><h2>Ergebnisse für „${escapeHtml(ui.searchQuery)}“</h2></div>
-        <div class="workspace-list">${hits
-          .map((item) => resultRow(item, item.note ? `${item.label} · ${item.note}` : item.label, ui.searchQuery))
-          .join("")}</div>
-      `
-      : emptyState({ ...emptyHits, text: `Zu „${ui.searchQuery}“ gibt es nichts. Versuch ein kürzeres Wort.` }));
+    kinds +
+    chipsMarkup(refine) +
+    (hits.length || hiddenByLimits ? countRowMarkup(total, refine) : "") +
+    list;
+  const bar = dom.searchResults.querySelector(".search-kinds");
+  if (bar) bar.scrollLeft = shift;
 }
 
 /* Zuletzt geöffnet, nach Tagen gruppiert, damit „Heute“ und „Gestern“ getrennt stehen. */
@@ -197,6 +229,8 @@ export function renderSearch() {
 }
 
 function drawSearch() {
+  /* Leeres Feld = neue Suche: Filter und Sortierung zurück auf die Vorgabe */
+  if (!ui.searchRefine || !ui.searchQuery) ui.searchRefine = defaultRefine();
   if (ui.searchQuery) {
     renderHits();
     return;
@@ -210,8 +244,50 @@ function drawSearch() {
   renderOverviewLists();
 }
 
+/* Art wählen; die Pillenleiste rollt die gewählte ins Bild. */
+function selectKind(id) {
+  if (ui.searchRefine.type === id) return;
+  ui.searchRefine.type = id;
+  renderSearch();
+  revealActive(el("view-search"));
+}
+
+/* Die Art-Pillen der Treffer, fürs Wischen. */
+function kindOrder() {
+  return [...el("view-search").querySelectorAll("[data-search-kind]")].map((pill) => pill.dataset.searchKind);
+}
+
+/* Klicks auf die Bedienung der Treffer: Art, Sortier-Pille, Chip, Zurücksetzen.
+   Gibt true zurück, wenn der Klick erledigt ist. */
+function onRefineClick(event) {
+  const kind = event.target.closest("[data-search-kind]");
+  if (kind) {
+    selectKind(kind.dataset.searchKind);
+    return true;
+  }
+  if (event.target.closest("[data-search-refine]")) {
+    /* Erst die Tastatur weg, sonst verdeckt sie das Blatt */
+    dom.searchInput.blur();
+    openRefineSheet(ui.searchRefine, renderSearch);
+    return true;
+  }
+  const chip = event.target.closest("[data-search-chip]");
+  if (chip) {
+    clearChip(ui.searchRefine, chip.dataset.searchChip);
+    renderSearch();
+    return true;
+  }
+  if (event.target.closest("[data-search-reset]")) {
+    clearLimits(ui.searchRefine);
+    renderSearch();
+    return true;
+  }
+  return false;
+}
+
 /* Klicks auf der Suchseite, die nicht schon list-clicks.js erledigt. */
 function onViewClick(event) {
+  if (onRefineClick(event)) return;
   const tab = event.target.closest("[data-search-tab]");
   if (tab) {
     selectTab(tab.dataset.searchTab);
@@ -239,12 +315,13 @@ function init() {
   initSearchTap(el("view-search"));
   el("view-search").addEventListener("click", onViewClick);
 
-  /* Waagerecht wischen wechselt die Pille — nur auf der Übersicht, wo es Pillen gibt. */
+  /* Waagerecht wischen wechselt die Pille — auf der Übersicht die Liste, bei
+     Treffern die Art. */
   initPillSwipe(el("view-search"), {
-    order: searchTabs.map((tab) => tab.id),
-    current: () => ui.searchTab,
-    select: selectTab,
-    enabled: () => !ui.searchQuery && !ui.searchList,
+    order: () => (ui.searchQuery ? kindOrder() : searchTabs.map((tab) => tab.id)),
+    current: () => (ui.searchQuery ? ui.searchRefine.type : ui.searchTab),
+    select: (id) => (ui.searchQuery ? selectKind(id) : selectTab(id)),
+    enabled: () => !ui.searchList,
   });
 
   on(events.viewOpened, (name) => {

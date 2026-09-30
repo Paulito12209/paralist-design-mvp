@@ -1,0 +1,126 @@
+/*
+ * Suchseite: Filtern und Sortieren der Treffer — Art-Pillen mit Anzahl, die
+ * Zeile mit Trefferzahl und Sortier-Pille, die Chips der Eingrenzungen und
+ * der Knopf „Filter zurücksetzen“ unter dem Platzhalter.
+ * Das Blatt „Sortieren und filtern“ selbst ist das gewohnte Auswahl-Blatt
+ * (styles/overlays.css).
+ * Pfad: styles/search-refine.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-pages.css)
+ * -----------------------------------
+ * --search-refine-height    -> Höhe der Sortier-Pille und der Chips
+ * --search-refine-size      -> Schriftgröße von Trefferzahl, Sortier-Pille und Chips
+ * --search-dot-size         -> Größe des Punkts an der Sortier-Pille, wenn etwas vom Standard abweicht
+ * --search-dot-color        -> Farbe dieses Punkts
+ * Außerdem gelesen: --card (Fläche von Chips und Knopf), --line (Rand der
+ * Sortier-Pille), --muted (Zahlen), --text.
+ */
+
+/* Die Art-Pillen stehen dichter über der Trefferzahl als andere Pillenleisten
+   über ihrem Inhalt: beides gehört zusammen. */
+.search-kinds {
+  margin-bottom: 8px;
+}
+
+/* Die Anzahl in der Pille: leiser als der Name, damit man zuerst die Art liest. */
+.search-kind-count {
+  font-weight: 400;
+  color: var(--muted);
+}
+
+.search-count-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 2px 2px 4px;
+}
+
+.search-count {
+  font-size: var(--search-refine-size);
+  color: var(--muted);
+}
+
+/* Die Sortier-Pille: nur ein feiner Rand, damit sie nicht wie eine gewählte Art aussieht. */
+.search-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--search-refine-height);
+  padding: 0 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  /* border-radius: macht aus dem Knopf eine Pille */
+  font-size: var(--search-refine-size);
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.search-sort .icon {
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+}
+
+.search-sort-dot {
+  width: var(--search-dot-size);
+  height: var(--search-dot-size);
+  border-radius: 50%;
+  background: var(--search-dot-color);
+}
+
+.search-sort:active,
+.search-chip:active,
+.search-reset:active {
+  opacity: 0.55;
+}
+
+/* Gesetzte Eingrenzungen: brechen um, statt seitlich zu schieben — es sind höchstens vier. */
+.search-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0 0 8px;
+}
+
+.search-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  max-width: 100%;
+  height: var(--search-refine-height);
+  padding: 0 8px 0 12px;
+  border-radius: 999px;
+  background: var(--card);
+  font-size: var(--search-refine-size);
+  color: var(--text);
+}
+
+/* Langer Ortsname: kürzt sich, statt die Zeile zu sprengen. */
+.search-chip span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  /* text-overflow: „Marketing-Kampagne Herbst“ wird zu „Marketing-Kamp…“ */
+  white-space: nowrap;
+}
+
+.search-chip .icon {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+  color: var(--muted);
+}
+
+/* Unter dem Platzhalter, mittig wie dessen Überschrift. */
+.search-reset {
+  display: block;
+  margin: 0 auto;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: var(--card);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+}
