@@ -27,7 +27,8 @@
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei:
  * .entry-crumb font-size    -> Größe der grauen Kategorie mitten in der Kopfzeile (15px)
- * .type-crumb::after inset  -> wie weit die Tippfläche der Kategorie-Pille über sie hinausgeht (10px / 6px)
+ * .type-crumb::after left/right -> wie weit die Tippfläche der Kategorie-Pille seitlich über sie hinausgeht (6px);
+ *                              ihre Höhe ist --head-btn-size, so hoch wie die Zeile der Kopfzeile
  *
  * Nur für Browser ohne field-sizing (das Textfeld wächst dort nicht mit),
  * direkt bei ihrer Regel unten:
@@ -108,7 +109,15 @@
 .type-crumb::after {
   content: "";
   position: absolute;
-  inset: -10px -6px;
+  left: -6px;
+  right: -6px;
+  /* Genau so hoch wie die Zeile der Kopfzeile und mittig darin — nie darüber
+     hinaus. Ragte die Fläche 1px unter die Kopfzeile, wurde die Ebene der
+     feststehenden Kopfzeile 57px statt 56px hoch; bei krummer Pixeldichte
+     (Android, z.B. 2,625) ergibt das Bruchteile eines Pixels, und an der
+     Unterkante erschien eine helle Linie — sichtbar über dem Cover. */
+  top: calc(50% - var(--head-btn-size) / 2);
+  height: var(--head-btn-size);
 }
 
 /* Editor-Seite: Titel und Text sind direkt bearbeitbar */
