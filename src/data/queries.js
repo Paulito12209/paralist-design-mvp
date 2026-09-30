@@ -201,6 +201,8 @@ export function resourceEntries() {
 export function pageCount(page) {
   if (page.kind === "favorites") return favoriteCount();
   if (page.kind === "projects") return projectEntries().length;
+  /* Die Karte Arbeitsbereiche zählt, was auf ihrer Seite steht: alle Tabs, ohne archivierte. */
+  if (page.kind === "workspaces") return state.workspaces.filter((workspace) => !workspace.archived).length;
   if (page.kind === "resources") return resourceEntries().length;
   /* Die Eingang-Karte (parent null) zählt wie ihre Liste, ohne Medien. */
   if (page.parent === null) return inboxEntries().length;

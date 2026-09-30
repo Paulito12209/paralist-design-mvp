@@ -1,8 +1,8 @@
 /*
  * Die zweite Kartenseite der Übersicht und die Sammlungen, die nicht an einer
- * der ersten vier Karten hängen: Lesezeichen, Archiv und Arbeitsbereiche —
- * dazu der große Kopf, den jede Sammlung zeigen kann. Die ersten vier
- * Karten stehen in src/data/config.js (overviewPages).
+ * der ersten vier Karten hängen: Lesezeichen, Archiv und Projekte — dazu die
+ * Seite Arbeitsbereiche (Karte 3) und der große Kopf, den jede Sammlung zeigen
+ * kann. Die ersten vier Karten stehen in src/data/config.js (overviewPages).
  * Pfad: src/data/collections.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -11,7 +11,8 @@
  *                   und ob sie schon gehen (`soon: true` = „Demnächst verfügbar“)
  * SOON_LABEL     -> Beschriftung des Schildchens oben rechts auf einer solchen Karte
  * archivePills   -> die Pillen oben im Archiv, von links nach rechts
- * workspacesPage -> Titel der Sammlung hinter dem Pfeil neben „Arbeitsbereiche“
+ * workspacesPage -> Titel der Seite Arbeitsbereiche (Karte 3 der Übersicht)
+ * projectsPage   -> Titel der Seite Projekte hinter „Projekte ↗“ auf der Übersicht
  * bookmarksPage  -> Titel der Lesezeichen-Seite
  * collectionHeads -> großer Kopf je Sammlung: Icon, seine Farbe und der Satz unter dem Titel
  *
@@ -45,8 +46,11 @@ export const archivePills = [
   ...typeOrder.map((type) => ({ id: type, label: typePlurals[type] })),
 ];
 
-/* Sammlung hinter dem Pfeil neben „Arbeitsbereiche“: alle Arbeitsbereiche, je Tab eine Pille. */
+/* Die Seite Arbeitsbereiche (Karte 3): alle Arbeitsbereiche, je Tab eine Pille. */
 export const workspacesPage = { title: "Arbeitsbereiche", kind: "workspaces" };
+
+/* Die Seite Projekte hinter „Projekte ↗“: dieselben Ansichten und dieselbe Liste wie auf der Übersicht. */
+export const projectsPage = { title: "Projekte", kind: "projects" };
 
 /* Die Lesezeichen-Seite: Web-Lesezeichen, Videos und Orte aus allen Einträgen. */
 export const bookmarksPage = { title: "Lesezeichen", kind: "bookmarks" };

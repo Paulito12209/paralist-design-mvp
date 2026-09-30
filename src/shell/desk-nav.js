@@ -23,7 +23,7 @@ import { overviewPages } from "../data/config.js";
 import { addTab, addWorkspace, selectTab } from "../data/mutations.js";
 import { findWorkspace, pageCount } from "../data/queries.js";
 import { state, ui } from "../data/state.js";
-import { closeOverlay, openArchive, openBookmarks, openTarget, openWorkspacesPage, restoreFrom, showTab } from "../ui/router.js";
+import { closeOverlay, openArchive, openBookmarks, openTarget, openWorkspacesPage, restoreFrom } from "../ui/router.js";
 import { isViewActive } from "../ui/views.js";
 import { collectionLinks } from "../ui/desk-links.js";
 import { activeTargets, footMarkup, skeletonMarkup, tabGroupsMarkup } from "./desk-nav-parts.js";
@@ -85,21 +85,26 @@ function swapMarkup(container, html) {
   if (again) again.focus({ preventScroll: true });
 }
 
+/* Ist die Seite Arbeitsbereiche offen? Nur dort gibt es die Namensfelder. */
+function onWorkspacesPage() {
+  return isViewActive("page") && ui.currentPage?.kind === "workspaces";
+}
+
 /*
- * Ein neuer Arbeitsbereich oder Tab wird auf der Übersicht benannt — nur
- * dort gibt es das Namensfeld. Darum erst dorthin wechseln, dann anlegen:
- * die Liste zeichnet sich neu und das Feld bekommt den Fokus.
+ * Ein neuer Arbeitsbereich oder Tab wird auf der Seite Arbeitsbereiche
+ * benannt. Darum erst dorthin wechseln, dann anlegen: die Liste zeichnet sich
+ * neu und das Feld bekommt den Fokus.
  */
 function addWorkspaceIn(tabId) {
   closedGroups = closedGroups.filter((id) => id !== tabId);
   writeJson(storageKeys.deskGroups, closedGroups);
   if (!sameId(tabId, state.activeTabId)) selectTab(tabId);
-  if (!isViewActive("home")) showTab("home");
+  if (!onWorkspacesPage()) openWorkspacesPage();
   addWorkspace();
 }
 
 function addTabFromNav() {
-  if (!isViewActive("home")) showTab("home");
+  if (!onWorkspacesPage()) openWorkspacesPage();
   addTab();
 }
 
@@ -221,7 +226,7 @@ function followNavMenu() {
 
   const renaming = source.kind === "tab" ? sameId(ui.editingTabId, source.id) : sameId(ui.editingWorkspaceId, source.id);
   if (renaming) {
-    if (!isViewActive("home")) showTab("home");
+    if (!onWorkspacesPage()) openWorkspacesPage();
     return;
   }
   if (source.kind !== "workspace") return;

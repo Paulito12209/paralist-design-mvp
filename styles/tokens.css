@@ -18,7 +18,7 @@
  * styles/base.css            -> Grundgerüst: Seite, Gerätefenster, Inhaltsbereich, Icons
  * styles/top-bar.css         -> Kopfzeile: Level-Anzeige, Suchleiste, Profil-Knopf
  * styles/overview.css        -> Startseite: die vier Karten und die Tab-Pillen
- * styles/overview-more.css   -> Startseite: zweite Kartenseite zum Schieben, Karten „Demnächst verfügbar“, Pfeil neben „Arbeitsbereiche“
+ * styles/overview-more.css   -> Startseite: zweite Kartenseite zum Schieben, Karten „Demnächst verfügbar“, Pfeil neben „Projekte“
  * styles/rows.css            -> Listenzeilen, Kopfzeile einer Unterseite
  * styles/swipe-rows.css      -> Wisch-Zeile: Knöpfe dahinter, Einfärben nach dem Halten
  * styles/empty-state.css     -> Platzhalter für leere Listen (eigene Werte, siehe dort)
@@ -112,7 +112,9 @@
  * --avatar-view-bg          -> Hintergrund der großen Profilbild-Ansicht (immer dunkel)
  * --avatar-gradient-from/-to -> Farbverlauf hinter den Initialen im Profil
  * --inbox-icon-color        -> Farbe des Eingang-Icons auf der Übersichtskarte
- * --project-icon-color      -> Farbe des Raketen-Icons auf der Projekte-Karte
+ * --project-icon-color      -> Farbe der Rakete (Projekte in der Seitenleiste am Desktop)
+ * --workspace-icon-color    -> Farbe des Stapel-Icons auf der Karte Arbeitsbereiche — dasselbe Orange
+ *                              wie die Arbeitsbereiche im Fortschritt (xpItems.arbeitsbereich)
  * --resource-icon-color     -> Farbe des Würfel-Icons auf der Ressourcen-Karte
  * --composer-mic-bg          -> Fläche des Diktat-Knopfes und der noch nicht geänderten Pillen
  * --composer-mic-border      -> dünner Rand darum: dunkelgrau, in beiden Darstellungen gleich
@@ -154,7 +156,7 @@
  * --title-side              -> Extra-Abstand für die große Überschrift
  * --overview-gap            -> Abstand zwischen Überschrift und Karten
  * --workspace-section-gap / --workspace-head-gap -> Abstand der vier Karten zu
- *                              „Arbeitsbereiche“ und von dort zu den Tab-Pillen
+ *                              „Projekte“ und von dort zu den Pillen der Ansichten
  * --top-bar-fade            -> Höhe des Ausblend-Verlaufs unter der Suchleiste
  * --top-bar-icon-width/-height          -> Größe der Icons oben
  * --top-bar-profile-icon-size           -> Größe des Profil-Icons im Kopfzeilen-Knopf
@@ -347,6 +349,7 @@
   --nav-glow-fade: 28%;
   --inbox-icon-color: #233d4c;
   --project-icon-color: #5B0E14;
+  --workspace-icon-color: #ff9f0a;
   --resource-icon-color: #1A2517;
   --ctx-radius: 16px;
   --sheet-options-max: 52vh;

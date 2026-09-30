@@ -9,7 +9,7 @@
  */
 
 import { emit, events } from "../core/bus.js";
-import { bookmarksPage, workspacesPage } from "../data/collections.js";
+import { bookmarksPage, projectsPage, workspacesPage } from "../data/collections.js";
 import { archivePage, overviewPages } from "../data/config.js";
 import { findEntry, findWorkspace, workspaceLabel } from "../data/queries.js";
 import { workspaceRef } from "../data/refs.js";
@@ -54,8 +54,8 @@ function restoreSheet(entry) {
   return false;
 }
 
-/* Eine Sammlung ohne eigene Adresse im Verlauf: Archiv, Lesezeichen, Arbeitsbereiche. */
-const collectionPages = { archive: archivePage, bookmarks: bookmarksPage, workspaces: workspacesPage };
+/* Sammlungen mit eigenem Verlaufseintrag: Archiv, Lesezeichen, Arbeitsbereiche, Projekte. */
+const collectionPages = { archive: archivePage, bookmarks: bookmarksPage, workspaces: workspacesPage, projects: projectsPage };
 
 /* Die Seite, die der Verlaufseintrag beschreibt, wieder aufbauen. */
 function restorePage(entry) {
@@ -86,6 +86,9 @@ function restorePage(entry) {
     showPage({ ...collectionPages[entry.view], pill }, false);
     return;
   }
+  /* Ältere Einträge `{ view: "overview", id: "3" }` meinten die Karte Projekte;
+     Karte 3 heißt jetzt Arbeitsbereiche und öffnet deren Seite — so landet
+     Zurück nie auf einer leeren Projektliste. */
   if (entry.view === "overview") {
     const page = overviewPages[entry.id];
     if (page) showPage({ title: page.title, parent: page.parent, kind: page.kind }, false);

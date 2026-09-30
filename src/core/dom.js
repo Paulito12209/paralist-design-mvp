@@ -71,8 +71,8 @@ export const dom = {
 
   /* Übersicht */
   get overviewGrid() { return el("overview-grid"); },
-  get workspaceTabs() { return el("workspace-tabs"); },
-  get workspaceList() { return el("workspace-list"); },
+  get projectViews() { return el("project-views"); },
+  get projectList() { return el("project-list"); },
 
   /* Unterseite (Übersichtskarte oder Arbeitsbereich) */
   get pageHead() { return el("page-head"); },

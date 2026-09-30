@@ -12,7 +12,7 @@
 import { emit, events } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { load, loadedModule } from "../core/lazy.js";
-import { bookmarksPage, workspacesPage } from "../data/collections.js";
+import { bookmarksPage, projectsPage, workspacesPage } from "../data/collections.js";
 import { archivePage, overviewPages } from "../data/config.js";
 import { noteOpen } from "../data/opens.js";
 import { findEntry, findWorkspace, workspaceLabel } from "../data/queries.js";
@@ -148,6 +148,15 @@ export function openWorkspacesPage() {
 }
 
 /**
+ * Die Seite Projekte öffnen („Projekte ↗“ auf der Übersicht, Kürzel G P am
+ * Desktop). Sie zeigt die Ansicht, die auch auf der Übersicht gewählt ist.
+ */
+export function openProjectsPage() {
+  showPage({ ...projectsPage });
+  writeHistory({ view: "projects", from: ui.sourceView }, "#/projekte", false);
+}
+
+/**
  * Die Pille einer Sammlung wechseln und im Verlauf vermerken: kommt man über
  * Zurück wieder hierher, steht dieselbe Pille wie beim Verlassen.
  */
@@ -167,6 +176,11 @@ export function openTarget(kind, id, replace = false) {
   if (kind === "overview") {
     const page = overviewPages[id];
     if (!page) return;
+    /* Karte Arbeitsbereiche: ihre Seite hat eine eigene Adresse und einen eigenen Verlaufseintrag. */
+    if (page.kind === "workspaces") {
+      openWorkspacesPage();
+      return;
+    }
     /* Sammlungen (Eingang, Favoriten, …) zählen nicht als „geöffnet“: sie sind
        Wegweiser wie die Reiter unten, die Suche merkt sich nur Inhalte. */
     showPage({ title: page.title, parent: page.parent, kind: page.kind });

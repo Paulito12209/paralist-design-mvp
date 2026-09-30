@@ -29,7 +29,15 @@ import { openEntryCtxMenu } from "./entry-menu.js";
 import { cancelHold, consumeClickBlock } from "./long-press.js";
 import { openMoveWorkspaceMenu } from "./move-menu.js";
 import { openLinkSheet } from "./link-sheet.js";
-import { openArchive, openBookmarks, openEntryOrFile, openTarget, openWorkspacesPage, showTab } from "./router.js";
+import {
+  openArchive,
+  openBookmarks,
+  openEntryOrFile,
+  openProjectsPage,
+  openTarget,
+  openWorkspacesPage,
+  showTab,
+} from "./router.js";
 import { closeSwipes, isSwipedOpen } from "./swipe.js";
 import { toggleGroup } from "./groups.js";
 import { toggleTaskFromCheck } from "./task-status.js";
@@ -178,6 +186,12 @@ function onClick(event) {
   /* Pfeil neben „Arbeitsbereiche“: die Seite zeigt den gewählten Tab. */
   if (event.target.closest("[data-open-workspaces]")) {
     openWorkspacesPage();
+    return;
+  }
+
+  /* „Projekte ↗“ auf der Übersicht: die Seite zeigt die gewählte Ansicht. */
+  if (event.target.closest("[data-open-projects]")) {
+    openProjectsPage();
     return;
   }
 

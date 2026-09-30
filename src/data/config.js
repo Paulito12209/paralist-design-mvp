@@ -105,13 +105,15 @@ export const fileDraftTypes = { bare: "medien", withText: "dokument" };
 /*
  * Die vier Übersichtskarten. Nur der Eingang ist ein Ablageort (parent null =
  * „nirgends abgelegt“). Die anderen drei sind Sammlungen („kind“): Favoriten
- * zeigt Markiertes, Projekte alle Projekte, Ressourcen alle Dokumente,
- * Zeichnungen und Medien — egal, wo sie liegen.
+ * zeigt Markiertes, Arbeitsbereiche alle Arbeitsbereiche je Tab (dort werden
+ * sie auch angelegt), Ressourcen alle Dokumente, Zeichnungen und Medien —
+ * egal, wo sie liegen. Die Projekte stehen unter den Karten auf der Übersicht
+ * und auf ihrer eigenen Seite (projectsPage in src/data/collections.js).
  */
 export const overviewPages = {
   1: { title: "Eingang", icon: "inbox", parent: null },
   2: { title: "Favoriten", icon: "star-outline", kind: "favorites" },
-  3: { title: "Projekte", icon: "rocket", kind: "projects" },
+  3: { title: "Arbeitsbereiche", icon: "layers", kind: "workspaces" },
   4: { title: "Ressourcen", icon: "cube", kind: "resources" },
 };
 

@@ -1,13 +1,16 @@
 /*
- * Die Liste der Arbeitsbereiche unter den Tab-Pillen: anlegen, umbenennen,
- * Icon geben, in einen anderen Tab legen, zu Favoriten, löschen.
+ * Die Liste der Arbeitsbereiche unter den Tab-Pillen der Seite
+ * Arbeitsbereiche: anlegen, umbenennen, Icon geben, in einen anderen Tab
+ * legen, zu Favoriten, löschen. Gezeichnet wird sie von
+ * src/features/overview/workspace-collection.js; das Namensfeld zeigt auch
+ * die Favoriten-Seite (src/features/overview/page.js).
  * Pfad: src/features/overview/workspaces.js
  *
  * Keine anpassbaren visuellen Werte: Zeilenhöhe und Trennlinien stehen in
  * styles/rows.css (Klasse .workspace-row).
  */
 
-import { emit, events, on } from "../../core/bus.js";
+import { emit, events } from "../../core/bus.js";
 import { dom, el, focusAtEnd } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
 import { sameId } from "../../core/ids.js";
@@ -19,7 +22,6 @@ import { moveWorkspaceAction } from "../../ui/move-menu.js";
 import { iconPickerAction } from "../../ui/pickers.js";
 import { typeChangeAction } from "../../ui/type-menu.js";
 import { workspaceRow } from "../../ui/rows.js";
-import { isViewActive } from "../../ui/views.js";
 
 /** Die Eingabe beim Umbenennen fokussieren, falls sie gerade im Dokument steht. */
 export function focusWorkspaceName() {
@@ -58,13 +60,6 @@ export function workspaceTailMarkup() {
     ${archiveButton}`;
 }
 
-/** Die Liste neu zeichnen. Umbenennen ist nur möglich, wenn die Startseite offen ist. */
-export function renderWorkspaces() {
-  commitStaleWorkspaceName();
-  const canEdit = isViewActive("home");
-  dom.workspaceList.innerHTML = workspaceRowsMarkup(canEdit) + workspaceTailMarkup();
-  if (canEdit) focusWorkspaceName();
-}
 
 /**
  * Den eingegebenen Namen übernehmen; ein leeres Feld behält den Vorgabenamen.
@@ -146,8 +141,7 @@ export function openWorkspaceMenu(button) {
   ]);
 }
 
-/* Enter und Fokusverlust im Umbenennen-Feld übernehmen den Namen.
-   Das Feld steht je nach Seite in der Liste oder in der Unterseite. */
+/* Enter und Fokusverlust im Umbenennen-Feld übernehmen den Namen. */
 function bindNameInput(container) {
   if (!container) return;
   container.addEventListener("keydown", (event) => {
@@ -165,15 +159,7 @@ function bindNameInput(container) {
   );
 }
 
-/** Tastatur, Fokus und Auffrischen anmelden. */
+/** Tastatur und Fokus im Namensfeld anmelden. */
 export function initWorkspaces() {
-  bindNameInput(dom.workspaceList);
   bindNameInput(dom.pageBody);
-
-  on(events.dataChanged, () => {
-    if (isViewActive("home")) renderWorkspaces();
-  });
-  on(events.viewOpened, (name) => {
-    if (name === "home") renderWorkspaces();
-  });
 }

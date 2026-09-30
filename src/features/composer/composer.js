@@ -146,6 +146,8 @@ export function closeComposer() {
      Entwurf, der gerade offen war. Ohne diese Zeile erbt die nächste Aufgabe
      — auch die von der Startseite — still deren Priorität. */
   ui.taskDraftColumn = null;
+  /* Ebenso die Projekt-Ansicht, aus der „Projekt hinzufügen“ kam. */
+  ui.projectDraftView = null;
   renderComposerAttachments(updateComposerSend);
   stopDictation();
 }

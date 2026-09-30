@@ -28,9 +28,10 @@ import { initEntry } from "./features/entry/entry.js";
 import { loadPhoto, renderProfileButton, savedPhoto } from "./features/profile/avatar.js";
 import { initOverview, renderOverview } from "./features/overview/overview.js";
 import { initPage } from "./features/overview/page.js";
-import { beginRenameTab, initTabs, openTabMenu, renderTabs } from "./features/overview/tabs.js";
+import { initProjects, renderProjectSection } from "./features/overview/projects.js";
+import { beginRenameTab, initTabs, openTabMenu } from "./features/overview/tabs.js";
 import { initWorkspacePage } from "./features/overview/workspace-page.js";
-import { commitWorkspaceName, initWorkspaces, openWorkspaceMenu, renderWorkspaces } from "./features/overview/workspaces.js";
+import { commitWorkspaceName, initWorkspaces, openWorkspaceMenu } from "./features/overview/workspaces.js";
 import { initKeyboardInset } from "./shell/keyboard-inset.js";
 import { initLevelGauge } from "./shell/level-gauge.js";
 import { initLifecycle } from "./shell/lifecycle.js";
@@ -130,6 +131,7 @@ function initShell() {
 /* Alle Bereiche anmelden, die von Anfang an da sein müssen. */
 function initFeatures() {
   initOverview();
+  initProjects();
   initTabs();
   initWorkspaces();
   initPage();
@@ -168,8 +170,7 @@ function initDeskWhenWide() {
 /* Die Startseite aufbauen und die Adresse setzen. */
 function showStartPage() {
   renderOverview();
-  renderTabs();
-  renderWorkspaces();
+  renderProjectSection();
   renderProfileButton();
   history.replaceState({ view: "home" }, "", "#/");
 }

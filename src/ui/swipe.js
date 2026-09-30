@@ -100,6 +100,8 @@ function onPointerDown(event) {
   const tabPill = event.target.closest("[data-tab-id]");
   /* Pille einer Ansicht auf der Aufgaben-Seite: halten öffnet ihr Menü (src/features/tasks/tasks-views.js) */
   const viewPill = event.target.closest("[data-task-view]");
+  /* Pille einer Projekt-Ansicht (src/features/overview/project-views.js) */
+  const projectPill = event.target.closest("[data-project-view]");
   const workspaceBtn = event.target.closest("[data-open-workspace]");
   /* Nur Eintrags-Zeilen, keine Kacheln oder Kalender-Termine: die haben eigene Gesten. */
   const entryBtn = event.target.closest(".entry-row[data-open-entry]");
@@ -108,6 +110,7 @@ function onPointerDown(event) {
   if (copyBtn) startHold(event, copyBtn, "copy");
   else if (tabPill) startHold(event, tabPill, "tab");
   else if (viewPill) startHold(event, viewPill, "taskView");
+  else if (projectPill) startHold(event, projectPill, "projectView");
   else if (workspaceBtn) startHold(event, workspaceBtn, "workspace");
   else if (entryBtn) startHold(event, entryBtn, "entry");
 
