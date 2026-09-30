@@ -7,7 +7,7 @@
  * Dringlichkeiten bzw. Status in src/data/config.js.
  * Pfad: styles/tasks-board.css
  *
- * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * ANPASSBARE WERTE (in styles/tokens.css, die Board-Werte in styles/tokens-pages.css)
  * -----------------------------------
  * --board-col-width    -> Breite einer Spalte
  * --board-gap          -> Fuge zwischen zwei Spalten
@@ -16,6 +16,9 @@
  * --board-card-radius  -> Rundung der angehobenen Zeile und der Lücke
  * --board-head-radius  -> Rundung der farbigen Kopfzeile
  * --board-drop-min     -> Mindesthöhe einer leeren Spalte
+ * --board-head-tint / --board-count-tint -> wie bunt Streifen und Anzahl-Blase sind (styles/tokens-pages.css)
+ * --board-head-base    -> worin die Farbe gemischt wird: hell Weiß, dunkel Kartenfarbe
+ * --board-ink-l-max    -> wie hell Schrift und Icon im Streifen höchstens werden
  * --content-side       -> Abstand des Boards zum Rand
  * --card / --line      -> Fläche der angehobenen Zeile und die Trennlinien
  * --muted / --chevron  -> Nebentexte, Griffpunkte und die Lücke beim Ziehen
@@ -53,12 +56,22 @@
   padding: 10px 12px;
   margin-bottom: var(--board-head-gap);
   border-radius: var(--board-head-radius);
-  /* color-mix: dieselbe Farbe, nur weit heruntergemischt — so passt der
-     Streifen in Hell und Dunkel, ohne zweite Farbe im Token-Satz */
-  background: color-mix(in srgb, var(--col-color) 16%, var(--card));
+  /* color-mix: dieselbe Farbe, nur weit heruntergemischt — im Hellen in Weiß
+     (Pastell, hebt sich vom grauen Grund ab), im Dunkeln in die Kartenfarbe */
+  background: color-mix(in srgb, var(--col-color) var(--board-head-tint), var(--board-head-base));
   color: var(--col-color);
   font-size: 15px;
   font-weight: 600;
+}
+
+/* Die Spaltenfarben sind für den dunklen Grund gebaut und auf dem hellen
+   Pastell zu blass. Schrift und Icon werden deshalb in der Helligkeit
+   gedeckelt, Farbton und Sättigung bleiben — dieselbe Formel wie beim Icon
+   eines Eintrags (styles/page-cover.css). Im Dunkeln greift die Grenze nicht. */
+@supports (color: oklch(from red l c h)) {
+  .board-head {
+    color: oklch(from var(--col-color) clamp(0, l, var(--board-ink-l-max)) c h); /* oklch(from …): s. o. */
+  }
 }
 
 .board-head-icon {
@@ -80,7 +93,7 @@
   min-width: 22px;
   padding: 1px 7px;
   border-radius: 999px; /* border-radius: macht aus der Zahl eine Blase */
-  background: color-mix(in srgb, var(--col-color) 22%, var(--card));
+  background: color-mix(in srgb, var(--col-color) var(--board-count-tint), var(--board-head-base));
   text-align: center;
   font-size: 13px;
 }

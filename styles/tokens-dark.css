@@ -60,6 +60,11 @@
     --page-cover-mix: 75%;
     --accent-l-min: 0.62;
     --accent-l-max: 1;
+    --board-head-tint: 16%;
+    --board-count-tint: 22%;
+    --board-head-base: var(--card);
+    --board-ink-l-max: 1;
+    --status-open: #8e8e93;
   }
 }
 
@@ -114,4 +119,9 @@
   --page-cover-mix: 75%;
   --accent-l-min: 0.62;
   --accent-l-max: 1;
+  --board-head-tint: 16%;
+  --board-count-tint: 22%;
+  --board-head-base: var(--card);
+  --board-ink-l-max: 1;
+  --status-open: #8e8e93;
 }

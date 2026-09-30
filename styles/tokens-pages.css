@@ -100,6 +100,13 @@
  * --board-head-radius       -> Rundung der farbigen Spalten-Kopfzeile
  * --board-drop-min          -> Mindesthöhe einer leeren Spalte, damit man dort ablegen kann
  * --board-edge              -> ab wie vielen Pixeln am Rand beim Ziehen mitgescrollt wird
+ * --board-head-tint         -> wie viel Spaltenfarbe im Streifen der Kopfzeile steckt; mehr = bunter
+ * --board-count-tint        -> dasselbe für die Anzahl-Blase rechts im Streifen (etwas kräftiger als der Streifen)
+ * --board-head-base         -> worin die Spaltenfarbe gemischt wird: im Hellen Weiß (Pastell), im Dunkeln
+ *                              die Kartenfarbe (styles/tokens-dark.css)
+ * --board-ink-l-max         -> höchste Helligkeit von Schrift und Icon im Streifen (0 = schwarz, 1 = weiß);
+ *                              niedriger = dunkler und besser lesbar, im Dunkeln ohne Grenze
+ * --status-open             -> Grau des Status „Offen“ (Kopfzeile im Board, Icon der Gruppe in der Liste)
  *
  * MEDIEN UND DATEIANSICHT
  * --media-gap               -> Fuge zwischen den Medien-Kacheln
@@ -273,6 +280,11 @@
   --board-head-radius: 14px;
   --board-drop-min: 72px;
   --board-edge: 44px;
+  --board-head-tint: 22%;
+  --board-count-tint: 30%;
+  --board-head-base: #ffffff;
+  --board-ink-l-max: 0.5;
+  --status-open: #5c5c61;
 
   /* Medien und Dateiansicht: Kacheln, Schilder und die Knöpfe über der Navigation */
   --media-gap: 3px;

@@ -21,7 +21,7 @@
  * ab, ob der Titel durchgestrichen wird und die Zeile ganz nach unten rutscht.
  */
 export const taskStatuses = [
-  { id: "offen", label: "Offen", icon: "circle", color: "var(--muted)" },
+  { id: "offen", label: "Offen", icon: "circle", color: "var(--status-open)" },
   { id: "inArbeit", label: "In Arbeit", icon: "history", color: "var(--cal-accent)" },
   { id: "erledigt", label: "Erledigt", icon: "check-circle", color: "var(--xp-done)", done: true },
 ];
