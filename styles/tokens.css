@@ -112,7 +112,7 @@
  * --avatar-view-bg          -> Hintergrund der großen Profilbild-Ansicht (immer dunkel)
  * --avatar-gradient-from/-to -> Farbverlauf hinter den Initialen im Profil
  * --inbox-icon-color        -> Farbe des Eingang-Icons auf der Übersichtskarte
- * --project-icon-color      -> Farbe der Rakete (Projekte in der Seitenleiste am Desktop)
+ * --project-icon-color      -> Farbe der Rakete im großen Kopf der Seite Projekte
  * --workspace-icon-color    -> Farbe des Stapel-Icons auf der Karte Arbeitsbereiche — dasselbe Orange
  *                              wie die Arbeitsbereiche im Fortschritt (xpItems.arbeitsbereich)
  * --resource-icon-color     -> Farbe des Würfel-Icons auf der Ressourcen-Karte

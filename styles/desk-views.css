@@ -3,7 +3,7 @@
  * Suche, Kalender, Aufgaben und Medien. Ab 1024px steht die Seite in der
  * mittleren Spalte (Raster in styles/desk.css). Hier bekommt jede Seite ihre
  * größte Breite, die Übersicht blendet ihre Sammlungs-Karten und
- * Arbeitsbereiche aus (die stehen in der Seitenleiste), und Aufgaben-Liste,
+ * Projekte aus (die stehen in der Seitenleiste), und Aufgaben-Liste,
  * Board und Medien-Raster ordnen sich für die Breite neu. Nur Anordnung: was unter der Maus, beim Drücken und
  * beim Tastatur-Fokus passiert, steht für die ganze mittlere Spalte in
  * styles/desk-hover.css. Unter 1024px gilt nichts davon.
@@ -12,7 +12,6 @@
  * ANPASSBARE WERTE
  * -----------------------------------
  * IN DIESER DATEI (stehen an .view und gelten nur am Desktop)
- * --views-section-gap    -> Luft über der Zeile „Arbeitsbereiche“ (nur beim Benennen zu sehen)
  * --views-cal-stick-gap  -> Luft über dem eingerasteten Wochenstreifen im Kalender
  * --views-board-col-min  -> schmalste Board-Spalte; passen nicht alle Spalten
  *                          mindestens so breit hinein, rollt das Board seitlich
@@ -34,16 +33,11 @@
  * --desk-edge            -> Haarlinie um die Zeichenfläche
  * --desk-scroll-thumb    -> Farbe des Rollbalkens unter dem Board
  * --desk-ease / --desk-enter-rise -> Kurve und Tiefe beim Aufblenden einer Seite
- * --text                 -> Überschrift „Arbeitsbereiche“
  * --content-side / --content-top -> Seitenrand und Luft oben
- *
- * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel:
- * Überschrift „Arbeitsbereiche“ 19px.
  */
 
 @media (min-width: 1024px) {
   .view {
-    --views-section-gap: 56px;
     --views-cal-stick-gap: 16px;
     --views-board-col-min: 220px;
     --views-board-bar: 6px;
@@ -82,28 +76,13 @@
   }
 
   /* ---------- Übersicht ---------- */
-  /* Die Sammlungs-Karten und die Arbeitsbereiche stehen am Desktop schon in
-     der Seitenleiste — die Übersicht zeigt stattdessen die Bühne
-     (styles/dashboard-stage.css). Nur während ein Tab oder Arbeitsbereich
-     benannt wird, kommt der Teil zurück: das Namensfeld wohnt dort.
-     :has: kennt ein Browser es nicht, bleibt der Teil einfach sichtbar. */
-  #view-home :is(.overview-grid, .overview-pager) {
+  /* Die Sammlungs-Karten und die Projekte stehen am Desktop schon in der
+     Seitenleiste — die Übersicht zeigt stattdessen die Bühne
+     (styles/dashboard-stage.css). Umbenannt wird auf den Seiten
+     Arbeitsbereiche und Projekte, darum bleibt dieser Teil immer verborgen;
+     gezeichnet wird er am Desktop ohnehin nicht (src/features/overview/projects.js). */
+  #view-home :is(.overview-grid, .overview-pager, .project-head, .project-views, .project-list) {
     display: none;
-  }
-
-  #view-home:not(:has(#tab-name-input, #workspace-name-input)) :is(.section-head, .tab-pills-row, .workspace-list) {
-    display: none;
-  }
-
-  #view-home .section-head {
-    margin-top: var(--views-section-gap);
-  }
-
-  #view-home .section-head h2 {
-    font-size: 19px;
-    font-weight: 600;
-    letter-spacing: -0.02em;
-    color: var(--text);
   }
 
   /* ---------- Eintrag und Zeichnung ---------- */

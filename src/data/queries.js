@@ -127,7 +127,7 @@ export function groupedEntriesOf(ref) {
   return groupByType(entriesOf(ref));
 }
 
-/** Alle Projekte, egal wo sie liegen — die Projekte-Karte. */
+/** Alle Projekte, egal wo sie liegen — Grundlage der Projekt-Ansichten. */
 export function projectEntries() {
   return state.entries.filter((entry) => entry.type === "projekt" && !entry.archived);
 }

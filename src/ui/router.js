@@ -174,6 +174,11 @@ export function setPagePill(pill) {
  */
 export function openTarget(kind, id, replace = false) {
   if (kind === "overview") {
+    /* Die Seite Projekte hat keine Karte, lässt sich aber wie eine finden (Suche, Palette). */
+    if (id === projectsPage.kind) {
+      openProjectsPage();
+      return;
+    }
     const page = overviewPages[id];
     if (!page) return;
     /* Karte Arbeitsbereiche: ihre Seite hat eine eigene Adresse und einen eigenen Verlaufseintrag. */

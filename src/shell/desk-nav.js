@@ -1,15 +1,16 @@
 /*
- * Die Seitenleiste am Desktop: oben „Neu“, darunter die Sammlungen und die
- * Arbeitsbereiche — jeder Tab eine eigene Gruppe zum Auf- und Zuklappen —,
- * unten fest das Konto. Die vier Reiter, die Suche und die Stufe stehen
- * nicht hier, sondern in der Reiterzeile (src/shell/desk-head.js). Eingehängt
- * und aufgefrischt wird die Leiste von src/shell/desk.js; das Markup steht in
+ * Die Seitenleiste am Desktop: oben „Neu“, darunter die Sammlungen (auch die
+ * Arbeitsbereiche, die ihre Seite öffnen) und die Projekte — jede Ansicht
+ * eine eigene Gruppe zum Auf- und Zuklappen, „Alle“ zuerst —, unten fest das
+ * Konto. Die vier Reiter, die Suche und die Stufe stehen nicht hier, sondern
+ * in der Reiterzeile (src/shell/desk-head.js). Eingehängt und aufgefrischt
+ * wird die Leiste von src/shell/desk.js; das Markup steht in
  * src/shell/desk-nav-parts.js.
  * Pfad: src/shell/desk-nav.js
  *
  * Keine anpassbaren visuellen Werte: Aussehen, Abstände und Größen stehen in
- * styles/desk-nav.css und styles/desk-nav-foot.css. Welche Tab-Gruppen
- * zugeklappt sind, merkt sich der Browser unter storageKeys.deskGroups, ob
+ * styles/desk-nav.css und styles/desk-nav-foot.css. Welche Ansichten
+ * zugeklappt sind, merkt sich der Browser unter storageKeys.deskViewGroups, ob
  * „Mehr anzeigen“ (Personen, Pläne) offen ist unter storageKeys.deskMore.
  */
 
@@ -20,37 +21,46 @@ import { sameId } from "../core/ids.js";
 import { load } from "../core/lazy.js";
 import { readJson, readText, storageKeys, writeJson, writeText } from "../core/storage.js";
 import { overviewPages } from "../data/config.js";
-import { addTab, addWorkspace, selectTab } from "../data/mutations.js";
-import { findWorkspace, pageCount } from "../data/queries.js";
-import { state, ui } from "../data/state.js";
-import { closeOverlay, openArchive, openBookmarks, openTarget, openWorkspacesPage, restoreFrom } from "../ui/router.js";
+import { addProjectView } from "../data/project-views.js";
+import { findEntry, pageCount } from "../data/queries.js";
+import { ui } from "../data/state.js";
+import { openEntryCtxMenu } from "../ui/entry-menu.js";
+import {
+  closeOverlay,
+  goBack,
+  openArchive,
+  openBookmarks,
+  openEntry,
+  openProjectsPage,
+  openTarget,
+} from "../ui/router.js";
 import { isViewActive } from "../ui/views.js";
 import { collectionLinks } from "../ui/desk-links.js";
-import { activeTargets, footMarkup, skeletonMarkup, tabGroupsMarkup } from "./desk-nav-parts.js";
+import { activeTargets, footMarkup, skeletonMarkup, viewGroupsMarkup } from "./desk-nav-parts.js";
 
 /* Die Seitenleiste selbst und ihre Teile — einmal beim Einhängen gesucht. */
 let root = null;
 let parts = null;
 /* Von src/main.js über src/shell/desk.js hereingegeben. */
-let handlers = { openWorkspaceMenu: null, openTabMenu: null, profilePhoto: () => "" };
+let handlers = { openProjectViewMenu: null, profilePhoto: () => "" };
 /* Zuletzt geschriebenes Markup je Behälter: Gleiches wird nicht neu gesetzt. */
 const lastMarkup = new Map();
-/* Arbeitsbereich oder Tab, dessen Menü gerade aus der Seitenleiste geöffnet wurde. */
+/* Projekt oder Ansicht, dessen Menü gerade aus der Seitenleiste geöffnet wurde. */
 let menuSource = null;
-/* Die zugeklappten Tab-Gruppen, als Text-Ids. */
+/* Die zugeklappten Ansichten, als Text-Ids. */
 let closedGroups = [];
 /* Steht „Mehr anzeigen“ offen (Personen, Pläne)? */
 let moreOpen = false;
 
 function collectParts() {
   return {
-    collections: collectionLinks.map((link) => {
+    collections: collectionLinks.filter((link) => link.nav !== false).map((link) => {
       const row = root.querySelector(`[data-nav-collection="${link.id}"]`);
       return { link, row, count: row.querySelector(".desk-nav-count") };
     }),
     more: root.querySelector("#desk-nav-more"),
     moreToggle: root.querySelector("[data-nav-more]"),
-    spaces: root.querySelector('[data-nav-slot="spaces"]'),
+    views: root.querySelector('[data-nav-slot="views"]'),
     foot: root.querySelector('[data-nav-slot="foot"]'),
   };
 }
@@ -63,9 +73,9 @@ function setActive(row, chosen) {
 
 /* Selektor, der nach dem Neuzeichnen denselben Knopf wiederfindet. */
 function focusSelector(node) {
-  const button = node.closest("[data-open-workspace], [data-nav-tab-toggle], [data-nav-add-workspace], [data-nav-profile]");
+  const button = node.closest("[data-open-entry], [data-nav-view-toggle], [data-nav-add-project], [data-nav-profile]");
   if (!button) return "";
-  const attribute = ["openWorkspace", "navTabToggle", "navAddWorkspace", "navProfile"].find((key) => button.dataset[key]);
+  const attribute = ["openEntry", "navViewToggle", "navAddProject", "navProfile"].find((key) => button.dataset[key]);
   const name = attribute.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
   return `[data-${name}="${CSS.escape(button.dataset[attribute])}"]`;
 }
@@ -85,27 +95,32 @@ function swapMarkup(container, html) {
   if (again) again.focus({ preventScroll: true });
 }
 
-/* Ist die Seite Arbeitsbereiche offen? Nur dort gibt es die Namensfelder. */
-function onWorkspacesPage() {
-  return isViewActive("page") && ui.currentPage?.kind === "workspaces";
+/* Ist die Seite Projekte offen? Nur dort (und am Handy auf der Übersicht) stehen die Pillen mit dem Namensfeld. */
+function onProjectsPage() {
+  return isViewActive("page") && ui.currentPage?.kind === "projects";
 }
 
 /*
- * Ein neuer Arbeitsbereich oder Tab wird auf der Seite Arbeitsbereiche
- * benannt. Darum erst dorthin wechseln, dann anlegen: die Liste zeichnet sich
- * neu und das Feld bekommt den Fokus.
+ * Eine neue Ansicht wird in den Pillen der Seite Projekte benannt. Darum erst
+ * dorthin wechseln, dann anlegen: die Pillen zeichnen sich neu und das Feld
+ * bekommt den Fokus.
  */
-function addWorkspaceIn(tabId) {
-  closedGroups = closedGroups.filter((id) => id !== tabId);
-  writeJson(storageKeys.deskGroups, closedGroups);
-  if (!sameId(tabId, state.activeTabId)) selectTab(tabId);
-  if (!onWorkspacesPage()) openWorkspacesPage();
-  addWorkspace();
+function addViewFromNav() {
+  if (!onProjectsPage()) openProjectsPage();
+  addProjectView();
 }
 
-function addTabFromNav() {
-  if (!onWorkspacesPage()) openWorkspacesPage();
-  addTab();
+/*
+ * Plus am Kopf einer Ansicht: ein Projekt in dieser Ansicht anlegen. Die
+ * Gruppe klappt auf, damit man es gleich sieht; das Eingabefeld übernimmt
+ * die Ansicht (src/data/project-views.js, applyProjectDraft).
+ */
+function addProjectIn(viewId) {
+  closedGroups = closedGroups.filter((id) => id !== viewId);
+  writeJson(storageKeys.deskViewGroups, closedGroups);
+  renderDeskNav();
+  ui.projectDraftView = Number(viewId);
+  emit(events.createRequested, "projekt");
 }
 
 /* „Mehr anzeigen“ auf- oder zuklappen und den Knopf beschriften. */
@@ -121,9 +136,9 @@ function toggleMore() {
   syncMore();
 }
 
-function toggleGroup(tabId) {
-  closedGroups = closedGroups.includes(tabId) ? closedGroups.filter((id) => id !== tabId) : [...closedGroups, tabId];
-  writeJson(storageKeys.deskGroups, closedGroups);
+function toggleGroup(viewId) {
+  closedGroups = closedGroups.includes(viewId) ? closedGroups.filter((id) => id !== viewId) : [...closedGroups, viewId];
+  writeJson(storageKeys.deskViewGroups, closedGroups);
   renderDeskNav();
 }
 
@@ -150,8 +165,6 @@ function reselect() {
   else dom.content.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-
-
 /** Eine Sammlung öffnen — auch über das Kürzel „G“ und Buchstabe. */
 export function openCollection(id) {
   const link = collectionLinks.find((item) => item.id === id);
@@ -162,12 +175,14 @@ export function openCollection(id) {
   }
   if (link.target === "bookmarks") openBookmarks();
   else if (link.target === "archive") openArchive("all");
+  else if (link.target === "projects") openProjectsPage();
   else openTarget("overview", link.overview);
 }
 
-function openWorkspace(row) {
+/* Ein Projekt der Leiste öffnen; das schon offene rollt nur nach oben. */
+function openProject(row) {
   if (row.classList.contains("is-active")) reselect();
-  else openTarget("workspace", row.dataset.openWorkspace);
+  else openEntry(row.dataset.openEntry);
 }
 
 /* Jeder Knopf der Leiste trägt genau ein data-Merkmal; das erste passende gewinnt. */
@@ -175,11 +190,11 @@ const clickActions = [
   ["[data-nav-new]", () => emit(events.createRequested)],
   ["[data-nav-collection]", (node) => openCollection(node.dataset.navCollection)],
   ["[data-nav-more]", toggleMore],
-  ["[data-nav-workspaces]", () => openWorkspacesPage()],
-  ["[data-nav-add-tab]", addTabFromNav],
-  ["[data-nav-add-workspace]", (node) => addWorkspaceIn(node.dataset.navAddWorkspace)],
-  ["[data-nav-tab-toggle]", (node) => toggleGroup(node.dataset.navTabToggle)],
-  ["[data-open-workspace]", openWorkspace],
+  ["[data-nav-projects]", () => openCollection("projects")],
+  ["[data-nav-add-view]", addViewFromNav],
+  ["[data-nav-add-project]", (node) => addProjectIn(node.dataset.navAddProject)],
+  ["[data-nav-view-toggle]", (node) => toggleGroup(node.dataset.navViewToggle)],
+  ["[data-open-entry]", openProject],
   ["[data-nav-profile]", () => load("profile").then((module) => module.openPane("konto"))],
 ];
 
@@ -195,57 +210,56 @@ function onClick(event) {
   }
 }
 
-/* Rechtsklick: auf einem Arbeitsbereich sein Menü, auf einem Gruppenkopf das des Tabs. */
+/* Rechtsklick: auf einem Projekt das Menü eines Eintrags, auf einem Gruppenkopf das der Ansicht. */
 function onContextMenu(event) {
-  const space = event.target.closest("[data-open-workspace]");
-  if (space && handlers.openWorkspaceMenu) {
+  const row = event.target.closest("[data-open-entry]");
+  if (row) {
     event.preventDefault();
-    menuSource = { kind: "workspace", id: space.dataset.openWorkspace };
-    handlers.openWorkspaceMenu(space);
+    menuSource = { kind: "entry", id: row.dataset.openEntry };
+    openEntryCtxMenu(row);
     return;
   }
-  const head = event.target.closest("[data-nav-tab-toggle]");
-  if (head && handlers.openTabMenu) {
+  const head = event.target.closest("[data-nav-view-toggle]");
+  if (head && handlers.openProjectViewMenu) {
     event.preventDefault();
-    menuSource = { kind: "tab", id: head.dataset.navTabToggle };
-    handlers.openTabMenu(head);
+    menuSource = { kind: "view", id: head.dataset.navViewToggle };
+    handlers.openProjectViewMenu(head);
   }
 }
 
 /*
  * Nach einer Wahl im Menü, das aus der Seitenleiste kam. Die Menüs sind für
- * die Übersicht gebaut; zwei Fälle brauchen hier einen Schritt mehr:
- * - „Umbenennen“: das Namensfeld gibt es nur auf der Übersicht — also dorthin.
- * - „Archivieren“ oder „Löschen“ des gerade offenen Arbeitsbereichs: seine
- *   Seite gibt es nicht mehr — zurück, woher man kam.
+ * die Seiten gebaut; zwei Fälle brauchen hier einen Schritt mehr:
+ * - „Umbenennen“ einer Ansicht: das Namensfeld steht in den Pillen der Seite
+ *   Projekte — also dorthin.
+ * - „Archivieren“ oder „Löschen“ des gerade offenen Projekts: seine Seite
+ *   gibt es nicht mehr — zurück, woher man kam.
  */
 function followNavMenu() {
   const source = menuSource;
   if (!source) return;
   menuSource = null;
 
-  const renaming = source.kind === "tab" ? sameId(ui.editingTabId, source.id) : sameId(ui.editingWorkspaceId, source.id);
-  if (renaming) {
-    if (!onWorkspacesPage()) openWorkspacesPage();
+  if (source.kind === "view") {
+    if (sameId(ui.editingProjectViewId, source.id) && !onProjectsPage()) openProjectsPage();
     return;
   }
-  if (source.kind !== "workspace") return;
-  const workspace = findWorkspace(source.id);
-  const isOpen = isViewActive("page") && ui.currentPage && sameId(ui.currentPage.workspaceId, source.id);
-  if (isOpen && (!workspace || workspace.archived)) restoreFrom(ui.sourceView);
+  const entry = findEntry(source.id);
+  const isOpen = isViewActive("entry") && sameId(ui.currentEntryId, source.id);
+  if (isOpen && (!entry || entry.archived)) goBack();
 }
 
 /**
  * Das feste Gerüst einmal in die Seitenleiste schreiben und die Klicks
  * anmelden (ein Empfänger für die ganze Leiste). Weitere Aufrufe tun nichts.
  * @param target   das <aside class="desk-nav"> aus src/shell/desk.js
- * @param given    { openWorkspaceMenu, openTabMenu, profilePhoto } von src/main.js
+ * @param given    { openProjectViewMenu, profilePhoto } von src/main.js
  */
 export function mountDeskNav(target, given = {}) {
   if (root) return;
   root = target;
   handlers = { ...handlers, ...given };
-  closedGroups = readJson(storageKeys.deskGroups, []).map(String);
+  closedGroups = readJson(storageKeys.deskViewGroups, []).map(String);
   moreOpen = readText(storageKeys.deskMore) === "1";
   root.innerHTML = skeletonMarkup();
   parts = collectParts();
@@ -258,7 +272,7 @@ export function mountDeskNav(target, given = {}) {
 }
 
 /**
- * Zahlen, gewählte Zeile, Tab-Gruppen und Fuß auffrischen. Billig genug für
+ * Zahlen, gewählte Zeile, Gruppen der Ansichten und Fuß auffrischen. Billig genug für
  * jeden Seitenwechsel: die festen Zeilen werden nur umgeschaltet, alles
  * andere nur neu gesetzt, wenn sich sein Inhalt geändert hat.
  */
@@ -277,6 +291,6 @@ export function renderDeskNav() {
   });
   syncMore();
 
-  swapMarkup(parts.spaces, tabGroupsMarkup(closedGroups, active.workspace));
+  swapMarkup(parts.views, viewGroupsMarkup(closedGroups, active.project));
   swapMarkup(parts.foot, footMarkup(handlers.profilePhoto()));
 }

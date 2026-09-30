@@ -65,7 +65,7 @@ function projectDraftPlace() {
  * Bei einem Projekt braucht es das nicht — dort ist der Ablageort schon die
  * Verbindung, und ein Projekt steht nie unter „Verknüpfte Einträge“.
  *
- * TYP — das, was die Seite gerade zeigt: die Projekte-Karte ein Projekt, die
+ * TYP — das, was die Seite gerade zeigt: die Seite Projekte ein Projekt, die
  * Ressourcen-Seite den Typ ihrer aktiven Pille, die Lesezeichen-Seite ein
  * Lesezeichen, der Kalender einen Termin, die Aufgaben-Seite und ein offenes
  * Projekt eine Aufgabe, die Medien-Seite ein Medium. Sonst der Vorschlag aus

@@ -12,12 +12,14 @@
  *                    die Vorlesehilfe dazu sagt
  * collectionLinks -> die Sammlungen links, von oben nach unten: welche Seite,
  *                    Taste nach „G“ und welche Farbe das Icon trägt (die Farben
- *                    selbst stehen in styles/desk-nav.css)
+ *                    selbst stehen in styles/desk-nav.css); `nav: false` hat
+ *                    ein Kürzel, aber keine eigene Zeile (Projekte stehen als
+ *                    Gruppe darunter)
  * chordKey        -> die Taste, nach der ein Buchstabe eine Sammlung öffnet
  * chordWindow     -> wie lange nach „G“ der Buchstabe noch zählt (Millisekunden)
  */
 
-import { moreCards } from "../data/collections.js";
+import { moreCards, projectsPage } from "../data/collections.js";
 import { overviewPages } from "../data/config.js";
 
 export const chordKey = "G";
@@ -52,18 +54,19 @@ function moreCard(id) {
 
 /*
  * Die Sammlungen. `overview` ist die Nummer aus overviewPages, `target` ein
- * eigener Weg (Lesezeichen, Archiv). `tone` wählt die Icon-Farbe.
+ * eigener Weg (Lesezeichen, Archiv, Projekte). `tone` wählt die Icon-Farbe.
  */
 export const collectionLinks = [
   { id: "1", overview: "1", key: "I", tone: "inbox" },
   { id: "2", overview: "2", key: "F", tone: "star" },
-  { id: "3", overview: "3", key: "P", tone: "project" },
+  { id: "3", overview: "3", key: "B", tone: "workspace" },
   { id: "4", overview: "4", key: "R", tone: "resource" },
   { id: "bookmarks", target: "bookmarks", key: "L", tone: "bookmark" },
   { id: "archive", target: "archive", key: "A", tone: "archive", quiet: true },
+  { id: "projects", target: "projects", key: "P", tone: "project", nav: false },
 ].map((link) => {
-  const source = link.overview ? overviewPages[link.overview] : moreCard(link.id);
-  return { ...link, title: source.title, icon: source.icon };
+  const source = link.overview ? overviewPages[link.overview] : link.target === "projects" ? projectsPage : moreCard(link.id);
+  return { ...link, title: source.title, icon: source.icon || "rocket" };
 });
 
 /* Was noch kommt: dieselben Karten, die am Handy „Demnächst verfügbar“ zeigen. */

@@ -27,7 +27,6 @@ import { isViewActive } from "../../ui/views.js";
 /* Die Karten mit eigenem farbigem Icon; alle anderen bleiben grau. */
 const coloredIcons = {
   inbox: "card-icon-inbox",
-  rocket: "card-icon-rocket",
   layers: "card-icon-layers",
   cube: "card-icon-cube",
   star: "card-icon-star",

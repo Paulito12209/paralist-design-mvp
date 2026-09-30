@@ -28,6 +28,7 @@ import { initEntry } from "./features/entry/entry.js";
 import { loadPhoto, renderProfileButton, savedPhoto } from "./features/profile/avatar.js";
 import { initOverview, renderOverview } from "./features/overview/overview.js";
 import { initPage } from "./features/overview/page.js";
+import { openProjectViewMenu } from "./features/overview/project-views.js";
 import { initProjects, renderProjectSection } from "./features/overview/projects.js";
 import { beginRenameTab, initTabs, openTabMenu } from "./features/overview/tabs.js";
 import { initWorkspacePage } from "./features/overview/workspace-page.js";
@@ -160,7 +161,7 @@ function initLazyViews() {
 function initDeskWhenWide() {
   const mount = () => {
     if (!isDesk()) return;
-    load("desk").then((module) => module.initDesk({ openWorkspaceMenu, openTabMenu, profilePhoto: savedPhoto, railCards }));
+    load("desk").then((module) => module.initDesk({ openProjectViewMenu, profilePhoto: savedPhoto, railCards }));
     load("dashboard").then((module) => module.initDashboard());
   };
   mount();

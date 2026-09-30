@@ -1,6 +1,6 @@
 /*
  * Desktop: die Seitenleiste links — oben der Knopf „Neu“, darunter rollend die
- * Sammlungen und die Arbeitsbereiche (je Tab eine Gruppe zum Auf- und
+ * Sammlungen und die Projekte (je Ansicht eine Gruppe zum Auf- und
  * Zuklappen), unten fest der Fuß mit Stufe und Konto (styles/desk-nav-foot.css).
  * Gilt erst ab 1024px Fensterbreite. Tasten-Schilder und das Auftauchen der
  * Blöcke stehen in styles/desk-kbd.css, das Markup in src/shell/desk-nav-parts.js.
@@ -10,22 +10,22 @@
  * -----------------------------------
  * --sidebar-row-pad    -> Innenrand der Zeilen: so weit reicht die Fläche beim Überfahren über Icon und Schild hinaus
  * --sidebar-icon       -> Größe der Icons in den Zeilen
- * --sidebar-indent     -> wie weit die Arbeitsbereiche unter ihrem Tab eingerückt stehen
+ * --sidebar-indent     -> wie weit die Projekte unter ihrer Ansicht eingerückt stehen
  * --sidebar-new-height -> Höhe des Knopfs „Neu“
  * --sidebar-head-height -> Höhe der Überschriften und der Tab-Köpfe
  * --sidebar-tool / --sidebar-tool-icon -> Größe der runden Plus-Knöpfe und ihrer Icons
  * --sidebar-fade       -> Höhe der weichen Ausblendung oben und unten im rollenden Teil
- * Einzelne Größen stehen bei ihrer Regel: Pfeil der Tab-Gruppe und von „Mehr anzeigen“ 14px, Stern 14px,
- * Pfeil hinter „Arbeitsbereiche“ 13px.
+ * Einzelne Größen stehen bei ihrer Regel: Pfeil einer Ansicht und von „Mehr anzeigen“ 14px, Stern 14px,
+ * Pfeil hinter „Projekte“ 13px.
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
  * --desk-nav-pad -> Rand links und rechts (bündig mit dem Suchfeld darüber)
- * --desk-nav-group-gap -> Luft über „Sammlungen“ und „Arbeitsbereiche“
+ * --desk-nav-group-gap -> Luft über „Sammlungen“ und „Projekte“
  * --desk-nav-item-height / --desk-nav-item-size / --desk-label-size -> Höhe und Schrift einer Zeile, kleine Schrift
  * --desk-item-radius / --desk-panel-strong -> Rundung der Zeilen / Fläche der gewählten Zeile
  * --desk-hover / --desk-fast / --desk-ease -> Tönung beim Überfahren, Dauer und Kurve
  * --text / --bg / --muted / --avatar-btn-bg -> Schrift, Grund (im Knopf „Neu“ vertauscht), leise Zahlen, Zeilen
- * --star-color / --inbox-icon-color / --project-icon-color / --resource-icon-color /
+ * --star-color / --inbox-icon-color / --workspace-icon-color / --resource-icon-color /
  * --bookmark-color / --archive-color -> farbige Icons der Sammlungen wie auf den Karten am Handy
  */
 
@@ -170,7 +170,7 @@
   .desk-nav-icon-inbox { color: var(--inbox-icon-color); }
   .desk-nav-icon-star,
   .desk-nav-star { color: var(--star-color); }
-  .desk-nav-icon-project { color: var(--project-icon-color); }
+  .desk-nav-icon-workspace { color: var(--workspace-icon-color); }
   .desk-nav-icon-resource { color: var(--resource-icon-color); }
   .desk-nav-icon-bookmark { color: var(--bookmark-color); }
   .desk-nav-icon-archive { color: var(--archive-color); }
@@ -210,7 +210,7 @@
     color: var(--muted);
   }
 
-  /* ---------- Tab-Gruppen unter „Arbeitsbereiche“ ---------- */
+  /* ---------- Gruppen der Ansichten unter „Projekte“ ---------- */
 
   .desk-nav-tabgroup + .desk-nav-tabgroup {
     margin-top: 4px;
@@ -279,7 +279,7 @@
     transform: rotate(-90deg); /* transform: offen, Pfeil nach oben */
   }
 
-  /* „Arbeitsbereiche ↗“: die Überschrift ist zugleich der Weg zur Sammlung */
+  /* „Projekte ↗“: die Überschrift ist zugleich der Weg zur Seite Projekte */
   .desk-nav-heading-link {
     display: inline-flex;
     align-items: center;
@@ -336,7 +336,7 @@
       background: color-mix(in srgb, var(--text) 86%, var(--bg)); /* color-mix: die dunkle Fläche hellt einen Hauch auf, aus den zwei Grundfarben gemischt */
     }
 
-    /* Das Plus eines Tabs erscheint erst über seinem Kopf — so bleibt die Liste ruhig */
+    /* Das Plus einer Ansicht erscheint erst über ihrem Kopf — so bleibt die Liste ruhig */
     .desk-nav-tabhead .desk-nav-tool {
       opacity: 0;
     }

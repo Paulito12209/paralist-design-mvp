@@ -10,7 +10,6 @@
  * --overview-card-bg / --card / --shadow / --radius-lg   -> Aussehen der Karten
  * --inbox-icon-color                -> Eingang-Icon
  * --star-color                      -> Favoriten-Stern
- * --project-icon-color              -> Raketen-Icon
  * --resource-icon-color             -> Würfel-Icon
  * --workspace-icon-color            -> Stapel-Icon der Karte Arbeitsbereiche
  * --tab-pill-size                   -> Schriftgröße der Tab-Pillen
@@ -87,11 +86,6 @@
 /* Goldene Stern-Kontur auf der Favoriten-Karte */
 .card-icon-star {
   color: var(--star-color);
-}
-
-/* Raketen-Icon auf der Projekte-Karte */
-.card-icon-rocket {
-  color: var(--project-icon-color);
 }
 
 /* Würfel-Icon auf der Ressourcen-Karte */
