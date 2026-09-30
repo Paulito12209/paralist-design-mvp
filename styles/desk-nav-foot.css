@@ -1,6 +1,6 @@
 /*
  * Desktop: der Fuß der Seitenleiste — fest unten, rollt nicht mit: das Konto
- * mit rundem Bild, Name, Plan, Zahnrad und dem Schild „⌘,“. Profil und
+ * mit rundem Bild, Name, darunter „Einstellungen“ und dem Schild „⌘,“. Profil und
  * Einstellungen sind dasselbe: beide Wege öffnen dasselbe Blatt. Die Stufe
  * steht oben rechts in der Reiterzeile (styles/desk-head.css). Gilt erst
  * ab 1024px Fensterbreite; das Markup entsteht in src/shell/desk-nav-parts.js.
@@ -11,7 +11,7 @@
  * --foot-disc      -> Größe des Profilbilds
  * --foot-row-height -> Höhe einer Zeile im Fuß
  * Einzelne Größen stehen bei ihrer Regel: Initialen 11px,
- * Zeile unter dem Namen 12px, Zahnrad 16px.
+ * Zeile unter dem Namen 12px.
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
  * --desk-nav-pad   -> Rand links, rechts und unten
@@ -34,9 +34,9 @@
     border-top: 0.5px solid var(--desk-edge);
   }
 
-  /* Bild | zwei Zeilen Text | Zahnrad | Schild */
+  /* Bild | zwei Zeilen Text | Schild */
   .desk-foot-row {
-    grid-template-columns: var(--foot-disc) minmax(0, 1fr) auto auto;
+    grid-template-columns: var(--foot-disc) minmax(0, 1fr) auto;
     height: var(--foot-row-height);
     padding-left: 6px;
   }
@@ -83,11 +83,5 @@
     width: 100%;
     height: 100%;
     object-fit: cover; /* object-fit: füllt den Kreis, ohne das Foto zu verzerren */
-  }
-
-  .desk-foot-gear {
-    width: 16px;
-    height: 16px;
-    color: var(--muted);
   }
 }

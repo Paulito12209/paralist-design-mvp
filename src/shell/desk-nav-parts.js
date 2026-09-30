@@ -174,15 +174,15 @@ function avatarMarkup(photo) {
 }
 
 /*
- * Der Fuß: das Konto mit Zahnrad, öffnet Profil und Einstellungen. Die Stufe
+ * Der Fuß: das Konto, darunter „Einstellungen“ — öffnet Profil und
+ * Einstellungen; ein Zahnrad braucht es daneben nicht. Die Stufe
  * steht oben rechts in der Reiterzeile (src/shell/desk-head.js).
  */
 export function footMarkup(photo) {
   return `
     <button class="desk-nav-row desk-foot-row" type="button" data-nav-profile="1" aria-label="Profil und Einstellungen" aria-keyshortcuts="Meta+Comma">
       <span class="desk-foot-avatar" aria-hidden="true">${avatarMarkup(photo)}</span>
-      <span class="desk-foot-copy"><span class="desk-foot-title">${escapeHtml(account.name)}</span><span class="desk-foot-hint">${escapeHtml(account.plan)}</span></span>
-      ${icon("settings", "desk-foot-gear")}
+      <span class="desk-foot-copy"><span class="desk-foot-title">${escapeHtml(account.name)}</span><span class="desk-foot-hint">Einstellungen</span></span>
       ${keyCap(withCommand(","))}
     </button>`;
 }

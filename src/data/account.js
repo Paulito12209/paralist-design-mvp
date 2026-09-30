@@ -9,7 +9,7 @@
  * account.name     -> Name im Profil und unten in der Seitenleiste
  * account.mail     -> Mailadresse unter dem Namen im Profil
  * account.meta     -> Zeile unter der Mailadresse („Pro · Dabei seit …“)
- * account.plan     -> Plan unter dem Namen in der Seitenleiste und in den Kontoeinstellungen
+ * account.plan     -> Plan in den Kontoeinstellungen
  * account.version  -> Versionszeile am Ende des Profils
  * account.initials -> Buchstaben im runden Bild, solange kein Foto hinterlegt ist
  */

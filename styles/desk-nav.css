@@ -11,6 +11,8 @@
  * --sidebar-row-pad    -> Innenrand der Zeilen: so weit reicht die Fläche beim Überfahren über Icon und Schild hinaus
  * --sidebar-icon       -> Größe der Icons in den Zeilen
  * --sidebar-indent     -> wie weit die Projekte unter ihrer Ansicht eingerückt stehen
+ * --sidebar-head-inset -> Abstand der Überschriften, der Pfeile von „Alle“ und „Mehr anzeigen“ vom
+ *                         Leistenrand — bündig mit der Wortmarke „Paralist“ (styles/desk-head.css)
  * --sidebar-new-height -> Höhe des Knopfs „Neu“
  * --sidebar-head-height -> Höhe der Überschriften und der Tab-Köpfe
  * --sidebar-tool / --sidebar-tool-icon -> Größe der runden Plus-Knöpfe und ihrer Icons
@@ -34,6 +36,7 @@
     --sidebar-row-pad: 10px;
     --sidebar-icon: 18px;
     --sidebar-indent: 18px;
+    --sidebar-head-inset: 6px;
     --sidebar-new-height: 38px;
     --sidebar-head-height: 28px;
     --sidebar-tool: 26px;
@@ -107,7 +110,7 @@
     justify-content: space-between;
     min-height: var(--sidebar-head-height);
     margin-bottom: 2px;
-    padding: 0 4px 0 var(--sidebar-row-pad);
+    padding: 0 4px 0 var(--sidebar-head-inset);
   }
 
   .desk-nav-heading {
@@ -229,7 +232,7 @@
     gap: 6px;
     min-width: 0;
     height: var(--sidebar-head-height);
-    padding: 0 var(--sidebar-row-pad) 0 calc(var(--sidebar-row-pad) - 4px);
+    padding: 0 var(--sidebar-row-pad) 0 var(--sidebar-head-inset);
     border-radius: var(--desk-item-radius);
     font-size: var(--desk-label-size);
     font-weight: 600;
@@ -267,7 +270,8 @@
   }
 
   .desk-nav-more-toggle .desk-nav-more-chevron {
-    justify-self: center; /* justify-self: der kleinere Pfeil steht mittig in der Icon-Spalte */
+    justify-self: start; /* justify-self: der Pfeil steht links in der Icon-Spalte … */
+    margin-left: calc(var(--sidebar-head-inset) - var(--sidebar-row-pad)); /* … und ragt so weit hinaus, dass er senkrecht unter den Überschriften und über dem Pfeil von „Alle“ steht */
     width: 14px;
     height: 14px;
     color: var(--muted);
