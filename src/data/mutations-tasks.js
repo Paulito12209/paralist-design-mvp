@@ -14,7 +14,9 @@
  */
 
 import { BOOKMARK_TYPE, fillBookmarkEntry } from "./bookmarks.js";
+import { typeIcon } from "./config.js";
 import { defaultTaskPriority, defaultTaskStatus, doneTaskStatus, isTaskDone } from "./config-tasks.js";
+import { applyPageHead } from "./design-prefs.js";
 import { commit } from "./mutations.js";
 import { applyProjectDraft } from "./project-views.js";
 import { taskOrder } from "./queries.js";
@@ -34,9 +36,11 @@ const orderGap = 1000;
  * Lesezeichen seine Karte, wenn der Titel ein Link ist). Ruft das
  * Eingabefeld auf, sobald der Eintrag in der Liste steht. Eine neue Aufgabe
  * startet auf `defaultTaskStatus` und `defaultTaskPriority` (siehe config.js)
- * und stellt sich mit ihrer Sortiernummer ans Ende.
+ * und stellt sich mit ihrer Sortiernummer ans Ende. Jeder neue Eintrag
+ * beginnt mit Cover oder dem Icon seines Typs — je nach Einstellungen › Design.
  */
 export function applyEntryDefaults(entry) {
+  applyPageHead(entry, typeIcon(entry.type));
   /* Ein Link als Titel eines Lesezeichens wird gleich zur Karte im Inhalt */
   if (entry.type === BOOKMARK_TYPE) fillBookmarkEntry(entry);
   /* Ein Projekt aus „Projekt hinzufügen“ gehört in die Ansicht, aus der es kam */

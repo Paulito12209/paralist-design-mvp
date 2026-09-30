@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "45a8c5f1e9f0";
+export const appVersion = "e4ae1af449ae";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -49,6 +49,7 @@ export const appFiles = [
   "src/data/config.js",
   "src/data/convert-notes.js",
   "src/data/convert.js",
+  "src/data/design-prefs.js",
   "src/data/details.js",
   "src/data/entry-facts.js",
   "src/data/files.js",

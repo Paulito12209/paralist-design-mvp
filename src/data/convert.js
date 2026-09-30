@@ -21,7 +21,7 @@
 
 import { dayKey, timeKey } from "../core/dates.js";
 import { nextId } from "../core/ids.js";
-import { workspaceDefaultName } from "./config.js";
+import { typeIcon, workspaceDefaultName } from "./config.js";
 import { defaultTaskPriority, defaultTaskStatus } from "./config-tasks.js";
 import { connectEntries, disconnectEntries, dropLinksTo } from "./links.js";
 import { commit, liftChildren } from "./mutations.js";
@@ -156,6 +156,9 @@ function applyType(entry, type) {
   const ref = entryRef(entry.id);
   const wasTask = entry.type === "aufgabe";
   const wasContainer = isContainer(entry);
+  /* Trug der Eintrag nur das Icon seines alten Typs (Vorgabe beim Anlegen),
+     wandert es zum neuen Typ; ein selbst gewähltes Icon bleibt. */
+  if (entry.icon && entry.icon === typeIcon(entry.type)) entry.icon = typeIcon(type);
   /* Erst den Typ setzen: connectEntries verbindet nur, was sich verknüpfen
      lässt — und ein Projekt lässt sich nicht verknüpfen. */
   entry.type = type;

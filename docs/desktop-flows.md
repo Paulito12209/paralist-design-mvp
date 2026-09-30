@@ -77,8 +77,8 @@ muss alles wie am Handy aussehen.
 - Profil als Seite: ⌘, (Strg ,) und das Konto unten links öffnen „Profil“ auf
   „Konto“, `?` auf „Kurzbefehle“. Alle Punkte links anklicken; Kachel unter
   „Analyse“ öffnen, Pfeil zurück; Punkt wechseln, während eine Kachel offen
-  ist; Esc und Zurück schließen. Unter „App“ die zwei Haken mit Hinweisen;
-  am Desktop öffnet das Suchfeld trotzdem immer die Palette. Reiter 1–4 wechseln die Seite, Browser-Zurück
+  ist; Esc und Zurück schließen. Navigation, Suche und Design stehen als
+  eigene Punkte; am Desktop öffnet das Suchfeld trotzdem immer die Palette. Reiter 1–4 wechseln die Seite, Browser-Zurück
   holt das Profil wieder. Unter „Kurzbefehle“ die zwei Schalter: Schilder in
   Seitenleiste bzw. Reiterzeile verschwinden, auch nach neu laden. Unter 1024 px
   bleibt es das gewohnte Blatt.

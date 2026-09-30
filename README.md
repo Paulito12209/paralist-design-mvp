@@ -363,9 +363,12 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   öffnen die volle Karte — Zurück-Pfeil, Browser-Zurück und das Kreuz müssen
   sich unterscheiden (Kreuz schließt alles). Nutzungszeit steht als
   „1 Std 20 Min“ (nicht als `m:ss`), Zeitraum umschalten, Darstellung wechseln,
-  Bild groß ansehen und mit Browser-Zurück schließen. „App › App-Einstellungen“:
-  beide Haken setzen und lösen (Namen unter den Reitern erscheinen sofort),
-  Pfeil und Browser-Zurück führen zur Liste, das Kreuz schließt alles.
+  Bild groß ansehen und mit Browser-Zurück schließen. Unter „App“ die
+  Unterseiten Navigation, Suche und Design: Haken setzen und lösen (Namen unter
+  den Reitern erscheinen sofort, der Verlauf hinter der Leiste ist ohne Haken
+  weg), „Neue Seiten beginnen mit“ Icon oder Cover und danach einen Eintrag
+  und einen Arbeitsbereich anlegen. Pfeil und Browser-Zurück führen zur Liste,
+  das Kreuz schließt alles.
 
 **Desktop (ab 1024 px)**
 - Alle Flows der Desktop-Fassung stehen in `docs/desktop-flows.md` —

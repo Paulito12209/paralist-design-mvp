@@ -4,8 +4,8 @@
  * Sie zeigen nur den Kopfwert und einen winzigen Verlauf; das ganze Diagramm
  * erscheint erst beim Antippen. Darunter der Abschnitt „Darstellung“.
  * Hier steht außerdem, welche große Seite hinter welchem Schlüssel liegt —
- * auch die App-Einstellungen, die Kontoeinstellungen und die Feedback- und
- * Danksagungs-Seite.
+ * auch Navigation, Suche und Design unter „App“, die Kontoeinstellungen und
+ * die Feedback- und Danksagungs-Seite.
  * Pfad: src/features/profile/settings-cards.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -23,7 +23,7 @@ import { dayShift, startOfDay } from "../../core/dates.js";
 import { icon } from "../../core/html.js";
 import { usageOfDay, usageStreaks } from "../../data/usage.js";
 import { accountCard } from "./account.js";
-import { appSettingsCard } from "./app-settings.js";
+import { designCard, navigationCard, searchCard } from "./app-settings.js";
 import { creditsCard, startCreditsVideo } from "./credits.js";
 import { enterFeedback, feedbackCard } from "./feedback.js";
 import { streakCard, usageCard } from "./profile-cards.js";
@@ -127,7 +127,9 @@ const details = {
   usage: { hash: "nutzungszeit", title: "Nutzungszeit", card: usageCard },
   streak: { hash: "serie", title: "Serie", card: streakCard },
   feedback: { hash: "feedback", title: "Feedback", card: feedbackCard, enter: enterFeedback },
-  app: { hash: "app", title: "App-Einstellungen", card: appSettingsCard },
+  navigation: { hash: "navigation", title: "Navigation", card: () => navigationCard() },
+  search: { hash: "suche", title: "Suche", card: () => searchCard() },
+  design: { hash: "design", title: "Design", card: () => designCard() },
   account: { hash: "konto", title: "Kontoeinstellungen", card: accountCard },
   credits: { hash: "danksagungen", title: "Danksagungen", card: creditsCard, settle: startCreditsVideo },
 };

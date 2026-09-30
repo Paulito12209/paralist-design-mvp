@@ -98,6 +98,8 @@
  * Stopps entstehen im Dunkeln sichtbare Streifen.
  *
  * Im Hellmodus steht --nav-glow-opacity auf 0, dann ist nichts davon zu sehen.
+ * In den Hauptreitern erscheint er nur mit der Wahl unter Einstellungen ›
+ * Design (Klasse .has-nav-glow an .device, Vorgabe aus).
  * Die Dateiansicht (.viewer) nutzt denselben Verlauf, legt ihn aber in
  * styles/viewer.css hinter Bild und Knöpfe.
  */
@@ -128,6 +130,14 @@
      die Maske statt eines festen Werts im Verlauf selbst. */
   mask-image: linear-gradient(to bottom, transparent 0%, #000 var(--nav-glow-fade));
   pointer-events: none;
+}
+
+/* In den Hauptreitern nur, wenn unter Einstellungen › Design eingeschaltet
+   (Klasse setzt src/shell/nav-bar.js). Vorgabe aus: die Karte „Ansicht“ am
+   Seitenende gibt Leiste und Eingabefeld inzwischen genug Kontrast. Die
+   Dateiansicht behält ihren Verlauf. */
+.device:not(.has-nav-glow)::before {
+  content: none;
 }
 
 /* Gemeinsamer Container: trägt sowohl die Navigation als auch das Eingabefeld */

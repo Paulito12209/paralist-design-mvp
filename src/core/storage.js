@@ -18,6 +18,8 @@ export const storageKeys = {
   feedback: "paralist-feedback",
   navLabels: "paralist-nav-labels",
   searchKeyboard: "paralist-search-keyboard",
+  navGlow: "paralist-nav-glow",
+  pageHead: "paralist-page-head",
   milestones: "paralist-milestones",
   deskNav: "paralist-desk-nav",
   /* Zugeklappte Ansichten der Projekte in der Seitenleiste — eigener Schlüssel,

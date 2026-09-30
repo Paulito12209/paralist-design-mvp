@@ -15,6 +15,7 @@ import { emit, events } from "../core/bus.js";
 import { nextId, sameId } from "../core/ids.js";
 import { workspaceDefaultName } from "./config.js";
 import { isTaskDone } from "./config-tasks.js";
+import { applyPageHead } from "./design-prefs.js";
 import { canLink, connectEntries, disconnectEntries, dropLinksTo, isLinked } from "./links.js";
 import { dropPlaceFromViews, dropProjectFromViews } from "./project-views.js";
 import { hasPlace, isContainer, tabWorkspaces } from "./queries.js";
@@ -80,6 +81,8 @@ export function addWorkspace() {
     /* Punkte gibt es erst, wenn der Name steht */
     awarded: false,
   };
+  /* Cover, wenn neue Seiten damit beginnen sollen (Einstellungen › Design) */
+  applyPageHead(workspace);
   state.workspaces.push(workspace);
   ui.editingWorkspaceId = id;
   saveState();

@@ -1,5 +1,13 @@
 # Einstellungen: Unterseite „App-Einstellungen“ mit Reiter-Namen und Such-Tastatur
 
+> Nachtrag 30. September 2026: Die eine Unterseite „App-Einstellungen“ wurde
+> in drei Unterseiten unter „App“ geteilt — Navigation, Suche und Design (am
+> Desktop drei Punkte im Untermenü). Design enthält „Verlauf hinter der
+> Leiste“ (Vorgabe aus, `.device.has-nav-glow`) und „Neue Seiten beginnen mit“
+> Icon (Vorgabe) oder Cover (`src/data/design-prefs.js`, angewandt in
+> `applyEntryDefaults` und `addWorkspace`). Abschnitte unten, die von einer
+> Unterseite „App-Einstellungen“ sprechen, beschreiben den ersten Stand.
+
 Stand: 30. September 2026, umgesetzt. Abweichung vom ersten Entwurf: der
 Fokus wird über `mousedown` und `touchend` verhindert statt über
 `pointerdown` (das hält den Fokus in Chrome nicht auf), und das
