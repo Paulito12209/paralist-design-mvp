@@ -209,7 +209,7 @@ export function typeChangeAction(subject) {
 /**
  * Die graue Kategorie mitten in der Kopfzeile als schmale Pille: ein Tipp
  * darauf öffnet „Typ ändern“. Der kleine Pfeil sagt, dass sich hier etwas
- * wählen lässt — wie bei „Aufgabe“ über „Offen · Jetzt“ (src/ui/task-status.js).
+ * wählen lässt.
  */
 export function typeCrumbMarkup(label) {
   return `

@@ -48,7 +48,7 @@
  * styles/support.css         -> Einstellungs-Blatt: Feedback-Formular und Danksagungen
  * styles/tasks.css           -> Aufgaben-Seite: Pillen der Ansichten, Liste, Haken, Anlegen durch Tippen; styles/tasks-desk.css: Desktop-Werkzeuge und Spalten
  * styles/tasks-board.css     -> Aufgaben-Seite: die Spalten des Kanban-Boards
- * styles/task-status.css     -> Haken vor Aufgaben in jeder Liste, „Aufgabe“ über „Offen · Jetzt“ auf der Aufgabenseite
+ * styles/task-status.css     -> Haken vor Aufgaben in jeder Liste, Kategorie-Pille oben auf jeder Eintragsseite
  * styles/tasks-settings.css  -> Karte „Ansicht konfigurieren“ über der Navigation der Aufgaben-Seite: Ebene, Segment, Schalter, Filter
  * styles/calendar.css        -> Kalender: Monat, Wochenstreifen, Bedienzeile
  * styles/calendar-rings.css  -> Kalender: Ringe mit Murmeln um die Tageszahlen

@@ -1,10 +1,12 @@
 /*
  * Die Karte „Details“ am Ende des Reiters „Inhalt“ einer Eintragsseite —
  * bei jeder Kategorie. Aufgebaut wie der Kopf eines Profils: oben „Details“
- * und rechts das Ketten-Symbol „Verknüpfen“ (src/ui/link-sheet.js), darunter
- * drei Kennzahlen nebeneinander (bei einer Aufgabe Datum | Status |
- * Dringlichkeit — ein Tipp auf Status oder Dringlichkeit öffnet das Blatt
- * dazu), nach einer Trennlinie die übrigen Angaben in Abschnitten. Was dort
+ * und rechts das Ketten-Symbol „Verknüpfen“ (src/ui/link-sheet.js) und das
+ * Symbol zum Hochklappen (entry-lift.js), darunter drei Kennzahlen
+ * nebeneinander (bei einer Aufgabe Dringlichkeit | Datum | Status — ein Tipp
+ * auf Status oder Dringlichkeit öffnet das Blatt dazu, einer auf das Datum
+ * die Auswahl für Tag und Uhrzeit, src/ui/date-field.js), nach einer
+ * Trennlinie die übrigen Angaben in Abschnitten. Was dort
  * steht, stellt src/data/entry-facts.js zusammen. Bei einem Lesezeichen
  * steht oben der Abschnitt „Link“: ein Tipp auf die Adresse macht sie zum
  * Feld, Enter oder Wegtippen übernimmt den neuen Link (und holt den
@@ -12,19 +14,20 @@
  *
  * Die Karte gehört zur Seite, nicht zur Navigation: sie scrollt mit dem Text
  * und liegt unter der Navigation. Wie weit sie beim Öffnen hervorschaut,
- * regelt entry-fold.js. Ein Tipp auf „Details“ holt die ganze Karte in den Blick.
+ * regelt entry-fold.js. Ein Tipp auf „Details“ oder das Symbol rechts klappt
+ * die Karte über den Text hoch, ohne die Seite zu bewegen (entry-lift.js).
  * Pfad: src/features/entry/entry-details.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * detailsLabel  -> Überschrift der Karte
  * linkLabel     -> Name des Ketten-Symbols für Vorlesehilfen und Tooltip
- * REVEAL_GAP_PX -> so viel Luft bleibt nach dem Hochholen zwischen Kopfzeile und Karte
+ * liftLabel     -> Name des Symbols zum Hochklappen
  *
  * Aussehen in styles/entry-details.css.
  */
 
-import { dom, el } from "../../core/dom.js";
+import { dom } from "../../core/dom.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { setBookmarkUrl } from "../../data/bookmarks.js";
 import { entryFacts } from "../../data/entry-facts.js";
@@ -36,10 +39,12 @@ import { findEntry } from "../../data/queries.js";
 import { ui } from "../../data/state.js";
 import { openLinkSheet } from "../../ui/link-sheet.js";
 import { openTaskSheet } from "../../ui/task-status.js";
+import { openDateField } from "../../ui/date-field.js";
+import { initEntryLift, refreshLift, toggleLift } from "./entry-lift.js";
 
 const detailsLabel = "Details";
 const linkLabel = "Verknüpfen";
-const REVEAL_GAP_PX = 12;
+const liftLabel = "Details hochklappen";
 
 /* Die Karte und ihre beiden Flächen, die sich je Eintrag neu füllen */
 let card = null;
@@ -89,6 +94,7 @@ export function renderEntryDetails(entry) {
   const facts = entryFacts(entry);
   statsBox.innerHTML = facts.stats.map(statMarkup).join("");
   listBox.innerHTML = facts.groups.map(groupMarkup).join("");
+  refreshLift();
 }
 
 /* Die Adresse an Ort und Stelle ändern: ein Feld statt des Werts. Enter oder
@@ -131,19 +137,6 @@ function editLink(entry, row, done = renderEntryDetails) {
   });
 }
 
-/* Wer Bewegung abgeschaltet hat, springt sofort statt zu gleiten. */
-function scrollBehavior() {
-  return window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
-}
-
-/* Die Karte so weit hochholen, dass sie direkt unter der Kopfzeile beginnt —
-   kürzer geht es am Seitenende nicht, dann steht sie so weit oben wie möglich. */
-function revealCard() {
-  const head = el("entry-head").getBoundingClientRect().bottom;
-  const shift = card.getBoundingClientRect().top - head - REVEAL_GAP_PX;
-  dom.content.scrollTo({ top: dom.content.scrollTop + shift, behavior: scrollBehavior() });
-}
-
 /** Karte ans Ende des Reiters „Inhalt“ hängen und ihre Tipps anmelden. */
 export function initEntryDetails() {
   card = document.createElement("section");
@@ -153,20 +146,22 @@ export function initEntryDetails() {
     <div class="details-head">
       <button class="details-title" type="button">${detailsLabel}</button>
       <button class="details-link" type="button" aria-label="${linkLabel}" title="${linkLabel}">${icon("link")}</button>
+      <button class="details-link details-toggle" type="button" aria-label="${liftLabel}" title="${liftLabel}" aria-expanded="false">${icon("panel-open")}</button>
     </div>
     <div class="details-stats"></div>
     <div class="details-list"></div>`;
   statsBox = card.querySelector(".details-stats");
   listBox = card.querySelector(".details-list");
   dom.entryPanelNotes.append(card);
+  initEntryLift(card);
 
   card.addEventListener("click", (event) => {
     const entry = findEntry(ui.currentEntryId);
     if (!entry) return;
-    if (event.target.closest(".details-title")) {
+    if (event.target.closest(".details-title, .details-toggle")) {
       /* Frisch rechnen: die Zeit auf der Seite ist seit dem Öffnen gewachsen */
       renderEntryDetails(entry);
-      revealCard();
+      toggleLift();
       return;
     }
     if (event.target.closest(".details-link")) {
@@ -178,14 +173,16 @@ export function initEntryDetails() {
 }
 
 /**
- * Tipps auf Kennzahlen (Status, Dringlichkeit) und die Link-Zeile — hier und
+ * Tipps auf Kennzahlen (Status, Dringlichkeit, Datum) und die Link-Zeile — hier und
  * in der Karte rechts am Desktop. Gibt `true` zurück, wenn der Tipp etwas tat.
  * @param done nach dem Ändern des Links: die Karte, in der er stand, neu zeichnen.
  */
 export function handleDetailsClick(event, entry, done = renderEntryDetails) {
   const stat = event.target.closest("[data-details-field]");
   if (stat) {
-    openTaskSheet(entry, stat.dataset.detailsField);
+    const field = stat.dataset.detailsField;
+    if (field === "date") openDateField(entry, stat);
+    else openTaskSheet(entry, field);
     return true;
   }
   const row = event.target.closest("[data-details-edit]");

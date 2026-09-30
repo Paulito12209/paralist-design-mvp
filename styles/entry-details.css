@@ -8,6 +8,9 @@
  * Angaben in Abschnitten. Die Karte liegt unter der Navigation und scrollt
  * mit der Seite; Kennzahlen und Abschnitte blenden erst ein, wenn sie über
  * der Navigation auftauchen (Klasse is-revealed, gesetzt von entry-fold.js).
+ * Hochgeklappt (Klasse is-lifted, src/features/entry/entry-lift.js) gleitet
+ * sie über den Text und scrollt, wenn nötig, in sich. Ganz unten das
+ * unsichtbare Feld für Datum und Uhrzeit (src/ui/date-field.js).
  * Pfad: styles/entry-details.css
  *
  * ANPASSBARE WERTE (in styles/tokens-pages.css)
@@ -15,6 +18,7 @@
  * --details-gap             -> Luft zwischen Text und Karte
  * --details-head-h          -> Höhe des Kartenkopfs — so viel schaut beim Öffnen über der Navigation hervor
  * --entry-fold-fade         -> wie lang gekürzter Text nach unten ausläuft
+ * --tasks-panel-slide       -> wie schnell die Karte hoch- und zurückklappt (wie auf der Aufgaben-Seite)
  *
  * Aus styles/tokens.css:
  * --card                    -> Fläche der Karte
@@ -101,7 +105,6 @@
 .details-head {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* justify-content: Überschrift links, Ketten-Symbol rechts */
   height: var(--details-head-h);
   /* margin-right: das Symbol, nicht sein unsichtbarer Kreis, schließt mit dem Inhalt ab */
   margin-right: calc((var(--page-tool-icon) - var(--page-tool-size)) / 2);
@@ -110,6 +113,7 @@
 /* Die ganze Kopfhöhe ist Tippfläche: ein Tipp holt die Karte hoch */
 .details-title {
   align-self: stretch; /* align-self: nicht nur die Schrift, die ganze Höhe ist antippbar */
+  margin-right: auto; /* margin-right: Überschrift links, die Symbole rechts */
   padding: 0;
   font-size: 17px;
   font-weight: 600;
@@ -133,6 +137,30 @@
 .details-title:active,
 .details-link:active {
   opacity: 0.55;
+}
+
+/* ---------- Hochklappen ---------- */
+
+/* Nur die Karte der Eintragsseite gleitet; die Karte der Aufgaben-Seite
+   (styles/tasks-settings.css) hat ihre eigene Bewegung. */
+#entry-panel-notes > .details-card {
+  transition: transform var(--tasks-panel-slide) cubic-bezier(0.2, 0.8, 0.2, 1); /* transition: weiches Hoch- und Zurückklappen */
+}
+
+.details-card.is-lifted {
+  position: relative; /* position: nötig für z-index */
+  z-index: 5; /* z-index: über dem Text (0), unter Kopfzeile und Navigation */
+  overflow-y: auto; /* overflow-y: passt die Karte nicht unter den Titel, scrollt sie in sich */
+  overscroll-behavior: contain; /* overscroll-behavior: am Ende der Karte scrollt nicht die Seite weiter */
+}
+
+/* Das Symbol dreht sich mit: hochgeklappt zeigt es nach unten, hier geht es zu */
+.details-toggle .icon {
+  transition: transform var(--tasks-panel-slide) ease; /* transition: das Symbol dreht sich mit */
+}
+
+.details-card.is-lifted .details-toggle .icon {
+  transform: rotate(180deg); /* transform: Pfeil nach unten */
 }
 
 /* Solange die Karte nur mit dem Kopf hervorschaut, bleibt der Rest leer:
@@ -253,4 +281,16 @@ button.details-stat:active {
   color: var(--link-color);
   font: inherit;
   text-align: right;
+}
+
+/* ---------- Feld für Datum und Uhrzeit ---------- */
+
+/* Unsichtbar über dem angetippten Datum: nur die Auswahl des Systems ist zu
+   sehen, am Desktop klappt sie an dieser Stelle auf. */
+.date-field {
+  position: fixed; /* position: liegt genau über dem Knopf, Lage setzt das Skript */
+  opacity: 0;
+  pointer-events: none; /* pointer-events: Tipps gehen weiter an die Karte darunter */
+  border: 0;
+  padding: 0;
 }

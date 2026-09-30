@@ -29,10 +29,10 @@ import { parseBlocks } from "./note-blocks.js";
 import { entryRef } from "./refs.js";
 import { entryUsage } from "./usage.js";
 
-/* Oben stehen bei einer Aufgabe Datum, Status und Dringlichkeit — wie
+/* Oben stehen bei einer Aufgabe Dringlichkeit, Datum und Status — wie
    gewünscht; die anderen Kategorien zeigen, was bei ihnen am meisten sagt. */
 const statsByType = {
-  aufgabe: ["date", "status", "priority"],
+  aufgabe: ["priority", "date", "status"],
   termin: ["date", "time", "links"],
   projekt: ["entries", "openTasks", "doneTasks"],
   notiz: ["words", "reading", "opens"],
@@ -80,15 +80,17 @@ function collect(entry) {
 
 /*
  * Die möglichen Kennzahlen: { value, label } und optional `color` (Farbe
- * des Wertes) und `field` (ein Tipp öffnet das Blatt dazu). Bei einer Aufgabe
- * steht die Uhrzeit unter dem Datum, beim Termin hat sie eine eigene Spalte.
+ * des Wertes) und `field` (ein Tipp öffnet das Blatt bzw. die Datumsauswahl
+ * dazu). Bei einer Aufgabe steht die Uhrzeit unter dem Datum, beim Termin hat
+ * sie eine eigene Spalte — beide öffnen dieselbe Auswahl für Tag und Uhrzeit.
  */
 const stats = {
   date: (entry) => ({
     value: entry.date ? shortDay(entry.date) : "—",
     label: entry.time && entry.type !== "termin" ? `${entry.time} Uhr` : entry.date ? "Datum" : "Kein Datum",
+    field: "date",
   }),
-  time: (entry) => ({ value: entry.time || "Ganztägig", label: "Uhrzeit" }),
+  time: (entry) => ({ value: entry.time || "Ganztägig", label: "Uhrzeit", field: "date" }),
   status: (entry) => {
     const status = taskStatusOf(entry.status);
     return { value: status.label, label: "Status", color: status.color, field: "status" };

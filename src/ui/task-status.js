@@ -5,8 +5,8 @@
  * - der runde Haken-Knopf auf der Aufgaben-Seite (Liste und Board); in allen
  *   anderen Listen trägt eine Aufgabe ihr Icon und wird über den grünen
  *   Wisch-Knopf abgehakt (src/ui/rows.js), der dieselbe Funktion ruft,
- * - auf der Seite der Aufgabe mittig in der Kopfzeile „Aufgabe“, darunter „Offen · Jetzt“;
- *   ein Tipp darauf öffnet von unten das Blatt mit Status und Dringlichkeit,
+ * - auf der Seite der Aufgabe in der Karte „Details“: ein Tipp auf Status
+ *   oder Dringlichkeit öffnet von unten das Blatt dazu,
  * - die kurze Meldung „Erledigt“ mit „Rückgängig“ — ein Tipp auf den
  *   Haken lässt die Zeile oft verschwinden (Filter „Erledigte ausblenden“), und
  *   ein versehentlicher Tipp soll sich ohne Suchen zurücknehmen lassen.
@@ -21,10 +21,10 @@
  * typeTitle   -> Beschriftung des Tabs „Typ“ im Blatt
  *
  * Aussehen steht in styles/tasks.css (Haken) und styles/task-status.css
- * (Kopfzeile der Aufgabenseite, erledigter Titel in allgemeinen Listen).
+ * (erledigter Titel in allgemeinen Listen, Kategorie-Pille der Kopfzeile).
  */
 
-import { escapeHtml, icon } from "../core/html.js";
+import { icon } from "../core/html.js";
 import {
   defaultTaskStatus,
   isTaskDone,
@@ -50,7 +50,7 @@ const typeTitle = "Typ";
 
 /*
  * Die beiden Felder, die sich im Blatt der Aufgabe wählen lassen. Die
- * Reihenfolge hier ist die Reihenfolge im Blatt und in der Kopfzeile.
+ * Reihenfolge hier ist die Reihenfolge im Blatt.
  */
 const taskFields = {
   status: { list: taskStatuses, of: taskStatusOf, set: setTaskStatus },
@@ -73,33 +73,6 @@ export function taskCheck(entry) {
       style="--task-ring:${taskPriorityOf(entry.priority).color}"
       aria-pressed="${done}" aria-label="${done ? "Wieder öffnen" : "Erledigt"}">
       ${icon("check", "task-check-icon")}
-    </button>
-  `;
-}
-
-/**
- * Mitte der Kopfzeile einer Aufgabe, zweizeilig: oben die Kategorie
- * „Aufgabe“ mit kleinem Pfeil, darunter „Offen · Jetzt“ — Status und rechts
- * daneben die Dringlichkeit, je in ihrer Farbe. So liest man den Stand ab,
- * ohne etwas zu öffnen; ein Tipp irgendwo darauf öffnet das Blatt.
- */
-export function taskCrumbMarkup(entry, typeName) {
-  const value = (field) => {
-    const item = taskFields[field].of(entry[field]);
-    return `<span class="task-crumb-value" style="--chip-color:${item.color}">${escapeHtml(item.label)}</span>`;
-  };
-  const status = taskStatusOf(entry.status).label;
-  const prio = taskPriorityOf(entry.priority).label;
-  return `
-    <button class="task-crumb" type="button" data-task-sheet
-      aria-label="${escapeHtml(typeName)}, Status ${escapeHtml(status)}, Dringlichkeit ${escapeHtml(prio)}. Ändern">
-      <span class="task-crumb-top">
-        <span class="task-crumb-type">${escapeHtml(typeName)}</span>
-        ${icon("chevron", "task-crumb-chevron")}
-      </span>
-      <span class="task-crumb-sub">
-        ${value("status")}<span class="task-crumb-dot" aria-hidden="true">·</span>${value("priority")}
-      </span>
     </button>
   `;
 }
@@ -142,8 +115,7 @@ const sheetTabs = [
 /**
  * Blatt von unten für eine Aufgabe: oben ihr Name mit dem Icon der Kategorie,
  * darunter die Tabs Status | Dringlichkeit | Typ — antippen oder waagerecht
- * wischen wechselt. Die Kopfzeile einer Aufgabe öffnet es immer bei „Status“;
- * bei jedem anderen Eintrag öffnet sie das Typ-Blatt direkt.
+ * wischen wechselt. Die Karte „Details“ öffnet es beim angetippten Feld.
  */
 export function openTaskSheet(entry, tab = sheetTabs[0].id) {
   const current = sheetTabs.find((item) => item.id === tab) || sheetTabs[0];

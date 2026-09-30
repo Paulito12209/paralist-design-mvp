@@ -4,12 +4,10 @@
  * wechselt zwischen ihnen), und das Menü oben rechts. Bei einer Zeichnung steht im Inhalt die Zeichenfläche statt des
  * Textes.
  *
- * Bei einer Aufgabe steht mittig in der Kopfzeile „Aufgabe“, darunter „Offen · Jetzt“;
- * ein Tipp darauf öffnet das Blatt mit Status und Dringlichkeit
- * (src/ui/task-status.js) — egal, von wo aus man die Aufgabe geöffnet hat.
- * Bei jedem anderen Eintrag ist die Kategorie („Notiz“) eine Pille, die das
- * Blatt „Typ ändern“ öffnet (src/ui/type-menu.js); nur eine Zeichnung und
- * ein Medium bleiben, was sie sind.
+ * Mittig in der Kopfzeile steht nur die Kategorie („Aufgabe“, „Notiz“) als
+ * Pille, die das Blatt „Typ ändern“ öffnet (src/ui/type-menu.js); nur eine
+ * Zeichnung und ein Medium bleiben, was sie sind. Status und Dringlichkeit
+ * einer Aufgabe stehen unten in der Karte „Details“.
  *
  * Unter der zweiten Pille steht bei einem Projekt sein INHALT — was dort
  * abgelegt ist. Bei jedem anderen Eintrag stehen dort die VERKNÜPFTEN
@@ -31,7 +29,8 @@
  * Unter „Inhalt“ endet die Seite bei jeder Kategorie mit der Karte „Details“
  * und dem Ketten-Symbol „Verknüpfen“ (entry-details.js). Ihr Kopf schaut beim
  * Öffnen gerade über der Navigation hervor; langer Text wird dafür gekürzt
- * und lässt sich mit „Mehr anzeigen“ ausklappen (entry-fold.js). „Details“
+ * und lässt sich mit „Mehr anzeigen“ ausklappen (entry-fold.js). Hochgeklappt
+ * gleitet die Karte über den Text, nie über den Titel (entry-lift.js). „Details“
  * steht darum nicht mehr im Menü oben rechts.
  *
  * Über dem Titel können ein Farbverlauf in der Farbe der Kategorie und ein
@@ -62,13 +61,13 @@ import { initEntryDetails, renderEntryDetails } from "./entry-details.js";
 import { initEntryHead, renderEntryHead } from "./entry-head.js";
 import { entrySteps, mountPath, renderPath } from "../../ui/page-path.js";
 import { expandEntryFold, initEntryFold, layoutEntryFold, resetEntryFold } from "./entry-fold.js";
+import { dropLift } from "./entry-lift.js";
 import { initEntryTitle, showEntryTitle } from "./entry-title.js";
 import { initEntryTools, linkFilterFor, renderEntryTools } from "./entry-tools.js";
 import { bindHeadTitle, setHeadTitle } from "../../ui/head-title.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { goBack, restoreFrom } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
-import { openTaskSheet, taskCrumbMarkup } from "../../ui/task-status.js";
 import { openTypeChangeSheet, typeCrumbMarkup } from "../../ui/type-menu.js";
 import { isViewActive } from "../../ui/views.js";
 import { addWritePage } from "../../ui/write-tap.js";
@@ -131,12 +130,11 @@ function renderLinks(entry) {
     : linkedListMarkup(entry, type);
 }
 
-/* Mitte der Kopfzeile: die Kategorie, bei einer Aufgabe dazu Status und
-   Dringlichkeit zum Antippen — sonst die Kategorie selbst als Pille. */
+/* Mitte der Kopfzeile: nur die Kategorie, als Pille zum Typ-Wechsel.
+   Status und Dringlichkeit stehen in der Karte „Details“ — oben bleibt es ruhig. */
 function renderCrumb(entry) {
   const name = entryTypeName(entry);
-  if (entry.type === "aufgabe") dom.entryCrumb.innerHTML = taskCrumbMarkup(entry, name);
-  else if (canChangeType(entry)) dom.entryCrumb.innerHTML = typeCrumbMarkup(name);
+  if (canChangeType(entry)) dom.entryCrumb.innerHTML = typeCrumbMarkup(name);
   else dom.entryCrumb.textContent = name;
 }
 
@@ -159,6 +157,7 @@ function renderEntry() {
   shownBody = entry.body || "";
   /* Jede geöffnete Seite beginnt mit gekürztem Text und hervorschauender Karte */
   resetEntryFold();
+  dropLift();
   renderEntryDetails(entry);
   /* Mittig die Kategorie, nicht der Ort: der Zurück-Pfeil führt dorthin, wo
      man zuletzt war — nicht zwingend an den Ort des Eintrags. */
@@ -247,6 +246,7 @@ export function initEntry() {
       closeVideoIfOpen();
     }
     ui.entryPill = id;
+    dropLift();
     renderEntryPills(entry);
   };
 
@@ -270,13 +270,10 @@ export function initEntry() {
     focusEnd: () => bodyEditor.focusEnd(),
   });
 
-  /* „Aufgabe“ mit „Offen · Jetzt“ in der Kopfzeile öffnet Status und Dringlichkeit,
-     die Pille „Notiz“ das Blatt „Typ ändern“ */
+  /* Die Pille mit der Kategorie öffnet das Blatt „Typ ändern“ */
   dom.entryCrumb.addEventListener("click", (event) => {
     const entry = findEntry(ui.currentEntryId);
-    if (!entry) return;
-    if (event.target.closest("[data-task-sheet]")) openTaskSheet(entry);
-    else if (event.target.closest("[data-type-sheet]")) openTypeChangeSheet({ entry });
+    if (entry && event.target.closest("[data-type-sheet]")) openTypeChangeSheet({ entry });
   });
 
   dom.entryMenu.addEventListener("click", openEntryMenu);

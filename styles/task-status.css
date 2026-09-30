@@ -2,25 +2,19 @@
  * Status einer Aufgabe außerhalb der Aufgaben-Seite: der durchgestrichene
  * Titel einer erledigten Aufgabe in jeder Liste (Projekt, Arbeitsbereich,
  * verknüpfte Einträge, Kalender — abgehakt wird dort über den grünen
- * Wisch-Knopf, styles/swipe-rows.css) und mittig in der Kopfzeile der Aufgabenseite „Aufgabe“, darunter
- * „Offen · Jetzt“, zum Antippen. Dieselbe Pille trägt auf jeder anderen Eintragsseite
- * die Kategorie („Notiz“, .type-crumb aus src/ui/type-menu.js) — der Stil
- * steht darum nur hier. Der Haken selbst sieht aus wie auf der Aufgaben-Seite
+ * Wisch-Knopf, styles/swipe-rows.css) und mittig in der Kopfzeile jeder
+ * Eintragsseite die Kategorie („Aufgabe“, „Notiz“) als Pille zum Typ-Wechsel
+ * (.type-crumb aus src/ui/type-menu.js). Der Haken selbst sieht aus wie auf der Aufgaben-Seite
  * (styles/tasks.css, Klasse .task-check).
  * Pfad: styles/task-status.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens-pages.css bzw. styles/tokens.css)
  * -----------------------------------
- * --task-crumb-gap      -> Abstand zwischen Status, Punkt und Dringlichkeit (und vor dem Pfeil)
+ * --task-crumb-gap      -> Abstand zwischen Wort und kleinem Pfeil
  * --tab-pill-active-bg  -> Fläche unter dem Schriftzug, solange man draufdrückt
  * --muted               -> Farbe eines erledigten Titels
- * --text                -> Farbe von „Aufgabe“ in der oberen Zeile
- * --chevron             -> Farbe des Punkts
  * --icon-soft           -> Farbe des kleinen Pfeils
  * --crumb-chevron-size  -> Größe des kleinen Pfeils (auch der Leerraum links, der das Wort mittig hält)
- *
- * Direkt bei ihrer Regel:
- * .task-crumb-sub font-size -> Größe von Status und Dringlichkeit unter „Aufgabe“ (13px)
 */
 
 /* ---------- Aufgaben in Listen ---------- */
@@ -31,90 +25,29 @@
   color: var(--muted);
 }
 
-/* ---------- Kopfzeile der Aufgabenseite: „Aufgabe“ über „Offen · Jetzt“ ---------- */
+/* ---------- Kopfzeile jeder Eintragsseite: die Kategorie als Pille ---------- */
 
 /* Der ganze Schriftzug ist ein Knopf; er erbt Größe und Grau von .entry-crumb
-   (styles/entry.css) und bleibt so mittig und bei Platzmangel gekürzt.
-   .type-crumb ist dieselbe Pille mit dem Typnamen statt Status und Dringlichkeit. */
-.task-crumb,
+   (styles/entry.css) und bleibt so mittig und bei Platzmangel gekürzt. */
 .type-crumb {
   display: inline-flex;
   align-items: center;
   gap: var(--task-crumb-gap);
   max-width: 100%;
-  padding: 6px 4px;
+  /* Links so viel Luft, wie rechts der kleine Pfeil braucht: so steht das Wort
+     selbst genau in der Mitte zwischen Zurück-Pfeil und Menü, und der Pfeil
+     hängt nur daneben — statt das Wort ein Stück nach links zu schieben. */
+  padding: 6px 4px 6px calc(4px + var(--crumb-chevron-size) + var(--task-crumb-gap));
   border-radius: 999px; /* border-radius: die Druckfläche ist eine Pille */
   color: inherit;
   font: inherit;
 }
 
-/* Links so viel Luft, wie rechts der kleine Pfeil braucht: so steht das Wort
-   selbst genau in der Mitte zwischen Zurück-Pfeil und Menü, und der Pfeil
-   hängt nur daneben — statt das Wort ein Stück nach links zu schieben. */
-.type-crumb {
-  padding-left: calc(4px + var(--crumb-chevron-size) + var(--task-crumb-gap));
-}
-
-.task-crumb-top {
-  padding-left: calc(var(--crumb-chevron-size) + var(--task-crumb-gap));
-}
-
-/* Bei einer Aufgabe zwei Zeilen übereinander wie ein Titel mit Untertitel:
-   oben die Kategorie, darunter Status und Dringlichkeit. */
-.task-crumb {
-  flex-direction: column;
-  gap: 1px;
-  padding: 3px 12px;
-  border-radius: 12px; /* border-radius: zwei Zeilen hoch, eine volle Pille wäre zu rund */
-  line-height: 1.2;
-}
-
-.task-crumb:active,
 .type-crumb:active {
   background: var(--tab-pill-active-bg);
 }
 
-/* Obere Zeile: die Kategorie hell und kräftig, wie ein Titel */
-.task-crumb-top {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--task-crumb-gap);
-  max-width: 100%;
-  color: var(--text);
-  font-weight: 600;
-}
-
-.task-crumb-type {
-  overflow: hidden; /* overflow: nötig für text-overflow */
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Untere Zeile: Status und rechts daneben die Dringlichkeit, kleiner */
-.task-crumb-sub {
-  display: inline-flex;
-  align-items: center;
-  gap: var(--task-crumb-gap);
-  max-width: 100%;
-  font-size: 13px;
-}
-
-/* Status und Dringlichkeit in der Farbe ihrer Stufe — Farbe kommt als
-   --chip-color aus src/ui/task-status.js */
-.task-crumb-value {
-  color: var(--chip-color, var(--text));
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-/* Grauer Punkt zwischen Status und Dringlichkeit */
-.task-crumb-dot {
-  color: var(--chevron);
-  flex: 0 0 auto;
-}
-
 /* Kleiner Pfeil nach unten: hier öffnet sich eine Auswahl */
-.task-crumb-chevron,
 .type-crumb-chevron {
   width: var(--crumb-chevron-size);
   height: var(--crumb-chevron-size);
