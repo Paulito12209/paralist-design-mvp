@@ -16,7 +16,9 @@
  * byHeading    -> Überschrift über der linken Rolle
  * dirHeading   -> Überschrift über der rechten Rolle
  * doneLabel    -> Aufschrift des Knopfs unten
- * settleMs     -> wie lange nach dem Rollen gewartet wird, bis die Auswahl gilt
+ *
+ * Wie lange nach dem Rollen gewartet wird, bis die Auswahl gilt, steht in
+ * src/ui/wheel.js (settleMs) — gemeinsam mit „Typ ändern“.
  *
  * Aussehen: Rollen, Band und „Fertig“ teilen sich die Stile mit dem Blatt
  * „Woche“ (styles/calendar.css, --date-wheel-h, --date-wheel-item-h); was
@@ -25,22 +27,19 @@
  */
 
 import { events, on } from "../core/bus.js";
-import { cssNumber } from "../core/css-vars.js";
 import { dom } from "../core/dom.js";
 import { escapeHtml, icon } from "../core/html.js";
 import { bindModalPull, clearModalPull } from "./modal-pull.js";
+import { fillWheel, markWheel, scrollWheelTo, watchWheel } from "./wheel.js";
 
 const title = "Sortieren";
 const byHeading = "Wonach";
 const dirHeading = "Reihenfolge";
 const doneLabel = "Fertig";
-const settleMs = 140;
 
 let root = null;
 /* Das offene Blatt: { options, sort, asc, onChange } */
 let open = null;
-/* Je Rolle ein Timer: die Auswahl gilt erst, wenn das Rollen zur Ruhe kommt. */
-const timers = {};
 
 /* Die gewählte Option; eine unbekannte (alter Speicherstand) gilt als die erste. */
 function optionOf(options, sort) {
@@ -76,24 +75,9 @@ function wheelOf(unit) {
   return root.querySelector(`[data-unit="${unit}"]`);
 }
 
-function itemHeight() {
-  return cssNumber("--date-wheel-item-h", 44);
-}
-
-function scrollToPick(unit, smooth) {
-  wheelOf(unit).scrollTo({ top: indexOf(unit) * itemHeight(), behavior: smooth ? "smooth" : "auto" });
-}
-
 /* Eine Rolle neu füllen und an ihre Auswahl setzen. */
 function renderWheel(unit) {
-  const chosen = indexOf(unit);
-  wheelOf(unit).innerHTML = labelsOf(unit)
-    .map(
-      (label, index) =>
-        `<button class="date-item${index === chosen ? " is-on" : ""}" type="button" data-index="${index}">${escapeHtml(label)}</button>`
-    )
-    .join("");
-  scrollToPick(unit, false);
+  fillWheel(wheelOf(unit), labelsOf(unit).map(escapeHtml), indexOf(unit));
 }
 
 /*
@@ -112,18 +96,8 @@ function choose(unit, index) {
     open.asc = index === 0 ? natural : !natural;
   }
   open.onChange(open.sort, open.asc);
-  wheelOf(unit)
-    .querySelectorAll(".date-item")
-    .forEach((item, i) => item.classList.toggle("is-on", i === index));
+  markWheel(wheelOf(unit), index);
   if (unit === "by") renderWheel("dir");
-}
-
-/* Die Rolle ist zur Ruhe gekommen: der Eintrag in der Mitte gilt. */
-function settle(unit) {
-  if (!open) return;
-  const last = labelsOf(unit).length - 1;
-  const index = Math.min(Math.max(Math.round(wheelOf(unit).scrollTop / itemHeight()), 0), last);
-  choose(unit, index);
 }
 
 /* Ein Tipp auf einen Eintrag rollt ihn in die Mitte und wählt ihn. */
@@ -132,7 +106,7 @@ function onWheelsClick(event) {
   if (!item) return;
   const unit = item.closest(".date-wheel").dataset.unit;
   choose(unit, Number(item.dataset.index));
-  scrollToPick(unit, true);
+  scrollWheelTo(wheelOf(unit), indexOf(unit), true);
 }
 
 /** Das Blatt schließen. */
@@ -170,18 +144,11 @@ function build() {
     if (event.target === root || event.target.closest("[data-sort-close]")) closeSortSheet();
   });
   root.querySelector(".sort-wheels").addEventListener("click", onWheelsClick);
+  /* Kommt eine Rolle zur Ruhe, gilt der Eintrag in der Mitte. */
   ["by", "dir"].forEach((unit) => {
-    const wheel = wheelOf(unit);
-    wheel.addEventListener(
-      "scroll",
-      () => {
-        clearTimeout(timers[unit]);
-        timers[unit] = setTimeout(() => settle(unit), settleMs);
-      },
-      { passive: true }
-    );
-    /* Wo der Browser das Ende des Rollens meldet, gilt die Auswahl sofort. */
-    wheel.addEventListener("scrollend", () => settle(unit));
+    watchWheel(wheelOf(unit), (index) => {
+      if (open) choose(unit, index);
+    });
   });
   bindModalPull(root, closeSortSheet);
   /* Beim Wechsel der Ansicht — auch durch Browser-Zurück — geht das Blatt zu. */

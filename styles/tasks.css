@@ -21,8 +21,10 @@
  * --prio-jetzt          -> Rot eines überfälligen Datums
  * --xp-done             -> Fläche des gesetzten Hakens
  * --line                -> Trennlinie unter der Zeile zum Anlegen
+ * --icon-soft           -> Farbe des ⓘ an der Pille „Alle“ (styles/tokens.css)
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+ * .tab-pill-info .icon width -> Größe des ⓘ an der Pille „Alle“ (16px)
 */
 
 /* ---------- Zeile unter dem Titel: Pillen der Ansichten ---------- */
@@ -31,6 +33,25 @@
    styles/overview.css) — nur der Abstand zum Titel darüber kommt von hier. */
 .tasks-tools .tab-pills-row {
   margin: var(--page-title-gap) 0 var(--task-tools-gap);
+}
+
+/* ⓘ in der Pille „Alle“: erklärt, dass sie jeden Ort zeigt; wählt nichts aus */
+.tab-pill-info {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  margin: -6px -12px -6px -4px; /* margin: große Tippfläche, ohne dass die Pille höher oder breiter wird */
+  color: var(--icon-soft);
+}
+
+.tab-pill-info .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.tab-pill-info:active {
+  opacity: 0.55;
 }
 
 /* Der runde Knopf ✓+ hinter der Trennlinie: neue Aufgabe */

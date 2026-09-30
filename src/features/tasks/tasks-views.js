@@ -7,7 +7,9 @@
  * startet gleich im Eingabefeld. Gedrückt halten (oder Rechtsklick) öffnet
  * das Menü: Umbenennen, Icon, Duplizieren, nach links, nach rechts, Löschen —
  * „Alle“ kennt nur Icon und Duplizieren. Waagerecht über die Liste wischen
- * wechselt die Ansicht (src/ui/pill-swipe.js).
+ * wechselt die Ansicht (src/ui/pill-swipe.js). „Alle“ trägt ein ⓘ: ein Tipp
+ * darauf erklärt, dass diese Ansicht jeden Ort zeigt und wie man eine für
+ * einen Ort baut — deshalb gibt es im Blatt „Filtern“ dort keinen Ort.
  * Pfad: src/features/tasks/tasks-views.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -15,8 +17,9 @@
  * addViewLabel -> Vorlesetext des kleinen Plus
  * addTaskLabel -> Vorlesetext des runden ✓+
  * menuLabels   -> Beschriftungen im Halte-Menü
+ * allInfo      -> Überschrift und Text der Erklärung hinter dem ⓘ an „Alle“
  *
- * Aussehen: styles/overview.css (Pillenzeile) und styles/tasks.css.
+ * Aussehen: styles/overview.css (Pillenzeile) und styles/tasks.css (das ⓘ).
  */
 
 import { dom, el, focusAtEnd } from "../../core/dom.js";
@@ -37,6 +40,7 @@ import {
 } from "../../data/task-views.js";
 import { openCtxMenu } from "../../ui/ctx-menu.js";
 import { addLongPressMenu, cancelHold } from "../../ui/long-press.js";
+import { openInfoDialog } from "../../ui/info-dialog.js";
 import { iconPickerAction } from "../../ui/pickers.js";
 import { fitPillInput, } from "../../ui/pill-input.js";
 import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
@@ -50,6 +54,11 @@ const menuLabels = {
   left: "Nach links",
   right: "Nach rechts",
   delete: "Löschen",
+};
+
+const allInfo = {
+  title: "Alle Orte",
+  text: "„Alle“ zeigt Aufgaben von jedem Ort. Für einen Ort tippe auf das kleine Plus neben den Pillen und filtere die neue Ansicht nach Ort.",
 };
 
 const INPUT_ID = "task-view-input";
@@ -67,9 +76,13 @@ function pillMarkup(view) {
     `;
   }
   const active = sameId(view.id, state.activeTaskViewId) ? " is-active" : "";
+  /* Kein Knopf im Knopf: das ⓘ ist ein span, den handleViewsClick zuerst prüft */
+  const info = view.fixed
+    ? `<span class="tab-pill-info" role="button" tabindex="0" data-task-view-info aria-label="Was zeigt „${escapeHtml(view.name)}“?">${icon("info")}</span>`
+    : "";
   return `
     <button class="tab-pill${active}" type="button" data-task-view="${view.id}">
-      ${glyph}${escapeHtml(view.name || view.placeholder || "")}
+      ${glyph}${escapeHtml(view.name || view.placeholder || "")}${info}
     </button>
   `;
 }
@@ -126,6 +139,10 @@ function openViewMenu(pill) {
 
 /** Klicks in der Zeile: Ansicht wählen, neue Ansicht, neue Aufgabe. */
 export function handleViewsClick(event) {
+  if (event.target.closest("[data-task-view-info]")) {
+    openInfoDialog(allInfo.title, allInfo.text);
+    return;
+  }
   const pill = event.target.closest("[data-task-view]");
   if (pill) {
     selectTaskView(Number(pill.dataset.taskView));

@@ -1,0 +1,157 @@
+/*
+ * Das Filter-Blatt (src/ui/filter-sheet.js): zwei Spalten mit Mehrfachwahl
+ * nebeneinander, darüber optional die Ort-Pillen. Blatt, Überschriften der
+ * Spalten und „Fertig“ kommen vom Blatt „Sortieren“ (styles/calendar.css,
+ * styles/sort-wheels.css); hier steht nur, was beim Filtern anders ist.
+ * Pfad: styles/filter-sheet.css
+ *
+ * ANPASSBARE WERTE (in styles/tokens.css bzw. styles/tokens-pages.css)
+ * -----------------------------------
+ * --date-wheel-item-h  -> Höhe einer Zeile (so hoch wie eine Zeile der Rollen beim Sortieren)
+ * --tab-pill-active-bg -> Band hinter einer gewählten Zeile (wie das Band der Rollen)
+ * --radius-lg          -> Rundung des Bands
+ * --link-color         -> Farbe des Hakens
+ * --muted / --text     -> Schrift abgewählter bzw. gewählter Zeilen
+ * --sheet-heading-size -> Größe der Überschrift „Ort“
+ *
+ * Direkt bei ihrer Regel:
+ * .filter-cols gap          -> Abstand zwischen den beiden Spalten (8px)
+ * .filter-item font-size    -> Schrift der Zeilen (15px, kleiner als beim Sortieren,
+ *                              weil Haken, Icon und ⓘ mit in die halbe Breite müssen)
+ * .filter-item padding      -> Luft zwischen Band-Rand und Haken bzw. Icon (8px)
+ * .filter-item .sheet-info width -> Tippfläche des ⓘ hier (24px, schmaler als im Auswahl-Blatt)
+ * .filter-check / .filter-icon width -> Größe von Haken und Icon (16px / 18px)
+ */
+
+.filter-content {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ---------- Ort: Pillen in einer Zeile ---------- */
+
+.filter-place-head {
+  color: var(--muted);
+  font-size: var(--sheet-heading-size);
+  font-weight: 600;
+  text-align: center;
+  text-transform: uppercase; /* text-transform: wie die Überschriften der Spalten */
+  letter-spacing: 0.04em; /* letter-spacing: Großbuchstaben brauchen etwas mehr Luft */
+}
+
+.filter-place {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 8px;
+  overflow-x: auto; /* overflow-x: viele Orte rollen waagerecht, statt umzubrechen */
+  scrollbar-width: none;
+  overscroll-behavior-x: contain; /* overscroll-behavior-x: am Ende rollt nicht die Seite dahinter mit */
+  touch-action: pan-x; /* touch-action: waagerecht rollen, ohne das Blatt herunterzuziehen */
+}
+
+/* Mittig wie die Überschrift; reicht der Platz nicht, beginnt die Reihe
+   trotzdem links (auto-Ränder werden dann null, nichts rutscht aus dem Bild) */
+.filter-place > :first-child {
+  margin-left: auto;
+}
+
+.filter-place > :last-child {
+  margin-right: auto;
+}
+
+.filter-place::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-place .tab-pill.is-active {
+  background: var(--tab-pill-active-bg);
+  color: var(--text);
+}
+
+/* ---------- Zwei Spalten mit Mehrfachwahl ---------- */
+
+.filter-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.filter-col {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+/* Eine Zeile: Haken außen, Name, Icon zur Mitte hin */
+.filter-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: var(--date-wheel-item-h);
+  padding-inline: 8px;
+  border-radius: var(--radius-lg); /* border-radius: das Band wird eine Pille wie bei den Rollen */
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* Rechts spiegelt sich die Zeile: Icon innen links, Haken außen rechts */
+.filter-col:last-child .filter-item {
+  flex-direction: row-reverse;
+}
+
+.filter-item.is-on {
+  background: var(--tab-pill-active-bg);
+  color: var(--text);
+  font-weight: 600;
+}
+
+.filter-item:active {
+  opacity: 0.6;
+}
+
+.filter-label {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  min-width: 0;
+}
+
+.filter-col:first-child .filter-label {
+  justify-content: flex-end;
+}
+
+.filter-name {
+  overflow: hidden;
+  text-overflow: ellipsis; /* text-overflow: ein zu langer Name endet mit „…“ statt umzubrechen */
+  white-space: nowrap;
+}
+
+.filter-icon {
+  flex: 0 0 auto;
+  width: 18px;
+  height: 18px;
+}
+
+.filter-item.is-on .filter-icon {
+  color: var(--item-color, currentColor);
+}
+
+/* Der Haken hält seinen Platz auch abgewählt, damit die Namen nicht springen */
+.filter-check {
+  flex: 0 0 auto;
+  width: 16px;
+  height: 16px;
+  color: var(--link-color);
+  visibility: hidden; /* visibility: unsichtbar, aber mit Platz */
+}
+
+.filter-item.is-on .filter-check {
+  visibility: visible;
+}
+
+/* Schmaler als im Auswahl-Blatt: in der halben Breite zählt jeder Pixel */
+.filter-item .sheet-info {
+  width: 24px;
+  margin-left: 0;
+}

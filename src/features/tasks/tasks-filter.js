@@ -3,47 +3,48 @@
  * „Ansicht“ unter der Zeile „Filtern“ zeigen, was gefiltert ist. Als Filter
  * zählen der Ort, abgewählte Status und abgewählte Dringlichkeiten — nicht
  * das Ausblenden der Erledigten, das hat seinen eigenen Schalter
- * „Erledigte zeigen“. Ohne Filter steht rechts „Keine“. Drei Abschnitte:
+ * „Erledigte zeigen“. Ohne Filter steht rechts „Keine“.
  *
- * - Ort: Einfachwahl (alle Orte, Eingang, jeder Ort mit Aufgaben). In der
- *   festen Ansicht „Alle“ steht nur „Alle Orte“, das ⓘ daneben erklärt,
- *   wie man eine eigene Ansicht für einen Ort baut.
- * - Status: Mehrfachwahl. „Erledigt“ ist derselbe Schalter wie „Erledigte
- *   zeigen“ in der Karte. „Archiviert“ holt die archivierten Aufgaben auf
- *   die Seite — nach Status gruppiert als eigene Spalte rechts neben
- *   „Erledigt“ (src/data/queries.js, taskGroups). Beide erklären sich per ⓘ.
- * - Dringlichkeit: Mehrfachwahl.
+ * Das Blatt ist gebaut wie „Sortieren“ (src/ui/filter-sheet.js): Titel und ✕,
+ * zwei Spalten nebeneinander, unten „Fertig“.
+ *
+ * - Ort (nur in eigenen Ansichten): Pillen darüber, Einfachwahl (alle Orte,
+ *   Eingang, jeder Ort mit Aufgaben). „Alle“ zeigt immer jeden Ort — das
+ *   erklärt dort das ⓘ an der Pille (src/features/tasks/tasks-views.js).
+ * - Status, links: Mehrfachwahl. „Erledigt“ ist derselbe Schalter wie
+ *   „Erledigte zeigen“ in der Karte. „Archiviert“ holt die archivierten
+ *   Aufgaben auf die Seite — nach Status gruppiert als eigene Spalte rechts
+ *   neben „Erledigt“ (src/data/queries.js, taskGroups). Beide erklären sich per ⓘ.
+ * - Dringlichkeit, rechts: Mehrfachwahl.
  *
  * Das Blatt bleibt beim An- und Abwählen offen und zeichnet sich nach jeder
- * Wahl mit dem neuen Stand neu — wie das Blatt „Sortieren“.
+ * Wahl mit dem neuen Stand neu.
  * Pfad: src/features/tasks/tasks-filter.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * headings      -> die drei Zwischenüberschriften im Blatt
+ * title         -> Überschrift des Blatts
+ * headings      -> Überschriften über Ort und den beiden Spalten
  * allPlaces / inboxLabel -> Name der beiden festen Orte
  * infos          -> Überschrift und Text der Erklärungen hinter den ⓘ
  * archivedLabel  -> Name der Option „Archiviert“
  * noneStatus / nonePrio -> Chip, wenn in einem Abschnitt gar nichts gewählt ist
  *
- * Aussehen: styles/overlays.css und styles/sheet-tabs.css (Blatt, Haken, ⓘ),
- * der Dialog hinter dem ⓘ in styles/info-dialog.css.
+ * Aussehen: styles/filter-sheet.css (Spalten, Band, Ort-Pillen), der Dialog
+ * hinter dem ⓘ in styles/info-dialog.css.
  */
 
 import { taskPriorities, taskStatuses } from "../../data/config-tasks.js";
 import { parentName, taskPlaces } from "../../data/queries.js";
 import { activeTaskView, updateTaskView } from "../../data/task-views.js";
-import { openSheet } from "../../ui/sheet.js";
+import { openFilterSheet } from "../../ui/filter-sheet.js";
 
+const title = "Filtern";
 const headings = { place: "Ort", status: "Status", priority: "Dringlichkeit" };
 const allPlaces = "Alle Orte";
 const inboxLabel = "Eingang";
 const archivedLabel = "Archiviert";
 const infos = {
-  fixedPlace: {
-    title: "Alle Orte",
-    text: "„Alle“ zeigt Aufgaben von jedem Ort. Für einen Ort tippe auf das kleine Plus neben den Pillen und filtere die neue Ansicht.",
-  },
   done: {
     title: "Erledigt",
     text: "Abgehakte Aufgaben bleiben bis Mitternacht stehen. Dieser Haken ist derselbe Schalter wie „Erledigte zeigen“ in der Karte.",
@@ -96,54 +97,58 @@ export function filterChips(view) {
   ];
 }
 
-/* Abschnitt „Ort“: Einfachwahl; in „Alle“ steht nur „Alle Orte“ mit ⓘ */
-function placeOptions(view) {
-  if (view.fixed) return [{ label: allPlaces, icon: "layers", active: true, stay: true, info: infos.fixedPlace }];
-  const option = (ref, label, iconName) => ({
-    label,
-    icon: iconName,
-    active: view.place === ref,
-    stay: true,
-    onSelect: () => change({ place: ref }),
-  });
-  return [
-    option("alle", allPlaces, "layers"),
-    option("inbox", inboxLabel, "inbox"),
-    ...taskPlaces().map((place) => option(place.ref, place.label, place.icon)),
-  ];
+/* Zeile „Ort“ mit Pillen — nur in eigenen Ansichten. „Alle“ zeigt immer
+   jeden Ort; das erklärt das ⓘ an ihrer Pille (tasks-views.js). */
+function placeRow(view) {
+  if (view.fixed) return null;
+  return {
+    heading: headings.place,
+    chosen: view.place,
+    options: [
+      { id: "alle", label: allPlaces, icon: "layers" },
+      { id: "inbox", label: inboxLabel, icon: "inbox" },
+      ...taskPlaces().map((place) => ({ id: place.ref, label: place.label, icon: place.icon })),
+    ],
+    onPick: (place) => change({ place }),
+  };
 }
 
-/* Abschnitt „Status“: die Status mit Haken, darunter „Archiviert“ */
-function statusOptions(view) {
-  const rows = taskStatuses.map((status) => ({
+/* Spalte „Status“: die Status, darunter „Archiviert“. Die id eines Eintrags
+   sagt, welcher Schalter der Ansicht umgelegt wird. */
+function statusColumn(view) {
+  const items = taskStatuses.map((status) => ({
+    id: status.done ? "done" : status.id,
     label: status.label,
     icon: status.icon,
+    color: status.color,
     info: status.done ? infos.done : undefined,
     active: statusShown(view, status),
-    stay: true,
-    onSelect: () =>
-      change(status.done ? { hideDone: !view.hideDone } : { hiddenStatuses: toggled(view.hiddenStatuses, status.id) }),
   }));
-  rows.push({
-    label: archivedLabel,
-    icon: "archive",
-    info: infos.archived,
-    active: view.showArchived,
-    stay: true,
-    onSelect: () => change({ showArchived: !view.showArchived }),
-  });
-  return rows;
+  items.push({ id: "archived", label: archivedLabel, icon: "archive", info: infos.archived, active: view.showArchived });
+  return {
+    heading: headings.status,
+    items,
+    onToggle: (id) => {
+      if (id === "done") change({ hideDone: !view.hideDone });
+      else if (id === "archived") change({ showArchived: !view.showArchived });
+      else change({ hiddenStatuses: toggled(view.hiddenStatuses, id) });
+    },
+  };
 }
 
-/* Abschnitt „Dringlichkeit“: Mehrfachwahl */
-function priorityOptions(view) {
-  return taskPriorities.map((prio) => ({
-    label: prio.label,
-    icon: prio.icon,
-    active: !view.hiddenPriorities.includes(prio.id),
-    stay: true,
-    onSelect: () => change({ hiddenPriorities: toggled(view.hiddenPriorities, prio.id) }),
-  }));
+/* Spalte „Dringlichkeit“: Mehrfachwahl */
+function priorityColumn(view) {
+  return {
+    heading: headings.priority,
+    items: taskPriorities.map((prio) => ({
+      id: prio.id,
+      label: prio.label,
+      icon: prio.icon,
+      color: prio.color,
+      active: !view.hiddenPriorities.includes(prio.id),
+    })),
+    onToggle: (id) => change({ hiddenPriorities: toggled(view.hiddenPriorities, id) }),
+  };
 }
 
 /* Speichern und das offene Blatt mit dem neuen Stand neu zeichnen */
@@ -152,15 +157,8 @@ function change(changes) {
   openTaskFilter();
 }
 
-/** Das Blatt für die gewählte Ansicht öffnen. Es hat keinen Titel — die drei Überschriften sagen genug. */
+/** Das Blatt für die gewählte Ansicht öffnen oder mit neuem Stand neu zeichnen. */
 export function openTaskFilter() {
   const view = activeTaskView();
-  openSheet("", [
-    { heading: true, label: headings.place },
-    ...placeOptions(view),
-    { heading: true, label: headings.status },
-    ...statusOptions(view),
-    { heading: true, label: headings.priority },
-    ...priorityOptions(view),
-  ]);
+  openFilterSheet({ title, place: placeRow(view), columns: [statusColumn(view), priorityColumn(view)] });
 }

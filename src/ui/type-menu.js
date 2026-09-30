@@ -5,8 +5,10 @@
  * Arbeitsbereich), steht vorher in Sätzen da, was passiert, und erst
  * „Umwandeln“ tut es (src/data/convert.js, src/data/convert-notes.js).
  * Geöffnet wird das Blatt aus dem Menü eines Eintrags oder Arbeitsbereichs,
- * und über die graue Kategorie mitten in der Kopfzeile; bei einer Aufgabe
- * stehen dieselben Typen im Tab „Typ“ neben Status und Dringlichkeit.
+ * und über die graue Kategorie mitten in der Kopfzeile — als Rolle wie beim
+ * Sortieren (src/ui/type-wheel.js), die erst mit „Umwandeln“ gilt. Bei einer
+ * Aufgabe stehen dieselben Typen als Liste im Tab „Typ“ neben Status und
+ * Dringlichkeit.
  * Pfad: src/ui/type-menu.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -16,7 +18,8 @@
  * undoLabel                     -> der Knopf in der Meldung nach einem sofortigen Wechsel
  * openLabel                     -> der Knopf in der Meldung, wenn man aus einer Liste kam
  *
- * Aussehen: Blatt in styles/overlays.css und styles/details.css (.sheet-note),
+ * Aussehen: Rolle in styles/sort-wheels.css (.type-modal), die Rückfrage
+ * in styles/overlays.css und styles/details.css (.sheet-note),
  * Meldung in styles/toast.css, die Kategorie als Knopf in styles/entry.css.
  */
 
@@ -39,6 +42,7 @@ import { ui } from "../data/state.js";
 import { openEntry, openTarget } from "./router.js";
 import { openSheet } from "./sheet.js";
 import { showToast } from "./toast.js";
+import { openTypeWheel } from "./type-wheel.js";
 import { isViewActive } from "./views.js";
 
 const menuLabel = "Typ ändern";
@@ -192,9 +196,15 @@ export function typeChangeOptions(subject) {
   return options;
 }
 
-/** Das Blatt „Typ ändern“ mit allen Typen öffnen. */
+/** Das Blatt „Typ ändern“ als Rolle öffnen, in derselben Reihenfolge wie die Liste. */
 export function openTypeChangeSheet(subject) {
-  openSheet(sheetTitle, typeChangeOptions(subject));
+  const kind = (id) => ({ id, label: kindName(id), icon: kindIcon(id), color: xpItemStyle(id).color });
+  openTypeWheel({
+    title: sheetTitle,
+    options: [...convertibleTypes.map(kind), kind(workspaceKind)],
+    current: currentKind(subject),
+    onApply: (target) => pick(subject, target),
+  });
 }
 
 /**

@@ -1,6 +1,7 @@
 /*
  * Das Blatt „Sortieren“ (src/ui/sort-sheet.js): zwei Rollen nebeneinander,
  * links „Wonach“, rechts „Reihenfolge“, darüber je eine kleine Überschrift.
+ * Unten dazu „Typ ändern“ (src/ui/type-wheel.js): eine Rolle mit Icon und Namen.
  * Rollen, Band in der Mitte und „Fertig“ kommen vom Blatt „Woche“
  * (styles/calendar.css); hier steht nur, was beim Sortieren anders ist.
  * Pfad: styles/sort-wheels.css
@@ -15,6 +16,10 @@
  * .sort-modal --date-wheel-h        -> Höhe der Rollen hier (176px: vier Zeilen reichen, es gibt nur wenige Optionen)
  * .sort-wheels .date-item font-size -> Schrift in den Rollen (17px, etwas kleiner als
  *                                      beim Datum, weil „Zuletzt geöffnet“ Platz braucht)
+ * .type-modal --date-wheel-h        -> Höhe der Rolle bei „Typ ändern“ (220px: fünf Zeilen)
+ * .type-wheel-item gap              -> Abstand zwischen Icon und Namen (10px)
+ * .type-wheel-icon width            -> Größe des Icons (20px)
+ * --muted / --text                  -> Icon abgewählter Zeilen bzw. ohne eigene Farbe
  */
 
 /* Weniger Optionen als beim Datum: die Rollen dürfen niedriger sein */
@@ -62,4 +67,31 @@
 
 .sort-wheels [data-unit="dir"] .date-item {
   text-align: left;
+}
+
+/* ---------- „Typ ändern“: eine Rolle ---------- */
+
+/* Sechs Typen: fünf Zeilen sichtbar, der gewählte in der Mitte */
+.type-modal {
+  --date-wheel-h: 220px;
+}
+
+.type-modal .date-wheels {
+  grid-template-columns: 1fr;
+}
+
+/* Icon und Name stehen gemeinsam mittig in der Zeile */
+.type-wheel-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.type-wheel-icon {
+  width: 20px;
+  height: 20px;
+}
+
+.date-item.is-on .type-wheel-icon {
+  color: var(--item-color, var(--text));
 }
