@@ -28,9 +28,27 @@
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
 
+/* Die Seite wird eine Spalte, in der der Inhalt den Rest bis zur Karte
+   „Ansicht“ füllt — nur so reicht das Board bis dorthin (s. u.). Die Liste
+   stapelt sich darin wie zuvor. */
+#view-tasks {
+  display: flex;
+  flex-direction: column;
+}
+
+.tasks-body {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
 /* Das Board läuft bis an beide Ränder des Geräts, damit die nächste Spalte
-   schon angeschnitten zu sehen ist. */
+   schon angeschnitten zu sehen ist, und bis hinunter zur Karte „Ansicht“:
+   Wischen in der leeren Fläche unter den Spalten rollt so ebenfalls die
+   Spalten — vorher endete das Board mit der längsten Spalte, und darunter
+   griff nur der Pillen-Wechsel, der bei einer einzigen Pille nichts tut. */
 .board {
+  flex: 1 1 auto;
   display: flex;
   align-items: flex-start;
   gap: var(--board-gap);
