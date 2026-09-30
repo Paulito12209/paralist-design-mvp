@@ -13,18 +13,22 @@ import {
   calendarModes,
   calendarSegments,
   calendarSpans,
+  mediaFilters,
+  projectViewDefaults,
+  resourceFilters,
+  stageModes,
+} from "./config.js";
+import {
   defaultTaskPriority,
   defaultTaskStatus,
   isTaskDone,
-  mediaFilters,
-  resourceFilters,
-  stageModes,
   taskDefaults,
   taskGroupings,
   taskLayouts,
   taskSorts,
-} from "./config.js";
+} from "./config-tasks.js";
 import { sanitizeLinks } from "./links.js";
+import { adoptProjectViews } from "./project-views.js";
 import { entryRef, normalizeRef, workspaceRef } from "./refs.js";
 import { seedMedia, seedXpFromExisting } from "./seed.js";
 import { archiveFinishedTasks } from "./task-archive.js";
@@ -36,6 +40,9 @@ export const state = {
   /* Ansichten der Aufgaben-Seite (src/data/task-views.js); die erste, „Alle“, ist fest */
   taskViews: [{ id: 1, name: "Alle", icon: null, fixed: true, ...taskDefaults }],
   activeTaskViewId: 1,
+  /* Ansichten der Projekte (src/data/project-views.js); die erste, „Alle“, ist fest */
+  projectViews: [{ id: 1, name: "Alle", icon: null, fixed: true, ...projectViewDefaults, ids: [] }],
+  activeProjectViewId: 1,
   activeTabId: 1,
   /* Ein Arbeitsbereich: { id, name, tab, favorite, icon, body, awarded }.
      `body` ist sein Inhalt (freier Text). Bleibt `name` leer, gilt `placeholder`. */
@@ -78,6 +85,11 @@ export const ui = {
   editingTabId: null,
   /* Ansicht der Aufgaben-Seite, deren Name gerade getippt wird */
   editingTaskViewId: null,
+  /* Ansicht der Projekte, deren Name gerade getippt wird */
+  editingProjectViewId: null,
+  /* Ansicht, aus der „Projekt hinzufügen“ kam — das neue Projekt gehört dorthin
+     (src/data/project-views.js, applyProjectDraft). Wie taskDraftColumn. */
+  projectDraftView: null,
   editingWorkspaceId: null,
   /* Was gerade ins Namensfeld eines Arbeitsbereichs getippt wurde: { id, value } */
   nameDraft: null,
@@ -138,6 +150,8 @@ function snapshot() {
     dashboard: state.prefs.dashboard,
     taskViews: state.taskViews,
     activeTaskViewId: state.activeTaskViewId,
+    projectViews: state.projectViews,
+    activeProjectViewId: state.activeProjectViewId,
     pageHeads: state.prefs.pageHeads,
     mediaSeeded,
   };
@@ -325,6 +339,8 @@ export function loadState() {
      bliebe der Speicher in der alten Form und müsste bei jedem Start erneut
      übersetzt werden. */
   let needsSave = migrate();
+  /* Nach der Migration: die Ansichten prüfen ihre Projekte gegen die Einträge. */
+  if (adoptProjectViews(saved)) needsSave = true;
 
   /* Ältere Stände kennen noch kein XP-Protokoll: alles Vorhandene als Sammelposten nachtragen. */
   if (Array.isArray(saved.xpLog)) state.xpLog = saved.xpLog;

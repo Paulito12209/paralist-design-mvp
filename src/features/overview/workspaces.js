@@ -1,13 +1,16 @@
 /*
- * Die Liste der Arbeitsbereiche unter den Tab-Pillen: anlegen, umbenennen,
- * Icon geben, in einen anderen Tab legen, zu Favoriten, löschen.
+ * Die Liste der Arbeitsbereiche unter den Tab-Pillen der Seite
+ * Arbeitsbereiche: anlegen, umbenennen, Icon geben, in einen anderen Tab
+ * legen, zu Favoriten, löschen. Gezeichnet wird sie von
+ * src/features/overview/workspace-collection.js; das Namensfeld zeigt auch
+ * die Favoriten-Seite (src/features/overview/page.js).
  * Pfad: src/features/overview/workspaces.js
  *
  * Keine anpassbaren visuellen Werte: Zeilenhöhe und Trennlinien stehen in
  * styles/rows.css (Klasse .workspace-row).
  */
 
-import { emit, events, on } from "../../core/bus.js";
+import { emit, events } from "../../core/bus.js";
 import { dom, el, focusAtEnd } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
 import { sameId } from "../../core/ids.js";
@@ -19,21 +22,27 @@ import { moveWorkspaceAction } from "../../ui/move-menu.js";
 import { iconPickerAction } from "../../ui/pickers.js";
 import { typeChangeAction } from "../../ui/type-menu.js";
 import { workspaceRow } from "../../ui/rows.js";
-import { isViewActive } from "../../ui/views.js";
 
 /** Die Eingabe beim Umbenennen fokussieren, falls sie gerade im Dokument steht. */
 export function focusWorkspaceName() {
   focusAtEnd(el("workspace-name-input"));
 }
 
-/** Die Liste neu zeichnen. Umbenennen ist nur möglich, wenn die Startseite offen ist. */
-export function renderWorkspaces() {
-  commitStaleWorkspaceName();
-  const canEdit = isViewActive("home");
-  const rows = tabWorkspaces()
+/** Die Zeilen der Arbeitsbereiche im gewählten Tab; `canEdit` erlaubt das Namensfeld. */
+export function workspaceRowsMarkup(canEdit) {
+  return tabWorkspaces()
     .map((workspace) => workspaceRow(workspace, canEdit))
     .join("");
+}
 
+/**
+ * Unter der Liste: die Zeile „Arbeitsbereich hinzufügen“ und — sobald etwas
+ * im Archiv liegt — die Pille „Zum Archiv“ mit der Pille Arbeitsbereiche.
+ * Die Pille steht mit festem Abstand unter der Liste — nicht am unteren
+ * Bildschirmrand: auf kleinen Geräten hinge sie sonst hinter der
+ * Navigationsleiste, auf großen stünde sie einsam weit unten.
+ */
+export function workspaceTailMarkup() {
   const hasArchived = archivedWorkspaces().length > 0 || archivedEntries().length > 0;
   const archiveButton = hasArchived
     ? `<div class="archive-link-row">
@@ -43,19 +52,14 @@ export function renderWorkspaces() {
       </button>
     </div>`
     : "";
-
-  /* Die Pille zum Archiv steht mit festem Abstand unter der Liste — nicht am
-     unteren Bildschirmrand: auf kleinen Geräten hängt sie sonst hinter der
-     Navigationsleiste, auf großen stünde sie einsam weit unten. */
-  dom.workspaceList.innerHTML = `${rows}
+  return `
     <button class="workspace-row workspace-add" type="button" data-add-workspace="1">
       ${icon("folder-plus")}
       <span>Arbeitsbereich hinzufügen</span>
     </button>
     ${archiveButton}`;
-
-  if (canEdit) focusWorkspaceName();
 }
+
 
 /**
  * Den eingegebenen Namen übernehmen; ein leeres Feld behält den Vorgabenamen.
@@ -137,8 +141,7 @@ export function openWorkspaceMenu(button) {
   ]);
 }
 
-/* Enter und Fokusverlust im Umbenennen-Feld übernehmen den Namen.
-   Das Feld steht je nach Seite in der Liste oder in der Unterseite. */
+/* Enter und Fokusverlust im Umbenennen-Feld übernehmen den Namen. */
 function bindNameInput(container) {
   if (!container) return;
   container.addEventListener("keydown", (event) => {
@@ -156,15 +159,7 @@ function bindNameInput(container) {
   );
 }
 
-/** Tastatur, Fokus und Auffrischen anmelden. */
+/** Tastatur und Fokus im Namensfeld anmelden. */
 export function initWorkspaces() {
-  bindNameInput(dom.workspaceList);
   bindNameInput(dom.pageBody);
-
-  on(events.dataChanged, () => {
-    if (isViewActive("home")) renderWorkspaces();
-  });
-  on(events.viewOpened, (name) => {
-    if (name === "home") renderWorkspaces();
-  });
 }

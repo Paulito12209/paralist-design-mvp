@@ -28,7 +28,7 @@ import {
   toggleFavorite,
 } from "../../data/mutations.js";
 import { workspaceDetails } from "../../data/details.js";
-import { findWorkspace, inboxEntries, projectEntries, workspaceColor } from "../../data/queries.js";
+import { findWorkspace, inboxEntries, workspaceColor } from "../../data/queries.js";
 import { saveState, state, ui } from "../../data/state.js";
 import { openDetails } from "../../ui/details.js";
 import { bindHeadTitle, setHeadTitle } from "../../ui/head-title.js";
@@ -43,6 +43,7 @@ import { openTypeChangeSheet, typeChangeAction, typeCrumbMarkup } from "../../ui
 import { isViewActive } from "../../ui/views.js";
 import { initArchive, renderArchive } from "./archive.js";
 import { pageHeroOptions, renderPageHero } from "./page-hero.js";
+import { renderProjectsPage } from "./projects.js";
 import { initWorkspaceCollection, renderWorkspaceCollection } from "./workspace-collection.js";
 import { isWritingNotes, renderWorkspacePage } from "./workspace-page.js";
 import { beginRenameWorkspaceTitle, initWorkspaceTitle, setupWorkspaceTitle } from "./workspace-title.js";
@@ -67,7 +68,8 @@ const WORKSPACE_CRUMB = "Arbeitsbereich";
 /*
  * Was eine leere Seite zeigt: Emblem in der Farbe der Karte, ein Satz dazu und
  * die Pille zum Anlegen. Favoriten bekommen keine Pille — ein Favorit entsteht
- * nur, indem man eine vorhandene Zeile markiert.
+ * nur, indem man eine vorhandene Zeile markiert. Die leere Projektliste steht
+ * in src/features/overview/projects.js — Übersicht und Seite Projekte teilen sie.
  */
 const emptyStates = {
   inbox: {
@@ -77,13 +79,6 @@ const emptyStates = {
     text: "Leg hier Einträge ab — Notizen, Aufgaben, Termine. Alles, was du nirgends ablegst, sammelt sich hier.",
     /* Ohne `pick`: die Seite schlägt ohnehin eine Notiz vor (proposedType). */
     action: { label: "Eintrag hinzufügen" },
-  },
-  projects: {
-    icon: "rocket",
-    accent: "var(--prio-jetzt)",
-    title: "Noch keine Projekte",
-    text: "Ein Projekt bündelt Aufgaben, Notizen und Termine an einem Ort.",
-    action: { label: "Projekt anlegen" },
   },
   favorites: {
     icon: "star",
@@ -124,7 +119,7 @@ export function renderPageBody() {
   if (page.kind === "favorites") renderFavorites();
   else if (page.kind === "archive") renderArchive();
   else if (page.kind === "workspaces") renderWorkspaceCollection();
-  else if (page.kind === "projects") dom.pageBody.innerHTML = listMarkup(projectEntries(), emptyStates.projects);
+  else if (page.kind === "projects") renderProjectsPage();
   else if (page.kind === "resources") load("resources").then((module) => module.renderResources());
   else if (page.kind === "bookmarks") load("bookmarks").then((module) => module.renderBookmarks());
   else if (page.isWorkspace) renderWorkspacePage(page);

@@ -14,7 +14,7 @@ import { dom, el } from "../../core/dom.js";
 import { dayKey, timeKey } from "../../core/dates.js";
 import { overviewPages, typeIcon, typePlurals, typeSingular, xpKinds } from "../../data/config.js";
 import { connectEntries } from "../../data/links.js";
-import { applyEntryDefaults } from "../../data/mutations.js";
+import { applyEntryDefaults } from "../../data/mutations-tasks.js";
 import { findEntry, mainPlace, parentName } from "../../data/queries.js";
 import { entryRef } from "../../data/refs.js";
 import { state, ui } from "../../data/state.js";
@@ -146,6 +146,8 @@ export function closeComposer() {
      Entwurf, der gerade offen war. Ohne diese Zeile erbt die nächste Aufgabe
      — auch die von der Startseite — still deren Priorität. */
   ui.taskDraftColumn = null;
+  /* Ebenso die Projekt-Ansicht, aus der „Projekt hinzufügen“ kam. */
+  ui.projectDraftView = null;
   renderComposerAttachments(updateComposerSend);
   stopDictation();
 }

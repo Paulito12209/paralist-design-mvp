@@ -29,7 +29,7 @@
 
 import { dom, el } from "../../core/dom.js";
 import { noHistoryForm } from "../../core/no-history.js";
-import { createTaskInline } from "../../data/mutations.js";
+import { createTaskInline } from "../../data/mutations-tasks.js";
 import { isViewActive } from "../../ui/views.js";
 
 const TAP_SLOP_PX = 20;

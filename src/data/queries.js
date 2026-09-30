@@ -16,17 +16,15 @@ import { dayKey, timeKey } from "../core/dates.js";
 import { sameId } from "../core/ids.js";
 import {
   containerTypes,
-  isTaskDone,
   overviewPages,
   resourceTypes,
-  taskGroupings,
-  taskPriorities,
   typeIcon,
   typeSingular,
   typeOrder,
   typePlurals,
   xpItems,
 } from "./config.js";
+import { isTaskDone, taskGroupings, taskPriorities } from "./config-tasks.js";
 import { entryRef, isEntryRef, isWorkspaceRef, refId, workspaceRef } from "./refs.js";
 import { state } from "./state.js";
 
@@ -129,7 +127,7 @@ export function groupedEntriesOf(ref) {
   return groupByType(entriesOf(ref));
 }
 
-/** Alle Projekte, egal wo sie liegen — die Projekte-Karte. */
+/** Alle Projekte, egal wo sie liegen — Grundlage der Projekt-Ansichten. */
 export function projectEntries() {
   return state.entries.filter((entry) => entry.type === "projekt" && !entry.archived);
 }
@@ -203,6 +201,8 @@ export function resourceEntries() {
 export function pageCount(page) {
   if (page.kind === "favorites") return favoriteCount();
   if (page.kind === "projects") return projectEntries().length;
+  /* Die Karte Arbeitsbereiche zählt, was auf ihrer Seite steht: alle Tabs, ohne archivierte. */
+  if (page.kind === "workspaces") return state.workspaces.filter((workspace) => !workspace.archived).length;
   if (page.kind === "resources") return resourceEntries().length;
   /* Die Eingang-Karte (parent null) zählt wie ihre Liste, ohne Medien. */
   if (page.parent === null) return inboxEntries().length;

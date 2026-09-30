@@ -13,12 +13,12 @@
  * WELCHE DATEI MACHT WAS
  * -----------------------------------
  * styles/tokens.css          -> die Werte, die auf jeder Seite wirken (diese Datei)
- * styles/tokens-pages.css    -> die Werte, die nur eine einzelne Seite betreffen
+ * styles/tokens-pages.css    -> die Werte, die nur eine einzelne Seite betreffen (auch das Update-Fenster)
  * styles/tokens-dark.css     -> dieselben Werte, soweit sie im Dunkeln anders sind
  * styles/base.css            -> Grundgerüst: Seite, Gerätefenster, Inhaltsbereich, Icons
  * styles/top-bar.css         -> Kopfzeile: Level-Anzeige, Suchleiste, Profil-Knopf
  * styles/overview.css        -> Startseite: die vier Karten und die Tab-Pillen
- * styles/overview-more.css   -> Startseite: zweite Kartenseite zum Schieben, Karten „Demnächst verfügbar“, Pfeil neben „Arbeitsbereiche“
+ * styles/overview-more.css   -> Startseite: zweite Kartenseite zum Schieben, Karten „Demnächst verfügbar“, Pfeil neben „Projekte“
  * styles/rows.css            -> Listenzeilen, Kopfzeile einer Unterseite
  * styles/swipe-rows.css      -> Wisch-Zeile: Knöpfe dahinter, Einfärben nach dem Halten
  * styles/empty-state.css     -> Platzhalter für leere Listen (eigene Werte, siehe dort)
@@ -112,7 +112,9 @@
  * --avatar-view-bg          -> Hintergrund der großen Profilbild-Ansicht (immer dunkel)
  * --avatar-gradient-from/-to -> Farbverlauf hinter den Initialen im Profil
  * --inbox-icon-color        -> Farbe des Eingang-Icons auf der Übersichtskarte
- * --project-icon-color      -> Farbe des Raketen-Icons auf der Projekte-Karte
+ * --project-icon-color      -> Farbe der Rakete im großen Kopf der Seite Projekte
+ * --workspace-icon-color    -> Farbe des Stapel-Icons auf der Karte Arbeitsbereiche — dasselbe Orange
+ *                              wie die Arbeitsbereiche im Fortschritt (xpItems.arbeitsbereich)
  * --resource-icon-color     -> Farbe des Würfel-Icons auf der Ressourcen-Karte
  * --composer-mic-bg          -> Fläche des Diktat-Knopfes und der noch nicht geänderten Pillen
  * --composer-mic-border      -> dünner Rand darum: dunkelgrau, in beiden Darstellungen gleich
@@ -154,7 +156,7 @@
  * --title-side              -> Extra-Abstand für die große Überschrift
  * --overview-gap            -> Abstand zwischen Überschrift und Karten
  * --workspace-section-gap / --workspace-head-gap -> Abstand der vier Karten zu
- *                              „Arbeitsbereiche“ und von dort zu den Tab-Pillen
+ *                              „Projekte“ und von dort zu den Pillen der Ansichten
  * --top-bar-fade            -> Höhe des Ausblend-Verlaufs unter der Suchleiste
  * --top-bar-icon-width/-height          -> Größe der Icons oben
  * --top-bar-profile-icon-size           -> Größe des Profil-Icons im Kopfzeilen-Knopf
@@ -204,12 +206,6 @@
  * --toast-gap               -> Abstand der Meldung zur Navigation darunter
  * --toast-anim              -> wie lange die Meldung heraufgleitet
  * --toast-rise              -> aus welcher Tiefe sie dabei kommt
- * --update-bg               -> Fläche des Fensters „Neue Version verfügbar“ (im Dunkeln eigener Wert)
- * --update-radius           -> Rundung dieses Fensters (Material 3: 28dp)
- * --update-width            -> größte Breite des Fensters; schmaler, wenn das Gerät schmaler ist
- * --update-pad              -> Innenabstand des Fensters
- * --update-btn-height       -> Höhe der beiden Knöpfe (48 = Mindest-Tippziel von Material 3)
- * --update-anim             -> wie lange das Fenster beim Auftauchen braucht
  * --autofill-hold           -> wie lange ein Feld nach einem Chrome-Vorschlag seine Farben behält,
  *                              bevor Chromes Blau durchkäme (600000s ≈ eine Woche, also praktisch nie)
  * --composer-close-angle    -> wie schief das Kreuz des Schließen-Knopfes steht (45deg = X)
@@ -310,12 +306,6 @@
   --toast-gap: 10px;
   --toast-anim: 0.26s;
   --toast-rise: 12px;
-  --update-bg: #ffffff;
-  --update-radius: 28px;
-  --update-width: 320px;
-  --update-pad: 24px;
-  --update-btn-height: 48px;
-  --update-anim: 0.22s;
   --autofill-hold: 600000s;
   --composer-close-angle: 45deg;
   --composer-close-angle-from: 35deg;
@@ -359,6 +349,7 @@
   --nav-glow-fade: 28%;
   --inbox-icon-color: #233d4c;
   --project-icon-color: #5B0E14;
+  --workspace-icon-color: #ff9f0a;
   --resource-icon-color: #1A2517;
   --ctx-radius: 16px;
   --sheet-options-max: 52vh;

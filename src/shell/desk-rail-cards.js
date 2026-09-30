@@ -21,7 +21,8 @@
 import { dayKey, dayShift, parseDay, startOfDay } from "../core/dates.js";
 import { formatNumber, formatSpan, shortDay, shortOpenTime } from "../core/format.js";
 import { escapeHtml, icon } from "../core/html.js";
-import { inboxPick, isTaskDone, typeSingular } from "../data/config.js";
+import { inboxPick, typeSingular } from "../data/config.js";
+import { isTaskDone } from "../data/config-tasks.js";
 import {
   eventStart,
   eventsOfDay,

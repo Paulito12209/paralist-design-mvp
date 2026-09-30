@@ -13,7 +13,7 @@
 import { emit, events } from "../core/bus.js";
 import { load } from "../core/lazy.js";
 import { entryDetails } from "../data/details.js";
-import { isTaskDone } from "../data/config.js";
+import { isTaskDone } from "../data/config-tasks.js";
 import { deleteEntry, setCover, setEntryIcon, toggleFavorite } from "../data/mutations.js";
 import { findEntry } from "../data/queries.js";
 import { archiveEntry } from "../data/xp.js";

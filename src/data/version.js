@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "93d7de269826";
+export const appVersion = "a962e38b2e79";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -45,6 +45,7 @@ export const appFiles = [
   "src/data/account.js",
   "src/data/bookmarks.js",
   "src/data/collections.js",
+  "src/data/config-tasks.js",
   "src/data/config.js",
   "src/data/convert-notes.js",
   "src/data/convert.js",
@@ -57,11 +58,13 @@ export const appFiles = [
   "src/data/links.js",
   "src/data/milestone-tracks.js",
   "src/data/milestones.js",
+  "src/data/mutations-tasks.js",
   "src/data/mutations.js",
   "src/data/nav-labels.js",
   "src/data/note-blocks.js",
   "src/data/opens.js",
   "src/data/page-text.js",
+  "src/data/project-views.js",
   "src/data/queries.js",
   "src/data/refs.js",
   "src/data/seed.js",
@@ -117,6 +120,9 @@ export const appFiles = [
   "src/features/overview/overview.js",
   "src/features/overview/page-hero.js",
   "src/features/overview/page.js",
+  "src/features/overview/project-settings.js",
+  "src/features/overview/project-views.js",
+  "src/features/overview/projects.js",
   "src/features/overview/tabs.js",
   "src/features/overview/workspace-collection.js",
   "src/features/overview/workspace-page.js",
@@ -154,7 +160,6 @@ export const appFiles = [
   "src/features/tasks/tasks-drag.js",
   "src/features/tasks/tasks-inline.js",
   "src/features/tasks/tasks-list.js",
-  "src/features/tasks/tasks-panel.js",
   "src/features/tasks/tasks-parts.js",
   "src/features/tasks/tasks-rail.js",
   "src/features/tasks/tasks-settings.js",
@@ -210,20 +215,24 @@ export const appFiles = [
   "src/ui/page-cover.js",
   "src/ui/page-path.js",
   "src/ui/page-tools.js",
+  "src/ui/panel-rows.js",
   "src/ui/pickers.js",
   "src/ui/pill-input.js",
   "src/ui/pill-swipe.js",
   "src/ui/pull-search.js",
   "src/ui/rail-parts.js",
+  "src/ui/router-restore.js",
   "src/ui/router.js",
   "src/ui/rows.js",
   "src/ui/sheet.js",
   "src/ui/slash-menu.js",
+  "src/ui/sort-sheet.js",
   "src/ui/swipe.js",
   "src/ui/task-status.js",
   "src/ui/toast.js",
   "src/ui/type-menu.js",
   "src/ui/video-player.js",
+  "src/ui/view-panel.js",
   "src/ui/views.js",
   "src/ui/write-tap.js",
   "styles/avatar-crop.css",

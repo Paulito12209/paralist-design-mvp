@@ -19,7 +19,9 @@ export const storageKeys = {
   navLabels: "paralist-nav-labels",
   milestones: "paralist-milestones",
   deskNav: "paralist-desk-nav",
-  deskGroups: "paralist-desk-groups",
+  /* Zugeklappte Ansichten der Projekte in der Seitenleiste — eigener Schlüssel,
+     damit alte Tab-Nummern nicht zufällig auf Ansichten passen. */
+  deskViewGroups: "paralist-desk-view-groups",
   deskHints: "paralist-desk-hints",
   deskMore: "paralist-desk-more",
 };

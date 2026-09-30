@@ -25,6 +25,7 @@
  */
 
 import { icon } from "../core/html.js";
+import { typeIcon, xpItemStyle, xpKinds } from "../data/config.js";
 import {
   defaultTaskStatus,
   isTaskDone,
@@ -32,11 +33,8 @@ import {
   taskPriorityOf,
   taskStatuses,
   taskStatusOf,
-  typeIcon,
-  xpItemStyle,
-  xpKinds,
-} from "../data/config.js";
-import { setTaskPriority, setTaskStatus, toggleTaskDone } from "../data/mutations.js";
+} from "../data/config-tasks.js";
+import { setTaskPriority, setTaskStatus, toggleTaskDone } from "../data/mutations-tasks.js";
 import { findEntry } from "../data/queries.js";
 import { openSheet } from "./sheet.js";
 import { showToast } from "./toast.js";

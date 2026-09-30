@@ -1,6 +1,8 @@
 /*
  * Feste Listen der App: Eintragstypen, Übersichtskarten, XP-Arten, Themes.
  * Hier steht nur, WAS es gibt — nicht, wie es aussieht oder was gespeichert ist.
+ * Status, Dringlichkeit und die Bedien-Listen der Aufgaben-Seite stehen in
+ * src/data/config-tasks.js.
  * Pfad: src/data/config.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -19,14 +21,9 @@
  * linkableTypes           -> welche Typen sich mit einem Eintrag verknüpfen lassen
  * workspaceDefaultName    -> Vorgabename eines neuen Arbeitsbereichs
  * levelSteps / levelStep  -> ab wie vielen XP die nächste Stufe beginnt
- * taskPriorities          -> Name, Icon und Farbe der vier Board-Spalten
- * defaultTaskPriority     -> Priorität, mit der eine NEUE Aufgabe startet („Später“)
- * defaultTaskStatus       -> Status, mit dem eine neue Aufgabe startet („Offen“)
- * taskStatuses            -> Name, Icon und Farbe der Status-Chips
- * taskGroupings           -> wonach sich Liste und Board gruppieren lassen (Dringlichkeit oder Status)
- * taskSorts               -> wonach die Aufgaben-Seite sortieren kann
- * taskDefaults            -> womit eine neue Ansicht der Aufgaben-Seite startet
  * calendarSegments[*].add -> Beschriftung der Pille am leeren Kalendertag
+ * projectSorts            -> wonach sich die Projekte sortieren lassen, samt Wortlaut beider Richtungen
+ * projectViewDefaults     -> womit „Alle“ und jede neue Ansicht der Projekte startet
  * stageModes              -> die drei Modi der Bühne auf der Übersicht (Desktop): Icon im Schalter und
  *                            Beschriftung, die beim Überfahren erscheint
  */
@@ -108,13 +105,15 @@ export const fileDraftTypes = { bare: "medien", withText: "dokument" };
 /*
  * Die vier Übersichtskarten. Nur der Eingang ist ein Ablageort (parent null =
  * „nirgends abgelegt“). Die anderen drei sind Sammlungen („kind“): Favoriten
- * zeigt Markiertes, Projekte alle Projekte, Ressourcen alle Dokumente,
- * Zeichnungen und Medien — egal, wo sie liegen.
+ * zeigt Markiertes, Arbeitsbereiche alle Arbeitsbereiche je Tab (dort werden
+ * sie auch angelegt), Ressourcen alle Dokumente, Zeichnungen und Medien —
+ * egal, wo sie liegen. Die Projekte stehen unter den Karten auf der Übersicht
+ * und auf ihrer eigenen Seite (projectsPage in src/data/collections.js).
  */
 export const overviewPages = {
   1: { title: "Eingang", icon: "inbox", parent: null },
   2: { title: "Favoriten", icon: "star-outline", kind: "favorites" },
-  3: { title: "Projekte", icon: "rocket", kind: "projects" },
+  3: { title: "Arbeitsbereiche", icon: "layers", kind: "workspaces" },
   4: { title: "Ressourcen", icon: "cube", kind: "resources" },
 };
 
@@ -301,96 +300,25 @@ export const resourceFilterTypes = {
   own: "dokument",
 };
 
-/* ---------- Aufgaben-Seite: Status, Prioritäten und die drei Bedien-Listen ---------- */
+/* ---------- Ansichten der Projekte (Übersicht, Seite Projekte) ---------- */
 
 /**
- * Status einer Aufgabe. `done: true` heißt „zählt als erledigt“ — davon hängt
- * ab, ob der Titel durchgestrichen wird und die Zeile ganz nach unten rutscht.
+ * Sortierarten der Projekte. `up` und `down` sind der Wortlaut der beiden
+ * Richtungen im Blatt „Sortieren“ (src/ui/sort-sheet.js), `asc` die Richtung,
+ * die beim Wechsel auf diese Option gilt. Die Regeln dahinter stehen in
+ * `sortProjects` in src/data/project-views.js.
  */
-export const taskStatuses = [
-  { id: "offen", label: "Offen", icon: "circle", color: "var(--muted)" },
-  { id: "inArbeit", label: "In Arbeit", icon: "history", color: "var(--cal-accent)" },
-  { id: "erledigt", label: "Erledigt", icon: "check-circle", color: "var(--xp-done)", done: true },
-];
-
-/** Status einer neu angelegten Aufgabe. */
-export const defaultTaskStatus = "offen";
-
-/** Status, den der runde Haken-Knopf setzt. */
-export const doneTaskStatus = "erledigt";
-
-/**
- * Prioritäten in der Reihenfolge, in der sie im Board als Spalten stehen:
- * die dringendste links. Ein weiterer Eintrag hier ist eine weitere Spalte.
- */
-export const taskPriorities = [
-  { id: "jetzt", label: "Jetzt", icon: "flame", color: "var(--prio-jetzt)" },
-  { id: "next", label: "Als Nächstes", icon: "arrow-right", color: "var(--prio-next)" },
-  { id: "spaeter", label: "Später", icon: "clock", color: "var(--prio-spaeter)" },
-  { id: "irgendwann", label: "Irgendwann", icon: "moon", color: "var(--prio-irgendwann)" },
-];
-
-/** Priorität einer neu angelegten Aufgabe. */
-export const defaultTaskPriority = "spaeter";
-
-/** Die beiden Ansichten der Aufgaben-Seite. */
-export const taskLayouts = ["list", "board"];
-
-/**
- * Wonach die Board-Spalten gruppieren. `columns` sagt, welche Liste die Spalten
- * liefert — ein weiteres Kriterium ist nur ein weiteres Objekt hier plus seine
- * Liste oben.
- *
- * Der Status steht bewusst vorn: mit „offen, in Arbeit, erledigt“ kann fast
- * jeder etwas anfangen, mit „Dringlichkeit“ erst nach kurzem Nachdenken. Diese
- * Reihenfolge bestimmt zugleich, was das Menü „Gruppieren“ zuerst anbietet und
- * worauf die Seite zurückfällt, wenn eine gespeicherte Wahl nicht mehr gilt.
- */
-export const taskGroupings = [
-  { id: "status", label: "Status", icon: "check-circle", field: "status", columns: taskStatuses },
-  { id: "priority", label: "Dringlichkeit", icon: "flame", field: "priority", columns: taskPriorities },
+export const projectSorts = [
+  { id: "name", label: "Name", icon: "text", up: "A bis Z", down: "Z bis A", asc: true },
+  { id: "erstellt", label: "Erstellt", icon: "plus-circle", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
+  { id: "geaendert", label: "Zuletzt geändert", icon: "pencil", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
+  { id: "geoeffnet", label: "Zuletzt geöffnet", icon: "history", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
+  { id: "eintraege", label: "Einträge", icon: "list", up: "Wenigste zuerst", down: "Meiste zuerst", asc: false },
 ];
 
 /**
- * Sortierarten der Aufgaben-Seite. Welche Regel dahintersteckt, steht in
- * `sortTasks` in src/data/queries.js; „erstellt“ ist zugleich die von Hand
- * im Board gezogene Reihenfolge.
+ * Womit „Alle“ und jede neue Ansicht der Projekte startet: zuletzt Geöffnetes
+ * oben, ohne Filter. `place` ist "alle", "inbox" oder ein Verweis wie „w:3“;
+ * `ids` ist die handverlesene Liste — leer heißt „nach den Filtern“.
  */
-export const taskSorts = [
-  { id: "erstellt", label: "Erstellt", icon: "history" },
-  { id: "faellig", label: "Fällig", icon: "calendar" },
-  { id: "titel", label: "Titel", icon: "text" },
-];
-
-/**
- * Womit eine Ansicht der Aufgaben-Seite startet: als Liste aller Aufgaben,
- * nicht gruppiert, älteste zuerst (Neues hängt sich unten an), Erledigtes
- * ausgeblendet. `group` ist "none" oder eine id aus taskGroupings; `place`
- * ist "alle", "inbox" oder ein Verweis wie „w:3“ / „e:12“.
- */
-export const taskDefaults = {
-  layout: "list",
-  group: "none",
-  sort: "erstellt",
-  sortAsc: true,
-  place: "alle",
-  hideDone: true,
-};
-
-/** Beschreibung eines Status; unbekannte Werte aus alten Ständen gelten als offen. */
-export function taskStatusOf(id) {
-  return taskStatuses.find((item) => item.id === id) || taskStatuses[0];
-}
-
-/** Beschreibung einer Priorität; unbekannte Werte gelten als die Vorgabe. */
-export function taskPriorityOf(id) {
-  return (
-    taskPriorities.find((item) => item.id === id) ||
-    taskPriorities.find((item) => item.id === defaultTaskPriority)
-  );
-}
-
-/** Gilt diese Aufgabe als erledigt? */
-export function isTaskDone(entry) {
-  return Boolean(taskStatusOf(entry && entry.status).done);
-}
+export const projectViewDefaults = { sort: "geoeffnet", sortAsc: false, place: "alle", favoritesOnly: false, ids: [] };

@@ -18,7 +18,7 @@
 
 import { emit, events } from "../core/bus.js";
 import { nextId, sameId } from "../core/ids.js";
-import { taskDefaults } from "./config.js";
+import { taskDefaults } from "./config-tasks.js";
 import { saveState, state, ui } from "./state.js";
 
 export const allViewName = "Alle";

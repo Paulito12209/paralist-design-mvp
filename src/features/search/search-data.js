@@ -8,6 +8,7 @@
  * und wie sie gefiltert werden, steht in search-refine.js.
  */
 
+import { projectsPage } from "../../data/collections.js";
 import { overviewPages, typeIcon, typeLabel } from "../../data/config.js";
 import { openCounts } from "../../data/opens.js";
 import { findEntry, findWorkspace, placesLabel, workspaceIcon } from "../../data/queries.js";
@@ -95,6 +96,8 @@ function searchPool() {
       text: page.title,
       make: () => itemOfPage(id, page),
     })),
+    /* Die Seite Projekte steht wie eine Karte in der Suche; ihr Schlüssel ist ihre Art. */
+    { title: projectsPage.title, text: projectsPage.title, make: () => itemOfPage(projectsPage.kind, { ...projectsPage, icon: "rocket" }) },
   ];
 }
 

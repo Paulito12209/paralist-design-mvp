@@ -2,7 +2,7 @@
  * Startseite: die zweite Kartenseite rechts neben den vier festen Karten
  * (erst sichtbar, wenn man sie hereinwischt), die Linie darunter, die zeigt,
  * welche Seite steht, die Karten „Demnächst verfügbar“ und der Pfeil neben
- * „Arbeitsbereiche“.
+ * „Projekte“.
  * Pfad: styles/overview-more.css
  *
  * ANPASSBARE WERTE (in styles/tokens-pages.css)
@@ -14,11 +14,11 @@
  * Direkt hier bei ihrer Regel:
  * .card-soon           -> Schildchen „Demnächst verfügbar“: Schrift 10px, Abstand 10px zur Ecke
  * .card-info           -> das „i“ im Kreis neben dem Namen: 16px groß
- * .section-link .icon  -> Pfeil nach oben rechts neben „Arbeitsbereiche“: 16px groß
+ * .section-link .icon  -> Pfeil nach oben rechts neben „Projekte“: 16px groß
  *
  * Farben kommen aus styles/tokens.css: --line (Seitenlinie, wie die Trennlinien
  * der Listen), --placeholder (ihr gefüllter Teil, wie „Suchen“ im Suchfeld),
- * --muted, --text, --archive-color, --icon-soft (Pfeil neben „Arbeitsbereiche“);
+ * --muted, --text, --archive-color, --icon-soft (Pfeil neben „Projekte“);
  * --bookmark-color (Lila der Lesezeichen-Karte) steht in styles/tokens-pages.css.
  */
 
@@ -129,7 +129,7 @@
   color: var(--archive-color);
 }
 
-/* ---------- Pfeil neben „Arbeitsbereiche“ ---------- */
+/* ---------- Pfeil neben „Projekte“ ---------- */
 
 .section-link {
   display: inline-flex;

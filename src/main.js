@@ -28,9 +28,11 @@ import { initEntry } from "./features/entry/entry.js";
 import { loadPhoto, renderProfileButton, savedPhoto } from "./features/profile/avatar.js";
 import { initOverview, renderOverview } from "./features/overview/overview.js";
 import { initPage } from "./features/overview/page.js";
-import { beginRenameTab, initTabs, openTabMenu, renderTabs } from "./features/overview/tabs.js";
+import { openProjectViewMenu } from "./features/overview/project-views.js";
+import { initProjects, renderProjectSection } from "./features/overview/projects.js";
+import { beginRenameTab, initTabs, openTabMenu } from "./features/overview/tabs.js";
 import { initWorkspacePage } from "./features/overview/workspace-page.js";
-import { commitWorkspaceName, initWorkspaces, openWorkspaceMenu, renderWorkspaces } from "./features/overview/workspaces.js";
+import { commitWorkspaceName, initWorkspaces, openWorkspaceMenu } from "./features/overview/workspaces.js";
 import { initKeyboardInset } from "./shell/keyboard-inset.js";
 import { initLevelGauge } from "./shell/level-gauge.js";
 import { initLifecycle } from "./shell/lifecycle.js";
@@ -51,6 +53,7 @@ import { initModalPull } from "./ui/modal-pull.js";
 import { initModalTop } from "./ui/modal-top.js";
 import { initPillTapReveal } from "./ui/pill-swipe.js";
 import { initPullSearch } from "./ui/pull-search.js";
+import { initHistoryRestore } from "./ui/router-restore.js";
 import { initSheet } from "./ui/sheet.js";
 import { initSwipe } from "./ui/swipe.js";
 
@@ -107,6 +110,7 @@ function loadEverything() {
 function initShell() {
   initSheet();
   initCtxMenu();
+  initHistoryRestore();
   initModalPull();
   initModalTop();
   initPullSearch();
@@ -128,6 +132,7 @@ function initShell() {
 /* Alle Bereiche anmelden, die von Anfang an da sein müssen. */
 function initFeatures() {
   initOverview();
+  initProjects();
   initTabs();
   initWorkspaces();
   initPage();
@@ -156,7 +161,7 @@ function initLazyViews() {
 function initDeskWhenWide() {
   const mount = () => {
     if (!isDesk()) return;
-    load("desk").then((module) => module.initDesk({ openWorkspaceMenu, openTabMenu, profilePhoto: savedPhoto, railCards }));
+    load("desk").then((module) => module.initDesk({ openProjectViewMenu, profilePhoto: savedPhoto, railCards }));
     load("dashboard").then((module) => module.initDashboard());
   };
   mount();
@@ -166,8 +171,7 @@ function initDeskWhenWide() {
 /* Die Startseite aufbauen und die Adresse setzen. */
 function showStartPage() {
   renderOverview();
-  renderTabs();
-  renderWorkspaces();
+  renderProjectSection();
   renderProfileButton();
   history.replaceState({ view: "home" }, "", "#/");
 }

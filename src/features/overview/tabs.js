@@ -1,28 +1,28 @@
 /*
- * Die Tab-Pillen über den Arbeitsbereichen: wählen, umbenennen, Icon geben,
- * löschen. Der aktive Tab ist gefüllt, ein neuer Tab startet gleich im
- * Eingabefeld. Waagerecht über die Übersicht wischen wechselt zum
- * nächsten oder vorigen Tab (src/ui/pill-swipe.js).
+ * Die Tab-Pillen auf der Seite Arbeitsbereiche: wählen, umbenennen, Icon
+ * geben, löschen. Der aktive Tab ist gefüllt, ein neuer Tab startet gleich im
+ * Eingabefeld. Gezeichnet wird die Zeile von
+ * src/features/overview/workspace-collection.js, das Wischen meldet sie dort an.
  * Pfad: src/features/overview/tabs.js
  *
  * Keine anpassbaren visuellen Werte: Schriftgröße und Hintergrund der Pillen
  * stehen in styles/overview.css (--tab-pill-size, --tab-pill-active-bg).
  */
 
-import { emit, events, on } from "../../core/bus.js";
+import { emit, events } from "../../core/bus.js";
 import { dom, el, focusAtEnd } from "../../core/dom.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { sameId } from "../../core/ids.js";
 import { noHistoryForm } from "../../core/no-history.js";
-import { deleteTab, selectTab } from "../../data/mutations.js";
+import { deleteTab } from "../../data/mutations.js";
 import { tabLabel } from "../../data/queries.js";
 import { saveState, state, ui } from "../../data/state.js";
 import { awardXp } from "../../data/xp.js";
 import { openCtxMenu } from "../../ui/ctx-menu.js";
 import { iconPickerAction } from "../../ui/pickers.js";
 import { fitPillInput } from "../../ui/pill-input.js";
-import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
-import { isViewActive } from "../../ui/views.js";
+import { revealActive } from "../../ui/pill-swipe.js";
+import { currentView } from "../../ui/views.js";
 
 function pillMarkup(tab) {
   const glyph = tab.icon ? icon(tab.icon, "tab-pill-icon") : "";
@@ -45,22 +45,37 @@ function pillMarkup(tab) {
   `;
 }
 
-/** Die Pillen neu zeichnen. Beim Umbenennen bekommt die Eingabe den Fokus. */
-export function renderTabs() {
-  dom.workspaceTabs.innerHTML = `${state.tabs.map(pillMarkup).join("")}
+/** Alle Tab-Pillen samt kleinem Plus — auf der Übersicht und der Seite Arbeitsbereiche. */
+export function tabPillsMarkup() {
+  return `${state.tabs.map(pillMarkup).join("")}
     <button class="tab-pill-add" type="button" data-tab-add="1" aria-label="Tab hinzufügen">
       ${icon("plus")}
     </button>`;
+}
 
-  const input = el("tab-name-input");
+/* Die Seite, auf der gerade getippt wird — dort soll die Pille ins Bild rollen. */
+function activeViewSection() {
+  return el(`view-${currentView()}`);
+}
+
+/* Das Namensfeld der sichtbaren Seite. Nur dort suchen: eine verborgene Seite
+   kann noch ein altes Feld mit derselben id tragen, bis sie neu zeichnet. */
+function tabNameInput() {
+  return activeViewSection()?.querySelector("#tab-name-input") || null;
+}
+
+/** Nach dem Zeichnen: steht ein Namensfeld da, passt es sich an und bekommt den Fokus. */
+export function afterTabsRender() {
+  const input = tabNameInput();
   if (!input) return;
   fitPillInput(input);
   focusAtEnd(input);
 }
 
+
 /** Den eingegebenen Namen übernehmen. Ein leerer Name behält den Platzhalter. */
 export function commitTabName() {
-  const input = el("tab-name-input");
+  const input = tabNameInput();
   if (!input) return;
   const tab = state.tabs.find((item) => sameId(item.id, ui.editingTabId));
   ui.editingTabId = null;
@@ -75,10 +90,10 @@ export function commitTabName() {
   saveState();
   /* Als Datenänderung melden statt nur die Pillen hier neu zu zeichnen: den
      Namen zeigt auch die Seitenleiste der Desktop-Fassung. Die Pillen zeichnet
-     der Zuhörer in initTabs() neu — wie beim Umbenennen eines Arbeitsbereichs. */
+     die Seite Arbeitsbereiche dabei selbst neu. */
   emit(events.dataChanged);
   /* Als fertige Pille ist der Tab breiter als das Eingabefeld: ganz ins Bild holen */
-  revealActive(el("view-home"));
+  revealActive(activeViewSection());
 }
 
 /** Umbenennen einer Pille starten. */
@@ -86,10 +101,8 @@ export function beginRenameTab(id) {
   const tab = state.tabs.find((item) => sameId(item.id, id));
   ui.editingTabId = id;
   if (tab && !tab.placeholder) tab.placeholder = tab.name;
-  /* Als Datenänderung melden statt nur die Pillen zu zeichnen — wie beim
-     Arbeitsbereich: kommt „Umbenennen“ aus der Seitenleiste am Desktop, wechselt
-     sie dann zur Übersicht, wo das Namensfeld steht. Die Pillen zeichnet der
-     Zuhörer in initTabs() neu. */
+  /* Als Datenänderung melden statt nur die Pillen zu zeichnen: die Seite
+     Arbeitsbereiche zeichnet sich neu und setzt den Fokus ins Namensfeld. */
   emit(events.dataChanged);
 }
 
@@ -114,44 +127,32 @@ export function openTabMenu(pill) {
   openCtxMenu(pill, options);
 }
 
-/** Tastatur und Fokus im Umbenennen-Feld, Wischen sowie das Auffrischen anmelden. */
-export function initTabs() {
-  const pills = dom.workspaceTabs;
-
-  pills.addEventListener("input", (event) => {
+/* Tippen, Enter und Fokusverlust im Namensfeld eines Tabs. */
+function bindTabNameInput(container) {
+  container.addEventListener("input", (event) => {
     if (event.target.id !== "tab-name-input") return;
     fitPillInput(event.target);
     /* Der Tab wächst beim Tippen: sonst verschwände sein Ende unter Linie und Plus-Knopf */
-    revealActive(el("view-home"));
+    revealActive(activeViewSection());
   });
 
-  pills.addEventListener("keydown", (event) => {
+  container.addEventListener("keydown", (event) => {
     if (event.target.id !== "tab-name-input" || event.key !== "Enter") return;
     event.preventDefault();
     commitTabName();
   });
 
   /* blur in der Aufnahmephase: sonst erreicht das Ereignis den Zuhörer nicht */
-  pills.addEventListener(
+  container.addEventListener(
     "blur",
     (event) => {
       if (event.target.id === "tab-name-input") commitTabName();
     },
     true
   );
+}
 
-  /* Nicht während ein Tab umbenannt wird: dann gehört das Wischen dem Textfeld. */
-  initPillSwipe(el("view-home"), {
-    order: () => state.tabs.map((tab) => tab.id),
-    current: () => state.activeTabId,
-    select: selectTab,
-    enabled: () => ui.editingTabId == null,
-  });
-
-  on(events.dataChanged, () => {
-    if (isViewActive("home")) renderTabs();
-  });
-  on(events.viewOpened, (name) => {
-    if (name === "home") renderTabs();
-  });
+/** Tastatur und Fokus im Umbenennen-Feld anmelden — das Feld steht in der Seite Arbeitsbereiche. */
+export function initTabs() {
+  bindTabNameInput(dom.pageBody);
 }

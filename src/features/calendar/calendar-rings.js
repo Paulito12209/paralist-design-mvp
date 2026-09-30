@@ -28,7 +28,8 @@
  */
 
 import { cssNumber } from "../../core/css-vars.js";
-import { isTaskDone, xpItems } from "../../data/config.js";
+import { xpItems } from "../../data/config.js";
+import { isTaskDone } from "../../data/config-tasks.js";
 import { calendarDayEntries } from "../../data/queries.js";
 
 const BOX = 44;

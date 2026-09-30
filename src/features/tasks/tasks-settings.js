@@ -1,7 +1,7 @@
 /*
  * Der Inhalt der Karte „Ansicht konfigurieren“ auf der Aufgaben-Seite: die
  * Einstellungen der gewählten Ansicht. Kopf, Lage und Aus- und Einklappen
- * der Karte stehen in tasks-panel.js — hier nur die Zeilen:
+ * der Karte stehen in src/ui/view-panel.js — hier nur die Zeilen:
  *
  * - Layout: Liste | Board
  * - Sortieren: Zeile mit der Wahl, ein Tipp öffnet das Blatt
@@ -23,10 +23,12 @@
  */
 
 import { escapeHtml, icon } from "../../core/html.js";
-import { taskGroupings, taskSorts } from "../../data/config.js";
+import { panelSegment as segment, panelToggle as toggle } from "../../ui/panel-rows.js";
+import { taskGroupings, taskSorts } from "../../data/config-tasks.js";
 import { parentName, taskPlaces } from "../../data/queries.js";
 import { updateTaskView } from "../../data/task-views.js";
 import { openSheet } from "../../ui/sheet.js";
+import { openSortSheet, sortSummary } from "../../ui/sort-sheet.js";
 
 const rowLabels = {
   layout: "Layout",
@@ -49,28 +51,9 @@ const layouts = [
   { id: "board", label: "Board", icon: "board" },
 ];
 
-/* Ein Segment aus zwei, drei Knöpfen; der gewählte ist gefüllt. */
-function segment(items, current, setting) {
-  return `<span class="tasks-seg">${items
-    .map(
-      (item) => `
-        <button class="tasks-seg-btn${item.id === current ? " is-on" : ""}" type="button"
-          data-settings="${setting}" data-value="${item.id}" aria-label="${escapeHtml(item.label)}" title="${escapeHtml(item.label)}"
-          aria-pressed="${item.id === current}">${item.icon ? icon(item.icon) : escapeHtml(item.label)}</button>`
-    )
-    .join("")}</span>`;
-}
-
-/* Ein Schalter, an oder aus. */
-function toggle(setting, on, label) {
-  return `<button class="tasks-switch${on ? " is-on" : ""}" type="button" role="switch" aria-checked="${on}"
-    data-settings="${setting}" aria-label="${escapeHtml(label)}"><span class="tasks-switch-knob"></span></button>`;
-}
-
-/* Was in der Sortier-Zeile steht: „Erstellt ↑“. */
+/* Was in der Sortier-Zeile steht: „Erstellt · Älteste zuerst“. */
 function sortValue(view) {
-  const sort = taskSorts.find((item) => item.id === view.sort) || taskSorts[0];
-  return `${sort.label} ${view.sortAsc ? "↑" : "↓"}`;
+  return sortSummary(taskSorts, view.sort, view.sortAsc);
 }
 
 /* Was in der Filter-Zeile steht. */
@@ -128,20 +111,15 @@ export function taskSettingsMarkup(view) {
   `;
 }
 
-/* Blatt „Sortieren“: wonach, darunter die Richtung. Bleibt offen, bis man es zuzieht. */
-function openSortSheet(view) {
-  const options = taskSorts.map((item) => ({
-    label: item.label,
-    icon: item.icon,
-    active: view.sort === item.id,
-    onSelect: () => updateTaskView({ sort: item.id }),
-  }));
-  options.push({
-    label: view.sortAsc ? "Aufsteigend" : "Absteigend",
-    icon: view.sortAsc ? "arrow-up" : "arrow-down",
-    onSelect: () => updateTaskView({ sortAsc: !view.sortAsc }),
+/* Blatt „Sortieren“: wonach, darunter die Richtung (src/ui/sort-sheet.js). */
+function openTaskSort(view) {
+  openSortSheet({
+    title: sortTitle,
+    options: taskSorts,
+    sort: view.sort,
+    asc: view.sortAsc,
+    onChange: (sort, sortAsc) => updateTaskView({ sort, sortAsc }),
   });
-  openSheet(sortTitle, options);
 }
 
 /* Blatt „Aufgaben von“: alle Orte, an denen Aufgaben liegen oder verknüpft sind. */
@@ -165,7 +143,7 @@ export function handleSettingsClick(event, view) {
   if (!button) return;
   const { settings, value } = button.dataset;
   if (settings === "layout") updateTaskView({ layout: value });
-  else if (settings === "sort") openSortSheet(view);
+  else if (settings === "sort") openTaskSort(view);
   else if (settings === "place") openPlaceSheet(view);
   else if (settings === "info") openSheet(infoTitle, [{ lead: true, label: infoText }]);
   else if (settings === "group-toggle") updateTaskView({ group: view.group === "none" ? taskGroupings[0].id : "none" });

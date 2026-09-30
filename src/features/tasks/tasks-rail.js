@@ -21,7 +21,7 @@ import { dayKey } from "../../core/dates.js";
 import { dom } from "../../core/dom.js";
 import { formatNumber, shortDay } from "../../core/format.js";
 import { escapeHtml, icon } from "../../core/html.js";
-import { isTaskDone, taskPriorities, taskPriorityOf, taskStatusOf } from "../../data/config.js";
+import { isTaskDone, taskPriorities, taskPriorityOf, taskStatusOf } from "../../data/config-tasks.js";
 import { findEntry, placesLabel, taskEntries } from "../../data/queries.js";
 import { activeTaskView } from "../../data/task-views.js";
 import { cardHead, createPill, railTaskRow, railTitle } from "../../ui/rail-parts.js";

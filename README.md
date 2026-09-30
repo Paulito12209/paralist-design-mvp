@@ -89,8 +89,10 @@ Tab
          └─ alles andere    { id, type, title, body, places: ["e:17"] }
 ```
 
-- **Arbeitsbereiche** stehen ganz oben, direkt auf der Übersichtsseite. Sie
-  liegen nie in etwas anderem und sind keine Einträge.
+- **Arbeitsbereiche** stehen ganz oben in der Ordnung. Sie liegen nie in etwas
+  anderem und sind keine Einträge. Angezeigt werden sie auf ihrer eigenen
+  Seite (Karte „Arbeitsbereiche“), je Tab eine Pille; die Übersicht zeigt
+  darunter die Projekte, weil man die viel öfter öffnet.
 - **Jeder Eintrag hat eine Liste von Ablageorten** (`places`) und erscheint an
   jedem davon: `"w:<id>"` ist ein Arbeitsbereich, `"e:<id>"` ein Projekt, die
   leere Liste heißt Eingang. So liegt ein Projekt zugleich bei Marketing und bei
@@ -108,9 +110,13 @@ Tab
   „Alle Einträge löschen“), wird er aus den Einträgen gestrichen. Was nur dort
   lag, ist weg bzw. rückt in den Eingang; was auch woanders liegt, bleibt dort.
   Inhalte eines gelöschten Projekts übernehmen dessen Orte.
-- **Die Karten Projekte, Favoriten und Ressourcen sind Sammlungen**, keine
-  Orte: sie zeigen alle Projekte, alles Markierte, alle Dokumente, Zeichnungen
-  und Medien — egal, wo sie liegen. Nur der Eingang ist ein Ort.
+- **Die Karten Favoriten, Arbeitsbereiche und Ressourcen sind Sammlungen**,
+  keine Orte: sie zeigen alles Markierte, alle Arbeitsbereiche, alle
+  Dokumente, Zeichnungen und Medien — egal, wo sie liegen. Nur der Eingang ist
+  ein Ort. Die Projekte stehen in **Ansichten** (`src/data/project-views.js`):
+  „Alle“ fest, eigene Ansichten mit Sortierung, Ort-Filter, „Nur Favoriten“
+  oder einer handverlesenen Liste. In der Oberfläche heißen sie immer
+  „Ansicht“, nie „Tab“ — Tabs sind die Pillen der Arbeitsbereiche.
 - **Der Typ lässt sich nachträglich ändern** (`src/data/convert.js`): aus einer
   Notiz wird eine Aufgabe, aus einer Aufgabe ein Projekt, aus einem Eintrag ein
   Arbeitsbereich — und zurück. Die Regel dabei: was zu einem Ding gehört,
@@ -150,9 +156,9 @@ Build-Schritt hinzufügen, der nach Android nicht mitwandert.
 
 Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 
-**Übersicht**
-- Die vier Karten öffnen (Eingang, Favoriten, Projekte, Ressourcen) und zurück —
-  die Zahl auf der Karte passt zur Zahl der Zeilen.
+**Übersicht** (375 px, hell und dunkel, leerer und voller Speicher)
+- Die vier Karten öffnen (Eingang, Favoriten, Arbeitsbereiche, Ressourcen) und
+  zurück — die Zahl passt zur Liste (Arbeitsbereiche: alle Tabs, ohne archivierte).
 - Auf einer Unterseite (Karte, Arbeitsbereich, Eintrag) ist die allgemeine
   Kopfzeile mit Level, Suche und Profil weg: ganz oben links steht nur der
   Zurück-Pfeil. Suche und Optionen erscheinen erst beim Herunterscrollen in
@@ -160,11 +166,28 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   Zurück zur Übersicht und erneut öffnen zeigt wieder ganz oben, mit
   verborgener Suche. Über die Suche geht es auf die Suchseite, dort ist die
   allgemeine Kopfzeile wieder da und der Cursor steht im Feld.
-- Tab anlegen, benennen (Enter **und** Klick daneben), wechseln, umbenennen,
-  Icon geben, löschen. Beim Löschen verschwinden seine Arbeitsbereiche, deren
-  Einträge wandern in den Eingang.
-- Arbeitsbereich anlegen, umbenennen, Icon geben, zu Favoriten, löschen.
-- Lange auf eine Tab-Pille oder eine Arbeitsbereich-Zeile drücken: das Menü
+- Projekte unter den Karten: „Alle“ zeigt jedes Projekt, zuletzt Geöffnetes
+  oben. Projekt über den Raketen-Knopf und über die Zeile „Projekt
+  hinzufügen“ anlegen. Ansicht anlegen (kleines Plus, startet im Namensfeld),
+  benennen, Icon, duplizieren, nach links/rechts, löschen — halten oder
+  Rechtsklick auf die Pille; „Alle“ nur Icon und Duplizieren. Wischen wechselt
+  die Ansicht, nicht während des Benennens. „Zum Archiv“ öffnet die Pille
+  Projekte. Zweites Antippen von „Übersicht“ rollt die Karten zurück.
+- Karte „Ansicht“ über der Navigation (Kopf antippen oder ziehen): Sortieren
+  mit „Sortieren nach“ und „Sortierungsrichtung“ — jede Option in beiden
+  Richtungen; Filtern nach Ort; Nur Favoriten; Projekte wählen (danach sind
+  Filtern und Favoriten gesperrt, die Zeile sagt „Handverlesen, n Projekte“).
+  Ansicht mit Arbeitsbereichs-Filter: neues Projekt liegt dort und steht in
+  der Liste. Handverlesenes Projekt löschen: Liste sauber; archivieren und
+  zurückholen: steht wieder da.
+- „Projekte ↗“ öffnet die Seite Projekte mit derselben Ansicht, allen Punkten
+  von oben; Zurück führt zur Übersicht.
+- Seite Arbeitsbereiche: Tab anlegen, benennen (Enter **und** Klick daneben),
+  wechseln, umbenennen, Icon, löschen (seine Arbeitsbereiche verschwinden,
+  deren Einträge wandern in den Eingang). Arbeitsbereich anlegen,
+  umbenennen, Icon, Favorit, in anderen Tab verschieben und „Zeigen“,
+  archivieren, „Zum Archiv“, zurückholen, löschen. Wischen wechselt den Tab.
+- Lange auf eine Pille oder Zeile drücken (oder Rechtsklick): das Menü
   geht auf und die Seite darunter öffnet sich **nicht**.
 - Zeile nach links wischen (Archivieren, Löschen) und nach rechts (Favorit,
   Verknüpfen). Eine aufgewischte Zeile schiebt sich beim Antippen erst zu.
@@ -177,7 +200,7 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 
 **Anlegen**
 - Jeden Typ einmal anlegen; der aktive Knopf lässt sich abwählen, dann entsteht
-  ein Dokument. Ein Projekt landet auf der Projekte-Karte.
+  ein Dokument. Ein Projekt steht danach in „Alle“ unter den Karten.
 - Ablageort über die Verknüpfen-Pille wechseln.
 - Foto/Video/Audio/Datei anhängen und wieder entfernen; ohne Text heißt der
   Eintrag wie die erste Datei.
@@ -249,7 +272,7 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   Eintrag → Arbeitsbereich steht die Seite des Arbeitsbereichs offen; Zurück
   führt dorthin, woher man kam. Zeichnung und Medium haben die Option nicht.
 - Aufgaben-Seite: der Titel steht allein, darunter die Pillen der Ansichten
-  wie die Tabs über den Arbeitsbereichen: „Alle“ (fest), eigene Ansichten,
+  wie bei den Projekten auf der Übersicht: „Alle“ (fest), eigene Ansichten,
   das kleine Plus legt eine neue Ansicht als Kopie von „Alle“ an (startet im
   Namensfeld), rechts hinter der Trennlinie öffnet ✓+ dieselbe leere Zeile wie ein Tipp
   in die Liste (am Ende der Liste bzw. der ersten Gruppe, im Board in der
@@ -259,8 +282,9 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 - Karte „Ansicht konfigurieren“ als Ebene über der Liste, unter der
   Navigation: eingeklappt schaut nur der Kopf hervor; Tipp auf Kopf oder
   Symbol rechts (oder Kopf ziehen) klappt sie aus und wieder ein, die Liste
-  bleibt dabei stehen. Beim Umstellen bleibt der Inhalt sichtbar. Layout Liste | Board, Sortieren (Blatt: Erstellt /
-  Fällig / Titel, Richtung), Filtern (Blatt „Aufgaben von“ — bei „Alle“
+  bleibt dabei stehen. Beim Umstellen bleibt der Inhalt sichtbar. Layout Liste | Board, Sortieren (Blatt „Sortieren
+  nach“ Erstellt / Fällig / Titel, darunter „Sortierungsrichtung“ mit eigenem
+  Wortlaut je Option; die Zeile zeigt z.B. „Titel · A bis Z“), Filtern (Blatt „Aufgaben von“ — bei „Alle“
   gesperrt, das ⓘ erklärt die eigene Ansicht), Gruppieren als Schalter (an:
   „Spalten nach“ Dringlichkeit | Status), Erledigte zeigen. Jede Ansicht
   merkt sich das für sich. Standard: alle Aufgaben als eine Liste, älteste

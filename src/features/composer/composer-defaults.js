@@ -18,8 +18,9 @@ import {
   resourceFilterTypes,
   resourcePick,
 } from "../../data/config.js";
+import { findProjectView } from "../../data/project-views.js";
 import { findEntry, isContainer, mainPlace } from "../../data/queries.js";
-import { entryRef } from "../../data/refs.js";
+import { entryRef, isWorkspaceRef } from "../../data/refs.js";
 import { state, ui } from "../../data/state.js";
 import { currentView } from "../../ui/views.js";
 
@@ -35,6 +36,16 @@ function calendarType() {
   if (prefs.mode !== "list") return "termin";
   const segment = calendarSegments.find((item) => item.id === prefs.seg);
   return segment ? segment.pick : "termin";
+}
+
+/*
+ * „Projekt hinzufügen“ aus einer Projekt-Ansicht, die nach einem
+ * Arbeitsbereich filtert: das Eingabefeld zeigt gleich diesen Ort — dorthin
+ * legt es src/data/project-views.js (applyProjectDraft) ohnehin.
+ */
+function projectDraftPlace() {
+  const view = ui.projectDraftView != null ? findProjectView(ui.projectDraftView) : null;
+  return view && !view.fixed && !view.ids.length && isWorkspaceRef(view.place) ? view.place : null;
 }
 
 /**
@@ -54,7 +65,7 @@ function calendarType() {
  * Bei einem Projekt braucht es das nicht — dort ist der Ablageort schon die
  * Verbindung, und ein Projekt steht nie unter „Verknüpfte Einträge“.
  *
- * TYP — das, was die Seite gerade zeigt: die Projekte-Karte ein Projekt, die
+ * TYP — das, was die Seite gerade zeigt: die Seite Projekte ein Projekt, die
  * Ressourcen-Seite den Typ ihrer aktiven Pille, die Lesezeichen-Seite ein
  * Lesezeichen, der Kalender einen Termin, die Aufgaben-Seite und ein offenes
  * Projekt eine Aufgabe, die Medien-Seite ein Medium. Sonst der Vorschlag aus
@@ -66,6 +77,8 @@ function calendarType() {
 export function contextDefaults() {
   const proposal = { type: proposedType, place: null };
   const view = currentView();
+  const draftPlace = projectDraftPlace();
+  if (draftPlace) return { type: "projekt", place: draftPlace };
 
   if (view === "page" && ui.currentPage) {
     const page = ui.currentPage;

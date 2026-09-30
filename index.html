@@ -82,27 +82,13 @@
           <section class="view is-active" id="view-home" data-view="home">
             <h1 class="screen-title">Übersicht</h1>
 
-            <!-- data-own-swipe: waagerecht wischen schiebt die zweite Kartenseite herein, statt den Tab zu wechseln; die Linie darunter zeigt, welche Seite steht.
-                 Der Pfeil neben „Arbeitsbereiche“ öffnet die Sammlung aller Arbeitsbereiche, je Tab eine Pille. -->
+            <!-- data-own-swipe: waagerecht wischen schiebt die zweite Kartenseite herein, statt die Ansicht zu wechseln; die Linie darunter zeigt, welche Seite steht. -->
             <div class="overview-grid" id="overview-grid" data-own-swipe></div><div class="overview-pager" id="overview-pager" aria-hidden="true"><span class="overview-pager-thumb"></span></div>
 
-            <div class="section-head"><h2><button class="section-link" type="button" data-open-workspaces="1" aria-label="Alle Arbeitsbereiche öffnen">Arbeitsbereiche<svg class="icon"><use href="#icon-arrow-up-right"></use></svg></button></h2></div>
-
-            <!-- Tabs links, Plus-Button rechts; bei vielen Tabs laufen die Pillen unter Linie und Button durch -->
-            <div class="tab-pills-row">
-              <div class="tab-pills" id="workspace-tabs"></div>
-              <div class="tab-pills-tools">
-                <div class="tab-pills-fade"></div>
-                <div class="tab-pills-end">
-                  <div class="tab-pills-split"></div>
-                  <button class="add-btn" type="button" data-add-workspace="1" aria-label="Arbeitsbereich hinzufügen">
-                    <svg class="icon"><use href="#icon-folder-plus"></use></svg>
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div class="workspace-list" id="workspace-list"></div>
+            <!-- Projekte: der Pfeil öffnet die Seite Projekte. Darunter die Pillen der Ansichten und die Liste, beides aus src/features/overview/projects.js -->
+            <div class="section-head project-head"><h2><button class="section-link" type="button" data-open-projects="1" aria-label="Alle Projekte öffnen">Projekte<svg class="icon"><use href="#icon-arrow-up-right"></use></svg></button></h2></div>
+            <div class="project-views" id="project-views"></div>
+            <div class="project-list" id="project-list"></div>
           </section>
 
           <section class="view" id="view-page" data-view="page" hidden>

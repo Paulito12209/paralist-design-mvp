@@ -1,7 +1,7 @@
 /*
  * Bausteine der Seitenleiste am Desktop: das feste Gerüst (Knopf „Neu“,
- * Sammlungen, Arbeitsbereiche, Fuß) und die Teile, die sich mit den Daten
- * ändern (die Tab-Gruppen mit ihren Arbeitsbereichen und der Fuß mit dem
+ * Sammlungen, Projekte, Fuß) und die Teile, die sich mit den Daten ändern
+ * (je Projekt-Ansicht eine Gruppe mit ihren Projekten und der Fuß mit dem
  * Konto). Hier steht nur Markup und was gerade gewählt ist — was ein Klick
  * auslöst, entscheidet src/shell/desk-nav.js.
  * Pfad: src/shell/desk-nav-parts.js
@@ -17,8 +17,9 @@ import { escapeHtml, icon } from "../core/html.js";
 import { sameId } from "../core/ids.js";
 import { account } from "../data/account.js";
 import { overviewPages } from "../data/config.js";
-import { entriesOf, workspaceIcon, workspaceLabel, workspacesOfTab } from "../data/queries.js";
-import { workspaceRef } from "../data/refs.js";
+import { projectViewLabel, visibleProjects } from "../data/project-views.js";
+import { entriesOf, findEntry } from "../data/queries.js";
+import { entryRef } from "../data/refs.js";
 import { state, ui } from "../data/state.js";
 import { currentView } from "../ui/views.js";
 import { chordKey, collectionLinks, pageLinks, soonLinks, withCommand } from "../ui/desk-links.js";
@@ -37,11 +38,11 @@ function headMarkup(title, tool = "") {
   return `<div class="desk-nav-head"><h2 class="desk-nav-heading">${title}</h2>${tool}</div>`;
 }
 
-/* Überschrift „Arbeitsbereiche ↗“: öffnet die Sammlung aller Arbeitsbereiche, wie am Handy. */
-function spacesHeadMarkup(tool) {
+/* Überschrift „Projekte ↗“: öffnet die Seite Projekte, wie am Handy. */
+function projectsHeadMarkup(tool) {
   return `
     <div class="desk-nav-head">
-      <h2 class="desk-nav-heading"><button class="desk-nav-heading-link" type="button" data-nav-workspaces="1" aria-label="Alle Arbeitsbereiche öffnen">Arbeitsbereiche${icon("arrow-up-right")}</button></h2>
+      <h2 class="desk-nav-heading"><button class="desk-nav-heading-link" type="button" data-nav-projects="1" aria-label="Alle Projekte öffnen">Projekte${icon("arrow-up-right")}</button></h2>
       ${tool}
     </div>`;
 }
@@ -82,7 +83,7 @@ function collectionsMarkup() {
     <section class="desk-nav-group" aria-label="Sammlungen">
       ${headMarkup("Sammlungen")}
       <div class="desk-nav-list">
-        ${collectionLinks.map(collectionRowMarkup).join("")}
+        ${collectionLinks.filter((link) => link.nav !== false).map(collectionRowMarkup).join("")}
         <div class="desk-nav-more" id="desk-nav-more" hidden>${soonLinks.map(soonRowMarkup).join("")}</div>
         <button class="desk-nav-row desk-nav-more-toggle" type="button" data-nav-more="1" aria-expanded="false" aria-controls="desk-nav-more">
           ${icon("chevron", "desk-nav-icon desk-nav-more-chevron")}
@@ -92,14 +93,14 @@ function collectionsMarkup() {
     </section>`;
 }
 
-/* Die Tab-Gruppen bleiben hier leer; renderDeskNav() füllt sie. */
-function spacesMarkup() {
-  const addTab = `
-    <button class="desk-nav-tool" type="button" data-nav-add-tab="1" aria-label="Neuen Tab anlegen" title="Neuen Tab anlegen">${icon("plus")}</button>`;
+/* Die Gruppen der Ansichten bleiben hier leer; renderDeskNav() füllt sie. */
+function projectsMarkup() {
+  const addView = `
+    <button class="desk-nav-tool" type="button" data-nav-add-view="1" aria-label="Neue Ansicht anlegen" title="Neue Ansicht anlegen">${icon("plus")}</button>`;
   return `
-    <section class="desk-nav-group" aria-label="Arbeitsbereiche">
-      ${spacesHeadMarkup(addTab)}
-      <div data-nav-slot="spaces"></div>
+    <section class="desk-nav-group" aria-label="Projekte">
+      ${projectsHeadMarkup(addView)}
+      <div data-nav-slot="views"></div>
     </section>`;
 }
 
@@ -113,56 +114,58 @@ export function skeletonMarkup() {
     <div class="desk-nav-block desk-nav-top" style="--i: 0">${newButtonMarkup()}</div>
     <div class="desk-nav-scroll">
       <div class="desk-nav-block" style="--i: 1">${collectionsMarkup()}</div>
-      <div class="desk-nav-block" style="--i: 2">${spacesMarkup()}</div>
+      <div class="desk-nav-block" style="--i: 2">${projectsMarkup()}</div>
     </div>
     <div class="desk-nav-block desk-nav-foot" style="--i: 3" data-nav-slot="foot"></div>`;
 }
 
-function spaceRowMarkup(workspace, activeId) {
-  const chosen = sameId(workspace.id, activeId);
-  const label = escapeHtml(workspaceLabel(workspace));
-  const count = entriesOf(workspaceRef(workspace.id)).length;
-  const star = workspace.favorite ? icon("star", "desk-nav-star") : "";
+/* Ein Projekt: sein Icon (eigenes oder die Rakete), Titel, Stern bei Favorit, Zahl der Einträge. */
+function projectRowMarkup(project, activeId) {
+  const chosen = sameId(project.id, activeId);
+  const label = escapeHtml(project.title || "Projekt");
+  const count = entriesOf(entryRef(project.id)).length;
+  const star = project.favorite ? icon("star", "desk-nav-star") : "";
   /* title: lange Namen enden mit „…“ — beim Überfahren steht der ganze Name da */
   return `
-    <button class="desk-nav-row desk-nav-space${chosen ? " is-active" : ""}" type="button" data-open-workspace="${workspace.id}" title="${label}"${chosen ? ' aria-current="page"' : ""}>
-      ${icon(workspaceIcon(workspace), "desk-nav-icon desk-nav-icon-space")}
+    <button class="desk-nav-row desk-nav-space${chosen ? " is-active" : ""}" type="button" data-open-entry="${project.id}" title="${label}"${chosen ? ' aria-current="page"' : ""}>
+      ${icon(project.icon || "rocket", "desk-nav-icon desk-nav-icon-space")}
       <span class="desk-nav-label"><span class="desk-nav-text">${label}</span>${star}</span>
       ${count ? `<span class="desk-nav-count">${formatNumber(count)}</span>` : ""}
     </button>`;
 }
 
 /*
- * Eine Tab-Gruppe: Kopf zum Auf- und Zuklappen (Rechtsklick: Menü des Tabs),
- * Plus für einen neuen Arbeitsbereich darin, darunter die Arbeitsbereiche.
- * Zugeklappt zeigt der Kopf, wie viele darin liegen.
+ * Eine Ansicht als Gruppe: Kopf zum Auf- und Zuklappen (Rechtsklick: Menü der
+ * Ansicht — der Kopf trägt dafür data-project-view), Rakete mit Plus für ein
+ * neues Projekt in dieser Ansicht, darunter ihre Projekte. Zugeklappt zeigt
+ * der Kopf, wie viele Projekte darin stehen.
  */
-function tabGroupMarkup(tab, closedIds, activeId) {
-  const id = String(tab.id);
+function viewGroupMarkup(view, closedIds, activeId) {
+  const id = String(view.id);
   const closed = closedIds.includes(id);
-  const name = escapeHtml(tab.name || tab.placeholder || "Tab");
-  const spaces = workspacesOfTab(tab.id);
-  const list = spaces.length
-    ? spaces.map((workspace) => spaceRowMarkup(workspace, activeId)).join("")
-    : '<p class="desk-nav-empty">Noch keine Arbeitsbereiche</p>';
-  const listId = `desk-tab-group-${id}`;
+  const name = escapeHtml(projectViewLabel(view));
+  const projects = visibleProjects(view);
+  const list = projects.length
+    ? projects.map((project) => projectRowMarkup(project, activeId)).join("")
+    : '<p class="desk-nav-empty">Keine Projekte</p>';
+  const listId = `desk-view-group-${id}`;
   return `
     <div class="desk-nav-tabgroup${closed ? " is-closed" : ""}">
       <div class="desk-nav-tabhead">
-        <button class="desk-nav-tabtoggle" type="button" data-nav-tab-toggle="${id}" data-tab-id="${id}" aria-expanded="${!closed}" aria-controls="${listId}">
+        <button class="desk-nav-tabtoggle" type="button" data-nav-view-toggle="${id}" data-project-view="${id}" aria-expanded="${!closed}" aria-controls="${listId}">
           ${icon("chevron", "desk-nav-chevron")}
           <span class="desk-nav-text">${name}</span>
-          ${closed && spaces.length ? `<span class="desk-nav-count">${formatNumber(spaces.length)}</span>` : ""}
+          ${closed && projects.length ? `<span class="desk-nav-count">${formatNumber(projects.length)}</span>` : ""}
         </button>
-        <button class="desk-nav-tool" type="button" data-nav-add-workspace="${id}" aria-label="Arbeitsbereich in „${name}“ anlegen" title="Arbeitsbereich anlegen">${icon("folder-plus")}</button>
+        <button class="desk-nav-tool" type="button" data-nav-add-project="${id}" aria-label="Projekt in „${name}“ anlegen" title="Projekt anlegen">${icon("rocket-plus")}</button>
       </div>
       <div class="desk-nav-list" id="${listId}"${closed ? " hidden" : ""}>${list}</div>
     </div>`;
 }
 
-/** Alle Tabs als Gruppen; `closedIds` sind die zugeklappten, `activeId` der offene Arbeitsbereich. */
-export function tabGroupsMarkup(closedIds, activeId) {
-  return state.tabs.map((tab) => tabGroupMarkup(tab, closedIds, activeId)).join("");
+/** Alle Ansichten als Gruppen, „Alle“ zuerst; `closedIds` sind die zugeklappten, `activeId` das offene Projekt. */
+export function viewGroupsMarkup(closedIds, activeId) {
+  return state.projectViews.map((view) => viewGroupMarkup(view, closedIds, activeId)).join("");
 }
 
 /* Das runde Bild: Foto, sonst die Initialen auf dem Verlauf des Profils. */
@@ -185,10 +188,10 @@ export function footMarkup(photo) {
 }
 
 /* Welche Sammlung zeigt die offene Unterseite? Der Eingang hat keine Art und
-   keinen Ablageort; Lesezeichen und Archiv haben ihre eigene Art. */
+   keinen Ablageort; Lesezeichen, Archiv und Projekte haben ihre eigene Art. */
 function collectionOf(page) {
   if (page.isWorkspace) return null;
-  if (page.kind === "bookmarks" || page.kind === "archive") return page.kind;
+  if (page.kind === "bookmarks" || page.kind === "archive" || page.kind === "projects") return page.kind;
   const match = Object.entries(overviewPages).find(([, item]) =>
     item.kind ? item.kind === page.kind : !page.kind && page.parent === null
   );
@@ -200,14 +203,17 @@ function collectionOf(page) {
  * tab        -> Reiter, wenn einer davon offen ist
  * collection -> id der offenen Sammlung (wie in collectionLinks)
  * workspace  -> Nummer des offenen Arbeitsbereichs
- * Auf einem Eintrag und in der Suche ist nichts gewählt.
+ * project    -> Nummer des offenen Eintrags, wenn er ein Projekt ist
+ * In der Suche ist nichts gewählt.
  */
 export function activeTargets() {
   const view = currentView();
   const page = view === "page" ? ui.currentPage : null;
+  const entry = view === "entry" ? findEntry(ui.currentEntryId) : null;
   return {
     tab: pageLinks.some((link) => link.tab === view) ? view : null,
     collection: page ? collectionOf(page) : null,
     workspace: page && page.isWorkspace ? page.workspaceId : null,
+    project: entry && entry.type === "projekt" ? entry.id : null,
   };
 }

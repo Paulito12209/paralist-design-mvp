@@ -23,7 +23,8 @@
 
 import { startOfDay } from "../../core/dates.js";
 import { sameId } from "../../core/ids.js";
-import { isTaskDone, typeOrder, typePlurals } from "../../data/config.js";
+import { typeOrder, typePlurals } from "../../data/config.js";
+import { isTaskDone } from "../../data/config-tasks.js";
 import { hasPlace } from "../../data/queries.js";
 import { isEntryRef, refId } from "../../data/refs.js";
 import { state } from "../../data/state.js";

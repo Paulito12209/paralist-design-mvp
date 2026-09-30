@@ -16,7 +16,8 @@
 
 import { escapeHtml, icon } from "../../core/html.js";
 import { formatNumber, relativeTime } from "../../core/format.js";
-import { isTaskDone, typeIcon } from "../../data/config.js";
+import { typeIcon } from "../../data/config.js";
+import { isTaskDone } from "../../data/config-tasks.js";
 import { setCover, toggleFavorite } from "../../data/mutations.js";
 import { entriesOf, findWorkspace } from "../../data/queries.js";
 import { workspaceRef } from "../../data/refs.js";

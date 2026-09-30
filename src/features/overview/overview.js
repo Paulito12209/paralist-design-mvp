@@ -1,6 +1,6 @@
 /*
  * Die Karten oben auf der Startseite. Links die vier festen — Eingang,
- * Favoriten, Projekte, Ressourcen —, rechts daneben eine zweite Seite mit vier
+ * Favoriten, Arbeitsbereiche, Ressourcen —, rechts daneben eine zweite Seite mit vier
  * weiteren (src/data/collections.js, moreCards): Lesezeichen, Archiv und
  * zwei Karten, die noch „Demnächst verfügbar“ sind. Man schiebt sie waagerecht herein; auf der
  * Übersicht sieht man zuerst nur die vier festen. Die Linie unter den Karten
@@ -24,10 +24,10 @@ import { overviewPages } from "../../data/config.js";
 import { archivedEntries, archivedWorkspaces, pageCount } from "../../data/queries.js";
 import { isViewActive } from "../../ui/views.js";
 
-/* Vier Karten haben ein eigenes farbiges Icon; alle anderen bleiben grau. */
+/* Die Karten mit eigenem farbigem Icon; alle anderen bleiben grau. */
 const coloredIcons = {
   inbox: "card-icon-inbox",
-  rocket: "card-icon-rocket",
+  layers: "card-icon-layers",
   cube: "card-icon-cube",
   star: "card-icon-star",
   "star-outline": "card-icon-star",
@@ -128,7 +128,7 @@ export function initOverview() {
     if (name === "home") renderOverview();
   });
   /* Zweites Antippen von „Übersicht“ unten: die Karten zurück auf die erste
-     Seite mit Eingang, Favoriten, Projekte und Ressourcen. */
+     Seite mit Eingang, Favoriten, Arbeitsbereiche und Ressourcen. */
   on(events.tabReselected, (tab) => {
     if (tab === "home") dom.overviewGrid.scrollTo({ left: 0, behavior: "smooth" });
   });

@@ -18,7 +18,7 @@
  */
 
 import { MS_PER_DAY, dayKey, dayShift, parseDay, startOfDay } from "../core/dates.js";
-import { isTaskDone } from "./config.js";
+import { isTaskDone } from "./config-tasks.js";
 import { linkedEntries } from "./links.js";
 import { openStats } from "./opens.js";
 import {

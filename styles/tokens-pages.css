@@ -153,6 +153,14 @@
  * --video-bar-h / --video-speed-size -> Leiste zwischen Bild und Titel, Höhe der Tempo-Stufen und der runden Knöpfe
  * --video-inset / --video-title-size -> Abstand von Leiste und Titel zum Rand, Schriftgröße des Titels
  *
+ * FENSTER „NEUE VERSION VERFÜGBAR“ (styles/update.css)
+ * --update-bg               -> Fläche des Fensters „Neue Version verfügbar“ (im Dunkeln eigener Wert)
+ * --update-radius           -> Rundung dieses Fensters (Material 3: 28dp)
+ * --update-width            -> größte Breite des Fensters; schmaler, wenn das Gerät schmaler ist
+ * --update-pad              -> Innenabstand des Fensters
+ * --update-btn-height       -> Höhe der beiden Knöpfe (48 = Mindest-Tippziel von Material 3)
+ * --update-anim             -> wie lange das Fenster beim Auftauchen braucht
+ *
  * EINSTELLUNGEN UND FEEDBACK
  * --support-field-radius     -> Rundung der Felder und Art-Knöpfe im Feedback
  * --support-text-min-height  -> Mindesthöhe des Beschreibungsfelds im Feedback
@@ -330,6 +338,14 @@
   --details-gap: 28px;
   --details-head-h: 52px;
   --entry-fold-fade: 64px;
+
+  /* Fenster „Neue Version verfügbar“ */
+  --update-bg: #ffffff;
+  --update-radius: 28px;
+  --update-width: 320px;
+  --update-pad: 24px;
+  --update-btn-height: 48px;
+  --update-anim: 0.22s;
 
   /* Einstellungen und Feedback: Felder, gewählte Art und Danksagungen */
   --support-field-radius: 14px;

@@ -18,7 +18,7 @@
 
 import { MS_PER_DAY, parseDay, startOfDay } from "../core/dates.js";
 import { dayMonth, formatNumber, formatSpan, relativeTime, shortDay } from "../core/format.js";
-import { isTaskDone, taskPriorityOf, taskStatusOf } from "./config.js";
+import { isTaskDone, taskPriorityOf, taskStatusOf } from "./config-tasks.js";
 import { entryTypeName } from "./details.js";
 import { linkedEntries } from "./links.js";
 import { openStats } from "./opens.js";

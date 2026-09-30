@@ -31,7 +31,7 @@ export function workspaceDetails(workspace) {
   const tab = state.tabs.find((item) => String(item.id) === String(workspace.tab));
   const rows = [
     { label: "Typ", value: "Arbeitsbereich" },
-    { label: "Speicherort", value: tab ? `Übersicht · ${tab.name}` : "Übersicht" },
+    { label: "Speicherort", value: tab ? `Arbeitsbereiche · ${tab.name}` : "Arbeitsbereiche" },
     { label: "Einträge", value: String(entriesOf(workspaceRef(workspace.id)).length) },
   ];
   const chars = (workspace.body || "").trim().length;

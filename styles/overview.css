@@ -1,7 +1,8 @@
 /*
- * Startseite: die Übersichtskarten (je Seite vier), die Zeile „Arbeitsbereiche“
- * und die Tab-Pillen darunter. Schieben der Kartenseiten, abgeschaltete Karten
- * und der Pfeil neben „Arbeitsbereiche“: styles/overview-more.css.
+ * Startseite: die Übersichtskarten (je Seite vier), die Zeile „Projekte“
+ * und die Pillen darunter — dieselbe Pillenzeile nutzen die Seite
+ * Arbeitsbereiche und die Aufgaben-Seite. Schieben der Kartenseiten,
+ * abgeschaltete Karten und der Pfeil neben „Projekte“: styles/overview-more.css.
  * Pfad: styles/overview.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens.css)
@@ -9,8 +10,8 @@
  * --overview-card-bg / --card / --shadow / --radius-lg   -> Aussehen der Karten
  * --inbox-icon-color                -> Eingang-Icon
  * --star-color                      -> Favoriten-Stern
- * --project-icon-color              -> Raketen-Icon
  * --resource-icon-color             -> Würfel-Icon
+ * --workspace-icon-color            -> Stapel-Icon der Karte Arbeitsbereiche
  * --tab-pill-size                   -> Schriftgröße der Tab-Pillen
  * --tab-pills-btn-gap               -> Abstand zwischen Trennlinie und Plus-Knopf
  * --tab-pills-fade                  -> Breite des Ausblendens links der Trennlinie
@@ -20,7 +21,8 @@
  * --icon-folder-plus-width / -height -> Größe des Ordner-Plus-Icons
  * --avatar-btn-bg                    -> Farbe des Kartenzählers
  * --icon-soft                        -> abgeschwächte Farbe von Ordner-Plus-Icon und Plus-Icon der Tab-Pille
- * --workspace-section-gap           -> Abstand zwischen Karten und „Arbeitsbereiche“
+ * --workspace-section-gap           -> Abstand zwischen Karten und „Projekte“
+ * --muted                           -> Satz, wenn eine Projekt-Ansicht nichts findet
  * --workspace-head-gap              -> Abstand über den Pillen
  
  *
@@ -86,14 +88,14 @@
   color: var(--star-color);
 }
 
-/* Raketen-Icon auf der Projekte-Karte */
-.card-icon-rocket {
-  color: var(--project-icon-color);
-}
-
 /* Würfel-Icon auf der Ressourcen-Karte */
 .card-icon-cube {
   color: var(--resource-icon-color);
+}
+
+/* Stapel-Icon auf der Karte Arbeitsbereiche */
+.card-icon-layers {
+  color: var(--workspace-icon-color);
 }
 
 .card-label {
@@ -317,7 +319,14 @@
 .tab-pill-add:active {
   opacity: 0.55;
 }
-/* Die Pille „Zum Archiv“ unter der Liste der Arbeitsbereiche. Sie steht mittig
+/* Eine Projekt-Ansicht findet nichts: ein Satz statt einer leeren Fläche */
+.project-empty-note {
+  padding: 14px 2px;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+/* Die Pille „Zum Archiv“ unter der Liste der Arbeitsbereiche oder Projekte. Sie steht mittig
    und hält immer denselben Abstand zur Zeile „Arbeitsbereich hinzufügen“ — so
    rutscht sie auf kleinen Geräten nicht unter die Navigationsleiste und hängt
    auf großen nicht am unteren Rand herum. */

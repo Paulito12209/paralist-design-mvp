@@ -1,6 +1,8 @@
 /*
- * Aufgaben-Seite: die Karte „Ansicht konfigurieren“
- * (src/features/tasks/tasks-panel.js und tasks-settings.js). Karte, Kopf und
+ * Die Einstellungs-Karte einer Ansicht (src/ui/view-panel.js): auf der
+ * Aufgaben-Seite „Ansicht konfigurieren“ (src/features/tasks/tasks-settings.js),
+ * bei den Projekten auf Übersicht und Seite Projekte „Ansicht“
+ * (src/features/overview/project-settings.js). Karte, Kopf und
  * Zeilen sehen aus wie die Karte „Details“ einer Eintragsseite
  * (styles/entry-details.css). Anders als dort liegt sie nicht in der Seite,
  * sondern als eigene Ebene über der Liste und unter der Navigation:
@@ -32,8 +34,9 @@
 
 /* ---------- Die Ebene über der Liste ---------- */
 
-/* Nur auf der Aufgaben-Seite: die Klasse is-tasks setzt src/ui/views.js */
-.tasks-panel {
+/* Jede Karte nur auf ihrer Seite: is-tasks setzt src/ui/views.js, is-projects
+   src/features/overview/projects.js (Übersicht am Handy und Seite Projekte). */
+.view-panel {
   display: none;
   position: absolute; /* position: liegt fest über der Liste, statt mit ihr zu scrollen */
   left: var(--content-side);
@@ -52,63 +55,65 @@
   transition: transform var(--tasks-panel-slide) cubic-bezier(0.2, 0.8, 0.2, 1); /* transition: weiches Aus- und Einklappen */
 }
 
-body.is-tasks .tasks-panel {
+body.is-tasks .tasks-panel,
+body.is-projects .project-panel {
   display: block;
 }
 
-.tasks-panel.is-expanded {
+.view-panel.is-expanded {
   transform: none;
 }
 
 /* Beim Ziehen folgt die Karte dem Finger, ohne nachzuziehen */
-.tasks-panel.is-dragging {
+.view-panel.is-dragging {
   transition: none;
 }
 
 /* Beim Anlegen braucht das Eingabefeld den Platz über der Navigation; beim
    Schreiben auf Touch-Geräten tritt die Navigation zurück (styles/navigation.css)
    — die Karte ebenso. :has fragt, ob das Eingabefeld offen ist. */
-body:has(.nav-shell.is-composing) .tasks-panel {
+body:has(.nav-shell.is-composing) .view-panel {
   display: none;
 }
 
 @media (hover: none) and (pointer: coarse) {
-  body.is-writing .tasks-panel {
+  body.is-writing .view-panel {
     visibility: hidden; /* visibility: wie die Navigation, ohne dass sich etwas verschiebt */
   }
 }
 
 /* Der Kopf ist Griff: ziehen statt die Seite zu bewegen */
-.tasks-panel-head {
+.view-panel-head {
   touch-action: none; /* touch-action: der Browser soll das Ziehen nicht selbst als Geste nehmen */
 }
 
-.tasks-panel-toggle .icon {
+.view-panel-toggle .icon {
   transition: transform var(--tasks-panel-slide) ease; /* transition: das Symbol dreht sich mit */
 }
 
 /* Ausgeklappt zeigt der Pfeil nach unten — hier geht es wieder zu */
-.tasks-panel.is-expanded .tasks-panel-toggle .icon {
+.view-panel.is-expanded .view-panel-toggle .icon {
   transform: rotate(180deg); /* transform: Pfeil nach unten */
 }
 
 /* Eingeklappt bleiben die Zeilen leer — neben der runden Navigation sähe man
    sonst halbe Zeilen. Die Zeilen werden beim Neuzeichnen ersetzt, die Karte
    nicht: darum bleibt der Inhalt sichtbar, während man etwas umstellt. */
-.tasks-panel.is-expanded .details-list,
-.tasks-panel.is-dragging .details-list {
+.view-panel.is-expanded .details-list,
+.view-panel.is-dragging .details-list {
   opacity: 1;
 }
 
 /* Die Liste endet über dem eingeklappten Kopf, nicht dahinter */
-#view-tasks {
+#view-tasks,
+body.is-projects :is(#view-home, #view-page) {
   padding-bottom: var(--details-head-h);
 }
 
 /* Am Desktop gibt es die Handy-Navigation nicht: die Karte sitzt unten in
    der Mitte, so breit wie die Aufgaben-Liste. */
 @media (min-width: 1024px) {
-  .tasks-panel {
+  .view-panel {
     left: calc(var(--desk-nav-width) + var(--desk-gutter));
     right: var(--desk-gutter);
     bottom: calc(var(--desk-gutter) + var(--safe-bottom));
@@ -118,7 +123,7 @@ body:has(.nav-shell.is-composing) .tasks-panel {
 }
 
 @media (min-width: 1280px) {
-  .tasks-panel {
+  .view-panel {
     right: calc(var(--desk-rail-width) + var(--desk-gutter));
   }
 }
@@ -222,6 +227,11 @@ body:has(.nav-shell.is-composing) .tasks-panel {
 
 /* Gesperrt („Alle“): blass, nicht antippbar — der ⓘ daneben erklärt es */
 .tasks-filter-row.is-locked .tasks-filter-btn {
+  opacity: 0.45;
+}
+
+/* Eine ganze Zeile ruht, z.B. „Nur Favoriten“ bei handverlesenen Projekten */
+.details-row.is-muted {
   opacity: 0.45;
 }
 

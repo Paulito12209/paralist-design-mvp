@@ -19,7 +19,8 @@
  *   /  oder ⌘K     -> Such-Palette öffnen (src/shell/search-palette.js); bei offener
  *                     Palette markiert ⌘K das Suchwort, alle anderen Kürzel ruhen
  *   1 bis 4        -> Übersicht, Kalender, Aufgaben, Medien
- *   G, dann I F P R L A -> Eingang, Favoriten, Projekte, Ressourcen, Lesezeichen, Archiv
+ *   G, dann I F B R L A P -> Eingang, Favoriten, Arbeitsbereiche, Ressourcen, Lesezeichen,
+ *                     Archiv, Projekte
  *   ⌘[  und  ⌘]    -> zurück und vor
  *   ⌘\             -> Seitenleiste ein- und ausklappen
  *   ⌘,             -> Profil und Einstellungen (Punkt „Konto“)
@@ -288,7 +289,7 @@ function createColumn(className, label) {
  * Seitenleiste und rechte Spalte einhängen. Darf mehrmals aufgerufen werden —
  * etwa bei jedem Wechsel über die Breitengrenze; eingehängt wird nur einmal,
  * danach hält onDeskChange unten alles aktuell.
- * @param handlers { openWorkspaceMenu, openTabMenu, profilePhoto, railCards } aus
+ * @param handlers { openProjectViewMenu, profilePhoto, railCards } aus
  *   den Seiten, von src/main.js hereingegeben; `railCards` ordnet einer Ansicht
  *   die Funktion zu, die ihre Karten für die rechte Spalte lädt.
  */

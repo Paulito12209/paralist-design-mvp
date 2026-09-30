@@ -21,10 +21,12 @@
 
 import { dayKey, timeKey } from "../core/dates.js";
 import { nextId } from "../core/ids.js";
-import { defaultTaskPriority, defaultTaskStatus, workspaceDefaultName } from "./config.js";
+import { workspaceDefaultName } from "./config.js";
+import { defaultTaskPriority, defaultTaskStatus } from "./config-tasks.js";
 import { connectEntries, disconnectEntries, dropLinksTo } from "./links.js";
 import { commit, liftChildren } from "./mutations.js";
 import { moveOpen } from "./opens.js";
+import { dropPlaceFromViews, dropProjectFromViews } from "./project-views.js";
 import { findEntry, findWorkspace, hasPlace, isContainer, workspaceLabel } from "./queries.js";
 import { entryRef, isEntryRef, isWorkspaceRef, refId, workspaceRef } from "./refs.js";
 import { state } from "./state.js";
@@ -246,6 +248,7 @@ export function entryToWorkspace(entry) {
   dropLinksTo(entry.id);
   moveOpen(`entry:${entry.id}`, "workspace", id);
   movePlaceFilter(ref, target);
+  dropProjectFromViews(entry.id);
   state.entries = state.entries.filter((item) => item !== entry);
   commit({ prunedEntries: true });
   return workspace;
@@ -291,6 +294,8 @@ export function workspaceToEntry(workspace, type) {
     contentsIntoLinks(entry, source, []);
     movePlaceFilter(source, null);
   }
+  /* Ein Projekt liegt nie in einem Projekt: der Ort-Filter einer Projekt-Ansicht fällt auf „alle“ zurück. */
+  dropPlaceFromViews(source);
   state.workspaces = state.workspaces.filter((item) => item !== workspace);
   moveOpen(`workspace:${workspace.id}`, "entry", entry.id);
   commit();

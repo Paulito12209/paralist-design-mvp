@@ -13,7 +13,7 @@
 
 import { shortDay } from "../core/format.js";
 import { escapeHtml, icon } from "../core/html.js";
-import { taskPriorityOf } from "../data/config.js";
+import { taskPriorityOf } from "../data/config-tasks.js";
 
 /** Titel für die Ausgabe: immer abgesichert, ein leerer Titel bekommt einen Platzhalter. */
 export function railTitle(entry) {
