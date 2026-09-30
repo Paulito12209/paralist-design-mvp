@@ -104,8 +104,11 @@ function sheetMarkup(options) {
   return paired ? `${rest}<div class="sheet-pair">${paired}</div>` : rest;
 }
 
-/* Titel mit Icon davor (in der Farbe der Kategorie) oder nur als Text. */
+/* Titel mit Icon davor (in der Farbe der Kategorie) oder nur als Text.
+   Ein leerer Titel blendet die Zeile ganz aus — das Blatt „Sortieren“ beginnt
+   direkt mit seiner ersten Zwischenüberschrift. */
 function renderTitle(title, titleIcon, iconColor) {
+  dom.sheetTitle.hidden = !title;
   if (!titleIcon) {
     dom.sheetTitle.textContent = title;
     return;

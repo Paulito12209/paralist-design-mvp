@@ -5,6 +5,8 @@
  * liefert — „A bis Z“ / „Z bis A“, „Neueste zuerst“ / „Älteste zuerst“.
  * Jede Option hat beide Richtungen. Das Blatt bleibt offen, bis man es
  * zuzieht oder daneben tippt; jede Wahl zeichnet es mit dem neuen Stand neu.
+ * Einen eigenen Titel hat das Blatt nicht — „Sortieren nach“ sagt schon alles,
+ * ein „Sortieren“ darüber wäre doppelt.
  *
  * Eine Option ist { id, label, icon, up, down, asc }: `up` ist der Wortlaut
  * für aufsteigend, `down` für absteigend, `asc` die natürliche Richtung —
@@ -39,17 +41,16 @@ export function sortSummary(options, sort, asc) {
 
 /**
  * Das Blatt öffnen.
- * @param title    Überschrift des Blatts, z.B. „Sortieren“
  * @param options  die Optionen wie oben beschrieben
  * @param sort     id der gewählten Option
  * @param asc      true = aufsteigend
  * @param onChange (sort, asc) — speichert die Wahl; das Blatt zeichnet sich danach selbst neu
  */
-export function openSortSheet({ title, options, sort, asc, onChange }) {
+export function openSortSheet({ options, sort, asc, onChange }) {
   const current = optionOf(options, sort);
   const choose = (nextSort, nextAsc) => {
     onChange(nextSort, nextAsc);
-    openSortSheet({ title, options, sort: nextSort, asc: nextAsc, onChange });
+    openSortSheet({ options, sort: nextSort, asc: nextAsc, onChange });
   };
 
   const byRows = options.map((option) => ({
@@ -71,7 +72,7 @@ export function openSortSheet({ title, options, sort, asc, onChange }) {
     onSelect: () => choose(current.id, dirAsc),
   }));
 
-  openSheet(title, [
+  openSheet("", [
     { heading: true, label: byHeading },
     ...byRows,
     { heading: true, label: dirHeading },

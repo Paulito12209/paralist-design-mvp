@@ -20,7 +20,7 @@
  * rowLabels             -> Beschriftungen der Zeilen
  * allPlaces / inboxLabel -> was in der Filter-Zeile steht
  * handpicked(n)          -> was die Filter-Zeile bei handverlesenen Projekten sagt
- * sortTitle / placeTitle / pickTitle -> Überschriften der drei Blätter
+ * placeTitle / pickTitle -> Überschriften der Blätter „Projekte aus“ und „Projekte wählen“ (das Blatt „Sortieren“ hat keinen Titel)
  * clearPickLabel         -> letzte Zeile im Blatt „Projekte wählen“
  * infoTitle / infoText   -> das Blatt hinter dem ⓘ
  *
@@ -53,7 +53,6 @@ const rowLabels = {
 const allPlaces = "Alle Orte";
 const inboxLabel = "Eingang";
 const handpicked = (n) => `Handverlesen, ${n} ${n === 1 ? "Projekt" : "Projekte"}`;
-const sortTitle = "Sortieren";
 const placeTitle = "Projekte aus";
 const pickTitle = "Projekte wählen";
 const clearPickLabel = "Auswahl aufheben";
@@ -101,7 +100,6 @@ export function projectSettingsMarkup(view) {
 /* Blatt „Sortieren“: wonach, darunter die Richtung. */
 function openProjectSort(view) {
   openSortSheet({
-    title: sortTitle,
     options: projectSorts,
     sort: view.sort,
     asc: view.sortAsc,

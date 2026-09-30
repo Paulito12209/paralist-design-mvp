@@ -7,16 +7,18 @@
  * - Sortieren: Zeile mit der Wahl, ein Tipp öffnet das Blatt
  * - Filtern: Zeile mit dem Ort, ein Tipp öffnet das Blatt „Aufgaben von“ —
  *   bei „Alle“ gesperrt, der ⓘ daneben erklärt, wie man eine eigene Ansicht baut
- * - Gruppieren: Schalter; an, dann darunter „Spalten nach“ Dringlichkeit | Status
+ * - Gruppieren: Schalter; an, dann darunter „Abschnitte nach“ Status | Dringlichkeit.
+ *   Im Board gibt es keinen Schalter — ein Board hat immer Spalten —, dort
+ *   steht nur „Spalten nach“
  * - Erledigte zeigen: Schalter
  * Pfad: src/features/tasks/tasks-settings.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * rowLabels    -> Beschriftungen der Zeilen
+ * rowLabels    -> Beschriftungen der Zeilen („groupBy“ je Layout: Liste hat Abschnitte, Board Spalten)
  * allPlaces    -> was in der Filter-Zeile steht, solange kein Ort gewählt ist
  * infoTitle / infoText -> das Blatt hinter dem ⓘ
- * placeTitle / sortTitle -> Überschriften der beiden Blätter
+ * placeTitle   -> Überschrift des Blatts „Aufgaben von“ (das Blatt „Sortieren“ hat keinen Titel)
  *
  * Aussehen: styles/tasks-settings.css (Schalter, Segmente) und
  * styles/entry-details.css (Karte, Zeilen).
@@ -35,14 +37,13 @@ const rowLabels = {
   sort: "Sortieren",
   place: "Filtern",
   group: "Gruppieren",
-  groupBy: "Spalten nach",
+  groupBy: { list: "Abschnitte nach", board: "Spalten nach" },
   done: "Erledigte zeigen",
   info: "Warum lässt sich „Alle“ nicht filtern?",
 };
 const allPlaces = "Alle Orte";
 const inboxLabel = "Eingang";
 const placeTitle = "Aufgaben von";
-const sortTitle = "Sortieren";
 const infoTitle = "Eigene Ansicht";
 const infoText =
   "„Alle“ zeigt immer jede Aufgabe. Tippe auf das kleine Plus neben den Pillen: die neue Ansicht beginnt als Kopie von „Alle“ und lässt sich filtern, sortieren und gruppieren, wie du willst.";
@@ -79,9 +80,12 @@ export function deskToolsMarkup(view) {
 
 /** Die Zeilen der Karte für die gewählte Ansicht. */
 export function taskSettingsMarkup(view) {
-  const grouped = view.group !== "none";
+  const board = view.layout === "board";
+  /* Das Board ist immer gruppiert (src/data/queries.js, taskColumns) — der Schalter gilt nur der Liste */
+  const grouped = board || view.group !== "none";
   const groupItems = taskGroupings.map((item) => ({ id: item.id, label: item.label }));
-  const groupBy = grouped ? view.group : taskGroupings[0].id;
+  const groupBy = view.group !== "none" ? view.group : taskGroupings[0].id;
+  const groupByLabel = board ? rowLabels.groupBy.board : rowLabels.groupBy.list;
   return `
       <div class="details-list tasks-settings">
         <div class="details-row">
@@ -96,12 +100,14 @@ export function taskSettingsMarkup(view) {
           </button>
           ${view.fixed ? `<button class="tasks-info" type="button" data-settings="info" aria-label="${escapeHtml(rowLabels.info)}">${icon("info")}</button>` : ""}
         </div>
-        <div class="details-row">
-          <span class="details-row-label">${rowLabels.group}</span>${toggle("group-toggle", grouped, rowLabels.group)}
-        </div>
+        ${
+          board
+            ? ""
+            : `<div class="details-row"><span class="details-row-label">${rowLabels.group}</span>${toggle("group-toggle", grouped, rowLabels.group)}</div>`
+        }
         ${
           grouped
-            ? `<div class="details-row tasks-group-row"><span class="details-row-label">${rowLabels.groupBy}</span>${segment(groupItems, groupBy, "group")}</div>`
+            ? `<div class="details-row tasks-group-row"><span class="details-row-label">${groupByLabel}</span>${segment(groupItems, groupBy, "group")}</div>`
             : ""
         }
         <div class="details-row">
@@ -114,7 +120,6 @@ export function taskSettingsMarkup(view) {
 /* Blatt „Sortieren“: wonach, darunter die Richtung (src/ui/sort-sheet.js). */
 function openTaskSort(view) {
   openSortSheet({
-    title: sortTitle,
     options: taskSorts,
     sort: view.sort,
     asc: view.sortAsc,
