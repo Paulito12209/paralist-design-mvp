@@ -5,9 +5,10 @@
  *
  * - Layout: Liste | Board
  * - Sortieren: Zeile mit der Wahl, ein Tipp öffnet das Blatt
- * - Filtern: Zeile mit Ort, Status und Dringlichkeit in Kurzform; ein Tipp
- *   öffnet das Blatt „Filtern“ (src/features/tasks/tasks-filter.js). Auch
- *   „Alle“ lässt sich filtern, nur nicht nach Ort
+ * - Filtern: rechts „Keine“; ist etwas gefiltert, bleibt rechts nichts
+ *   stehen und die gewählten Werte stehen darunter als Chips. Ein Tipp auf Zeile oder
+ *   Chips öffnet das Blatt „Filtern“ (src/features/tasks/tasks-filter.js).
+ *   Auch „Alle“ lässt sich filtern, nur nicht nach Ort
  * - Gruppieren: Schalter; an, dann darunter „Abschnitte nach“ Status | Dringlichkeit.
  *   Im Board gibt es keinen Schalter — ein Board hat immer Spalten —, dort
  *   steht nur „Spalten nach“
@@ -17,6 +18,8 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * rowLabels    -> Beschriftungen der Zeilen („groupBy“ je Layout: Liste hat Abschnitte, Board Spalten)
+ * noFilter     -> was rechts in der Zeile „Filtern“ steht, solange nichts gefiltert ist
+ * deskFiltered -> Aufschrift des Filter-Knopfs am Desktop, wenn etwas gefiltert ist
  *
  * Was in der Filter-Zeile steht und was das Blatt „Filtern“ anbietet, steht
  * in src/features/tasks/tasks-filter.js.
@@ -30,7 +33,7 @@ import { panelSegment as segment, panelToggle as toggle } from "../../ui/panel-r
 import { taskGroupings, taskSorts } from "../../data/config-tasks.js";
 import { updateTaskView } from "../../data/task-views.js";
 import { openSortSheet, sortSummary } from "../../ui/sort-sheet.js";
-import { filterSummary, openTaskFilter } from "./tasks-filter.js";
+import { filterChips, openTaskFilter } from "./tasks-filter.js";
 
 const rowLabels = {
   layout: "Layout",
@@ -40,6 +43,16 @@ const rowLabels = {
   groupBy: { list: "Abschnitte nach", board: "Spalten nach" },
   done: "Erledigte zeigen",
 };
+const noFilter = "Keine";
+const deskFiltered = "Gefiltert";
+
+/* Die Chips unter der Zeile „Filtern“ — in der Farbe ihres Status bzw. ihrer Dringlichkeit */
+function chipsMarkup(chips) {
+  if (!chips.length) return "";
+  const chip = (item) =>
+    `<span class="tasks-filter-chip"${item.color ? ` style="--chip-color:${item.color}"` : ""}>${icon(item.icon)}<span>${escapeHtml(item.label)}</span></span>`;
+  return `<button class="tasks-filter-chips" type="button" data-settings="filter" aria-label="${escapeHtml(rowLabels.place)}">${chips.map(chip).join("")}</button>`;
+}
 const layouts = [
   { id: "list", label: "Liste", icon: "list" },
   { id: "board", label: "Board", icon: "board" },
@@ -59,9 +72,14 @@ export function deskToolsMarkup(view) {
     <span class="tasks-desk-tools">
       ${segment(layouts, view.layout, "layout")}
       <button class="tasks-desk-filter" type="button" data-settings="filter" title="${escapeHtml(rowLabels.place)}">
-        ${icon("sliders")}<span>${escapeHtml(filterSummary(view))}</span>
+        ${icon("sliders")}<span>${escapeHtml(deskFilterLabel(view))}</span>
       </button>
     </span>`;
+}
+
+/* Am Desktop: „Filtern“ oder „Gefiltert“ */
+function deskFilterLabel(view) {
+  return filterChips(view).length ? deskFiltered : rowLabels.place;
 }
 
 /** Die Zeilen der Karte für die gewählte Ansicht. */
@@ -72,6 +90,7 @@ export function taskSettingsMarkup(view) {
   const groupItems = taskGroupings.map((item) => ({ id: item.id, label: item.label }));
   const groupBy = view.group !== "none" ? view.group : taskGroupings[0].id;
   const groupByLabel = board ? rowLabels.groupBy.board : rowLabels.groupBy.list;
+  const chips = filterChips(view);
   return `
       <div class="details-list tasks-settings">
         <div class="details-row">
@@ -81,8 +100,9 @@ export function taskSettingsMarkup(view) {
           <span class="details-row-label">${rowLabels.sort}</span><span class="details-row-value">${escapeHtml(sortValue(view))}</span>
         </button>
         <button class="details-row is-editable" type="button" data-settings="filter">
-          <span class="details-row-label">${rowLabels.place}</span><span class="details-row-value">${escapeHtml(filterSummary(view))}</span>
+          <span class="details-row-label">${rowLabels.place}</span><span class="details-row-value">${chips.length ? "" : noFilter}</span>
         </button>
+        ${chipsMarkup(chips)}
         ${
           board
             ? ""

@@ -1,6 +1,9 @@
 /*
- * Das Blatt „Filtern“ der Aufgaben-Seite und die Kurzform, die in der Karte
- * „Ansicht“ in der Zeile „Filtern“ steht. Drei Abschnitte:
+ * Das Blatt „Filtern“ der Aufgaben-Seite und die Chips, die in der Karte
+ * „Ansicht“ unter der Zeile „Filtern“ zeigen, was gefiltert ist. Als Filter
+ * zählen der Ort, abgewählte Status und abgewählte Dringlichkeiten — nicht
+ * das Ausblenden der Erledigten, das hat seinen eigenen Schalter
+ * „Erledigte zeigen“. Ohne Filter steht rechts „Keine“. Drei Abschnitte:
  *
  * - Ort: Einfachwahl (alle Orte, Eingang, jeder Ort mit Aufgaben). In der
  *   festen Ansicht „Alle“ steht hier nur ein Satz, wie man eine eigene
@@ -20,7 +23,7 @@
  * allPlaces / inboxLabel -> Name der beiden festen Orte
  * fixedPlaceNote -> Satz unter „Ort“ in der Ansicht „Alle“
  * doneHint / archivedHint / archivedLabel -> die beiden erklärenden Zeilen unter „Status“
- * noneStatus / noneAll / manyPrios -> Kurzform in der Karte, wenn nichts bzw. viel gewählt ist
+ * noneStatus / nonePrio -> Chip, wenn in einem Abschnitt gar nichts gewählt ist
  *
  * Aussehen: styles/overlays.css und styles/sheet-tabs.css (Blatt, Haken,
  * kleiner Satz unter dem Namen).
@@ -33,15 +36,14 @@ import { openArchive } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
 
 const headings = { place: "Ort", status: "Status", priority: "Dringlichkeit" };
-export const allPlaces = "Alle Orte";
+const allPlaces = "Alle Orte";
 const inboxLabel = "Eingang";
 const fixedPlaceNote = "„Alle“ zeigt Aufgaben von jedem Ort. Für einen Ort tippe auf das kleine Plus neben den Pillen und filtere die neue Ansicht.";
 const doneHint = "Heute erledigte – wie „Erledigte zeigen“";
 const archivedLabel = "Archiviert";
 const archivedHint = "Ältere Erledigte liegen im Archiv";
 const noneStatus = "Kein Status";
-const noneAll = "Keine Dringlichkeit";
-const manyPrios = (n) => `${n} Dringlichkeiten`;
+const nonePrio = "Keine Dringlichkeit";
 
 /* Die Pille „Aufgaben“ im Archiv (src/data/collections.js, archivePills) */
 const archivePill = "aufgabe";
@@ -57,24 +59,33 @@ function toggled(list, id) {
   return list.includes(id) ? list.filter((item) => item !== id) : [...list, id];
 }
 
-/* Namen einer Auswahl kurz: bis zwei beim Namen, darüber als Anzahl */
-function shortList(labels, none, many) {
-  if (!labels.length) return none;
-  return labels.length > 2 ? many(labels.length) : labels.join(", ");
+/* Chip für den gewählten Ort; „alle“ ist kein Filter */
+function placeChip(view) {
+  if (view.place === "alle") return [];
+  if (view.place === "inbox") return [{ label: inboxLabel, icon: "inbox" }];
+  const place = taskPlaces().find((item) => item.ref === view.place);
+  return [{ label: parentName(view.place), icon: place ? place.icon : "layers" }];
 }
 
-/** Was in der Zeile „Filtern“ steht, z.B. „Alle Orte · Offen, In Arbeit“. */
-export function filterSummary(view) {
-  const parts = [view.place === "alle" ? allPlaces : view.place === "inbox" ? inboxLabel : parentName(view.place)];
-  const statuses = taskStatuses.filter((status) => statusShown(view, status));
-  if (statuses.length < taskStatuses.length) {
-    parts.push(shortList(statuses.map((status) => status.label), noneStatus, () => ""));
-  }
-  if (view.hiddenPriorities.length) {
-    const prios = taskPriorities.filter((prio) => !view.hiddenPriorities.includes(prio.id));
-    parts.push(shortList(prios.map((prio) => prio.label), noneAll, manyPrios));
-  }
-  return parts.join(" · ");
+/* Chips für einen Abschnitt: nur wenn darin etwas abgewählt ist, dann das Gewählte */
+function listChips(items, hidden, none) {
+  if (!hidden.length) return [];
+  const shown = items.filter((item) => !hidden.includes(item.id));
+  if (!shown.length) return [{ label: none, icon: "close" }];
+  return shown.map((item) => ({ label: item.label, icon: item.icon, color: item.color }));
+}
+
+/**
+ * Was gefiltert ist, als Chips: [{ label, icon, color? }] — leer ohne Filter.
+ * Reihenfolge wie im Blatt: Ort, Status, Dringlichkeit.
+ */
+export function filterChips(view) {
+  const openStatuses = taskStatuses.filter((status) => !status.done);
+  return [
+    ...placeChip(view),
+    ...listChips(openStatuses, view.hiddenStatuses, noneStatus),
+    ...listChips(taskPriorities, view.hiddenPriorities, nonePrio),
+  ];
 }
 
 /* Abschnitt „Ort“: Einfachwahl, in „Alle“ nur der erklärende Satz */

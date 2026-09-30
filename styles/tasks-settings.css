@@ -28,6 +28,11 @@
  * --add                      -> Schalter „an“ (styles/tokens.css)
  * --text / --muted           -> Schrift im Segment, gewählt und nicht gewählt
  * --icon-soft                -> das ⓘ neben der gesperrten Filter-Zeile
+ * --tab-pill-active-bg       -> Fläche eines Filter-Chips ohne eigene Farbe (Ort)
+ *
+ * Direkt bei ihrer Regel:
+ * .tasks-filter-chip height / font-size -> Höhe und Schrift der Filter-Chips (26px, 13px)
+ * .tasks-filter-chip color-mix 16%      -> wie kräftig die Farbe eines Chips hinterlegt ist
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -260,4 +265,55 @@ body.is-projects :is(#view-home, #view-page) {
 
 .tasks-info:active {
   opacity: 0.55;
+}
+
+/* ---------- Filter-Chips ---------- */
+
+/* Unter der Zeile „Filtern“: die gewählten Werte, sobald etwas gefiltert ist.
+   Die Reihe bricht um, statt die Zeile zu stauchen; ein Tipp öffnet das Blatt. */
+.tasks-filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  width: 100%;
+  padding: 0 0 8px;
+  text-align: left;
+}
+
+.tasks-filter-chips:active {
+  opacity: 0.55;
+}
+
+/* Ein Chip in der Farbe seines Status bzw. seiner Dringlichkeit; der Ort bleibt grau */
+.tasks-filter-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  height: 26px;
+  padding: 0 10px 0 8px;
+  border-radius: 999px;
+  background: var(--tab-pill-active-bg);
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.tasks-filter-chip[style] {
+  /* color-mix: dieselbe Farbe wie das Icon, nur blass hinterlegt */
+  background: color-mix(in srgb, var(--chip-color) 16%, transparent);
+  color: var(--chip-color);
+}
+
+.tasks-filter-chip span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis; /* text-overflow: lange Ortsnamen enden mit „…“ */
+  white-space: nowrap;
+}
+
+.tasks-filter-chip .icon {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
 }
