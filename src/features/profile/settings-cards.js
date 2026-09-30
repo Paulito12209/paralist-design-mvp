@@ -4,7 +4,8 @@
  * Sie zeigen nur den Kopfwert und einen winzigen Verlauf; das ganze Diagramm
  * erscheint erst beim Antippen. Darunter der Abschnitt „Darstellung“.
  * Hier steht außerdem, welche große Seite hinter welchem Schlüssel liegt —
- * auch die Kontoeinstellungen und die Feedback- und Danksagungs-Seite.
+ * auch die App-Einstellungen, die Kontoeinstellungen und die Feedback- und
+ * Danksagungs-Seite.
  * Pfad: src/features/profile/settings-cards.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -22,9 +23,9 @@ import { dayShift, startOfDay } from "../../core/dates.js";
 import { icon } from "../../core/html.js";
 import { usageOfDay, usageStreaks } from "../../data/usage.js";
 import { accountCard } from "./account.js";
+import { appSettingsCard } from "./app-settings.js";
 import { creditsCard, startCreditsVideo } from "./credits.js";
 import { enterFeedback, feedbackCard } from "./feedback.js";
-import { navLabelsRowMarkup } from "./nav-labels.js";
 import { streakCard, usageCard } from "./profile-cards.js";
 import { themeListMarkup } from "./theme.js";
 
@@ -113,9 +114,9 @@ export function insightsSection() {
   return `<p class="psection">Analyse</p><div class="mini-grid">${usageMini()}${streakMini()}</div>`;
 }
 
-/** Der Abschnitt „Darstellung“: Überschrift, die drei Zeilen und die Reiter-Namen-Zeile. */
+/** Der Abschnitt „Darstellung“: Überschrift und die drei Zeilen Hell, Dunkel, System. */
 export function appearanceSection() {
-  return `<p class="psection">Darstellung</p>${themeListMarkup()}${navLabelsRowMarkup()}`;
+  return `<p class="psection">Darstellung</p>${themeListMarkup()}`;
 }
 
 /*
@@ -126,6 +127,7 @@ const details = {
   usage: { hash: "nutzungszeit", title: "Nutzungszeit", card: usageCard },
   streak: { hash: "serie", title: "Serie", card: streakCard },
   feedback: { hash: "feedback", title: "Feedback", card: feedbackCard, enter: enterFeedback },
+  app: { hash: "app", title: "App-Einstellungen", card: appSettingsCard },
   account: { hash: "konto", title: "Kontoeinstellungen", card: accountCard },
   credits: { hash: "danksagungen", title: "Danksagungen", card: creditsCard, settle: startCreditsVideo },
 };

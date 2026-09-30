@@ -1,9 +1,10 @@
 /*
- * Die Zeile im Einstellungs-Blatt, mit der man die Namen unter den Icons der
- * unteren Navigation wieder einblendet — ohne Namen sind die Icons dafür
- * 8px größer (styles/navigation.css, --tab-icon-grow). Geklickt wird sie in
- * src/features/profile/profile.js, hier entsteht nur ihr Markup und die
- * Änderung selbst; die Navigationsleiste hört über den Bus mit.
+ * Die Zeile auf der Unterseite App-Einstellungen
+ * (src/features/profile/app-settings.js), mit der man die Namen unter den
+ * Icons der unteren Navigation wieder einblendet — ohne Namen sind die Icons
+ * dafür 8px größer (styles/navigation.css, --tab-icon-grow). Geklickt wird
+ * sie über app-settings.js, hier entsteht nur ihr Markup und die Änderung
+ * selbst; die Navigationsleiste hört über den Bus mit.
  * Pfad: src/features/profile/nav-labels.js
  *
  * Keine anpassbaren visuellen Werte: das Aussehen der Zeile steht in

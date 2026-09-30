@@ -3,7 +3,8 @@
  * beiden Kacheln unter „Analyse“, die Darstellung und die Konto-Listen. Tippt
  * man eine Kachel an, tritt an die Stelle der Liste die volle Karte mit
  * Diagramm. Der Bereich heißt weiter „profile“, weil das Blatt am Profilkopf
- * hängt. Unter „Konto“ führt eine Zeile zu den Kontoeinstellungen, unter
+ * hängt. Unter „App“ führt eine Zeile zu den App-Einstellungen (Reiter-Namen,
+ * Tastatur der Suche), unter „Konto“ eine zu den Kontoeinstellungen, unter
  * „Support“ zwei auf das Feedback-Formular und die Danksagungen; „Roadmap“
  * ist dagegen ein Link nach draußen und braucht hier nichts (Adresse in
  * profile-cards.js). „Nach Updates suchen“ unter „Mehr“ bittet die Hülle, die
@@ -37,8 +38,8 @@ import {
   renderProfileButton,
   setDraft,
 } from "./avatar.js";
+import { onAppSettingsClick } from "./app-settings.js";
 import { noteFeedbackInput, onFeedbackClick } from "./feedback.js";
-import { toggleNavLabels } from "./nav-labels.js";
 import { initProfilePage, renderPageChrome, selectPane } from "./profile-page.js";
 import { identityCard, listsMarkup } from "./profile-cards.js";
 import {
@@ -320,8 +321,7 @@ function onBodyClick(event) {
     rerenderKeepingScroll();
     return;
   }
-  if (event.target.closest("[data-nav-labels-toggle]")) {
-    toggleNavLabels();
+  if (onAppSettingsClick(event)) {
     rerenderKeepingScroll();
     return;
   }

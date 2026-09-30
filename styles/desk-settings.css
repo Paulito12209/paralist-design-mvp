@@ -11,8 +11,8 @@
  * -----------------------------------
  * --settings-nav-width -> Breite des Untermenüs links
  * --settings-gap       -> Luft zwischen Untermenü und Inhalt
- * Einzelne Größen stehen bei ihrer Regel: Seitentitel 34px, Hinweis unter
- * „Navigation“ 13px.
+ * Einzelne Größen stehen bei ihrer Regel: Seitentitel 34px. Die grauen
+ * Hinweise unter den App-Einstellungen stehen in styles/settings.css.
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
  * -----------------------------------
@@ -120,12 +120,6 @@
 
   .device #profile .profile-save {
     grid-column: 2;
-  }
-
-  .settings-note {
-    padding: 0 4px;
-    font-size: 13px;
-    color: var(--muted);
   }
 
   /* Solange Profil oder Fortschritt als Seite offen sind, ist keiner der vier

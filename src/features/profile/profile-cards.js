@@ -199,6 +199,10 @@ export function streakCard() {
  */
 const listSections = [
   {
+    title: "App",
+    rows: [{ icon: "settings", label: "App-Einstellungen", trail: "chevron", detail: "app" }],
+  },
+  {
     title: "Konto",
     rows: [
       { icon: "person", label: "Kontoeinstellungen", trail: "chevron", detail: "account" },

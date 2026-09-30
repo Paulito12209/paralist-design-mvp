@@ -1,6 +1,7 @@
 /*
  * Einstellungs-Blatt: die beiden kleinen Karten unter „Analyse“, die Liste für
- * Hell, Dunkel und System und die Kopfzeile der aufgeklappten Karte.
+ * Hell, Dunkel und System, die Haken-Zeilen und grauen Hinweise der
+ * App-Einstellungen und die Kopfzeile der aufgeklappten Karte.
  * Pfad: styles/settings.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens.css)
@@ -16,7 +17,8 @@
  * --dot-empty / --dot-4     -> Punkte der Serie: blass und voll
  * --add                     -> Haken neben der gewählten Darstellung
  *
- * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei
+ * (u.a. der graue Hinweis unter einer Gruppe: 13px).
 */
 
 /* ---------- Analyse: zwei Kacheln nebeneinander ---------- */
@@ -192,6 +194,14 @@
 
 .settings-row:active {
   background: var(--bg);
+}
+
+/* Grauer Satz unter einer Gruppe: sagt, was die Wahl bewirkt */
+.settings-note {
+  padding: 4px 4px 0;
+  font-size: 13px;
+  line-height: 1.35;
+  color: var(--muted);
 }
 
 /* ---------- Aufgeklappte Kachel ---------- */
