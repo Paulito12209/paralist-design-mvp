@@ -170,13 +170,9 @@
 }
 
 /* Die Zeile zum Anlegen (src/features/tasks/tasks-inline.js) steht im Board
-   wie jede andere Zeile: Feld links, Ring rechts, ohne Griff */
+   wie jede andere Zeile: Ring links, dann das Feld, rechts frei wie der Griff */
 .board-row.task-inline {
   padding-right: var(--board-grip-width);
-}
-
-.board-row.task-inline .task-inline-ring {
-  order: 2; /* order: im Board sitzt der Ring rechts, in der Liste links */
 }
 
 /* Solange in der Spalte geschrieben wird, ist der Hinweis „Nichts hier“ überflüssig */
