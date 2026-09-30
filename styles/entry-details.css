@@ -38,6 +38,7 @@
  * .details-stat-value font-size -> Wert einer Kennzahl (17px)
  * .details-stat-label font-size -> Beschriftung darunter (13px)
  * .details-row font-size        -> Zeilen der Abschnitte (15px)
+ * .details-row-more width       -> Pfeil hinter der Zeile „Erinnerung“ (16px)
  * .entry-more font-size         -> „Mehr anzeigen“ (15px)
  * .details-stats transition     -> wie schnell Kennzahlen und Abschnitte einblenden (0.2s)
  */
@@ -286,6 +287,21 @@ button.details-stat:active {
 
 .details-row.is-editable:active {
   opacity: 0.55;
+}
+
+/* Der Pfeil hinter „Erinnerung“: hier öffnet sich ein Blatt, kein Feld.
+   Wert und Pfeil stehen in einer Zeile nebeneinander. */
+.details-row-value:has(.details-row-more) {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.details-row-more {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 auto;
+  color: var(--icon-soft);
 }
 
 /* Das Feld an der Stelle des Werts, in derselben Schrift */

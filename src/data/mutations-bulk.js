@@ -24,6 +24,7 @@ import { dropLinksTo } from "./links.js";
 import { commit, liftChildren, markEdited } from "./mutations.js";
 import { applyTaskStatus } from "./mutations-tasks.js";
 import { dropProjectFromViews } from "./project-views.js";
+import { dueTime, followDue } from "./reminders.js";
 import { isContainer } from "./queries.js";
 import { entryRef, isEntryRef } from "./refs.js";
 import { state } from "./state.js";
@@ -74,11 +75,14 @@ export function setTasksPriority(entries, priority) {
 /** Fälligkeit setzen (Tag als „JJJJ-MM-TT“); ohne Tag fallen Datum und Uhrzeit weg. */
 export function setEntriesDate(entries, day) {
   entries.forEach((entry) => {
+    const due = dueTime(entry);
     if (day) entry.date = day;
     else {
       delete entry.date;
       delete entry.time;
     }
+    /* Eine Erinnerung an der Fälligkeit wandert mit (src/data/reminders.js) */
+    followDue(entry, due);
     markEdited(entry);
   });
   commit();

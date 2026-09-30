@@ -3,10 +3,12 @@
  * bei jeder Kategorie. Aufgebaut wie der Kopf eines Profils: oben „Details“
  * und rechts das Ketten-Symbol „Verknüpfen“ (src/ui/link-sheet.js) und das
  * Symbol zum Hochklappen (entry-lift.js), darunter drei Kennzahlen
- * nebeneinander (bei einer Aufgabe Dringlichkeit | Datum | Status — ein Tipp
- * auf Status oder Dringlichkeit öffnet das Blatt dazu, einer auf das Datum
- * die Auswahl für Tag und Uhrzeit, src/ui/date-field.js), nach einer
- * Trennlinie die übrigen Angaben in Abschnitten. Was dort
+ * nebeneinander (bei Aufgabe und Projekt Dringlichkeit | Fälligkeit | Status,
+ * bei den meisten anderen in der Mitte die Erinnerung — ein Tipp auf Status
+ * oder Dringlichkeit öffnet das Blatt dazu, einer auf Fälligkeit oder
+ * Erinnerung die Auswahl für Tag und Uhrzeit, src/ui/date-field.js), nach
+ * einer Trennlinie die übrigen Angaben in Abschnitten; die Zeile
+ * „Erinnerung“ im Abschnitt „Zeit“ öffnet src/ui/remind-sheet.js. Was dort
  * steht, stellt src/data/entry-facts.js zusammen. Bei einem Lesezeichen
  * steht oben der Abschnitt „Link“: ein Tipp auf die Adresse macht sie zum
  * Feld, Enter oder Wegtippen übernimmt den neuen Link (und holt den
@@ -39,7 +41,8 @@ import { findEntry } from "../../data/queries.js";
 import { ui } from "../../data/state.js";
 import { openLinkSheet } from "../../ui/link-sheet.js";
 import { openTaskSheet } from "../../ui/task-status.js";
-import { openDateField } from "../../ui/date-field.js";
+import { openDateField, openReminderField } from "../../ui/date-field.js";
+import { openRemindSheet } from "../../ui/remind-sheet.js";
 import { initEntryLift, refreshLift, toggleLift } from "./entry-lift.js";
 
 const detailsLabel = "Details";
@@ -65,9 +68,12 @@ function statMarkup(stat) {
     : `<div class="details-stat">${inner}</div>`;
 }
 
-/* Eine Zeile mit `edit` ist ein Knopf: der Tipp macht den Wert zum Feld */
+/* Eine Zeile mit `edit` ist ein Knopf: der Tipp macht den Wert zum Feld
+   (Adresse) oder öffnet die Auswahl (Fällig am) bzw. das Blatt (Erinnerung —
+   dann steht ein Pfeil dahinter, weil sich etwas Neues öffnet) */
 function rowMarkup(row) {
-  const value = `<span class="details-row-value">${escapeHtml(row.value)}</span>`;
+  const more = row.edit === "remind" ? icon("chevron", "details-row-more") : "";
+  const value = `<span class="details-row-value">${escapeHtml(row.value)}${more}</span>`;
   if (row.edit) {
     return `<button class="details-row is-editable" type="button" data-details-edit="${row.edit}" aria-label="${escapeHtml(`${row.label} ändern`)}"><span class="details-row-label">${escapeHtml(row.label)}</span>${value}</button>`;
   }
@@ -173,7 +179,8 @@ export function initEntryDetails() {
 }
 
 /**
- * Tipps auf Kennzahlen (Status, Dringlichkeit, Datum) und die Link-Zeile — hier und
+ * Tipps auf Kennzahlen (Status, Dringlichkeit, Fälligkeit, Erinnerung) und die
+ * antippbaren Zeilen (Adresse, Fällig am, Erinnerung) — hier und
  * in der Karte rechts am Desktop. Gibt `true` zurück, wenn der Tipp etwas tat.
  * @param done nach dem Ändern des Links: die Karte, in der er stand, neu zeichnen.
  */
@@ -182,11 +189,15 @@ export function handleDetailsClick(event, entry, done = renderEntryDetails) {
   if (stat) {
     const field = stat.dataset.detailsField;
     if (field === "date") openDateField(entry, stat);
+    else if (field === "remind") openReminderField(entry, stat);
     else openTaskSheet(entry, field);
     return true;
   }
   const row = event.target.closest("[data-details-edit]");
   if (!row) return false;
-  if (!row.querySelector("input")) editLink(entry, row, done);
+  const edit = row.dataset.detailsEdit;
+  if (edit === "date") openDateField(entry, row);
+  else if (edit === "remind") openRemindSheet(entry, row);
+  else if (!row.querySelector("input")) editLink(entry, row, done);
   return true;
 }

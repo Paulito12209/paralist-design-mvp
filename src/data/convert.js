@@ -22,7 +22,7 @@
 import { dayKey, timeKey } from "../core/dates.js";
 import { nextId } from "../core/ids.js";
 import { typeIcon, workspaceDefaultName } from "./config.js";
-import { adoptStatusFields, isTaskDone } from "./config-tasks.js";
+import { adoptStatusFields, isTaskDone, isTimeType } from "./config-tasks.js";
 import { connectEntries, disconnectEntries, dropLinksTo } from "./links.js";
 import { commit, liftChildren } from "./mutations.js";
 import { moveOpen } from "./opens.js";
@@ -43,9 +43,10 @@ export const convertibleTypes = ["notiz", "aufgabe", "termin", "projekt", "dokum
 export const workspaceKind = "arbeitsbereich";
 
 /* Die Felder, die am Typ hängen: Status, Dringlichkeit und Reihenfolge einer
-   Aufgabe, der Zeitpunkt des Erledigens, Tag und Uhrzeit eines Termins.
+   Aufgabe, der Zeitpunkt des Erledigens, Tag und Uhrzeit eines Termins und
+   ob die Erinnerung an der Fälligkeit hängt.
    „Rückgängig“ stellt genau diese wieder her — nie Titel oder Text. */
-const typeFields = ["status", "priority", "order", "doneAt", "date", "time"];
+const typeFields = ["status", "priority", "order", "doneAt", "date", "time", "remindOffset"];
 
 /** Lässt sich der Typ dieses Eintrags ändern? */
 export function canChangeType(entry) {
@@ -76,6 +77,8 @@ function adoptTaskFields(entry, wasTask) {
   const isTask = entry.type === "aufgabe";
   adoptStatusFields(entry);
   if (!isTaskDone(entry)) delete entry.doneAt;
+  /* Ohne Fälligkeit gibt es kein „1 Stunde vorher“: die Erinnerung bleibt als eigener Zeitpunkt */
+  if (!isTimeType(entry.type)) delete entry.remindOffset;
   if (isTask && !wasTask) entry.order = -(entry.createdAt || Date.now());
   if (!isTask && wasTask) {
     delete entry.order;

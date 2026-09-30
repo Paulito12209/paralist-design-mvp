@@ -17,7 +17,8 @@ import { entryRef, workspaceRef } from "./refs.js";
 import { state } from "./state.js";
 import { typeSingular } from "./config.js";
 import { charCount } from "./page-text.js";
-import { formatNumber, longDate } from "../core/format.js";
+import { dayClock, formatNumber, longDate } from "../core/format.js";
+import { isTimeType } from "./config-tasks.js";
 
 const createdFormat = new Intl.DateTimeFormat("de-DE", { day: "numeric", month: "long", year: "numeric" });
 
@@ -46,7 +47,10 @@ export function entryDetails(entry) {
     { label: "Typ", value: entryTypeName(entry) },
     { label: "Speicherort", value: placesLabel(entry) },
   ];
-  if (entry.date) rows.push({ label: "Datum", value: longDate(entry.date) });
+  /* Bei Aufgabe und Projekt ist das Datum die Fälligkeit, beim Termin sein Tag */
+  const dueLike = isTimeType(entry.type) && entry.type !== "termin";
+  if (entry.date) rows.push({ label: dueLike ? "Fällig am" : "Datum", value: longDate(entry.date) });
+  if (Number.isFinite(entry.remindAt)) rows.push({ label: "Erinnerung", value: dayClock(entry.remindAt) });
   const count = isContainer(entry) ? entriesOf(entryRef(entry.id)).length : linkedEntries(entry).length;
   rows.push({ label: isContainer(entry) ? "Einträge" : "Verknüpfungen", value: String(count) });
   const chars = charCount(entry);

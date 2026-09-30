@@ -9,7 +9,7 @@
  * `formatClock` für die Länge eines Videos oder einer Aufnahme („1:20“).
  */
 
-import { MS_PER_DAY, pad2, parseDay, sameDay, startOfDay } from "./dates.js";
+import { MS_PER_DAY, dayShift, pad2, parseDay, sameDay, startOfDay } from "./dates.js";
 
 /* Formatierer einmal anlegen: sie sind teuer zu erzeugen und werden oft gebraucht. */
 const numberFormat = new Intl.NumberFormat("de-DE");
@@ -24,6 +24,7 @@ const longWeekdayDate = new Intl.DateTimeFormat("de-DE", { weekday: "long", day:
 const weekdayDayMonthLong = new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "numeric", month: "long" });
 const fullDate = new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 const dayMonthYear = new Intl.DateTimeFormat("de-DE", { day: "numeric", month: "short", year: "numeric" });
+const weekdayDayMonthShort = new Intl.DateTimeFormat("de-DE", { weekday: "short", day: "numeric", month: "short" });
 
 /** Tausenderpunkte, z.B. 1234 → „1.234“. */
 export function formatNumber(value) {
@@ -168,4 +169,21 @@ export function formatBytes(bytes) {
   }
   const rounded = value < 10 && unit > 0 ? Math.round(value * 10) / 10 : Math.round(value);
   return `${rounded.toLocaleString("de-DE")} ${byteUnits[unit]}`;
+}
+
+/**
+ * Der Tag eines Zeitpunkts, knapp: „Heute“, „Morgen“, „Gestern“, sonst
+ * „Fr., 3. Okt.“ — für Fälligkeit und Erinnerung.
+ */
+export function dayWord(ts) {
+  const day = startOfDay(ts);
+  const today = startOfDay(Date.now());
+  /* dayShift statt ± 24 Stunden: am Tag der Zeitumstellung hat ein Tag 23 oder 25 */
+  const near = { [today]: "Heute", [dayShift(today, 1)]: "Morgen", [dayShift(today, -1)]: "Gestern" }[day];
+  return near || weekdayDayMonthShort.format(new Date(ts));
+}
+
+/** Tag und Uhrzeit eines Zeitpunkts: „Heute, 14:00“, sonst „Fr., 3. Okt., 14:00“. */
+export function dayClock(ts) {
+  return `${dayWord(ts)}, ${clockTime.format(new Date(ts))}`;
 }

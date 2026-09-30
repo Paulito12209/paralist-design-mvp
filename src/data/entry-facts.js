@@ -4,6 +4,9 @@
  * darunter Abschnitte mit Zeilen. Nur Angaben, die die App wirklich hat —
  * fehlt ein Wert, fällt die Zeile weg.
  *
+ * „Zeit“ steht zuerst, weil man dort etwas tut: die Fälligkeit mit Uhrzeit
+ * und die Erinnerung (src/data/reminders.js) lassen sich antippen.
+ *
  * „Nutzung“ und „Verlauf“ sollen ein Gefühl dafür geben, wie viel Zeit und
  * Aufmerksamkeit eine Seite bekommt: wie oft man sie öffnet, wie lange man
  * darauf verbringt, wie lange eine Aufgabe schon offen ist. Gemessene Zeit
@@ -15,8 +18,8 @@
  */
 
 import { MS_PER_DAY, parseDay, startOfDay } from "../core/dates.js";
-import { formatNumber, formatSpan, relativeTime } from "../core/format.js";
-import { isTaskDone } from "./config-tasks.js";
+import { dayClock, dayWord, formatNumber, formatSpan, relativeTime } from "../core/format.js";
+import { isTaskDone, isTimeType } from "./config-tasks.js";
 import { entryTypeName } from "./details.js";
 import { statIdsOf, statsOf } from "./entry-stats.js";
 import { linkedEntries } from "./links.js";
@@ -26,6 +29,7 @@ import { entriesOf, isContainer, placesLabel } from "./queries.js";
 import { BOOKMARK_TYPE } from "./bookmarks.js";
 import { parseBlocks } from "./note-blocks.js";
 import { entryRef } from "./refs.js";
+import { dueTime, hasReminder, reminderChoice } from "./reminders.js";
 import { entryUsage } from "./usage.js";
 
 /* Ganze Tage zwischen zwei Zeitpunkten, nach Kalendertagen gezählt */
@@ -64,6 +68,27 @@ function collect(entry) {
   };
 }
 
+/*
+ * Abschnitt „Zeit“: die Fälligkeit mit Uhrzeit (oben steht nur der Tag) und
+ * die Erinnerung — beide antippbar (edit: "date" öffnet die Auswahl,
+ * "remind" das Blatt „Erinnerung“). Bei Aufgabe, Projekt und Termin steht
+ * die Erinnerung immer da, sonst gäbe es keinen Weg zu „1 Stunde vorher“;
+ * bei den anderen nur, wenn eine gesetzt ist — gesetzt wird sie oben.
+ */
+function timeRows(entry) {
+  const rows = [];
+  const timed = isTimeType(entry.type);
+  if (timed && entry.type !== "termin" && entry.date) {
+    const due = dueTime(entry);
+    rows.push({ label: "Fällig am", value: entry.time ? dayClock(due) : dayWord(due), edit: "date" });
+  }
+  if (!timed && !hasReminder(entry)) return rows;
+  const choice = reminderChoice(entry);
+  const value = choice ? choice.label : hasReminder(entry) ? dayClock(entry.remindAt) : "Keine";
+  rows.push({ label: "Erinnerung", value, edit: "remind" });
+  return rows;
+}
+
 /* Abschnitt „Text“: Zeichen, Wörter, Lesezeit — nur mit Text und nur, was oben noch fehlt */
 function textRows(facts, shown) {
   if (!facts.hasBody) return [];
@@ -81,7 +106,7 @@ function usageRows(entry, facts, shown) {
   if (count && !shown.has("opens")) rows.push({ label: "Geöffnet", value: count === 1 ? "1-mal" : `${formatNumber(count)}-mal` });
   if (count > 1 && facts.seconds >= 60) rows.push({ label: "Im Schnitt je Besuch", value: spentText(facts.seconds / count) });
   if (facts.opens && facts.opens.prev) rows.push({ label: "Besuch davor", value: relativeTime(facts.opens.prev) });
-  if (entry.editedAt) rows.push({ label: "Zuletzt bearbeitet", value: relativeTime(entry.editedAt) });
+  if (entry.editedAt && !shown.has("edited")) rows.push({ label: "Zuletzt bearbeitet", value: relativeTime(entry.editedAt) });
   return rows;
 }
 
@@ -113,6 +138,12 @@ function placeRows(entry, facts, shown) {
     { label: "Speicherort", value: placesLabel(entry) },
   ];
   if (isContainer(entry) && !shown.has("entries")) rows.push({ label: "Einträge", value: formatNumber(facts.content.length) });
+  /* Beim Projekt stehen oben Dringlichkeit, Fälligkeit und Status — wie weit
+     es ist, sagen hier seine Aufgaben */
+  if (facts.openTasks || facts.doneTasks) {
+    rows.push({ label: "Offene Aufgaben", value: formatNumber(facts.openTasks) });
+    rows.push({ label: "Erledigte Aufgaben", value: formatNumber(facts.doneTasks) });
+  }
   if (!isContainer(entry) && !shown.has("links")) rows.push({ label: "Verknüpfungen", value: formatNumber(facts.links) });
   if (entry.favorite) rows.push({ label: "Favorit", value: "Ja" });
   return rows;
@@ -137,6 +168,7 @@ export function entryFacts(entry) {
   const shown = new Set(ids);
   const groups = [
     { heading: "Link", rows: linkRows(entry) },
+    { heading: "Zeit", rows: timeRows(entry) },
     { heading: "Text", rows: textRows(facts, shown) },
     { heading: "Nutzung", rows: usageRows(entry, facts, shown) },
     { heading: "Verlauf", rows: historyRows(entry) },

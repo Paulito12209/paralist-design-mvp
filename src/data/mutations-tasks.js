@@ -26,6 +26,7 @@ import {
 import { applyPageHead } from "./design-prefs.js";
 import { commit } from "./mutations.js";
 import { applyProjectDraft } from "./project-views.js";
+import { dropReminder } from "./reminders.js";
 import { taskOrder } from "./queries.js";
 import { saveState, state, ui } from "./state.js";
 import { noteDoneTime } from "./task-archive.js";
@@ -123,6 +124,8 @@ export function applyTaskStatus(entry, status) {
   const wasDone = isTaskDone(entry);
   entry.status = status;
   noteDone(entry, wasDone);
+  /* Erledigt braucht keine Erinnerung mehr — auch nicht nach dem Wieder-Öffnen */
+  if (!wasDone && isTaskDone(entry)) dropReminder(entry);
   /* Wieder geöffnet heißt: sie gehört nicht mehr ins Archiv. Nur bei der
      Aufgabe — ein archiviertes Projekt bleibt, wo es ist. */
   if (entry.type === "aufgabe" && entry.archived && !isTaskDone(entry)) entry.archived = false;
