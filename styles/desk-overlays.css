@@ -1,6 +1,6 @@
 /*
  * Desktop ab 1024px: Blätter werden Dialoge in der Fenstermitte. Die großen
- * Blätter (Fortschritt, Einstellungen, „Monat und Jahr“ …), das Update-Fenster,
+ * Blätter (Fortschritt, Einstellungen, „Datum“ und „Woche“ …), das Update-Fenster,
  * der Auswahl-Dialog (Verknüpfen, Seitenmenü) und das Kontextmenü stehen über
  * abgedunkelter App, statt von unten hereinzufahren — dazu ihr Auftauchen.
  * Das Eingabefeld unten (Platz und Glas in styles/desk.css) taucht mit
@@ -95,7 +95,7 @@
     animation: none; /* animation: kein Hereinfahren von unten; das Auftauchen steht weiter unten */
   }
 
-  /* „Monat und Jahr“ bleibt so hoch wie seine Rollen (styles/calendar.css) */
+  /* „Datum“ und „Woche“ bleiben so hoch wie ihre Rollen (styles/calendar.css) */
   .device .modal-backdrop .date-modal {
     height: auto;
   }

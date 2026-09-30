@@ -70,6 +70,24 @@ export function isoWeek(date) {
   return Math.ceil(((utc - yearStart) / MS_PER_DAY + 1) / 7);
 }
 
+/**
+ * Zu welchem Jahr die Kalenderwoche eines Tages gehört: das Jahr ihres
+ * Donnerstags. Der 29.12.2025 liegt so schon in KW 1 von 2026.
+ */
+export function isoWeekYear(date) {
+  return addDays(startOfWeek(date), 3).getFullYear();
+}
+
+/** Montag der Kalenderwoche `week` im Wochenjahr `year` — KW 1 enthält immer den 4. Januar. */
+export function isoWeekStart(year, week) {
+  return addDays(startOfWeek(new Date(year, 0, 4)), (week - 1) * 7);
+}
+
+/** Wie viele Kalenderwochen ein Jahr hat (52 oder 53): der 28. Dezember liegt immer in der letzten. */
+export function isoWeeksInYear(year) {
+  return isoWeek(new Date(year, 11, 28));
+}
+
 /** Liegen zwei Zeitpunkte am selben Kalendertag? */
 export function sameDay(a, b) {
   return startOfDay(a) === startOfDay(b);

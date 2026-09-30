@@ -60,8 +60,9 @@ export function showView(name) {
 
   /* Medien- und Zeichenansicht brauchen eigene Knopfleisten unten:
      die beiden Klassen schalten sie in styles/media.css und styles/drawing.css frei.
-     is-search schaltet die Suchen-Pille frei (styles/search.css), is-tasks die
-     Karte „Ansicht“ über der Navigation (styles/tasks-settings.css).
+     is-search schaltet die Suchen-Pille frei (styles/search.css), is-tasks und
+     is-calendar das Panel „Ansicht“ über der Navigation (styles/tasks-settings.css,
+     styles/calendar.css).
      is-subpage blendet die allgemeine Kopfzeile aus (styles/top-bar.css): eine
      Sammlung, ein Arbeitsbereich und ein Eintrag haben ihre eigene Kopfzeile
      mit dem Zurück-Pfeil, und der gehört ganz nach oben. */
@@ -70,6 +71,7 @@ export function showView(name) {
   document.body.classList.toggle("is-drawing", Boolean(entry && entry.type === "zeichnung"));
   document.body.classList.toggle("is-search", name === "search");
   document.body.classList.toggle("is-tasks", name === "tasks");
+  document.body.classList.toggle("is-calendar", name === "calendar");
   document.body.classList.toggle("is-subpage", name === "page" || name === "entry");
 
   emit(events.viewOpened, name);

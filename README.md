@@ -330,7 +330,12 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   Arbeitsbereich seinen eigenen Text, Pillen wechseln behält alles.
 
 **Kalender**
-- Raster und Liste umschalten, Zeitraum 1 W / 2 W / 1 M, „Heute“, Monatsmenü.
+- Panel „Ansicht“ über der Navigation: Darstellung Raster | Liste, Zeitspanne
+  1 W / 2 W / 1 M, Zeile „Woche“ öffnet die Rollen Jahr | KW (Wechsel über die
+  Jahresgrenze: KW 53 wird im Jahr mit 52 Wochen zu KW 52), „Heute“ im Kopf
+  springt zurück, ohne das Panel zuzuklappen. Am Desktop nur in der Tagesansicht.
+- Datum unter „Kalender“ antippen: Rollen Tag | Monat | Jahr; ein Tag in einem
+  anderen Jahr zeigt das Jahr in der Überschrift.
 - Wochenstreifen senkrecht ziehen (eine Zeile) und waagerecht wischen (ganzer
   Zeitraum).
 - Leere Stunde antippen: das Eingabefeld geht mit Typ „Termin“ und dieser

@@ -164,27 +164,20 @@
             <div id="search-results"></div>
           </section>
 
-          <!-- Kalender: Monat, Wochenstreifen, Bedienzeile und darunter die graue Fläche mit Stundenraster oder Liste -->
+          <!-- Kalender: gewählter Tag, Wochenstreifen und darunter die Fläche mit Stundenraster oder Liste; das Panel „Ansicht“ legt src/features/calendar/calendar-settings.js an -->
           <section class="view" id="view-calendar" data-view="calendar" hidden>
             <h1 class="screen-title">Kalender</h1>
-            <button class="cal-month" id="cal-month" type="button" aria-label="Monat wechseln">
-              <span id="cal-month-label">Monat</span>
+            <button class="cal-month" id="cal-month" type="button" aria-label="Datum wählen">
+              <span id="cal-month-label">Datum</span>
               <svg class="icon"><use href="#icon-chevron"></use></svg>
             </button>
-            <!-- cal-head rastet unter der Suchleiste ein; Titel und Monat scrollen weg (styles/calendar.css) -->
+            <!-- cal-head rastet unter der Suchleiste ein; Titel und Datum scrollen weg (styles/calendar.css) -->
             <div class="cal-head" id="cal-head">
               <div class="cal-strip" id="cal-strip">
                 <div class="cal-week-head">
-                  <span>KW</span><span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span>
+                  <span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span>
                 </div>
                 <div class="cal-weeks" id="cal-weeks"></div>
-                <div class="cal-controls">
-                  <button class="cal-round" id="cal-mode" type="button" aria-label="Ansicht wechseln">
-                    <svg class="icon"><use id="cal-mode-icon" href="#icon-list"></use></svg>
-                  </button>
-                  <button class="cal-pill cal-today" id="cal-today" type="button">Heute</button>
-                  <button class="cal-pill cal-span" id="cal-span" type="button" aria-label="Zeitraum wählen">1 W</button>
-                </div>
               </div>
             </div>
             <div class="cal-panel" id="cal-panel"></div>

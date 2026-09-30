@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "4a07b7447c2a";
+export const appVersion = "e6f307655f06";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -85,6 +85,7 @@ export const appFiles = [
   "src/features/calendar/calendar-nav.js",
   "src/features/calendar/calendar-rail.js",
   "src/features/calendar/calendar-rings.js",
+  "src/features/calendar/calendar-settings.js",
   "src/features/calendar/calendar-state.js",
   "src/features/calendar/calendar-strip.js",
   "src/features/calendar/calendar-week.js",

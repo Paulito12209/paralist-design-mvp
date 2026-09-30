@@ -67,8 +67,7 @@
  * Raster statt space-between: mit Flex hängt die Lage der Mitte davon ab, wie
  * breit die Nachbarn sind — ein Zähler an nur einem Tab schob „Termine“ aus
  * der Mitte. Zwei gleich breite 1fr-Spalten links und rechts halten die
- * mittlere Spalte immer genau zentriert (gleiches Muster wie .cal-controls
- * in styles/calendar.css).
+ * mittlere Spalte immer genau zentriert.
  * minmax(0, 1fr): die Aussenspalten dürfen schmaler werden als ihr Inhalt,
  * sonst würde ein breiter Aussen-Tab die Spalten ungleich machen und die
  * Mitte doch wieder verschieben.
@@ -169,10 +168,6 @@
   font-weight: 700;
   color: var(--text);
   margin-bottom: 8px;
-}
-
-.cal-empty span {
-  font-size: 19px;
 }
 
 /* Die Pille zum Anlegen erbt sonst das große Kalender-Icon von oben. Ihr

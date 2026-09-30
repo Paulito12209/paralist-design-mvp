@@ -145,10 +145,6 @@ export const dom = {
   get calMonthLabel() { return el("cal-month-label"); },
   get calStrip() { return el("cal-strip"); },
   get calWeeks() { return el("cal-weeks"); },
-  get calModeBtn() { return el("cal-mode"); },
-  get calModeIcon() { return el("cal-mode-icon"); },
-  get calTodayBtn() { return el("cal-today"); },
-  get calSpanBtn() { return el("cal-span"); },
   get calPanel() { return el("cal-panel"); },
 
   /* Aufgaben */

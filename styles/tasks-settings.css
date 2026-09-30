@@ -87,6 +87,14 @@ body:has(.nav-shell.is-composing) .view-panel {
   touch-action: none; /* touch-action: der Browser soll das Ziehen nicht selbst als Geste nehmen */
 }
 
+/* Knöpfe im Kopf links vom Symbol, z.B. „Heute“ im Kalender — ohne Knöpfe
+   nimmt der Behälter keinen Platz ein */
+.view-panel-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
 .view-panel-toggle .icon {
   transition: transform var(--tasks-panel-slide) ease; /* transition: das Symbol dreht sich mit */
 }

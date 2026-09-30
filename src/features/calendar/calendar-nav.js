@@ -1,6 +1,6 @@
 /*
- * Blättern im Kalender: eine Woche, ein Monat, zurück zu heute, Zeitraum und
- * Ansicht umstellen.
+ * Blättern im Kalender: eine Woche, ein Monat, zurück zu heute, Zeitspanne und
+ * Darstellung umstellen.
  * Pfad: src/features/calendar/calendar-nav.js
  *
  * Keine anpassbaren visuellen Werte.
@@ -57,7 +57,7 @@ export function goToday() {
   redraw(true);
 }
 
-/** Zeitraum des Streifens umstellen (1 Woche, 2 Wochen, 1 Monat). */
+/** Zeitspanne des Streifens umstellen (1 Woche, 2 Wochen, 1 Monat). */
 export function setSpan(span) {
   state.prefs.calendar.span = span;
   saveState();

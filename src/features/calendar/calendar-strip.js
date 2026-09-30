@@ -1,6 +1,8 @@
 /*
- * Der Wochenstreifen oben auf der Kalenderseite: Kalenderwoche links,
- * sieben Tage daneben, die Vor- und Nachwoche scheinen schwach durch.
+ * Der Wochenstreifen oben auf der Kalenderseite: sieben Tage je Woche, die
+ * Vor- und Nachwoche scheinen schwach durch. Darüber steht der gewählte Tag
+ * als Überschrift; die Kalenderwoche zeigt das Panel „Ansicht“
+ * (calendar-settings.js).
  * Pfad: src/features/calendar/calendar-strip.js
  *
  * Keine anpassbaren visuellen Werte: Farben und Größen stehen in
@@ -8,12 +10,10 @@
  * zeichnet calendar-rings.js.
  */
 
-import { addDays, dayKey, isoWeek, parseDay, startOfWeek } from "../../core/dates.js";
+import { addDays, dayKey, parseDay, startOfWeek } from "../../core/dates.js";
 import { dom } from "../../core/dom.js";
-import { longDate, monthHeading } from "../../core/format.js";
-import { calendarSpans } from "../../data/config.js";
+import { calendarDayHeading, longDate } from "../../core/format.js";
 import { state, ui } from "../../data/state.js";
-import { cal } from "./calendar-state.js";
 import { dayRing } from "./calendar-rings.js";
 
 /** Die Montage der sichtbaren Wochen: eine, zwei oder alle Wochen des Monats. */
@@ -36,7 +36,7 @@ export function visibleWeeks() {
 function weekMarkup(monday, extra = "") {
   const todayKey = dayKey(new Date());
   const month = parseDay(ui.calendarDay).getMonth();
-  let html = `<div class="cal-week${extra ? ` ${extra}` : ""}"><span class="cal-kw">${isoWeek(monday)}</span>`;
+  let html = `<div class="cal-week${extra ? ` ${extra}` : ""}">`;
 
   for (let offset = 0; offset < 7; offset += 1) {
     const day = addDays(monday, offset);
@@ -57,21 +57,13 @@ function weekMarkup(monday, extra = "") {
   return `${html}</div>`;
 }
 
-/** Streifen, Monatsname und die drei Knöpfe darunter neu zeichnen. */
+/** Überschrift und Streifen neu zeichnen. */
 export function renderStrip() {
   const weeks = visibleWeeks();
-  const { calendar } = state.prefs;
 
-  dom.calMonthLabel.textContent = monthHeading(parseDay(ui.calendarDay).getTime());
+  dom.calMonthLabel.textContent = calendarDayHeading(ui.calendarDay);
   dom.calWeeks.innerHTML =
     weekMarkup(addDays(weeks[0], -7), "is-peek is-before") +
     weeks.map((monday) => weekMarkup(monday)).join("") +
     weekMarkup(addDays(weeks[weeks.length - 1], 7), "is-peek is-after");
-
-  /* Ob der „Heute“-Knopf sichtbar und blau ist, entscheidet updateTodayPill()
-     in calendar.js — das haengt auch von der Jetzt-Linie im Raster ab. */
-  const span = calendarSpans.find((item) => item.id === calendar.span) || calendarSpans[0];
-  dom.calSpanBtn.textContent = span.short;
-  /* Der runde Knopf zeigt immer die Ansicht, zu der er wechselt. */
-  dom.calModeIcon.setAttribute("href", calendar.mode === "grid" ? "#icon-list" : "#icon-timeline");
 }

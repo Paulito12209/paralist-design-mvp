@@ -12,7 +12,6 @@
  */
 
 import { icon } from "../../core/html.js";
-import { longDate } from "../../core/format.js";
 import { calendarSegments } from "../../data/config.js";
 import { entriesOfDay, entryTime } from "../../data/queries.js";
 import { state, ui } from "../../data/state.js";
@@ -66,7 +65,6 @@ export function renderList() {
       <div class="cal-empty">
         ${icon("calendar")}
         <b>${seg.empty}</b>
-        <span>${longDate(ui.calendarDay)}</span>
         <button class="empty-add" type="button" data-empty-add="${seg.pick}">
           ${icon("plus", "empty-add-icon")}<span>${seg.add}</span>
         </button>

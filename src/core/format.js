@@ -21,6 +21,7 @@ const monthOnly = new Intl.DateTimeFormat("de-DE", { month: "long" });
 const clockTime = new Intl.DateTimeFormat("de-DE", { hour: "2-digit", minute: "2-digit" });
 const shortDate = new Intl.DateTimeFormat("de-DE", { day: "2-digit", month: "2-digit" });
 const longWeekdayDate = new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "2-digit", month: "2-digit" });
+const weekdayDayMonthLong = new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "numeric", month: "long" });
 const fullDate = new Intl.DateTimeFormat("de-DE", { weekday: "long", day: "numeric", month: "long", year: "numeric" });
 const dayMonthYear = new Intl.DateTimeFormat("de-DE", { day: "numeric", month: "short", year: "numeric" });
 
@@ -103,6 +104,16 @@ export function shortDay(key) {
   if (day === today + MS_PER_DAY) return "Morgen";
   if (day === today - MS_PER_DAY) return "Gestern";
   return shortDate.format(new Date(day));
+}
+
+/**
+ * Überschrift der Kalenderseite: „Mittwoch, 30. September“. Das Jahr kommt
+ * nur dazu, wenn der Tag nicht im laufenden Jahr liegt.
+ */
+export function calendarDayHeading(key) {
+  const day = parseDay(key);
+  if (day.getFullYear() === new Date().getFullYear()) return weekdayDayMonthLong.format(day);
+  return fullDate.format(day);
 }
 
 /** Ausgeschriebenes Datum für Vorlesehilfen und den leeren Kalendertag. */

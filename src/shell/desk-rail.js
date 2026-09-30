@@ -94,9 +94,9 @@ function openInbox() {
 function openCalendarOn(key) {
   const todayKey = dayKey(new Date());
   if (isViewActive("calendar") && key === todayKey) {
-    /* Derselbe Weg wie der Knopf „Heute“ im Kalender: er rollt das
-       Stundenraster auch zur Jetzt-Linie. */
-    dom.calTodayBtn.click();
+    /* Derselbe Weg wie der Knopf „Heute“ im Panel „Ansicht“ des Kalenders:
+       er rollt das Stundenraster auch zur Jetzt-Linie. */
+    document.querySelector(".cal-view-panel .cal-today")?.click();
   } else {
     const moved = ui.calendarDay !== key;
     ui.calendarDay = key;

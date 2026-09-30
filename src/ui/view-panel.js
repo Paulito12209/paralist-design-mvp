@@ -4,9 +4,10 @@
  * Lagen: eingeklappt schaut nur der Kopf über der Navigation hervor,
  * ausgeklappt steht die ganze Karte darüber. Die Liste darunter scrollt dabei
  * nicht mit — man sieht die Einstellungen, ohne seinen Platz zu verlieren.
- * Genutzt als Karte „Ansicht“ von der Aufgaben-Seite und von den Projekten
- * auf Übersicht und Seite Projekte — überall derselbe Titel; jede Seite legt
- * ihre eigene Karte an und füllt sie mit ihren Zeilen.
+ * Genutzt als Karte „Ansicht“ von der Aufgaben-Seite, von den Projekten
+ * auf Übersicht und Seite Projekte und vom Kalender — überall derselbe Titel;
+ * jede Seite legt ihre eigene Karte an und füllt sie mit ihren Zeilen. Der
+ * Kalender stellt zusätzlich „Heute“ in den Kopf (Parameter `actions`).
  *
  * Umschalten: Tipp auf den Kopf oder das Symbol rechts, oder den Kopf nach
  * oben bzw. unten ziehen. Kopf und Karte werden einmal angelegt; beim
@@ -33,16 +34,20 @@ const SNAP_PX = 40;
  * @param title     Überschrift im Kopf
  * @param className eigene Klasse der Karte — styles/tasks-settings.css zeigt
  *                  sie darüber nur auf ihrer Seite (z.B. „tasks-panel“)
- * @param onClick   bekommt die Klicks im Inhalt
- * @returns { setContent(html) } — ersetzt nur den Inhalt, Kopf und Lage bleiben
+ * @param onClick   bekommt die Klicks im Inhalt — und die auf Knöpfe im Kopf
+ * @param actions   HTML für Knöpfe im Kopf links vom Symbol (optional); jeder
+ *                  trägt `data-settings`, ein Tipp darauf klappt nicht um
+ * @returns { setContent(html), actions } — setContent ersetzt nur den Inhalt,
+ *          actions ist der Behälter der Kopf-Knöpfe
  */
-export function createViewPanel({ title, className, onClick }) {
+export function createViewPanel({ title, className, onClick, actions = "" }) {
   const panel = document.createElement("section");
   panel.className = `details-card view-panel ${className}`;
   panel.setAttribute("aria-label", title);
   panel.innerHTML = `
     <div class="details-head view-panel-head">
       <button class="details-title" type="button">${title}</button>
+      <div class="view-panel-actions">${actions}</div>
       <button class="details-link view-panel-toggle" type="button"
         aria-label="${title}" aria-expanded="false">${icon("panel-open")}</button>
     </div>
@@ -51,6 +56,7 @@ export function createViewPanel({ title, className, onClick }) {
   const body = panel.querySelector(".view-panel-body");
   const head = panel.querySelector(".view-panel-head");
   const toggle = panel.querySelector(".view-panel-toggle");
+  const headActions = panel.querySelector(".view-panel-actions");
   let expanded = false;
   /* Beim Ziehen: { y, from, moved, id } — from ist die Lage in px beim Aufsetzen. */
   let drag = null;
@@ -68,6 +74,8 @@ export function createViewPanel({ title, className, onClick }) {
 
   head.addEventListener("pointerdown", (event) => {
     if (event.button !== 0) return;
+    /* Ein Knopf im Kopf ist kein Griff: sein Klick soll ihn selbst treffen. */
+    if (event.target.closest(".view-panel-actions [data-settings]")) return;
     skipClick = false;
     drag = { y: event.clientY, from: expanded ? 0 : collapsedOffset(), moved: false, id: event.pointerId };
     /* Der Kopf behält den Finger, auch wenn er ihn beim Ziehen gleich verlässt. */
@@ -103,7 +111,11 @@ export function createViewPanel({ title, className, onClick }) {
 
   /* Der ganze Kopf schaltet um — mit festgehaltenem Zeiger trifft der Klick
      den Kopf selbst, nicht den Knopf darin. */
-  head.addEventListener("click", () => {
+  head.addEventListener("click", (event) => {
+    if (event.target.closest(".view-panel-actions [data-settings]")) {
+      onClick(event);
+      return;
+    }
     if (skipClick) {
       skipClick = false;
       return;
@@ -120,5 +132,6 @@ export function createViewPanel({ title, className, onClick }) {
     setContent(html) {
       body.innerHTML = html;
     },
+    actions: headActions,
   };
 }

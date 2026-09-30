@@ -1,6 +1,6 @@
 /*
  * Die Kalenderseite. Wird erst beim ersten Öffnen nachgeladen und setzt dann
- * Streifen, Fläche, Knöpfe und Gesten zusammen. Am Desktop kommen die
+ * Streifen, Fläche, das Panel „Ansicht“ (calendar-settings.js) und Gesten zusammen. Am Desktop kommen die
  * Werkzeugzeile und die Ansichten Woche und Monat dazu (calendar-week.js). In der Listenansicht wechselt
  * waagerechtes Wischen unter dem Streifen zwischen Aufgaben, Termine und
  * Projekte (src/ui/pill-swipe.js).
@@ -15,24 +15,22 @@
 
 import { emit, events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
-import { calendarSegments, calendarSpans } from "../../data/config.js";
+import { calendarSegments } from "../../data/config.js";
 import { state, ui } from "../../data/state.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { registerReselect } from "../../ui/router.js";
-import { openSheet } from "../../ui/sheet.js";
 import { onDeskChange } from "../../ui/desk-mode.js";
 import { isViewActive } from "../../ui/views.js";
 import { openDatePicker } from "./calendar-date-picker.js";
+import { initCalendarSettings, renderCalendarSettings, setTodayActive } from "./calendar-settings.js";
 import { initCalendarGestures, setRedraw as setGestureRedraw } from "./calendar-gestures.js";
 import { moveNowLine, nowLineVisible, renderGrid, scrollToNow, sizeGrid } from "./calendar-grid.js";
 import { renderList } from "./calendar-list.js";
 import {
   goToDay,
   goToday,
-  setMode,
   setRedraw as setNavRedraw,
   setSegment,
-  setSpan,
   shiftMonth,
   shiftWeeks,
 } from "./calendar-nav.js";
@@ -74,6 +72,7 @@ export function renderCalendar(jumpToNow = false) {
      00:00 zurück. */
   const keepScroll = dom.calPanel.scrollTop;
   renderStrip();
+  renderCalendarSettings();
   renderToolbar();
   const wide = deskView();
   /* Die Woche ist ein Stundenraster wie der Tag; der Monat rollt mit der Seite. */
@@ -107,13 +106,13 @@ function isOnToday() {
 }
 
 /*
- * Der „Heute“-Knopf bleibt immer sichtbar. Volle Pillen-Optik mit blauer
- * Schrift bekommt er nur am heutigen Tag und nur, solange die Jetzt-Linie im
- * sichtbaren Ausschnitt steht; sonst bleibt er zurückhaltend im Hintergrund
- * (styles/calendar.css, Klasse .cal-today).
+ * Der „Heute“-Knopf im Kopf des Panels bleibt immer sichtbar. Volle
+ * Pillen-Optik mit blauer Schrift bekommt er nur am heutigen Tag und nur,
+ * solange die Jetzt-Linie im sichtbaren Ausschnitt steht; sonst bleibt er
+ * zurückhaltend im Hintergrund (styles/calendar.css, Klasse .cal-today).
  */
 function updateTodayPill() {
-  dom.calTodayBtn.classList.toggle("is-on", isOnToday() && nowLineVisible());
+  setTodayActive(isOnToday() && nowLineVisible());
 }
 
 /*
@@ -139,7 +138,7 @@ function onScroll() {
   if (!isViewActive("calendar")) return;
   updateGridLock();
   if (!isOnToday()) return;
-  dom.calTodayBtn.classList.toggle("is-on", nowLineVisible());
+  setTodayActive(nowLineVisible());
 }
 
 /* Die Jetzt-Linie läuft nur, solange die Kalenderseite offen ist. */
@@ -167,19 +166,6 @@ function onReselect() {
   }
   if (dom.content.scrollTop > 1) dom.content.scrollTo({ top: 0, behavior: "smooth" });
   else goToday();
-}
-
-/* Das Blatt hinter dem Zeitraum-Knopf. */
-function openSpanSheet() {
-  openSheet(
-    "Zeitraum",
-    calendarSpans.map((span) => ({
-      icon: "calendar",
-      label: span.label,
-      active: span.id === state.prefs.calendar.span,
-      onSelect: () => setSpan(span.id),
-    }))
-  );
 }
 
 /*
@@ -234,7 +220,7 @@ function onToolbarClick(event) {
   if (calView) switchDeskView(calView);
   else if (calStep) stepDeskView(Number(calStep));
   else if (calToday) goToday();
-  else if (calPicker) openDatePicker();
+  else if (calPicker) openDatePicker("date");
   else if (calAdd) emit(events.createRequested, "termin");
 }
 
@@ -254,13 +240,9 @@ function init() {
   setGestureRedraw(renderCalendar);
   initCalendarGestures();
 
-  /* Der Monatsname öffnet das Blatt „Monat und Jahr“ mit den drei Rollen. */
-  dom.calMonthBtn.addEventListener("click", openDatePicker);
-  dom.calModeBtn.addEventListener("click", () =>
-    setMode(state.prefs.calendar.mode === "grid" ? "list" : "grid")
-  );
-  dom.calTodayBtn.addEventListener("click", goToday);
-  dom.calSpanBtn.addEventListener("click", openSpanSheet);
+  initCalendarSettings();
+  /* Das Datum unter „Kalender“ öffnet das Blatt „Datum“ mit den drei Rollen. */
+  dom.calMonthBtn.addEventListener("click", () => openDatePicker("date"));
   dom.calPanel.addEventListener("click", onPanelClick);
   toolbarElement().addEventListener("click", onToolbarClick);
   /* Nur auf der Fläche unter dem Streifen: dort blättert waagerechtes Wischen
