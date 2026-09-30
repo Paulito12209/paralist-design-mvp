@@ -117,9 +117,9 @@ body:has(.nav-shell.is-composing) .view-panel {
   opacity: 1;
 }
 
-/* Die Liste endet über dem eingeklappten Kopf, nicht dahinter */
-#view-tasks,
-body.is-projects :is(#view-home, #view-page) {
+/* Die Liste endet über dem eingeklappten Kopf, nicht dahinter. Übersicht und
+   Seite Projekte enden genau an ihm: styles/view-end.css */
+#view-tasks {
   padding-bottom: var(--details-head-h);
 }
 

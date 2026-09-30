@@ -325,38 +325,3 @@
   color: var(--muted);
   font-size: 15px;
 }
-
-/* Die Pille „Zum Archiv“ unter der Liste der Arbeitsbereiche oder Projekte. Sie steht mittig
-   und hält immer denselben Abstand zur Zeile „Arbeitsbereich hinzufügen“ — so
-   rutscht sie auf kleinen Geräten nicht unter die Navigationsleiste und hängt
-   auf großen nicht am unteren Rand herum. */
-.archive-link-row {
-  display: flex;
-  justify-content: center;
-  margin-top: var(--archive-link-top);
-}
-
-/* Normal: nur Text und Icon, subtil wie ein Link */
-.archive-link {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 18px;
-  border: none;
-  border-radius: 999px;
-  background: transparent;
-  color: var(--muted);
-  font-size: 15px;
-  transition: border-color 0.08s ease, background-color 0.08s ease;
-}
-
-.archive-link .icon {
-  width: 18px;
-  height: 18px;
-}
-
-/* Beim Drücken: kurz den Button-Stil zeigen, dann öffnet sich das Archiv */
-.archive-link:active {
-  border: 0.5px solid var(--line);
-  background: var(--card);
-}

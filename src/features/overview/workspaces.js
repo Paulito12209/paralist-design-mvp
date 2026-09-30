@@ -39,9 +39,8 @@ export function workspaceRowsMarkup(canEdit) {
  * Unter der Liste: die Zeile „Arbeitsbereich hinzufügen“ (ohne sie, wenn
  * `withAdd` false ist — dann legt die Pille im Platzhalter an) und — sobald etwas
  * im Archiv liegt — die Pille „Zum Archiv“ mit der Pille Arbeitsbereiche.
- * Die Pille steht mit festem Abstand unter der Liste — nicht am unteren
- * Bildschirmrand: auf kleinen Geräten hinge sie sonst hinter der
- * Navigationsleiste, auf großen stünde sie einsam weit unten.
+ * Die Pille sitzt am unteren Ende der Seite, direkt über der Navigation, und
+ * folgt einer langen Liste mit Mindestabstand (styles/view-end.css).
  */
 export function workspaceTailMarkup(withAdd = true) {
   const hasArchived = archivedWorkspaces().length > 0 || archivedEntries().length > 0;

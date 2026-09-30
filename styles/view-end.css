@@ -1,0 +1,107 @@
+/*
+ * Wo eine Liste unten aufhört — und die Pille „Zum Archiv“ darüber.
+ * Pfad: styles/view-end.css
+ *
+ * Gilt für die Übersicht am Handy, die Seite Projekte (beide mit der Karte
+ * „Ansicht“) und jede Seite, auf der „Zum Archiv“ steht (z.B. Arbeitsbereiche).
+ * Der Scrollweg endet dort genau an dem, was unten fest steht: am Kopf der
+ * Karte „Ansicht“ oder, ohne Karte, an der Oberkante der Navigation. Weiter
+ * zu scrollen gäbe es nichts zu sehen.
+ *
+ * Die Pille „Zum Archiv“ sitzt am unteren Ende der Seite, direkt über diesem
+ * Rand. Ist die Liste kurz (große Geräte), steht sie darum unten im Bild,
+ * ohne dass etwas scrollt; ist die Liste lang (kleine Geräte), folgt sie ihr
+ * mit Mindestabstand und man scrollt genau bis zu ihr. Das rechnet allein
+ * CSS aus — kein Messen im Skript, nichts springt beim Neuzeichnen.
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css und styles/tokens-pages.css)
+ * -----------------------------------
+ * --archive-link-top    -> Mindestabstand der Pille zur Liste darüber
+ * --archive-link-gap    -> Luft zwischen der Pille (bzw. dem Listenende) und der Karte oder Navigation darunter
+ * --archive-link-height -> Höhe der Pille; so viel Platz wird unter der Liste freigehalten
+ * --muted / --line / --card -> Schrift, Rand und Fläche der Pille beim Drücken
+ *
+ * Wo der feste Teil unten anfängt, ergibt sich aus Werten anderer Dateien:
+ * --nav-height, --nav-bottom, --safe-bottom (Navigation), --details-head-h und
+ * --tasks-panel-gap (Karte „Ansicht“), --desk-gutter (Desktop), --tab-space.
+ */
+
+/* ---------- Wo der Scrollweg endet ---------- */
+
+/*
+ * --view-end: Abstand vom unteren Rand bis zur Oberkante dessen, was unten
+ * fest steht. Der Scrollbereich (.content, styles/base.css) hält unten
+ * überall --tab-space frei; der Rand unten gleicht den Unterschied aus, die
+ * Mindesthöhe lässt die Seite auch ohne Scrollen genau bis dorthin reichen.
+ */
+.view:has(.archive-link-row),
+body.is-projects :is(#view-home, #view-page) {
+  --view-end: calc(var(--nav-height) + var(--nav-bottom) + var(--safe-bottom));
+  min-height: calc(100% + var(--tab-space) - var(--view-end));
+  margin-bottom: calc(var(--view-end) - var(--tab-space));
+  /* ohne Archiv: nur etwas Luft über Karte bzw. Navigation */
+  padding-bottom: var(--view-tail, var(--archive-link-gap));
+}
+
+/* Mit Karte „Ansicht“: sie schaut eingeklappt mit ihrem Kopf über der Navigation hervor */
+body.is-projects :is(#view-home, #view-page) {
+  --view-end: calc(var(--nav-height) + var(--nav-bottom) + var(--safe-bottom) + var(--details-head-h));
+}
+
+/* Am Desktop gibt es keine Navigation unten; die Karte sitzt am Fensterrand
+   (styles/tasks-settings.css). Ohne Karte bleibt es beim üblichen Seitenende. */
+@media (min-width: 1024px) {
+  .view:has(.archive-link-row) {
+    --view-end: var(--tab-space);
+  }
+
+  body.is-projects :is(#view-home, #view-page) {
+    --view-end: calc(var(--desk-gutter) + var(--safe-bottom) + var(--details-head-h) - var(--tasks-panel-gap));
+  }
+}
+
+/* ---------- Die Pille „Zum Archiv“ ---------- */
+
+/* Unter der Liste bleibt Platz für Mindestabstand und Pille; die Seite ist
+   Anker, damit die Pille an ihrem unteren Ende sitzt. */
+.view:has(.archive-link-row) {
+  --view-tail: calc(var(--archive-link-top) + var(--archive-link-height) + var(--archive-link-gap));
+  position: relative; /* position: Anker für die Pille */
+}
+
+.archive-link-row {
+  position: absolute; /* position: am unteren Ende der Seite, egal wie lang die Liste ist */
+  left: 0;
+  right: 0;
+  bottom: var(--archive-link-gap);
+  display: flex;
+  justify-content: center;
+}
+
+/* Normal: nur Text und Icon, subtil wie ein Link. Der Rand ist immer da
+   (durchsichtig), damit beim Drücken nichts um einen halben Pixel springt. */
+.archive-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: var(--archive-link-height);
+  padding: 0 18px;
+  border: 0.5px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 15px;
+  touch-action: manipulation; /* touch-action: der Tipp öffnet sofort, ohne auf einen Doppeltipp zu warten */
+  transition: border-color 0.08s ease, background-color 0.08s ease;
+}
+
+.archive-link .icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Beim Drücken: kurz den Button-Stil zeigen, dann öffnet sich das Archiv */
+.archive-link:active {
+  border-color: var(--line);
+  background: var(--card);
+}

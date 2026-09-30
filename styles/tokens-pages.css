@@ -15,6 +15,8 @@
  * --overview-pager-h        -> Dicke der Linie unter den Karten, die zeigt, welche Kartenseite steht
  * --overview-pager-w        -> Länge dieser Linie (steht rechtsbündig; die Hälfte davon ist der gefüllte Teil)
  * --soon-opacity            -> wie blass Icon und Name einer Karte „Demnächst verfügbar“ sind
+ * --archive-link-gap        -> Luft zwischen „Zum Archiv“ (bzw. Listenende) und Karte „Ansicht“ oder Navigation
+ * --archive-link-height     -> Höhe der Pille „Zum Archiv“
  *
  * FORTSCHRITT UND PROFIL
  * --level-color / --level-dim / --level-glow -> Level-Anzeige oben links; --level-color färbt auch Plus und Ring des Navigations-Knopfes
@@ -176,10 +178,12 @@
  */
 
 :root {
-  /* Übersicht: zweite Kartenseite und abgeschaltete Karten */
+  /* Übersicht: zweite Kartenseite, abgeschaltete Karten, Pille „Zum Archiv“ */
   --overview-pager-h: 1px;
   --overview-pager-w: 48px;
   --soon-opacity: 0.45;
+  --archive-link-gap: 8px;
+  --archive-link-height: 36px;
 
   /* Fortschritt und Profil: Level-Anzeige, Verlaufskurve und Punkte-Raster */
   --level-color: #4d72ad;

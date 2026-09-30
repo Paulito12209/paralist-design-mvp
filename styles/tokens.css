@@ -50,6 +50,7 @@
  * styles/tasks-board.css     -> Aufgaben-Seite: die Spalten des Kanban-Boards
  * styles/task-status.css     -> Haken vor Aufgaben in jeder Liste, Kategorie-Pille oben auf jeder Eintragsseite
  * styles/tasks-settings.css  -> Karte „Ansicht“ über der Navigation der Aufgaben-Seite: Ebene, Segment, Schalter, Filter
+ * styles/view-end.css        -> wo Übersicht, Projekte und Arbeitsbereiche unten enden; die Pille „Zum Archiv“ darüber
  * styles/calendar.css        -> Kalender: Datum, Wochenstreifen, Rollen-Blatt, Knopf „Heute“ im Panel „Ansicht“
  * styles/calendar-rings.css  -> Kalender: Ringe mit Murmeln um die Tageszahlen
  * styles/calendar-panel.css  -> Kalender: graue Fläche mit Stundenraster und Liste; styles/calendar-week.css: Desktop-Werkzeugzeile, Woche, Monat
@@ -219,7 +220,7 @@
  * --swipe-grab-bg           -> Farbe einer Zeile, die nach dem Halten angefasst ist (Wischen zeigt die Knöpfe)
  * --swipe-grab-anim         -> wie schnell diese Farbe auftaucht
  * --restore-color          -> Knopf „Zurückholen“ im Archiv
- * --archive-link-top       -> Abstand der Pille „Zum Archiv“ zur Liste darüber
+ * --archive-link-top       -> Mindestabstand der Pille „Zum Archiv“ zur Liste darüber (styles/view-end.css)
  * --ctx-radius              -> Rundung des kleinen Menüs beim gedrückt Halten
  * --sheet-options-max       -> ab welcher Höhe die Liste im Auswahl-Blatt scrollt
  * --sheet-heading-size      -> Schriftgröße der Abschnitts-Überschrift im Auswahl-Blatt
