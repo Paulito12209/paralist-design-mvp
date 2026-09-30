@@ -21,6 +21,9 @@
  * --bg                                                  -> Hintergrundfarbe (wird am unteren Rand ausgeblendet)
  * --avatar-btn-bg                                       -> Farbe des Icons im Profil-/Einstellungs-Knopf rechts,
  *                                                          des Such-Icons und des Platzhaltertexts „Suchen“
+ * --search-clear-size / --search-clear-icon             -> Kreis mit dem × zum Leeren und das × darin
+ * --search-clear-bg / --search-clear-ink                -> Fläche des Kreises und Farbe des ×
+ *                                                          (die vier stehen in styles/tokens-pages.css)
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -200,6 +203,41 @@ body.is-subpage .top-bar {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* Das eingebaute × des Browsers (blau in Chrome, grau in Safari) weicht dem
+   eigenen Kreis unten, der überall gleich aussieht. */
+.search input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+  /* -webkit-appearance: ohne das zeichnet WebKit sein × trotzdem */
+  display: none;
+}
+
+/* × im Kreis: erst sichtbar, wenn etwas im Feld steht (dann ist der Platzhalter weg). */
+.search-clear {
+  display: none;
+  flex: 0 0 auto;
+  place-items: center;
+  width: var(--search-clear-size);
+  height: var(--search-clear-size);
+  border-radius: 50%;
+  background: var(--search-clear-bg);
+  color: var(--search-clear-ink);
+}
+
+.search:has(input:not(:placeholder-shown)) .search-clear {
+  /* :has: das Feld selbst sagt, ob etwas drinsteht — kein Nachführen per Skript nötig */
+  display: grid;
+}
+
+.search-clear .icon {
+  width: var(--search-clear-icon);
+  height: var(--search-clear-icon);
+  stroke-width: 3;
+}
+
+.search-clear:active {
+  opacity: 0.55;
 }
 
 .search input::placeholder {

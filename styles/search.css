@@ -142,13 +142,14 @@ body.is-search .device::after {
 
    Drei Spalten statt einer Reihe: die leere linke Spalte ist genauso breit wie
    die rechte mit „Abbrechen“, dadurch steht das Gehäuse in der Mitte der Seite
-   und nicht nur in der Mitte des freien Platzes. Beide Randspalten dürfen bis
-   auf null schrumpfen (minmax(0, 1fr)) — auf schmalen Geräten wird „Abbrechen“
-   dann abgekürzt, statt das Gehäuse aus der Mitte zu schieben. */
+   und nicht nur in der Mitte des freien Platzes. Wird es eng (schmale Geräte,
+   „Neue Suche“ statt „Suchen“), gibt zuerst die leere linke Spalte nach und
+   das Gehäuse rückt etwas nach links — „Abbrechen“ bleibt ganz lesbar
+   (minmax(max-content, 1fr)). Erst wenn gar nichts mehr geht, kürzt es sich. */
 .search-actions {
   display: none;
   align-items: center;
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto minmax(max-content, 1fr);
   gap: 12px;
   /* gap: Abstand zwischen dem Gehäuse und dem Abbrechen-Knopf */
   margin: 0 0 12px;

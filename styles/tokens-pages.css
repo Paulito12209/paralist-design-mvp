@@ -128,6 +128,8 @@
  * --search-fade             -> Länge des Ausblendens ab der Oberkante der Knöpfe unten auf der Suche
  * --search-refine-height / --search-refine-size -> Höhe und Schrift von Sortier-Pille und Filter-Chips auf der Suche
  * --search-dot-size / --search-dot-color -> Punkt an der Sortier-Pille, wenn Filter oder Sortierung vom Standard abweichen
+ * --search-clear-size / --search-clear-icon -> Kreis mit dem × im Suchfeld und das × darin
+ * --search-clear-bg / --search-clear-ink   -> Fläche des Kreises (helles Paralist-Silber) und Farbe des ×
  *
  * DETAILSEITEN (EINTRAG UND ARBEITSBEREICH)
  * --page-cover-mix          -> wie kräftig die Kategoriefarbe ganz oben im Cover ist (im Dunkeln stärker, siehe styles/tokens-dark.css)
@@ -298,6 +300,10 @@
   --search-refine-size: 13px;
   --search-dot-size: 6px;
   --search-dot-color: var(--link-color);
+  --search-clear-size: 20px;
+  --search-clear-icon: 12px;
+  --search-clear-bg: color-mix(in srgb, var(--avatar-btn-bg) 90%, var(--card)); /* etwas ins Kartengrau gemischt, damit der Kreis nicht grell wirkt */
+  --search-clear-ink: var(--card);
 
   /* Zeichnung: Werkzeug-Knöpfe und Farbpunkte */
   --draw-tool-size: 38px;
