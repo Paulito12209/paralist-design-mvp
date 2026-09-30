@@ -11,6 +11,7 @@
  * defaultTaskPriority     -> Priorität, mit der eine NEUE Aufgabe startet („Später“)
  * defaultTaskStatus       -> Status, mit dem eine neue Aufgabe startet („Offen“)
  * taskStatuses            -> Name, Icon und Farbe der Status-Chips
+ * archiveColumn           -> Name, Icon und Farbe der Spalte „Archiviert“ rechts neben „Erledigt“
  * taskGroupings           -> wonach sich Liste und Board gruppieren lassen (Dringlichkeit oder Status)
  * taskSorts               -> wonach die Aufgaben-Seite sortieren kann, samt Wortlaut beider Richtungen
  * taskDefaults            -> womit eine neue Ansicht der Aufgaben-Seite startet
@@ -25,6 +26,15 @@ export const taskStatuses = [
   { id: "inArbeit", label: "In Arbeit", icon: "history", color: "var(--cal-accent)" },
   { id: "erledigt", label: "Erledigt", icon: "check-circle", color: "var(--xp-done)", done: true },
 ];
+
+/**
+ * Die Spalte für Archiviertes: kein Status, den man einer Aufgabe gibt,
+ * sondern der Ort, an dem sie nach dem Tag des Erledigens liegt. Sie steht
+ * nur da, wenn die Ansicht „Archiviert“ zeigt und nach Status gruppiert —
+ * dann ganz rechts, neben „Erledigt“. Hineinziehen archiviert, Herausziehen
+ * holt zurück.
+ */
+export const archiveColumn = { id: "archiviert", label: "Archiviert", icon: "archive", color: "var(--status-open)" };
 
 /** Status einer neu angelegten Aufgabe. */
 export const defaultTaskStatus = "offen";
@@ -85,7 +95,8 @@ export const taskSorts = [
  * `hiddenStatuses` und `hiddenPriorities` zählen auf, was der Filter
  * ausblendet — leer heißt: alles zu sehen. Ob Erledigtes zu sehen ist, sagt
  * allein `hideDone` (der Schalter „Erledigte zeigen“), deshalb steht der
- * Status „erledigt“ nie in `hiddenStatuses`.
+ * Status „erledigt“ nie in `hiddenStatuses`. `showArchived` holt auch die
+ * archivierten Aufgaben auf die Seite (im Board als eigene Spalte).
  */
 export const taskDefaults = {
   layout: "list",
@@ -96,6 +107,7 @@ export const taskDefaults = {
   hideDone: true,
   hiddenStatuses: [],
   hiddenPriorities: [],
+  showArchived: false,
 };
 
 /** Beschreibung eines Status; unbekannte Werte aus alten Ständen gelten als offen. */

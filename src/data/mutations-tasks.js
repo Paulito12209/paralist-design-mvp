@@ -15,14 +15,14 @@
 
 import { BOOKMARK_TYPE, fillBookmarkEntry } from "./bookmarks.js";
 import { typeIcon } from "./config.js";
-import { defaultTaskPriority, defaultTaskStatus, doneTaskStatus, isTaskDone } from "./config-tasks.js";
+import { archiveColumn, defaultTaskPriority, defaultTaskStatus, doneTaskStatus, isTaskDone } from "./config-tasks.js";
 import { applyPageHead } from "./design-prefs.js";
 import { commit } from "./mutations.js";
 import { applyProjectDraft } from "./project-views.js";
 import { taskOrder } from "./queries.js";
 import { saveState, state, ui } from "./state.js";
 import { noteDoneTime } from "./task-archive.js";
-import { awardXp } from "./xp.js";
+import { archiveEntry, awardXp } from "./xp.js";
 
 /*
  * Abstand zwischen zwei Sortiernummern, wenn eine Aufgabe an den Anfang oder
@@ -105,6 +105,8 @@ export function setTaskStatus(entry, status) {
   const wasDone = isTaskDone(entry);
   entry.status = status;
   noteDone(entry, wasDone);
+  /* Wieder geöffnet heißt: sie gehört nicht mehr ins Archiv */
+  if (entry.archived && !isTaskDone(entry)) entry.archived = false;
   commit();
 }
 
@@ -120,15 +122,32 @@ export function setTaskPriority(entry, priority) {
   commit();
 }
 
+/*
+ * Die Spalte „Archiviert“ ist kein Wert eines Feldes: Hineinziehen
+ * archiviert, Herausziehen holt zurück und setzt den Wert der Zielspalte.
+ * Zurückgeholtes Erledigtes gilt als heute erledigt — sonst räumte das
+ * nächste Aufräumen es gleich wieder ins Archiv.
+ */
+function placeTask(entry, field, value) {
+  if (value === archiveColumn.id) {
+    if (!entry.archived) archiveEntry(entry);
+    return;
+  }
+  const wasDone = isTaskDone(entry);
+  const restored = entry.archived;
+  entry.archived = false;
+  entry[field] = value;
+  noteDone(entry, wasDone);
+  if (restored && isTaskDone(entry)) entry.doneAt = Date.now();
+}
+
 /**
  * Eine gezogene Aufgabe ablegen: sie bekommt den Wert der Zielspalte und eine
  * Sortiernummer zwischen ihren neuen Nachbarn. `before` und `after` sind die
  * Aufgaben darüber und darunter — fehlt eine, wird der Abstand angehängt.
  */
 export function moveTask(entry, field, value, before, after) {
-  const wasDone = isTaskDone(entry);
-  entry[field] = value;
-  noteDone(entry, wasDone);
+  placeTask(entry, field, value);
   const top = before ? taskOrder(before) : null;
   const bottom = after ? taskOrder(after) : null;
   if (top !== null && bottom !== null) entry.order = (top + bottom) / 2;

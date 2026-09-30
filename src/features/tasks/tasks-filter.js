@@ -6,11 +6,12 @@
  * „Erledigte zeigen“. Ohne Filter steht rechts „Keine“. Drei Abschnitte:
  *
  * - Ort: Einfachwahl (alle Orte, Eingang, jeder Ort mit Aufgaben). In der
- *   festen Ansicht „Alle“ steht hier nur ein Satz, wie man eine eigene
- *   Ansicht für einen Ort baut.
+ *   festen Ansicht „Alle“ steht nur „Alle Orte“, das ⓘ daneben erklärt,
+ *   wie man eine eigene Ansicht für einen Ort baut.
  * - Status: Mehrfachwahl. „Erledigt“ ist derselbe Schalter wie „Erledigte
- *   zeigen“ in der Karte. Darunter blass „Archiviert“ — das filtert nicht,
- *   sondern erklärt, wo die älteren Erledigten liegen, und öffnet das Archiv.
+ *   zeigen“ in der Karte. „Archiviert“ holt die archivierten Aufgaben auf
+ *   die Seite — nach Status gruppiert als eigene Spalte rechts neben
+ *   „Erledigt“ (src/data/queries.js, taskGroups). Beide erklären sich per ⓘ.
  * - Dringlichkeit: Mehrfachwahl.
  *
  * Das Blatt bleibt beim An- und Abwählen offen und zeichnet sich nach jeder
@@ -21,32 +22,39 @@
  * -----------------------------------
  * headings      -> die drei Zwischenüberschriften im Blatt
  * allPlaces / inboxLabel -> Name der beiden festen Orte
- * fixedPlaceNote -> Satz unter „Ort“ in der Ansicht „Alle“
- * doneHint / archivedHint / archivedLabel -> die beiden erklärenden Zeilen unter „Status“
+ * infos          -> Überschrift und Text der Erklärungen hinter den ⓘ
+ * archivedLabel  -> Name der Option „Archiviert“
  * noneStatus / nonePrio -> Chip, wenn in einem Abschnitt gar nichts gewählt ist
  *
- * Aussehen: styles/overlays.css und styles/sheet-tabs.css (Blatt, Haken,
- * kleiner Satz unter dem Namen).
+ * Aussehen: styles/overlays.css und styles/sheet-tabs.css (Blatt, Haken, ⓘ),
+ * der Dialog hinter dem ⓘ in styles/info-dialog.css.
  */
 
 import { taskPriorities, taskStatuses } from "../../data/config-tasks.js";
 import { parentName, taskPlaces } from "../../data/queries.js";
 import { activeTaskView, updateTaskView } from "../../data/task-views.js";
-import { openArchive } from "../../ui/router.js";
 import { openSheet } from "../../ui/sheet.js";
 
 const headings = { place: "Ort", status: "Status", priority: "Dringlichkeit" };
 const allPlaces = "Alle Orte";
 const inboxLabel = "Eingang";
-const fixedPlaceNote = "„Alle“ zeigt Aufgaben von jedem Ort. Für einen Ort tippe auf das kleine Plus neben den Pillen und filtere die neue Ansicht.";
-const doneHint = "Heute erledigte – wie „Erledigte zeigen“";
 const archivedLabel = "Archiviert";
-const archivedHint = "Ältere Erledigte liegen im Archiv";
+const infos = {
+  fixedPlace: {
+    title: "Alle Orte",
+    text: "„Alle“ zeigt Aufgaben von jedem Ort. Für einen Ort tippe auf das kleine Plus neben den Pillen und filtere die neue Ansicht.",
+  },
+  done: {
+    title: "Erledigt",
+    text: "Abgehakte Aufgaben bleiben bis Mitternacht stehen. Dieser Haken ist derselbe Schalter wie „Erledigte zeigen“ in der Karte.",
+  },
+  archived: {
+    title: "Archiviert",
+    text: "Ab dem Tag nach dem Erledigen liegt eine Aufgabe im Archiv. Mit Haken siehst du sie hier trotzdem, im Board als Spalte rechts neben „Erledigt“. Ziehst du sie heraus, holst du sie zurück.",
+  },
+};
 const noneStatus = "Kein Status";
 const nonePrio = "Keine Dringlichkeit";
-
-/* Die Pille „Aufgaben“ im Archiv (src/data/collections.js, archivePills) */
-const archivePill = "aufgabe";
 
 /* Ist dieser Status in der Ansicht zu sehen? „Erledigt“ hängt am Schalter. */
 function statusShown(view, status) {
@@ -88,9 +96,9 @@ export function filterChips(view) {
   ];
 }
 
-/* Abschnitt „Ort“: Einfachwahl, in „Alle“ nur der erklärende Satz */
+/* Abschnitt „Ort“: Einfachwahl; in „Alle“ steht nur „Alle Orte“ mit ⓘ */
 function placeOptions(view) {
-  if (view.fixed) return [{ note: true, label: fixedPlaceNote }];
+  if (view.fixed) return [{ label: allPlaces, icon: "layers", active: true, stay: true, info: infos.fixedPlace }];
   const option = (ref, label, iconName) => ({
     label,
     icon: iconName,
@@ -105,18 +113,25 @@ function placeOptions(view) {
   ];
 }
 
-/* Abschnitt „Status“: die Status mit Haken, darunter der Weg ins Archiv */
+/* Abschnitt „Status“: die Status mit Haken, darunter „Archiviert“ */
 function statusOptions(view) {
   const rows = taskStatuses.map((status) => ({
     label: status.label,
     icon: status.icon,
-    hint: status.done ? doneHint : "",
+    info: status.done ? infos.done : undefined,
     active: statusShown(view, status),
     stay: true,
     onSelect: () =>
       change(status.done ? { hideDone: !view.hideDone } : { hiddenStatuses: toggled(view.hiddenStatuses, status.id) }),
   }));
-  rows.push({ label: archivedLabel, icon: "archive", hint: archivedHint, muted: true, more: true, onSelect: () => openArchive(archivePill) });
+  rows.push({
+    label: archivedLabel,
+    icon: "archive",
+    info: infos.archived,
+    active: view.showArchived,
+    stay: true,
+    onSelect: () => change({ showArchived: !view.showArchived }),
+  });
   return rows;
 }
 

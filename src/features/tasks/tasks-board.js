@@ -41,11 +41,14 @@ function boardRow(entry, field) {
   `;
 }
 
-/** Eine Spalte mit Kopfzeile und Zeilen. data-section/data-field lesen Ziehen und Inline-Anlegen. */
+/**
+ * Eine Spalte mit Kopfzeile und Zeilen. data-section/data-field lesen Ziehen
+ * und Inline-Anlegen; data-no-add sperrt das Anlegen (Spalte „Archiviert“).
+ */
 function boardColumn(column, field) {
   const rows = column.items.map((entry) => boardRow(entry, field)).join("");
   return `
-    <div class="board-col" data-column="${column.id}" data-section="${column.id}" data-field="${field}" style="--col-color:${column.color}">
+    <div class="board-col" data-column="${column.id}" data-section="${column.id}" data-field="${field}"${column.locked ? " data-no-add" : ""} style="--col-color:${column.color}">
       <div class="board-head">
         ${icon(column.icon, "board-head-icon")}
         <span class="board-head-name">${column.label}</span>

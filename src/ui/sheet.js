@@ -13,9 +13,9 @@
  * groß und ungekürzt) und `detail` (Bezeichnung oben, Wert darunter); „Typ
  * ändern“ nutzt dazu `note` (ein Satz in normaler Schrift, z.B. was beim
  * Umwandeln mit den verknüpften Einträgen passiert).
- * Eine Option kann außerdem `hint` tragen (ein kleiner Satz unter dem Namen),
- * `muted` (blass — sie filtert nicht, sondern führt woandershin) und `more`
- * (rechts ein Pfeil statt des Hakens: das Antippen öffnet eine andere Seite).
+ * Eine Option kann außerdem `info: { title, text }` tragen (ein ⓘ gleich
+ * rechts neben dem Namen; ein Tipp darauf öffnet src/ui/info-dialog.js und
+ * lässt das Blatt offen).
  *
  * Eine gewählte Option (`active`) trägt rechts einen Haken — nicht nur die
  * Fläche, die man bei hellem Licht leicht übersieht.
@@ -37,6 +37,7 @@ import { events, on } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { escapeHtml, icon } from "../core/html.js";
 import { closeCtxMenu } from "./ctx-menu.js";
+import { openInfoDialog } from "./info-dialog.js";
 import { bindModalPull } from "./modal-pull.js";
 import { initPillSwipe, revealActive } from "./pill-swipe.js";
 
@@ -45,6 +46,8 @@ let actions = [];
 let tabbed = null;
 /* Je Option: bleibt das Blatt nach dem Antippen offen? (für An-/Abwählen) */
 let stays = [];
+/* Je Option die Erklärung hinter ihrem ⓘ — oder undefined */
+let infos = [];
 
 function optionMarkup(option, index) {
   /* Eine Überschrift ist kein Knopf: ohne data-sheet lässt sie sich nicht
@@ -71,14 +74,15 @@ function optionMarkup(option, index) {
   if (option.gap) classes.push("is-gap");
   /* pair: halbe Breite, damit zwei Optionen nebeneinander in eine Zeile passen */
   if (option.pair) classes.push("is-pair");
-  if (option.muted) classes.push("is-muted");
-  let end = option.active && !option.pair ? icon("check", "sheet-check") : "";
-  if (option.more) end = icon("chevron", "sheet-more");
-  const hint = option.hint ? `<span class="sheet-option-hint">${escapeHtml(option.hint)}</span>` : "";
+  const check = option.active && !option.pair ? icon("check", "sheet-check") : "";
+  /* Kein Knopf im Knopf: das ⓘ ist ein span, den der Klick-Empfänger unten zuerst prüft */
+  const info = option.info
+    ? `<span class="sheet-info" role="button" tabindex="0" data-sheet-info="${index}" aria-label="Was heißt „${escapeHtml(option.label)}“?">${icon("info")}</span>`
+    : "";
   return `
     <button class="${classes.join(" ")}" type="button" data-sheet="${index}"${option.active ? ' aria-current="true"' : ""}>
       ${icon(option.icon)}
-      <span class="sheet-option-label">${escapeHtml(option.label)}${hint}</span>${end}
+      <span class="sheet-option-label">${escapeHtml(option.label)}${info}</span>${check}
     </button>
   `;
 }
@@ -165,6 +169,7 @@ export function openSheet(title, options, { icon: titleIcon, iconColor, tabs, ta
   renderTabs(previous);
   actions = options.map((option) => option.onSelect);
   stays = options.map((option) => Boolean(option.stay));
+  infos = options.map((option) => option.info);
   dom.sheet.hidden = false;
 }
 
@@ -174,6 +179,7 @@ export function closeSheet() {
   tabbed = null;
   actions = [];
   stays = [];
+  infos = [];
 }
 
 /** Klicks im Blatt: Option ausführen, Klick daneben schließt. Ziehen schließt es auch. */
@@ -203,6 +209,12 @@ export function initSheet() {
     if (tab) {
       selectTab(tab.dataset.sheetTab);
       revealActive(box);
+      return;
+    }
+    const info = event.target.closest("[data-sheet-info]");
+    if (info) {
+      const about = infos[Number(info.dataset.sheetInfo)];
+      if (about) openInfoDialog(about.title, about.text);
       return;
     }
     const option = event.target.closest("[data-sheet]");

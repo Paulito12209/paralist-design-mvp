@@ -54,6 +54,8 @@
  * styles/calendar.css        -> Kalender: Datum, Wochenstreifen, Rollen-Blatt, Knopf „Heute“ im Panel „Ansicht“
  * styles/calendar-rings.css  -> Kalender: Ringe mit Murmeln um die Tageszahlen
  * styles/calendar-panel.css  -> Kalender: graue Fläche mit Stundenraster und Liste; styles/calendar-week.css: Desktop-Werkzeugzeile, Woche, Monat
+ * styles/sort-wheels.css     -> Blatt „Sortieren“: zwei Rollen „Wonach“ | „Reihenfolge“ (Rollen selbst aus styles/calendar.css)
+ * styles/info-dialog.css     -> kleiner Erklär-Dialog hinter einem ⓘ im Auswahl-Blatt
  * styles/media.css           -> Medien- und Ressourcen-Seite; styles/media-desk.css: Desktop-Werkzeuge, Liste, Markierung
  * styles/bookmarks.css       -> Lesezeichen-Seite: Zeilen mit großer Kachel, Website und Herkunft
  * styles/page-hero.css       -> Sammlungen: großer Kopf mit Icon und zweizeiligem Satz (im Menü einschaltbar)

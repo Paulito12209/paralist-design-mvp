@@ -1,0 +1,78 @@
+/*
+ * Der kleine Erklär-Dialog (src/ui/info-dialog.js): eine Karte in der Mitte
+ * des Geräts mit Überschrift, ein paar Sätzen und „Verstanden“. Er liegt über
+ * dem Auswahl-Blatt, aus dessen ⓘ er kommt.
+ * Pfad: styles/info-dialog.css
+ *
+ * ANPASSBARE WERTE (in styles/tokens.css)
+ * -----------------------------------
+ * --modal-radius -> Rundung der Karte
+ * --bg / --text / --muted -> Fläche, Überschrift und Text
+ * --link-color   -> Farbe von „Verstanden“
+ * --line         -> Linie über „Verstanden“
+ *
+ * Direkt bei ihrer Regel:
+ * .info-dialog max-width      -> wie breit die Karte höchstens wird (300px)
+ * .info-dialog-title font-size -> Größe der Überschrift (17px)
+ * .info-dialog-text font-size  -> Größe der Erklärung (15px)
+ */
+
+.info-backdrop {
+  position: absolute; /* position: liegt über der ganzen Gerätefläche */
+  inset: 0;
+  z-index: 60; /* z-index: über dem Auswahl-Blatt (50), aus dem der Dialog kommt */
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: rgba(0, 0, 0, 0.35);
+}
+
+.info-backdrop[hidden] {
+  display: none;
+}
+
+.info-dialog {
+  width: 100%;
+  max-width: 300px;
+  padding: 22px 20px 0;
+  border-radius: var(--modal-radius);
+  background: var(--bg);
+  text-align: center;
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+  animation: info-pop 0.18s ease; /* animation: die Karte wächst kurz auf, statt hart zu erscheinen */
+}
+
+.info-dialog-title {
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.info-dialog-text {
+  margin-top: 8px;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+/* „Verstanden“ über die ganze Breite, abgesetzt durch eine Linie — wie ein iOS-Hinweis */
+.info-dialog-ok {
+  width: calc(100% + 40px);
+  height: 50px;
+  margin: 20px -20px 0;
+  border-top: 0.5px solid var(--line);
+  color: var(--link-color);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.info-dialog-ok:active {
+  opacity: 0.55;
+}
+
+@keyframes info-pop {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}

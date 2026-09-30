@@ -83,7 +83,7 @@ function headMarkup(column, field) {
 function sectionMarkup(column, field, tail) {
   const rows = column.items.map((entry) => taskRow(entry, field)).join("");
   return `
-    <section class="task-section" data-section="${column.id}" data-field="${field || ""}" style="--col-color:${column.color}">
+    <section class="task-section" data-section="${column.id}" data-field="${field || ""}"${column.locked ? " data-no-add" : ""} style="--col-color:${column.color}">
       ${headMarkup(column, field)}
       <div class="workspace-list task-rows">${rows}${tail}</div>
     </section>

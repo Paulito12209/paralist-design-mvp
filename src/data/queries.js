@@ -24,7 +24,7 @@ import {
   typePlurals,
   xpItems,
 } from "./config.js";
-import { isTaskDone, taskGroupings, taskPriorities, taskPriorityOf, taskStatusOf } from "./config-tasks.js";
+import { archiveColumn, isTaskDone, taskGroupings, taskPriorities, taskPriorityOf, taskStatusOf } from "./config-tasks.js";
 import { entryRef, isEntryRef, isWorkspaceRef, refId, workspaceRef } from "./refs.js";
 import { state } from "./state.js";
 
@@ -264,8 +264,14 @@ function priorityRank(entry) {
   return index < 0 ? taskPriorities.length : index;
 }
 
+/* Wie weit unten eine Aufgabe steht: offen, dann erledigt, dann archiviert */
+function doneRank(entry) {
+  if (entry.archived) return 2;
+  return isTaskDone(entry) ? 1 : 0;
+}
+
 /**
- * Aufgaben sortieren. Erledigtes steht immer ganz unten. `sortId` kommt aus
+ * Aufgaben sortieren. Erledigtes steht immer ganz unten, Archiviertes darunter. `sortId` kommt aus
  * taskSorts (config.js): „erstellt“ ist die Reihenfolge des Anlegens — bzw.
  * die im Board von Hand gezogene —, „faellig“ das Datum, „titel“ das Alphabet.
  * `asc` false dreht die Reihenfolge um. „prio“ braucht nur die Übersicht
@@ -279,7 +285,7 @@ export function sortTasks(list, sortId = "erstellt", asc = true) {
     return taskOrder(a) - taskOrder(b);
   };
   const sign = asc ? 1 : -1;
-  return [...list].sort((a, b) => Number(isTaskDone(a)) - Number(isTaskDone(b)) || sign * rest(a, b));
+  return [...list].sort((a, b) => doneRank(a) - doneRank(b) || sign * rest(a, b));
 }
 
 /** Gehört die Aufgabe zu dem Ort, den der Filter verlangt — abgelegt oder verknüpft? „alle“ lässt alles durch. */
@@ -290,8 +296,10 @@ function matchesPlace(entry, place) {
   return isEntryRef(place) && (entry.links || []).some((id) => sameId(id, refId(place)));
 }
 
-/* Lässt der Filter der Ansicht Status und Dringlichkeit dieser Aufgabe durch? */
+/* Lässt der Filter der Ansicht Status und Dringlichkeit dieser Aufgabe durch?
+   Archiviertes hängt nur am Schalter „Archiviert“ und an der Dringlichkeit. */
 function matchesFilter(entry, prefs) {
+  if (entry.archived) return Boolean(prefs.showArchived) && !(prefs.hiddenPriorities || []).includes(taskPriorityOf(entry.priority).id);
   if (isTaskDone(entry)) return !prefs.hideDone && !(prefs.hiddenPriorities || []).includes(taskPriorityOf(entry.priority).id);
   if ((prefs.hiddenStatuses || []).includes(taskStatusOf(entry.status).id)) return false;
   return !(prefs.hiddenPriorities || []).includes(taskPriorityOf(entry.priority).id);
@@ -299,7 +307,8 @@ function matchesFilter(entry, prefs) {
 
 /** Aufgaben der Seite: nach Ort, Status und Dringlichkeit gesiebt, sortiert. Archiviertes fehlt immer. */
 export function visibleTasks(prefs) {
-  const list = taskEntries().filter((entry) => matchesFilter(entry, prefs) && matchesPlace(entry, prefs.place));
+  const source = prefs.showArchived ? state.entries.filter((entry) => entry.type === "aufgabe") : taskEntries();
+  const list = source.filter((entry) => matchesFilter(entry, prefs) && matchesPlace(entry, prefs.place));
   return sortTasks(list, prefs.sort, prefs.sortAsc);
 }
 
@@ -314,7 +323,14 @@ export function taskGroups(prefs) {
   const list = visibleTasks(prefs);
   if (!grouping) return { field: null, columns: [{ id: "alle", label: "", icon: "", color: "var(--muted)", items: list }] };
   const columns = grouping.columns.map((column) => ({ ...column, items: [] }));
+  /* Nach Status gruppiert bekommt Archiviertes die eigene Spalte ganz rechts */
+  const archive = grouping.field === "status" && prefs.showArchived ? { ...archiveColumn, items: [], locked: true } : null;
+  if (archive) columns.push(archive);
   list.forEach((entry) => {
+    if (archive && entry.archived) {
+      archive.items.push(entry);
+      return;
+    }
     const target = columns.find((column) => column.id === entry[grouping.field]) || columns[0];
     target.items.push(entry);
   });

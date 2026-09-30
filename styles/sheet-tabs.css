@@ -20,8 +20,8 @@
  * .sheet.has-tabs .sheet-title font-size -> Größe des Namens oben (17px)
  * .sheet-title-icon .icon width/height   -> Größe des Kategorie-Icons (22px)
  * .sheet-check width/height              -> Größe des Hakens (20px)
- * .sheet-option-hint font-size            -> Größe des kleinen Satzes unter einem Namen (12px)
- * .sheet-option.is-muted opacity          -> wie blass eine weiterführende Option ist (0.55)
+ * .sheet-info width/height               -> Tippfläche des ⓘ neben einem Namen (32px, Icon 18px)
+ * --icon-soft                            -> Farbe des ⓘ (styles/tokens.css)
  */
 
 /* Pillen-Leiste im Blatt; ohne Tabs verborgen. display ist sonst flex und
@@ -99,26 +99,31 @@
   font-weight: 600;
 }
 
-/* Kleiner Satz unter dem Namen, z.B. was „Erledigt“ im Filter bedeutet */
-.sheet-option-hint {
-  display: block;
-  margin-top: 1px;
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 400;
-  line-height: 1.3;
+/* ⓘ gleich rechts neben dem Namen: öffnet die Erklärung, wählt nichts aus.
+   Nur Namen mit ⓘ werden zur Reihe — die übrigen kürzen sich wie bisher. */
+.sheet-option-label:has(.sheet-info) {
+  display: flex;
+  align-items: center;
 }
 
-/* Blasse Option, die nicht auswählt, sondern woandershin führt („Archiviert“) */
-.sheet-option.is-muted {
+.sheet-info {
+  display: inline-grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: 32px;
+  height: 32px;
+  margin: -8px 0 -8px 2px; /* margin: große Tippfläche, ohne dass die Zeile höher wird */
+  color: var(--icon-soft);
+  cursor: pointer;
+}
+
+.sheet-info .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.sheet-info:active {
   opacity: 0.55;
-}
-
-/* Pfeil rechts statt Haken: das Antippen öffnet eine andere Seite */
-.sheet-option .sheet-more {
-  width: 16px;
-  height: 16px;
-  color: var(--chevron);
 }
 
 /* Nach einem Tab-Wechsel gleitet die Liste aus der Richtung herein, in der

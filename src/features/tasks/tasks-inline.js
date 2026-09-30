@@ -51,7 +51,8 @@ function sectionAt(target, y) {
   const column = target.closest(".board-col");
   if (column) return column;
   if (target.closest(".board")) return null;
-  const sections = [...el("tasks-body").querySelectorAll(".task-section")];
+  /* Unter „Archiviert“ entsteht nichts Neues — der Tipp gilt dem Abschnitt davor */
+  const sections = [...el("tasks-body").querySelectorAll(".task-section:not([data-no-add])")];
   let pick = sections[0] || null;
   sections.forEach((section) => {
     if (section.getBoundingClientRect().top <= y) pick = section;
@@ -94,7 +95,7 @@ function commitRow(chain) {
 
 /** Eine neue leere Zeile am Ende des Abschnitts öffnen und den Cursor hineinsetzen. */
 function openRow(section, reveal = false) {
-  if (editing) return;
+  if (editing || section.hasAttribute("data-no-add")) return;
   const box = section.querySelector(".task-rows, .board-rows");
   if (!box) return;
   const board = section.classList.contains("board-col");
