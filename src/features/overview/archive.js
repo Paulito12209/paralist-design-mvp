@@ -2,8 +2,10 @@
  * Das Archiv: alles, was man aus einer Liste herausgewischt, aber nicht
  * gelöscht hat. Oben laufen Pillen zum Durchschieben — „Alle“, dann
  * „Arbeitsbereiche“, dann je Typ eine (src/data/collections.js, archivePills).
- * Waagerecht wischen wechselt die Pille. In einer Zeile holt Wischen nach
- * rechts sie zurück, nach links löscht es sie endgültig.
+ * Waagerecht wischen wechselt die Pille. Die Zeilen sind dieselben wie
+ * überall: Antippen öffnet die Seite, Halten oder Rechtsklick das Menü (dort
+ * steht „Zurückholen“ statt „Archivieren“), Wischen nach rechts holt zurück,
+ * nach links löscht endgültig.
  * Pfad: src/features/overview/archive.js
  *
  * Keine anpassbaren visuellen Werte: die Zeilen sehen aus wie überall
@@ -13,14 +15,13 @@
  */
 
 import { dom, el } from "../../core/dom.js";
-import { escapeHtml, icon } from "../../core/html.js";
 import { archivePills } from "../../data/collections.js";
-import { archivedEntries, archivedWorkspaces, workspaceIcon, workspaceLabel } from "../../data/queries.js";
+import { archivedEntries, archivedWorkspaces } from "../../data/queries.js";
 import { ui } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { setPagePill } from "../../ui/router.js";
-import { entryGlyph, swipeAction, swipeRow } from "../../ui/rows.js";
+import { archiveActions, entryRow, workspaceRow } from "../../ui/rows.js";
 import { isViewActive } from "../../ui/views.js";
 
 /* Ein leeres Archiv bekommt keine Pille: hier legt man nichts an, hier landet etwas. */
@@ -31,43 +32,11 @@ const emptyArchive = {
   text: "Wisch eine Zeile nach links und tippe auf den grauen Knopf, dann liegt sie hier.",
 };
 
-/* Beide Zeilenarten haben dieselben zwei Knöpfe, nur andere Namen dahinter. */
-function archiveRow(dataAttr, restoreKind, deleteKind, rowHtml) {
-  return swipeRow(
-    dataAttr,
-    [swipeAction(restoreKind, "Zurückholen", "history", "restore")],
-    [swipeAction(deleteKind, "Löschen", "trash", "delete")],
-    rowHtml
-  );
-}
-
-function workspaceArchiveRow(workspace) {
-  return archiveRow(
-    `data-workspace="${workspace.id}"`,
-    "restore-workspace",
-    "delete-workspace",
-    `
-      <div class="workspace-row">
-        ${icon(workspaceIcon(workspace))}
-        <span>${escapeHtml(workspaceLabel(workspace))}</span>
-      </div>
-    `
-  );
-}
-
-function entryArchiveRow(entry) {
-  return archiveRow(
-    `data-entry="${entry.id}"`,
-    "restore",
-    "delete",
-    `
-      <div class="workspace-row entry-row">
-        ${entryGlyph(entry)}
-        <span>${escapeHtml(entry.title)}</span>
-      </div>
-    `
-  );
-}
+/* Beide Zeilenarten haben dieselben zwei Knöpfe, nur andere Namen dahinter
+   (src/ui/list-clicks.js unterscheidet Eintrag und Arbeitsbereich daran). */
+const workspaceArchiveRow = (workspace) =>
+  workspaceRow(workspace, false, archiveActions("restore-workspace", "delete-workspace"));
+const entryArchiveRow = (entry) => entryRow(entry, "", archiveActions("restore", "delete"));
 
 /* Was unter einer Pille steht: Arbeitsbereiche nur unter „Alle“ und ihrer eigenen Pille. */
 function archivedFor(pill) {

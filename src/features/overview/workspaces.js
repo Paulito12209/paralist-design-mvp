@@ -14,7 +14,7 @@ import { emit, events } from "../../core/bus.js";
 import { dom, el, focusAtEnd } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
 import { sameId } from "../../core/ids.js";
-import { archiveWorkspace, deleteWorkspace, nameWorkspace, toggleFavorite } from "../../data/mutations.js";
+import { archiveWorkspace, deleteWorkspace, nameWorkspace, restoreFromArchive, toggleFavorite } from "../../data/mutations.js";
 import { archivedEntries, archivedWorkspaces, findWorkspace, tabWorkspaces } from "../../data/queries.js";
 import { saveState, ui } from "../../data/state.js";
 import { openCtxMenu } from "../../ui/ctx-menu.js";
@@ -131,11 +131,10 @@ export function openWorkspaceMenu(button) {
       icon: workspace.favorite ? "star" : "star-outline",
       onSelect: () => toggleFavorite(workspace),
     },
-    {
-      label: "Archivieren",
-      icon: "archive",
-      onSelect: () => archiveWorkspace(workspace.id),
-    },
+    /* Im Archiv steht an dieser Stelle „Zurückholen“ */
+    workspace.archived
+      ? { label: "Zurückholen", icon: "history", onSelect: () => restoreFromArchive(workspace) }
+      : { label: "Archivieren", icon: "archive", onSelect: () => archiveWorkspace(workspace.id) },
     {
       label: "Löschen",
       icon: "trash",

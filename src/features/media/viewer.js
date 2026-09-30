@@ -279,12 +279,13 @@ function init() {
     if (event.key === "ArrowRight") step(1);
   });
 
-  /* Ist der Eintrag weg (gelöscht, archiviert) oder änderte sich sein Name
-     woanders, hört die Ansicht auf bzw. zieht nach. */
+  /* Ist der Eintrag gelöscht oder änderte sich sein Name woanders, hört die
+     Ansicht auf bzw. zieht nach. Ein archivierter bleibt offen — man kommt
+     aus dem Archiv hierher; Archivieren aus dem Menü schließt selbst. */
   on(events.dataChanged, () => {
     if (!openId || openId === VIDEO_ID) return;
     const entry = findEntry(openId);
-    if (!entry || entry.archived) {
+    if (!entry) {
       close();
       return;
     }

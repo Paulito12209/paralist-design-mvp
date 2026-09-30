@@ -16,7 +16,7 @@
 import { getBlob } from "../../core/blobs.js";
 import { emit, events } from "../../core/bus.js";
 import { copyText } from "../../core/clipboard.js";
-import { deleteEntry, toggleFavorite } from "../../data/mutations.js";
+import { deleteEntry, restoreFromArchive, toggleFavorite } from "../../data/mutations.js";
 import { archiveEntry } from "../../data/xp.js";
 import { openSheet } from "../../ui/sheet.js";
 
@@ -87,16 +87,19 @@ export function openViewerMenu(entry, { onRename, onClose }) {
       icon: entry.favorite ? "star" : "star-outline",
       onSelect: () => toggleFavorite(entry),
     },
-    {
-      label: "Archivieren",
-      icon: "archive",
-      pair: true,
-      onSelect: () => {
-        archiveEntry(entry);
-        emit(events.dataChanged);
-        onClose();
-      },
-    },
+    /* Aus dem Archiv geöffnet: zurückholen statt archivieren, die Ansicht bleibt offen */
+    entry.archived
+      ? { label: "Zurückholen", icon: "history", pair: true, onSelect: () => restoreFromArchive(entry) }
+      : {
+          label: "Archivieren",
+          icon: "archive",
+          pair: true,
+          onSelect: () => {
+            archiveEntry(entry);
+            emit(events.dataChanged);
+            onClose();
+          },
+        },
     {
       label: "Löschen",
       icon: "trash",

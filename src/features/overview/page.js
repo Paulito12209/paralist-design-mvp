@@ -21,9 +21,11 @@ import { dom, el } from "../../core/dom.js";
 import { escapeHtml } from "../../core/html.js";
 import { load } from "../../core/lazy.js";
 import {
+  archiveWorkspace,
   clearFavorites,
   deleteEntriesOf,
   deleteWorkspace,
+  restoreFromArchive,
   setCover,
   toggleFavorite,
 } from "../../data/mutations.js";
@@ -219,6 +221,20 @@ function openPageMenu() {
       })
     );
     options.push(typeChangeAction({ workspace }));
+    /* Wie im Menü seiner Zeile: Archivieren verlässt die Seite (er steht in
+       keiner Liste mehr), Zurückholen aus dem Archiv lässt sie offen. */
+    options.push(
+      workspace.archived
+        ? { label: "Zurückholen", icon: "history", onSelect: () => restoreFromArchive(workspace) }
+        : {
+            label: "Archivieren",
+            icon: "archive",
+            onSelect: () => {
+              archiveWorkspace(workspace.id);
+              restoreFrom(ui.sourceView);
+            },
+          }
+    );
   }
 
   if (!collectionsWithoutDelete.includes(page.kind)) {

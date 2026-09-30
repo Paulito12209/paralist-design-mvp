@@ -104,12 +104,21 @@ export function entryActions(entry, withDone = false) {
   };
 }
 
+/** Die Wisch-Knöpfe einer archivierten Zeile: rechts holt sie zurück, links löscht sie endgültig. */
+export function archiveActions(restoreKind, deleteKind) {
+  return {
+    left: [swipeAction(restoreKind, "Zurückholen", "history", "restore")],
+    right: [swipeAction(deleteKind, "Löschen", "trash", "delete")],
+  };
+}
+
 /**
  * Zeile eines Eintrags mit ihren Wisch-Knöpfen.
- * @param prefix optionaler Einschub vor dem Titel, z.B. die Uhrzeit im Kalender.
+ * @param prefix  optionaler Einschub vor dem Titel, z.B. die Uhrzeit im Kalender.
+ * @param actions andere Wisch-Knöpfe als die üblichen — das Archiv gibt hier
+ *   Zurückholen und Löschen herein, die Zeile selbst bleibt dieselbe.
  */
-export function entryRow(entry, prefix = "") {
-  const actions = entryActions(entry, true);
+export function entryRow(entry, prefix = "", actions = entryActions(entry, true)) {
   /* Auch eine Aufgabe trägt hier ihr Icon — abgehakt wird sie über den
      grünen Wisch-Knopf; erledigt bleibt sie am durchgestrichenen Titel erkennbar. */
   const done = entry.type === "aufgabe" && isTaskDone(entry);
@@ -128,11 +137,28 @@ export function entryRow(entry, prefix = "") {
   );
 }
 
+/* Die üblichen Wisch-Knöpfe eines Arbeitsbereichs: dieselbe Aufteilung wie
+   bei einem Eintrag — links bleibt er erhalten (Favorit, in einen anderen
+   Tab), rechts geht er heraus: Archivieren grau neben dem roten Löschen.
+   Verschieben gibt es nur, wenn es mehr als einen Tab gibt; sonst gäbe es kein Ziel. */
+function workspaceActions(workspace) {
+  const left = [swipeAction("favorite-workspace", "Favorit", workspace.favorite ? "star" : "star-outline", "favorite")];
+  if (canMoveWorkspace()) left.push(swipeAction("move-workspace", "In anderen Tab verschieben", "folder-move", "move"));
+  return {
+    left,
+    right: [
+      swipeAction("archive-workspace", "Archivieren", "archive", "archive"),
+      swipeAction("delete-workspace", "Löschen", "trash", "delete"),
+    ],
+  };
+}
+
 /**
  * Zeile eines Arbeitsbereichs.
  * @param canEdit true, wenn beim Umbenennen an dieser Stelle ein Eingabefeld stehen darf.
+ * @param actions andere Wisch-Knöpfe als die üblichen (Archiv: Zurückholen und Löschen).
  */
-export function workspaceRow(workspace, canEdit = false) {
+export function workspaceRow(workspace, canEdit = false, actions = workspaceActions(workspace)) {
   if (canEdit && workspace.id === ui.editingWorkspaceId) {
     /* Der Vorgabename steht grau als Platzhalter; wer nichts tippt, bekommt ihn.
        Schon Getipptes bleibt stehen, auch wenn die Liste zwischendurch neu gezeichnet wird. */
@@ -145,19 +171,10 @@ export function workspaceRow(workspace, canEdit = false) {
     `;
   }
 
-  /* Dieselbe Aufteilung wie bei einem Eintrag: links bleibt der Arbeitsbereich
-     erhalten (Favorit, in einen anderen Tab), rechts geht er heraus —
-     Archivieren grau neben dem roten Löschen. Verschieben gibt es nur, wenn
-     es mehr als einen Tab gibt; sonst gäbe es kein Ziel. */
-  const left = [swipeAction("favorite-workspace", "Favorit", workspace.favorite ? "star" : "star-outline", "favorite")];
-  if (canMoveWorkspace()) left.push(swipeAction("move-workspace", "In anderen Tab verschieben", "folder-move", "move"));
   return swipeRow(
     `data-workspace="${workspace.id}"`,
-    left,
-    [
-      swipeAction("archive-workspace", "Archivieren", "archive", "archive"),
-      swipeAction("delete-workspace", "Löschen", "trash", "delete"),
-    ],
+    actions.left,
+    actions.right,
     `
       <button class="workspace-row" type="button" data-open-workspace="${workspace.id}">
         ${favoriteGlyph(icon(workspaceIcon(workspace)), workspace.favorite)}

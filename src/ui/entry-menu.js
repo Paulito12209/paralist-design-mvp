@@ -14,7 +14,7 @@ import { emit, events } from "../core/bus.js";
 import { load } from "../core/lazy.js";
 import { entryDetails } from "../data/details.js";
 import { isTaskDone } from "../data/config-tasks.js";
-import { deleteEntry, setCover, setEntryIcon, toggleFavorite } from "../data/mutations.js";
+import { deleteEntry, restoreFromArchive, setCover, setEntryIcon, toggleFavorite } from "../data/mutations.js";
 import { findEntry } from "../data/queries.js";
 import { archiveEntry } from "../data/xp.js";
 import { copyOptions } from "./copy-page.js";
@@ -101,16 +101,20 @@ export function entryMenuOptions(entry, { onPage = false, afterRemove = () => {}
     });
   }
 
+  /* Ein archivierter Eintrag (Archiv-Liste, seine Seite von dort aus) wird
+     zurückgeholt statt noch einmal archiviert; er bleibt dabei offen. */
   options.push(
-    {
-      label: "Archivieren",
-      icon: "archive",
-      onSelect: () => {
-        archiveEntry(entry);
-        emit(events.dataChanged);
-        afterRemove();
-      },
-    },
+    entry.archived
+      ? { label: "Zurückholen", icon: "history", onSelect: () => restoreFromArchive(entry) }
+      : {
+          label: "Archivieren",
+          icon: "archive",
+          onSelect: () => {
+            archiveEntry(entry);
+            emit(events.dataChanged);
+            afterRemove();
+          },
+        },
     {
       label: "Eintrag löschen",
       icon: "trash",
