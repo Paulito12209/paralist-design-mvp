@@ -231,9 +231,12 @@ export function initEntryFold() {
   });
 
   /* ResizeObserver: neu messen, wenn Titel oder Text höher werden oder die
-     Anzeigefläche sich ändert (Drehen, Tastatur) — ohne bei jedem Tastendruck zu rechnen */
+     Anzeigefläche sich ändert (Drehen, Tastatur) — ohne bei jedem Tastendruck zu rechnen.
+     Auch die Leiste unten zählt: öffnet oder schließt dort das Eingabefeld,
+     ändert sich ihre Höhe, und die Karte muss wieder an ihre Oberkante rasten.
+     Sonst bliebe sie nach „Tastatur zu, dann ✕“ in der Höhe des Eingabefelds hängen. */
   const observer = new ResizeObserver(() => layoutEntryFold());
-  [dom.content, dom.entryTitle, dom.entryBody].forEach((node) => observer.observe(node));
+  [dom.content, dom.entryTitle, dom.entryBody, dom.navShell].forEach((node) => observer.observe(node));
 
   /* Tastatur zu: am iPhone ändert sich dabei keine Größe, der Beobachter
      schweigt. Neu messen, falls die Seite mit offener Tastatur geöffnet
