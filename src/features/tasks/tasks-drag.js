@@ -8,25 +8,37 @@
  * Maße werden einmal beim Anfassen genommen, und während der Bewegung wird
  * höchstens die Zeile unter dem Zeiger gemessen — nie das ganze Board und nie
  * über `getComputedStyle`.
+ *
+ * Im Auswahlmodus zieht der Griff einer gewählten Zeile alle gewählten
+ * mit: die übrigen verschwinden aus ihren Spalten, die angefasste trägt sie
+ * als Stapel mit der Zahl oben rechts. Loslassen gibt allen den Wert der
+ * Zielspalte, in ihrer bisherigen Reihenfolge an der Stelle der Lücke —
+ * mit „Rückgängig“ in der Meldung. Der Griff einer nicht gewählten Zeile
+ * zieht wie immer nur sie.
  * Pfad: src/features/tasks/tasks-drag.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * scrollSpeed  -> wie schnell am Rand mitgerollt wird (Pixel je Bild)
  * startSlack   -> ab wie vielen Pixeln Bewegung das Ziehen wirklich beginnt
+ * stackWords   -> Texte der Meldung nach dem Ablegen eines Stapels
  *
  * Wie breit der Randstreifen ist, steht als --board-edge in styles/tokens.css.
  */
 
 import { cssNumber } from "../../core/css-vars.js";
 import { dom } from "../../core/dom.js";
-import { moveTask } from "../../data/mutations-tasks.js";
+import { restoreSnapshot, snapshotEntries } from "../../data/mutations-bulk.js";
+import { moveTask, moveTasks } from "../../data/mutations-tasks.js";
 import { findEntry } from "../../data/queries.js";
 import { saveState } from "../../data/state.js";
 import { activeTaskView } from "../../data/task-views.js";
+import { showToast } from "../../ui/toast.js";
+import { isPicked, isSelecting } from "./tasks-pick.js";
 
 const scrollSpeed = 12;
 const startSlack = 4;
+const stackWords = { many: "Aufgaben", undo: "Rückgängig" };
 
 /* Der laufende Zug; außerhalb eines Zuges null. */
 let drag = null;
@@ -104,7 +116,7 @@ function autoScroll() {
 /* Die Zeile an die Stelle der Lücke zurückstellen und alles aufräumen. */
 function endDrag(save) {
   if (!drag) return;
-  const { card, gap, grip, pointerId } = drag;
+  const { card, gap, grip, pointerId, stack } = drag;
   cancelAnimationFrame(drag.frame);
   /* Der Zeiger kann schon weg sein (Fenster verlassen, Browser-Geste): dann
      gibt es nichts mehr freizugeben und der Versuch würde nur stolpern. */
@@ -116,8 +128,9 @@ function endDrag(save) {
 
   const box = gap.parentElement;
   gap.replaceWith(card);
-  card.classList.remove("is-dragging");
+  card.classList.remove("is-dragging", "is-stack");
   card.removeAttribute("style");
+  delete card.dataset.stack;
   document.body.classList.remove("is-dragging-task");
   const moved = drag.moved;
   drag = null;
@@ -127,8 +140,8 @@ function endDrag(save) {
     return;
   }
 
-  const entry = entryOfCard(card);
-  const siblings = Array.from(box.querySelectorAll(".board-row"));
+  /* Mitgetragene Zeilen stehen noch unsichtbar in ihren Spalten — sie sind keine Nachbarn */
+  const siblings = Array.from(box.querySelectorAll(".board-row:not(.is-carried)"));
   const index = siblings.indexOf(card);
   const above = entryOfCard(siblings[index - 1]);
   const below = entryOfCard(siblings[index + 1]);
@@ -141,8 +154,26 @@ function endDrag(save) {
     saveState();
   }
   const [before, after] = view.sortAsc ? [above, below] : [below, above];
-  moveTask(entry, box.dataset.field, box.dataset.drop, before, after);
+  if (stack.length > 1) dropStack(stack, box, before, after, view.sortAsc);
+  else moveTask(entryOfCard(card), box.dataset.field, box.dataset.drop, before, after);
   redrawBoard();
+}
+
+/*
+ * Einen Stapel ablegen: alle bekommen den Wert der Zielspalte und stehen in
+ * ihrer bisherigen Reihenfolge an der Stelle der Lücke. Absteigend gezeigt
+ * steht die oberste Zeile mit der höchsten Sortiernummer — deshalb umgedreht.
+ */
+function dropStack(stack, box, before, after, ascending) {
+  const entries = stack.map(entryOfCard).filter(Boolean);
+  const snap = snapshotEntries(entries);
+  moveTasks(ascending ? entries : [...entries].reverse(), box.dataset.field, box.dataset.drop, before, after);
+  const column = box.closest(".board-col")?.querySelector(".board-head-name")?.textContent || "";
+  showToast({
+    icon: "board",
+    title: `${entries.length} ${stackWords.many} → ${column}`,
+    action: { label: stackWords.undo, icon: "undo", onSelect: () => restoreSnapshot(snap) },
+  });
 }
 
 /* Anfassen am Griff: Maße einmal nehmen, Lücke einsetzen, Zeile lösen. */
@@ -157,6 +188,9 @@ function onPointerDown(event) {
 
   const rect = card.getBoundingClientRect();
   const deviceRect = dom.device.getBoundingClientRect();
+  /* Gewählte Zeile im Auswahlmodus: alle gewählten kommen mit, in ihrer Reihenfolge im Board */
+  const stack =
+    isSelecting() && isPicked(card.dataset.boardRow) ? Array.from(board.querySelectorAll(".board-row[data-picked]")) : [card];
   const gap = document.createElement("div");
   gap.className = "board-gap";
   gap.style.height = `${rect.height}px`;
@@ -176,7 +210,15 @@ function onPointerDown(event) {
     boardRect: board.getBoundingClientRect(),
     contentRect: dom.content.getBoundingClientRect(),
     frame: 0,
+    stack,
   };
+  stack.forEach((row) => {
+    if (row !== card) row.classList.add("is-carried");
+  });
+  if (stack.length > 1) {
+    card.classList.add("is-stack");
+    card.dataset.stack = String(stack.length);
+  }
 
   card.parentElement.insertBefore(gap, card);
   card.classList.add("is-dragging");

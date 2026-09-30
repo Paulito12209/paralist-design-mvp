@@ -99,15 +99,24 @@ function noteDone(entry, wasDone) {
   awardXp("done", "aufgabe", entry.title);
 }
 
-/** Status einer Aufgabe setzen. */
-export function setTaskStatus(entry, status) {
-  if (entry.status === status) return;
+/**
+ * Status setzen, ohne zu speichern — für Sammel-Änderungen mehrerer Aufgaben
+ * (src/data/mutations-bulk.js), die erst am Ende einmal speichern.
+ * Gibt zurück, ob sich etwas geändert hat.
+ */
+export function applyTaskStatus(entry, status) {
+  if (entry.status === status) return false;
   const wasDone = isTaskDone(entry);
   entry.status = status;
   noteDone(entry, wasDone);
   /* Wieder geöffnet heißt: sie gehört nicht mehr ins Archiv */
   if (entry.archived && !isTaskDone(entry)) entry.archived = false;
-  commit();
+  return true;
+}
+
+/** Status einer Aufgabe setzen. */
+export function setTaskStatus(entry, status) {
+  if (applyTaskStatus(entry, status)) commit();
 }
 
 /** Runder Haken-Knopf: erledigt setzen oder wieder auf den Vorgabe-Status zurück. */
@@ -154,5 +163,26 @@ export function moveTask(entry, field, value, before, after) {
   else if (top !== null) entry.order = top + orderGap;
   else if (bottom !== null) entry.order = bottom - orderGap;
   else entry.order = entry.createdAt || Date.now();
+  saveState();
+}
+
+/**
+ * Mehrere gewählte Aufgaben auf einmal ablegen (Stapel im Board): alle
+ * bekommen den Wert der Zielspalte und stehen in der gegebenen Reihenfolge
+ * zwischen `before` und `after` — gleichmäßig verteilt, damit sich danach
+ * noch etwas dazwischenschieben lässt. Speichert einmal am Ende.
+ */
+export function moveTasks(entries, field, value, before, after) {
+  entries.forEach((entry) => placeTask(entry, field, value));
+  const top = before ? taskOrder(before) : null;
+  const bottom = after ? taskOrder(after) : null;
+  const count = entries.length;
+  entries.forEach((entry, index) => {
+    const step = index + 1;
+    if (top !== null && bottom !== null) entry.order = top + ((bottom - top) * step) / (count + 1);
+    else if (top !== null) entry.order = top + orderGap * step;
+    else if (bottom !== null) entry.order = bottom - orderGap * (count + 1 - step);
+    else entry.order = Date.now() + step;
+  });
   saveState();
 }

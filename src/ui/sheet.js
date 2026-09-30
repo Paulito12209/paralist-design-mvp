@@ -18,7 +18,9 @@
  * lässt das Blatt offen).
  *
  * Eine gewählte Option (`active`) trägt rechts einen Haken — nicht nur die
- * Fläche, die man bei hellem Licht leicht übersieht.
+ * Fläche, die man bei hellem Licht leicht übersieht. `count` stellt statt
+ * des Hakens eine blasse Zahl rechts hin: bei mehreren gewählten Aufgaben,
+ * wie viele davon diesen Wert schon haben.
  *
  * Mit Tabs (das Blatt einer Aufgabe): oben Icon und Name, eine Trennlinie
  * über die ganze Breite, darunter Pillen. Antippen oder waagerecht wischen
@@ -75,6 +77,7 @@ function optionMarkup(option, index) {
   /* pair: halbe Breite, damit zwei Optionen nebeneinander in eine Zeile passen */
   if (option.pair) classes.push("is-pair");
   const check = option.active && !option.pair ? icon("check", "sheet-check") : "";
+  const count = option.count ? `<span class="sheet-count">${option.count}</span>` : "";
   /* Kein Knopf im Knopf: das ⓘ ist ein span, den der Klick-Empfänger unten zuerst prüft */
   const info = option.info
     ? `<span class="sheet-info" role="button" tabindex="0" data-sheet-info="${index}" aria-label="Was heißt „${escapeHtml(option.label)}“?">${icon("info")}</span>`
@@ -82,7 +85,7 @@ function optionMarkup(option, index) {
   return `
     <button class="${classes.join(" ")}" type="button" data-sheet="${index}"${option.active ? ' aria-current="true"' : ""}>
       ${icon(option.icon)}
-      <span class="sheet-option-label">${escapeHtml(option.label)}${info}</span>${check}
+      <span class="sheet-option-label">${escapeHtml(option.label)}${info}</span>${count}${check}
     </button>
   `;
 }

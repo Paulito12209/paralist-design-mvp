@@ -6,6 +6,10 @@
  * Board als Spalten zeigt, jede mit dünner Überschrift (Icon in ihrer Farbe,
  * Name, Anzahl); leere Gruppen fehlen dann.
  *
+ * Im Auswahlmodus (src/features/tasks/tasks-select.js) steht vor jeder Zeile
+ * ein Kreis zum Wählen und im Kopf jeder Gruppe einer für die ganze Gruppe;
+ * die Geister-Zeile fehlt dann.
+ *
  * Solange es gar keine Aufgabe gibt, liegt eine blasse Geister-Zeile da, die
  * das Anlegen durch Tippen ein einziges Mal erklärt
  * (src/features/tasks/tasks-inline.js).
@@ -26,6 +30,7 @@ import { taskEntries, taskGroups } from "../../data/queries.js";
 import { entryActions, swipeRow } from "../../ui/rows.js";
 import { taskCheck } from "../../ui/task-status.js";
 import { taskColumns, taskMeta, taskTitle } from "./tasks-parts.js";
+import { groupPickMark, isPicked, isSelecting, pickMark } from "./tasks-pick.js";
 
 const ghostLabel = "Neue Aufgabe";
 const emptyFilter = "Hier liegt keine offene Aufgabe.";
@@ -37,11 +42,13 @@ const emptyFilter = "Hier liegt keine offene Aufgabe.";
 function taskRow(entry, field) {
   const done = isTaskDone(entry);
   const actions = entryActions(entry);
+  const picked = isPicked(entry.id) ? " data-picked" : "";
   return swipeRow(
-    `data-entry="${entry.id}"`,
+    `data-entry="${entry.id}" data-pick-row="${entry.id}"${picked}`,
     actions.left,
     actions.right,
     `
+      ${pickMark(entry.id)}
       ${taskCheck(entry)}
       <button class="workspace-row entry-row task-row" type="button" data-open-entry="${entry.id}">
         <span class="task-main">
@@ -71,6 +78,7 @@ function headMarkup(column, field) {
   if (!field) return "";
   return `
     <h2 class="task-section-head">
+      ${groupPickMark(column.items.map((entry) => entry.id))}
       ${icon(column.icon, "task-section-icon")}
       <span class="task-section-name">${column.label}</span>
       <span class="task-section-count">${column.items.length || ""}</span>
@@ -96,7 +104,8 @@ export function taskListMarkup(prefs) {
   const empty = columns.every((column) => !column.items.length);
   /* Ohne eine einzige Aufgabe lädt die Geister-Zeile zum Schreiben ein; hat
      nur der Filter alles ausgesiebt, sagt die Liste das in einem Satz. */
-  const tail = empty ? (taskEntries().length ? `<p class="task-empty-note">${emptyFilter}</p>` : ghostRow()) : "";
+  const ghost = isSelecting() ? "" : ghostRow();
+  const tail = empty ? (taskEntries().length ? `<p class="task-empty-note">${emptyFilter}</p>` : ghost) : "";
   return `<div class="task-sections">${columns
     .filter((column, index) => index === 0 || column.items.length)
     .map((column, index) => sectionMarkup(column, field, index === 0 ? tail : ""))

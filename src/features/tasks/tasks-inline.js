@@ -32,6 +32,7 @@ import { dom, el } from "../../core/dom.js";
 import { noHistoryForm } from "../../core/no-history.js";
 import { createTaskInline } from "../../data/mutations-tasks.js";
 import { isViewActive } from "../../ui/views.js";
+import { isSelecting } from "./tasks-pick.js";
 
 const TAP_SLOP_PX = 20;
 const placeholder = "Neue Aufgabe";
@@ -163,7 +164,8 @@ function onPointerDown(event) {
 function onClick(event) {
   const start = down;
   down = null;
-  if (!start || !isViewActive("tasks")) return;
+  /* Im Auswahlmodus wählt ein Tipp nur aus — er legt nichts an */
+  if (!start || !isViewActive("tasks") || isSelecting()) return;
   const target = event.target;
   const ghost = target.closest("[data-task-ghost]");
   /* Ein Tipp während des Schreibens hat nur die Zeile abgeschlossen. */

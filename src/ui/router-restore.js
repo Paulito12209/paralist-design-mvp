@@ -107,7 +107,22 @@ function restorePage(entry) {
   }
 }
 
+/*
+ * Verlaufsschritte, die eine Seite selbst verbraucht — der Auswahlmodus der
+ * Aufgaben, wenn er über ✕ oder eine Aktion endet. Dann gibt es nichts
+ * wiederherzustellen, und ein Seitenwechsel würde nur die Meldung mit
+ * „Rückgängig“ schließen. Jeder Wächter sagt `true`, wenn er den Schritt
+ * übernimmt.
+ */
+const popGuards = [];
+
+/** Einen Wächter anmelden: guard(event) -> true, wenn dieser Schritt still bleiben soll. */
+export function addPopGuard(guard) {
+  popGuards.push(guard);
+}
+
 function onPopState(event) {
+  if (popGuards.some((guard) => guard(event))) return;
   const entry = event.state;
   emit(events.viewWillChange, currentView());
 

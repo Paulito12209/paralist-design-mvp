@@ -289,8 +289,8 @@ export function initListClicks(handlers) {
       menus.openWorkspaceMenu(workspaceBtn);
       return;
     }
-    const entryBtn = event.target.closest(".entry-row[data-open-entry]");
-    if (entryBtn) {
+    const entryBtn = event.target.closest(".entry-row[data-open-entry], [data-board-row]");
+    if (entryBtn && !event.target.closest("[data-grip]")) {
       event.preventDefault();
       cancelHold();
       openEntryCtxMenu(entryBtn);

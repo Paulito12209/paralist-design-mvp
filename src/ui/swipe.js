@@ -97,6 +97,15 @@ export function isSwipedOpen(row) {
 }
 
 function onPointerDown(event) {
+  /* Auswahlmodus der Aufgaben (data-selecting am Inhalt): ein Tipp wählt an
+     oder ab — kein Wischen, kein Halte-Menü. */
+  if (event.target.closest("[data-selecting]")) {
+    cancelHold();
+    rowGesture = false;
+    if (drag) release(drag);
+    drag = null;
+    return;
+  }
   const tabPill = event.target.closest("[data-tab-id]");
   /* Pille einer Ansicht auf der Aufgaben-Seite: halten öffnet ihr Menü (src/features/tasks/tasks-views.js) */
   const viewPill = event.target.closest("[data-task-view]");
@@ -105,6 +114,8 @@ function onPointerDown(event) {
   const workspaceBtn = event.target.closest("[data-open-workspace]");
   /* Nur Eintrags-Zeilen, keine Kacheln oder Kalender-Termine: die haben eigene Gesten. */
   const entryBtn = event.target.closest(".entry-row[data-open-entry]");
+  /* Eine Zeile im Board der Aufgaben — aber nicht ihr Haken oder Griff, die haben eigene Aufgaben. */
+  const boardRow = !event.target.closest("[data-grip], [data-task-done]") && event.target.closest("[data-board-row]");
   /* Kopier-Knopf und kleiner Kopfzeilen-Titel: halten fragt „Seite“ oder „Titel“. */
   const copyBtn = event.target.closest(COPY_HOLD);
   if (copyBtn) startHold(event, copyBtn, "copy");
@@ -112,7 +123,7 @@ function onPointerDown(event) {
   else if (viewPill) startHold(event, viewPill, "taskView");
   else if (projectPill) startHold(event, projectPill, "projectView");
   else if (workspaceBtn) startHold(event, workspaceBtn, "workspace");
-  else if (entryBtn) startHold(event, entryBtn, "entry");
+  else if (entryBtn || boardRow) startHold(event, entryBtn || boardRow, "entry");
 
   rowGesture = false;
   if (drag) release(drag);

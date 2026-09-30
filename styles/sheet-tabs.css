@@ -2,7 +2,8 @@
  * Auswahl-Blatt mit Tabs — das Blatt einer Aufgabe: oben das Icon der
  * Kategorie und der Name, darunter eine Trennlinie über die ganze Breite des
  * Blatts, dann die Pillen Status | Dringlichkeit | Typ und die Liste. Dazu
- * der Haken rechts an jeder gewählten Option (in jedem Auswahl-Blatt) und das
+ * der Haken rechts an jeder gewählten Option (in jedem Auswahl-Blatt), die
+ * blasse Zahl an seiner Stelle bei mehreren gewählten Aufgaben und das
  * Hereingleiten der Liste nach einem Tab-Wechsel. Gebaut in src/ui/sheet.js.
  * Pfad: styles/sheet-tabs.css
  *
@@ -20,6 +21,7 @@
  * .sheet.has-tabs .sheet-title font-size -> Größe des Namens oben (17px)
  * .sheet-title-icon .icon width/height   -> Größe des Kategorie-Icons (22px)
  * .sheet-check width/height              -> Größe des Hakens (20px)
+ * .sheet-count font-size                 -> Größe der Zahl statt des Hakens (15px), Farbe --muted
  * .sheet-info width/height               -> Tippfläche des ⓘ neben einem Namen (32px, Icon 18px)
  * --icon-soft                            -> Farbe des ⓘ (styles/tokens.css)
  */
@@ -97,6 +99,15 @@
 
 .sheet-option.is-active {
   font-weight: 600;
+}
+
+/* Mehrere Aufgaben gewählt, gemischte Werte: statt des Hakens steht, wie
+   viele der gewählten diesen Wert schon haben. */
+.sheet-count {
+  flex: 0 0 auto;
+  color: var(--muted);
+  font-size: 15px;
+  font-variant-numeric: tabular-nums; /* font-variant-numeric: Ziffern gleich breit, die Zahlen fluchten untereinander */
 }
 
 /* ⓘ gleich rechts neben dem Namen: öffnet die Erklärung, wählt nichts aus.

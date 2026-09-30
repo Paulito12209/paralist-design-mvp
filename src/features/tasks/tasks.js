@@ -6,7 +6,8 @@
  * den Einstellungen (tasks-settings.js). Diese Datei hält nur alles
  * zusammen: gezeichnet wird in tasks-list.js und tasks-board.js, das Ziehen
  * steht in tasks-drag.js, das Anlegen durch Tippen in die Fläche in
- * tasks-inline.js. Am Desktop wandert die Karte in die rechte Spalte
+ * tasks-inline.js, der Auswahlmodus in tasks-select.js (dann steht an der
+ * Stelle der Pillen die Zählzeile). Am Desktop wandert die Karte in die rechte Spalte
  * (tasks-rail.js), rechts neben den Pillen stehen Liste | Board und Filter.
  * Wird erst beim ersten Öffnen nachgeladen.
  * Pfad: src/features/tasks/tasks.js
@@ -25,6 +26,9 @@ import { taskBoardMarkup } from "./tasks-board.js";
 import { consumeDragClick, initTaskDrag } from "./tasks-drag.js";
 import { initTaskInline } from "./tasks-inline.js";
 import { taskListMarkup } from "./tasks-list.js";
+import { isSelecting } from "./tasks-pick.js";
+import { afterSelectRender, handleSelectClick, initTaskSelect } from "./tasks-select.js";
+import { selectRowMarkup } from "./tasks-select-bar.js";
 import { deskToolsMarkup, handleSettingsClick, taskSettingsMarkup } from "./tasks-settings.js";
 import { afterViewsRender, handleViewsClick, initTaskViews, taskViewsMarkup } from "./tasks-views.js";
 
@@ -37,10 +41,12 @@ export function renderTasks() {
   const left = scrolled ? scrolled.scrollLeft : 0;
 
   /* Rechts neben den Pillen: Liste | Board und Filter — nur am Desktop zu sehen (styles/tasks-desk.css). */
-  dom.tasksTools.innerHTML = taskViewsMarkup(deskToolsMarkup(view));
+  /* Im Auswahlmodus steht an der Stelle der Pillen die Zählzeile */
+  dom.tasksTools.innerHTML = isSelecting() ? selectRowMarkup() : taskViewsMarkup(deskToolsMarkup(view));
   afterViewsRender();
   dom.tasksBody.innerHTML = board ? taskBoardMarkup(view) : taskListMarkup(view);
   panel.setContent(taskSettingsMarkup(view));
+  afterSelectRender();
 
   const next = board ? dom.tasksBody.querySelector(".board") : null;
   if (next) next.scrollLeft = left;
@@ -55,6 +61,8 @@ function onBodyClick(event) {
     event.stopPropagation();
     return;
   }
+  /* Im Auswahlmodus (und beim Cmd-Klick) wählt ein Tipp — sonst nichts */
+  if (handleSelectClick(event)) return;
   /* In der Liste öffnet src/ui/list-clicks.js den Eintrag; im Board hier.
      Der Haken vor dem Titel hakt nur ab (list-clicks.js) und der Griff
      zieht — beide liegen in der Zeile, öffnen sie aber nicht. */
@@ -81,6 +89,7 @@ function init() {
   initTaskDrag(renderTasks);
   initTaskInline();
   initTaskViews();
+  initTaskSelect(renderTasks);
 
   on(events.dataChanged, () => {
     if (isViewActive("tasks")) renderTasks();

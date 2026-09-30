@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "829d3066a874";
+export const appVersion = "866169148708";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -61,6 +61,7 @@ export const appFiles = [
   "src/data/links.js",
   "src/data/milestone-tracks.js",
   "src/data/milestones.js",
+  "src/data/mutations-bulk.js",
   "src/data/mutations-tasks.js",
   "src/data/mutations.js",
   "src/data/nav-labels.js",
@@ -170,7 +171,11 @@ export const appFiles = [
   "src/features/tasks/tasks-inline.js",
   "src/features/tasks/tasks-list.js",
   "src/features/tasks/tasks-parts.js",
+  "src/features/tasks/tasks-pick.js",
   "src/features/tasks/tasks-rail.js",
+  "src/features/tasks/tasks-select-actions.js",
+  "src/features/tasks/tasks-select-bar.js",
+  "src/features/tasks/tasks-select.js",
   "src/features/tasks/tasks-settings.js",
   "src/features/tasks/tasks-views.js",
   "src/features/tasks/tasks.js",
@@ -317,6 +322,7 @@ export const appFiles = [
   "styles/task-status.css",
   "styles/tasks-board.css",
   "styles/tasks-desk.css",
+  "styles/tasks-select.css",
   "styles/tasks-settings.css",
   "styles/tasks.css",
   "styles/toast.css",

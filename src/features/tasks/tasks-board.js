@@ -8,6 +8,9 @@
  * man sie in eine andere Spalte zieht. Eine neue Aufgabe entsteht, indem man
  * in die freie Fläche unter den Zeilen einer Spalte tippt
  * (src/features/tasks/tasks-inline.js) — deshalb gibt es keinen Knopf dafür.
+ * Im Auswahlmodus (src/features/tasks/tasks-select.js) steht vor jeder Zeile
+ * ein Kreis und im Kopf jeder Spalte einer für die ganze Spalte; der Griff
+ * einer gewählten Zeile zieht dann alle gewählten als Stapel.
  * Pfad: src/features/tasks/tasks-board.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -23,6 +26,7 @@ import { isTaskDone } from "../../data/config-tasks.js";
 import { taskColumns } from "../../data/queries.js";
 import { taskCheck } from "../../ui/task-status.js";
 import { taskMeta, taskTitle } from "./tasks-parts.js";
+import { groupPickMark, isPicked, pickMark } from "./tasks-pick.js";
 
 const emptyNote = "Nichts hier";
 
@@ -30,7 +34,8 @@ const emptyNote = "Nichts hier";
 function boardRow(entry, field) {
   const done = isTaskDone(entry);
   return `
-    <div class="board-row" data-board-row="${entry.id}">
+    <div class="board-row" data-board-row="${entry.id}" data-pick-row="${entry.id}"${isPicked(entry.id) ? " data-picked" : ""}>
+      ${pickMark(entry.id)}
       ${taskCheck(entry)}
       <div class="board-row-main">
         <p class="board-row-title task-title${done ? " is-done" : ""}">${taskTitle(entry)}</p>
@@ -50,6 +55,7 @@ function boardColumn(column, field) {
   return `
     <div class="board-col" data-column="${column.id}" data-section="${column.id}" data-field="${field}"${column.locked ? " data-no-add" : ""} style="--col-color:${column.color}">
       <div class="board-head">
+        ${groupPickMark(column.items.map((entry) => entry.id))}
         ${icon(column.icon, "board-head-icon")}
         <span class="board-head-name">${column.label}</span>
         <span class="board-count">${column.items.length}</span>

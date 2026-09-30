@@ -10,6 +10,9 @@
  * -----------------------------------
  * defaultTime -> Uhrzeit, mit der die Auswahl beginnt, wenn der Eintrag noch keine hat
  *
+ * Für mehrere gewählte Aufgaben gibt es openDayPicker: nur der Tag, ohne
+ * Uhrzeit, und das Ergebnis geht an den Aufrufer statt an einen Eintrag.
+ *
  * Das Feld selbst ist unsichtbar (styles/entry-details.css, Klasse .date-field).
  */
 
@@ -77,5 +80,43 @@ export function openDateField(entry, anchor) {
   } catch {
     field.focus({ preventScroll: true });
     field.click();
+  }
+}
+
+/* Das Feld für openDayPicker und was mit dem gewählten Tag geschehen soll. */
+let dayInput = null;
+let onDay = null;
+
+/**
+ * Nur einen Tag wählen (ohne Uhrzeit) — für mehrere Aufgaben auf einmal.
+ * `onPick(tag)` bekommt „JJJJ-MM-TT“; leeren in der Auswahl gibt "".
+ */
+export function openDayPicker(anchor, day, onPick) {
+  if (!dayInput) {
+    /* input type=date: nur der Kalender des Systems, keine Uhr */
+    dayInput = document.createElement("input");
+    dayInput.type = "date";
+    dayInput.className = "date-field";
+    dayInput.tabIndex = -1;
+    dayInput.setAttribute("aria-label", "Datum");
+    dayInput.addEventListener("change", () => {
+      if (onDay) onDay(dayInput.value);
+    });
+    document.body.append(dayInput);
+  }
+  onDay = onPick;
+  const rect = anchor.getBoundingClientRect();
+  dayInput.value = day || dayKey(new Date());
+  Object.assign(dayInput.style, {
+    left: `${rect.left}px`,
+    top: `${rect.top}px`,
+    width: `${rect.width}px`,
+    height: `${rect.height}px`,
+  });
+  try {
+    dayInput.showPicker();
+  } catch {
+    dayInput.focus({ preventScroll: true });
+    dayInput.click();
   }
 }

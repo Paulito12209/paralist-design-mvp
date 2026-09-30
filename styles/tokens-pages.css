@@ -116,6 +116,10 @@
  * --board-ink-l-max         -> höchste Helligkeit von Schrift und Icon im Streifen (0 = schwarz, 1 = weiß);
  *                              niedriger = dunkler und besser lesbar, im Dunkeln ohne Grenze
  * --status-open             -> Grau des Status „Offen“ (Kopfzeile im Board, Icon der Gruppe in der Liste)
+ * --select-color            -> Farbe der Auswahl: gefüllter Kreis, „Alle“, Zahl am Stapel
+ * --pick-size               -> Größe des Kreises vor einer Zeile im Auswahlmodus
+ * --select-tint             -> wie stark eine gewählte Zeile getönt ist; mehr = kräftiger
+ * --select-act-size         -> Schriftgröße der Wörter unter den Knöpfen der Auswahl-Leiste
  *
  * MEDIEN UND DATEIANSICHT
  * --media-gap               -> Fuge zwischen den Medien-Kacheln
@@ -297,6 +301,10 @@
   --board-head-radius: 14px;
   --board-drop-min: 72px;
   --board-edge: 44px;
+  --select-color: var(--link-color);
+  --pick-size: 22px;
+  --select-tint: 10%;
+  --select-act-size: 11px;
   --board-head-tint: 22%;
   --board-head-base: #ffffff;
   --board-ink-l-max: 0.5;

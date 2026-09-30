@@ -1,0 +1,274 @@
+/*
+ * Aufgaben-Seite im Auswahlmodus (src/features/tasks/tasks-select.js), in
+ * der Liste wie im Board: der Kreis vor jeder Zeile und im Kopf jeder Gruppe
+ * bzw. Spalte, die getönte gewählte Zeile, oben die Zählzeile an der Stelle
+ * der Pillen, unten die Aktionsleiste an der Stelle der Navigation (am
+ * Desktop eine schwebende Glaspille) und der Stapel, wenn man gewählte
+ * Zeilen im Board am Griff zieht.
+ * Pfad: styles/tasks-select.css
+ *
+ * ANPASSBARE WERTE (in styles/tokens-pages.css, außer wo genannt)
+ * -----------------------------------
+ * --select-color     -> Farbe der Auswahl: gefüllter Kreis, „Alle“, Zahl am Stapel
+ * --pick-size        -> Größe des Kreises vor einer Zeile
+ * --select-tint      -> wie stark eine gewählte Zeile getönt ist
+ * --select-act-size  -> Schriftgröße der Wörter unter den Knöpfen unten
+ * --nav-height / --nav-radius / --nav-bg / --nav-inner-pad -> Höhe, Rundung, Fläche und
+ *                       Innenabstand der Leiste unten — dieselben wie die Navigation (styles/tokens.css)
+ * --desk-glass / --desk-glass-blur / --desk-edge -> Glas der Leiste am Desktop (styles/tokens-desk.css)
+ * --board-card-radius -> Rundung des Stapels beim Ziehen
+ * --chevron / --card / --bg / --text / --muted -> Ring, Haken, Zeilenfläche und Schrift (styles/tokens.css)
+ *
+ * Direkt bei ihrer Regel:
+ * .task-pick-icon width        -> Größe des Hakens im Kreis (14px)
+ * .select-count font-size      -> Größe von „3 ausgewählt“ (15px)
+ * .select-all font-size        -> Größe von „Alle“ / „Keine“ (15px)
+ * .select-act-icon .icon width -> Größe der Icons in der Leiste unten (22px, am Desktop 18px)
+ * .select-act font-size (Desktop) -> Wörter neben den Icons am Desktop (14px)
+ * .board-row.is-stack::after font-size -> Zahl am Stapel (12px)
+ */
+
+/* ---------- Kreis vor der Zeile und im Kopf ---------- */
+
+.task-pick {
+  width: var(--pick-size);
+  height: var(--pick-size);
+  flex: 0 0 auto;
+  position: relative; /* position: Bezug für den Strich bei halb gewählter Gruppe */
+  display: grid;
+  place-items: center;
+  border-radius: 50%; /* border-radius: macht aus dem Feld einen Kreis */
+  box-shadow: inset 0 0 0 1.5px var(--chevron); /* box-shadow statt border: der Ring bleibt innen, die Größe stimmt */
+  color: transparent; /* der Haken ist erst zu sehen, wenn gewählt */
+  touch-action: none; /* touch-action: über die Kreise ziehen wählt aus, statt die Liste zu scrollen */
+  transition: background 0.12s ease, box-shadow 0.12s ease;
+}
+
+.task-pick-icon {
+  width: 14px;
+  height: 14px;
+}
+
+.task-pick.is-on {
+  background: var(--select-color);
+  box-shadow: inset 0 0 0 1.5px var(--select-color);
+  color: var(--card);
+}
+
+/* Ein Teil der Gruppe gewählt: blauer Ring mit einem Strich statt Haken */
+.task-pick.is-part {
+  box-shadow: inset 0 0 0 1.5px var(--select-color);
+}
+
+.task-pick.is-part::after {
+  content: "";
+  position: absolute; /* position: der Strich liegt mitten im Kreis */
+  width: 10px;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--select-color);
+}
+
+/* Im Kopf einer Gruppe etwas Luft zum Icon dahinter */
+.task-pick-group {
+  margin-right: 4px;
+  cursor: pointer;
+}
+
+/* ---------- Zeilen im Auswahlmodus ---------- */
+
+/* Kein Markieren von Text beim Shift-Klick oder Ziehen über die Kreise */
+[data-selecting] {
+  -webkit-user-select: none; /* user-select: ältere Safari kennen nur die Vorsilbe */
+  user-select: none;
+}
+
+[data-selecting] :is(.swipe-body, .board-row) {
+  cursor: pointer;
+}
+
+/* Der Haken hakt im Modus nicht ab: ein Tipp darauf geht an die Zeile und wählt sie */
+[data-selecting] .task-check {
+  pointer-events: none; /* pointer-events: der Tipp fällt zur Zeile durch */
+}
+
+[data-selecting] .swipe[data-picked] .swipe-body,
+[data-selecting] .board-row[data-picked] {
+  background: color-mix(in srgb, var(--select-color) var(--select-tint), var(--bg));
+}
+
+/* ---------- Zählzeile an der Stelle der Pillen ---------- */
+
+.select-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.select-exit {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 50%; /* border-radius: runder Knopf wie die Pillen daneben */
+  background: var(--card);
+  color: var(--text);
+}
+
+.select-exit .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.select-count {
+  flex: 1 1 auto;
+  min-width: 0;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  white-space: nowrap;
+  overflow: hidden; /* overflow: nötig für text-overflow */
+  text-overflow: ellipsis; /* text-overflow: wird es eng, kürzt sich die Spaltenzahl */
+}
+
+.select-all {
+  flex: 0 0 auto;
+  min-width: 56px;
+  padding: 8px 4px;
+  text-align: right;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--select-color);
+}
+
+:is(.select-exit, .select-all):active {
+  opacity: 0.55;
+}
+
+/* ---------- Leiste unten an der Stelle der Navigation ---------- */
+
+.select-bar[hidden] {
+  display: none;
+}
+
+/* Die Navigation tritt zurück, solange die Leiste steht; die Karte „Ansicht“ auch */
+body.is-selecting .nav-shell:not(.is-composing),
+body.is-tasks.is-selecting .tasks-panel {
+  display: none;
+}
+
+.select-bar {
+  min-height: var(--nav-height);
+  display: flex;
+  align-items: center;
+  padding: 0 var(--nav-inner-pad);
+  border-radius: var(--nav-radius); /* border-radius: dieselbe Pille wie die Navigation */
+  background: var(--nav-bg);
+}
+
+/* flex-basis auto: kurze Wörter (Status, Mehr) geben ihren Platz an lange
+   (Dringlichkeit, Archivieren) ab — so passen alle auch auf 375px ungekürzt */
+.select-act {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 48px; /* Material 3: mindestens 48dp Tippfläche */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--text);
+  font-size: var(--select-act-size);
+  font-weight: 500;
+}
+
+.select-act-icon .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.select-act-label {
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden; /* overflow: nötig für text-overflow */
+  text-overflow: ellipsis; /* text-overflow: sehr schmale Geräte kürzen das Wort statt umzubrechen */
+}
+
+.select-act:disabled {
+  opacity: 0.35;
+}
+
+.select-act:not(:disabled):active {
+  opacity: 0.55;
+}
+
+/* ---------- Stapel im Board ---------- */
+
+/* Mitgetragene Zeilen verlassen ihre Spalte, solange sie am Finger hängen */
+.board-row.is-carried {
+  display: none;
+}
+
+/* Zwei versetzte Kanten hinter der angehobenen Zeile zeigen, dass mehr daran hängt */
+.board-row.is-dragging.is-stack {
+  box-shadow:
+    0 12px 28px rgba(0, 0, 0, 0.25),
+    6px 6px 0 -1px var(--card),
+    6px 6px 0 0 var(--line),
+    12px 12px 0 -2px var(--card),
+    12px 12px 0 -1px var(--line);
+}
+
+/* Die Zahl oben rechts: wie viele Aufgaben am Finger hängen */
+.board-row.is-stack::after {
+  content: attr(data-stack);
+  position: absolute; /* position: sitzt auf der Ecke der angehobenen Zeile */
+  top: -8px;
+  right: -8px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  display: grid;
+  place-items: center;
+  border-radius: 11px; /* border-radius: runde Plakette */
+  background: var(--select-color);
+  color: var(--card);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ---------- Desktop: die Leiste schwebt als Glaspille ---------- */
+
+@media (min-width: 1024px) {
+  .select-bar {
+    min-height: 0;
+    gap: 2px;
+    padding: 6px;
+    background: var(--desk-glass);
+    -webkit-backdrop-filter: blur(var(--desk-glass-blur)); /* backdrop-filter: ältere Safari kennen nur die Vorsilbe */
+    backdrop-filter: blur(var(--desk-glass-blur)); /* backdrop-filter: die Seite scheint verwischt durch das Glas */
+    border: 0.5px solid var(--desk-edge);
+    pointer-events: auto; /* pointer-events: die Leiste unten lässt Klicks sonst zur Seite durch */
+  }
+
+  .select-act {
+    flex: 0 0 auto;
+    min-height: 36px;
+    flex-direction: row;
+    gap: 6px;
+    padding: 0 14px;
+    border-radius: 999px; /* border-radius: jeder Knopf eine kleine Pille */
+    font-size: 14px;
+  }
+
+  .select-act-icon .icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .select-act:not(:disabled):hover {
+    background: var(--card);
+  }
+}

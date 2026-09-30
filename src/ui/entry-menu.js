@@ -128,8 +128,21 @@ export function entryMenuOptions(entry, { onPage = false, afterRemove = () => {}
   return options;
 }
 
-/** Das kleine Menü neben einer gedrückt gehaltenen Eintrags-Zeile. */
+/* Optionen, die eine Seite vor das Menü einer Zeile stellt — die
+   Aufgaben-Seite „Auswählen“. Die Seite gibt sie herein (setEntryMenuLead),
+   damit diese Datei keinen Bereich kennen muss. */
+let leadOptions = () => [];
+
+/** Festlegen, welche Optionen oben im Menü einer Zeile stehen: fn(entry, row) -> Optionen. */
+export function setEntryMenuLead(fn) {
+  leadOptions = fn;
+}
+
+/**
+ * Das kleine Menü neben einer gedrückt gehaltenen Eintrags-Zeile — in einer
+ * Liste (data-open-entry) oder im Board der Aufgaben (data-board-row).
+ */
 export function openEntryCtxMenu(row) {
-  const entry = findEntry(row.dataset.openEntry);
-  if (entry) openCtxMenu(row, entryMenuOptions(entry));
+  const entry = findEntry(row.dataset.openEntry || row.dataset.boardRow);
+  if (entry) openCtxMenu(row, [...leadOptions(entry, row), ...entryMenuOptions(entry)]);
 }

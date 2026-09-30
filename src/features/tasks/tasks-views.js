@@ -45,6 +45,7 @@ import { iconPickerAction } from "../../ui/pickers.js";
 import { fitPillInput, } from "../../ui/pill-input.js";
 import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
 import { startTaskRow } from "./tasks-inline.js";
+import { isSelecting } from "./tasks-pick.js";
 
 const addViewLabel = "Ansicht hinzufügen";
 const addTaskLabel = "Aufgabe hinzufügen";
@@ -189,6 +190,7 @@ export function initTaskViews() {
     order: () => state.taskViews.map((view) => view.id),
     current: () => state.activeTaskViewId,
     select: selectTaskView,
-    enabled: () => ui.editingTaskViewId == null,
+    /* Im Auswahlmodus stehen keine Pillen da: wischen wechselt dann nichts */
+    enabled: () => ui.editingTaskViewId == null && !isSelecting(),
   });
 }
