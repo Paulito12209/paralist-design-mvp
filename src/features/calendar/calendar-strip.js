@@ -1,8 +1,8 @@
 /*
  * Der Wochenstreifen oben auf der Kalenderseite: sieben Tage je Woche, die
  * Vor- und Nachwoche scheinen schwach durch. Darüber steht der gewählte Tag
- * als Überschrift; die Kalenderwoche zeigt das Panel „Ansicht“
- * (calendar-settings.js).
+ * als Überschrift, rechts daneben seine Kalenderwoche („KW 40“) — zusätzlich
+ * zur Zeile „Woche“ im Panel „Ansicht“ (calendar-settings.js).
  * Pfad: src/features/calendar/calendar-strip.js
  *
  * Keine anpassbaren visuellen Werte: Farben und Größen stehen in
@@ -10,7 +10,7 @@
  * zeichnet calendar-rings.js.
  */
 
-import { addDays, dayKey, parseDay, startOfWeek } from "../../core/dates.js";
+import { addDays, dayKey, isoWeek, parseDay, startOfWeek } from "../../core/dates.js";
 import { dom } from "../../core/dom.js";
 import { calendarDayHeading, longDate } from "../../core/format.js";
 import { state, ui } from "../../data/state.js";
@@ -62,6 +62,7 @@ export function renderStrip() {
   const weeks = visibleWeeks();
 
   dom.calMonthLabel.textContent = calendarDayHeading(ui.calendarDay);
+  dom.calKwBtn.textContent = `KW ${isoWeek(parseDay(ui.calendarDay))}`;
   dom.calWeeks.innerHTML =
     weekMarkup(addDays(weeks[0], -7), "is-peek is-before") +
     weeks.map((monday) => weekMarkup(monday)).join("") +

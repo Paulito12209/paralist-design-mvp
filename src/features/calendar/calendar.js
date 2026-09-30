@@ -243,6 +243,8 @@ function init() {
   initCalendarSettings();
   /* Das Datum unter „Kalender“ öffnet das Blatt „Datum“ mit den drei Rollen. */
   dom.calMonthBtn.addEventListener("click", () => openDatePicker("date"));
+  /* Die KW rechts daneben öffnet dasselbe Blatt mit den Rollen Jahr | KW. */
+  dom.calKwBtn.addEventListener("click", () => openDatePicker("week"));
   dom.calPanel.addEventListener("click", onPanelClick);
   toolbarElement().addEventListener("click", onToolbarClick);
   /* Nur auf der Fläche unter dem Streifen: dort blättert waagerechtes Wischen

@@ -148,7 +148,7 @@
 
   /* Der Monatsknopf steht jetzt in der Werkzeugzeile; Woche und Monat brauchen
      auch den Wochenstreifen nicht — sie zeigen die Tage selbst. */
-  #view-calendar .cal-month,
+  #view-calendar .cal-date-row,
   #view-calendar.is-desk-week .cal-head,
   #view-calendar.is-desk-month .cal-head {
     display: none;

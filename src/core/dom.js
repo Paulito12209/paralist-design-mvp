@@ -143,6 +143,7 @@ export const dom = {
   get calHead() { return el("cal-head"); },
   get calMonthBtn() { return el("cal-month"); },
   get calMonthLabel() { return el("cal-month-label"); },
+  get calKwBtn() { return el("cal-kw"); },
   get calStrip() { return el("cal-strip"); },
   get calWeeks() { return el("cal-weeks"); },
   get calPanel() { return el("cal-panel"); },

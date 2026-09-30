@@ -14,14 +14,14 @@
  * --date-wheel-h            -> Höhe der Rollen im Blatt „Datum“ bzw. „Woche“
  * --date-wheel-item-h       -> Höhe einer Zeile in diesen Rollen
  * --tab-pill-active-bg      -> graues Band hinter der gewählten Zeile der Rollen
- * --muted                   -> Farbe des Datums, der Wochentage, fremder Monate und von „Heute“ in Ruhe
+ * --muted                   -> Farbe des Datums, der KW daneben, der Wochentage, fremder Monate und von „Heute“ in Ruhe
  * --icon-soft               -> abgeschwächter Pfeil neben dem Datum
  * --line                    -> Trennlinie unter dem Streifen, zum Raster hin
  * --content-side            -> Seitenabstand, den die Trennlinie automatisch übernimmt
  * --content-top             -> um so viel wird der einrastende Kopf nach oben verlängert
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei
- * (Datum 18px, Wochentage 12px, Tageszahlen 16px, „Heute“ 15px, Rollen-Zeilen 20px, „Fertig“ 17px).
+ * (Datum 18px, KW daneben 15px, Wochentage 12px, Tageszahlen 16px, „Heute“ 15px, Rollen-Zeilen 20px, „Fertig“ 17px).
 */
 
 /* @import: die Ringe haben eine eigene Datei, weil diese sonst über 400 Zeilen
@@ -65,22 +65,42 @@
   border-bottom: 1px solid var(--line);
 }
 
+/* Zeile unter „Kalender“: links der gewählte Tag, rechts seine KW */
+.cal-date-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 var(--title-side);
+  margin-bottom: 18px;
+  /* position/z-index: die Verlaengerung des Kopfes (.cal-head) reicht in Ruhe
+     14px in diese Zeile hinein; ohne eigene Ebene wuerde sie das „p“ verdecken */
+  position: relative;
+  z-index: 4;
+}
+
 /* Der gewählte Tag mit kleinem Pfeil, öffnet das Blatt „Datum“ */
 .cal-month {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 0 var(--title-side);
-  margin-bottom: 18px;
+  min-width: 0;
   font-size: 18px;
   font-weight: 500;
   letter-spacing: -0.02em;
   color: var(--muted); /* silbergrau wie die nicht gewählten Reiter darunter: tritt hinter „Kalender“ zurück */
-  align-self: flex-start;
-  /* position/z-index: die Verlaengerung des Kopfes (.cal-head) reicht in Ruhe
-     14px in diese Zeile hinein; ohne eigene Ebene wuerde sie das „p“ verdecken */
-  position: relative;
-  z-index: 4;
+}
+
+/* Die Kalenderwoche des gewählten Tages, öffnet das Blatt „Woche“ */
+.cal-kw {
+  flex-shrink: 0;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.cal-kw:active {
+  opacity: 0.55;
 }
 
 .cal-month .icon {
