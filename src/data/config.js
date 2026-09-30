@@ -22,6 +22,8 @@
  * workspaceDefaultName    -> Vorgabename eines neuen Arbeitsbereichs
  * levelSteps / levelStep  -> ab wie vielen XP die nächste Stufe beginnt
  * calendarSegments[*].add -> Beschriftung der Pille am leeren Kalendertag
+ * projectSorts            -> wonach sich die Projekte sortieren lassen, samt Wortlaut beider Richtungen
+ * projectViewDefaults     -> womit „Alle“ und jede neue Ansicht der Projekte startet
  * stageModes              -> die drei Modi der Bühne auf der Übersicht (Desktop): Icon im Schalter und
  *                            Beschriftung, die beim Überfahren erscheint
  */
@@ -295,3 +297,26 @@ export const resourceFilterTypes = {
   drawings: "zeichnung",
   own: "dokument",
 };
+
+/* ---------- Ansichten der Projekte (Übersicht, Seite Projekte) ---------- */
+
+/**
+ * Sortierarten der Projekte. `up` und `down` sind der Wortlaut der beiden
+ * Richtungen im Blatt „Sortieren“ (src/ui/sort-sheet.js), `asc` die Richtung,
+ * die beim Wechsel auf diese Option gilt. Die Regeln dahinter stehen in
+ * `sortProjects` in src/data/project-views.js.
+ */
+export const projectSorts = [
+  { id: "name", label: "Name", icon: "text", up: "A bis Z", down: "Z bis A", asc: true },
+  { id: "erstellt", label: "Erstellt", icon: "plus-circle", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
+  { id: "geaendert", label: "Zuletzt geändert", icon: "pencil", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
+  { id: "geoeffnet", label: "Zuletzt geöffnet", icon: "history", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
+  { id: "eintraege", label: "Einträge", icon: "list", up: "Wenigste zuerst", down: "Meiste zuerst", asc: false },
+];
+
+/**
+ * Womit „Alle“ und jede neue Ansicht der Projekte startet: zuletzt Geöffnetes
+ * oben, ohne Filter. `place` ist "alle", "inbox" oder ein Verweis wie „w:3“;
+ * `ids` ist die handverlesene Liste — leer heißt „nach den Filtern“.
+ */
+export const projectViewDefaults = { sort: "geoeffnet", sortAsc: false, place: "alle", favoritesOnly: false, ids: [] };

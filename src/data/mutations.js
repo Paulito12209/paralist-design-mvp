@@ -16,6 +16,7 @@ import { nextId, sameId } from "../core/ids.js";
 import { workspaceDefaultName } from "./config.js";
 import { isTaskDone } from "./config-tasks.js";
 import { canLink, connectEntries, disconnectEntries, dropLinksTo, isLinked } from "./links.js";
+import { dropPlaceFromViews, dropProjectFromViews } from "./project-views.js";
 import { hasPlace, isContainer, tabWorkspaces } from "./queries.js";
 import { entryRef, isEntryRef, refId, workspaceRef } from "./refs.js";
 import { archiveFinishedTasks } from "./task-archive.js";
@@ -149,6 +150,7 @@ export function sweepFinishedTasks() {
 export function deleteWorkspace(id) {
   state.workspaces = state.workspaces.filter((workspace) => !sameId(workspace.id, id));
   liftChildren(workspaceRef(id));
+  dropPlaceFromViews(workspaceRef(id));
   commit();
 }
 
@@ -167,7 +169,10 @@ export function deleteTab(id) {
   if (state.tabs.length < 2) return;
   state.workspaces
     .filter((workspace) => sameId(workspace.tab, id))
-    .forEach((workspace) => liftChildren(workspaceRef(workspace.id)));
+    .forEach((workspace) => {
+      liftChildren(workspaceRef(workspace.id));
+      dropPlaceFromViews(workspaceRef(workspace.id));
+    });
   state.workspaces = state.workspaces.filter((workspace) => !sameId(workspace.tab, id));
   state.tabs = state.tabs.filter((tab) => !sameId(tab.id, id));
   if (sameId(state.activeTabId, id)) state.activeTabId = state.tabs[0].id;
@@ -206,6 +211,8 @@ export function deleteEntry(id) {
   /* Eine Verknüpfung steht auf beiden Seiten: ohne diese Zeile bliebe beim
      Partner ein Verweis auf etwas, das es nicht mehr gibt. */
   dropLinksTo(entry.id);
+  /* Auch die handverlesenen Listen der Projekt-Ansichten zeigen sonst ins Leere. */
+  dropProjectFromViews(entry.id);
   state.entries = state.entries.filter((item) => !sameId(item.id, id));
   commit({ prunedEntries: true });
 }
@@ -227,7 +234,10 @@ export function deleteEntriesOf(ref) {
   doomed.forEach((entry) => {
     if (isContainer(entry)) liftChildren(entryRef(entry.id), ref ? [ref] : []);
   });
-  doomed.forEach((entry) => dropLinksTo(entry.id));
+  doomed.forEach((entry) => {
+    dropLinksTo(entry.id);
+    dropProjectFromViews(entry.id);
+  });
   const doomedIds = new Set(doomed.map((entry) => entry.id));
   state.entries = state.entries.filter((entry) => !doomedIds.has(entry.id));
   commit({ prunedEntries: true });

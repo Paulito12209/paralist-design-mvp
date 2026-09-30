@@ -16,6 +16,7 @@
 import { BOOKMARK_TYPE, fillBookmarkEntry } from "./bookmarks.js";
 import { defaultTaskPriority, defaultTaskStatus, doneTaskStatus, isTaskDone } from "./config-tasks.js";
 import { commit } from "./mutations.js";
+import { applyProjectDraft } from "./project-views.js";
 import { taskOrder } from "./queries.js";
 import { saveState, state, ui } from "./state.js";
 import { noteDoneTime } from "./task-archive.js";
@@ -38,6 +39,8 @@ const orderGap = 1000;
 export function applyEntryDefaults(entry) {
   /* Ein Link als Titel eines Lesezeichens wird gleich zur Karte im Inhalt */
   if (entry.type === BOOKMARK_TYPE) fillBookmarkEntry(entry);
+  /* Ein Projekt aus „Projekt hinzufügen“ gehört in die Ansicht, aus der es kam */
+  applyProjectDraft(entry);
   if (entry.type !== "aufgabe") return;
   entry.status = defaultTaskStatus;
   entry.priority = defaultTaskPriority;
