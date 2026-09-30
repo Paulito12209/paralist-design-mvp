@@ -3,7 +3,7 @@
  * Ansichten stehen Liste | Board und der Filter nach Ort; die Liste zeigt
  * Fälligkeit, Dringlichkeit und Ablageort als ruhige Spalten statt in der
  * Nebenzeile; die Zeile unter der Maus ist getönt (ihre Details stehen
- * rechts). Ab 1280px wandert die Karte „Ansicht konfigurieren“ in die rechte
+ * rechts). Ab 1280px wandert die Karte „Ansicht“ in die rechte
  * Spalte (src/features/tasks/tasks-rail.js) — die schwebende Karte unten
  * entfällt dann. Am Handy gilt hier nichts.
  * Pfad: styles/tasks-desk.css
@@ -114,7 +114,7 @@
   }
 }
 
-/* Ab 1280px steht „Ansicht konfigurieren“ in der rechten Spalte. */
+/* Ab 1280px steht „Ansicht“ in der rechten Spalte. */
 @media (min-width: 1280px) {
   body.is-tasks .tasks-panel {
     display: none;

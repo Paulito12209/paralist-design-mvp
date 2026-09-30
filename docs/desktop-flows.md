@@ -39,7 +39,7 @@ muss alles wie am Handy aussehen.
   Stufe steht oben rechts in der Reiterzeile.
 - Seitenleiste mit dem Knopf und mit ⌘\ zu- und aufklappen, neu laden: der
   Zustand bleibt. Der Klapp-Knopf steht dann links in der Reiterzeile; das
-  Eingabefeld und „Ansicht konfigurieren“ rücken mit.
+  Eingabefeld und „Ansicht“ rücken mit.
 - Ansicht zuklappen (Zahl der Projekte erscheint), neu laden: bleibt zu.
   Rechtsklick auf eine Zeile öffnet das Menü des Eintrags, auf einen Kopf das
   der Ansicht; „Umbenennen“ springt zur Seite Projekte. Archivieren oder
@@ -90,7 +90,7 @@ muss alles wie am Handy aussehen.
   nach neu laden; unter 1024 px wieder der Handy-Kalender.
 - Aufgaben (Taste 3): rechts neben den Pillen Liste | Board und „Alle Orte“
   (bei „Alle“ gesperrt); Spalten Fällig, Dringlichkeit, Ort, lange Titel enden
-  mit „…“. Ab 1280 px „Ansicht konfigurieren“ rechts (alle Schalter), die
+  mit „…“. Ab 1280 px „Ansicht“ rechts (alle Schalter), die
   Karte unten ist weg; Zeile überfahren → „Details“ mit „Öffnen“ und
   „Erledigen“. Zwischen 1024 und 1279 px bleibt die Karte unten.
 - Medien (Taste 4): Raster | Liste und Regler für die Kachelgröße (bleibt nach

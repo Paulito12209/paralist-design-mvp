@@ -2,7 +2,7 @@
  * Die Aufgaben-Seite hinter dem dritten Reiter. Der Titel steht allein,
  * darunter die Pillen der Ansichten (tasks-views.js), darunter je nach
  * Ansicht die Liste oder das Kanban-Board. Über allem, aber unter der
- * Navigation, liegt die Karte „Ansicht konfigurieren“ (src/ui/view-panel.js) mit
+ * Navigation, liegt die Karte „Ansicht“ (src/ui/view-panel.js) mit
  * den Einstellungen (tasks-settings.js). Diese Datei hält nur alles
  * zusammen: gezeichnet wird in tasks-list.js und tasks-board.js, das Ziehen
  * steht in tasks-drag.js, das Anlegen durch Tippen in die Fläche in
@@ -60,13 +60,13 @@ function onBodyClick(event) {
   if (row) openEntry(row.dataset.boardRow);
 }
 
-/* Die Karte „Ansicht konfigurieren“; angelegt in init(). */
+/* Die Karte „Ansicht“; angelegt in init(). */
 let panel = null;
 
 /* Beim Laden des Moduls anmelden: die Seite frischt sich auf, solange sie offen ist. */
 function init() {
   panel = createViewPanel({
-    title: "Ansicht konfigurieren",
+    title: "Ansicht",
     className: "tasks-panel",
     onClick: (event) => handleSettingsClick(event, activeTaskView()),
   });

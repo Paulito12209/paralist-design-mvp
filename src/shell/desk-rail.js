@@ -153,7 +153,7 @@ function checkTask(button) {
 
 /*
  * Erst darf der sichtbare Bereich selbst (railClick, etwa die Schalter von
- * „Ansicht konfigurieren“), dann seine Knöpfe, dann die gemeinsamen
+ * „Ansicht“), dann seine Knöpfe, dann die gemeinsamen
  * (Eintrag öffnen, abhaken …).
  */
 function onClick(event) {

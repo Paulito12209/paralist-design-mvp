@@ -1,5 +1,5 @@
 /*
- * Der Inhalt der Karte „Ansicht konfigurieren“ auf der Aufgaben-Seite: die
+ * Der Inhalt der Karte „Ansicht“ auf der Aufgaben-Seite: die
  * Einstellungen der gewählten Ansicht. Kopf, Lage und Aus- und Einklappen
  * der Karte stehen in src/ui/view-panel.js — hier nur die Zeilen:
  *

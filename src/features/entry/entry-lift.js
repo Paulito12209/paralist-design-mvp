@@ -1,6 +1,6 @@
 /*
  * Hochklappen der Karte „Details“ auf einer Eintragsseite — wie die Karte
- * „Ansicht konfigurieren“ auf der Aufgaben-Seite: ein Tipp auf „Details“ oder
+ * „Ansicht“ auf der Aufgaben-Seite: ein Tipp auf „Details“ oder
  * das Symbol rechts im Kopf holt die Karte über die Navigation, ein zweiter
  * Tipp legt sie zurück.
  *

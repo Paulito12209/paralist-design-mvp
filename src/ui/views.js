@@ -61,7 +61,7 @@ export function showView(name) {
   /* Medien- und Zeichenansicht brauchen eigene Knopfleisten unten:
      die beiden Klassen schalten sie in styles/media.css und styles/drawing.css frei.
      is-search schaltet die Suchen-Pille frei (styles/search.css), is-tasks die
-     Karte „Ansicht konfigurieren“ über der Navigation (styles/tasks-settings.css).
+     Karte „Ansicht“ über der Navigation (styles/tasks-settings.css).
      is-subpage blendet die allgemeine Kopfzeile aus (styles/top-bar.css): eine
      Sammlung, ein Arbeitsbereich und ein Eintrag haben ihre eigene Kopfzeile
      mit dem Zurück-Pfeil, und der gehört ganz nach oben. */

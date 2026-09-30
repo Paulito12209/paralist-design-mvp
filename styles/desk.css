@@ -80,7 +80,7 @@
   }
 
   /* Zugeklappt: die Spalte wird 0 breit. Alles, was --desk-nav-width liest
-     (Eingabefeld unten, Karte „Ansicht konfigurieren“), rückt von selbst mit. */
+     (Eingabefeld unten, Karte „Ansicht“), rückt von selbst mit. */
   .device.is-nav-closed {
     --desk-nav-width: 0px;
   }

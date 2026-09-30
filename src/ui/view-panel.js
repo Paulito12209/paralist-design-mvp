@@ -4,8 +4,8 @@
  * Lagen: eingeklappt schaut nur der Kopf über der Navigation hervor,
  * ausgeklappt steht die ganze Karte darüber. Die Liste darunter scrollt dabei
  * nicht mit — man sieht die Einstellungen, ohne seinen Platz zu verlieren.
- * Genutzt von der Aufgaben-Seite („Ansicht konfigurieren“) und von den
- * Projekten auf Übersicht und Seite Projekte („Ansicht“); jede Seite legt
+ * Genutzt als Karte „Ansicht“ von der Aufgaben-Seite und von den Projekten
+ * auf Übersicht und Seite Projekte — überall derselbe Titel; jede Seite legt
  * ihre eigene Karte an und füllt sie mit ihren Zeilen.
  *
  * Umschalten: Tipp auf den Kopf oder das Symbol rechts, oder den Kopf nach

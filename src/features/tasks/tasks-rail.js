@@ -1,6 +1,6 @@
 /*
  * Die Karten der Aufgaben-Seite in der rechten Spalte am Desktop: oben
- * „Ansicht konfigurieren“ (dieselben Zeilen wie die Karte unten am Handy,
+ * „Ansicht“ (dieselben Zeilen wie die Karte unten am Handy,
  * src/features/tasks/tasks-settings.js), darunter die Details der markierten
  * Aufgabe — markiert ist die Zeile unter der Maus oder mit dem
  * Tastatur-Fokus —, „Stand“ mit vier Zahlen, die offenen Aufgaben nach
@@ -98,9 +98,9 @@ function dueCard() {
   return cardHead("Demnächst fällig") + body;
 }
 
-/** Karte „Ansicht konfigurieren“: die Einstellungen der gewählten Ansicht. */
+/** Karte „Ansicht“: die Einstellungen der gewählten Ansicht. */
 function viewCard() {
-  return cardHead("Ansicht konfigurieren") + taskSettingsMarkup(activeTaskView());
+  return cardHead("Ansicht") + taskSettingsMarkup(activeTaskView());
 }
 
 /* Zwei Spalten „Angabe | Wert“; leere Werte fallen weg. */
@@ -139,7 +139,7 @@ export const railCards = [
   { name: "due", className: "rail-card rail-tasks", render: dueCard },
 ];
 
-/** Klicks auf die Schalter von „Ansicht konfigurieren“ — derselbe Weg wie in der Karte am Handy. */
+/** Klicks auf die Schalter von „Ansicht“ — derselbe Weg wie in der Karte am Handy. */
 export function railClick(event) {
   if (!event.target.closest("[data-settings]")) return false;
   handleSettingsClick(event, activeTaskView());

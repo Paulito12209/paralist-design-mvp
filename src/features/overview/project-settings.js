@@ -1,7 +1,7 @@
 /*
  * Der Inhalt der Karte „Ansicht“ unter den Projekten — auf der Übersicht und
  * der Seite Projekte gleich. Kopf, Lage und Auf- und Zuklappen kommen aus
- * src/ui/view-panel.js (wie „Ansicht konfigurieren“ der Aufgaben-Seite);
+ * src/ui/view-panel.js (wie „Ansicht“ der Aufgaben-Seite);
  * hier stehen nur die Zeilen der gewählten Ansicht:
  *
  * - Sortieren: Zeile mit der Wahl („Zuletzt geöffnet · Neueste zuerst“), ein
