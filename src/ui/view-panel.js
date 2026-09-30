@@ -58,7 +58,7 @@ export function createViewPanel({ title, className, onClick }) {
   let skipClick = false;
 
   /* Wie weit die Karte eingeklappt nach unten geschoben ist. */
-  const collapsedOffset = () => Math.max(0, panel.offsetHeight - cssNumber("--details-head-h", 52));
+  const collapsedOffset = () => Math.max(0, panel.offsetHeight - cssNumber("--details-head-h", 48));
 
   const setExpanded = (next) => {
     expanded = next;

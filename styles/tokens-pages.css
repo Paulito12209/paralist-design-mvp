@@ -336,7 +336,7 @@
   --entry-icon-gap: 10px;
   /* Eintrag: Karte „Details“ am Ende von „Inhalt“ und gekürzter Text darüber */
   --details-gap: 28px;
-  --details-head-h: 52px;
+  --details-head-h: 48px;
   --entry-fold-fade: 64px;
 
   /* Fenster „Neue Version verfügbar“ */

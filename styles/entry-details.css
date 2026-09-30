@@ -34,7 +34,7 @@
  * --sheet-heading-size      -> Schriftgröße der Abschnitts-Überschriften, wie im Auswahl-Blatt
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel:
- * .details-title font-size      -> „Details“ (17px)
+ * .details-title font-size      -> „Details“ und „Ansicht“ (16px)
  * .details-stat-value font-size -> Wert einer Kennzahl (17px)
  * .details-stat-label font-size -> Beschriftung darunter (13px)
  * .details-row font-size        -> Zeilen der Abschnitte (15px)
@@ -119,7 +119,7 @@
   flex: 1; /* flex: die ganze Breite bis zu den Symbolen ist Tippfläche zum Auf- und Zuklappen */
   text-align: left;
   padding: 0;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
   color: var(--icon-soft);
 }
