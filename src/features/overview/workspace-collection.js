@@ -25,8 +25,10 @@
 import { dom, el } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
 import { selectTab } from "../../data/mutations.js";
+import { tabWorkspaces } from "../../data/queries.js";
 import { state, ui } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
+import { filterEmptyState } from "../../ui/filter-empty.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { isViewActive } from "../../ui/views.js";
 import { afterTabsRender, tabPillsMarkup } from "./tabs.js";
@@ -78,9 +80,12 @@ export function renderWorkspaceCollection() {
   /* Rollstellung der Leiste mitnehmen, sonst springt sie an den Anfang zurück. */
   const scrolled = dom.pageBody.querySelector(".collection-pills")?.scrollLeft || 0;
   /* Leerer Tab: die Pille im Platzhalter legt an, die Zeile darunter sagte
-     dasselbe noch einmal und entfällt. */
-  dom.pageBody.innerHTML = `${pillsRowMarkup()}${rows ? "" : emptyState(emptyTab)}
-    <div class="workspace-list">${rows}${workspaceTailMarkup(Boolean(rows))}</div>`;
+     dasselbe noch einmal und entfällt. Blenden nur die Filter alles aus,
+     steht der Filter-Platzhalter da und die Zeile zum Anlegen bleibt. */
+  const filteredAway = !rows && tabWorkspaces().length > 0;
+  const empty = filteredAway ? filterEmptyState() : rows ? "" : emptyState(emptyTab);
+  dom.pageBody.innerHTML = `${pillsRowMarkup()}${empty}
+    <div class="workspace-list">${rows}${workspaceTailMarkup(Boolean(rows) || filteredAway)}</div>`;
   dom.pageBody.querySelector(".collection-pills").scrollLeft = scrolled;
   afterTabsRender();
   focusWorkspaceName();

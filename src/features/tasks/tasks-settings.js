@@ -21,7 +21,6 @@
  * -----------------------------------
  * rowLabels    -> Beschriftungen der Zeilen („groupBy“ je Layout: Liste hat Abschnitte, Board Spalten)
  * noFilter     -> was rechts in der Zeile „Filtern“ steht, solange nichts gefiltert ist
- * notLabel     -> Wort im Zähler eines Chips, wenn der Abschnitt „ist nicht“ filtert
  * deskFiltered -> Aufschrift des Filter-Knopfs am Desktop, wenn etwas gefiltert ist
  *
  * Was in der Filter-Zeile steht und was das Blatt „Filtern“ anbietet, steht
@@ -35,6 +34,7 @@ import { escapeHtml, icon } from "../../core/html.js";
 import { panelSegment as segment, panelToggle as toggle } from "../../ui/panel-rows.js";
 import { taskGroupings, taskSorts } from "../../data/config-tasks.js";
 import { updateTaskView } from "../../data/task-views.js";
+import { filterChipsMarkup as chipsMarkup } from "../../ui/filter-chips.js";
 import { openSortSheet, sortSummary } from "../../ui/sort-sheet.js";
 import { filterChips, openTaskFilter } from "./tasks-filter.js";
 
@@ -47,23 +47,8 @@ const rowLabels = {
   done: "Erledigte zeigen",
 };
 const noFilter = "Keine";
-const notLabel = "nicht";
 const deskFiltered = "Gefiltert";
 
-/* Der Zähler in einem Chip: „2“ oder „nicht | 1“ mit Strich dazwischen */
-function countMarkup(chip) {
-  if (chip.count === undefined) return "";
-  const not = chip.not ? `${escapeHtml(notLabel)}<span class="tasks-filter-sep"></span>` : "";
-  return `<span class="tasks-filter-count">${not}${chip.count}</span>`;
-}
-
-/* Die Chips unter der Zeile „Filtern“, einer je Abschnitt; jeder öffnet seine Unterseite */
-function chipsMarkup(chips) {
-  if (!chips.length) return "";
-  const chip = (item) =>
-    `<button class="tasks-filter-chip" type="button" data-settings="filter" data-value="${escapeHtml(item.page)}">${icon(item.icon)}<span>${escapeHtml(item.label)}</span>${countMarkup(item)}</button>`;
-  return `<div class="tasks-filter-chips">${chips.map(chip).join("")}</div>`;
-}
 const layouts = [
   { id: "list", label: "Liste", icon: "list" },
   { id: "board", label: "Board", icon: "board" },

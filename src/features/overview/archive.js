@@ -15,11 +15,13 @@
  */
 
 import { dom, el } from "../../core/dom.js";
+import { filterCollectionEntries, filterCollectionWorkspaces } from "../../data/collection-filters.js";
 import { sortCollectionEntries, sortCollectionWorkspaces } from "../../data/collection-sorts.js";
 import { archivePills } from "../../data/collections.js";
 import { archivedEntries, archivedWorkspaces } from "../../data/queries.js";
 import { ui } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
+import { filterEmptyState } from "../../ui/filter-empty.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { setPagePill } from "../../ui/router.js";
 import { archiveActions, entryRow, workspaceRow } from "../../ui/rows.js";
@@ -40,14 +42,19 @@ const workspaceArchiveRow = (workspace) =>
 const entryArchiveRow = (entry) => entryRow(entry, "", archiveActions("restore", "delete"));
 
 /* Was unter einer Pille steht: Arbeitsbereiche nur unter „Alle“ und ihrer
-   eigenen Pille. Die Zahlen auf den Pillen brauchen keine Reihenfolge —
-   sortiert wird nur, was die Liste zeigt (`sorted`). */
-function archivedFor(pill, sorted = false) {
-  const spaces = pill === "all" || pill === "workspaces" ? archivedWorkspaces() : [];
-  const entries =
+   eigenen Pille. Die Filter der Karte „Ansicht“ gelten auch für die Zahlen
+   auf den Pillen; `raw` lässt sie weg (für die Frage, ob die Filter alles
+   ausblenden). Sortiert wird nur, was die Liste zeigt (`sorted`). */
+function archivedFor(pill, { sorted = false, raw = false } = {}) {
+  let spaces = pill === "all" || pill === "workspaces" ? archivedWorkspaces() : [];
+  let entries =
     pill === "workspaces"
       ? []
       : archivedEntries().filter((entry) => pill === "all" || entry.type === pill);
+  if (!raw) {
+    spaces = filterCollectionWorkspaces("archive", spaces);
+    entries = filterCollectionEntries("archive", entries);
+  }
   if (!sorted) return { spaces, entries };
   return {
     spaces: sortCollectionWorkspaces("archive", spaces),
@@ -83,9 +90,12 @@ function activePill() {
 /** Pillen und Liste des Archivs in die Unterseite zeichnen. */
 export function renderArchive() {
   const pill = activePill();
-  const { spaces, entries } = archivedFor(pill, true);
-  const list =
-    spaces.length || entries.length
+  const { spaces, entries } = archivedFor(pill, { sorted: true });
+  const raw = archivedFor(pill, { raw: true });
+  const filteredAway = !spaces.length && !entries.length && (raw.spaces.length || raw.entries.length);
+  const list = filteredAway
+    ? filterEmptyState()
+    : spaces.length || entries.length
       ? `<div class="workspace-list">${spaces.map(workspaceArchiveRow).join("")}${entries
           .map(entryArchiveRow)
           .join("")}</div>`

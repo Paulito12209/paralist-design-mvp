@@ -23,13 +23,15 @@ import { dom, el } from "../../core/dom.js";
 import { load, loadedModule } from "../../core/lazy.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { colorFromText, faviconUrl } from "../../core/link-preview.js";
+import { filterBookmarkItems } from "../../data/collection-filters.js";
 import { sortCollectionItems } from "../../data/collection-sorts.js";
-import { BOOKMARK_TYPE, bookmarkCounts, bookmarkItems, bookmarkPills, validBookmarkPill } from "../../data/bookmarks.js";
+import { BOOKMARK_TYPE, bookmarkItems, bookmarkPills, validBookmarkPill } from "../../data/bookmarks.js";
 import { typeIcon, typeSingular } from "../../data/config.js";
 import { hostOf, youtubeId, youtubeThumb } from "../../data/link-kinds.js";
 import { placesLabel } from "../../data/queries.js";
 import { ui } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
+import { filterEmptyState } from "../../ui/filter-empty.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { setPagePill } from "../../ui/router.js";
 import { isViewActive } from "../../ui/views.js";
@@ -49,7 +51,8 @@ const isBookmarksOpen = () => isViewActive("page") && ui.currentPage?.kind === "
 const activePill = () => validBookmarkPill(ui.currentPage?.pill);
 
 function pillsMarkup(active) {
-  const counts = bookmarkCounts();
+  /* Die Zahlen folgen den Filtern der Karte „Ansicht“ */
+  const counts = Object.fromEntries(bookmarkPills.map((pill) => [pill.id, filterBookmarkItems(bookmarkItems(pill.kind)).length]));
   return `<div class="tab-pills bookmark-pills">${bookmarkPills
     .map((pill) => {
       const mark = pill.id === active ? " is-active" : "";
@@ -113,9 +116,12 @@ export function renderBookmarks() {
   if (!isBookmarksOpen()) return;
   const pill = activePill();
   const kind = bookmarkPills.find((item) => item.id === pill).kind;
-  const items = sortCollectionItems("bookmarks", bookmarkItems(kind), (item) => item.entry, titleOf);
+  const raw = bookmarkItems(kind);
+  const items = sortCollectionItems("bookmarks", filterBookmarkItems(raw), (item) => item.entry, titleOf);
   const list = items.length
     ? `<div class="bookmark-list">${items.map(rowMarkup).join("")}</div>`
+    : raw.length
+    ? filterEmptyState()
     : emptyState({ ...emptyArt[pill], accent: "var(--bookmark-color)", action: { label: EMPTY_ACTION } });
 
   /* Ein offener Player würde mit ersetzt: vorher sauber schließen */

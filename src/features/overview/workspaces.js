@@ -14,6 +14,7 @@ import { emit, events } from "../../core/bus.js";
 import { dom, el, focusAtEnd } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
 import { sameId } from "../../core/ids.js";
+import { filterCollectionWorkspaces } from "../../data/collection-filters.js";
 import { sortCollectionWorkspaces } from "../../data/collection-sorts.js";
 import { archiveWorkspace, deleteWorkspace, nameWorkspace, restoreFromArchive, toggleFavorite } from "../../data/mutations.js";
 import { archivedEntries, archivedWorkspaces, findWorkspace, tabWorkspaces } from "../../data/queries.js";
@@ -29,9 +30,17 @@ export function focusWorkspaceName() {
   focusAtEnd(el("workspace-name-input"));
 }
 
-/** Die Zeilen der Arbeitsbereiche im gewählten Tab; `canEdit` erlaubt das Namensfeld. */
+/**
+ * Die Zeilen der Arbeitsbereiche im gewählten Tab, gefiltert und sortiert wie
+ * in der Karte „Ansicht“; `canEdit` erlaubt das Namensfeld. Der gerade
+ * benannte bleibt immer stehen — sonst verschwände ein frisch angelegter
+ * unter „Nur Favoriten“ samt seinem Namensfeld.
+ */
 export function workspaceRowsMarkup(canEdit) {
-  return sortCollectionWorkspaces("workspaces", tabWorkspaces())
+  const all = tabWorkspaces();
+  const shown = filterCollectionWorkspaces("workspaces", all);
+  const kept = all.filter((workspace) => shown.includes(workspace) || sameId(workspace.id, ui.editingWorkspaceId));
+  return sortCollectionWorkspaces("workspaces", kept)
     .map((workspace) => workspaceRow(workspace, canEdit))
     .join("");
 }

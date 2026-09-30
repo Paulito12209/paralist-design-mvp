@@ -18,11 +18,13 @@
 import { dom, el } from "../../core/dom.js";
 import { groupByMonth } from "../../core/format.js";
 import { icon } from "../../core/html.js";
+import { filterCollectionEntries } from "../../data/collection-filters.js";
 import { collectionSort, sortCollectionEntries } from "../../data/collection-sorts.js";
 import { resourceFilters } from "../../data/config.js";
 import { resourceEntries } from "../../data/queries.js";
 import { saveState, state, ui } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
+import { filterEmptyState } from "../../ui/filter-empty.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { entryRow } from "../../ui/rows.js";
 import { isViewActive } from "../../ui/views.js";
@@ -68,9 +70,9 @@ const emptyLabels = {
   own: "Dokument anlegen",
 };
 
-/** Die Ressourcen einer Filter-Pille. */
-function filtered(filter) {
-  const all = resourceEntries();
+/** Die Ressourcen einer Filter-Pille — ohne `raw` auch nach den Filtern der Karte „Ansicht“. */
+function filtered(filter, raw = false) {
+  const all = raw ? resourceEntries() : filterCollectionEntries("resources", resourceEntries());
   if (filter === "notes") return all.filter((entry) => entry.type === "notiz");
   if (filter === "drawings") return all.filter((entry) => entry.type === "zeichnung");
   if (filter === "own") return all.filter((entry) => entry.type === "dokument");
@@ -101,7 +103,8 @@ export function renderResources() {
     ...(emptyArt[active] || emptyArt.all),
     action: { label: emptyLabels[active] || emptyLabels.all },
   });
-  if (list.length && !byMonth) body = rows(list);
+  if (!list.length && filtered(active, true).length) body = filterEmptyState();
+  else if (list.length && !byMonth) body = rows(list);
   else if (list.length) {
     body = groupByMonth(list)
       .map((group) => `<h2 class="media-month">${group.heading}</h2>${rows(group.items)}`)

@@ -29,6 +29,7 @@ import {
   setCover,
   toggleFavorite,
 } from "../../data/mutations.js";
+import { filterCollectionEntries, filterCollectionWorkspaces } from "../../data/collection-filters.js";
 import { sortCollectionEntries, sortCollectionWorkspaces } from "../../data/collection-sorts.js";
 import { workspaceDetails } from "../../data/details.js";
 import { searchKeyboardOn } from "../../data/search-keyboard.js";
@@ -41,6 +42,7 @@ import { iconPickerAction } from "../../ui/pickers.js";
 import { mountPath, pageSteps, renderPath } from "../../ui/page-path.js";
 import { goBack, restoreFrom, showSearch } from "../../ui/router.js";
 import { emptyState } from "../../ui/empty-state.js";
+import { filterEmptyState } from "../../ui/filter-empty.js";
 import { entryRow, workspaceRow } from "../../ui/rows.js";
 import { openSheet } from "../../ui/sheet.js";
 import { openTypeChangeSheet, typeChangeAction, typeCrumbMarkup } from "../../ui/type-menu.js";
@@ -99,21 +101,27 @@ function listMarkup(entries, empty) {
     : emptyState(empty);
 }
 
+/* Der Eingang: gefiltert und sortiert. Blenden die Filter alles aus, sagt
+   die Seite das, statt „Noch nichts im Eingang“ zu behaupten. */
+function renderInbox() {
+  const all = inboxEntries();
+  const shown = sortCollectionEntries("inbox", filterCollectionEntries("inbox", all));
+  dom.pageBody.innerHTML = all.length && !shown.length ? filterEmptyState() : listMarkup(shown, emptyStates.inbox);
+}
+
 /* Favoriten-Karte: erst die markierten Arbeitsbereiche, dann die markierten Einträge. */
 function renderFavorites() {
   commitStaleWorkspaceName();
-  const spaces = sortCollectionWorkspaces(
-    "favorites",
-    state.workspaces.filter((workspace) => workspace.favorite && !workspace.archived)
-  );
-  const entries = sortCollectionEntries(
-    "favorites",
-    state.entries.filter((entry) => entry.favorite && !entry.archived)
-  );
+  const allSpaces = state.workspaces.filter((workspace) => workspace.favorite && !workspace.archived);
+  const allEntries = state.entries.filter((entry) => entry.favorite && !entry.archived);
+  const spaces = sortCollectionWorkspaces("favorites", filterCollectionWorkspaces("favorites", allSpaces));
+  const entries = sortCollectionEntries("favorites", filterCollectionEntries("favorites", allEntries));
   const canEdit = isViewActive("page");
+  const filteredAway = !spaces.length && !entries.length && (allSpaces.length || allEntries.length);
 
-  dom.pageBody.innerHTML =
-    spaces.length || entries.length
+  dom.pageBody.innerHTML = filteredAway
+    ? filterEmptyState()
+    : spaces.length || entries.length
       ? `<div class="workspace-list">${spaces
           .map((workspace) => workspaceRow(workspace, canEdit))
           .join("")}${entries.map((entry) => entryRow(entry)).join("")}</div>`
@@ -134,7 +142,7 @@ export function renderPageBody() {
   else if (page.kind === "resources") load("resources").then((module) => module.renderResources());
   else if (page.kind === "bookmarks") load("bookmarks").then((module) => module.renderBookmarks());
   else if (page.isWorkspace) renderWorkspacePage(page);
-  else dom.pageBody.innerHTML = listMarkup(sortCollectionEntries("inbox", inboxEntries()), emptyStates.inbox);
+  else renderInbox();
 }
 
 /* Das Cover gibt es nur auf einem Arbeitsbereich, nie auf den Sammlungen

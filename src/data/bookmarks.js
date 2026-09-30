@@ -68,11 +68,6 @@ export function bookmarkItems(kind) {
   return items;
 }
 
-/** Wie viele Lesezeichen unter jeder Pille stehen, als { web: 3, … }. */
-export function bookmarkCounts() {
-  return Object.fromEntries(bookmarkPills.map((pill) => [pill.id, bookmarkItems(pill.kind).length]));
-}
-
 /** Alle Lesezeichen zusammen — die Zahl auf der Karte der Startseite. */
 export function bookmarkTotal() {
   return bookmarkItems(null).length;

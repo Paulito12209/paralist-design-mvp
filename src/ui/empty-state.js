@@ -92,7 +92,10 @@ function emblemMarkup(withBadge) {
  * @param options.accent  Farbe des Emblems, am besten eine Variable aus tokens.css.
  * @param options.title   Überschrift, kurz und in Alltagssprache.
  * @param options.text    Ein Satz darunter; ohne Text bleibt die Zeile weg.
- * @param options.action  { label, pick } für die Pille zum Anlegen; ohne Angabe keine Pille.
+ * @param options.action  { label, pick, icon } für die Pille zum Anlegen; ohne Angabe keine Pille.
+ *                        Mit `icon` tut die Pille etwas anderes als anlegen (z.B.
+ *                        Filter zurücksetzen): sie trägt dieses Icon statt des
+ *                        Plus, und das Emblem verliert sein Plus-Abzeichen.
  *                        `pick` ist der Typ, den das Eingabefeld vorwählt ("aufgabe",
  *                        "projekt" …). Ohne `pick` bleibt es bei dem, was die Seite
  *                        ohnehin vorschlägt — die Pille ist dann reine Abkürzung.
@@ -116,7 +119,7 @@ export function emptyState({
 }) {
   const pill = action
     ? `<button class="empty-add" type="button" ${data || `data-empty-add="${action.pick || ""}"`}>
-        ${icon("plus", "empty-add-icon")}<span>${escapeHtml(action.label)}</span>
+        ${icon(action.icon || "plus", "empty-add-icon")}<span>${escapeHtml(action.label)}</span>
       </button>`
     : "";
 
@@ -125,7 +128,7 @@ export function emptyState({
       ${
         art
           ? `<div class="empty-art">
-        ${emblemMarkup(Boolean(action))}
+        ${emblemMarkup(Boolean(action) && !action.icon)}
         ${icon(iconName, "empty-emblem-icon")}
       </div>`
           : ""
