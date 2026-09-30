@@ -51,8 +51,9 @@ function createdOfType(type) {
   return Math.max(loggedCount("created", type), entriesOfType(type).length);
 }
 
+/* Erledigt heißt abgehakt — unerledigt Archiviertes zählt nicht mit */
 function doneTasks() {
-  const listed = entriesOfType("aufgabe").filter((entry) => isTaskDone(entry) || entry.archived).length;
+  const listed = entriesOfType("aufgabe").filter((entry) => isTaskDone(entry)).length;
   return Math.max(loggedCount("done", "aufgabe"), listed);
 }
 

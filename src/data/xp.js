@@ -10,6 +10,7 @@
 
 import { emit, events } from "../core/bus.js";
 import { levelStep, levelSteps, xpKinds } from "./config.js";
+import { isTaskDone } from "./config-tasks.js";
 import { saveState, state } from "./state.js";
 
 /** Ein Ereignis ins Protokoll schreiben, ohne zu speichern oder neu zu zeichnen. */
@@ -37,14 +38,16 @@ export function awardXp(kind, item, title, count = 1) {
 }
 
 /**
- * Archivierte Aufgaben zählen als erledigt; andere Typen nur als weggeräumt.
- * Die Punkte fürs Erledigen gibt es je Aufgabe nur einmal — wie beim Abhaken
- * (noteDone in src/data/mutations.js). Sonst brächte eine abgehakte und danach
+ * Archivieren räumt weg, es erledigt nichts: Punkte fürs Erledigen gibt es
+ * nur für eine Aufgabe, die wirklich abgehakt ist — eine unerledigt
+ * archivierte behält ihren offenen Haken und bringt nichts. Hakt man sie
+ * später ab, kommen die Punkte dann (noteDone in src/data/mutations-tasks.js).
+ * Je Aufgabe gibt es sie nur einmal: sonst brächte eine abgehakte und danach
  * archivierte Aufgabe doppelte Punkte und zählte bei „Erledigt“ zweimal.
  */
 export function archiveEntry(entry) {
   entry.archived = true;
-  if (entry.type === "aufgabe" && !entry.doneAwarded) {
+  if (entry.type === "aufgabe" && isTaskDone(entry) && !entry.doneAwarded) {
     entry.doneAwarded = true;
     awardXp("done", "aufgabe", entry.title);
   } else saveState();
