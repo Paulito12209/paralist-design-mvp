@@ -11,7 +11,8 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * emptyProjects -> was die Liste zeigt, solange es noch gar kein Projekt gibt
+ * emptyProjects -> was die Seite Projekte zeigt, solange es noch gar kein Projekt gibt
+ *                  (die Übersicht zeigt dann nur die Zeile „Projekt hinzufügen“)
  * emptyViewText -> der Satz, wenn eine Ansicht nichts findet
  * addRowLabel   -> Beschriftung der Zeile unter der Liste
  * archiveLabel  -> Beschriftung der Pille zum Archiv
@@ -75,12 +76,16 @@ function archiveMarkup() {
 }
 
 /* Liste, Zeile „Projekt hinzufügen“ und Archiv-Pille der gewählten Ansicht.
-   Gibt es noch gar kein Projekt, steht nur der Platzhalter mit seiner Pille da
-   — die Zeile darunter sagte dasselbe noch einmal. */
-function listMarkup() {
+   Gibt es noch gar kein Projekt, zeigt nur die Seite Projekte (`onPage`) den
+   großen Platzhalter mit seiner Pille — die Zeile darunter sagte dasselbe
+   noch einmal. Auf der Übersicht wäre er zu wuchtig: dort steht allein die
+   Zeile „Projekt hinzufügen“, wie bei den Arbeitsbereichen. */
+function listMarkup(onPage) {
   const projects = visibleProjects(activeProjectView());
-  if (!projectEntries().length) return emptyState(emptyProjects) + archiveMarkup();
-  const lead = projects.length ? "" : `<p class="project-empty-note">${emptyViewText}</p>`;
+  const none = !projectEntries().length;
+  if (none && onPage) return emptyState(emptyProjects) + archiveMarkup();
+  /* Der Satz „kein Projekt in dieser Ansicht“ nur, wenn es woanders welche gibt */
+  const lead = projects.length || none ? "" : `<p class="project-empty-note">${emptyViewText}</p>`;
   const rows = projects.map((project) => entryRow(project)).join("");
   const addRow = `
     <button class="workspace-row workspace-add" type="button" data-project-add="1">
@@ -109,14 +114,14 @@ export function renderProjectSection() {
   withPillScroll(dom.projectViews, () => {
     dom.projectViews.innerHTML = projectViewsMarkup();
   });
-  dom.projectList.innerHTML = listMarkup();
+  dom.projectList.innerHTML = listMarkup(false);
   afterProjectViewsRender();
 }
 
 /** Die Seite Projekte zeichnen: dieselbe Pillenzeile und Liste wie auf der Übersicht. */
 export function renderProjectsPage() {
   withPillScroll(dom.pageBody, () => {
-    dom.pageBody.innerHTML = `<div class="project-views">${projectViewsMarkup()}</div>${listMarkup()}`;
+    dom.pageBody.innerHTML = `<div class="project-views">${projectViewsMarkup()}</div>${listMarkup(true)}`;
   });
   afterProjectViewsRender();
 }
