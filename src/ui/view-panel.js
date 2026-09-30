@@ -15,22 +15,71 @@
  * erst ab DRAG_START_PX gezogen, darunter bleibt es ein Tipp auf die Zeile.
  * Kopf und Karte werden einmal angelegt; beim
  * Neuzeichnen wird nur der Inhalt ersetzt — so blinkt die Karte nie leer auf.
+ *
+ * Von selbst zu: die Karte ist ein Werkzeug für einen Moment, kein fester
+ * Teil der Seite. Sie klappt ein, sobald man sich wieder der Seite zuwendet —
+ * ein Tipp oder Scrollen irgendwo außerhalb der Karte (Liste, Pillen, Kopf,
+ * Navigation, das Plus zum Anlegen), das Eingabefeld geht auf, oder die
+ * Ansicht wechselt (auch durch Browser-Zurück; zurück auf der Seite ist sie
+ * dann eingeklappt). Offen bleibt sie, solange man in ihr oder in einem Blatt
+ * darüber arbeitet: Sortieren, Filter, Menüs und Hinweise (OVERLAY_SELECTOR)
+ * zählen nicht als „außerhalb“. Der Tipp selbst tut danach, was er immer tut.
  * Pfad: src/ui/view-panel.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * DRAG_START_PX -> so weit muss der Finger wandern, bevor aus einem Tipp ein Ziehen wird
  * SNAP_PX       -> so weit muss man ziehen, damit die Karte in die andere Lage springt
+ * OVERLAY_SELECTOR -> Ebenen über der Seite, deren Tipps die Karte offen lassen
  *
  * Aussehen, Lage, Sichtbarkeit je Seite und Geschwindigkeit: styles/tasks-settings.css
  * (--details-head-h, --tasks-panel-gap, --tasks-panel-slide).
  */
 
+import { events, on } from "../core/bus.js";
 import { cssNumber } from "../core/css-vars.js";
 import { icon } from "../core/html.js";
 
 const DRAG_START_PX = 6;
 const SNAP_PX = 40;
+const OVERLAY_SELECTOR = '[class*="backdrop"], .toast-host, .slash-menu';
+
+/* Alle angelegten Karten mit ihrer Funktion zum Einklappen. */
+const collapsers = new Set();
+
+function collapseAll() {
+  collapsers.forEach((collapse) => collapse());
+}
+
+/* Tippt oder scrollt man hier, wendet man sich der Seite zu? Nicht in einer
+   Karte, nicht in einem Blatt oder Menü darüber. */
+function isOutside(target) {
+  return target instanceof Element && target.isConnected && !target.closest(".view-panel") && !target.closest(OVERLAY_SELECTOR);
+}
+
+/* Einmal für alle Karten anmelden. pointerdown statt click, damit auch der
+   Beginn eines Wischens über die Liste zählt; capture, damit kein Zuhörer
+   darunter das Ereignis vorher verschluckt. wheel deckt Mausrad und Trackpad
+   am Desktop ab. */
+function watchOutside() {
+  document.addEventListener(
+    "pointerdown",
+    (event) => {
+      if (isOutside(event.target)) collapseAll();
+    },
+    true
+  );
+  document.addEventListener(
+    "wheel",
+    (event) => {
+      if (isOutside(event.target)) collapseAll();
+    },
+    { capture: true, passive: true }
+  );
+  on(events.viewWillChange, collapseAll);
+  on(events.composerRequested, collapseAll);
+  on(events.createRequested, collapseAll);
+}
 
 /**
  * Eine Karte anlegen und vor der unteren Leiste einhängen.
@@ -74,6 +123,11 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
     panel.classList.toggle("is-expanded", next);
     toggle.setAttribute("aria-expanded", String(next));
   };
+  if (!collapsers.size) watchOutside();
+  collapsers.add(() => {
+    /* Mitten im Ziehen gehört die Karte dem Finger */
+    if (expanded && !drag) setExpanded(false);
+  });
 
   /* Die ganze Karte ist Griff. Der Kopf hält den Zeiger selbst fest; über
      den Zeilen hält ihn die angetippte Zeile — so erreicht jede Bewegung die
