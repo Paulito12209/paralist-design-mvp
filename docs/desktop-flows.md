@@ -25,22 +25,27 @@ muss alles wie am Handy aussehen.
   Schrift mit feiner Haarlinie, ohne Fläche — dezent, aber gut lesbar.
 - ‹ und › oben links, ⌘[ und ⌘] (Strg außerhalb des Macs) und Browser-Zurück
   führen durch denselben Verlauf.
-- Alle sechs Sammlungen links öffnen, auch per G und Buchstabe (G I, G F, G P,
-  G R, G L, G A); die offene ist markiert. Nur Personen und Pläne (noch nicht
+- Alle sechs Sammlungen links öffnen, auch per G und Buchstabe (G I, G F, G B
+  für Arbeitsbereiche, G R, G L, G A); die offene ist markiert. G P öffnet die
+  Seite Projekte, Profil › Kurzbefehle listet beide. Nur Personen und Pläne (noch nicht
   fertig) stehen unter „Mehr anzeigen“ (Pfeil nach unten; aufgeklappt steht
   ganz unten „Weniger anzeigen“ mit Pfeil nach oben; bleibt nach neu laden).
-- „Arbeitsbereiche ↗“ öffnet die Sammlung aller Arbeitsbereiche; das Plus
-  daneben legt einen Tab an. Überfahren eines Tab-Kopfs („Meine“) zeigt rechts
-  den Ordner mit Plus für einen neuen Arbeitsbereich darin.
+- „Projekte ↗“ öffnet die Seite Projekte; das Plus daneben führt dorthin ins
+  Namensfeld einer neuen Ansicht. Darunter je Ansicht eine Gruppe, „Alle“
+  zuerst; eine Zeile zeigt Icon, Titel, Stern bei Favorit und die Zahl der
+  Einträge, das offene Projekt ist markiert. Überfahren eines Kopfs zeigt die
+  Rakete mit Plus: legt ein Projekt in dieser Ansicht an.
 - Rechte Spalte: oben nur die Kachel „Eingang“ über die ganze Breite — die
   Stufe steht oben rechts in der Reiterzeile.
 - Seitenleiste mit dem Knopf und mit ⌘\ zu- und aufklappen, neu laden: der
   Zustand bleibt. Der Klapp-Knopf steht dann links in der Reiterzeile; das
   Eingabefeld und „Ansicht konfigurieren“ rücken mit.
-- Tab-Gruppe unter „Arbeitsbereiche“ zuklappen (Zahl erscheint), Plus am Kopf
-  legt einen Arbeitsbereich darin an, das Plus neben der Überschrift einen Tab — benannt wird auf der
-  Übersicht, deren Arbeitsbereiche nur dafür kurz auftauchen. Rechtsklick auf Kopf oder Zeile öffnet das Menü, „Umbenennen“
-  springt zur Übersicht.
+- Ansicht zuklappen (Zahl der Projekte erscheint), neu laden: bleibt zu.
+  Rechtsklick auf eine Zeile öffnet das Menü des Eintrags, auf einen Kopf das
+  der Ansicht; „Umbenennen“ springt zur Seite Projekte. Archivieren oder
+  Löschen des offenen Projekts geht zurück, woher man kam.
+- Seite Arbeitsbereiche (G B): alle Abläufe wie am Handy; rechts die Karten
+  der Übersicht.
 - Fortschritt (über die Level-Anzeige oben rechts) ist eine Seite: Karten
   „Diese Woche“ und „Serie“, Aktivitätsband, darunter die Karten in zwei
   Spalten; „Serie“ öffnet ihre Karte in den Einstellungen. Unten links öffnen
@@ -52,7 +57,8 @@ muss alles wie am Handy aussehen.
   Kacheln zeigen nur Icons, nie Vorschaubilder), darunter
   die Kacheln der verknüpften Einträge (bei Projekt und Arbeitsbereich:
   „Inhalt“). Leerer Speicher zeigt „Willkommen“ mit „Neu anlegen“. Keine
-  Sammlungs-Karten, keine Arbeitsbereiche, rechts kein „Zuletzt geöffnet“.
+  Sammlungs-Karten, keine Projekte (auch nicht beim Umbenennen), rechts kein
+  „Zuletzt geöffnet“.
 - Such-Palette: ⌘K (Strg K), „/“ und die Lupe in der Reiterzeile öffnen sie
   in der Mitte; eine zugeklappte Leiste bleibt zu. Die Suchseite nennt das
   Suchwort in „Ergebnisse für „…““. Leer zeigt sie „Zuletzt geöffnet / Am häufigsten / Zuletzt
@@ -61,6 +67,7 @@ muss alles wie am Handy aussehen.
   dem Eingabefeld zuerst nur die Palette); Tasten wie 1–4 oder G I landen im
   Feld. „Alle Ergebnisse“ oder Enter ohne Wahl öffnet die Suchseite — ohne
   Knöpfe „Suchen / Abbrechen“ unten. Browser-Zurück schließt die Palette mit.
+  „Projekte“ und „Arbeitsbereiche“ als Treffer öffnen ihre Seite.
 - Rechte Spalte (ab 1280 px) wechselt mit der Seite: Kalender zeigt den
   kleinen Monat (Tag anklicken, Pfeile, „Heute“) und den gewählten Tag;
   Aufgaben „Stand“, „Dringlichkeit“ und „Demnächst fällig“ (Haken abhaken);

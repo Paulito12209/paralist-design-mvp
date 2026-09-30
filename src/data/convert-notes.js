@@ -95,7 +95,7 @@ function lostFieldsNotes(entry) {
 function toWorkspaceNotes(entry) {
   const notes = [];
   const tab = state.tabs.find((item) => String(item.id) === String(workspaceTabFor(entry)));
-  if (tab) notes.push(`Erscheint auf der Übersicht im Tab „${tab.name}“.`);
+  if (tab) notes.push(`Erscheint unter Arbeitsbereiche im Tab „${tab.name}“.`);
   const container = isContainer(entry);
   const inside = container
     ? state.entries.filter((item) => hasPlace(item, entryRef(entry.id))).length
