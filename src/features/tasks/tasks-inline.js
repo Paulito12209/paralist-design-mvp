@@ -4,7 +4,8 @@
  * der Gruppe, unter der man getippt hat) eine neue Zeile mit leerem Ring und
  * Cursor erscheinen. Enter legt die Aufgabe an und öffnet gleich die nächste Zeile;
  * eine leere Zeile verschwindet lautlos, sobald man sie verlässt. Im Board
- * gilt dasselbe je Spalte. Nur ein echter Tipp zählt: wer scrollt oder wischt,
+ * gilt dasselbe je Spalte — auch für die Fläche unter den Zeilen, die zu
+ * der Spalte darüber gehört. Nur ein echter Tipp zählt: wer scrollt oder wischt,
  * schreibt nicht — dieselbe Regel wie in src/ui/write-tap.js.
  *
  * Der runde Knopf ✓+ oben rechts (tasks-views.js) öffnet dieselbe Zeile —
@@ -46,11 +47,20 @@ let committing = false;
 
 /* Welcher Abschnitt zu einer Tipp-Stelle gehört: in der Liste der letzte,
    dessen Oberkante über dem Finger liegt — eine Zeile erscheint also immer
-   direkt unter dem, was man gerade ansieht. Im Board die angetippte Spalte. */
-function sectionAt(target, y) {
+   direkt unter dem, was man gerade ansieht. Im Board die angetippte Spalte;
+   unter den Spalten (das Board reicht bis zur Karte „Ansicht“) die, unter
+   der der Finger steht. */
+function sectionAt(target, x, y) {
   const column = target.closest(".board-col");
   if (column) return column;
-  if (target.closest(".board")) return null;
+  const board = target.closest(".board");
+  if (board) {
+    const columns = [...board.querySelectorAll(".board-col:not([data-no-add])")];
+    return columns.find((col) => {
+      const rect = col.getBoundingClientRect();
+      return x >= rect.left && x < rect.right;
+    }) || null;
+  }
   /* Unter „Archiviert“ entsteht nichts Neues — der Tipp gilt dem Abschnitt davor */
   const sections = [...el("tasks-body").querySelectorAll(".task-section:not([data-no-add])")];
   let pick = sections[0] || null;
@@ -163,7 +173,7 @@ function onClick(event) {
     if (target.closest("button, a, input, [data-grip], .swipe-actions, .board-row, .board-head, .tasks-tools")) return;
     if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > TAP_SLOP_PX) return;
   }
-  const section = ghost ? el("tasks-body").querySelector(".task-section") : sectionAt(target, event.clientY);
+  const section = ghost ? el("tasks-body").querySelector(".task-section") : sectionAt(target, event.clientX, event.clientY);
   if (section) openRow(section);
 }
 

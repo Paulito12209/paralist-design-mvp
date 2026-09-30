@@ -55,7 +55,10 @@ function onBodyClick(event) {
     event.stopPropagation();
     return;
   }
-  /* In der Liste öffnet src/ui/list-clicks.js den Eintrag; im Board hier. */
+  /* In der Liste öffnet src/ui/list-clicks.js den Eintrag; im Board hier.
+     Der Haken vor dem Titel hakt nur ab (list-clicks.js) und der Griff
+     zieht — beide liegen in der Zeile, öffnen sie aber nicht. */
+  if (event.target.closest("[data-task-done], [data-grip]")) return;
   const row = event.target.closest("[data-board-row]");
   if (row) openEntry(row.dataset.boardRow);
 }

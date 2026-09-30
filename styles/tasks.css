@@ -10,7 +10,6 @@
  *
  * ANPASSBARE WERTE (alle in styles/tokens-pages.css, außer wo genannt)
  * -----------------------------------
- * --page-title-gap      -> Luft zwischen Titel und Pillenzeile (styles/tokens.css)
  * --task-tools-gap      -> Abstand zwischen Pillenzeile und Liste
  * --task-section-gap    -> Luft zwischen zwei Gruppen
  * --task-check-size     -> Größe des runden Haken-Knopfes
@@ -30,9 +29,11 @@
 /* ---------- Zeile unter dem Titel: Pillen der Ansichten ---------- */
 
 /* Dieselbe Zeile wie über den Arbeitsbereichen (.tab-pills-row,
-   styles/overview.css) — nur der Abstand zum Titel darüber kommt von hier. */
+   styles/overview.css). Den Abstand zum Titel darüber gibt der Titel selbst
+   (.screen-title, styles/base.css) — wie auf Medien und Ressourcen; nur die
+   Luft zur Liste darunter kommt von hier. */
 .tasks-tools .tab-pills-row {
-  margin: var(--page-title-gap) 0 var(--task-tools-gap);
+  margin: 0 0 var(--task-tools-gap);
 }
 
 /* ⓘ in der Pille „Alle“: erklärt, dass sie jeden Ort zeigt; wählt nichts aus */

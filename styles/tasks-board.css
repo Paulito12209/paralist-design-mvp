@@ -18,7 +18,7 @@
  * --board-card-radius  -> Rundung der angehobenen Zeile und der Lücke
  * --board-head-radius  -> Rundung der farbigen Kopfzeile
  * --board-drop-min     -> Mindesthöhe einer leeren Spalte
- * --board-head-tint / --board-count-tint -> wie bunt Streifen und Anzahl-Blase sind (styles/tokens-pages.css)
+ * --board-head-tint    -> wie bunt der Streifen der Kopfzeile ist (styles/tokens-pages.css)
  * --board-head-base    -> worin die Farbe gemischt wird: hell Weiß, dunkel Kartenfarbe
  * --board-ink-l-max    -> wie hell Schrift und Icon im Streifen höchstens werden
  * --content-side       -> Abstand des Boards zum Rand
@@ -130,14 +130,12 @@
   white-space: nowrap;
 }
 
-/* Anzahl-Blase am Ende der Kopfzeile */
+/* Anzahl am Ende der Kopfzeile: nur die Zahl, in derselben Farbe wie der
+   Name — eine eigene Blase darum wäre ein zweiter Fleck im Streifen. */
 .board-count {
-  min-width: 22px;
-  padding: 1px 7px;
-  border-radius: 999px; /* border-radius: macht aus der Zahl eine Blase */
-  background: color-mix(in srgb, var(--col-color) var(--board-count-tint), var(--board-head-base));
-  text-align: center;
+  padding-right: 2px;
   font-size: 13px;
+  font-variant-numeric: tabular-nums; /* font-variant-numeric: 1 und 11 sind gleich breit, die Zahl springt nicht */
 }
 
 .board-rows {
