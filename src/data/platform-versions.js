@@ -1,7 +1,8 @@
 /*
- * Welche Fassung der App gezeigt wird — je eine fürs Handy (Android oder iOS)
- * und eine für den Computer (Windows oder macOS). Das Projekt ist eine
- * Sammlung von Entwürfen; die Wahl bleibt gespeichert und gilt dauerhaft, bis
+ * Welche Fassung der App gezeigt wird — je eine fürs Handy und eine für den
+ * Computer. „Erster Test“ ist der bisherige Entwurf und gehört zu keiner
+ * Plattform; daneben stehen Android und iOS bzw. Windows und macOS. Das
+ * Projekt ist eine Sammlung von Entwürfen; die Wahl bleibt gespeichert und gilt dauerhaft, bis
  * man sie unter Einstellungen › Mehr › Versionen ändert. Sichtbar wird sie als
  * data-mobile-os und data-desk-os an <html>; Stile für eine Fassung hängen
  * sich daran, z.B. :root[data-mobile-os="android"] .nav-bar { … }.
@@ -23,8 +24,9 @@ export const platforms = [
   {
     id: "mobile",
     title: "Mobil",
-    fallback: "ios",
+    fallback: "erster-test",
     options: [
+      { id: "erster-test", label: "Erster Test", icon: "pencil" },
       { id: "android", label: "Android", icon: "smartphone" },
       { id: "ios", label: "iOS", icon: "smartphone" },
     ],
@@ -32,8 +34,9 @@ export const platforms = [
   {
     id: "desk",
     title: "Desktop",
-    fallback: "macos",
+    fallback: "erster-test",
     options: [
+      { id: "erster-test", label: "Erster Test", icon: "pencil" },
       { id: "windows", label: "Windows", icon: "laptop" },
       { id: "macos", label: "macOS", icon: "laptop" },
     ],

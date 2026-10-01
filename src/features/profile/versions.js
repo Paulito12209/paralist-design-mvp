@@ -1,7 +1,7 @@
 /*
- * Die Unterseite Einstellungen › Mehr › Versionen: oben „Mobil“ mit Android
- * und iOS, darunter „Desktop“ mit Windows und macOS — je Gruppe genau eine
- * Wahl mit Haken. Die Wahl gilt dauerhaft und steht als data-mobile-os und
+ * Die Unterseite Einstellungen › Mehr › Versionen: oben „Mobil“ mit Erster
+ * Test, Android und iOS, darunter „Desktop“ mit Erster Test, Windows und
+ * macOS — je Gruppe genau eine Wahl mit Haken. Die Wahl gilt dauerhaft und steht als data-mobile-os und
  * data-desk-os an <html> (Zustand in src/data/platform-versions.js). Klicks
  * kommen aus src/features/profile/profile.js über onVersionsClick.
  * Pfad: src/features/profile/versions.js
@@ -24,9 +24,11 @@ export function applyVersions() {
   document.documentElement.dataset.deskOs = chosenVersion("desk");
 }
 
-/** Kurzfassung für den rechten Rand der Zeile, z.B. „iOS · macOS“. */
+/** Kurzfassung für den rechten Rand der Zeile, z.B. „Android · macOS“; gleiche Wahl nur einmal. */
 export function versionsSummary() {
-  return `${chosenLabel("mobile")} · ${chosenLabel("desk")}`;
+  const mobile = chosenLabel("mobile");
+  const desk = chosenLabel("desk");
+  return mobile === desk ? mobile : `${mobile} · ${desk}`;
 }
 
 /* Eine Gruppe: Überschrift und ihre Zeilen, der Haken bei der gewählten Fassung. */
