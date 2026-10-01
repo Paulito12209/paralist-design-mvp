@@ -20,6 +20,8 @@ export const storageKeys = {
   searchKeyboard: "paralist-search-keyboard",
   navGlow: "paralist-nav-glow",
   pageHead: "paralist-page-head",
+  /* Gewählte Fassung je Gerät, {mobile, desk} — index.html liest denselben Namen. */
+  versions: "paralist-versions",
   milestones: "paralist-milestones",
   deskNav: "paralist-desk-nav",
   /* Zugeklappte Ansichten der Projekte in der Seitenleiste — eigener Schlüssel,

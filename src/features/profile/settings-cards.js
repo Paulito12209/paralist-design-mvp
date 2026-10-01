@@ -4,8 +4,8 @@
  * Sie zeigen nur den Kopfwert und einen winzigen Verlauf; das ganze Diagramm
  * erscheint erst beim Antippen. Darunter der Abschnitt „Darstellung“.
  * Hier steht außerdem, welche große Seite hinter welchem Schlüssel liegt —
- * auch Navigation, Suche und Design unter „App“, die Kontoeinstellungen und
- * die Feedback- und Danksagungs-Seite.
+ * auch Navigation, Suche und Design unter „App“, die Kontoeinstellungen, die
+ * Feedback- und Danksagungs-Seite und die Versionen unter „Mehr“.
  * Pfad: src/features/profile/settings-cards.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -28,6 +28,7 @@ import { creditsCard, startCreditsVideo } from "./credits.js";
 import { enterFeedback, feedbackCard } from "./feedback.js";
 import { streakCard, usageCard } from "./profile-cards.js";
 import { themeListMarkup } from "./theme.js";
+import { versionsCard } from "./versions.js";
 
 const miniDays = 7;
 const minBarShare = 0.08;
@@ -131,6 +132,7 @@ const details = {
   search: { hash: "suche", title: "Suche", card: () => searchCard() },
   design: { hash: "design", title: "Design", card: () => designCard() },
   account: { hash: "konto", title: "Kontoeinstellungen", card: accountCard },
+  versions: { hash: "versionen", title: "Versionen", card: versionsCard },
   credits: { hash: "danksagungen", title: "Danksagungen", card: creditsCard, settle: startCreditsVideo },
 };
 

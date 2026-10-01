@@ -19,6 +19,12 @@
         var savedTheme = localStorage.getItem("paralist-theme");
         if (savedTheme === "light" || savedTheme === "dark") document.documentElement.dataset.theme = savedTheme;
       } catch (error) {}
+      /* Gewählte Fassung (Einstellungen › Mehr › Versionen) ebenso früh, damit ihre
+         Stile schon im ersten Bild greifen. Vorgaben wie in src/data/platform-versions.js. */
+      var versions = {};
+      try { versions = JSON.parse(localStorage.getItem("paralist-versions")) || {}; } catch (error) {}
+      document.documentElement.dataset.mobileOs = versions.mobile === "android" ? "android" : "ios";
+      document.documentElement.dataset.deskOs = versions.desk === "windows" ? "windows" : "macos";
 
       /* Icons schon jetzt holen (zwei Dateien wegen der 400-Zeilen-Grenze je Datei);
          src/shell/sprite.js hängt sie später ein und versucht es bei einem

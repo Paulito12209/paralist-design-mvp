@@ -7,7 +7,8 @@
  * (app-settings.js), unter „Konto“ eine zu den Kontoeinstellungen, unter
  * „Support“ zwei auf das Feedback-Formular und die Danksagungen; „Roadmap“
  * ist dagegen ein Link nach draußen und braucht hier nichts (Adresse in
- * profile-cards.js). „Nach Updates suchen“ unter „Mehr“ bittet die Hülle, die
+ * profile-cards.js). Unter „Mehr“ führt „Versionen“ zur Wahl der Fassung je
+ * Gerät (versions.js); „Nach Updates suchen“ bittet die Hülle, die
  * neueste Fassung zu laden. Am Desktop wird das Blatt eine Seite mit
  * Untermenü (src/features/profile/profile-page.js); dann steht rechts nur der
  * gewählte Punkt. Wird erst beim ersten Öffnen nachgeladen.
@@ -54,6 +55,7 @@ import {
 import { defaultPane, isPane, paneMarkup } from "./settings-nav.js";
 import { toggleHints } from "./shortcuts.js";
 import { setTheme } from "./theme.js";
+import { onVersionsClick } from "./versions.js";
 
 /* Welche große Ansicht zuletzt gezeichnet wurde — null steht für die Liste —
    und welcher Punkt des Untermenüs (nur am Desktop sichtbar). */
@@ -321,7 +323,7 @@ function onBodyClick(event) {
     rerenderKeepingScroll();
     return;
   }
-  if (onAppSettingsClick(event)) {
+  if (onAppSettingsClick(event) || onVersionsClick(event)) {
     rerenderKeepingScroll();
     return;
   }

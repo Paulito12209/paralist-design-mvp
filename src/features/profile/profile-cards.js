@@ -26,6 +26,7 @@ import { usageDays, usageOfDay, usageSince, usageStreaks } from "../../data/usag
 import { chartBox, dateMarks, gridLines, niceStep, rangeSwitch, yAxis } from "../../ui/chart.js";
 import { currentPhoto } from "./avatar.js";
 import { usageSplitCard } from "./usage-split.js";
+import { versionsSummary } from "./versions.js";
 
 /* Die festen Angaben im Kopf des Blatts: Name, Mail, Plan, Version und
    Initialen stehen in src/data/account.js — die Seitenleiste am Desktop zeigt
@@ -221,14 +222,22 @@ const listSections = [
       { icon: "cube", label: "Danksagungen", trail: "chevron", detail: "credits" },
     ],
   },
-  { title: "Mehr", rows: [{ icon: "import", label: "Nach Updates suchen", action: "update" }] },
+  {
+    title: "Mehr",
+    rows: [
+      { icon: "layers", label: "Versionen", trail: "chevron", detail: "versions", value: versionsSummary },
+      { icon: "import", label: "Nach Updates suchen", action: "update" },
+    ],
+  },
 ];
 
 /* Eine Zeile: Link, Unterseite, Aktion oder nur Aufbau. `value` steht grau am
-   rechten Rand (z.B. die Mailadresse in den Kontoeinstellungen). */
+   rechten Rand (z.B. die Mailadresse in den Kontoeinstellungen); als Funktion
+   wird er bei jedem Zeichnen frisch gelesen (die gewählten Versionen). */
 function rowMarkup(row) {
   const shell = `class="plist-row${row.danger ? " is-danger" : ""}"`;
-  const value = row.value ? `<span class="plist-value">${escapeHtml(row.value)}</span>` : "";
+  const text = typeof row.value === "function" ? row.value() : row.value;
+  const value = text ? `<span class="plist-value">${escapeHtml(text)}</span>` : "";
   /* plist-status: dort meldet „Nach Updates suchen“ den Stand, ohne neu zu zeichnen */
   const status = row.action ? `<span class="plist-value plist-status"></span>` : "";
   const inner = `
