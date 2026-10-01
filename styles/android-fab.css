@@ -1,0 +1,192 @@
+/*
+ * Android-Fassung, Plus-Knopf und Plus-Menü: der Knopf steht rechts über der
+ * Navigationsleiste wie „Schreiben“ in Google Mail. Beim Scrollen nach unten
+ * wird er zum reinen Plus und rückt mit der Leiste an den unteren Rand. Ein
+ * Tipp legt einen Schleier über die App (dunkel im Dunkelmodus, weißlich im
+ * Hellmodus) und stapelt rechts die Arten zum Anlegen übereinander — wie das
+ * Plus-Menü in Google Kalender. Aufgebaut wird beides in src/shell/android-fab.js.
+ * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
+ * Pfad: styles/android-fab.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-fab-size / --m3-fab-radius  -> Höhe und Rundung des Plus-Knopfs
+ * --m3-fab-gap                     -> Abstand zum rechten Rand und zur Leiste
+ * --m3-primary-container           -> Fläche von Knopf und Menü-Einträgen
+ * --m3-on-primary-container        -> Schrift und Icon darauf
+ * --m3-primary / --m3-on-primary   -> runder Schließen-Knopf mit ✕
+ * --m3-scrim                       -> Schleier über der App
+ * --m3-menu-item-height            -> Höhe eines Menü-Eintrags
+ * --m3-menu-gap                    -> Luft zwischen den Einträgen
+ * --m3-hide-time                   -> wie schnell der Knopf schmal und wieder breit wird
+ * --m3-menu-bottom                 -> wo der Schließen-Knopf steht; setzt android-fab.js
+ *                                     beim Öffnen auf die Lage des Plus-Knopfs
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel: „Neu“ auf
+ * dem Knopf 15px, Einträge im Menü 16px (Material 3 „Title medium“).
+ */
+
+/* position: schwebt rechts über der Leiste; hängt an .nav-shell und rückt so
+   beim Wegscrollen mit ihr nach unten. Außerhalb der Android-Fassung unsichtbar. */
+.m3-fab {
+  display: none;
+  position: absolute;
+  right: var(--m3-fab-gap);
+  bottom: calc(100% + var(--m3-fab-gap));
+  height: var(--m3-fab-size);
+  min-width: var(--m3-fab-size);
+  padding: 0 20px 0 16px;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--m3-fab-radius);
+  background: var(--m3-primary-container);
+  color: var(--m3-on-primary-container);
+  font-size: 15px;
+  font-weight: 600;
+  /* box-shadow: Material 3 hebt den Knopf mit Schatten (Ebene 3) vom Inhalt ab */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16), 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: padding var(--m3-hide-time) ease, gap var(--m3-hide-time) ease; /* transition: wird weich schmal */
+}
+
+.m3-fab .icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* max-width: das Wort fährt beim Schmalwerden ein, statt zu springen */
+.m3-fab-label {
+  max-width: 6em;
+  overflow: hidden;
+  white-space: nowrap;
+  transition: max-width var(--m3-hide-time) ease, opacity var(--m3-hide-time) ease;
+}
+
+.m3-fab:active {
+  opacity: 0.8;
+}
+
+/* Solange das Menü offen ist, steht an seiner Stelle das runde ✕ (.m3-fab-close);
+   visibility: der breite Knopf schimmerte sonst durch den Schleier daneben hervor */
+.device.is-fab-open .m3-fab {
+  visibility: hidden;
+}
+
+/* Beim Scrollen nach unten bleibt nur das Plus */
+.device.is-bars-hidden .m3-fab {
+  padding: 0;
+  gap: 0;
+}
+
+.device.is-bars-hidden .m3-fab-label {
+  max-width: 0;
+  opacity: 0;
+}
+
+@media (max-width: 1023px) {
+  [data-mobile-os="android"] .m3-fab {
+    display: flex;
+  }
+
+  /* Beim Anlegen und Suchen hat der Knopf nichts zu tun */
+  [data-mobile-os="android"] .nav-shell.is-composing .m3-fab {
+    display: none;
+  }
+}
+
+/* ---------- Das Menü ---------- */
+
+/* position/inset: der Schleier deckt das ganze Gerät ab.
+   z-index 30: über Kopfzeile und Leiste (20), unter den Blättern (ab 36). */
+.m3-fab-menu {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  background: var(--m3-scrim);
+  opacity: 0;
+  transition: opacity 160ms ease; /* transition: der Schleier blendet ein */
+}
+
+.m3-fab-menu[hidden] {
+  display: none;
+}
+
+.m3-fab-menu.is-open {
+  opacity: 1;
+}
+
+/* Die Einträge stapeln sich rechts über dem Schließen-Knopf; bei sehr
+   niedrigen Geräten lässt sich die Spalte scrollen, statt oben abzureißen. */
+.m3-fab-menu-list {
+  position: absolute;
+  right: var(--m3-fab-gap);
+  bottom: calc(var(--m3-menu-bottom) + var(--m3-fab-size) + var(--m3-menu-gap));
+  max-height: calc(100% - var(--m3-menu-bottom) - var(--m3-fab-size) - 2 * var(--m3-menu-gap) - var(--safe-top));
+  overflow-y: auto; /* overflow: nur bei zu wenig Höhe, sonst ohne Wirkung */
+  scrollbar-width: none;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: var(--m3-menu-gap);
+}
+
+/* animation: jeder Eintrag gleitet von unten herein, der unterste zuerst
+   (--i zählt von unten, gesetzt in android-fab.js) */
+.m3-fab-menu-item {
+  flex: 0 0 auto;
+  height: var(--m3-menu-item-height);
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 24px 0 20px;
+  border-radius: 999px; /* border-radius: Pillenform wie im Kalender-Menü */
+  background: var(--m3-primary-container);
+  color: var(--m3-on-primary-container);
+  font-size: 16px;
+  font-weight: 600;
+  white-space: nowrap;
+  animation: m3-menu-in 200ms ease both;
+  animation-delay: calc(var(--i) * 18ms);
+}
+
+.m3-fab-menu-item .icon {
+  width: 24px;
+  height: 24px;
+}
+
+.m3-fab-menu-item:active {
+  opacity: 0.8;
+}
+
+/* Der Plus-Knopf wird zum runden ✕ an derselben Stelle */
+.m3-fab-close {
+  position: absolute; /* position: genau dort, wo eben der Plus-Knopf stand */
+  right: var(--m3-fab-gap);
+  bottom: var(--m3-menu-bottom);
+  width: var(--m3-fab-size);
+  height: var(--m3-fab-size);
+  border-radius: 50%; /* border-radius: rund statt eckig zeigt: jetzt schließt er */
+  display: grid;
+  place-items: center;
+  background: var(--m3-primary);
+  color: var(--m3-on-primary);
+  animation: m3-close-in 200ms ease both;
+}
+
+.m3-fab-close .icon {
+  width: 24px;
+  height: 24px;
+}
+
+@keyframes m3-menu-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.92);
+  }
+}
+
+@keyframes m3-close-in {
+  from {
+    transform: rotate(-90deg) scale(0.8);
+  }
+}

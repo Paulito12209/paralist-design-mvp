@@ -1,0 +1,106 @@
+/*
+ * Die Werte der Android-Fassung (Einstellungen › Mehr › Versionen › Android).
+ * Sie gelten nur, solange an <html> data-mobile-os="android" steht, und nur
+ * unterhalb der Desktop-Breite — die Regeln dazu stehen in styles/android.css,
+ * styles/android-tabs.css und styles/android-fab.css. Farben und Maße folgen
+ * Material 3 in der Lesart von Google Mail und Google Kalender: neutrale
+ * Flächen, blaue Akzente im Hellen, graublaue im Dunkeln.
+ * Pfad: styles/tokens-android.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * FARBEN (je hell und dunkel)
+ * --m3-surface-container       -> Fläche der Navigationsleiste unten
+ * --m3-surface-container-high  -> Fläche der Suchleiste oben
+ * --m3-secondary-container     -> Pille hinter dem Icon des aktiven Reiters
+ * --m3-on-secondary-container  -> Icon in dieser Pille
+ * --m3-primary-container       -> Fläche des Plus-Knopfs und der Einträge im Plus-Menü
+ * --m3-on-primary-container    -> Schrift und Icon darauf
+ * --m3-primary                 -> Akzent: Linie und Schrift des aktiven Reiters, Schließen-Knopf im Menü
+ * --m3-on-primary              -> das ✕ auf dem Schließen-Knopf
+ * --m3-on-surface              -> Schrift des aktiven Reiters unten
+ * --m3-on-surface-variant      -> Icons und Schrift der übrigen Reiter, Platzhalter der Suche
+ * --m3-outline-variant         -> Trennlinie unter den Reitern
+ * --m3-scrim                   -> Schleier über der App, solange das Plus-Menü offen ist
+ *                                 (dunkel im Dunkelmodus, weißlich im Hellmodus)
+ * MASSE
+ * --m3-nav-height              -> Höhe der Leiste unten ohne Namen (Material 3 Expressive: 64dp)
+ * --m3-nav-height-labels       -> Höhe mit Namen unter den Icons (Material 3: 80dp)
+ * --m3-indicator-w / -h        -> Breite und Höhe der Pille hinter dem aktiven Icon
+ * --m3-search-height           -> Höhe der Suchleiste oben (Material 3: 56dp)
+ * --m3-top-bar-pad             -> Luft über und unter der Suchleiste
+ * --m3-top-bar-height          -> ganze Höhe der Kopfzeile (aus den beiden Werten darüber)
+ * --m3-fab-size / --m3-fab-radius -> Höhe und Rundung des Plus-Knopfs (Material 3: 56dp, 16dp)
+ * --m3-fab-gap                 -> Abstand des Plus-Knopfs zum rechten Rand und zur Leiste
+ * --m3-menu-item-height        -> Höhe eines Eintrags im Plus-Menü
+ * --m3-menu-gap                -> Luft zwischen den Einträgen im Plus-Menü
+ * --m3-tab-height              -> Höhe eines Reiters (Material 3: 48dp)
+ * --m3-tab-indicator           -> Dicke der Linie unter dem aktiven Reiter (Material 3: 3dp)
+ * --m3-hide-time               -> wie schnell Kopfzeile und Leiste beim Scrollen weg- und wiederkommen
+ * --m3-content-end             -> Platz am Seitenende, damit nichts hinter Plus-Knopf und Leiste liegt
+ */
+
+:root[data-mobile-os="android"] {
+  --m3-surface-container: #eef2f9;
+  --m3-surface-container-high: #e5eaf2;
+  --m3-secondary-container: #c2e7ff;
+  --m3-on-secondary-container: #001d35;
+  --m3-primary-container: #d3e3fd;
+  --m3-on-primary-container: #041e49;
+  --m3-primary: #0b57d0;
+  --m3-on-primary: #ffffff;
+  --m3-on-surface: #1f1f1f;
+  --m3-on-surface-variant: #444746;
+  --m3-outline-variant: #c4c7c5;
+  --m3-scrim: rgba(255, 255, 255, 0.86);
+
+  --m3-nav-height: 64px;
+  --m3-nav-height-labels: 80px;
+  --m3-indicator-w: 56px;
+  --m3-indicator-h: 32px;
+  --m3-search-height: 56px;
+  --m3-top-bar-pad: 8px;
+  --m3-top-bar-height: calc(var(--m3-search-height) + 2 * var(--m3-top-bar-pad));
+  --m3-fab-size: 56px;
+  --m3-fab-radius: 16px;
+  --m3-fab-gap: 16px;
+  --m3-menu-item-height: 56px;
+  --m3-menu-gap: 8px;
+  --m3-tab-height: 48px;
+  --m3-tab-indicator: 3px;
+  --m3-hide-time: 220ms;
+  --m3-content-end: calc(var(--m3-nav-height-labels) + var(--m3-fab-size) + 3 * var(--m3-fab-gap));
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-mobile-os="android"]:not([data-theme="light"]) {
+    --m3-surface-container: #1e1f23;
+    --m3-surface-container-high: #2a2b30;
+    --m3-secondary-container: #4a4e5a;
+    --m3-on-secondary-container: #e3e3e8;
+    --m3-primary-container: #5c6070;
+    --m3-on-primary-container: #eceef8;
+    --m3-primary: #c3c8dc;
+    --m3-on-primary: #1d2030;
+    --m3-on-surface: #e3e3e3;
+    --m3-on-surface-variant: #c4c7c5;
+    --m3-outline-variant: #3c3f44;
+    --m3-scrim: rgba(10, 10, 12, 0.82);
+  }
+}
+
+/* Dunkelmodus fest in den Einstellungen gewählt: dieselben Werte wie oben */
+:root[data-mobile-os="android"][data-theme="dark"] {
+  --m3-surface-container: #1e1f23;
+  --m3-surface-container-high: #2a2b30;
+  --m3-secondary-container: #4a4e5a;
+  --m3-on-secondary-container: #e3e3e8;
+  --m3-primary-container: #5c6070;
+  --m3-on-primary-container: #eceef8;
+  --m3-primary: #c3c8dc;
+  --m3-on-primary: #1d2030;
+  --m3-on-surface: #e3e3e3;
+  --m3-on-surface-variant: #c4c7c5;
+  --m3-outline-variant: #3c3f44;
+  --m3-scrim: rgba(10, 10, 12, 0.82);
+}

@@ -37,6 +37,8 @@ import { initKeyboardInset } from "./shell/keyboard-inset.js";
 import { initLevelGauge } from "./shell/level-gauge.js";
 import { initLifecycle } from "./shell/lifecycle.js";
 import { initNavBar } from "./shell/nav-bar.js";
+import { initAndroidBars } from "./shell/android-bars.js";
+import { initAndroidFab } from "./shell/android-fab.js";
 import { checkReminders, initReminderBanner } from "./shell/reminder-banner.js";
 import { initSearchBar } from "./shell/search-bar.js";
 import { checkForUpdate, initUpdatePrompt } from "./shell/update-prompt.js";
@@ -125,6 +127,8 @@ function initShell() {
   initLevelGauge();
   initSearchBar();
   initNavBar();
+  initAndroidBars();
+  initAndroidFab();
   initKeyboardInset();
   initWriting();
   initWeekFill();

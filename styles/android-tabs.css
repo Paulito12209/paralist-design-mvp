@@ -1,0 +1,147 @@
+/*
+ * Android-Fassung, Reiter: aus den Pillen werden Reiter nach Material 3 —
+ * reiner Text, der aktive in der Akzentfarbe mit einer Linie darunter, unter
+ * der ganzen Zeile eine dünne Trennlinie. Beim Scrollen rasten die Zeilen oben
+ * ein: auf den Hauptseiten direkt unter der Suchleiste (ist sie weggerutscht,
+ * ganz oben), auf Unterseiten unter der Kopfzeile mit dem Zurück-Pfeil.
+ * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
+ * Pfad: styles/android-tabs.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-tab-height        -> Höhe eines Reiters
+ * --m3-tab-indicator     -> Dicke der Linie unter dem aktiven Reiter
+ * --m3-primary           -> Farbe von Schrift und Linie des aktiven Reiters
+ * --m3-on-surface-variant -> Schrift der übrigen Reiter
+ * --m3-outline-variant   -> Trennlinie unter der ganzen Zeile
+ * --m3-hide-time         -> wie schnell die Zeile nachrückt, wenn die Suchleiste geht
+ *
+ * Schriftgröße der Reiter: 14px direkt bei .tab-pill (Material 3 „Title small“).
+ */
+
+@media (max-width: 1023px) {
+  /* Wie weit die Suchleiste gerade weggerutscht ist; die Zeilen rücken um so viel nach */
+  [data-mobile-os="android"] .device.is-bars-hidden {
+    --m3-bar-shift: var(--m3-top-bar-height);
+  }
+
+  /* ---------- Einrasten ---------- */
+
+  /* position: sticky — die Zeile scrollt mit, bis sie oben anstößt, und bleibt
+     dann stehen. Sie muss dazu direkt in der langen Seite liegen, deshalb
+     trifft die Regel die äußerste Hülle jeder Reiterzeile.
+     top: der Inhalt hat oben --content-top Luft; erst um so viel höher liegt
+     die Zeile bündig unter der Suchleiste.
+     z-index: über der scrollenden Liste, unter der Kopfzeile einer Unterseite (2). */
+  [data-mobile-os="android"] #project-views,
+  [data-mobile-os="android"] .tasks-tools,
+  [data-mobile-os="android"] #media-filters,
+  [data-mobile-os="android"] .cal-head {
+    position: sticky;
+    top: calc(-1 * var(--content-top) - var(--m3-bar-shift, 0px));
+    z-index: 1;
+    background: var(--bg);
+    transition: top var(--m3-hide-time) ease; /* transition: rückt mit der Suchleiste nach, statt zu springen */
+  }
+
+  /* Der Kalenderkopf liegt über Jetzt-Linie und Terminen (styles/calendar.css) */
+  [data-mobile-os="android"] .cal-head {
+    z-index: 3;
+  }
+
+  /* Unterseiten: unter der Kopfzeile, die dort selbst oben stehen bleibt (styles/rows.css) */
+  [data-mobile-os="android"] .page-pills-row,
+  [data-mobile-os="android"] .page-body > .tab-pills,
+  [data-mobile-os="android"] .page-body > .tab-pills-row {
+    position: sticky;
+    top: calc(var(--safe-top) + var(--page-head-top) + var(--search-bar-height));
+    z-index: 1;
+    background: var(--bg);
+  }
+
+  /* Die Hüllen reichen bis an den Geräterand, damit Fläche und Trennlinie
+     nicht am Inhaltsrand abbrechen; der Innenabstand setzt den Inhalt zurück. */
+  [data-mobile-os="android"] #project-views,
+  [data-mobile-os="android"] .tasks-tools,
+  [data-mobile-os="android"] .page-pills-row,
+  [data-mobile-os="android"] .page-body > .tab-pills-row {
+    margin-left: calc(-1 * var(--content-side));
+    margin-right: calc(-1 * var(--content-side));
+    padding-left: var(--content-side);
+    padding-right: var(--content-side);
+  }
+
+  /* Trennlinie unter der ganzen Zeile; als Schatten nach innen, damit sie
+     nichts verschiebt und auch unter den Knöpfen rechts durchläuft */
+  [data-mobile-os="android"] #project-views,
+  [data-mobile-os="android"] .tasks-tools,
+  [data-mobile-os="android"] #media-filters,
+  [data-mobile-os="android"] .page-pills-row,
+  [data-mobile-os="android"] .page-body > .tab-pills,
+  [data-mobile-os="android"] .page-body > .tab-pills-row {
+    box-shadow: inset 0 -1px 0 var(--m3-outline-variant);
+  }
+
+  /* Die Zeile selbst trägt keinen Abstand mehr nach unten — die Trennlinie
+     ist die Grenze; Luft zur Liste kommt danach */
+  [data-mobile-os="android"] .tasks-tools .tab-pills-row,
+  [data-mobile-os="android"] #project-views .tab-pills-row {
+    margin-bottom: 0;
+  }
+
+  [data-mobile-os="android"] .tasks-tools,
+  [data-mobile-os="android"] #project-views,
+  [data-mobile-os="android"] #media-filters,
+  [data-mobile-os="android"] .page-pills-row {
+    margin-bottom: 12px;
+  }
+
+  /* Knöpfe rechts (Plus, Filter) lassen die Trennlinie frei */
+  [data-mobile-os="android"] .tab-pills-tools {
+    bottom: 1px;
+  }
+
+  /* ---------- Die Reiter selbst ---------- */
+
+  [data-mobile-os="android"] .tab-pills {
+    gap: 0;
+  }
+
+  [data-mobile-os="android"] .tab-pills-row {
+    min-height: var(--m3-tab-height);
+  }
+
+  /* position: Bezug für die Linie unter dem aktiven Reiter */
+  [data-mobile-os="android"] .tab-pill {
+    position: relative;
+    height: var(--m3-tab-height);
+    padding: 0 16px;
+    border-radius: 0;
+    background: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--m3-on-surface-variant);
+  }
+
+  [data-mobile-os="android"] .tab-pill.is-active {
+    background: none;
+    color: var(--m3-primary);
+  }
+
+  /* Die Linie unter dem aktiven Reiter: so breit wie sein Inhalt, oben gerundet */
+  [data-mobile-os="android"] .tab-pill.is-active::after {
+    content: "";
+    position: absolute; /* position: sitzt am unteren Rand des Reiters, ohne ihn höher zu machen */
+    left: 16px;
+    right: 16px;
+    bottom: 0;
+    height: var(--m3-tab-indicator);
+    border-radius: var(--m3-tab-indicator) var(--m3-tab-indicator) 0 0;
+    background: var(--m3-primary);
+  }
+
+  [data-mobile-os="android"] .tab-pill .media-count {
+    color: inherit;
+    opacity: 0.7;
+  }
+}

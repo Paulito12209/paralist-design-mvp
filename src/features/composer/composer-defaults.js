@@ -17,6 +17,7 @@ import {
   proposedType,
   resourceFilterTypes,
   resourcePick,
+  types,
 } from "../../data/config.js";
 import { findProjectView } from "../../data/project-views.js";
 import { findEntry, isContainer, mainPlace } from "../../data/queries.js";
@@ -117,5 +118,8 @@ export function pickOverrides(pick) {
     return inbox;
   }
   if (pick === resourcePick.id) return { type: resourcePick.typeId, pick: resourcePick.id };
+  /* Typen ohne eigenen Knopf (Dokument, Zeichnung, Lesezeichen, Medium — etwa
+     aus dem Plus-Menü der Android-Fassung): der Knopf ergibt sich aus dem Typ. */
+  if (!types.some((type) => type.pick && type.id === pick)) return { type: pick };
   return { type: pick, pick };
 }
