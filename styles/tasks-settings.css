@@ -112,11 +112,6 @@ body:has(.nav-shell.is-composing) .view-panel {
   gap: 4px;
 }
 
-/* Das ✕ gehört nur ins Blatt der Android-Fassung (styles/android-sheet.css) */
-.view-panel-close {
-  display: none;
-}
-
 .view-panel-toggle .icon {
   transition: transform var(--tasks-panel-slide) ease; /* transition: das Symbol dreht sich mit */
 }

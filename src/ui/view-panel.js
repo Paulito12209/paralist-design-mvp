@@ -22,8 +22,8 @@
  * der offenen Seite herauf. Wie viel eingeklappt hervorschaut, sagt die
  * CSS-Variable --view-panel-peek an der Karte (ohne sie: --details-head-h).
  * Hinter der Karte liegt ein Schleier, der nur im Blatt zu sehen ist. Im Blatt
- * steht im Kopf statt des Kartensymbols ein ✕ zum Schließen (beide Symbole
- * liegen im Knopf, das Stylesheet zeigt eines).
+ * gibt es keinen Knopf im Kopf: Griff, Schleier, Ziehen nach unten und die
+ * Zurück-Geste schließen es, wie bei Material 3 „Modal bottom sheet“.
  *
  * Von selbst zu: die Karte ist ein Werkzeug für einen Moment, kein fester
  * Teil der Seite. Sie klappt ein, sobald man sich wieder der Seite zuwendet —
@@ -157,7 +157,7 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
       <button class="details-title" type="button">${title}</button>
       <div class="view-panel-actions">${actions}</div>
       <button class="details-link view-panel-toggle" type="button"
-        aria-label="${title}" aria-expanded="false">${icon("panel-open")}${icon("close", "view-panel-close")}</button>
+        aria-label="${title}" aria-expanded="false">${icon("panel-open")}</button>
     </div>
     <div class="view-panel-body"></div>
   `;
