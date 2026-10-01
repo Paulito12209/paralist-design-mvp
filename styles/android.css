@@ -5,6 +5,7 @@
  * unten gleitet die Suchleiste nach oben und die Leiste nach unten weg, beim
  * Scrollen nach oben kommen beide wieder — die Klasse „is-bars-hidden“ an
  * .device setzt src/shell/android-bars.js.
+ * Auch hier: Listeneinträge haben keine Trennlinie am unteren Rand.
  * Alles hier gilt nur mit data-mobile-os="android" an <html> (Einstellungen ›
  * Mehr › Versionen) und unterhalb der Desktop-Breite von 1024px.
  * Pfad: styles/android.css
@@ -229,5 +230,13 @@
     justify-content: flex-start;
     padding-left: var(--m3-fab-gap);
     margin-bottom: var(--m3-fab-gap);
+  }
+
+  /* Listeneinträge ohne Trennlinie am unteren Rand: Material 3 trennt Zeilen
+     durch Abstand, nicht durch Haarlinien. Auf dem Pixel (hohe Pixeldichte)
+     sind die 0.5px-Linien sichtbar, im Browser am Rechner nicht. Gilt für
+     Zeilen (Einträge, Projekte, Aufgaben), Board-Einträge und Lesezeichen. */
+  [data-mobile-os="android"] :is(.workspace-row, .board-row, .bookmark-row) {
+    border-bottom: 0;
   }
 }
