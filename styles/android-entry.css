@@ -29,7 +29,8 @@
  * --head-btn-size        -> Tippfläche des Ketten-Symbols in der Kopfzeile; um so viel rückt
  *                           auch die Kategorie mittig nach (styles/tokens.css)
  * --m3-head-tools-pull   -> um so viel rückt das Ketten-Symbol näher an das Drei-Punkte-Menü
- * --page-tool-size / --page-tool-icon -> Tippfläche und Größe des Symbols hinter „Details“ (styles/tokens.css)
+ * --page-tool-size / --page-tool-icon -> Tippfläche und Größe des Symbols hinter „Details“, auf der Karte
+ *                           wie im Blatt (styles/tokens.css)
  * --m3-sheet-radius      -> Rundung der oberen Ecken des Blatts
  * --m3-sheet-max         -> wie hoch das Blatt höchstens wird (Anteil des Geräts)
  * --m3-surface-container -> Fläche des Blatts
@@ -39,7 +40,7 @@
  * --icon-soft            -> Farbe der Überschrift „Details“, wie auf der Karte (styles/tokens.css)
  * --safe-bottom          -> Platz unter dem Inhalt für die Gestenleiste (styles/tokens.css)
  *
- * Direkt bei ihrer Regel: Luft zwischen „Details“ und dem Symbol (4px), der
+ * Direkt bei ihrer Regel: Luft zwischen „Details“ und dem Symbol (4px, auf der Karte wie im Blatt), der
  * Griff oben (32 × 4px, Material 3) und die Überschrift im Blatt (16px).
  */
 
@@ -128,6 +129,16 @@
     font-size: 16px;
     font-weight: 600;
     color: var(--icon-soft);
+  }
+
+  /* Dasselbe Symbol wie hinter „Details“ auf der Karte, aber umgedreht; nur
+     ein Zeichen, keine Tippfläche. transform: dreht es auf den Kopf, statt ein
+     zweites Symbol zu zeichnen. */
+  [data-mobile-os="android"] .details-sheet-title .icon {
+    width: var(--page-tool-icon);
+    height: var(--page-tool-icon);
+    margin-left: 4px;
+    transform: rotate(180deg);
   }
 
   /* Der Inhalt scrollt in sich (.modal-body, styles/overlays.css); hier ohne

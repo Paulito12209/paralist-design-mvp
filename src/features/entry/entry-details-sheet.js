@@ -22,11 +22,15 @@
  * -----------------------------------
  * sheetLabel -> Überschrift des Blatts und Name für Vorlesehilfen
  *
+ * Hinter der Überschrift steht dasselbe Symbol wie auf der Karte, hier
+ * umgedreht: das Blatt ist die „hochgeklappte“ Karte. Es ist nur ein Zeichen,
+ * kein Knopf.
  * Aussehen in styles/android-entry.css (Klasse .details-sheet).
  */
 
 import { events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
+import { icon } from "../../core/html.js";
 import { entryFacts } from "../../data/entry-facts.js";
 import { findEntry } from "../../data/queries.js";
 import { ui } from "../../data/state.js";
@@ -130,7 +134,7 @@ export function initDetailsSheet(toggled = () => {}) {
   backdrop.hidden = true;
   backdrop.innerHTML = `
     <div class="sheet" role="dialog" aria-modal="true" aria-label="${sheetLabel}">
-      <p class="details-sheet-title">${sheetLabel}</p>
+      <p class="details-sheet-title">${sheetLabel}${icon("panel-open")}</p>
       <div class="modal-body details-sheet-body">
         <div class="details-stats"></div>
         <div class="details-list"></div>
