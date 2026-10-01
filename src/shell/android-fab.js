@@ -1,9 +1,9 @@
 /*
  * Android-Fassung: der Plus-Knopf rechts über der Navigationsleiste und sein
  * Menü. Ein Tipp legt einen Schleier über die App und stapelt rechts die
- * Arten zum Anlegen übereinander, von unten nach oben in der Reihenfolge von
- * `menuItems`. Ein Eintrag öffnet das Eingabefeld mit dieser Art — der
- * Arbeitsbereich entsteht wie auf seiner Seite gleich mit Namensfeld.
+ * Arten zum Anlegen übereinander, von unten nach oben — welche das sind und
+ * was ein Tipp darauf tut, steht in src/shell/create-menu.js (dieselbe Liste
+ * wie im Plus-Menü der iOS-Fassung).
  * Knopf und Menü gibt es immer im Dokument; zu sehen sind sie nur in der
  * Android-Fassung (styles/android-fab.css).
  * Pfad: src/shell/android-fab.js
@@ -11,36 +11,16 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * fabLabel  -> das Wort auf dem Knopf, solange er breit ist
- * menuItems -> was das Menü anbietet, von unten nach oben: Art, Name und
- *              (beim Arbeitsbereich) eigenes Icon; sonst kommt das Icon der Art
- *              aus src/data/config.js
  */
 
-import { emit, events, on } from "../core/bus.js";
+import { events, on } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { escapeHtml, icon } from "../core/html.js";
-import { typeIcon } from "../data/config.js";
-import { addWorkspace } from "../data/mutations.js";
-import { openWorkspacesPage, registerOverlay } from "../ui/router.js";
+import { registerOverlay } from "../ui/router.js";
 import { isAndroidMobile, showBars } from "./android-bars.js";
+import { createFromMenu, createMenuItems } from "./create-menu.js";
 
 const fabLabel = "Neu";
-
-/* Die Arbeitsbereiche sind keine Einträge und haben darum keinen Typ — sie
-   bekommen ihr Icon hier. */
-const workspaceItem = "arbeitsbereich";
-
-const menuItems = [
-  { type: "termin", label: "Termin" },
-  { type: "aufgabe", label: "Aufgabe" },
-  { type: "notiz", label: "Notiz" },
-  { type: "projekt", label: "Projekt" },
-  { type: workspaceItem, label: "Arbeitsbereich", icon: "layers" },
-  { type: "dokument", label: "Dokument" },
-  { type: "zeichnung", label: "Zeichnung" },
-  { type: "lesezeichen", label: "Lesezeichen" },
-  { type: "medien", label: "Medium" },
-];
 
 let fab = null;
 let menu = null;
@@ -60,13 +40,12 @@ function buildFab() {
 /* Das Menü: oben steht der letzte Eintrag, deshalb umgekehrt aufgebaut.
    --i zählt von unten, damit der unterste zuerst hereingleitet. */
 function buildMenu() {
-  const items = menuItems
-    .map((item, index) => ({ ...item, index }))
+  const items = createMenuItems()
     .reverse()
     .map(
       (item) => `
         <button class="m3-fab-menu-item" type="button" role="menuitem" data-fab-create="${item.type}" style="--i:${item.index}">
-          ${icon(item.icon || typeIcon(item.type))}<span>${escapeHtml(item.label)}</span>
+          ${icon(item.icon)}<span>${escapeHtml(item.label)}</span>
         </button>`
     )
     .join("");
@@ -112,16 +91,11 @@ export function closeFabMenu() {
   document.removeEventListener("keydown", onKey);
 }
 
-/* Ein Eintrag gewählt: Arbeitsbereich direkt auf seiner Seite, sonst das Eingabefeld. */
+/* Ein Eintrag gewählt: Menü zu, Leisten zurück, dann anlegen (create-menu.js). */
 function create(type) {
   closeFabMenu();
   showBars();
-  if (type === workspaceItem) {
-    openWorkspacesPage();
-    addWorkspace();
-    return;
-  }
-  emit(events.createRequested, type);
+  createFromMenu(type);
 }
 
 function onMenuClick(event) {

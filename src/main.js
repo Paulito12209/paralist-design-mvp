@@ -39,6 +39,8 @@ import { initLifecycle } from "./shell/lifecycle.js";
 import { initNavBar } from "./shell/nav-bar.js";
 import { initAndroidBars } from "./shell/android-bars.js";
 import { initAndroidFab } from "./shell/android-fab.js";
+import { initIosAdd } from "./shell/ios-add.js";
+import { initIosBars } from "./shell/ios-bars.js";
 import { checkReminders, initReminderBanner } from "./shell/reminder-banner.js";
 import { initSearchBar } from "./shell/search-bar.js";
 import { checkForUpdate, initUpdatePrompt } from "./shell/update-prompt.js";
@@ -129,6 +131,8 @@ function initShell() {
   initNavBar();
   initAndroidBars();
   initAndroidFab();
+  initIosBars();
+  initIosAdd();
   initKeyboardInset();
   initWriting();
   initWeekFill();

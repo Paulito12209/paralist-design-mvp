@@ -1,0 +1,96 @@
+/*
+ * iOS-Fassung, Plus-Menü: ein Apple-Menü als Glas-Karte direkt über dem
+ * Plus-Knopf. Jede Zeile trägt links den Namen und rechts das Symbol, feine
+ * Linien trennen die Zeilen; der Eintrag, der dem Knopf am nächsten steht,
+ * kommt zuerst. Es wächst aus der Ecke des Knopfs heraus und verdunkelt die
+ * App nicht — ein Tipp daneben schließt es. Aufgebaut in src/shell/ios-add.js.
+ * Pfad: styles/ios-menu.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-ios.css)
+ * -----------------------------------
+ * --ios-menu-bg      -> Fläche der Karte
+ * --ios-menu-width   -> Breite der Karte
+ * --ios-menu-row     -> Höhe einer Zeile
+ * --ios-menu-radius  -> Rundung der Karte
+ * --ios-glass-border / -shadow / -blur -> Rand, Schatten und Unschärfe des Glases
+ * --ios-separator    -> Linie zwischen den Zeilen
+ * --ios-menu-bottom  -> Abstand der Karte vom unteren Rand; setzt ios-add.js
+ *                       beim Öffnen auf die Lage des Plus-Knopfs
+ *
+ * Schriftgröße der Zeilen: 17px direkt bei .ios-menu-row (Apple „Body“).
+ */
+
+/* position/inset: unsichtbare Fläche über dem ganzen Gerät, die Tipps daneben auffängt.
+   z-index 30: über Kopfzeile und Leiste (20), unter den Blättern (ab 36). */
+.ios-menu {
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+}
+
+.ios-menu[hidden] {
+  display: none;
+}
+
+/* Die Karte wächst aus der rechten unteren Ecke, wo der Knopf sitzt.
+   backdrop-filter: Liquid Glass verwischt die App dahinter. */
+.ios-menu-card {
+  position: absolute;
+  right: var(--nav-side);
+  bottom: var(--ios-menu-bottom);
+  width: var(--ios-menu-width);
+  max-height: calc(100% - var(--ios-menu-bottom) - var(--safe-top) - 16px);
+  overflow-y: auto; /* overflow: nur auf sehr niedrigen Geräten nötig */
+  scrollbar-width: none;
+  padding: 6px 0;
+  border-radius: var(--ios-menu-radius);
+  background: var(--ios-menu-bg);
+  box-shadow: inset 0 0 0 1px var(--ios-glass-border), 0 10px 40px rgba(0, 0, 0, 0.18);
+  backdrop-filter: blur(var(--ios-glass-blur)) saturate(180%);
+  -webkit-backdrop-filter: blur(var(--ios-glass-blur)) saturate(180%);
+  transform-origin: bottom right; /* transform-origin: das Menü wächst aus dem Knopf heraus */
+  transform: scale(0.4);
+  opacity: 0;
+  transition: transform 260ms cubic-bezier(0.2, 0.9, 0.3, 1.15), opacity 160ms ease; /* transition: federndes Aufgehen */
+}
+
+.ios-menu.is-open .ios-menu-card {
+  transform: none;
+  opacity: 1;
+}
+
+/* Name links, Symbol rechts — wie in jedem Menü von iOS */
+.ios-menu-row {
+  position: relative; /* position: Bezug für die Trennlinie */
+  width: 100%;
+  min-height: var(--ios-menu-row);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 18px;
+  font-size: 17px;
+  color: var(--ios-label);
+  text-align: left;
+}
+
+.ios-menu-row .icon {
+  width: 22px;
+  height: 22px;
+  flex: 0 0 auto;
+}
+
+/* Feine Linie zwischen den Zeilen, eingerückt wie bei Apple */
+.ios-menu-row + .ios-menu-row::before {
+  content: "";
+  position: absolute; /* position: sitzt am oberen Rand der Zeile, ohne Platz zu nehmen */
+  left: 18px;
+  right: 0;
+  top: 0;
+  height: 0.5px;
+  background: var(--ios-separator);
+}
+
+.ios-menu-row:active {
+  background: var(--ios-fill);
+}

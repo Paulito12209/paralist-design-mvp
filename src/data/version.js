@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "ae8c1529b682";
+export const appVersion = "980cbbeec29f";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -192,6 +192,7 @@ export const appFiles = [
   "src/main.js",
   "src/shell/android-bars.js",
   "src/shell/android-fab.js",
+  "src/shell/create-menu.js",
   "src/shell/desk-head.js",
   "src/shell/desk-nav-parts.js",
   "src/shell/desk-nav.js",
@@ -199,11 +200,15 @@ export const appFiles = [
   "src/shell/desk-rail-visuals.js",
   "src/shell/desk-rail.js",
   "src/shell/desk.js",
+  "src/shell/ios-add.js",
+  "src/shell/ios-bars.js",
   "src/shell/keyboard-inset.js",
   "src/shell/level-gauge.js",
   "src/shell/lifecycle.js",
   "src/shell/nav-bar.js",
+  "src/shell/platform.js",
   "src/shell/reminder-banner.js",
+  "src/shell/scroll-direction.js",
   "src/shell/search-bar.js",
   "src/shell/search-palette.js",
   "src/shell/search-voice.js",
@@ -316,6 +321,9 @@ export const appFiles = [
   "styles/entry.css",
   "styles/filter-sheet.css",
   "styles/info-dialog.css",
+  "styles/ios-menu.css",
+  "styles/ios-segmented.css",
+  "styles/ios.css",
   "styles/media-desk.css",
   "styles/media.css",
   "styles/milestones.css",
@@ -351,6 +359,7 @@ export const appFiles = [
   "styles/tokens-android.css",
   "styles/tokens-dark.css",
   "styles/tokens-desk.css",
+  "styles/tokens-ios.css",
   "styles/tokens-pages.css",
   "styles/tokens.css",
   "styles/top-bar.css",

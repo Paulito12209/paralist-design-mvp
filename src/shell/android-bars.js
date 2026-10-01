@@ -1,37 +1,32 @@
 /*
  * Android-Fassung: beim Scrollen nach unten gleiten Suchleiste und
  * Navigationsleiste aus dem Bild, beim Scrollen nach oben kommen sie wieder —
- * wie in Google Mail. Hier wird nur die Richtung erkannt und die Klasse
- * „is-bars-hidden“ an .device gesetzt; wie es aussieht, steht in
- * styles/android.css, styles/android-tabs.css und styles/android-fab.css.
+ * wie in Google Mail. Hier wird nur die Klasse „is-bars-hidden“ an .device
+ * gesetzt; die Richtung erkennt src/shell/scroll-direction.js, wie es aussieht,
+ * steht in styles/android.css, styles/android-tabs.css und styles/android-fab.css.
  * Pfad: src/shell/android-bars.js
  *
- * ANPASSBARE WERTE IN DIESER DATEI
- * -----------------------------------
- * scrollSlack -> wie viele Pixel man in eine Richtung scrollen muss, bevor die
- *                Leisten reagieren (kleiner = nervöser, größer = träger)
- * topZone     -> so nah am Seitenanfang bleiben die Leisten immer stehen
+ * Keine anpassbaren visuellen Werte: wie früh die Leisten reagieren, steht in
+ * src/shell/scroll-direction.js, wie schnell sie gleiten, in
+ * styles/tokens-android.css (--m3-hide-time).
  */
 
 import { events, on } from "../core/bus.js";
 import { dom } from "../core/dom.js";
-import { isDesk } from "../ui/desk-mode.js";
+import { isMobileOs } from "./platform.js";
+import { directionTracker } from "./scroll-direction.js";
 
-const scrollSlack = 12;
-const topZone = 48;
-
-/* Wo die Richtung zuletzt gewechselt hat; erst ab scrollSlack Abstand dazu zählt sie. */
-let anchor = 0;
+const direction = directionTracker();
 
 /** Ist gerade die Android-Fassung am Handy oder Tablet zu sehen? */
 export function isAndroidMobile() {
-  return document.documentElement.dataset.mobileOs === "android" && !isDesk();
+  return isMobileOs("android");
 }
 
 /** Beide Leisten zurückholen — beim Seitenwechsel, Anlegen und Öffnen des Menüs. */
 export function showBars() {
   dom.device.classList.remove("is-bars-hidden");
-  anchor = dom.content.scrollTop;
+  direction.reset(dom.content.scrollTop);
 }
 
 /* Beim Suchen und Anlegen bleiben die Leisten stehen: dort stehen Knöpfe darin. */
@@ -41,24 +36,10 @@ function barsPinned() {
 
 function onScroll() {
   if (!isAndroidMobile() || barsPinned()) return;
-  const y = dom.content.scrollTop;
   const hidden = dom.device.classList.contains("is-bars-hidden");
-  if (y <= topZone) {
-    if (hidden) showBars();
-    anchor = y;
-    return;
-  }
-  const moved = y - anchor;
-  if (!hidden && moved > scrollSlack) {
-    dom.device.classList.add("is-bars-hidden");
-    anchor = y;
-  } else if (hidden && moved < -scrollSlack) {
-    showBars();
-  } else if ((hidden && moved > 0) || (!hidden && moved < 0)) {
-    /* In der Richtung weitergescrollt, in der die Leisten schon stehen: der
-       Bezugspunkt wandert mit, damit eine kleine Gegenbewegung genügt. */
-    anchor = y;
-  }
+  const turn = direction.step(dom.content.scrollTop, hidden);
+  if (turn === "away") dom.device.classList.add("is-bars-hidden");
+  else if (turn === "back") dom.device.classList.remove("is-bars-hidden");
 }
 
 /** Den Zuhörer am Inhalt anmelden. */

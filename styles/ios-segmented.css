@@ -1,0 +1,98 @@
+/*
+ * iOS-Fassung, Reiter als Segmented Control: alle Ansichten einer Zeile
+ * („Alle“, eigene Ansichten, Bilder/Videos …) liegen in einer grauen Kapsel,
+ * das gewählte Segment liegt hell und leicht erhaben darauf. Zwischen zwei
+ * nicht gewählten Segmenten steht eine feine Trennlinie. Passen nicht alle
+ * hinein, lässt sich die Kapsel waagerecht schieben. Knöpfe rechts der Zeile
+ * (Plus, Filter) stehen außerhalb der Kapsel.
+ * Gilt nur mit data-mobile-os="ios" an <html> und unterhalb von 1024px.
+ * Pfad: styles/ios-segmented.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-ios.css)
+ * -----------------------------------
+ * --ios-fill          -> Grund der Kapsel
+ * --ios-segment-thumb -> das gewählte Segment
+ * --ios-separator     -> Trennlinie zwischen nicht gewählten Segmenten
+ * --ios-label         -> Schrift der Segmente
+ *
+ * Schriftgröße der Segmente: 13px direkt bei .tab-pill (wie Apples Segmented Control).
+ */
+
+@media (max-width: 1023px) {
+  /* Die Kapsel ist so breit wie ihre Segmente, höchstens so breit wie die Zeile */
+  [data-mobile-os="ios"] .tab-pills {
+    gap: 0;
+    width: fit-content;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    padding: 2px;
+    border-radius: 999px; /* border-radius: Kapsel wie in iOS 26/27 */
+    background: var(--ios-fill);
+    scroll-padding-inline: 2px;
+  }
+
+  /* In der Zeile mit Knöpfen rechts: Kapsel links, Knöpfe in der Zeile statt darüber */
+  [data-mobile-os="ios"] .tab-pills-row .tab-pills,
+  [data-mobile-os="ios"] .page-pills-row .page-pills {
+    flex: 0 1 auto;
+    padding-right: 2px;
+    scroll-padding-right: 2px;
+  }
+
+  [data-mobile-os="ios"] .tab-pills-tools {
+    position: static;
+    margin-left: auto;
+    padding-left: 12px;
+  }
+
+  [data-mobile-os="ios"] .tab-pills-fade {
+    display: none;
+  }
+
+  [data-mobile-os="ios"] .tab-pills-end {
+    padding-right: 0;
+    background: none;
+  }
+
+  /* position: Bezug für die Trennlinie davor */
+  [data-mobile-os="ios"] .tab-pill {
+    position: relative;
+    min-height: 30px;
+    padding: 5px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--ios-label);
+    background: none;
+  }
+
+  /* Das gewählte Segment: heller Daumen mit kleinem Schatten wie bei Apple */
+  [data-mobile-os="ios"] .tab-pill.is-active {
+    color: var(--ios-label);
+    background: var(--ios-segment-thumb);
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 3px 1px rgba(0, 0, 0, 0.04);
+  }
+
+  /* Trennlinie zwischen zwei nicht gewählten Segmenten; neben dem gewählten fällt sie weg */
+  [data-mobile-os="ios"] .tab-pill:not(.is-active) + .tab-pill:not(.is-active)::before {
+    content: "";
+    position: absolute; /* position: steht am linken Rand, ohne Platz zu nehmen */
+    left: 0;
+    top: 25%;
+    bottom: 25%;
+    width: 1px;
+    background: var(--ios-separator);
+  }
+
+  [data-mobile-os="ios"] .tab-pill .media-count {
+    color: var(--ios-secondary-label);
+  }
+
+  /* Das kleine Plus für eine neue Ansicht ist das letzte, schmale Segment */
+  [data-mobile-os="ios"] .tab-pills .tab-pill-add {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+  }
+}

@@ -1,0 +1,300 @@
+/*
+ * iOS-Fassung, Kopf und Fuß nach Apples Vorgaben für iOS 27:
+ * - oben links die Stufe, rechts runde Glas-Knöpfe für Suche und Profil; das
+ *   Suchfeld erscheint erst beim Suchen. Beim Scrollen wandert der große Titel
+ *   klein in die Mitte der Kopfzeile, und die Kopfzeile bekommt die harte
+ *   Scrollkante von iOS 27: Unschärfe mit feiner Linie darunter.
+ * - unten eine schwebende Glas-Kapsel mit den vier Reitern, rechts daneben der
+ *   hervorgehobene runde Plus-Knopf. Beim Scrollen nach unten schrumpft die
+ *   Kapsel auf den gewählten Reiter; ein Tipp darauf oder Scrollen nach oben
+ *   holt sie zurück.
+ * Klassen an .device setzt src/shell/ios-bars.js: is-scroll-edge,
+ * is-title-collapsed, is-tabbar-min. Knöpfe und Menü baut src/shell/ios-add.js.
+ * Alles gilt nur mit data-mobile-os="ios" an <html> und unterhalb von 1024px.
+ * Pfad: styles/ios.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-ios.css)
+ * -----------------------------------
+ * --ios-glass-bg / -border / -shadow / -blur -> das Glas von Leiste und Knöpfen
+ * --ios-tab-selected-bg  -> Fläche hinter dem gewählten Reiter
+ * --ios-tint             -> Farbe des gewählten Reiters und des Plus-Knopfs
+ * --ios-bar-height       -> Höhe der Kopfzeile
+ * --ios-btn-size         -> runde Knöpfe oben
+ * --ios-tab-min-width    -> Breite der geschrumpften Leiste
+ * --ios-motion           -> Tempo von Schrumpfen, Titel und Scrollkante
+ * --nav-height / --nav-side / --nav-bottom -> Höhe und Lage der Leiste (dort überschrieben)
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel: kleiner Titel
+ * 17px (Apple „Headline“), Namen unter den Icons 10px, Suchtext 17px.
+ */
+
+/* Außerhalb der iOS-Fassung gibt es die beiden Zusätze nicht */
+.ios-search-btn,
+.ios-add,
+.ios-inline-title {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  /* ---------- Kopfzeile ---------- */
+
+  /* position: liegt über dem Inhalt, damit er unter der Scrollkante durchläuft */
+  [data-mobile-os="ios"] .top-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: calc(var(--safe-top) + var(--ios-bar-height));
+    mask-image: none;
+    margin-bottom: 0;
+    padding: var(--safe-top) 16px 0;
+    gap: 10px;
+    background: transparent;
+    transition: background-color var(--ios-motion) ease, box-shadow var(--ios-motion) ease; /* transition: die Kante blendet weich ein */
+  }
+
+  /* Die harte Scrollkante von iOS 27: verwischter Grund und eine feine Linie.
+     backdrop-filter: verwischt den Inhalt, der unter der Kopfzeile durchläuft. */
+  [data-mobile-os="ios"] .device.is-scroll-edge .top-bar {
+    background: color-mix(in srgb, var(--bg) 78%, transparent);
+    backdrop-filter: blur(var(--ios-glass-blur)) saturate(180%);
+    -webkit-backdrop-filter: blur(var(--ios-glass-blur)) saturate(180%);
+    box-shadow: 0 0.5px 0 var(--ios-separator);
+  }
+
+  [data-mobile-os="ios"] body:not(.is-subpage) .content {
+    padding-top: calc(var(--safe-top) + var(--ios-bar-height) + var(--content-top));
+  }
+
+  [data-mobile-os="ios"] .screen-title {
+    letter-spacing: 0;
+  }
+
+  /* Das Suchfeld erscheint erst beim Suchen; bis dahin steht der runde Knopf */
+  [data-mobile-os="ios"] body:not(.is-search) .top-bar .search {
+    display: none;
+  }
+
+  [data-mobile-os="ios"] .top-bar .search {
+    height: var(--ios-btn-size);
+    border-radius: calc(var(--ios-btn-size) / 2); /* border-radius: Kapsel wie Apples Suchfeld */
+    background: var(--ios-fill);
+  }
+
+  [data-mobile-os="ios"] .top-bar .search input {
+    font-size: 17px;
+  }
+
+  [data-mobile-os="ios"] .top-bar .search-icon {
+    color: var(--ios-secondary-label);
+  }
+
+  /* Runde Glas-Knöpfe: Suche und Profil rechts, wie Apples Symbolleisten-Knöpfe */
+  [data-mobile-os="ios"] .ios-search-btn,
+  [data-mobile-os="ios"] .top-bar .avatar {
+    display: grid;
+    place-items: center;
+    width: var(--ios-btn-size);
+    height: var(--ios-btn-size);
+    border-radius: 50%; /* border-radius: aus dem Quadrat wird der Kreis */
+    color: var(--ios-label);
+    background: var(--ios-glass-bg);
+    box-shadow: inset 0 0 0 1px var(--ios-glass-border), var(--ios-glass-shadow);
+    backdrop-filter: blur(var(--ios-glass-blur)); /* backdrop-filter: Glas verwischt, was dahinter liegt */
+    -webkit-backdrop-filter: blur(var(--ios-glass-blur));
+  }
+
+  /* margin-left: auto schiebt Suche und Profil an den rechten Rand */
+  [data-mobile-os="ios"] .ios-search-btn {
+    margin-left: auto;
+  }
+
+  [data-mobile-os="ios"] body.is-search .ios-search-btn {
+    display: none;
+  }
+
+  [data-mobile-os="ios"] .ios-search-btn .icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  [data-mobile-os="ios"] .top-bar .avatar .icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  [data-mobile-os="ios"] .top-bar .avatar .avatar-photo {
+    width: var(--ios-btn-size);
+    height: var(--ios-btn-size);
+  }
+
+  [data-mobile-os="ios"] .ios-search-btn:active,
+  [data-mobile-os="ios"] .top-bar .avatar:active {
+    transform: scale(0.94); /* transform: Glas gibt beim Drücken nach wie in iOS */
+  }
+
+  /* Kleiner Titel in der Mitte der Kopfzeile, sobald der große weggescrollt ist.
+     position: steht unabhängig von den Knöpfen genau in der Mitte. */
+  [data-mobile-os="ios"] .ios-inline-title {
+    display: block;
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    max-width: 46%;
+    height: var(--ios-bar-height);
+    line-height: var(--ios-bar-height);
+    transform: translateX(-50%); /* transform: zieht den Titel um seine halbe Breite zurück in die Mitte */
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ios-label);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0;
+    pointer-events: none; /* pointer-events: Tipps gehen an die Kopfzeile darunter */
+    transition: opacity var(--ios-motion) ease;
+  }
+
+  [data-mobile-os="ios"] .device.is-title-collapsed .ios-inline-title {
+    opacity: 1;
+  }
+
+  [data-mobile-os="ios"] body.is-search .ios-inline-title {
+    display: none;
+  }
+
+  /* Zurück und Menü auf Unterseiten: dieselben runden Glas-Knöpfe */
+  [data-mobile-os="ios"] .page-head .back-btn,
+  [data-mobile-os="ios"] .page-head .head-btn {
+    width: var(--ios-btn-size);
+    height: var(--ios-btn-size);
+    border-radius: 50%;
+    color: var(--ios-label);
+    background: var(--ios-glass-bg);
+    box-shadow: inset 0 0 0 1px var(--ios-glass-border), var(--ios-glass-shadow);
+  }
+
+  /* ---------- Tab-Leiste ---------- */
+
+  /* Rechts bleibt Platz für den runden Plus-Knopf daneben */
+  [data-mobile-os="ios"] .nav-shell {
+    margin-right: calc(var(--nav-height) + 10px);
+    max-width: 100%;
+    background: var(--ios-glass-bg);
+    box-shadow: inset 0 0 0 1px var(--ios-glass-border), var(--ios-glass-shadow);
+    backdrop-filter: blur(var(--ios-glass-blur)) saturate(180%); /* backdrop-filter: Liquid Glass */
+    -webkit-backdrop-filter: blur(var(--ios-glass-blur)) saturate(180%);
+    transition: max-width var(--ios-motion) cubic-bezier(0.3, 0.8, 0.3, 1); /* transition: schrumpft weich */
+  }
+
+  /* overflow: beim Schrumpfen verschwinden die übrigen Reiter hinter dem Rand.
+     Nicht beim Anlegen — dort schweben die Anhänge über dem Container. */
+  [data-mobile-os="ios"] .nav-shell:not(.is-composing) {
+    overflow: hidden;
+  }
+
+  [data-mobile-os="ios"] .nav-shell.is-composing {
+    margin-right: 0;
+  }
+
+  [data-mobile-os="ios"] .tab-add {
+    display: none;
+  }
+
+  [data-mobile-os="ios"] .tab-bar {
+    justify-content: space-between;
+  }
+
+  /* Vier gleich breite Reiter; flex-grow lässt sie beim Schrumpfen weich zusammenfallen */
+  [data-mobile-os="ios"] .tab-btn {
+    flex: 1 1 0;
+    min-width: 0;
+    justify-content: center;
+    color: var(--ios-label);
+    transition: flex-grow var(--ios-motion) ease, opacity var(--ios-motion) ease;
+  }
+
+  [data-mobile-os="ios"] .tab-btn:not(.is-active) {
+    opacity: 1;
+  }
+
+  [data-mobile-os="ios"] .tab-btn::after {
+    inset: 0;
+  }
+
+  /* Der gewählte Reiter liegt auf einer Kapsel, so hoch wie die Leiste innen */
+  [data-mobile-os="ios"] .tab-circle,
+  [data-mobile-os="ios"] .tab-bar.show-labels .tab-circle {
+    width: 100%;
+    height: calc(var(--nav-height) - 2 * var(--nav-inner-pad));
+    border-radius: 999px;
+    gap: 1px;
+    padding-bottom: 0;
+  }
+
+  [data-mobile-os="ios"] .tab-btn.is-active .tab-circle {
+    background: var(--ios-tab-selected-bg);
+    color: var(--ios-tint);
+  }
+
+  [data-mobile-os="ios"] .tab-btn .icon {
+    width: 27px;
+    height: 27px;
+  }
+
+  [data-mobile-os="ios"] .tab-bar.show-labels .tab-btn .icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  [data-mobile-os="ios"] .tab-label {
+    font-size: 10px;
+    font-weight: 600;
+  }
+
+  /* Geschrumpft: nur der gewählte Reiter bleibt, die übrigen fallen zusammen */
+  [data-mobile-os="ios"] .device.is-tabbar-min .nav-shell:not(.is-composing) {
+    max-width: var(--ios-tab-min-width);
+  }
+
+  [data-mobile-os="ios"] .device.is-tabbar-min .tab-btn:not(.is-active) {
+    flex-grow: 0;
+    opacity: 0;
+    overflow: hidden;
+    pointer-events: none; /* pointer-events: unsichtbare Reiter fangen keinen Tipp */
+  }
+
+  /* ---------- Plus-Knopf ---------- */
+
+  /* position: rechts neben der Leiste, auf derselben Grundlinie wie sie */
+  [data-mobile-os="ios"] .ios-add {
+    display: grid;
+    place-items: center;
+    position: absolute;
+    right: var(--nav-side);
+    bottom: calc(var(--nav-bottom) + var(--safe-bottom));
+    width: var(--nav-height);
+    height: var(--nav-height);
+    border-radius: 50%; /* border-radius: runder Knopf */
+    background: var(--ios-tint);
+    color: var(--ios-on-tint);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22), var(--ios-glass-shadow);
+    transition: transform 160ms ease; /* transition: federt beim Drücken */
+  }
+
+  [data-mobile-os="ios"] .ios-add .icon {
+    width: 28px;
+    height: 28px;
+  }
+
+  [data-mobile-os="ios"] .ios-add:active,
+  [data-mobile-os="ios"] .ios-add[aria-expanded="true"] {
+    transform: scale(0.92); /* transform: Glas gibt nach wie in iOS */
+  }
+
+  /* Beim Suchen und Anlegen hat der Knopf nichts zu tun */
+  [data-mobile-os="ios"] body.is-search .ios-add,
+  [data-mobile-os="ios"] .bottom-bar:has(.nav-shell.is-composing) .ios-add {
+    display: none;
+  }
+}

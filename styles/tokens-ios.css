@@ -1,0 +1,126 @@
+/*
+ * Die Werte der iOS-Fassung (Einstellungen › Mehr › Versionen › iOS). Sie
+ * gelten nur, solange an <html> data-mobile-os="ios" steht; die Regeln dazu
+ * stehen in styles/ios.css, styles/ios-segmented.css und styles/ios-menu.css
+ * und greifen nur unterhalb der Desktop-Breite. Farben und Maße folgen
+ * Apples Vorgaben für iOS 27: Systemfarben, Liquid Glass mit weniger
+ * Durchsicht und klaren Rändern statt Schatten, im Dunkeln hellere Glasflächen
+ * und eine dunklere Fläche hinter dem gewählten Reiter.
+ * Pfad: styles/tokens-ios.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * FARBEN (je hell und dunkel)
+ * --ios-tint              -> Akzentblau (systemBlue): gewählter Reiter, Plus-Knopf
+ * --ios-on-tint           -> Plus-Zeichen auf dem blauen Knopf
+ * --ios-label             -> Schrift (label)
+ * --ios-secondary-label   -> nicht gewählte Reiter (secondaryLabel)
+ * --ios-separator         -> feine Linien: Scrollkante, Trennlinien im Menü und Segment
+ * --ios-fill              -> Grund des Segmented Control (tertiarySystemFill)
+ * --ios-segment-thumb     -> das gewählte Segment, das darauf liegt
+ * --ios-glass-bg          -> Glasfläche von Tab-Leiste, runden Knöpfen und Kopfzeile beim Scrollen
+ * --ios-glass-border      -> der klare Rand des Glases (iOS 27: Rand statt Schlagschatten)
+ * --ios-glass-shadow      -> nur ein Hauch Schatten unter schwebendem Glas
+ * --ios-tab-selected-bg   -> Fläche hinter dem gewählten Reiter in der Leiste
+ * --ios-menu-bg           -> Fläche des Plus-Menüs
+ * Dazu überschreibt die Fassung Grundwerte aus styles/tokens.css: --card weiß bzw.
+ * #1c1c1e (secondarySystemGroupedBackground), --bg im Dunkeln Schwarz, großer
+ * Titel 34px fett, Leiste 62px hoch und 16px vom Rand.
+ * MASSE
+ * --ios-glass-blur        -> wie stark das Glas den Inhalt dahinter verwischt
+ * --ios-bar-height        -> Höhe der Kopfzeile oben (Navigationsleiste: 44pt plus Luft)
+ * --ios-btn-size          -> runde Glas-Knöpfe oben (Suche, Profil): Apples 44pt-Tippfläche
+ * --ios-tab-min-width     -> Breite der Tab-Leiste, wenn sie beim Scrollen geschrumpft ist
+ * --ios-motion            -> Tempo von Schrumpfen, Titel und Scrollkante
+ * --ios-menu-width        -> Breite des Plus-Menüs
+ * --ios-menu-row          -> Höhe einer Zeile im Plus-Menü
+ * --ios-menu-radius       -> Rundung des Plus-Menüs
+ */
+
+:root[data-mobile-os="ios"] {
+  --ios-tint: #007aff;
+  --ios-on-tint: #ffffff;
+  --ios-label: #000000;
+  --ios-secondary-label: rgba(60, 60, 67, 0.6);
+  --ios-separator: rgba(60, 60, 67, 0.29);
+  --ios-fill: rgba(118, 118, 128, 0.12);
+  --ios-segment-thumb: #ffffff;
+  --ios-glass-bg: rgba(255, 255, 255, 0.82);
+  --ios-glass-border: rgba(0, 0, 0, 0.08);
+  --ios-glass-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
+  --ios-tab-selected-bg: rgba(118, 118, 128, 0.16);
+  --ios-menu-bg: rgba(250, 250, 252, 0.9);
+
+  --ios-glass-blur: 24px;
+  --ios-bar-height: 60px;
+  --ios-btn-size: 44px;
+  --ios-tab-min-width: 74px;
+  --ios-motion: 280ms;
+  --ios-menu-width: 250px;
+  --ios-menu-row: 46px;
+  --ios-menu-radius: 24px;
+}
+
+/* Grundwerte der App nur am Handy und Tablet: der Desktop behält seine eigenen */
+@media (max-width: 1023px) {
+  :root[data-mobile-os="ios"] {
+    --card: #ffffff;
+    --overview-card-bg: #ffffff;
+    --title-size: 34px;
+    --title-weight: 700;
+    --content-top: 12px;
+    --nav-height: 62px;
+    --nav-side: 16px;
+    --nav-bottom: 14px;
+    --nav-inner-pad: 4px;
+    --tab-space: 104px;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-mobile-os="ios"]:not([data-theme="light"]) {
+    --ios-tint: #0a84ff;
+    --ios-label: #ffffff;
+    --ios-secondary-label: rgba(235, 235, 245, 0.6);
+    --ios-separator: rgba(84, 84, 88, 0.65);
+    --ios-fill: rgba(118, 118, 128, 0.24);
+    --ios-segment-thumb: #636366;
+    --ios-glass-bg: rgba(58, 58, 62, 0.78);
+    --ios-glass-border: rgba(255, 255, 255, 0.14);
+    --ios-glass-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+    --ios-tab-selected-bg: rgba(0, 0, 0, 0.32);
+    --ios-menu-bg: rgba(44, 44, 48, 0.9);
+  }
+}
+
+/* Dunkelmodus fest in den Einstellungen gewählt: dieselben Werte wie oben */
+:root[data-mobile-os="ios"][data-theme="dark"] {
+  --ios-tint: #0a84ff;
+  --ios-label: #ffffff;
+  --ios-secondary-label: rgba(235, 235, 245, 0.6);
+  --ios-separator: rgba(84, 84, 88, 0.65);
+  --ios-fill: rgba(118, 118, 128, 0.24);
+  --ios-segment-thumb: #636366;
+  --ios-glass-bg: rgba(58, 58, 62, 0.78);
+  --ios-glass-border: rgba(255, 255, 255, 0.14);
+  --ios-glass-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --ios-tab-selected-bg: rgba(0, 0, 0, 0.32);
+  --ios-menu-bg: rgba(44, 44, 48, 0.9);
+}
+
+/* Dunkle Grundwerte ebenso nur unterhalb der Desktop-Breite */
+@media (max-width: 1023px) and (prefers-color-scheme: dark) {
+  :root[data-mobile-os="ios"]:not([data-theme="light"]) {
+    --bg: #000000;
+    --card: #1c1c1e;
+    --overview-card-bg: #1c1c1e;
+  }
+}
+
+@media (max-width: 1023px) {
+  :root[data-mobile-os="ios"][data-theme="dark"] {
+    --bg: #000000;
+    --card: #1c1c1e;
+    --overview-card-bg: #1c1c1e;
+  }
+}
