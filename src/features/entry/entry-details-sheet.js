@@ -8,7 +8,12 @@
  * und Plus-Knopf, und dahinter liegt ein Schleier.
  *
  * Schließen: Tipp auf den Schleier, Escape, das Blatt nach unten ziehen
- * (src/ui/modal-pull.js) oder die Seite wechseln. Ändert sich der Eintrag,
+ * (src/ui/modal-pull.js), die Zurück-Geste bzw. Browser-Zurück oder die
+ * Seite wechseln. Damit Zurück zuerst nur das Blatt schließt, legt es beim
+ * Öffnen einen eigenen Schritt in den Verlauf (Merkmal detailsSheet);
+ * schließt man es anders, wird dieser Schritt still wieder verbraucht — wie
+ * beim Auswahlmodus (src/ui/selection.js). Vorwärts öffnet es wieder.
+ * Ändert sich der Eintrag,
  * während es offen ist (Status im Auswahl-Blatt darüber), zeichnet
  * entry-details.js es über refreshDetailsSheet neu.
  * Pfad: src/features/entry/entry-details-sheet.js
@@ -27,12 +32,18 @@ import { findEntry } from "../../data/queries.js";
 import { ui } from "../../data/state.js";
 import { fillDetails, handleCardClick } from "../../ui/details-card.js";
 import { bindModalPull, clearModalPull } from "../../ui/modal-pull.js";
+import { addPopGuard } from "../../ui/router-restore.js";
+import { closeSheet } from "../../ui/sheet.js";
+import { isViewActive } from "../../ui/views.js";
 
 const sheetLabel = "Details";
 
 let backdrop = null;
 let statsBox = null;
 let listBox = null;
+/* Läuft gerade das eigene history.back() nach einem Schließen per Schleier,
+   Ziehen oder Escape? Dann ist der folgende Verlaufsschritt kein Seitenwechsel. */
+let ownPop = false;
 /* Wird beim Öffnen und Schließen benachrichtigt — die Karte hält damit ihr Symbol auf Stand */
 let onToggle = () => {};
 
@@ -48,9 +59,13 @@ function onKey(event) {
   if (event.key === "Escape") closeDetailsSheet();
 }
 
-/** Das Blatt mit den Angaben des Eintrags öffnen. */
-export function openDetailsSheet(entry) {
-  if (!backdrop || !entry) return;
+/**
+ * Das Blatt mit den Angaben des Eintrags öffnen.
+ * @param push false, wenn der Verlauf schon auf dem Schritt des Blatts steht (Vorwärts)
+ */
+export function openDetailsSheet(entry, { push = true } = {}) {
+  if (!backdrop || !entry || isOpen()) return;
+  if (push) history.pushState({ ...(history.state || { view: "entry" }), detailsSheet: true }, "");
   fill(entry);
   clearModalPull(backdrop);
   delete backdrop.dataset.dismissing;
@@ -60,12 +75,42 @@ export function openDetailsSheet(entry) {
   onToggle(true);
 }
 
-/** Das Blatt schließen; nichts geschieht, wenn es schon zu ist. */
-export function closeDetailsSheet() {
+/**
+ * Das Blatt schließen; nichts geschieht, wenn es schon zu ist.
+ * @param fromHistory der Verlaufsschritt ist schon weg (Zurück) oder darf
+ *        nicht angetastet werden (Seitenwechsel); sonst wird er still verbraucht
+ */
+export function closeDetailsSheet({ fromHistory = false } = {}) {
   if (!isOpen()) return;
   backdrop.hidden = true;
   document.removeEventListener("keydown", onKey);
   onToggle(false);
+  if (!fromHistory && history.state?.detailsSheet) {
+    ownPop = true;
+    history.back();
+  }
+}
+
+/* Verlaufsschritte, die das Blatt selbst erledigt — vor jedem Seitenwechsel
+   (src/ui/router-restore.js). true heißt: die Seite bleibt, wie sie ist. */
+function onPop(event) {
+  if (ownPop) {
+    ownPop = false;
+    return true;
+  }
+  /* Zurück bei offenem Blatt: nur das Blatt schließen, samt einem Auswahl-
+     Blatt darüber (Status, Dringlichkeit) — es hat keinen eigenen Schritt */
+  if (isOpen()) {
+    closeSheet();
+    closeDetailsSheet({ fromHistory: true });
+    return true;
+  }
+  /* Vorwärts auf den Schritt des Blatts: auf derselben Seite wieder öffnen */
+  if (event.state?.detailsSheet && isViewActive("entry")) {
+    openDetailsSheet(findEntry(ui.currentEntryId), { push: false });
+    return true;
+  }
+  return false;
 }
 
 /** Offenes Blatt nach einer Änderung neu füllen. */
@@ -105,6 +150,8 @@ export function initDetailsSheet(toggled = () => {}) {
     if (entry) handleCardClick(event, entry, { done: () => fill(entry) });
   });
 
-  /* Eine andere Seite: das Blatt gehört zum verlassenen Eintrag */
-  on(events.viewWillChange, closeDetailsSheet);
+  addPopGuard(onPop);
+  /* Eine andere Seite: das Blatt gehört zum verlassenen Eintrag. Der Verlauf
+     bleibt unangetastet — er gehört jetzt der neuen Seite. */
+  on(events.viewWillChange, () => closeDetailsSheet({ fromHistory: true }));
 }
