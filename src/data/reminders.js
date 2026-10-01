@@ -1,6 +1,6 @@
 /*
- * Erinnerungen an Einträge: wann man an etwas erinnert werden will. Jeder
- * Eintrag kann genau eine tragen, als Zeitpunkt in `remindAt` (Millisekunden)
+ * Erinnerungen an Einträge und Arbeitsbereiche: wann man an etwas erinnert
+ * werden will. Jeder kann genau eine tragen, als Zeitpunkt in `remindAt` (Millisekunden)
  * — bewusst nicht in `date`: danach sortiert der Kalender, und eine Notiz
  * spränge sonst auf den Tag der Erinnerung.
  *
@@ -12,7 +12,8 @@
  * Eine Erinnerung meldet sich genau einmal, wie ein Wecker: nach dem Banner
  * (src/shell/reminder-banner.js) ist sie verbraucht und verschwindet. Was
  * erledigt ist, meldet sich nicht mehr; Archiviertes wartet, bis es
- * zurückgeholt wird.
+ * zurückgeholt wird. Eine Erinnerung zu setzen ist keine Bearbeitung: „Zuletzt
+ * bearbeitet“ in der Karte „Details“ bleibt, wie es war.
  * Pfad: src/data/reminders.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -24,7 +25,7 @@
 
 import { parseDay } from "../core/dates.js";
 import { isTaskDone, isTimeType } from "./config-tasks.js";
-import { commit, markEdited } from "./mutations.js";
+import { commit } from "./mutations.js";
 import { state } from "./state.js";
 
 /** Die festen Optionen, gemessen von der Fälligkeit aus. */
@@ -70,7 +71,6 @@ export function setReminderAt(entry, at) {
     entry.remindAt = at;
     delete entry.remindOffset;
   } else dropReminder(entry);
-  markEdited(entry);
   commit();
 }
 
@@ -80,7 +80,6 @@ export function setReminderOffset(entry, offset) {
   if (due === null) return;
   entry.remindAt = due - offset * MS_PER_MINUTE;
   entry.remindOffset = offset;
-  markEdited(entry);
   commit();
 }
 
@@ -88,7 +87,6 @@ export function setReminderOffset(entry, offset) {
 export function removeReminder(entry) {
   if (!hasReminder(entry)) return;
   dropReminder(entry);
-  markEdited(entry);
   commit();
 }
 
@@ -113,14 +111,24 @@ function isLive(entry) {
   return hasReminder(entry) && !entry.archived && !(isTimeType(entry.type) && isTaskDone(entry));
 }
 
+/* Einträge und Arbeitsbereiche — beide können eine Erinnerung tragen */
+function reminderTargets() {
+  return [...state.entries, ...state.workspaces];
+}
+
+/** Gehört die Erinnerung zu einem Arbeitsbereich (statt zu einem Eintrag)? */
+export function isWorkspaceTarget(target) {
+  return state.workspaces.includes(target);
+}
+
 /** Alle Erinnerungen, die jetzt dran sind — älteste zuerst. */
 export function dueReminders(now = Date.now()) {
-  return state.entries.filter((entry) => isLive(entry) && entry.remindAt <= now).sort((a, b) => a.remindAt - b.remindAt);
+  return reminderTargets().filter((item) => isLive(item) && item.remindAt <= now).sort((a, b) => a.remindAt - b.remindAt);
 }
 
 /** Zeitpunkt der nächsten Erinnerung, die noch kommt — oder null, dann braucht es keinen Zeitgeber. */
 export function nextReminderAt() {
-  return state.entries.reduce((next, entry) => (isLive(entry) && (next === null || entry.remindAt < next) ? entry.remindAt : next), null);
+  return reminderTargets().reduce((next, item) => (isLive(item) && (next === null || item.remindAt < next) ? item.remindAt : next), null);
 }
 
 /** Die Erinnerung hat sich gemeldet: sie ist verbraucht. */

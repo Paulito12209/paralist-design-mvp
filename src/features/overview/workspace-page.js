@@ -8,6 +8,9 @@
  * und wie dort startet ein Tipp unter den Text das Schreiben, bei offener
  * Tastatur schließt ein Tipp nur sie (src/ui/write-tap.js).
  *
+ * Unter dem Text steht wie auf einer Eintragsseite die Karte „Details“
+ * (workspace-details.js) mit Einträgen, Erinnerung und letzter Änderung.
+ *
  * Rechts neben den Pillen stehen dieselben Knöpfe wie auf einer Eintragsseite
  * (src/ui/page-tools.js): Kopieren unter „Inhalt“ — Name als Überschrift und
  * Text —, Filter und Plus unter „Verknüpfte Einträge“.
@@ -23,6 +26,7 @@
 import { emit, events } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { entriesOf, findWorkspace, groupedEntriesOf, workspaceLabel } from "../../data/queries.js";
+import { markEdited } from "../../data/mutations.js";
 import { scheduleSave, ui } from "../../data/state.js";
 import { groupedListMarkup } from "../../ui/groups.js";
 import {
@@ -35,6 +39,7 @@ import {
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { addWritePage } from "../../ui/write-tap.js";
 import { createBlockEditor } from "../../ui/block-editor.js";
+import { initWorkspaceDetails, showWorkspaceDetails } from "./workspace-details.js";
 
 /* Die beiden Pillen; die zweite trägt die Anzahl der Einträge. Kein Icon:
    es wird nie mehr als diese zwei geben, das Wort allein reicht. */
@@ -81,6 +86,8 @@ function saveNotes(text) {
   if (!workspace || workspace.id !== notes.id) return;
   workspace.body = text;
   notes.text = text;
+  /* Für „Geändert“ in der Karte „Details“ */
+  markEdited(workspace);
   scheduleSave();
 }
 
@@ -98,6 +105,7 @@ function notesPanel(workspace) {
     panel.append(root);
     const editor = createBlockEditor(root, { onChange: saveNotes, emptyHint: "Schreib etwas zu diesem Arbeitsbereich …" });
     notes = { panel, root, editor, id: null, text: null };
+    initWorkspaceDetails({ onEntries: () => selectPill("links"), textRoot: root });
   }
   const text = workspace.body || "";
   if (notes.id !== workspace.id || notes.text !== text) {
@@ -118,7 +126,11 @@ export function renderWorkspacePage(page) {
   const links = ui.pagePill === "links";
   const tools = pageToolsMarkup(ui.pagePill, filterKey(page), groups);
   dom.pageBody.innerHTML = pillsRowMarkup(pillsMarkup(ui.pagePill, count), tools) + (links ? groupedListMarkup(page.parent, type) : "");
-  if (!links) dom.pageBody.append(notesPanel(workspace));
+  if (links) return;
+  /* Unter dem Text die Karte „Details“ (workspace-details.js) */
+  const panel = notesPanel(workspace);
+  dom.pageBody.append(panel);
+  showWorkspaceDetails(workspace, panel);
 }
 
 /** Tippt jemand gerade im Inhalt? Dann darf die Seite nicht neu gezeichnet werden. */
@@ -126,17 +138,20 @@ export function isWritingNotes() {
   return Boolean(notes && notes.root.contains(document.activeElement));
 }
 
+const isWorkspaceOpen = () => Boolean(ui.currentPage && ui.currentPage.isWorkspace);
+
+/* Pille wechseln — über die Pillen, durch Wischen oder „Einträge“ in der Karte „Details“ */
+function selectPill(id) {
+  if (!isWorkspaceOpen()) return;
+  /* Der Text wird gleich ersetzt: vorher den Cursor herausnehmen, sonst
+     bliebe die Tastatur für ein Feld offen, das es nicht mehr gibt. */
+  if (id !== "notes") notes?.editor.blur();
+  ui.pagePill = id;
+  renderWorkspacePage(ui.currentPage);
+}
+
 /** Pillen und Inhalt anmelden. */
 export function initWorkspacePage() {
-  const isWorkspaceOpen = () => Boolean(ui.currentPage && ui.currentPage.isWorkspace);
-  const selectPill = (id) => {
-    if (!isWorkspaceOpen()) return;
-    /* Der Text wird gleich ersetzt: vorher den Cursor herausnehmen, sonst
-       bliebe die Tastatur für ein Feld offen, das es nicht mehr gibt. */
-    if (id !== "notes") notes?.editor.blur();
-    ui.pagePill = id;
-    renderWorkspacePage(ui.currentPage);
-  };
 
   /* Kopiert wird der Name als Überschrift und der Text darunter. */
   registerCopySource("page", () => {

@@ -1,7 +1,8 @@
 /*
  * Die Karten eines Arbeitsbereichs in der rechten Spalte am Desktop (ab
- * 1280px): „Details“ mit Zahlen zu dem, was darin liegt, „Zuletzt geändert“
- * und „Gestaltung“ (Cover, Favorit). Nur auf der Seite eines Arbeitsbereichs —
+ * 1280px): „Details“ — dieselben Kennzahlen und Abschnitte wie die Karte
+ * unter dem Text (workspace-details.js), die dort solange entfällt —,
+ * „Zuletzt geändert“ und „Gestaltung“ (Cover, Favorit). Nur auf der Seite eines Arbeitsbereichs —
  * Sammlungen wie Eingang oder Favoriten teilen sich die Ansicht „page“ mit
  * ihm und behalten die Karten der Übersicht (railApplies). Geladen über
  * registerRailCards in src/main.js.
@@ -14,14 +15,16 @@
  * Aussehen in styles/desk-rail-views.css und styles/entry-desk.css (Gestaltung).
  */
 
+import { dom } from "../../core/dom.js";
 import { escapeHtml, icon } from "../../core/html.js";
-import { formatNumber, relativeTime } from "../../core/format.js";
+import { relativeTime } from "../../core/format.js";
 import { typeIcon } from "../../data/config.js";
-import { isTaskDone } from "../../data/config-tasks.js";
 import { setCover, toggleFavorite } from "../../data/mutations.js";
 import { entriesOf, findWorkspace } from "../../data/queries.js";
 import { workspaceRef } from "../../data/refs.js";
 import { ui } from "../../data/state.js";
+import { workspaceFacts } from "../../data/workspace-facts.js";
+import { detailsMarkup, handleCardClick } from "../../ui/details-card.js";
 import { cardHead, railTitle } from "../../ui/rail-parts.js";
 
 const recentLimit = 5;
@@ -36,29 +39,11 @@ export function railApplies() {
   return Boolean(currentWorkspace());
 }
 
-/* Zwei Spalten „Angabe | Wert“. */
-function facts(pairs) {
-  return `<div class="rail-facts">${pairs
-    .map(([label, value]) => `<span class="rail-muted">${label}</span><span>${escapeHtml(value)}</span>`)
-    .join("")}</div>`;
-}
-
-/** Karte „Details“: wie viel darin liegt, nach Art. */
+/** Karte „Details“: dieselben Kennzahlen und Abschnitte wie die Karte unter dem Text. */
 function detailsCard() {
   const workspace = currentWorkspace();
   if (!workspace) return "";
-  const entries = entriesOf(workspaceRef(workspace.id));
-  const count = (type) => entries.filter((entry) => entry.type === type).length;
-  const open = entries.filter((entry) => entry.type === "aufgabe" && !isTaskDone(entry)).length;
-  return `
-    ${cardHead("Details")}
-    ${facts([
-      ["Einträge", formatNumber(entries.length)],
-      ["Offene Aufgaben", formatNumber(open)],
-      ["Termine", formatNumber(count("termin"))],
-      ["Notizen", formatNumber(count("notiz"))],
-      ["Favorit", workspace.favorite ? "ja" : "nein"],
-    ])}`;
+  return `${cardHead("Details")}<div class="rail-entry-details">${detailsMarkup(workspaceFacts(workspace))}</div>`;
 }
 
 /** Karte „Zuletzt geändert“ — leer (und ausgeblendet), solange nichts darin liegt. */
@@ -114,3 +99,12 @@ export const railActions = {
     if (workspace) toggleFavorite(workspace);
   },
 };
+
+/** Tipps auf die Kennzahlen und die Zeile „Erinnerung“ in „Details“ — wie in der Karte unter dem Text. */
+export function railClick(event) {
+  const workspace = currentWorkspace();
+  if (!workspace || !event.target.closest(".rail-entry-details")) return false;
+  /* „Einträge“: derselbe Weg wie ein Klick auf die Pille, sie zeichnet die Seite passend neu */
+  const showEntries = () => dom.pageBody.querySelector('[data-page-pill="links"]')?.click();
+  return handleCardClick(event, workspace, { actions: { entries: showEntries } });
+}

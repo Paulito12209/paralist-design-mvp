@@ -1,6 +1,7 @@
 /*
  * Die Erinnerung als Banner von oben — wie eine Benachrichtigung unter
- * Android, nur in der Optik der App. Links das Icon der Kategorie, daneben
+ * Android, nur in der Optik der App. Links das Icon der Kategorie (beim
+ * Arbeitsbereich sein eigenes), daneben
  * der Titel und „Erinnerung“ bzw. „Fällig: Heute, 14:00“, rechts ein Knopf:
  * bei Aufgabe, Projekt und Termin ein Haken (setzt „Erledigt“, mit der
  * Meldung „Rückgängig“ unten), sonst ein ✕ (zur Kenntnis genommen).
@@ -37,9 +38,9 @@ import { dayClock } from "../core/format.js";
 import { escapeHtml, icon } from "../core/html.js";
 import { typeIcon, xpItemStyle } from "../data/config.js";
 import { isTaskDone, isTimeType } from "../data/config-tasks.js";
-import { findEntry } from "../data/queries.js";
-import { consumeReminder, dueReminders, dueTime, nextReminderAt } from "../data/reminders.js";
-import { openEntryOrFile } from "../ui/router.js";
+import { findEntry, findWorkspace, workspaceColor, workspaceIcon, workspaceLabel } from "../data/queries.js";
+import { consumeReminder, dueReminders, dueTime, isWorkspaceTarget, nextReminderAt } from "../data/reminders.js";
+import { openEntryOrFile, openTarget } from "../ui/router.js";
 import { toggleTaskFromCheck } from "../ui/task-status.js";
 
 const AUTO_HIDE_MS = 12000;
@@ -49,7 +50,8 @@ const DRAG_START_PX = 4;
 const LEAVE_MS = 260;
 
 let host = null;
-let shownId = null;
+/* Was das Banner gerade zeigt: { kind: "entry" | "workspace", id } — oder null */
+let shown = null;
 let checkTimer = 0;
 let hideTimer = 0;
 /* Restzeit bis zum Verschwinden — der Finger auf dem Banner hält sie an */
@@ -81,19 +83,26 @@ function ensureHost() {
   return host;
 }
 
+/* Titel, Icon und Farbe — ein Arbeitsbereich hat keinen Typ, aber sein eigenes Icon */
+function lookOf(item, isWorkspace) {
+  if (isWorkspace) return { title: workspaceLabel(item), icon: workspaceIcon(item), color: workspaceColor() };
+  return { title: item.title || "Ohne Titel", icon: typeIcon(item.type), color: xpItemStyle(item.type).color };
+}
+
 function show(entry) {
   const element = ensureHost();
-  const done = isTimeType(entry.type);
-  const style = xpItemStyle(entry.type);
-  shownId = entry.id;
+  const isWorkspace = isWorkspaceTarget(entry);
+  const done = !isWorkspace && isTimeType(entry.type);
+  const look = lookOf(entry, isWorkspace);
+  shown = { kind: isWorkspace ? "workspace" : "entry", id: entry.id };
   /* role="status": Sprachausgaben lesen die Erinnerung vor, ohne sie anzuspringen */
   element.innerHTML = `
     <div class="reminder-banner" role="status">
-      <button class="reminder-open" type="button" aria-label="${escapeHtml(`${entry.title || "Ohne Titel"} öffnen`)}">
-        <span class="reminder-icon" style="color:${style.color}">${icon(typeIcon(entry.type))}</span>
+      <button class="reminder-open" type="button" aria-label="${escapeHtml(`${look.title} öffnen`)}">
+        <span class="reminder-icon" style="color:${look.color}">${icon(look.icon)}</span>
         <span class="reminder-text">
-          <span class="reminder-title">${escapeHtml(entry.title || "Ohne Titel")}</span>
-          <span class="reminder-note">${escapeHtml(noteOf(entry))}</span>
+          <span class="reminder-title">${escapeHtml(look.title)}</span>
+          <span class="reminder-note">${escapeHtml(isWorkspace ? "Erinnerung" : noteOf(entry))}</span>
         </span>
       </button>
       <button class="reminder-act${done ? " is-done" : ""}" type="button" data-reminder-act aria-label="${done ? "Erledigt" : "Schließen"}">
@@ -118,7 +127,7 @@ function hide() {
   setTimeout(() => {
     host.hidden = true;
     host.classList.remove("is-leaving");
-    shownId = null;
+    shown = null;
     checkReminders();
   }, LEAVE_MS);
 }
@@ -136,8 +145,9 @@ function resumeHide() {
 
 function onClick(event) {
   /* Ein Wisch endet auch mit einem Klick — der soll nichts öffnen */
-  if (dragged) return;
-  const entry = findEntry(shownId);
+  if (dragged || !shown) return;
+  const { kind, id } = shown;
+  const entry = kind === "entry" ? findEntry(id) : null;
   if (event.target.closest("[data-reminder-act]")) {
     if (entry && isTimeType(entry.type) && !isTaskDone(entry)) toggleTaskFromCheck(entry.id);
     hide();
@@ -146,6 +156,7 @@ function onClick(event) {
   if (!event.target.closest(".reminder-open")) return;
   hide();
   if (entry) openEntryOrFile(entry.id);
+  else if (findWorkspace(id)) openTarget("workspace", id);
 }
 
 function onDown(event) {
@@ -194,7 +205,7 @@ function arm() {
 
 /** Fällige Erinnerung zeigen, falls gerade keine steht, und den Zeitgeber neu stellen. */
 export function checkReminders() {
-  if (shownId === null) {
+  if (!shown) {
     const [first] = dueReminders();
     if (first) show(first);
   }

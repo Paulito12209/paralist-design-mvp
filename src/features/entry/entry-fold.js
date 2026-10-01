@@ -17,20 +17,18 @@
  *   damit er nicht unter dem Auslaufen liegt.
  *
  * Kennzahlen und Abschnitte der Karte erscheinen erst, wenn sie beim
- * Hochscrollen über der Navigation auftauchen (IntersectionObserver, kein
- * Messen beim Scrollen). Beim Öffnen liegt unter der Navigation darum nur die
- * leere Kartenfläche — keine halben Zeilen neben oder unter ihr.
+ * Hochscrollen über der Navigation auftauchen. Beim Öffnen liegt unter der
+ * Navigation darum nur die leere Kartenfläche — keine halben Zeilen neben
+ * oder unter ihr.
  *
  * Dafür liegen Text und Zeichenfläche in einem gemeinsamen Rahmen
  * (.entry-fold), den diese Datei beim Start um beide legt. Gemessen wird nur,
  * wenn sich wirklich etwas ändert (Seite öffnen, Pille wechseln, Größe von
  * Titel, Text oder Anzeigefläche), nie beim Scrollen.
  *
- * Die Bildschirmtastatur verschiebt nichts davon: die Karte bleibt beim
- * Tippen dort, wo sie ohne Tastatur liegt — unter der Tastatur, per Scrollen
- * erreichbar —, statt mit ihr hochzurutschen und die Fläche zum Schreiben
- * zusammenzudrücken. Gemessen wird darum immer gegen die Lage der Navigation
- * bei geschlossener Tastatur.
+ * Die Bildschirmtastatur verschiebt nichts davon. Wo die Navigation liegt
+ * und wann die Kennzahlen einblenden, misst src/ui/details-peek.js — dieselbe
+ * Rechnung gilt für die Karte eines Arbeitsbereichs.
  * Pfad: src/features/entry/entry-fold.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -52,8 +50,8 @@ import { events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
 import { cssNumber } from "../../core/css-vars.js";
-import { ui } from "../../data/state.js";
 import { isRailShown } from "../../ui/desk-mode.js";
+import { coveredFrom, revealWatcher } from "../../ui/details-peek.js";
 import { isViewActive } from "../../ui/views.js";
 import { detailsCard } from "./entry-details.js";
 
@@ -64,52 +62,11 @@ const lessLabel = "Weniger anzeigen";
 
 let fold = null;
 let more = null;
-/* Beobachtet, ob die Kennzahlen über der Navigation zu sehen sind, und der
-   Rand, mit dem er das tut — neu angelegt nur, wenn sich der Rand ändert */
-let reveal = null;
-let revealMargin = "";
 /* Ausgeklappt? Beginnt bei jeder geöffneten Seite eingeklappt. */
 let expanded = false;
-/* Abstand von der Oberkante der Anzeigefläche bis zur Navigation, zuletzt
-   bei geschlossener Tastatur gemessen (null: noch nie ohne Tastatur gemessen) */
-let restingCover = null;
-
-/*
- * Oberkante dessen, was unten über der Seite liegt: die Navigation. Ist sie
- * nicht zu sehen (Desktop), zählt der untere Rand der Anzeigefläche.
- * Bei offener Tastatur zählt die Lage ohne Tastatur: die Leiste steht dann
- * unsichtbar über der Tastatur (styles/navigation.css), und Android macht
- * zusätzlich die ganze Anzeigefläche kürzer — beides würde die Karte
- * hochziehen und den Text auf die Mindesthöhe stauchen.
- */
-function coveredFrom() {
-  const contentTop = dom.content.getBoundingClientRect().top;
-  if (ui.keyboardOpen && restingCover !== null) return contentTop + restingCover;
-  const rect = dom.navShell ? dom.navShell.getBoundingClientRect() : null;
-  const covered = rect && rect.height ? rect.top : dom.content.getBoundingClientRect().bottom;
-  if (!ui.keyboardOpen) restingCover = covered - contentTop;
-  return covered;
-}
-
-/*
- * Die Karte bekommt „is-revealed“, sobald ihre Kennzahlen oberhalb dessen
- * auftauchen, was unten über der Seite liegt. Der Rand des Beobachters zieht
- * genau diese verdeckte Zone vom unteren Rand der Anzeigefläche ab — und
- * einen Pixel mehr: beim Öffnen beginnen die Kennzahlen genau an dieser
- * Kante, und eine bloße Berührung zählt für den Beobachter schon als sichtbar.
- */
-function watchReveal(card, coveredTop) {
-  const covered = Math.max(0, Math.ceil(dom.content.getBoundingClientRect().bottom - coveredTop) + 1);
-  const margin = `0px 0px -${covered}px 0px`;
-  if (reveal && margin === revealMargin) return;
-  if (reveal) reveal.disconnect();
-  revealMargin = margin;
-  reveal = new IntersectionObserver(
-    ([hit]) => card.classList.toggle("is-revealed", hit.isIntersecting),
-    { root: dom.content, rootMargin: margin }
-  );
-  reveal.observe(card.querySelector(".details-stats"));
-}
+/* Blendet Kennzahlen und Abschnitte ein, sobald sie über der Navigation
+   auftauchen (src/ui/details-peek.js) — angelegt beim ersten Messen */
+let watchReveal = null;
 
 /*
  * Höhe der Zeichenfläche am Desktop mit rechter Spalte: bis zum unteren Rand
@@ -163,7 +120,8 @@ export function layoutEntryFold() {
   const between = card.offsetTop - fold.offsetTop - fold.offsetHeight;
   const covered = coveredFrom();
   const cardTop = covered - PEEK_BELOW_HEAD_PX - head.offsetHeight;
-  watchReveal(card, covered);
+  if (!watchReveal) watchReveal = revealWatcher(card);
+  watchReveal(covered);
   const room = Math.max(MIN_ROOM_PX, Math.round(cardTop - between - top));
 
   if (drawing) {

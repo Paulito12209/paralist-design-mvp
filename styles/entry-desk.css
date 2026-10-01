@@ -107,8 +107,10 @@
 }
 
 @media (min-width: 1280px) {
-  /* Die Details stehen rechts — die Karte am Textende und das Kürzen entfallen. */
+  /* Die Details stehen rechts — die Karte am Textende und das Kürzen entfallen.
+     Ebenso auf der Seite eines Arbeitsbereichs (workspace-rail.js). */
   #view-entry .details-card,
+  #view-page .details-card,
   #view-entry .entry-more {
     display: none;
   }

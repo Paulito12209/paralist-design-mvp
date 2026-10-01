@@ -62,6 +62,14 @@
   margin-bottom: 0;
 }
 
+/* Arbeitsbereich: der Freiraum unter dem Text bleibt in seiner Fläche, statt
+   je nach Mindesthöhe hinauszurutschen — sonst springt der Abstand zur Karte
+   „Details“, sobald src/features/overview/workspace-details.js die Fläche
+   streckt, und die Karte landet zu hoch. */
+#view-page .entry-panel {
+  display: flow-root; /* display: flow-root hält den unteren Rand des Textes in der Fläche */
+}
+
 /* Die Zeichenfläche füllt den Rahmen, dessen Höhe das Skript setzt */
 .entry-fold > .draw-pad {
   height: 100%;

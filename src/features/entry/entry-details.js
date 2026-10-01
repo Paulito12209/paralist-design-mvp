@@ -9,10 +9,9 @@
  * Erinnerung die Auswahl für Tag und Uhrzeit, src/ui/date-field.js), nach
  * einer Trennlinie die übrigen Angaben in Abschnitten; die Zeile
  * „Erinnerung“ im Abschnitt „Zeit“ öffnet src/ui/remind-sheet.js. Was dort
- * steht, stellt src/data/entry-facts.js zusammen. Bei einem Lesezeichen
- * steht oben der Abschnitt „Link“: ein Tipp auf die Adresse macht sie zum
- * Feld, Enter oder Wegtippen übernimmt den neuen Link (und holt den
- * Videotitel nach, src/ui/bookmark-title.js).
+ * steht, stellt src/data/entry-facts.js zusammen; wie Kennzahlen und Zeilen
+ * aussehen und was ein Tipp darauf tut (auch die Adresse eines Lesezeichens),
+ * steht gemeinsam mit dem Arbeitsbereich in src/ui/details-card.js.
  *
  * Die Karte gehört zur Seite, nicht zur Navigation: sie scrollt mit dem Text
  * und liegt unter der Navigation. Wie weit sie beim Öffnen hervorschaut,
@@ -30,19 +29,12 @@
  */
 
 import { dom } from "../../core/dom.js";
-import { escapeHtml, icon } from "../../core/html.js";
-import { setBookmarkUrl } from "../../data/bookmarks.js";
+import { icon } from "../../core/html.js";
 import { entryFacts } from "../../data/entry-facts.js";
-import { markEdited } from "../../data/mutations.js";
-import { saveState } from "../../data/state.js";
-import { events, emit } from "../../core/bus.js";
-import { fillVideoTitle } from "../../ui/bookmark-title.js";
 import { findEntry } from "../../data/queries.js";
 import { ui } from "../../data/state.js";
+import { detailsMarkup, fillDetails, handleCardClick } from "../../ui/details-card.js";
 import { openLinkSheet } from "../../ui/link-sheet.js";
-import { openTaskSheet } from "../../ui/task-status.js";
-import { openDateField, openReminderField } from "../../ui/date-field.js";
-import { openRemindSheet } from "../../ui/remind-sheet.js";
 import { initEntryLift, refreshLift, toggleLift } from "./entry-lift.js";
 
 const detailsLabel = "Details";
@@ -59,88 +51,19 @@ export function detailsCard() {
   return card;
 }
 
-/* Eine Kennzahl: ein Knopf, wenn ein Tipp etwas öffnet, sonst reiner Text */
-function statMarkup(stat) {
-  const color = stat.color ? ` style="--stat-color:${stat.color}"` : "";
-  const inner = `<span class="details-stat-value"${color}>${escapeHtml(stat.value)}</span><span class="details-stat-label">${escapeHtml(stat.label)}</span>`;
-  return stat.field
-    ? `<button class="details-stat" type="button" data-details-field="${stat.field}" aria-label="${escapeHtml(`${stat.label}: ${stat.value}. Ändern`)}">${inner}</button>`
-    : `<div class="details-stat">${inner}</div>`;
-}
-
-/* Eine Zeile mit `edit` ist ein Knopf: der Tipp macht den Wert zum Feld
-   (Adresse) oder öffnet die Auswahl (Fällig am) bzw. das Blatt (Erinnerung —
-   dann steht ein Pfeil dahinter, weil sich etwas Neues öffnet) */
-function rowMarkup(row) {
-  const more = row.edit === "remind" ? icon("chevron", "details-row-more") : "";
-  const value = `<span class="details-row-value">${escapeHtml(row.value)}${more}</span>`;
-  if (row.edit) {
-    return `<button class="details-row is-editable" type="button" data-details-edit="${row.edit}" aria-label="${escapeHtml(`${row.label} ändern`)}"><span class="details-row-label">${escapeHtml(row.label)}</span>${value}</button>`;
-  }
-  return `<div class="details-row"><span class="details-row-label">${escapeHtml(row.label)}</span>${value}</div>`;
-}
-
-function groupMarkup(group) {
-  const rows = group.rows.map(rowMarkup).join("");
-  return `<p class="details-heading">${escapeHtml(group.heading)}</p>${rows}`;
-}
-
 /**
  * Kennzahlen und Abschnitte als HTML — für die Karte hier und für die
  * Karte „Details“ in der rechten Spalte am Desktop (entry-rail.js).
  */
 export function detailsBodyMarkup(entry) {
-  const facts = entryFacts(entry);
-  return `<div class="details-stats">${facts.stats.map(statMarkup).join("")}</div><div class="details-list">${facts.groups.map(groupMarkup).join("")}</div>`;
+  return detailsMarkup(entryFacts(entry));
 }
 
 /** Kennzahlen und Abschnitte für den offenen Eintrag neu schreiben. */
 export function renderEntryDetails(entry) {
   if (!card || !entry) return;
-  const facts = entryFacts(entry);
-  statsBox.innerHTML = facts.stats.map(statMarkup).join("");
-  listBox.innerHTML = facts.groups.map(groupMarkup).join("");
+  fillDetails(statsBox, listBox, entryFacts(entry));
   refreshLift();
-}
-
-/* Die Adresse an Ort und Stelle ändern: ein Feld statt des Werts. Enter oder
-   Wegtippen übernimmt, Escape lässt alles wie es war. */
-function editLink(entry, row, done = renderEntryDetails) {
-  const value = row.querySelector(".details-row-value");
-  /* input type=url: die Tastatur am Handy zeigt „.“ und „/“; kein eigenes
-     autocomplete, das Formular no-history hält Chromes Verlaufs-Chips fern */
-  const input = document.createElement("input");
-  input.className = "details-row-input";
-  input.type = "url";
-  input.inputMode = "url";
-  input.enterKeyHint = "done";
-  input.setAttribute("form", "no-history");
-  input.setAttribute("aria-label", "Adresse");
-  const before = value.textContent;
-  input.value = before;
-  value.replaceWith(input);
-  input.focus();
-  input.select();
-  let finished = false;
-  const finish = (apply) => {
-    if (finished) return;
-    finished = true;
-    if (apply && input.value.trim() !== before && setBookmarkUrl(entry, input.value)) {
-      markEdited(entry);
-      saveState();
-      emit(events.dataChanged);
-      fillVideoTitle(entry);
-    }
-    /* Erst den Wert zurück an seinen Platz, dann neu zeichnen — so steht auch
-       dort, wo nicht neu gezeichnet wird, kein verwaistes Feld mehr. */
-    input.replaceWith(value);
-    done(entry);
-  };
-  input.addEventListener("blur", () => finish(true));
-  input.addEventListener("keydown", (event) => {
-    if (event.key === "Enter") input.blur();
-    if (event.key === "Escape") finish(false);
-  });
 }
 
 /** Karte ans Ende des Reiters „Inhalt“ hängen und ihre Tipps anmelden. */
@@ -179,25 +102,11 @@ export function initEntryDetails() {
 }
 
 /**
- * Tipps auf Kennzahlen (Status, Dringlichkeit, Fälligkeit, Erinnerung) und die
- * antippbaren Zeilen (Adresse, Fällig am, Erinnerung) — hier und
- * in der Karte rechts am Desktop. Gibt `true` zurück, wenn der Tipp etwas tat.
+ * Tipps auf Kennzahlen und antippbare Zeilen — hier und in der Karte rechts
+ * am Desktop (src/ui/details-card.js). Gibt `true` zurück, wenn der Tipp
+ * etwas tat.
  * @param done nach dem Ändern des Links: die Karte, in der er stand, neu zeichnen.
  */
 export function handleDetailsClick(event, entry, done = renderEntryDetails) {
-  const stat = event.target.closest("[data-details-field]");
-  if (stat) {
-    const field = stat.dataset.detailsField;
-    if (field === "date") openDateField(entry, stat);
-    else if (field === "remind") openReminderField(entry, stat);
-    else openTaskSheet(entry, field);
-    return true;
-  }
-  const row = event.target.closest("[data-details-edit]");
-  if (!row) return false;
-  const edit = row.dataset.detailsEdit;
-  if (edit === "date") openDateField(entry, row);
-  else if (edit === "remind") openRemindSheet(entry, row);
-  else if (!row.querySelector("input")) editLink(entry, row, done);
-  return true;
+  return handleCardClick(event, entry, { done });
 }

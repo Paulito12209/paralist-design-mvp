@@ -50,11 +50,11 @@ export function isOverdue(entry) {
 }
 
 /*
- * Wie frisch etwas ist, so knapp, dass es in die rechte Spalte passt (rund
+ * Wie frisch etwas ist (auch für „Geändert“ eines Arbeitsbereichs), so knapp, dass es in die rechte Spalte passt (rund
  * zehn Zeichen auf 375 px): „jetzt“, „vor 5 Min“, „vor 3 Std“, „gestern“,
  * danach der Tag wie „26. Sept.“.
  */
-function freshness(ts) {
+export function freshness(ts) {
   const ago = Date.now() - ts;
   if (ago < MS_PER_MINUTE) return "jetzt";
   if (ago < MS_PER_HOUR) return `vor ${Math.floor(ago / MS_PER_MINUTE)} Min`;
@@ -63,6 +63,17 @@ function freshness(ts) {
   if (day === today) return `vor ${Math.floor(ago / MS_PER_HOUR)} Std`;
   if (day === dayShift(today, -1)) return "gestern";
   return dayMonth(ts);
+}
+
+/** Kennzahl „Erinnerung“ — auch für den Arbeitsbereich (src/data/workspace-facts.js). */
+export function remindStat(subject) {
+  const set = Number.isFinite(subject.remindAt);
+  return {
+    value: set ? shortDay(dayKey(new Date(subject.remindAt))) : "—",
+    label: "Erinnerung",
+    color: set ? "" : quietColor,
+    field: "remind",
+  };
 }
 
 /* Die erste Karte mit Adresse im Inhalt eines Lesezeichens */
@@ -101,15 +112,7 @@ const stats = {
     const status = statusOf(entry);
     return { value: status.label, label: "Status", color: status.color, field: "status" };
   },
-  remind: (entry) => {
-    const set = Number.isFinite(entry.remindAt);
-    return {
-      value: set ? shortDay(dayKey(new Date(entry.remindAt))) : "—",
-      label: "Erinnerung",
-      color: set ? "" : quietColor,
-      field: "remind",
-    };
-  },
+  remind: (entry) => remindStat(entry),
   words: (entry, facts) => ({ value: formatNumber(facts.words), label: facts.words === 1 ? "Wort" : "Wörter" }),
   created: (entry) => ({ value: entry.createdAt ? dayMonth(entry.createdAt) : "—", label: "Erstellt" }),
   /* Nie bearbeitet heißt: so frisch wie beim Anlegen */
