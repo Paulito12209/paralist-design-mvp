@@ -84,6 +84,16 @@
     opacity: 0.4;
   }
 
+  /* Im Kopf des Blatts schließt ein ✕ statt des Kartensymbols (Material 3
+     erlaubt neben Griff und Schleier ausdrücklich einen Schließen-Knopf) */
+  [data-mobile-os="android"] .view-panel-toggle .icon:not(.view-panel-close) {
+    display: none;
+  }
+
+  [data-mobile-os="android"] .view-panel-toggle .view-panel-close {
+    display: block;
+  }
+
   /* Der Schleier: nur da, solange das Blatt offen ist. position/inset: deckt das
      ganze Gerät. Ein Tipp darauf klappt das Blatt zu (src/ui/view-panel.js). */
   [data-mobile-os="android"] .view-panel-scrim {

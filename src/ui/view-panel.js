@@ -21,7 +21,9 @@
  * aus viewPanelButton() in ihre Reiterzeile, ein Tipp darauf holt die Karte
  * der offenen Seite herauf. Wie viel eingeklappt hervorschaut, sagt die
  * CSS-Variable --view-panel-peek an der Karte (ohne sie: --details-head-h).
- * Hinter der Karte liegt ein Schleier, der nur im Blatt zu sehen ist.
+ * Hinter der Karte liegt ein Schleier, der nur im Blatt zu sehen ist. Im Blatt
+ * steht im Kopf statt des Kartensymbols ein ✕ zum Schließen (beide Symbole
+ * liegen im Knopf, das Stylesheet zeigt eines).
  *
  * Von selbst zu: die Karte ist ein Werkzeug für einen Moment, kein fester
  * Teil der Seite. Sie klappt ein, sobald man sich wieder der Seite zuwendet —
@@ -155,7 +157,7 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
       <button class="details-title" type="button">${title}</button>
       <div class="view-panel-actions">${actions}</div>
       <button class="details-link view-panel-toggle" type="button"
-        aria-label="${title}" aria-expanded="false">${icon("panel-open")}</button>
+        aria-label="${title}" aria-expanded="false">${icon("panel-open")}${icon("close", "view-panel-close")}</button>
     </div>
     <div class="view-panel-body"></div>
   `;
