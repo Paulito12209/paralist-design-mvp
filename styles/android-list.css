@@ -30,6 +30,8 @@
  * --m3-on-surface / --m3-on-surface-variant -> Titel bzw. Icon vor dem Titel
  * --m3-row-more-size       -> Tippfläche der drei Punkte (Material 3: 48dp); sie ragt über den Rand
  *                             der Zeile hinaus, damit die Punkte bündig mit dem Seitenrand stehen
+ * --m3-state-pressed       -> wie stark Zeile und drei Punkte beim Drücken getönt werden
+ *                             (Material 3 „state layer“; die blaue Fläche von Chrome ist aus, styles/base.css)
  *
  * Direkt bei ihrer Regel: Schrift des Titels 16px (Material 3 „Body large“),
  * Icon in den Wisch-Knöpfen 24px.
@@ -56,6 +58,17 @@
     padding: 8px 0;
     font-size: 16px;
     color: var(--m3-on-surface);
+  }
+
+  /* Gedrückt: die Zeile tönt sich leicht in ihrer Schriftfarbe — statt der
+     blauen Fläche, die Chrome sonst darüberlegt. Getönt wird die Wisch-Hülle,
+     weil sie bis an den Rand reicht (styles/swipe-rows.css); „… hinzufügen“
+     hat keine und tönt sich selbst. :active gilt auch für die Hülle, wenn
+     etwas in ihr gedrückt ist. */
+  [data-mobile-os="android"] .swipe-body:active,
+  [data-mobile-os="android"] .workspace-add:active,
+  [data-mobile-os="android"] .workspace-row .row-more:active {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), transparent);
   }
 
   [data-mobile-os="android"] .workspace-row .icon:not(.chevron) {

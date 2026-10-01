@@ -387,10 +387,10 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   Gruppe eine Fassung wählen, sie bleibt nach dem Neuladen (`data-mobile-os`).
   Pfeil und Browser-Zurück führen zur Liste, das Kreuz schließt alles.
 
-**Desktop (ab 1024 px)**
-- Alle Flows der Desktop-Fassung stehen in `docs/desktop-flows.md` —
-  bei jeder Änderung an Seitenleiste, Reiterzeile, Palette, rechter Spalte
-  oder den breiten Seiten dort durchgehen.
+**Desktop (ab 1024 px) und Android-Fassung**
+- Desktop: alle Flows in `docs/desktop-flows.md` — bei jeder Änderung an
+  Seitenleiste, Reiterzeile, Palette, rechter Spalte oder breiten Seiten.
+- Android (Einstellungen › Mehr › Versionen): `docs/android-flows.md`.
 
 **Immer**
 - `python3 tools/version.py` ausführen, dann meldet `python3 tools/check.py` „alles in Ordnung“.

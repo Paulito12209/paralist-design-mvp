@@ -62,10 +62,23 @@
  * --m3-reorder-shadow          -> Schatten der gezogenen Zeile
  * --m3-reorder-slot-inset      -> Luft der Lücke zu Zeilen darüber und darunter
  * --m3-error / --m3-on-error   -> Wisch-Knopf „Löschen“ (Material 3: gefüllt in der Fehlerfarbe)
+ * --m3-surface-container-lowest -> Fläche der Projektkarte und der vier Übersichtskarten — im Hellen
+ *                                 weiß auf der getönten Seite, im Dunkeln dunkler als die Seite
+ *                                 (styles/android-card.css); die Seite selbst liegt auf --m3-surface-container
+ * --m3-surface-container-low   -> Fläche der zweiten Karte „Archiviert“ unter den Projekten
+ * --m3-card-radius             -> Rundung der Projektkarte (Google Tasks: 24dp)
+ * --m3-card-pad                -> Rand in der Projektkarte links und rechts
+ * --m3-card-gap                -> Luft zwischen Projektkarte und Karte „Archiviert“
+ * --m3-card-head-h             -> Höhe der Werkzeugzeile oben in der Karte (Zähler, Sortieren, Filtern, Menü)
+ * --m3-card-tool-size          -> Tippfläche eines Symbols in der Werkzeugzeile (Material 3: 48dp)
+ * --m3-card-tool-icon          -> Größe des Symbols darin (Material 3: 24dp)
+ * --m3-state-pressed           -> wie stark eine Zeile beim Drücken getönt wird (Material 3 „state layer“: 12%)
  */
 
 :root[data-mobile-os="android"] {
   --m3-surface-container: #eef2f9;
+  --m3-surface-container-lowest: #ffffff;
+  --m3-surface-container-low: #f6f8fc;
   --m3-surface-container-high: #e5eaf2;
   --m3-secondary-container: #c2e7ff;
   --m3-on-secondary-container: #001d35;
@@ -115,6 +128,13 @@
   --m3-reorder-radius: 16px;
   --m3-reorder-shadow: 0 6px 16px rgba(0, 0, 0, 0.22), 0 2px 4px rgba(0, 0, 0, 0.14);
   --m3-reorder-slot-inset: 4px;
+  --m3-card-radius: 24px;
+  --m3-card-pad: 16px;
+  --m3-card-gap: 12px;
+  --m3-card-head-h: 48px;
+  --m3-card-tool-size: 48px;
+  --m3-card-tool-icon: 24px;
+  --m3-state-pressed: 12%;
   --m3-error: #b3261c;
   --m3-on-error: #ffffff;
 }
@@ -122,6 +142,8 @@
 @media (prefers-color-scheme: dark) {
   :root[data-mobile-os="android"]:not([data-theme="light"]) {
     --m3-surface-container: #1e1f23;
+    --m3-surface-container-lowest: #0e0f12;
+    --m3-surface-container-low: #16171b;
     --m3-surface-container-high: #2a2b30;
     --m3-secondary-container: #4a4e5a;
     --m3-on-secondary-container: #e3e3e8;
@@ -141,6 +163,8 @@
 /* Dunkelmodus fest in den Einstellungen gewählt: dieselben Werte wie oben */
 :root[data-mobile-os="android"][data-theme="dark"] {
   --m3-surface-container: #1e1f23;
+  --m3-surface-container-lowest: #0e0f12;
+  --m3-surface-container-low: #16171b;
   --m3-surface-container-high: #2a2b30;
   --m3-secondary-container: #4a4e5a;
   --m3-on-secondary-container: #e3e3e8;

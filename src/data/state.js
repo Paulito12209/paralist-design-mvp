@@ -95,6 +95,8 @@ export const ui = {
   /* Ansicht, aus der „Projekt hinzufügen“ kam — das neue Projekt gehört dorthin
      (src/data/project-views.js, applyProjectDraft). Wie taskDraftColumn. */
   projectDraftView: null,
+  /* Android-Fassung: ist die Karte „Archiviert“ unter den Projekten aufgeklappt? */
+  projectArchiveOpen: false,
   editingWorkspaceId: null,
   /* Was gerade ins Namensfeld eines Arbeitsbereichs getippt wurde: { id, value } */
   nameDraft: null,

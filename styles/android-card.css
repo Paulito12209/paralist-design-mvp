@@ -1,0 +1,185 @@
+/*
+ * Android-Fassung, die Projekte als Karte nach Google Tasks: die Seite liegt
+ * getönt auf surface-container, die Karte darauf eine Stufe „tiefer“
+ * (surface-container-lowest — im Hellen weiß, im Dunkeln dunkler als die
+ * Seite); die vier Übersichtskarten bekommen dieselbe Fläche. Oben in der
+ * Karte eine Werkzeugzeile: links der Zähler, rechts Sortieren, Filtern und
+ * drei Punkte (src/features/overview/project-card.js). Die Reiterzeile darüber
+ * verliert dadurch Trennlinie und Symbol „Ansicht“ — die Kante der Karte ist
+ * die Grenze. Unter der Liste die Karte „Archiviert (n)“ auf
+ * surface-container-low, aufklappbar wie „Erledigt“ in Tasks.
+ * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px;
+ * Werkzeugzeile und Karte „Archiviert“ sind in den anderen Fassungen unsichtbar.
+ * Pfad: styles/android-card.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-surface-container        -> Fläche der Seite
+ * --m3-surface-container-lowest -> Fläche der Projektkarte und der vier Übersichtskarten
+ * --m3-surface-container-low    -> Fläche der Karte „Archiviert“
+ * --m3-card-radius              -> Rundung beider Karten
+ * --m3-card-pad                 -> Rand in den Karten links und rechts; muss --content-side entsprechen,
+ *                                  damit die Wisch-Hüllen der Zeilen genau bis an die Rundung reichen
+ * --m3-card-gap                 -> Luft zwischen Projektkarte und Karte „Archiviert“
+ * --m3-card-head-h              -> Höhe der Werkzeugzeile
+ * --m3-card-tool-size / -icon   -> Tippfläche und Symbol der drei Werkzeuge
+ * --m3-state-pressed            -> Tönung eines Werkzeugs beim Drücken
+ * --m3-on-surface / --m3-on-surface-variant -> Überschrift „Archiviert“ bzw. Zähler und Symbole
+ * --m3-primary                  -> das Filter-Symbol, sobald die Ansicht aussiebt
+ * --m3-list-row-h               -> Höhe des Kopfs der Karte „Archiviert“
+ * --m3-row-more-size            -> die drei Punkte einer Zeile; sie stehen bündig mit den Werkzeugen oben
+ * --content-side                -> Rand der Reiter, sobald rechts kein Symbol mehr steht (styles/tokens.css)
+ *
+ * Direkt bei ihrer Regel: Zähler 14px (Material 3 „Body medium“), Überschrift
+ * „Archiviert“ 16px (Body large), Pfeil 24px.
+ */
+
+/* Außerhalb der Android-Fassung gibt es Werkzeugzeile und Karte „Archiviert“ nicht */
+.project-card-head,
+.project-archived {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  /* ---------- Seite und Flächen ---------- */
+
+  /* Am body, nicht an :root: die Werte der Dunkel-Datei stehen an :root und
+     gewännen sonst je nach Reihenfolge. Das Gerät und alles darin erbt von hier. */
+  [data-mobile-os="android"] body {
+    --bg: var(--m3-surface-container);
+    --overview-card-bg: var(--m3-surface-container-lowest);
+  }
+
+  /* ---------- Die Reiterzeile ohne Linie und Symbol ---------- */
+
+  [data-mobile-os="android"] #project-views,
+  [data-mobile-os="android"] .page-body > .project-views {
+    box-shadow: none;
+  }
+
+  [data-mobile-os="android"] :is(#project-views, .page-body > .project-views) .tab-pills-tools {
+    display: none;
+  }
+
+  /* Ohne Werkzeuge rechts laufen die Reiter bis an den Rand */
+  [data-mobile-os="android"] :is(#project-views, .page-body > .project-views) .tab-pills {
+    padding-right: calc(var(--content-side) + 2px);
+    scroll-padding-right: var(--content-side);
+  }
+
+  /* ---------- Die Projektkarte ---------- */
+
+  [data-mobile-os="android"] .project-card {
+    padding: 0 var(--m3-card-pad) 8px;
+    border-radius: var(--m3-card-radius);
+    background: var(--m3-surface-container-lowest);
+  }
+
+  /* Die Wisch-Hüllen der Zeilen reichen von sich aus um --content-side über
+     den Inhalt hinaus (styles/swipe-rows.css) — in der Karte also genau bis an
+     ihre Rundung, weil der Kartenrand gleich groß ist. Nur die Zeile „Projekt
+     hinzufügen“ hat keine Hülle und wird hier ebenso breit gemacht. */
+  /* Die Wisch-Hülle deckt die Knöpfe hinter der Zeile mit der Seitenfarbe ab
+     (styles/swipe-rows.css) — in den Karten muss das die Kartenfarbe sein */
+  [data-mobile-os="android"] .project-card .swipe-body {
+    background: var(--m3-surface-container-lowest);
+  }
+
+  [data-mobile-os="android"] .project-archived .swipe-body {
+    background: var(--m3-surface-container-low);
+  }
+
+  [data-mobile-os="android"] .project-card .workspace-add {
+    width: calc(100% + 2 * var(--m3-card-pad));
+    margin-inline: calc(-1 * var(--m3-card-pad));
+    padding-inline: var(--m3-card-pad);
+  }
+
+  /* Der Satz „kein Projekt in dieser Ansicht“ steht in der Karte ohne eigenen Rand */
+  [data-mobile-os="android"] .project-card .project-empty-note {
+    padding-inline: 0;
+  }
+
+  /* ---------- Die Werkzeugzeile ---------- */
+
+  [data-mobile-os="android"] .project-card-head {
+    display: flex;
+    align-items: center;
+    min-height: var(--m3-card-head-h);
+  }
+
+  [data-mobile-os="android"] .project-card-count {
+    flex: 1;
+    min-width: 0;
+    font-size: 14px;
+    color: var(--m3-on-surface-variant);
+  }
+
+  /* Die Tippflächen ragen über den Rand hinaus, damit die Symbole selbst
+     bündig mit dem Kartenrand stehen — wie die drei Punkte einer Zeile */
+  [data-mobile-os="android"] .project-card-tools {
+    display: flex;
+    flex: 0 0 auto;
+    margin-right: calc((var(--m3-card-tool-icon) - var(--m3-card-tool-size)) / 2);
+  }
+
+  [data-mobile-os="android"] .project-card-tool {
+    display: grid;
+    place-items: center;
+    width: var(--m3-card-tool-size);
+    height: var(--m3-card-tool-size);
+    border-radius: 50%;
+    color: var(--m3-on-surface-variant);
+  }
+
+  [data-mobile-os="android"] .project-card-tool .icon {
+    width: var(--m3-card-tool-icon);
+    height: var(--m3-card-tool-icon);
+  }
+
+  [data-mobile-os="android"] .project-card-tool.is-active {
+    color: var(--m3-primary);
+  }
+
+  [data-mobile-os="android"] .project-card-tool:active {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), transparent);
+  }
+
+  /* ---------- Die Karte „Archiviert“ ---------- */
+
+  [data-mobile-os="android"] .project-archived {
+    display: block;
+    margin-top: var(--m3-card-gap);
+    padding: 0 var(--m3-card-pad);
+    border-radius: var(--m3-card-radius);
+    background: var(--m3-surface-container-low);
+  }
+
+  [data-mobile-os="android"] .project-archived-head {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    min-height: var(--m3-list-row-h);
+    font-size: 16px;
+    text-align: left;
+    color: var(--m3-on-surface);
+  }
+
+  /* Der Pfeil rechts zeigt nach unten, aufgeklappt nach oben */
+  [data-mobile-os="android"] .project-archived-head .icon {
+    width: 24px;
+    height: 24px;
+    margin-left: auto;
+    color: var(--m3-on-surface-variant);
+    transform: rotate(90deg); /* transform: der Pfeil „›“ aus der Sammlung zeigt gedreht nach unten */
+    transition: transform 200ms ease; /* transition: dreht weich mit dem Aufklappen */
+  }
+
+  [data-mobile-os="android"] .project-archived.is-open .project-archived-head .icon {
+    transform: rotate(-90deg);
+  }
+
+  [data-mobile-os="android"] .project-archived-body {
+    padding-bottom: 8px;
+  }
+}

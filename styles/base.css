@@ -52,6 +52,11 @@ body {
   -webkit-user-select: none;
   /* -webkit-touch-callout: kein iPhone-Menü „Kopieren/Nachschlagen“ auf Bedientext */
   -webkit-touch-callout: none;
+  /* -webkit-tap-highlight-color: Chrome auf Android legt beim Tippen und Halten
+     sonst seine eigene blaue Fläche über das Element — über die Zeile und die
+     drei Punkte, die seitlich hinausragen, ergab das eine gestufte Kante.
+     Gedrückt zeigt jede Fassung ihren eigenen Zustand (z.B. styles/android-list.css). */
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* Alles, worin man schreibt, bleibt markierbar und kopierbar */

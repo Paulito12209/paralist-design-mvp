@@ -80,9 +80,10 @@ export function viewPanelButton(asFilter = false) {
   return `<button class="${cls}" type="button" data-view-panel-open aria-label="${buttonLabel}" title="${buttonLabel}">${icon(asFilter ? "sliders" : "panel-open")}</button>`;
 }
 
-/* Die Karte der offenen Seite aufklappen. Welche das ist, entscheidet das
-   Stylesheet (Klassen am body): nur sie nimmt gerade Platz ein. */
-function openShownPanel() {
+/** Die Karte der offenen Seite aufklappen. Welche das ist, entscheidet das
+    Stylesheet (Klassen am body): nur sie nimmt gerade Platz ein. Von außen
+    ruft das die Werkzeugzeile der Projektkarte (src/features/overview/project-card.js). */
+export function openViewPanel() {
   openers.forEach((open, panel) => {
     if (panel.getClientRects().length) open();
   });
@@ -119,7 +120,7 @@ function watchOutside() {
   /* Der Knopf steht in Zeilen, die beim Zeichnen ersetzt werden — darum ein
      Empfänger für alle. Der pointerdown davor hat schon alles eingeklappt. */
   document.addEventListener("click", (event) => {
-    if (event.target instanceof Element && event.target.closest("[data-view-panel-open]")) openShownPanel();
+    if (event.target instanceof Element && event.target.closest("[data-view-panel-open]")) openViewPanel();
   });
   /* Ein Tipp auf den Schleier klappt schon beim Aufsetzen ein; der Schleier
      lässt danach durch, und der Klick beim Loslassen träfe die Zeile darunter

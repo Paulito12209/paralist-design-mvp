@@ -6,8 +6,11 @@
  * gewählten Ansicht als schlichte Zeilen, die Zeile „Projekt hinzufügen“ und
  * „Zum Archiv“ mit der Pille Projekte. Über der Navigation hängt die Karte
  * „Ansicht“ mit Sortieren und Filtern (src/features/overview/project-settings.js).
- * In der Android-Fassung ersetzt der Archiv-Knopf links unten die Pille
- * (src/shell/android-archive.js), die Karte kommt als Blatt von unten.
+ * In der Android-Fassung liegt die Liste in einer Karte mit Werkzeugzeile
+ * (Zähler, Sortieren, Filtern, drei Punkte) und darunter die Karte
+ * „Archiviert“ (src/features/overview/project-card.js, styles/android-card.css);
+ * die Pille „Zum Archiv“ ersetzt der Archiv-Knopf links unten
+ * (src/shell/android-archive.js), die Karte „Ansicht“ kommt als Blatt von unten.
  * Am Desktop zeigt die Übersicht keine Projekte — dort stehen sie in der Seitenleiste.
  * Pfad: src/features/overview/projects.js
  *
@@ -34,6 +37,7 @@ import { entryRow } from "../../ui/rows.js";
 import { createViewPanel } from "../../ui/view-panel.js";
 import { isViewActive } from "../../ui/views.js";
 import { handleProjectSettingsClick, projectSettingsMarkup } from "./project-settings.js";
+import { archivedProjectsCard, handleProjectCardClick, projectCardHead } from "./project-card.js";
 import { afterProjectViewsRender, initProjectViews, isProjectsPageOpen, projectViewsMarkup } from "./project-views.js";
 
 /* Noch kein einziges Projekt: Emblem, Satz und die Pille zum Anlegen. Die
@@ -83,9 +87,10 @@ function archiveMarkup() {
    noch einmal. Auf der Übersicht wäre er zu wuchtig: dort steht allein die
    Zeile „Projekt hinzufügen“, wie bei den Arbeitsbereichen. */
 function listMarkup(onPage) {
-  const projects = visibleProjects(activeProjectView());
+  const view = activeProjectView();
+  const projects = visibleProjects(view);
   const none = !projectEntries().length;
-  if (none && onPage) return emptyState(emptyProjects) + archiveMarkup();
+  if (none && onPage) return emptyState(emptyProjects) + archiveMarkup() + archivedProjectsCard();
   /* Der Satz „kein Projekt in dieser Ansicht“ nur, wenn es woanders welche gibt */
   const lead = projects.length || none ? "" : `<p class="project-empty-note">${emptyViewText}</p>`;
   const rows = projects.map((project) => entryRow(project)).join("");
@@ -93,7 +98,8 @@ function listMarkup(onPage) {
     <button class="workspace-row workspace-add" type="button" data-project-add="1">
       ${icon("rocket-plus")}<span>${addRowLabel}</span>
     </button>`;
-  return `${lead}<div class="workspace-list">${rows}${addRow}</div>${archiveMarkup()}`;
+  /* Die Hülle .project-card wird nur in der Android-Fassung zur Karte */
+  return `<div class="project-card">${projectCardHead(view, projects)}${lead}<div class="workspace-list">${rows}${addRow}</div></div>${archiveMarkup()}${archivedProjectsCard()}`;
 }
 
 /* Neu zeichnen, ohne dass die Pillenleiste an den Anfang zurückspringt. */
@@ -128,9 +134,19 @@ export function renderProjectsPage() {
   afterProjectViewsRender();
 }
 
+/* Werkzeugzeile und Karte „Archiviert“: nach dem Auf- oder Zuklappen zeichnet
+   die offene Stelle neu — die Übersicht oder die Seite Projekte. */
+function onCardClick(event) {
+  if (!handleProjectCardClick(event, activeProjectView())) return;
+  if (isProjectsPageOpen()) renderProjectsPage();
+  else renderProjectSection();
+}
+
 /** Anmelden: die Übersicht frischt ihre Projekte auf, solange sie offen ist. */
 export function initProjects() {
   initProjectViews();
+  dom.projectList.addEventListener("click", onCardClick);
+  dom.pageBody.addEventListener("click", onCardClick);
   panel = createViewPanel({
     title: panelTitle,
     className: "project-panel",
