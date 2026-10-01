@@ -8,10 +8,12 @@
  *   „Details“ entfällt.
  * - Der Plus-Knopf steht auf seiner gewohnten Höhe und liegt über dem rechten
  *   Teil des Kartenkopfs, statt über ihn gehoben zu werden. Darum steht das
- *   Symbol zum Hochklappen direkt hinter „Details“; ein Tipp irgendwo in den
- *   Kopf klappt die Karte hoch (src/features/entry/entry-details.js). Ganz
- *   gescrollt und hochgeklappt endet die Karte über dem Plus-Knopf
- *   (styles/android.css, src/features/entry/entry-lift.js).
+ *   Symbol direkt hinter „Details“. Die Karte bleibt ein Abschnitt der Seite;
+ *   ganz gescrollt endet sie über dem Plus-Knopf (styles/android.css).
+ * - Ein Tipp irgendwo in den Kartenkopf öffnet ein Blatt von unten mit
+ *   denselben Angaben (Klasse .details-sheet,
+ *   src/features/entry/entry-details-sheet.js): am unteren Rand verankert,
+ *   oben gerundet, mit Griff, über Leiste und Plus-Knopf.
  * - „Mehr anzeigen“ ist ein Textknopf nach Material 3: Schrift in der
  *   Akzentfarbe der Fassung — im Dunkeln graublau statt Blau.
  *
@@ -26,9 +28,18 @@
  * --head-btn-size        -> Tippfläche des Ketten-Symbols in der Kopfzeile; um so viel rückt
  *                           auch die Kategorie mittig nach (styles/tokens.css)
  * --m3-head-tools-pull   -> um so viel rückt das Ketten-Symbol näher an das Drei-Punkte-Menü
- * --page-tool-size / --page-tool-icon -> Tippfläche und Größe des Symbols zum Hochklappen (styles/tokens.css)
+ * --page-tool-size / --page-tool-icon -> Tippfläche und Größe des Symbols hinter „Details“ (styles/tokens.css)
+ * --m3-sheet-radius      -> Rundung der oberen Ecken des Blatts
+ * --m3-sheet-max         -> wie hoch das Blatt höchstens wird (Anteil des Geräts)
+ * --m3-surface-container -> Fläche des Blatts
+ * --m3-on-surface-variant -> Griff oben am Blatt
+ * --tasks-panel-slide    -> wie schnell das Blatt hereingleitet (styles/tokens-pages.css)
+ * --details-head-h       -> Höhe der Überschrift im Blatt, wie der Kopf der Karte (styles/tokens-pages.css)
+ * --icon-soft            -> Farbe der Überschrift „Details“, wie auf der Karte (styles/tokens.css)
+ * --safe-bottom          -> Platz unter dem Inhalt für die Gestenleiste (styles/tokens.css)
  *
- * Direkt bei ihrer Regel: Luft zwischen „Details“ und dem Symbol (4px).
+ * Direkt bei ihrer Regel: Luft zwischen „Details“ und dem Symbol (4px), der
+ * Griff oben (32 × 4px, Material 3) und die Überschrift im Blatt (16px).
  */
 
 /* Außerhalb dieser Fassung gibt es das Ketten-Symbol in der Kopfzeile nicht */
@@ -66,6 +77,77 @@
 
   [data-mobile-variant="details-oben"] .entry-more {
     color: var(--m3-primary);
+  }
+
+  /* ---------- Blatt „Details“ von unten ---------- */
+
+  /* Am unteren Rand verankert, ohne Luft drumherum (das Auswahl-Blatt schwebt
+     mit 12px Rand). transition: der Schleier blendet weich ein. */
+  [data-mobile-variant="details-oben"] .details-sheet {
+    padding: 0;
+    transition: background-color var(--tasks-panel-slide) ease;
+  }
+
+  /* position: Bezug für den Griff. transition: gleitet von unten herein;
+     beim Ziehen setzt src/ui/modal-pull.js Lage und Übergang selbst. */
+  [data-mobile-variant="details-oben"] .details-sheet .sheet {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    max-height: var(--m3-sheet-max);
+    padding: 12px 16px 0;
+    border-radius: var(--m3-sheet-radius) var(--m3-sheet-radius) 0 0;
+    background: var(--m3-surface-container);
+    transition: transform var(--tasks-panel-slide) cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  /* @starting-style: woher Blatt und Schleier beim Öffnen kommen — sonst
+     stünden sie sofort da, weil sie eben erst aus display: none auftauchen */
+  @starting-style {
+    [data-mobile-variant="details-oben"] .details-sheet:not([hidden]) {
+      background-color: transparent;
+    }
+
+    [data-mobile-variant="details-oben"] .details-sheet:not([hidden]) .sheet {
+      transform: translateY(100%);
+    }
+  }
+
+  /* Der Griff oben in der Mitte: das Blatt lässt sich nach unten ziehen */
+  [data-mobile-variant="details-oben"] .details-sheet .sheet::before {
+    content: "";
+    position: absolute; /* position: mittig über der Überschrift, ohne Platz zu nehmen */
+    top: 8px;
+    left: 50%;
+    width: 32px;
+    height: 4px;
+    margin-left: -16px;
+    border-radius: 2px;
+    background: var(--m3-on-surface-variant);
+    opacity: 0.4;
+  }
+
+  [data-mobile-variant="details-oben"] .details-sheet-title {
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    height: var(--details-head-h);
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--icon-soft);
+  }
+
+  /* Der Inhalt scrollt in sich (.modal-body, styles/overlays.css); hier ohne
+     dessen Seitenrand und Lücken — die Angaben bringen ihre eigenen mit */
+  [data-mobile-variant="details-oben"] .details-sheet-body {
+    gap: 0;
+    padding: 0 0 calc(16px + var(--safe-bottom));
+  }
+
+  /* Im Blatt ist alles sofort zu sehen; auf der Karte blenden die Angaben
+     erst beim Hochscrollen ein (styles/entry-details.css) */
+  [data-mobile-variant="details-oben"] .details-sheet :is(.details-stats, .details-list) {
+    opacity: 1;
   }
 
   /* ---------- „Verknüpfen“ in der Kopfzeile ---------- */

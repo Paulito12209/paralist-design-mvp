@@ -18,8 +18,10 @@
  * regelt entry-fold.js. Ein Tipp auf „Details“ oder das Symbol rechts klappt
  * die Karte über den Text hoch, ohne die Seite zu bewegen (entry-lift.js);
  * ebenso ein Tipp irgendwo sonst in den Kopf, außer auf das Ketten-Symbol.
- * In der Fassung „Android (Experiment 2: Details)“ steht das Symbol zum
- * Hochklappen direkt hinter „Details“ und das Ketten-Symbol oben in der
+ * In der Fassung „Android (Experiment 2: Details)“ öffnet derselbe Tipp
+ * stattdessen ein Blatt von unten mit denselben Angaben
+ * (entry-details-sheet.js); die Karte bleibt dort ein gewöhnlicher Abschnitt.
+ * Das Symbol steht direkt hinter „Details“, das Ketten-Symbol oben in der
  * Kopfzeile (styles/android-details-top.css) — rechts im Kopf liegt dort der
  * Plus-Knopf darüber.
  * Pfad: src/features/entry/entry-details.js
@@ -40,6 +42,8 @@ import { findEntry } from "../../data/queries.js";
 import { ui } from "../../data/state.js";
 import { detailsMarkup, fillDetails, handleCardClick } from "../../ui/details-card.js";
 import { openLinkSheet } from "../../ui/link-sheet.js";
+import { isMobileVariant } from "../../ui/mobile-variant.js";
+import { initDetailsSheet, openDetailsSheet, refreshDetailsSheet } from "./entry-details-sheet.js";
 import { initEntryLift, refreshLift, toggleLift } from "./entry-lift.js";
 
 const detailsLabel = "Details";
@@ -69,6 +73,7 @@ export function renderEntryDetails(entry) {
   if (!card || !entry) return;
   fillDetails(statsBox, listBox, entryFacts(entry));
   refreshLift();
+  refreshDetailsSheet(entry);
 }
 
 /** Karte ans Ende des Reiters „Inhalt“ hängen und ihre Tipps anmelden. */
@@ -88,6 +93,8 @@ export function initEntryDetails() {
   listBox = card.querySelector(".details-list");
   dom.entryPanelNotes.append(card);
   initEntryLift(card);
+  /* Das Symbol im Kopf zeigt auch beim Blatt, ob es offen ist */
+  initDetailsSheet((open) => card.querySelector(".details-toggle").setAttribute("aria-expanded", String(open)));
 
   card.addEventListener("click", (event) => {
     const entry = findEntry(ui.currentEntryId);
@@ -97,6 +104,11 @@ export function initEntryDetails() {
       return;
     }
     if (event.target.closest(".details-head")) {
+      /* Experiment 2: dieselben Angaben als Blatt von unten, die Karte bleibt stehen */
+      if (isMobileVariant("details-oben")) {
+        openDetailsSheet(entry);
+        return;
+      }
       /* Frisch rechnen: die Zeit auf der Seite ist seit dem Öffnen gewachsen */
       renderEntryDetails(entry);
       toggleLift();

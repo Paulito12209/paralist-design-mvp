@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "8e33eb6d3416";
+export const appVersion = "11176f183825";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -113,6 +113,7 @@ export const appFiles = [
   "src/features/drawing/drawing-tools.js",
   "src/features/drawing/drawing.js",
   "src/features/entry/entry-cover.js",
+  "src/features/entry/entry-details-sheet.js",
   "src/features/entry/entry-details.js",
   "src/features/entry/entry-fold.js",
   "src/features/entry/entry-head.js",
@@ -255,6 +256,7 @@ export const appFiles = [
   "src/ui/long-press.js",
   "src/ui/media-cell.js",
   "src/ui/media-strip.js",
+  "src/ui/mobile-variant.js",
   "src/ui/modal-pull.js",
   "src/ui/modal-top.js",
   "src/ui/move-menu.js",
