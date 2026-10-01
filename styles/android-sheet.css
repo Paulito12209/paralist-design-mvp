@@ -20,15 +20,17 @@
  * --m3-scrim               -> Schleier hinter dem Blatt
  * --m3-on-surface-variant  -> Griff oben am Blatt und das Symbol in der Reiterzeile
  * --m3-secondary-container, --m3-on-secondary-container -> Fläche und Strich des ✕ im Kopf des Blatts
- * --details-head-h, --page-tool-size -> Höhe des Kopfs und Größe des ✕; daraus ergibt sich sein Abstand nach oben und rechts
+ * --m3-sheet-close-inset   -> Abstand des ✕ vom oberen und vom rechten Rand des Blatts
+ * --m3-sheet-close-gap     -> Abstand vom ✕ bis zur Trennlinie darunter
+ * --page-tool-size         -> Größe des ✕ (styles/tokens.css)
  * --icon-soft, --page-tool-icon -> Farbe und Größe der zwei Regler in der Projekte-Zeile
  * --tasks-panel-slide      -> wie schnell das Blatt kommt und geht (styles/tokens-pages.css)
  * --head-btn-size          -> Tippfläche des Symbols in der Kopfzeile einer Sammlung (styles/tokens.css)
  * --m3-tab-tools-air       -> Luft vor dem Symbol in der Reiterzeile statt der Trennlinie
  * --tab-pills-btn-gap      -> Grundabstand vor dem Symbol (styles/tokens.css)
  *
- * Direkt bei ihrer Regel: der Griff oben (32 × 4px, Material 3) und das
- * Symbol in der Reiterzeile (22px).
+ * Direkt bei ihrer Regel: die Schrift der Überschrift „Ansicht“ (20px), der
+ * Griff oben (32 × 4px, Material 3) und das Symbol in der Reiterzeile (22px).
  */
 
 @media (max-width: 1023px) {
@@ -71,11 +73,21 @@
      position: Bezug für den Griff, der über dem Kopf schwebt, ohne ihn höher zu machen. */
   [data-mobile-os="android"] .view-panel-head {
     position: relative;
-    /* margin-right: das ✕ soll vom rechten Rand des Blatts so weit entfernt sein
-       wie vom oberen — oben sind es (Kopfhöhe − Knopf) / 2 plus 12px Blattrand, rechts
-       16px Blattrand plus dieser Wert. Die Karte „Details“ zieht den Kopf sonst
-       nach rechts, damit das Symbol (nicht der Kreis) bündig abschließt. */
-    margin-right: calc((var(--details-head-h) - var(--page-tool-size)) / 2 - 4px);
+    /* height: auto statt fester Kopfhöhe — der Kopf ist so hoch wie das ✕ plus
+       Abstand nach oben und zur Trennlinie darunter */
+    height: auto;
+    /* padding: oben und rechts steht das ✕ gleich weit vom Blattrand
+       (--m3-sheet-close-inset, vom Blattrand aus gemessen, der selbst 12px
+       oben und 16px seitlich Luft lässt), unten --m3-sheet-close-gap bis zur Linie */
+    padding: calc(var(--m3-sheet-close-inset) - 12px) 0 var(--m3-sheet-close-gap);
+    /* margin-right: die Karte „Details“ zieht ihren Kopf sonst 8px nach rechts,
+       damit dort das Symbol (nicht der Kreis) bündig abschließt */
+    margin-right: calc(var(--m3-sheet-close-inset) - 16px);
+  }
+
+  /* Die Überschrift des Blatts passt zum 36px großen ✕ daneben */
+  [data-mobile-os="android"] .view-panel-head .details-title {
+    font-size: 20px;
   }
 
   [data-mobile-os="android"] .view-panel-head::before {

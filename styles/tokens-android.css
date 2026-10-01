@@ -41,6 +41,8 @@
  * --m3-content-end             -> Platz am Seitenende, damit nichts hinter Plus-Knopf und Leiste liegt
  * --m3-sheet-radius            -> Rundung oben an der Karte „Ansicht“ als Blatt (Material 3: 28dp)
  * --m3-sheet-max               -> wie hoch dieses Blatt höchstens wird (Anteil des Geräts)
+ * --m3-sheet-close-inset      -> Abstand des ✕ im Blatt vom oberen und rechten Rand
+ * --m3-sheet-close-gap        -> Abstand vom ✕ bis zur Trennlinie darunter
  * --m3-tab-tools-air          -> zusätzliche Luft zwischen den Reitern und dem Symbol
  *                                 „Ansicht“ rechts, dort wo sonst die Trennlinie stand
  * --m3-view-btn-size           -> Größe des runden Knopfs „Ansicht“ mittig über der Leiste
@@ -82,6 +84,8 @@
   --m3-content-end: calc(var(--m3-nav-height-labels) + var(--m3-fab-size) + 3 * var(--m3-fab-gap));
   --m3-sheet-radius: 28px;
   --m3-sheet-max: 80%;
+  --m3-sheet-close-inset: 18px;
+  --m3-sheet-close-gap: 16px;
   --m3-tab-tools-air: 4px;
   --m3-view-btn-size: 40px;
   --m3-head-tools-pull: 8px;
