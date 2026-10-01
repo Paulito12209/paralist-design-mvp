@@ -1,20 +1,16 @@
 # Karte „Details“: Fälligkeit, Erinnerung und die drei Kennzahlen je Kategorie
 
-> Nachtrag 1. Oktober 2026: Schritte 1–5 sind umgesetzt, Schritt 6
-> (Karte für den Arbeitsbereich) und 7 (README, Desktop-Flows) stehen noch
-> aus. Die offenen Punkte aus Abschnitt 13 sind so entschieden, wie der Plan
-> sie vorschlägt. Abweichungen: Schritt 3 und 4 sind ein Commit. Das Banner
-> nutzt die Werte der Meldung unten (`--toast-radius`, `--toast-gap`,
-> `--toast-anim`) statt eigener `--banner-*`, und `styles/reminder-banner.css`
-> steht in der Zeile von `toast.css` in der Übersicht — `tokens.css` hat 399
-> Zeilen. `remindMissedAt` gibt es nicht: eine Erinnerung ist verbraucht,
-> sobald ihr Banner erscheint, und verpasste kommen beim nächsten Öffnen.
-> „Bearbeitet“ oben heißt knapp „jetzt“, „vor 5 Min“, „vor 3 Std“,
-> „gestern“, sonst der Tag — „gerade eben“ passte nicht in die Spalte.
-> Icon der Erinnerung ist bis zur Glocke `clock` (`reminderIcon` in
-> `src/ui/date-field.js`).
+> Nachtrag 1. Oktober 2026: alle sieben Schritte umgesetzt, offene Punkte
+> (Abschnitt 13) wie vorgeschlagen entschieden. Abweichungen: Schritt 3 und 4
+> sind ein Commit. Das Banner nutzt `--toast-*` statt eigener Werte, seine
+> Stil-Datei steht in der Zeile von `toast.css` (tokens.css hat 399 Zeilen).
+> Kein `remindMissedAt`: verbraucht ist eine Erinnerung, sobald ihr Banner
+> erscheint. Setzen einer Erinnerung zählt nicht als Bearbeitung. Icon bis
+> zur Glocke `clock`. Arbeitsbereich: Karte ohne Kürzen und Hochklappen —
+> „Details“ scrollt sie in den Blick; gemeinsam genutzt werden
+> `src/ui/details-card.js` (Markup, Tipps) und `src/ui/details-peek.js`.
 
-Stand: 1. Oktober 2026, Entwurf zur Prüfung. Umsetzung
+Stand: 1. Oktober 2026, umgesetzt. Umsetzung
 nach den Regeln in `.claude/skills/paralist-clean-code/SKILL.md`: erst
 `python3 tools/version.py`, dann `python3 tools/check.py`, dann im Browser
 prüfen, dann committen — je Schritt aus Abschnitt 11 ein Commit.

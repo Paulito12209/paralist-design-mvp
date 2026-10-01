@@ -219,11 +219,21 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   ein; jede neu geöffnete Seite beginnt eingeklappt, ein Tipp in den Text
   klappt von selbst aus. Ein Tipp in die freie Fläche über der Karte schreibt
   am Textende weiter. Hochscrollen zeigt die ganze Karte über der Navigation;
-  ein Tipp auf „Details“ holt sie hoch. Oben drei Kennzahlen (Aufgabe: Datum |
-  Status | Dringlichkeit, ein Tipp auf Status oder Dringlichkeit öffnet das
-  Blatt), darunter Text, Nutzung (Zeit auf der Seite, Besuche, zuletzt
-  bearbeitet), Verlauf und Ablage. Das Ketten-Symbol öffnet „Verknüpfen“ mit
-  den Pillen Zuletzt | Ablageort | Kategorien.
+  ein Tipp auf „Details“ holt sie hoch. Oben drei Kennzahlen je Kategorie
+  (`src/data/entry-stats.js`): Aufgabe und Projekt Dringlichkeit | Fälligkeit |
+  Status, Termin Dringlichkeit | Tag mit Uhrzeit | Status, sonst in der Mitte
+  die Erinnerung (Dokument rechts Entwurf · Fertig · Geprüft). Ohne Datum steht
+  „— Fälligkeit“ gedämpft, gestern fällig und offen „Überfällig“ in Rot,
+  erledigt gedämpft. Darunter „Zeit“ (Fällig am, Erinnerung ›), Text, Nutzung,
+  Verlauf und Ablage. Das Ketten-Symbol öffnet „Verknüpfen“ mit den Pillen
+  Zuletzt | Ablageort | Kategorien.
+- Erinnerung ›: Keine, Zur Fälligkeit, 1 Std / 1 Tag vorher, Eigener Zeitpunkt.
+  Fälligkeit verschieben: sie wandert mit; abhaken: sie ist weg. Fällig: Banner
+  von oben — Haken setzt Erledigt, ✕ schließt, Antippen öffnet (Zurück führt
+  zurück), nach oben wischen schließt, nach 12 s allein weg, Finger hält es.
+  Zwei fällige nacheinander; verpasste kommen nach dem Neuladen.
+- Arbeitsbereich: unter „Inhalt“ dieselbe Karte (Einträge | Erinnerung |
+  Geändert); „Einträge“ wechselt die Pille, „Details“ scrollt sie in den Blick.
 - YouTube-Karte im Inhalt antippen: die Karte wird an Ort und Stelle zum
   dunklen Player über die ganze Zeilenbreite (kein neuer Tab), der Text bleibt
   darüber und darunter stehen; gekürzter Text klappt dafür aus. Das Bild hat

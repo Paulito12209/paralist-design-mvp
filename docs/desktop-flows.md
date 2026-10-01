@@ -100,7 +100,8 @@ muss alles wie am Handy aussehen.
 - Eintrag: kein eigener Zurück-Pfeil (auch auf Sammlungen), zurück über ‹ der
   Reiterzeile oder Browser-Zurück. Rechts oben Kategorie, Stern (Favorit),
   Cover, Menü. Ab 1280 px rechts „Details“ (Status/Dringlichkeit antippen,
-  Link-Zeile beim Lesezeichen ändern), verknüpfte Einträge (Klick öffnet,
+  Fälligkeit und Erinnerung öffnen die Auswahl für Tag und Uhrzeit, die Zeile
+  „Erinnerung ›“ ihr Blatt, Link-Zeile beim Lesezeichen ändern), verknüpfte Einträge (Klick öffnet,
   „Alle“ wechselt die Pille) und „Gestaltung“; langer Text ohne „Mehr
   anzeigen“. Zwischen 1024 und 1279 px bleibt die Karte am Textende.
 
@@ -110,9 +111,13 @@ muss alles wie am Handy aussehen.
   Marketing › Titel“ (bzw. Kalender/Aufgaben/Medien/Suche, je nachdem, woher
   man kam). Jedes Glied außer dem letzten öffnet seinen Ort; der kleine Titel
   beim Rollen entfällt am Desktop.
-- Arbeitsbereich ab 1280 px: rechts „Details“, „Zuletzt geändert“ und
+- Arbeitsbereich ab 1280 px: rechts „Details“ (dieselbe Karte wie am Handy
+  unter dem Text: Einträge | Erinnerung | Geändert, „Einträge“ wechselt die
+  Pille, die Karte unter dem Text entfällt), „Zuletzt geändert“ und
   „Gestaltung“ (Cover, Favorit). Sammlungen wie Eingang behalten die Karten
   der Übersicht.
+- Erinnerung fällig: das Banner steht oben mittig in der Fläche, höchstens
+  420 px breit, über Dialogen und Palette, unter dem Update-Fenster.
 - Kalender bei 1280 px: „September 2026“ bleibt in einer Zeile.
 - Medien: die Pillen laufen vor Raster | Liste weich aus.
 - Mit „Bewegung reduzieren“ im System: nichts gleitet oder taucht auf.
