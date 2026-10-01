@@ -20,6 +20,7 @@
  * --m3-scrim               -> Schleier hinter dem Blatt
  * --m3-on-surface-variant  -> Griff oben am Blatt und das Symbol in der Reiterzeile
  * --m3-secondary-container, --m3-on-secondary-container -> Fläche und Strich des ✕ im Kopf des Blatts
+ * --details-head-h, --page-tool-size -> Höhe des Kopfs und Größe des ✕; daraus ergibt sich sein Abstand nach oben und rechts
  * --icon-soft, --page-tool-icon -> Farbe und Größe der zwei Regler in der Projekte-Zeile
  * --tasks-panel-slide      -> wie schnell das Blatt kommt und geht (styles/tokens-pages.css)
  * --head-btn-size          -> Tippfläche des Symbols in der Kopfzeile einer Sammlung (styles/tokens.css)
@@ -70,6 +71,11 @@
      position: Bezug für den Griff, der über dem Kopf schwebt, ohne ihn höher zu machen. */
   [data-mobile-os="android"] .view-panel-head {
     position: relative;
+    /* margin-right: das ✕ soll vom rechten Rand des Blatts so weit entfernt sein
+       wie vom oberen — oben sind es (Kopfhöhe − Knopf) / 2 plus 12px Blattrand, rechts
+       16px Blattrand plus dieser Wert. Die Karte „Details“ zieht den Kopf sonst
+       nach rechts, damit das Symbol (nicht der Kreis) bündig abschließt. */
+    margin-right: calc((var(--details-head-h) - var(--page-tool-size)) / 2 - 4px);
   }
 
   [data-mobile-os="android"] .view-panel-head::before {
