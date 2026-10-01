@@ -37,6 +37,10 @@
  * -----------------------------------
  * DRAG_START_PX -> so weit muss der Finger wandern, bevor aus einem Tipp ein Ziehen wird
  * SNAP_PX       -> so weit muss man ziehen, damit die Karte in die andere Lage springt
+ * FLICK_SPEED   -> so schnell (Pixel je Millisekunde) muss ein kurzes Wischen sein,
+ *                 damit die Karte auch unter SNAP_PX umspringt
+ * SCRIM_CLICK_BLOCK_MS -> so lange nach einem Tipp auf den Schleier wird der Klick
+ *                 verworfen, der sonst auf der Seite darunter landen würde
  * OVERLAY_SELECTOR -> Ebenen über der Seite, deren Tipps die Karte offen lassen
  * buttonLabel   -> Vorlesetext und Hinweis des Knopfs, der die Karte heraufholt
  *
@@ -50,11 +54,15 @@ import { icon } from "../core/html.js";
 
 const DRAG_START_PX = 6;
 const SNAP_PX = 40;
+const FLICK_SPEED = 0.4;
+const SCRIM_CLICK_BLOCK_MS = 500;
 const OVERLAY_SELECTOR = '[class*="backdrop"], .toast-host, .slash-menu';
 const buttonLabel = "Ansicht";
 
 /* Alle angelegten Karten mit ihrer Funktion zum Einklappen. */
 const collapsers = new Set();
+/* Bis wann ein Klick nach einem Tipp auf den Schleier verworfen wird. */
+let scrimClickUntil = 0;
 /* Alle angelegten Karten mit ihrer Funktion zum Aufklappen — für den Knopf in der Reiterzeile. */
 const openers = new Map();
 
@@ -108,6 +116,20 @@ function watchOutside() {
   document.addEventListener("click", (event) => {
     if (event.target instanceof Element && event.target.closest("[data-view-panel-open]")) openShownPanel();
   });
+  /* Ein Tipp auf den Schleier klappt schon beim Aufsetzen ein; der Schleier
+     lässt danach durch, und der Klick beim Loslassen träfe die Zeile darunter
+     (z.B. „Projekt hinzufügen“). Der Tipp soll nur schließen — darum wird
+     dieser eine Klick verschluckt. capture: vor allen anderen Zuhörern. */
+  window.addEventListener(
+    "click",
+    (event) => {
+      if (Date.now() > scrimClickUntil) return;
+      scrimClickUntil = 0;
+      event.stopPropagation();
+      event.preventDefault();
+    },
+    true
+  );
 }
 
 /**
@@ -174,9 +196,13 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
     if (event.target.closest(".view-panel-actions [data-settings]")) return;
     skipClick = false;
     const max = collapsedOffset();
-    drag = { y: event.clientY, from: expanded ? 0 : max, max, moved: false, id: event.pointerId };
+    drag = { y: event.clientY, from: expanded ? 0 : max, max, moved: false, id: event.pointerId, at: event.timeStamp };
     /* Der Kopf behält den Finger, auch wenn er ihn beim Ziehen gleich verlässt. */
-    (head.contains(event.target) ? head : event.target).setPointerCapture(event.pointerId);
+    try {
+      (head.contains(event.target) ? head : event.target).setPointerCapture(event.pointerId);
+    } catch (error) {
+      /* Zeiger schon weg (Browser-Geste): die Bewegungen kommen trotzdem über die Karte an */
+    }
   });
 
   panel.addEventListener("pointermove", (event) => {
@@ -196,11 +222,14 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
     const dy = event.clientY - drag.y;
     /* Auch ohne Zwischenschritte zählt die Strecke vom Aufsetzen bis zum Loslassen. */
     const moved = drag.moved || Math.abs(dy) >= DRAG_START_PX;
+    /* Ein schnelles kurzes Wischen zählt wie ein langes Ziehen — wie bei
+       den Blättern in Android. Gemessen über die ganze Geste, nicht je Bewegung. */
+    const flick = Math.abs(dy) / Math.max(1, event.timeStamp - drag.at) >= FLICK_SPEED;
     drag = null;
     if (!moved) return;
     panel.classList.remove("is-dragging");
     panel.style.transform = "";
-    if (Math.abs(dy) >= SNAP_PX) setExpanded(dy < 0);
+    if (Math.abs(dy) >= SNAP_PX || flick) setExpanded(dy < 0);
     skipClick = true;
   };
   panel.addEventListener("pointerup", onPointerUp);
@@ -235,6 +264,9 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
   const scrim = document.createElement("div");
   scrim.className = "view-panel-scrim";
   scrim.setAttribute("aria-hidden", "true");
+  scrim.addEventListener("pointerdown", () => {
+    scrimClickUntil = Date.now() + SCRIM_CLICK_BLOCK_MS;
+  });
   document.querySelector(".bottom-bar").before(scrim, panel);
 
   return {
