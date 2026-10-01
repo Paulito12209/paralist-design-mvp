@@ -27,7 +27,8 @@ export const platforms = [
   {
     id: "mobile",
     title: "Mobil",
-    fallback: "erster-test",
+    /* Wer den Link zum ersten Mal öffnet, sieht die Android-Fassung */
+    fallback: "android",
     options: [
       { id: "erster-test", label: "Erster Test", icon: "pencil" },
       { id: "android", label: "Android", icon: "smartphone" },

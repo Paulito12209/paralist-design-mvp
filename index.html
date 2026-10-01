@@ -25,7 +25,7 @@
       try { versions = JSON.parse(localStorage.getItem("paralist-versions")) || {}; } catch (error) {}
       var mobile = versions.mobile === "android-ohne-ansicht" ? "android" : versions.mobile;
       if (mobile !== versions.mobile) document.documentElement.dataset.mobileVariant = "ansicht-unten";
-      document.documentElement.dataset.mobileOs = /^(android|ios)$/.test(mobile) ? mobile : "erster-test";
+      document.documentElement.dataset.mobileOs = /^(erster-test|android|ios)$/.test(mobile) ? mobile : "android";
       document.documentElement.dataset.deskOs = /^(windows|macos)$/.test(versions.desk) ? versions.desk : "erster-test";
 
       /* Icons schon jetzt holen (zwei Dateien wegen der 400-Zeilen-Grenze je Datei);
