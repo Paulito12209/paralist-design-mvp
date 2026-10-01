@@ -3,7 +3,9 @@
  * und oben auf der Seite Projekte, gebaut wie die Pillen der Aufgaben-Seite
  * (src/features/tasks/tasks-views.js): links „Alle“ und die eigenen
  * Ansichten, dahinter das kleine Plus für eine neue Ansicht; rechts hinter
- * der Trennlinie der runde Knopf „Projekt hinzufügen“ (Rakete mit Plus). Eine
+ * der Trennlinie der runde Knopf „Projekt hinzufügen“ (Rakete mit Plus) —
+ * in der Android-Fassung steht dort stattdessen das Symbol „Ansicht“
+ * (viewPanelButton aus src/ui/view-panel.js, styles/android-sheet.css). Eine
  * neue Ansicht startet gleich im Namensfeld. Halten oder Rechtsklick öffnet
  * das Menü: Umbenennen, Icon, Duplizieren, Nach links, Nach rechts, Löschen —
  * „Alle“ kennt nur Icon und Duplizieren. Waagerecht wischen wechselt die
@@ -44,6 +46,7 @@ import { addLongPressMenu, cancelHold } from "../../ui/long-press.js";
 import { iconPickerAction } from "../../ui/pickers.js";
 import { fitPillInput } from "../../ui/pill-input.js";
 import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
+import { viewPanelButton } from "../../ui/view-panel.js";
 import { currentView, isViewActive } from "../../ui/views.js";
 
 const addViewLabel = "Ansicht hinzufügen";
@@ -96,6 +99,7 @@ export function projectViewsMarkup() {
           <button class="add-btn" type="button" data-project-add="1" aria-label="${addProjectLabel}" title="${addProjectLabel}">
             ${icon("rocket-plus")}
           </button>
+          ${viewPanelButton()}
         </div>
       </div>
     </div>`;

@@ -6,6 +6,8 @@
  * gewählten Ansicht als schlichte Zeilen, die Zeile „Projekt hinzufügen“ und
  * „Zum Archiv“ mit der Pille Projekte. Über der Navigation hängt die Karte
  * „Ansicht“ mit Sortieren und Filtern (src/features/overview/project-settings.js).
+ * In der Android-Fassung ersetzt der Archiv-Knopf links unten die Pille
+ * (src/shell/android-archive.js), die Karte kommt als Blatt von unten.
  * Am Desktop zeigt die Übersicht keine Projekte — dort stehen sie in der Seitenleiste.
  * Pfad: src/features/overview/projects.js
  *

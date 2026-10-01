@@ -15,6 +15,10 @@
  * --m3-on-surface-variant -> Schrift der übrigen Reiter
  * --m3-outline-variant   -> Trennlinie unter der ganzen Zeile
  * --m3-hide-time         -> wie schnell die Zeile nachrückt, wenn die Suchleiste geht
+ * --m3-tabs-gap          -> Luft zwischen der Reiterzeile und der Liste darunter
+ * --m3-top-bar-height    -> Höhe der Suchleiste; um so viel weiter lässt sich scrollen
+ * --content-top / --page-head-top / --search-bar-height (styles/tokens.css)
+ *                        -> wo die Zeile einrastet; daraus folgt der nötige Scrollweg
  *
  * Schriftgröße der Reiter: 14px direkt bei .tab-pill (Material 3 „Title small“).
  */
@@ -52,7 +56,8 @@
   /* Unterseiten: unter der Kopfzeile, die dort selbst oben stehen bleibt (styles/rows.css) */
   [data-mobile-os="android"] .page-pills-row,
   [data-mobile-os="android"] .page-body > .tab-pills,
-  [data-mobile-os="android"] .page-body > .tab-pills-row {
+  [data-mobile-os="android"] .page-body > .tab-pills-row,
+  [data-mobile-os="android"] .page-body > .project-views {
     position: sticky;
     top: calc(var(--safe-top) + var(--page-head-top) + var(--search-bar-height));
     z-index: 1;
@@ -64,7 +69,8 @@
   [data-mobile-os="android"] #project-views,
   [data-mobile-os="android"] .tasks-tools,
   [data-mobile-os="android"] .page-pills-row,
-  [data-mobile-os="android"] .page-body > .tab-pills-row {
+  [data-mobile-os="android"] .page-body > .tab-pills-row,
+  [data-mobile-os="android"] .page-body > .project-views {
     margin-left: calc(-1 * var(--content-side));
     margin-right: calc(-1 * var(--content-side));
     padding-left: var(--content-side);
@@ -78,22 +84,24 @@
   [data-mobile-os="android"] #media-filters,
   [data-mobile-os="android"] .page-pills-row,
   [data-mobile-os="android"] .page-body > .tab-pills,
-  [data-mobile-os="android"] .page-body > .tab-pills-row {
+  [data-mobile-os="android"] .page-body > .tab-pills-row,
+  [data-mobile-os="android"] .page-body > .project-views {
     box-shadow: inset 0 -1px 0 var(--m3-outline-variant);
   }
 
   /* Die Zeile selbst trägt keinen Abstand mehr nach unten — die Trennlinie
      ist die Grenze; Luft zur Liste kommt danach */
   [data-mobile-os="android"] .tasks-tools .tab-pills-row,
-  [data-mobile-os="android"] #project-views .tab-pills-row {
+  [data-mobile-os="android"] :is(#project-views, .project-views) .tab-pills-row {
     margin-bottom: 0;
   }
 
   [data-mobile-os="android"] .tasks-tools,
   [data-mobile-os="android"] #project-views,
   [data-mobile-os="android"] #media-filters,
-  [data-mobile-os="android"] .page-pills-row {
-    margin-bottom: 12px;
+  [data-mobile-os="android"] .page-pills-row,
+  [data-mobile-os="android"] .page-body > .project-views {
+    margin-bottom: var(--m3-tabs-gap);
   }
 
   /* Knöpfe rechts (Plus, Filter) lassen die Trennlinie frei */
@@ -143,5 +151,35 @@
   [data-mobile-os="android"] .tab-pill .media-count {
     color: inherit;
     opacity: 0.7;
+  }
+
+  /* ---------- Genug Scrollweg zum Einrasten ---------- */
+
+  /* container-type: der Scrollbereich wird zum Maßstab, damit die Teile unter
+     einer Reiterzeile seine Höhe in cqh kennen. Er hat ohnehin eine feste Höhe
+     aus dem Gerät — sein Inhalt bestimmt sie nicht, es verschiebt sich nichts. */
+  [data-mobile-os="android"] .content {
+    container-type: size;
+  }
+
+  /* Hauptseiten: eingerastet steht die Zeile ganz oben (die Suchleiste ist
+     beim Runterscrollen weg). Darunter muss mindestens so viel liegen, wie
+     von dort bis zum Seitenende zu sehen ist — die Höhe des Scrollbereichs
+     plus der Platz, den Suchleiste und Luft oben einnehmen, abzüglich der
+     Zeile selbst und ihres Abstands zur Liste. */
+  [data-mobile-os="android"] :is(#project-list, .tasks-body, .media-body) {
+    min-height: calc(100cqh + var(--m3-top-bar-height) + var(--content-top) - var(--m3-tab-height) - var(--m3-tabs-gap));
+  }
+
+  /* Kalender: der Kopf mit dem Wochenstreifen ist höher als eine Reiterzeile;
+     ohne ihn abzuziehen bleibt am Ende etwas Luft, nie zu wenig */
+  [data-mobile-os="android"] .cal-panel {
+    min-height: calc(100cqh + var(--m3-top-bar-height));
+  }
+
+  /* Unterseiten: die Zeile ist das erste Stück der Seite und rastet unter der
+     Kopfzeile ein — von dort bis unten muss die Seite reichen */
+  [data-mobile-os="android"] .page-body:has(> :is(.tab-pills, .tab-pills-row, .page-pills-row, .project-views):first-child) {
+    min-height: calc(100cqh - var(--safe-top) - var(--page-head-top) - var(--search-bar-height));
   }
 }

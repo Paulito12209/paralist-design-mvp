@@ -37,6 +37,7 @@ import { initKeyboardInset } from "./shell/keyboard-inset.js";
 import { initLevelGauge } from "./shell/level-gauge.js";
 import { initLifecycle } from "./shell/lifecycle.js";
 import { initNavBar } from "./shell/nav-bar.js";
+import { initAndroidArchive } from "./shell/android-archive.js";
 import { initAndroidBars } from "./shell/android-bars.js";
 import { initAndroidFab } from "./shell/android-fab.js";
 import { initIosAdd } from "./shell/ios-add.js";
@@ -60,6 +61,7 @@ import { initPillTapReveal } from "./ui/pill-swipe.js";
 import { initPullSearch } from "./ui/pull-search.js";
 import { initHistoryRestore } from "./ui/router-restore.js";
 import { initSheet } from "./ui/sheet.js";
+import { initRowLift } from "./ui/row-lift.js";
 import { initSwipe } from "./ui/swipe.js";
 
 /* Was erst beim ersten Öffnen geholt wird. Nur diese Datei kennt die Pfade. */
@@ -122,6 +124,7 @@ function initShell() {
   initPillTapReveal();
   setLongPressMenus({ tab: openTabMenu, workspace: openWorkspaceMenu, entry: openEntryCtxMenu, copy: openCopyChoice });
   initSwipe();
+  initRowLift();
   initPageTools();
   initHeadTitle();
   initListClicks({ openTabMenu, openWorkspaceMenu, beginRenameTab, finishWorkspaceName: commitWorkspaceName });
@@ -131,6 +134,7 @@ function initShell() {
   initNavBar();
   initAndroidBars();
   initAndroidFab();
+  initAndroidArchive();
   initIosBars();
   initIosAdd();
   initKeyboardInset();

@@ -21,6 +21,10 @@
  * --archive-link-height -> Höhe der Pille; so viel Platz wird unter der Liste freigehalten
  * --muted / --line / --card -> Schrift, Rand und Fläche der Pille beim Drücken
  *
+ * In der Android-Fassung gilt das alles nicht: dort steht statt der Pille der
+ * Archiv-Knopf links unten und die Karte „Ansicht“ ist ein Blatt von unten
+ * (styles/android-archive.css hebt die Regeln hier auf).
+ *
  * Wo der feste Teil unten anfängt, ergibt sich aus Werten anderer Dateien:
  * --nav-height, --nav-bottom, --safe-bottom (Navigation), --details-head-h und
  * --tasks-panel-gap (Karte „Ansicht“), --desk-gutter (Desktop), --tab-space.

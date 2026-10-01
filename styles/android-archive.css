@@ -1,0 +1,137 @@
+/*
+ * Android-Fassung, Archiv-Knopf: links unten, gegenüber dem Plus-Knopf und
+ * genauso groß, nur mit dem Archiv-Symbol. Er ersetzt die Pille „Zum Archiv“
+ * unter den Listen und erscheint erst, wenn etwas im Archiv liegt — und nur
+ * auf Seiten mit Einträgen (Übersicht, Aufgaben, Sammlungen, Arbeitsbereich;
+ * nicht bei Medien, Kalender und im Archiv selbst). Wird eine Zeile nach
+ * langem Drücken angehoben, steht er immer da: die Zeile lässt sich auf ihn
+ * ziehen und landet im Archiv. Aufgebaut in src/shell/android-archive.js,
+ * das Anheben in src/ui/row-lift.js.
+ * Dazu: die Seitenenden der Pille „Zum Archiv“ (styles/view-end.css) und der
+ * Platz für die Karte „Ansicht“ (styles/tasks-settings.css) entfallen — das
+ * Seitenende kommt hier aus --m3-content-end (styles/android.css).
+ * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
+ * Pfad: styles/android-archive.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css, außer wo genannt)
+ * -----------------------------------
+ * --m3-fab-size / --m3-fab-radius -> Größe und Rundung — dieselben wie beim Plus-Knopf
+ * --m3-fab-gap                    -> Abstand zum linken Rand und zur Leiste
+ * --m3-surface-container-high     -> Fläche des Knopfs in Ruhe
+ * --m3-on-surface-variant         -> das Archiv-Symbol darauf
+ * --m3-primary-container / --m3-on-primary-container
+ *                                 -> Fläche und Symbol, solange eine Zeile über ihm schwebt
+ * --m3-hide-time                  -> wie schnell er beim Ein- und Ausblenden reagiert
+ * --card / --radius-lg            -> Fläche und Rundung der angehobenen Zeile (styles/tokens.css)
+ *
+ * Direkt bei ihrer Regel: wie stark der Knopf beim Darüberschweben wächst (1.08),
+ * wie klein und blass die Zeile über ihm wird (0.4, 0.6) und wie blass sie an
+ * ihrem alten Platz bleibt (0.35).
+ */
+
+/* position: schwebt links über der Leiste; hängt wie der Plus-Knopf an
+   .nav-shell und rückt so beim Wegscrollen mit ihr nach unten.
+   Außerhalb der Android-Fassung und ohne .is-shown unsichtbar. */
+.m3-archive {
+  display: none;
+  position: absolute;
+  left: var(--m3-fab-gap);
+  bottom: calc(100% + var(--m3-fab-gap));
+  width: var(--m3-fab-size);
+  height: var(--m3-fab-size);
+  place-items: center;
+  border-radius: var(--m3-fab-radius);
+  background: var(--m3-surface-container-high);
+  color: var(--m3-on-surface-variant);
+  /* box-shadow: dieselbe Ebene wie der Plus-Knopf (Material 3, Ebene 3) */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16), 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition:
+    transform var(--m3-hide-time) ease,
+    background-color var(--m3-hide-time) ease; /* transition: wächst und färbt sich weich */
+}
+
+.m3-archive .icon {
+  width: 24px;
+  height: 24px;
+}
+
+.m3-archive:active {
+  opacity: 0.8;
+}
+
+/* Eine angehobene Zeile schwebt über ihm: loslassen archiviert sie */
+.m3-archive.is-drop-over {
+  transform: scale(1.08); /* transform: wächst ein wenig — hier landet die Zeile */
+  background: var(--m3-primary-container);
+  color: var(--m3-on-primary-container);
+}
+
+@media (max-width: 1023px) {
+  [data-mobile-os="android"] .m3-archive.is-shown {
+    display: grid;
+  }
+
+  /* Beim Anlegen und Suchen hat der Knopf nichts zu tun */
+  [data-mobile-os="android"] .nav-shell.is-composing .m3-archive {
+    display: none;
+  }
+
+  /* ---------- Seitenende ohne Pille „Zum Archiv“ ---------- */
+
+  [data-mobile-os="android"] .archive-link-row {
+    display: none;
+  }
+
+  /* Die Regeln aus styles/view-end.css rechnen mit der Pille und dem Kopf der
+     Karte „Ansicht“ — beides gibt es hier nicht */
+  [data-mobile-os="android"] .view:has(.archive-link-row),
+  [data-mobile-os="android"] :is(body.is-projects, body.is-collection) :is(#view-home, #view-page) {
+    min-height: 100%;
+    margin-bottom: 0;
+    padding-bottom: 0;
+  }
+
+  [data-mobile-os="android"] #view-tasks {
+    padding-bottom: 0;
+  }
+}
+
+/* ---------- Die angehobene Zeile ---------- */
+
+/* position: hängt am Gerät über allem außer Menüs und Blättern und folgt dem
+   Finger über translate (src/ui/row-lift.js).
+   z-index 28: über Leiste, Plus- und Archiv-Knopf (20), unter dem Plus-Menü (30).
+   pointer-events: sonst fände der Zeiger unter sich immer nur die Zeile selbst. */
+.row-lift {
+  position: absolute;
+  z-index: 28;
+  margin: 0;
+  pointer-events: none;
+  border-radius: var(--radius-lg);
+  background: var(--card);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+  opacity: 0.95;
+}
+
+/* Über dem Archiv-Knopf schrumpft sie zum Finger hin (den Ursprung setzt
+   row-lift.js) und wird blasser: so sieht man, dass sie dort hineingeht.
+   Die Bewegung trägt translate, das Schrumpfen scale — beide unabhängig. */
+.row-lift {
+  transition: scale 150ms ease, opacity 150ms ease; /* transition: schrumpft weich statt zu springen */
+}
+
+.row-lift.is-over-drop {
+  scale: 0.4;
+  opacity: 0.6;
+}
+
+/* Am alten Platz bleibt nur ein blasser Rest, bis die Liste neu zeichnet */
+.is-lift-source {
+  opacity: 0.35;
+}
+
+/* Während des Ziehens markiert der Finger keinen Text */
+body.is-row-lifting {
+  user-select: none;
+  -webkit-user-select: none;
+}

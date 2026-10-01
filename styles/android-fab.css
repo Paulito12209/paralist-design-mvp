@@ -11,7 +11,8 @@
  * ANPASSBARE WERTE (alle in styles/tokens-android.css)
  * -----------------------------------
  * --m3-fab-size / --m3-fab-radius  -> Höhe und Rundung des Plus-Knopfs
- * --m3-fab-gap                     -> Abstand zum rechten Rand und zur Leiste
+ * --m3-fab-gap                     -> Abstand zum rechten Rand und zur Leiste; Meldungen
+ *                                     stehen um Knopfhöhe und zwei Abstände höher
  * --m3-primary-container           -> Fläche von Knopf und Menü-Einträgen
  * --m3-on-primary-container        -> Schrift und Icon darauf
  * --m3-primary / --m3-on-primary   -> runder Schließen-Knopf mit ✕
@@ -91,6 +92,12 @@
   /* Beim Anlegen und Suchen hat der Knopf nichts zu tun */
   [data-mobile-os="android"] .nav-shell.is-composing .m3-fab {
     display: none;
+  }
+
+  /* Meldungen (styles/toast.css) stehen über Plus- und Archiv-Knopf statt
+     dahinter — wie die Snackbar in Material 3 */
+  [data-mobile-os="android"] .toast-host {
+    margin-bottom: calc(var(--m3-fab-size) + 2 * var(--m3-fab-gap));
   }
 }
 

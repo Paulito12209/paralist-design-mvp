@@ -1,0 +1,154 @@
+/*
+ * Android-Fassung, Karte „Ansicht“ als Blatt von unten (Material 3 „Bottom
+ * sheet“): eingeklappt ist nichts von ihr zu sehen — über der Leiste steht
+ * kein Kopf mehr. Stattdessen sitzt rechts in der Reiterzeile das Symbol
+ * „Ansicht“ (dort, wo sonst „… hinzufügen“ steht); ein Tipp darauf schiebt
+ * das Blatt von unten über Leiste und Plus-Knopf, dahinter ein Schleier.
+ * Seiten ohne Reiterzeile tragen das Symbol in der Kopfzeile (Sammlungen)
+ * bzw. neben „KW“ (Kalender). Schließen: Tipp auf Schleier, Kopf oder Pfeil,
+ * oder das Blatt nach unten ziehen (src/ui/view-panel.js).
+ * Außerdem: neben „Projekte“ auf der Übersicht entfällt der Pfeil — die
+ * Überschrift öffnet die Seite Projekte trotzdem.
+ * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
+ * Pfad: styles/android-sheet.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-sheet-radius        -> Rundung der oberen Ecken des Blatts
+ * --m3-sheet-max           -> wie hoch das Blatt höchstens wird
+ * --m3-surface-container   -> Fläche des Blatts
+ * --m3-scrim               -> Schleier hinter dem Blatt
+ * --m3-on-surface-variant  -> Griff oben am Blatt und das Symbol in der Reiterzeile
+ * --tasks-panel-slide      -> wie schnell das Blatt kommt und geht (styles/tokens-pages.css)
+ * --head-btn-size          -> Tippfläche des Symbols in der Kopfzeile einer Sammlung (styles/tokens.css)
+ *
+ * Direkt bei ihrer Regel: der Griff oben (32 × 4px, Material 3) und das
+ * Symbol in der Reiterzeile (22px).
+ */
+
+@media (max-width: 1023px) {
+  /* ---------- Das Blatt ---------- */
+
+  /* --view-panel-peek: eingeklappt schaut nichts hervor (gelesen von src/ui/view-panel.js).
+     z-index 25: über Leiste und Plus-Knopf (20), unter dem Plus-Menü (30) und den Blättern (ab 36).
+     visibility: eingeklappt wird das Blatt nach dem Wegschieben ganz ausgeblendet,
+     damit sein Schatten nicht an der Unterkante hervorschaut und Tab es nicht erreicht. */
+  [data-mobile-os="android"] .view-panel {
+    --view-panel-peek: 0px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 25;
+    max-height: var(--m3-sheet-max);
+    padding: 12px 16px calc(16px + var(--safe-bottom));
+    border-radius: var(--m3-sheet-radius) var(--m3-sheet-radius) 0 0;
+    background: var(--m3-surface-container);
+    transform: translateY(100%);
+    visibility: hidden;
+    transition:
+      transform var(--tasks-panel-slide) cubic-bezier(0.2, 0.8, 0.2, 1),
+      visibility 0s linear var(--tasks-panel-slide);
+  }
+
+  [data-mobile-os="android"] .view-panel.is-expanded,
+  [data-mobile-os="android"] .view-panel.is-dragging {
+    transform: none;
+    visibility: visible;
+    transition: transform var(--tasks-panel-slide) cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  /* Beim Ziehen folgt das Blatt dem Finger (transform setzt das Skript direkt) */
+  [data-mobile-os="android"] .view-panel.is-dragging {
+    transition: none;
+  }
+
+  /* Der Griff oben in der Mitte zeigt: das Blatt lässt sich nach unten ziehen.
+     position: Bezug für den Griff, der über dem Kopf schwebt, ohne ihn höher zu machen. */
+  [data-mobile-os="android"] .view-panel-head {
+    position: relative;
+  }
+
+  [data-mobile-os="android"] .view-panel-head::before {
+    content: "";
+    position: absolute; /* position: mittig über dem Titel, ohne Platz zu nehmen */
+    top: -6px;
+    left: 50%;
+    width: 32px;
+    height: 4px;
+    margin-left: -16px;
+    border-radius: 2px;
+    background: var(--m3-on-surface-variant);
+    opacity: 0.4;
+  }
+
+  /* Der Schleier: nur da, solange das Blatt offen ist. position/inset: deckt das
+     ganze Gerät. Ein Tipp darauf klappt das Blatt zu (src/ui/view-panel.js). */
+  [data-mobile-os="android"] .view-panel-scrim {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: 25;
+    background: var(--m3-scrim);
+    opacity: 0;
+    pointer-events: none; /* pointer-events: unsichtbar lässt er jeden Tipp zur Seite durch */
+    transition: opacity var(--tasks-panel-slide) ease; /* transition: blendet mit dem Blatt ein und aus */
+  }
+
+  [data-mobile-os="android"] .view-panel-scrim:has(+ .view-panel.is-expanded) {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* ---------- Das Symbol „Ansicht“ ---------- */
+
+  [data-mobile-os="android"] .view-panel-btn {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    color: var(--m3-on-surface-variant);
+  }
+
+  [data-mobile-os="android"] .view-panel-btn .icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  [data-mobile-os="android"] .view-panel-btn:active {
+    opacity: 0.55;
+  }
+
+  /* Es steht an der Stelle von „… hinzufügen“ in der Reiterzeile; Anlegen
+     geht über den Plus-Knopf und die Zeile „… hinzufügen“ unter der Liste. */
+  [data-mobile-os="android"] .tab-pills-end .add-btn {
+    display: none;
+  }
+
+  /* Sammlungen ohne Reiterzeile: in der Kopfzeile links vom Menü — nur, wo es
+     eine Karte gibt (is-collection) und die Seite das Symbol nicht schon in
+     ihrer Reiterzeile trägt (Arbeitsbereiche) */
+  [data-mobile-os="android"] .page-head .view-panel-btn {
+    display: none;
+  }
+
+  [data-mobile-os="android"] body.is-collection:not(:has(#page-body .view-panel-btn)) .page-head .view-panel-btn {
+    display: grid;
+    width: var(--head-btn-size);
+    height: var(--head-btn-size);
+  }
+
+  /* Kalender: „KW“ rückt nach rechts neben das Symbol, statt mittig zu stehen */
+  [data-mobile-os="android"] .cal-kw {
+    margin-left: auto;
+  }
+
+  [data-mobile-os="android"] .cal-date-row .view-panel-btn {
+    margin-left: -4px;
+  }
+
+  /* ---------- „Projekte“ ohne Pfeil ---------- */
+
+  [data-mobile-os="android"] .project-head .section-link .icon {
+    display: none;
+  }
+}

@@ -1,7 +1,9 @@
 /*
  * Gedrückt halten: nach kurzer Zeit öffnet sich das Kontextmenü eines Tabs,
  * Arbeitsbereichs oder Eintrags. Der Klick danach wird unterdrückt, damit die Seite
- * nicht zusätzlich aufgeht.
+ * nicht zusätzlich aufgeht. Wandert der Finger nach dem Halten, statt
+ * loszulassen, kann die Zeile stattdessen angehoben werden (src/ui/row-lift.js,
+ * angestoßen aus src/ui/swipe.js) — dafür liefert holdTurnedDrag() das Ziel.
  * Pfad: src/ui/long-press.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -51,6 +53,21 @@ export function startHold(event, target, kind) {
       if (hold) hold.fired = true;
     }, holdDelay),
   };
+}
+
+/** Das Ziel eines Haltens, das schon gegriffen hat (das Menü käme beim Loslassen) — sonst null. */
+export function firedHoldTarget() {
+  return hold && hold.fired ? hold.target : null;
+}
+
+/**
+ * Ist der Finger nach einem gegriffenen Halten losgewandert? Dann gibt es das
+ * Ziel zurück — aus dem Menü wird ein Ziehen. Sonst null.
+ */
+export function holdTurnedDrag(event) {
+  if (!hold || !hold.fired || event.pointerId !== hold.pointerId) return null;
+  const moved = Math.hypot(event.clientX - hold.startX, event.clientY - hold.startY);
+  return moved > holdSlack ? hold.target : null;
 }
 
 /** Prüft beim Bewegen, ob der Finger zu weit gewandert ist. */

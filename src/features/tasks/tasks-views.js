@@ -3,7 +3,9 @@
  * Arbeitsbereichen der Übersicht: links „Alle“ und die eigenen Ansichten,
  * dahinter das kleine Plus für eine neue Ansicht; rechts hinter der
  * Trennlinie der runde Knopf ✓+, der eine Aufgabe anlegt — dieselbe Zeile
- * wie ein Tipp in die Liste (tasks-inline.js), nicht das Eingabefeld unten. Der aktive Tab ist gefüllt, eine neue Ansicht
+ * wie ein Tipp in die Liste (tasks-inline.js), nicht das Eingabefeld unten.
+ * In der Android-Fassung steht dort stattdessen das Symbol „Ansicht“
+ * (src/ui/view-panel.js, styles/android-sheet.css). Der aktive Tab ist gefüllt, eine neue Ansicht
  * startet gleich im Eingabefeld. Gedrückt halten (oder Rechtsklick) öffnet
  * das Menü: Umbenennen, Icon, Duplizieren, nach links, nach rechts, Löschen —
  * „Alle“ kennt nur Icon und Duplizieren. Waagerecht über die Liste wischen
@@ -44,6 +46,7 @@ import { openInfoDialog } from "../../ui/info-dialog.js";
 import { iconPickerAction } from "../../ui/pickers.js";
 import { fitPillInput, } from "../../ui/pill-input.js";
 import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
+import { viewPanelButton } from "../../ui/view-panel.js";
 import { startTaskRow } from "./tasks-inline.js";
 import { isSelecting } from "./tasks-pick.js";
 
@@ -104,6 +107,7 @@ export function taskViewsMarkup(end = "") {
           <button class="add-btn task-add-btn" type="button" data-task-add aria-label="${addTaskLabel}" title="${addTaskLabel}">
             ${icon("task-plus")}
           </button>
+          ${viewPanelButton()}
         </div>
       </div>
     </div>

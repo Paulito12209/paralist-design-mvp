@@ -20,9 +20,8 @@
  * --m3-secondary-container    -> Farbe dieser Pille
  * --m3-hide-time              -> Dauer des Weg- und Wiederkommens
  * --m3-content-end            -> Platz am Seitenende
- * --details-head-h            -> so viel schaut die Karte „Ansicht“ hervor; der Plus-Knopf
+ * --details-head-h            -> so viel schaut die Karte „Details“ hervor; der Plus-Knopf
  *                                steht um so viel höher (styles/tokens-pages.css)
- * --tasks-panel-gap / -slide  -> Luft und Tempo der Karte „Ansicht“ (styles/tokens-pages.css)
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel: Suchtext 16px,
  * Namen unter den Icons 12px (Material 3 „Label medium“).
@@ -196,35 +195,14 @@
     font-weight: 700;
   }
 
-  /* ---------- Karte „Ansicht“ (styles/tasks-settings.css) ---------- */
+  /* ---------- Plus-Knopf über einer Karte „Details“ ---------- */
 
-  /* Sie sitzt auf der randlosen Leiste und wandert beim Wegscrollen mit ihr
-     nach unten. translate statt transform: transform klappt die Karte schon
-     aus und ein, beide Bewegungen laufen so unabhängig voneinander. */
-  [data-mobile-os="android"] .view-panel {
-    bottom: calc(var(--m3-nav-shift) + var(--safe-bottom) + var(--tasks-panel-gap));
-    transition:
-      transform var(--tasks-panel-slide) cubic-bezier(0.2, 0.8, 0.2, 1),
-      translate var(--m3-hide-time) ease;
-  }
-
-  [data-mobile-os="android"] .view-panel.is-dragging {
-    transition: none;
-  }
-
-  [data-mobile-os="android"] .device.is-bars-hidden .view-panel {
-    translate: 0 calc(var(--m3-nav-shift) + var(--safe-bottom));
-  }
-
-  /* Wo die Karte „Ansicht“ oder auf Unterseiten „Details“ (styles/entry-details.css)
-     hervorschaut, steht der Plus-Knopf über ihrem Kopf statt darauf */
-  [data-mobile-os="android"] body:is(.is-tasks, .is-projects, .is-collection, .is-calendar, .is-subpage) .m3-fab {
+  /* Wo auf einer Eintragsseite oder einem Arbeitsbereich die Karte „Details“
+     (styles/entry-details.css) hervorschaut, steht der Plus-Knopf über ihrem
+     Kopf statt darauf. Die Karte „Ansicht“ ist hier ein Blatt von unten und
+     schaut nicht hervor (styles/android-sheet.css). */
+  [data-mobile-os="android"] body:has(.view.is-active .details-card) .m3-fab {
     bottom: calc(100% + var(--details-head-h) + var(--m3-fab-gap));
-  }
-
-  /* Ausgeklappt braucht die Karte den Platz; der Knopf läge sonst auf ihren Zeilen */
-  [data-mobile-os="android"] body:has(.view-panel.is-expanded) .m3-fab {
-    visibility: hidden;
   }
 
   /* Die Medien-Knöpfe rücken nach links, rechts steht der Plus-Knopf */

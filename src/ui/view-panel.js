@@ -16,6 +16,13 @@
  * Kopf und Karte werden einmal angelegt; beim
  * Neuzeichnen wird nur der Inhalt ersetzt — so blinkt die Karte nie leer auf.
  *
+ * Als Blatt von unten (Android-Fassung, styles/android-sheet.css): dort
+ * schaut eingeklappt nichts hervor — die Seite stellt stattdessen den Knopf
+ * aus viewPanelButton() in ihre Reiterzeile, ein Tipp darauf holt die Karte
+ * der offenen Seite herauf. Wie viel eingeklappt hervorschaut, sagt die
+ * CSS-Variable --view-panel-peek an der Karte (ohne sie: --details-head-h).
+ * Hinter der Karte liegt ein Schleier, der nur im Blatt zu sehen ist.
+ *
  * Von selbst zu: die Karte ist ein Werkzeug für einen Moment, kein fester
  * Teil der Seite. Sie klappt ein, sobald man sich wieder der Seite zuwendet —
  * ein Tipp oder Scrollen irgendwo außerhalb der Karte (Liste, Pillen, Kopf,
@@ -31,6 +38,7 @@
  * DRAG_START_PX -> so weit muss der Finger wandern, bevor aus einem Tipp ein Ziehen wird
  * SNAP_PX       -> so weit muss man ziehen, damit die Karte in die andere Lage springt
  * OVERLAY_SELECTOR -> Ebenen über der Seite, deren Tipps die Karte offen lassen
+ * buttonLabel   -> Vorlesetext und Hinweis des Knopfs, der die Karte heraufholt
  *
  * Aussehen, Lage, Sichtbarkeit je Seite und Geschwindigkeit: styles/tasks-settings.css
  * (--details-head-h, --tasks-panel-gap, --tasks-panel-slide).
@@ -43,12 +51,28 @@ import { icon } from "../core/html.js";
 const DRAG_START_PX = 6;
 const SNAP_PX = 40;
 const OVERLAY_SELECTOR = '[class*="backdrop"], .toast-host, .slash-menu';
+const buttonLabel = "Ansicht";
 
 /* Alle angelegten Karten mit ihrer Funktion zum Einklappen. */
 const collapsers = new Set();
+/* Alle angelegten Karten mit ihrer Funktion zum Aufklappen — für den Knopf in der Reiterzeile. */
+const openers = new Map();
 
 function collapseAll() {
   collapsers.forEach((collapse) => collapse());
+}
+
+/** Der Knopf, der die Karte der offenen Seite heraufholt (nur im Blatt zu sehen). */
+export function viewPanelButton() {
+  return `<button class="view-panel-btn" type="button" data-view-panel-open aria-label="${buttonLabel}" title="${buttonLabel}">${icon("panel-open")}</button>`;
+}
+
+/* Die Karte der offenen Seite aufklappen. Welche das ist, entscheidet das
+   Stylesheet (Klassen am body): nur sie nimmt gerade Platz ein. */
+function openShownPanel() {
+  openers.forEach((open, panel) => {
+    if (panel.getClientRects().length) open();
+  });
 }
 
 /* Tippt oder scrollt man hier, wendet man sich der Seite zu? Nicht in einer
@@ -79,6 +103,11 @@ function watchOutside() {
   on(events.viewWillChange, collapseAll);
   on(events.composerRequested, collapseAll);
   on(events.createRequested, collapseAll);
+  /* Der Knopf steht in Zeilen, die beim Zeichnen ersetzt werden — darum ein
+     Empfänger für alle. Der pointerdown davor hat schon alles eingeklappt. */
+  document.addEventListener("click", (event) => {
+    if (event.target instanceof Element && event.target.closest("[data-view-panel-open]")) openShownPanel();
+  });
 }
 
 /**
@@ -115,8 +144,13 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
   /* Nach einem Ziehen kommt noch ein Klick — der schaltet nicht noch einmal um. */
   let skipClick = false;
 
-  /* Wie weit die Karte eingeklappt nach unten geschoben ist. */
-  const collapsedOffset = () => Math.max(0, panel.offsetHeight - cssNumber("--details-head-h", 48));
+  /* Wie weit die Karte eingeklappt nach unten geschoben ist. Gemessen nur beim
+     Aufsetzen, nicht in jeder Bewegung: --view-panel-peek setzt das Blatt der
+     Android-Fassung, sonst gilt die Kopfhöhe. */
+  const collapsedOffset = () => {
+    const peek = parseFloat(getComputedStyle(panel).getPropertyValue("--view-panel-peek"));
+    return Math.max(0, panel.offsetHeight - (Number.isNaN(peek) ? cssNumber("--details-head-h", 48) : peek));
+  };
 
   const setExpanded = (next) => {
     expanded = next;
@@ -128,6 +162,7 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
     /* Mitten im Ziehen gehört die Karte dem Finger */
     if (expanded && !drag) setExpanded(false);
   });
+  openers.set(panel, () => setExpanded(true));
 
   /* Die ganze Karte ist Griff. Der Kopf hält den Zeiger selbst fest; über
      den Zeilen hält ihn die angetippte Zeile — so erreicht jede Bewegung die
@@ -138,7 +173,8 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
     /* Ein Knopf im Kopf ist kein Griff: sein Klick soll ihn selbst treffen. */
     if (event.target.closest(".view-panel-actions [data-settings]")) return;
     skipClick = false;
-    drag = { y: event.clientY, from: expanded ? 0 : collapsedOffset(), moved: false, id: event.pointerId };
+    const max = collapsedOffset();
+    drag = { y: event.clientY, from: expanded ? 0 : max, max, moved: false, id: event.pointerId };
     /* Der Kopf behält den Finger, auch wenn er ihn beim Ziehen gleich verlässt. */
     (head.contains(event.target) ? head : event.target).setPointerCapture(event.pointerId);
   });
@@ -151,7 +187,7 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
       drag.moved = true;
       panel.classList.add("is-dragging");
     }
-    const top = Math.min(collapsedOffset(), Math.max(0, drag.from + dy));
+    const top = Math.min(drag.max, Math.max(0, drag.from + dy));
     panel.style.transform = `translateY(${top}px)`;
   });
 
@@ -194,8 +230,12 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
   body.addEventListener("click", onClick);
 
   /* Vor der unteren Leiste einhängen: dieselbe Ebene wie die Seite, die
-     Navigation (styles/navigation.css) bleibt darüber. */
-  document.querySelector(".bottom-bar").before(panel);
+     Navigation (styles/navigation.css) bleibt darüber. Der Schleier steht
+     direkt davor; ein Tipp auf ihn zählt als „außerhalb“ und klappt ein. */
+  const scrim = document.createElement("div");
+  scrim.className = "view-panel-scrim";
+  scrim.setAttribute("aria-hidden", "true");
+  document.querySelector(".bottom-bar").before(scrim, panel);
 
   return {
     setContent(html) {

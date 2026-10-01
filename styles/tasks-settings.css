@@ -97,6 +97,13 @@ body:has(.nav-shell.is-composing) .view-panel {
   touch-action: none; /* touch-action: der Browser soll das Ziehen nicht selbst als Geste nehmen */
 }
 
+/* Schleier hinter der Karte und das Symbol, das sie heraufholt: nur im Blatt
+   der Android-Fassung (styles/android-sheet.css), sonst ohne Wirkung */
+.view-panel-scrim,
+.view-panel-btn {
+  display: none;
+}
+
 /* Knöpfe im Kopf links vom Symbol, z.B. „Heute“ im Kalender — ohne Knöpfe
    nimmt der Behälter keinen Platz ein */
 .view-panel-actions {

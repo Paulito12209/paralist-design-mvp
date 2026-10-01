@@ -2,8 +2,10 @@
  * Die Seite „Arbeitsbereiche“ (#/arbeitsbereiche): hier werden Tabs und
  * Arbeitsbereiche angelegt, umbenannt und verwaltet. Oben je Tab eine Pille
  * (Meine, Arbeit, …), dahinter das kleine Plus für einen neuen Tab, rechts
- * hinter der Trennlinie der Ordner-Plus-Knopf. Darunter die Arbeitsbereiche
- * des gewählten Tabs, die Zeile „Arbeitsbereich hinzufügen“ und „Zum Archiv“.
+ * hinter der Trennlinie der Ordner-Plus-Knopf (in der Android-Fassung das
+ * Symbol „Ansicht“, styles/android-sheet.css). Darunter die Arbeitsbereiche
+ * des gewählten Tabs, die Zeile „Arbeitsbereich hinzufügen“ und „Zum Archiv“
+ * (in der Android-Fassung der Archiv-Knopf links unten, src/shell/android-archive.js).
  * Ist der Tab leer, steht statt der Zeile der Platzhalter mit einer Pille
  * zum Anlegen in der Mitte — wie auf den übrigen Seiten.
  * Die gewählte Pille ist der Tab der App (state.activeTabId) — so legt „neu“
@@ -30,6 +32,7 @@ import { state, ui } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { filterEmptyState } from "../../ui/filter-empty.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
+import { viewPanelButton } from "../../ui/view-panel.js";
 import { isViewActive } from "../../ui/views.js";
 import { afterTabsRender, tabPillsMarkup } from "./tabs.js";
 import {
@@ -67,6 +70,7 @@ function pillsRowMarkup() {
         <div class="tab-pills-end">
           <div class="tab-pills-split"></div>
           <button class="add-btn" type="button" data-add-workspace="1" aria-label="${addLabel}">${icon("folder-plus")}</button>
+          ${viewPanelButton()}
         </div>
       </div>
     </div>`;

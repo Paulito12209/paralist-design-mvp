@@ -67,7 +67,7 @@
     <link rel="stylesheet" href="styles/viewer.css" />
     <link rel="stylesheet" href="styles/drawing.css" /><link rel="stylesheet" href="styles/video-player.css" />
     <!-- Android-Fassung (Einstellungen › Mehr › Versionen): nach den Seiten, damit sie deren Handy-Regeln überschreibt -->
-    <link rel="stylesheet" href="styles/tokens-android.css" /><link rel="stylesheet" href="styles/android.css" /><link rel="stylesheet" href="styles/android-tabs.css" /><link rel="stylesheet" href="styles/android-fab.css" />
+    <link rel="stylesheet" href="styles/tokens-android.css" /><link rel="stylesheet" href="styles/android.css" /><link rel="stylesheet" href="styles/android-tabs.css" /><link rel="stylesheet" href="styles/android-fab.css" /><link rel="stylesheet" href="styles/android-sheet.css" /><link rel="stylesheet" href="styles/android-archive.css" />
     <!-- iOS-Fassung: ebenso nach den Seiten -->
     <link rel="stylesheet" href="styles/tokens-ios.css" /><link rel="stylesheet" href="styles/ios.css" /><link rel="stylesheet" href="styles/ios-segmented.css" /><link rel="stylesheet" href="styles/ios-menu.css" />
     <!-- Desktop-Fassung ab 1024px (Reiterzeile, Seitenleiste, rechte Spalte, Kopf der Übersicht): zuletzt, damit sie das Handy-Layout überschreibt -->
@@ -116,6 +116,8 @@
                   <span class="page-search-label">Suchen</span>
                 </button>
               </div>
+              <!-- Symbol „Ansicht“: holt in der Android-Fassung das Blatt mit Sortieren und Filtern herauf (styles/android-sheet.css) -->
+              <button class="view-panel-btn" type="button" data-view-panel-open aria-label="Ansicht" title="Ansicht"><svg class="icon"><use href="#icon-panel-open"></use></svg></button>
               <button class="head-btn page-menu" id="page-menu" type="button" aria-label="Optionen">
                 <svg class="icon"><use href="#icon-dots"></use></svg>
               </button>
@@ -185,6 +187,8 @@
                 <svg class="icon"><use href="#icon-chevron"></use></svg>
               </button>
               <button class="cal-kw" id="cal-kw" type="button" aria-label="Woche wählen">KW</button>
+              <!-- Symbol „Ansicht“ der Android-Fassung, wie in der Kopfzeile einer Sammlung -->
+              <button class="view-panel-btn" type="button" data-view-panel-open aria-label="Ansicht" title="Ansicht"><svg class="icon"><use href="#icon-panel-open"></use></svg></button>
             </div>
             <!-- cal-head rastet unter der Suchleiste ein; Titel und Datum scrollen weg (styles/calendar.css) -->
             <div class="cal-head" id="cal-head">

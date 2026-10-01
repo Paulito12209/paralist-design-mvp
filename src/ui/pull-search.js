@@ -25,6 +25,7 @@ import { dom } from "../core/dom.js";
 import { searchKeyboardOn } from "../data/search-keyboard.js";
 import { isDesk } from "./desk-mode.js";
 import { showSearch } from "./router.js";
+import { isLifting } from "./row-lift.js";
 import { isViewActive } from "./views.js";
 
 const pullThreshold = 120;
@@ -65,6 +66,15 @@ function canStartPull(target) {
 
   /* Der Inhalt muss ganz oben stehen (mit kleiner Toleranz für Subpixel-Rundung) */
   return !dom.content || dom.content.scrollTop <= 1;
+}
+
+/* Wird gerade eine Zeile angehoben (src/ui/row-lift.js), gehört die Bewegung
+   ihr: ein schon begonnenes Ziehen zur Suche federt zurück und endet. */
+function yieldToLift() {
+  if (!isLifting()) return false;
+  if (pull.active) resetVisual();
+  pull = null;
+  return true;
 }
 
 /* ───────── Visuelles Verschieben / Zurücksetzen ───────── */
@@ -113,7 +123,7 @@ function onTouchStart(event) {
 }
 
 function onTouchMove(event) {
-  if (!pull || !pull.isTouch) return;
+  if (!pull || !pull.isTouch || yieldToLift()) return;
   const touch = Array.from(event.changedTouches).find((t) => t.identifier === pull.id);
   if (!touch) return;
 
@@ -185,7 +195,7 @@ function onPointerDown(event) {
 }
 
 function onPointerMove(event) {
-  if (!pull || pull.isTouch || event.pointerId !== pull.pointerId) return;
+  if (!pull || pull.isTouch || event.pointerId !== pull.pointerId || yieldToLift()) return;
 
   const dy = event.clientY - pull.startY;
   const dx = event.clientX - pull.startX;

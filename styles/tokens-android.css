@@ -36,8 +36,11 @@
  * --m3-menu-gap                -> Luft zwischen den Einträgen im Plus-Menü
  * --m3-tab-height              -> Höhe eines Reiters (Material 3: 48dp)
  * --m3-tab-indicator           -> Dicke der Linie unter dem aktiven Reiter (Material 3: 3dp)
+ * --m3-tabs-gap                -> Luft zwischen einer Reiterzeile und der Liste darunter
  * --m3-hide-time               -> wie schnell Kopfzeile und Leiste beim Scrollen weg- und wiederkommen
  * --m3-content-end             -> Platz am Seitenende, damit nichts hinter Plus-Knopf und Leiste liegt
+ * --m3-sheet-radius            -> Rundung oben an der Karte „Ansicht“ als Blatt (Material 3: 28dp)
+ * --m3-sheet-max               -> wie hoch dieses Blatt höchstens wird (Anteil des Geräts)
  */
 
 :root[data-mobile-os="android"] {
@@ -68,8 +71,11 @@
   --m3-menu-gap: 8px;
   --m3-tab-height: 48px;
   --m3-tab-indicator: 3px;
+  --m3-tabs-gap: 12px;
   --m3-hide-time: 220ms;
   --m3-content-end: calc(var(--m3-nav-height-labels) + var(--m3-fab-size) + 3 * var(--m3-fab-gap));
+  --m3-sheet-radius: 28px;
+  --m3-sheet-max: 80%;
 }
 
 @media (prefers-color-scheme: dark) {

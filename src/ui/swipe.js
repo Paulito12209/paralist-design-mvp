@@ -8,6 +8,9 @@
  *                              tickt kurz; ab dann hängt sie am Finger und rastet
  *                              beim Loslassen offen oder zu ein
  * - halten, loslassen       -> Kontextmenü wie bisher (src/ui/long-press.js)
+ * - halten, bis das Menü greift, dann ziehen
+ *                           -> die Zeile wird angehoben und lässt sich auf ein
+ *                              Ziel legen (src/ui/row-lift.js), wo das angemeldet ist
  * Eine schon offene Zeile ist sofort angefasst: kurz wischen schiebt sie zu.
  * Pfad: src/ui/swipe.js
  *
@@ -28,11 +31,13 @@ import { dom } from "../core/dom.js";
 import {
   cancelHold,
   finishHold,
+  holdTurnedDrag,
   isHolding,
   startHold,
   trackHold,
 } from "./long-press.js";
 import { COPY_HOLD } from "./page-tools.js";
+import { canLift, startLift } from "./row-lift.js";
 
 const axisSlack = 6;
 const grabDelay = 280;
@@ -158,6 +163,20 @@ function onPointerDown(event) {
 }
 
 function onPointerMove(event) {
+  /* Das Halten hat gegriffen und der Finger wandert los: Zeile anheben statt Menü */
+  const held = holdTurnedDrag(event);
+  if (held && canLift(held)) {
+    cancelHold();
+    if (drag) {
+      const { body } = drag;
+      release(drag);
+      drag = null;
+      setOffset(body, 0);
+    }
+    rowGesture = true;
+    startLift(event, held);
+    return;
+  }
   trackHold(event);
   if (!drag || event.pointerId !== drag.pointerId) return;
 
