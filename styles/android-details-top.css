@@ -1,0 +1,150 @@
+/*
+ * Fassung „Android (Experiment 2: Details)“: auf der Seite eines Eintrags
+ * stehen die beiden Reiter mittig, jeder mit seinem Werkzeug daneben —
+ * „Inhalt“ mit dem Kopieren-Symbol, „Verknüpfte Einträge“ mit dem Symbol
+ * „Details“. Die Karte „Details“ schaut nicht mehr über der Leiste hervor:
+ * sie ist nur zu sehen, solange sie hochgeklappt ist — ein Tipp auf das
+ * Symbol oben holt sie über den Text (src/features/entry/entry-lift.js), ein
+ * zweiter legt sie zurück. Ihr Ketten-Symbol „Verknüpfen“ wird ein runder
+ * Knopf links über der Leiste, gegenüber dem Plus-Knopf, wie der Archiv-Knopf
+ * auf den Sammlungen (src/shell/android-link-btn.js). Filter und Plus neben
+ * den Reitern entfallen; Anlegen geht über den Plus-Knopf. Die Werkzeuge
+ * zeichnet src/features/entry/entry-tools.js.
+ * Gilt nur mit data-mobile-os="android" und data-mobile-variant="details-oben"
+ * an <html> und unterhalb von 1024px.
+ * Pfad: styles/android-details-top.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css, außer wo genannt)
+ * -----------------------------------
+ * --m3-tab-tool-pull          -> um so viel rückt ein Symbol näher an seinen Reiter heran
+ * --m3-tab-group-gap          -> zusätzliche Luft zwischen Kopieren-Symbol und „Verknüpfte Einträge“
+ * --m3-fab-size / --m3-fab-radius -> Größe und Rundung des Verknüpfen-Knopfs (wie Plus- und Archiv-Knopf)
+ * --m3-fab-gap                -> sein Abstand zum linken Rand und zur Leiste
+ * --m3-surface-container-high -> Fläche des Verknüpfen-Knopfs
+ * --m3-on-surface-variant     -> das Ketten-Symbol darauf
+ * --page-tool-size / --page-tool-icon -> Tippfläche und Symbol neben den Reitern (styles/tokens.css)
+ * --tasks-panel-slide         -> wie schnell die Karte „Details“ kommt und geht (styles/tokens-pages.css)
+ *
+ * Direkt bei ihrer Regel: das Ketten-Symbol auf dem Knopf (24px, wie beim Archiv-Knopf).
+ */
+
+/* position: schwebt links über der Leiste; hängt wie Plus- und Archiv-Knopf an
+   .nav-shell und rückt so beim Wegscrollen mit ihr nach unten.
+   Außerhalb dieser Fassung unsichtbar. */
+.m3-link-btn {
+  display: none;
+  position: absolute;
+  left: var(--m3-fab-gap);
+  bottom: calc(100% + var(--m3-fab-gap));
+  width: var(--m3-fab-size);
+  height: var(--m3-fab-size);
+  place-items: center;
+  border-radius: var(--m3-fab-radius);
+  background: var(--m3-surface-container-high);
+  color: var(--m3-on-surface-variant);
+  /* box-shadow: dieselbe Ebene wie Plus- und Archiv-Knopf (Material 3, Ebene 3) */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16), 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.m3-link-btn .icon {
+  width: 24px;
+  height: 24px;
+}
+
+.m3-link-btn:active {
+  opacity: 0.8;
+}
+
+@media (max-width: 1023px) {
+  /* ---------- Reiter mittig, Werkzeuge daneben ---------- */
+
+  [data-mobile-variant="details-oben"] #view-entry .page-pills-row {
+    justify-content: center;
+    gap: 0;
+  }
+
+  /* display: contents — Reiter und Werkzeuge werden unmittelbar Kinder der
+     Zeile und lassen sich so in eine Reihe bringen: Reiter, Symbol, Reiter,
+     Symbol. Schieben und Ausblenden der Hüllen braucht es hier nicht. */
+  [data-mobile-variant="details-oben"] #view-entry :is(.page-pills, .page-tools) {
+    display: contents;
+  }
+
+  /* order: das Kopieren-Symbol steht zwischen den Reitern, obwohl es im
+     Dokument hinter beiden kommt */
+  [data-mobile-variant="details-oben"] #view-entry [data-copy-page] {
+    order: 1;
+  }
+
+  [data-mobile-variant="details-oben"] #view-entry [data-entry-pill="links"] {
+    order: 2;
+    margin-left: var(--m3-tab-group-gap);
+  }
+
+  [data-mobile-variant="details-oben"] #view-entry [data-details-toggle] {
+    order: 3;
+  }
+
+  /* Das Symbol rückt an seinen Reiter heran: der Reiter hat 16px Innenabstand,
+     das Symbol Luft um sich herum — zusammen zu viel, um als „gehört dazu“ zu wirken */
+  [data-mobile-variant="details-oben"] #view-entry .page-tool {
+    margin-left: calc(-1 * var(--m3-tab-tool-pull));
+  }
+
+  /* Hochgeklappt zeigt das Symbol oben nach unten — hier geht es wieder zu
+     (die Drehung selbst gleitet, styles/entry-details.css) */
+  [data-mobile-variant="details-oben"] #view-entry.is-details-lifted [data-details-toggle] .icon {
+    transform: rotate(180deg); /* transform: Pfeil nach unten */
+  }
+
+  /* ---------- Karte „Details“ nur hochgeklappt ---------- */
+
+  /* Eingeklappt gibt es die Karte nicht: nichts schaut über der Leiste hervor,
+     die Seite endet mit dem Text. display none statt visibility — so nimmt sie
+     auch keinen Scrollweg ein, und entry-fold.js lässt den Text bis zur Leiste
+     reichen. transition mit allow-discrete: beim Zurückklappen bleibt sie zu
+     sehen, bis sie unten angekommen ist, und verschwindet erst dann. */
+  [data-mobile-variant="details-oben"] #entry-panel-notes > .details-card {
+    display: none;
+    transition:
+      transform var(--tasks-panel-slide) cubic-bezier(0.2, 0.8, 0.2, 1),
+      display var(--tasks-panel-slide) allow-discrete;
+  }
+
+  [data-mobile-variant="details-oben"] #entry-panel-notes > .details-card.is-lifted {
+    display: block;
+  }
+
+  /* @starting-style: woher die Karte beim Hochklappen kommt — von ihrem Platz
+     unter der Leiste. Ein eben erst eingeblendetes Element hat sonst keinen
+     Ausgangswert für die Bewegung und stünde sofort oben. !important: die Lage
+     oben setzt entry-lift.js direkt am Element; nur so zählt der Ausgangswert mehr. */
+  @starting-style {
+    [data-mobile-variant="details-oben"] #entry-panel-notes > .details-card.is-lifted {
+      transform: none !important;
+    }
+  }
+
+  /* Nichts schaut hervor: der Plus-Knopf steht wieder auf seiner gewohnten
+     Höhe (styles/android.css hebt ihn sonst über den Kopf der Karte) */
+  [data-mobile-variant="details-oben"] body:has(#view-entry.is-active) .m3-fab {
+    bottom: calc(100% + var(--m3-fab-gap));
+  }
+
+  /* Das Ketten-Symbol im Kopf der Karte ist jetzt der Knopf links unten */
+  [data-mobile-variant="details-oben"] #entry-panel-notes > .details-card .details-link:not(.details-toggle) {
+    display: none;
+  }
+
+  /* ---------- Knopf „Verknüpfen“ links über der Leiste ---------- */
+
+  /* Nur auf der Seite eines Eintrags: sie trägt is-active, solange sie offen ist (src/ui/views.js) */
+  [data-mobile-variant="details-oben"] body:has(#view-entry.is-active) .m3-link-btn {
+    display: grid;
+  }
+
+  /* Beim Anlegen und Suchen hat der Knopf nichts zu tun */
+  [data-mobile-variant="details-oben"] .nav-shell.is-composing .m3-link-btn {
+    display: none;
+  }
+}

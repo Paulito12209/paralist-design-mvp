@@ -127,19 +127,19 @@
   }
 
   /* Ohne Trennlinie: an ihrer Stelle bleibt Luft, um --m3-tab-tools-air
-     breiter als vorher Linie und Abstand. Nur die erste Android-Fassung —
-     Experiment 1 nimmt das Symbol ganz heraus (styles/android-view-btn.css). */
-  [data-mobile-os="android"]:not([data-mobile-variant]) .tab-pills-split {
+     breiter als vorher Linie und Abstand. Nicht in Experiment 1 — das nimmt
+     das Symbol ganz heraus (styles/android-view-btn.css). */
+  [data-mobile-os="android"]:not([data-mobile-variant="ansicht-unten"]) .tab-pills-split {
     display: none;
   }
 
-  [data-mobile-os="android"]:not([data-mobile-variant]) .tab-pills-end {
+  [data-mobile-os="android"]:not([data-mobile-variant="ansicht-unten"]) .tab-pills-end {
     padding-left: calc(var(--tab-pills-btn-gap) + 1px + var(--m3-tab-tools-air));
   }
 
   /* Die Reiter laufen um dieselbe Luft früher aus, damit der letzte nicht
      unter dem Symbol verschwindet */
-  [data-mobile-os="android"]:not([data-mobile-variant]) .tab-pills-row {
+  [data-mobile-os="android"]:not([data-mobile-variant="ansicht-unten"]) .tab-pills-row {
     --tab-pills-tools-width: calc(var(--content-side) + var(--tab-pills-fade) + 1px + var(--tab-pills-btn-gap) + var(--m3-tab-tools-air) + 32px);
   }
 

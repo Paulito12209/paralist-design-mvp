@@ -35,6 +35,10 @@ export const platforms = [
       /* Versuch: ohne Symbol „Ansicht“ in der Reiterzeile, stattdessen ein runder
          Knopf mittig über der Leiste (styles/android-view-btn.css) */
       { id: "android-ohne-ansicht", label: "Android (Experiment 1: Ansicht)", icon: "smartphone", os: "android", variant: "ansicht-unten" },
+      /* Versuch: Reiter mittig mit Kopieren und „Details“ daneben, die Karte
+         „Details“ nur hochgeklappt, „Verknüpfen“ als Knopf links über der
+         Leiste (styles/android-details-top.css) */
+      { id: "android-details-oben", label: "Android (Experiment 2: Details)", icon: "smartphone", os: "android", variant: "details-oben" },
       { id: "ios", label: "iOS", icon: "smartphone" },
     ],
   },

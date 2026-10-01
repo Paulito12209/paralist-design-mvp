@@ -17,6 +17,10 @@
  * und liegt unter der Navigation. Wie weit sie beim Öffnen hervorschaut,
  * regelt entry-fold.js. Ein Tipp auf „Details“ oder das Symbol rechts klappt
  * die Karte über den Text hoch, ohne die Seite zu bewegen (entry-lift.js).
+ * In der Fassung „Android (Experiment 2: Details)“ ist die Karte nur
+ * hochgeklappt zu sehen; geholt wird sie dort über das Symbol neben den
+ * Reitern (entry-tools.js, showDetails), ihr Ketten-Symbol ersetzt der Knopf
+ * links über der Leiste (styles/android-details-top.css).
  * Pfad: src/features/entry/entry-details.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -99,6 +103,19 @@ export function initEntryDetails() {
     }
     handleDetailsClick(event, entry);
   });
+}
+
+/**
+ * Die Karte vom Symbol neben den Reitern aus holen bzw. zurücklegen. Sie
+ * liegt unter „Inhalt“: steht gerade „Verknüpfte Einträge“ offen, wechselt
+ * die Seite erst dorthin — über die Pille, damit Text und Knöpfe wie bei
+ * jedem Wechsel neu gezeichnet werden — und klappt die Karte dann hoch.
+ */
+export function showDetails(entry) {
+  if (ui.entryPill !== "notes") dom.entryPills.querySelector('[data-entry-pill="notes"]')?.click();
+  /* Frisch rechnen: die Zeit auf der Seite ist seit dem Öffnen gewachsen */
+  renderEntryDetails(entry);
+  toggleLift();
 }
 
 /**

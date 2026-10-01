@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "4403199c7024";
+export const appVersion = "876c6de04240";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -195,6 +195,7 @@ export const appFiles = [
   "src/shell/android-archive.js",
   "src/shell/android-bars.js",
   "src/shell/android-fab.js",
+  "src/shell/android-link-btn.js",
   "src/shell/android-view-btn.js",
   "src/shell/create-menu.js",
   "src/shell/desk-head.js",
@@ -254,6 +255,7 @@ export const appFiles = [
   "src/ui/long-press.js",
   "src/ui/media-cell.js",
   "src/ui/media-strip.js",
+  "src/ui/mobile-variant.js",
   "src/ui/modal-pull.js",
   "src/ui/modal-top.js",
   "src/ui/move-menu.js",
@@ -289,6 +291,7 @@ export const appFiles = [
   "src/ui/wheel.js",
   "src/ui/write-tap.js",
   "styles/android-archive.css",
+  "styles/android-details-top.css",
   "styles/android-fab.css",
   "styles/android-sheet.css",
   "styles/android-tabs.css",

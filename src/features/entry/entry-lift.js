@@ -2,7 +2,10 @@
  * Hochklappen der Karte „Details“ auf einer Eintragsseite — wie die Karte
  * „Ansicht“ auf der Aufgaben-Seite: ein Tipp auf „Details“ oder
  * das Symbol rechts im Kopf holt die Karte über die Navigation, ein zweiter
- * Tipp legt sie zurück.
+ * Tipp legt sie zurück. In der Fassung „Android (Experiment 2: Details)“
+ * steht dasselbe Symbol neben den Reitern (entry-tools.js); die Seite trägt
+ * den Zustand als Klasse is-details-lifted, damit das Stylesheet auch dieses
+ * Symbol drehen kann.
  *
  * Die Seite selbst bewegt sich dabei nicht: die Karte gleitet nur als Ebene
  * über den Text (transform). Sie hört immer unter dem Titel auf — ist er
@@ -88,7 +91,11 @@ function place() {
 function setLifted(next) {
   lifted = next;
   card.classList.toggle("is-lifted", next);
-  card.querySelector(".details-toggle").setAttribute("aria-expanded", String(next));
+  /* Beide Symbole, die die Karte holen — im Kopf der Karte und neben den
+     Reitern —, zeigen denselben Zustand */
+  const view = el("view-entry");
+  view.classList.toggle("is-details-lifted", next);
+  view.querySelectorAll(".details-toggle").forEach((toggle) => toggle.setAttribute("aria-expanded", String(next)));
   if (next) {
     liftScroll = dom.content.scrollTop;
     place();
@@ -150,6 +157,11 @@ function onTouchEnd() {
   card.classList.remove("is-dragging");
   if (done.dy >= SNAP_PX) setLifted(false);
   else card.style.transform = `translateY(${-shift}px)`;
+}
+
+/** Ist die Karte gerade hochgeklappt? */
+export function isLifted() {
+  return lifted;
 }
 
 /** Karte hoch- bzw. zurückklappen. */
