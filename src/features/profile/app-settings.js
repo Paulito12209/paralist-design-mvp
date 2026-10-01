@@ -30,7 +30,7 @@ const notes = {
   search: "Aus: Die Suche zeigt erst, was du zuletzt geöffnet hast. Die Tastatur kommt mit der Pille „Suchen“ unten.",
   searchDesk: "Am Computer öffnet das Suchfeld stattdessen die Such-Palette.",
   glow: "Heller Verlauf am unteren Rand der Hauptreiter, der Leiste und Eingabefeld vom Inhalt abhebt. Nur am Handy und Tablet.",
-  head: "Gilt für neue Einträge und Arbeitsbereiche. Ändern lässt sich beides je Seite im Menü oben rechts.",
+  head: "Ohne Haken beginnen neue Einträge und Arbeitsbereiche nur mit dem Titel. Icon und Cover lassen sich je Seite im Menü oben rechts ein- und ausschalten.",
   tabs: "Mit Haken steht vor dem Namen jeder Pille oben ein kleines Icon, ohne Haken nur Text. Ein eigenes Icon gibst du einer Ansicht, indem du ihre Pille gedrückt hältst.",
 };
 
@@ -115,7 +115,8 @@ export function onAppSettingsClick(event) {
   }
   const head = event.target.closest("[data-page-head]");
   if (head) {
-    setPageHeadChoice(head.dataset.pageHead);
+    /* Zweiter Tipp auf die gewählte Zeile nimmt den Haken wieder weg */
+    setPageHeadChoice(head.dataset.pageHead === pageHeadChoice() ? "" : head.dataset.pageHead);
     return true;
   }
   return false;

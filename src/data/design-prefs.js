@@ -8,12 +8,13 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * defaultPageHead -> womit neue Seiten beginnen, solange nichts gewählt ist:
- *                    "icon" (großes Icon über dem Titel) oder "cover" (Farbverlauf)
+ *                    "" (nur der Titel, Vorgabe), "icon" (großes Icon über dem
+ *                    Titel) oder "cover" (Farbverlauf)
  */
 
 import { readText, storageKeys, writeText } from "../core/storage.js";
 
-const defaultPageHead = "icon";
+const defaultPageHead = "";
 const pageHeads = ["cover", "icon"];
 
 /** Ob hinter Leiste und Eingabefeld der helle Verlauf liegt (Voreinstellung: aus). */
@@ -26,26 +27,24 @@ export function setNavGlowOn(value) {
   writeText(storageKeys.navGlow, value ? "1" : "");
 }
 
-/** Womit neue Seiten beginnen: "cover" oder "icon". */
+/** Womit neue Seiten beginnen: "cover", "icon" oder "" (nur der Titel). */
 export function pageHeadChoice() {
   const saved = readText(storageKeys.pageHead);
   return pageHeads.includes(saved) ? saved : defaultPageHead;
 }
 
-/** Die Wahl merken; die Vorgabe selbst wird nicht gespeichert. */
+/** Die Wahl merken; ein leerer Wert (nichts gewählt) löscht sie und bringt die Vorgabe zurück. */
 export function setPageHeadChoice(value) {
-  writeText(storageKeys.pageHead, pageHeads.includes(value) && value !== defaultPageHead ? value : "");
+  writeText(storageKeys.pageHead, pageHeads.includes(value) ? value : "");
 }
 
 /**
  * Einer neuen Seite (Eintrag oder Arbeitsbereich) ihren Kopf geben: Cover an
- * oder das Icon `iconName` über dem Titel. Ohne `iconName` (Arbeitsbereiche
- * zeigen kein großes Icon) bleibt es bei „ohne Cover“.
+ * oder das Icon `iconName` über dem Titel. Ist nichts gewählt (Vorgabe) oder
+ * fehlt `iconName` (Arbeitsbereiche zeigen kein großes Icon), bleibt nur der Titel.
  */
 export function applyPageHead(target, iconName = "") {
-  if (pageHeadChoice() === "cover") {
-    target.cover = true;
-    return;
-  }
-  if (iconName && !target.icon) target.icon = iconName;
+  const choice = pageHeadChoice();
+  if (choice === "cover") target.cover = true;
+  else if (choice === "icon" && iconName && !target.icon) target.icon = iconName;
 }
