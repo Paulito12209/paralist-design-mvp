@@ -1,7 +1,8 @@
 /*
  * Android-Fassung, die Werkzeugzeile über den Projekten (Übersicht und Seite
- * Projekte), gebaut nach Google Tasks: links der Text-Knopf „Archiv (n)“ —
- * nur, wenn Projekte im Archiv liegen —, rechts Sortieren und, außer bei
+ * Projekte), gebaut nach Google Tasks: links der Text-Knopf „Archiv“ —
+ * mit der Zahl der archivierten Projekte in Klammern, sobald es welche gibt —,
+ * rechts Sortieren und, außer bei
  * „Alle“, Filtern (src/features/overview/project-card.js). Die Liste darunter
  * liegt ohne eigene Fläche auf der Seite; getönte Flächen bleiben Leiste,
  * Kacheln und Suchleiste vorbehalten. Die Reiterzeile darüber behält ihre
@@ -16,15 +17,15 @@
  * -----------------------------------
  * --m3-card-head-h            -> Höhe der Werkzeugzeile
  * --m3-card-tool-size / -icon -> Tippfläche und Symbol von Sortieren und Filtern
- * --m3-text-btn-h / -pad      -> Höhe und Innenabstand des Text-Knopfs „Archiv (n)“
+ * --m3-text-btn-h / -pad      -> Höhe und Innenabstand des Text-Knopfs „Archiv“
  * --m3-state-pressed          -> Tönung von Knopf und Symbolen beim Drücken
- * --m3-primary                -> Schrift und Icon von „Archiv (n)“ (Material 3: Text-Knopf in der
+ * --m3-primary                -> Schrift und Icon von „Archiv“ (Material 3: Text-Knopf in der
  *                                Akzentfarbe) und das Filter-Symbol, sobald die Ansicht aussiebt
  * --m3-on-surface             -> Grundfarbe der Tönung beim Drücken
  * --m3-on-surface-variant     -> Sortieren und Filtern in Ruhe
  * --content-side              -> Rand der Reiter, sobald rechts kein Symbol mehr steht (styles/tokens.css)
  *
- * Direkt bei ihrer Regel: Schrift von „Archiv (n)“ 14px halbfett (Material 3
+ * Direkt bei ihrer Regel: Schrift von „Archiv“ 14px halbfett (Material 3
  * „Label large“), sein Icon 18px.
  */
 
@@ -48,13 +49,14 @@
 
   /* ---------- Die Werkzeugzeile ---------- */
 
-  /* Der Abstand zur Reiterzeile kommt schon von ihr (--m3-tabs-gap); die
-     Zeile rückt um so viel hoch, dass sie mittig zwischen Linie und Liste steht */
+  /* Die Zeile beginnt gleich unter der Reiterlinie: der Abstand --m3-tabs-gap,
+     den die Reiterzeile sonst lässt, wird hier zurückgenommen. Die Symbole
+     (48px Tippfläche) bringen ihre Luft selbst mit — mehr Abstand wirkte zu weit. */
   [data-mobile-os="android"] .project-card-head {
     display: flex;
     align-items: center;
     min-height: var(--m3-card-head-h);
-    margin-top: calc(-1 * var(--m3-tabs-gap) / 2);
+    margin-top: calc(-1 * var(--m3-tabs-gap));
   }
 
   /* Text-Knopf nach Material 3: kein Rahmen, keine Fläche, Schrift in der

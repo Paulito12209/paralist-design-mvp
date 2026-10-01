@@ -31,6 +31,7 @@
  * --m3-row-more-size       -> Tippfläche der drei Punkte (Material 3: 48dp); sie ragt über den Rand
  *                             der Zeile hinaus, damit die Punkte bündig mit dem Seitenrand stehen
  * --m3-state-pressed       -> wie stark Zeile und drei Punkte beim Drücken getönt werden
+ *                             (die Zeile mischt über der Seitenfarbe und bleibt deckend)
  *                             (Material 3 „state layer“; die blaue Fläche von Chrome ist aus, styles/base.css)
  *
  * Direkt bei ihrer Regel: Schrift des Titels 16px (Material 3 „Body large“),
@@ -62,10 +63,15 @@
 
   /* Gedrückt: die Zeile tönt sich leicht in ihrer Schriftfarbe — statt der
      blauen Fläche, die Chrome sonst darüberlegt. Getönt wird die Wisch-Hülle,
-     weil sie bis an den Rand reicht (styles/swipe-rows.css); „… hinzufügen“
-     hat keine und tönt sich selbst. :active gilt auch für die Hülle, wenn
-     etwas in ihr gedrückt ist. */
-  [data-mobile-os="android"] .swipe-body:active,
+     weil sie bis an den Rand reicht (styles/swipe-rows.css). Die Tönung wird
+     über der Seitenfarbe gemischt, nicht über „transparent“: die Hülle muss
+     deckend bleiben, sonst scheinen die Wisch-Knöpfe dahinter durch.
+     „… hinzufügen“ hat keine Hülle, die drei Punkte sind ein Kreis in der Zeile —
+     beide tönen sich durchscheinend. */
+  [data-mobile-os="android"] .swipe-body:active {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), var(--bg));
+  }
+
   [data-mobile-os="android"] .workspace-add:active,
   [data-mobile-os="android"] .workspace-row .row-more:active {
     background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), transparent);
@@ -75,6 +81,14 @@
     width: var(--m3-list-icon);
     height: var(--m3-list-icon);
     color: var(--m3-on-surface-variant);
+  }
+
+  /* Die Zeile „… hinzufügen“ trägt ihr Icon in derselben Leading-Fläche wie die
+     Zeilen darüber (Icon mittig in --m3-list-leading): Icon und Text stehen
+     senkrecht untereinander mit den Icons und Titeln der Liste */
+  [data-mobile-os="android"] .workspace-add .icon {
+    box-sizing: content-box; /* box-sizing: der seitliche Rand kommt zur Icon-Größe dazu */
+    padding-inline: calc((var(--m3-list-leading) - var(--m3-list-icon)) / 2);
   }
 
   /* Das Favoriten-Gold bleibt, auch wenn Icons sonst in der Variant-Farbe stehen */

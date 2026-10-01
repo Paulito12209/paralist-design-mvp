@@ -1,7 +1,8 @@
 /*
  * Android-Fassung: die Werkzeugzeile über den Projekten, gebaut wie der Kopf
- * einer Liste in Google Tasks. Links der Text-Knopf „Archiv (n)“ — nur, wenn
- * Projekte im Archiv liegen; ein Tipp öffnet das Archiv mit der Pille
+ * einer Liste in Google Tasks. Links der Text-Knopf „Archiv“ — steht immer,
+ * damit die Zeile nie leer wirkt; liegen Projekte im Archiv, folgt ihre Zahl
+ * in Klammern („Archiv (2)“). Ein Tipp öffnet das Archiv mit der Pille
  * Projekte (data-open-archive, src/ui/list-clicks.js). Rechts Sortieren und,
  * außer bei „Alle“ (dort lässt sich nichts filtern), Filtern. Filtern holt
  * das Blatt „Ansicht“ herauf: darin stehen Ort, Nur Favoriten und Projekte
@@ -13,7 +14,7 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * archiveLabel -> Beschriftung des Text-Knopfs; die Zahl steht in Klammern dahinter
+ * archiveLabel -> Beschriftung des Text-Knopfs; die Zahl der archivierten Projekte steht in Klammern dahinter
  * toolLabels   -> Vorlesetexte und Hinweise der zwei Symbole rechts
  */
 
@@ -36,13 +37,13 @@ function tool(name, iconName, active = false) {
       aria-label="${toolLabels[name]}" title="${toolLabels[name]}">${icon(iconName)}</button>`;
 }
 
-/* „Archiv (2)“ — wie „Erledigt (2)“ in Google Tasks; ohne Archiviertes nichts. */
+/* „Archiv (2)“ wie „Erledigt (2)“ in Google Tasks; ohne Archiviertes nur „Archiv“. */
 function archiveButton() {
   const count = archivedEntries().filter((entry) => entry.type === "projekt").length;
-  if (!count) return "";
+  const label = count ? `${archiveLabel} (${count})` : archiveLabel;
   return `
     <button class="project-card-archive" type="button" data-open-archive="projekt">
-      ${icon("archive")}<span>${archiveLabel} (${count})</span>
+      ${icon("archive")}<span>${label}</span>
     </button>`;
 }
 

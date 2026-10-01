@@ -9,7 +9,7 @@
  *
  * ANPASSBARE WERTE (alle in styles/tokens-android.css)
  * -----------------------------------
- * --m3-tab-height        -> Höhe eines Reiters
+ * --m3-tab-height        -> Höhe eines Reiters (sein Innenabstand von 16px liegt mit --content-side auf einer Linie)
  * --m3-tab-indicator     -> Dicke der Linie unter dem aktiven Reiter
  * --m3-primary           -> Farbe von Schrift und Linie des aktiven Reiters
  * --m3-on-surface-variant -> Schrift der übrigen Reiter
@@ -112,8 +112,13 @@
 
   /* ---------- Die Reiter selbst ---------- */
 
+  /* Der Text des ersten Reiters steht auf derselben Linie wie „Projekte“, die
+     Listen und die Symbole (--content-side): das Tippfeld des Reiters beginnt
+     am Geräterand, nur sein Innenabstand von 16px schiebt den Text auf die Linie */
   [data-mobile-os="android"] .tab-pills {
     gap: 0;
+    padding-left: 0;
+    scroll-padding-left: 0;
   }
 
   [data-mobile-os="android"] .tab-pills-row {

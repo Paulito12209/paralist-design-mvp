@@ -5,7 +5,9 @@
  * unten gleitet die Suchleiste nach oben und die Leiste nach unten weg, beim
  * Scrollen nach oben kommen beide wieder — die Klasse „is-bars-hidden“ an
  * .device setzt src/shell/android-bars.js.
- * Auch hier: Listeneinträge haben keine Trennlinie am unteren Rand.
+ * Auch hier: Listeneinträge haben keine Trennlinie am unteren Rand. Titel und
+ * Abschnittsüberschriften verlieren den iOS-Einzug (--title-side → 0) und
+ * stehen auf der Linie des Seitenrands.
  * Alles hier gilt nur mit data-mobile-os="android" an <html> (Einstellungen ›
  * Mehr › Versionen) und unterhalb der Desktop-Breite von 1024px.
  * Pfad: styles/android.css
@@ -34,6 +36,17 @@
  */
 
 @media (max-width: 1023px) {
+  /* ---------- Eine Linie links ---------- */
+
+  /* Der Einzug der großen Titel (--title-side, 4px) gehört zu iOS: dort
+     rücken Titel und Abschnittsüberschrift ein Stück vor die Liste. Material 3
+     kennt nur den Seitenrand von 16px — Titel, Überschrift, Reiter, Symbole und
+     Listen stehen darauf. Am body, nicht an :root: tokens.css setzt den Wert
+     an :root, und ein Wert am body gewinnt unabhängig von der Reihenfolge. */
+  [data-mobile-os="android"] body {
+    --title-side: 0px;
+  }
+
   /* ---------- Kopfzeile mit Suchleiste ---------- */
 
   /* position: die Kopfzeile liegt über dem Inhalt statt darüber im Fluss — nur

@@ -9,8 +9,12 @@ von 1024 px. Zusätzlich zu den Flows in `README.md`.
   Kacheln und Suchleiste. Hell und Dunkel ansehen.
 - Reiterzeile mit Trennlinie, ohne Symbol rechts; die Reiter laufen bis an den
   Rand und rasten beim Scrollen oben ein.
-- Werkzeugzeile über der Liste: links „Archiv (n)“ in der Akzentfarbe, nur wenn
-  Projekte im Archiv liegen — Tipp öffnet das Archiv mit der Pille Projekte.
+- Werkzeugzeile über der Liste: links „Archiv“ in der Akzentfarbe, mit „(n)“
+  sobald Projekte im Archiv liegen, sonst ohne Zahl — Tipp öffnet das Archiv
+  mit der Pille Projekte. Die Zeile steht direkt unter der Reiterlinie.
+- Linien: Text des ersten Reiters, „Projekte“, „Archiv“-Icon, Listen-Icons und
+  „Projekt hinzufügen“ (Icon und Text) stehen auf denselben Linien links;
+  Sortieren, Filtern und die drei Punkte rechts auf einer Linie.
   Rechts Sortieren (Blatt „Sortieren“); außer bei „Alle“ auch Filtern, das das
   Blatt „Ansicht“ holt und sich in der Akzentfarbe zeigt, sobald die Ansicht
   aussiebt. Dasselbe auf der Seite Projekte.
@@ -28,4 +32,5 @@ von 1024 px. Zusätzlich zu den Flows in `README.md`.
   ändern, Filtern, Datum): ganze Breite, oben gerundet, kein ✕, kein Griff;
   Haken rechts in der Akzentfarbe, „Fertig“ als gefüllter Knopf.
 - Eine Zeile gedrückt halten: keine blaue Fläche von Chrome, sondern die eigene
-  Tönung; danach hebt sich die Zeile zum Verschieben.
+  Tönung, deckend — die Wisch-Knöpfe dahinter scheinen nie durch; danach hebt
+  sich die Zeile zum Verschieben.
