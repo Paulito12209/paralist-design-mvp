@@ -1,0 +1,118 @@
+/*
+ * Android-Fassung, Listenzeilen nach Material 3 („Lists“): eine Zeile ist
+ * 64px hoch, davor steht ein Icon (24px) oder ein gerundetes Vorschaubild
+ * (40px) mit 16px Abstand zum Titel, der Titel in 16px. Der Pfeil am rechten
+ * Rand entfällt — Material 3 zeigt dort nur Aktionen, keine Navigation —, und
+ * zwischen den Zeilen steht keine Linie. Wischt man eine Zeile zur Seite
+ * (src/ui/swipe.js), erscheinen dahinter hochkant stehende, voll gerundete
+ * Knöpfe: tonal in der Sekundärfarbe, nur „Löschen“ gefüllt in der Fehlerfarbe
+ * (Material 3: der Hauptknopf steht ganz außen und ist gefüllt).
+ * Je Seite öffnen sich höchstens drei Knöpfe; die App nutzt heute zwei links
+ * und zwei rechts (src/ui/rows.js, entryActions).
+ * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
+ * Pfad: styles/android-list.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-list-row-h          -> Mindesthöhe einer Zeile
+ * --m3-list-gap            -> Abstand zwischen Bild/Icon und Titel
+ * --m3-list-leading        -> Größe des Bilds und der Icon-Fläche vor dem Titel
+ * --m3-list-icon           -> Größe des Icons darin
+ * --m3-list-thumb-radius   -> Rundung der Vorschaubilder
+ * --m3-swipe-action-w / -h -> Breite und Höhe der Wisch-Knöpfe; die Breite nimmt auch
+ *                             src/ui/swipe.js, um zu rechnen, wie weit eine Zeile aufgeht
+ * --m3-swipe-action-gap    -> Abstand der Wisch-Knöpfe (ebenso von swipe.js gelesen)
+ * --m3-secondary-container / --m3-on-secondary-container -> tonale Wisch-Knöpfe
+ * --m3-error / --m3-on-error -> Wisch-Knopf „Löschen“
+ * --m3-on-surface / --m3-on-surface-variant -> Titel bzw. Icon vor dem Titel
+ *
+ * Direkt bei ihrer Regel: Schrift des Titels 16px (Material 3 „Body large“),
+ * Icon in den Wisch-Knöpfen 24px.
+ */
+
+@media (max-width: 1023px) {
+  /* Die Größen, mit denen src/ui/swipe.js die Öffnungsweite rechnet, folgen den
+     Knöpfen; sonst stünde hinter einer offenen Zeile zu viel oder zu wenig Platz. */
+  :root[data-mobile-os="android"] {
+    --swipe-action-size: var(--m3-swipe-action-w);
+    --swipe-action-gap: var(--m3-swipe-action-gap);
+  }
+
+  /* ---------- Zeile ---------- */
+
+  [data-mobile-os="android"] .workspace-row {
+    min-height: var(--m3-list-row-h);
+    gap: var(--m3-list-gap);
+    padding: 8px 0;
+    font-size: 16px;
+    color: var(--m3-on-surface);
+  }
+
+  [data-mobile-os="android"] .workspace-row .icon:not(.chevron) {
+    width: var(--m3-list-icon);
+    height: var(--m3-list-icon);
+    color: var(--m3-on-surface-variant);
+  }
+
+  /* Das Favoriten-Gold bleibt, auch wenn Icons sonst in der Variant-Farbe stehen */
+  [data-mobile-os="android"] .workspace-row .row-glyph.is-favorite .icon {
+    color: var(--star-color);
+  }
+
+  /* Icon-Fläche so breit wie ein Vorschaubild, damit alle Titel bündig stehen.
+     Der Rand um die Tippfläche (sonst -8px) entfällt: die Fläche ist schon groß. */
+  [data-mobile-os="android"] .workspace-row .row-glyph {
+    width: var(--m3-list-leading);
+    height: var(--m3-list-leading);
+    margin: 0;
+    padding: 0;
+    align-items: center;
+    justify-content: center;
+  }
+
+  [data-mobile-os="android"] .entry-thumb,
+  [data-mobile-os="android"] .workspace-row .entry-thumb-slot {
+    width: var(--m3-list-leading);
+    height: var(--m3-list-leading);
+  }
+
+  [data-mobile-os="android"] .entry-thumb {
+    border-radius: var(--m3-list-thumb-radius);
+  }
+
+  /* Querformat-Fotos behalten ihre Form im Feld, nur die Ecken passen sich an */
+  [data-mobile-os="android"] .entry-thumb.is-fit {
+    width: auto;
+    height: auto;
+    border-radius: calc(var(--m3-list-thumb-radius) / 2);
+  }
+
+  /* Kein Pfeil rechts, keine Linie zwischen den Zeilen (die Linie einer
+     Wisch-Zeile zeichnet .swipe::after, styles/swipe-rows.css) */
+  [data-mobile-os="android"] .swipe .workspace-row > .chevron,
+  [data-mobile-os="android"] .swipe::after {
+    display: none;
+  }
+
+  /* ---------- Wisch-Knöpfe ---------- */
+
+  /* border-radius so hoch wie der Knopf: Material 3 rundet sie voll, hochkant
+     ergibt das eine stehende Pille */
+  [data-mobile-os="android"] .swipe-action {
+    width: var(--m3-swipe-action-w);
+    height: var(--m3-swipe-action-h);
+    border-radius: var(--m3-swipe-action-h);
+    background: var(--m3-secondary-container);
+    color: var(--m3-on-secondary-container);
+  }
+
+  [data-mobile-os="android"] .swipe-action .icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  [data-mobile-os="android"] .swipe-action-delete {
+    background: var(--m3-error);
+    color: var(--m3-on-error);
+  }
+}

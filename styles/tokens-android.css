@@ -91,6 +91,16 @@
   --m3-tab-tools-air: 4px;
   --m3-view-btn-size: 40px;
   --m3-head-tools-pull: 8px;
+  --m3-list-row-h: 64px;
+  --m3-list-gap: 16px;
+  --m3-list-leading: 40px;
+  --m3-list-icon: 24px;
+  --m3-list-thumb-radius: 8px;
+  --m3-swipe-action-w: 48px;
+  --m3-swipe-action-h: 56px;
+  --m3-swipe-action-gap: 8px;
+  --m3-error: #b3261c;
+  --m3-on-error: #ffffff;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -107,6 +117,8 @@
     --m3-on-surface-variant: #c4c7c5;
     --m3-outline-variant: #3c3f44;
     --m3-scrim: rgba(10, 10, 12, 0.82);
+    --m3-error: #f2b8b5;
+    --m3-on-error: #601410;
   }
 }
 
@@ -124,4 +136,6 @@
   --m3-on-surface-variant: #c4c7c5;
   --m3-outline-variant: #3c3f44;
   --m3-scrim: rgba(10, 10, 12, 0.82);
+  --m3-error: #f2b8b5;
+  --m3-on-error: #601410;
 }
