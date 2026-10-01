@@ -1,21 +1,17 @@
 /*
- * Android-Fassung, Seite eines Eintrags. Reiter und Werkzeuge daneben wie
- * sonst (links die Reiter, rechts Kopieren bzw. Filter und Plus). Anders als
- * in den übrigen Fassungen:
+ * Android-Fassung, Seite eines Eintrags. Reiter wie sonst (links die
+ * Reiter, rechts Kopieren bzw. Filter und Plus). Anders als in den übrigen
+ * Fassungen:
  *
+ * - Die Karte „Details“ am Ende von „Inhalt“ gibt es nicht. Ihre Angaben
+ *   öffnet der Info-Knopf rechts neben „Kopieren“ (src/features/entry/entry-tools.js)
+ *   als Blatt von unten (Klasse .details-sheet,
+ *   src/features/entry/entry-details-sheet.js): am unteren Rand verankert,
+ *   oben gerundet, mit Griff, über Leiste und Plus-Knopf.
+ * - Text und „Mehr anzeigen“ reichen dafür bis zum Seitenende, einen Abstand
+ *   über dem Plus-Knopf (styles/android.css).
  * - „Verknüpfen“ steht oben in der Kopfzeile, links neben dem Drei-Punkte-Menü
- *   (src/shell/android-link-btn.js); das Ketten-Symbol im Kopf der Karte
- *   „Details“ entfällt.
- * - Der Plus-Knopf steht auf seiner gewohnten Höhe und liegt über dem rechten
- *   Teil des Kartenkopfs, statt über ihn gehoben zu werden. Darum steht das
- *   Symbol direkt hinter „Details“. Die Karte bleibt ein Abschnitt der Seite;
- *   ganz gescrollt endet sie einen Abstand über dem Plus-Knopf
- *   (styles/android.css).
- * - Ein Tipp irgendwo in den Kartenkopf öffnet ein Blatt von unten mit
- *   denselben Angaben (Klasse .details-sheet,
- *   src/features/entry/entry-details-sheet.js), statt die Karte über Text und
- *   Cover zu heben: am unteren Rand verankert, oben gerundet, mit Griff, über
- *   Leiste und Plus-Knopf.
+ *   (src/shell/android-link-btn.js).
  * - „Mehr anzeigen“ ist ein Textknopf nach Material 3: Schrift in der
  *   Akzentfarbe der Fassung — im Dunkeln graublau statt Blau.
  *
@@ -29,42 +25,40 @@
  * --head-btn-size        -> Tippfläche des Ketten-Symbols in der Kopfzeile; um so viel rückt
  *                           auch die Kategorie mittig nach (styles/tokens.css)
  * --m3-head-tools-pull   -> um so viel rückt das Ketten-Symbol näher an das Drei-Punkte-Menü
- * --page-tool-size / --page-tool-icon -> Tippfläche und Größe des Symbols hinter „Details“, auf der Karte
- *                           wie im Blatt (styles/tokens.css)
+ * --page-tool-icon       -> Größe des Symbols hinter „Details“ im Blatt (styles/tokens.css);
+ *                           der Info-Knopf ist ein .page-tool wie „Kopieren“ (styles/entry.css)
  * --m3-sheet-radius      -> Rundung der oberen Ecken des Blatts
  * --m3-sheet-max         -> wie hoch das Blatt höchstens wird (Anteil des Geräts)
  * --m3-surface-container -> Fläche des Blatts
  * --m3-on-surface-variant -> Griff oben am Blatt
  * --tasks-panel-slide    -> wie schnell das Blatt hereingleitet (styles/tokens-pages.css)
- * --details-head-h       -> Höhe der Überschrift im Blatt, wie der Kopf der Karte (styles/tokens-pages.css)
+ * --details-head-h       -> Höhe der Überschrift im Blatt (styles/tokens-pages.css)
  * --icon-soft            -> Farbe der Überschrift „Details“, wie auf der Karte (styles/tokens.css)
  * --safe-bottom          -> Platz unter dem Inhalt für die Gestenleiste (styles/tokens.css)
  *
- * Direkt bei ihrer Regel: Luft zwischen „Details“ und dem Symbol (4px, auf der Karte wie im Blatt), der
+ * Direkt bei ihrer Regel: Luft zwischen „Details“ und dem Symbol im Blatt (4px), der
  * Griff oben (32 × 4px, Material 3) und die Überschrift im Blatt (16px).
  */
 
-/* Außerhalb der Android-Fassung gibt es das Ketten-Symbol in der Kopfzeile nicht */
-.entry-link-btn {
+/* Außerhalb der Android-Fassung gibt es das Ketten-Symbol in der Kopfzeile
+   und den Info-Knopf neben „Kopieren“ nicht */
+.entry-link-btn,
+.entry-info-btn {
   display: none;
 }
 
 @media (max-width: 1023px) {
-  /* ---------- Kopf der Karte „Details“ ---------- */
+  /* ---------- Details nur noch als Blatt ---------- */
 
-  /* Das Ketten-Symbol ist jetzt oben in der Kopfzeile */
-  [data-mobile-os="android"] #entry-panel-notes > .details-card .details-link:not(.details-toggle) {
+  /* Die Karte am Ende von „Inhalt“ entfällt; der Text reicht bis zum
+     Seitenende (src/features/entry/entry-fold.js) */
+  [data-mobile-os="android"] #entry-panel-notes > .details-card {
     display: none;
   }
 
-  /* „Details“ nur so breit wie das Wort, das Symbol direkt dahinter — rechts
-     liegt der Plus-Knopf. Tippfläche bleibt der ganze Kopf (entry-details.js). */
-  [data-mobile-os="android"] #entry-panel-notes > .details-card .details-title {
-    flex: 0 0 auto;
-  }
-
-  [data-mobile-os="android"] #entry-panel-notes > .details-card .details-toggle {
-    margin-left: 4px;
+  /* Der Info-Knopf rechts neben „Kopieren“ öffnet das Blatt */
+  [data-mobile-os="android"] .entry-info-btn {
+    display: grid;
   }
 
   /* ---------- „Mehr anzeigen“ ---------- */

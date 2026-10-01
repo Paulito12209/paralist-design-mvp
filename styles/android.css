@@ -204,8 +204,8 @@
 
   /* Wo auf einem Arbeitsbereich die Karte „Details“ (styles/entry-details.css)
      hervorschaut, steht der Plus-Knopf über ihrem Kopf statt darauf. Auf der
-     Eintragsseite bleibt er auf gewohnter Höhe und liegt auf dem Kopf — ein
-     Tipp darauf öffnet dort ein Blatt (styles/android-entry.css). Die Karte
+     Eintragsseite gibt es die Karte nicht, dort öffnet der Info-Knopf ein
+     Blatt (styles/android-entry.css). Die Karte
      „Ansicht“ ist hier ein Blatt von unten und schaut nicht hervor
      (styles/android-sheet.css). */
   [data-mobile-os="android"] body:has(.view.is-active:not(#view-entry) .details-card) {
@@ -216,7 +216,7 @@
     bottom: calc(100% + var(--m3-fab-lift) + var(--m3-fab-gap));
   }
 
-  /* Eintragsseite: ganz gescrollt endet der Inhalt (meist die Karte „Details“)
+  /* Eintragsseite: ganz gescrollt endet der Inhalt (Text oder „Mehr anzeigen“)
      so weit über dem Plus-Knopf, wie der Knopf über der Leiste steht. Am
      Seitenende kommt die Leiste dafür zurück (src/shell/android-bars.js). Die
      übrigen Seiten behalten --m3-content-end. */

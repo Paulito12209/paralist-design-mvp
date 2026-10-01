@@ -5,14 +5,22 @@
  * (src/ui/page-tools.js); hier steht nur, was einen Eintrag betrifft:
  * welche Gruppen unter der zweiten Pille stehen und was das Plus tut —
  * im Projekt einen Eintrag darin anlegen, sonst neu anlegen oder verknüpfen.
+ * Unter „Inhalt“ steht rechts neben „Kopieren“ der Info-Knopf: er öffnet die
+ * Angaben als Blatt von unten (entry-details-sheet.js). Zu sehen ist er nur
+ * in der Android-Fassung, die dafür keine Karte „Details“ zeigt — das
+ * entscheidet styles/android-entry.css.
  * Pfad: src/features/entry/entry-tools.js
  *
- * Keine anpassbaren visuellen Werte: siehe src/ui/page-tools.js und
- * styles/entry.css (Klasse .page-tool).
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * infoLabel -> Vorlesetext und Hinweis des Info-Knopfs
+ *
+ * Aussehen: siehe src/ui/page-tools.js und styles/entry.css (Klasse .page-tool).
  */
 
 import { emit, events } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
+import { icon } from "../../core/html.js";
 import { groupedLinks } from "../../data/links.js";
 import { findEntry, groupedEntriesOf, isContainer } from "../../data/queries.js";
 import { entryRef } from "../../data/refs.js";
@@ -20,6 +28,9 @@ import { ui } from "../../data/state.js";
 import { openCtxMenu } from "../../ui/ctx-menu.js";
 import { activeFilter, openFilterMenu, pageToolsMarkup, registerCopySource } from "../../ui/page-tools.js";
 import { openLinkSheet } from "../../ui/link-sheet.js";
+import { isDetailsSheetOpen, openDetailsSheet } from "./entry-details-sheet.js";
+
+const infoLabel = "Details";
 
 /* Zeichnet die Liste neu, wenn der Filter wechselt; kommt aus entry.js. */
 let rerender = () => {};
@@ -42,7 +53,11 @@ export function linkFilterFor(entry) {
 /** Die Knöpfe passend zur gewählten Pille zeichnen. */
 export function renderEntryTools(entry) {
   const copyLabel = entry.type === "zeichnung" ? "Bild" : "Seite";
-  dom.entryTools.innerHTML = pageToolsMarkup(ui.entryPill, filterKey(entry), linkGroups(entry), copyLabel);
+  const info =
+    ui.entryPill === "notes"
+      ? `<button class="page-tool entry-info-btn" type="button" data-entry-info aria-label="${infoLabel}" title="${infoLabel}" aria-expanded="${isDetailsSheetOpen()}">${icon("info")}</button>`
+      : "";
+  dom.entryTools.innerHTML = pageToolsMarkup(ui.entryPill, filterKey(entry), linkGroups(entry), copyLabel) + info;
 }
 
 /* In einem Projekt entsteht der neue Eintrag darin — dafür reicht ein Tipp.
@@ -74,6 +89,10 @@ export function initEntryTools(options) {
     const filterBtn = event.target.closest("[data-link-filter]");
     if (filterBtn) {
       openFilterMenu(filterBtn, filterKey(entry), linkGroups(entry), () => rerender(entry));
+      return;
+    }
+    if (event.target.closest("[data-entry-info]")) {
+      openDetailsSheet(entry);
       return;
     }
     const add = event.target.closest("[data-link-add]");

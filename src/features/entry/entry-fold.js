@@ -26,6 +26,10 @@
  * wenn sich wirklich etwas ändert (Seite öffnen, Pille wechseln, Größe von
  * Titel, Text oder Anzeigefläche), nie beim Scrollen.
  *
+ * Blendet eine Fassung die Karte aus (Android, styles/android-entry.css),
+ * reichen Text und „Mehr anzeigen“ stattdessen bis zum Seitenende — bis dahin,
+ * wo der Freiraum unten im Inhalt (padding-bottom von .content) beginnt.
+ *
  * Die Bildschirmtastatur verschiebt nichts davon. Wo die Navigation liegt
  * und wann die Kennzahlen einblenden, misst src/ui/details-peek.js — dieselbe
  * Rechnung gilt für die Karte eines Arbeitsbereichs.
@@ -81,6 +85,32 @@ function railDrawRoom() {
   return Math.max(MIN_ROOM_PX, Math.round(bottom - tools - top));
 }
 
+/* Ausgeblendet (display: none) hat ein Element keine Fläche */
+function isShown(node) {
+  return node.getClientRects().length > 0;
+}
+
+/* Platz bis zum Kopf der Karte, der gerade über der Navigation steht */
+function roomAboveCard(card, head, top) {
+  const between = card.offsetTop - fold.offsetTop - fold.offsetHeight;
+  const covered = coveredFrom();
+  const cardTop = covered - PEEK_BELOW_HEAD_PX - head.offsetHeight;
+  if (!watchReveal) watchReveal = revealWatcher(card);
+  watchReveal(covered);
+  return cardTop - between - top;
+}
+
+/* Ohne Karte: Platz bis zum Seitenende — Unterkante der Anzeigefläche ohne
+   ihren Freiraum unten, abzüglich dessen, was im Reiter noch unter dem
+   Rahmen steht (bei einer Zeichnung die Werkzeugleiste). Gemessen wird nur
+   bei Änderungen, nie beim Scrollen. */
+function roomToPageEnd(foldRect, top) {
+  const box = dom.content;
+  const end = box.getBoundingClientRect().top + box.clientHeight - parseFloat(getComputedStyle(box).paddingBottom);
+  const below = dom.entryPanelNotes.getBoundingClientRect().bottom - foldRect.bottom;
+  return end - below - top;
+}
+
 function setMore(show, open) {
   more.hidden = !show;
   if (show) more.innerHTML = `<span>${open ? lessLabel : moreLabel}</span>${icon("chevron", open ? "is-up" : "")}`;
@@ -117,12 +147,7 @@ export function layoutEntryFold() {
      gelesen — so zählt alles mit, was dort gerade steht. Über offsetTop,
      nicht über die Lage auf dem Schirm: gleitet die Karte gerade zurück
      (entry-lift.js), zählte ihre Verschiebung sonst mit. */
-  const between = card.offsetTop - fold.offsetTop - fold.offsetHeight;
-  const covered = coveredFrom();
-  const cardTop = covered - PEEK_BELOW_HEAD_PX - head.offsetHeight;
-  if (!watchReveal) watchReveal = revealWatcher(card);
-  watchReveal(covered);
-  const room = Math.max(MIN_ROOM_PX, Math.round(cardTop - between - top));
+  const room = Math.max(MIN_ROOM_PX, Math.round(isShown(card) ? roomAboveCard(card, head, top) : roomToPageEnd(foldRect, top)));
 
   if (drawing) {
     fold.style.height = `${room}px`;

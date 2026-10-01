@@ -1,9 +1,8 @@
 /*
- * Android-Fassung: die Angaben der Karte „Details“
- * als Blatt von unten (Material 3 „Bottom sheet“). Auf der Seite bleibt die
- * Karte ein gewöhnlicher Abschnitt am Textende; ein Tipp auf ihren Kopf holt
- * nicht sie selbst hoch, sondern öffnet dieses Blatt mit denselben
- * Kennzahlen und Abschnitten (src/data/entry-facts.js, Aufbau und Tipps aus
+ * Android-Fassung: die Angaben der Karte „Details“ als Blatt von unten
+ * (Material 3 „Bottom sheet“). Die Karte selbst zeigt diese Fassung nicht;
+ * der Info-Knopf neben „Kopieren“ (entry-tools.js) öffnet dieses Blatt mit
+ * denselben Kennzahlen und Abschnitten (src/data/entry-facts.js, Aufbau und Tipps aus
  * src/ui/details-card.js). Es ist am unteren Rand verankert, liegt über Leiste
  * und Plus-Knopf, und dahinter liegt ein Schleier.
  *
@@ -22,8 +21,8 @@
  * -----------------------------------
  * sheetLabel -> Überschrift des Blatts und Name für Vorlesehilfen
  *
- * Hinter der Überschrift steht dasselbe Symbol wie auf der Karte, hier
- * umgedreht: das Blatt ist die „hochgeklappte“ Karte. Es ist nur ein Zeichen,
+ * Hinter der Überschrift steht das Symbol, das auf der Karte der übrigen
+ * Fassungen zum Hochklappen dient, hier umgedreht. Es ist nur ein Zeichen,
  * kein Knopf.
  * Aussehen in styles/android-entry.css (Klasse .details-sheet).
  */
@@ -51,7 +50,8 @@ let ownPop = false;
 /* Wird beim Öffnen und Schließen benachrichtigt — die Karte hält damit ihr Symbol auf Stand */
 let onToggle = () => {};
 
-function isOpen() {
+/** Ist das Blatt gerade offen? Auch für den Zustand des Info-Knopfs (entry-tools.js). */
+export function isDetailsSheetOpen() {
   return Boolean(backdrop) && !backdrop.hidden;
 }
 
@@ -68,7 +68,7 @@ function onKey(event) {
  * @param push false, wenn der Verlauf schon auf dem Schritt des Blatts steht (Vorwärts)
  */
 export function openDetailsSheet(entry, { push = true } = {}) {
-  if (!backdrop || !entry || isOpen()) return;
+  if (!backdrop || !entry || isDetailsSheetOpen()) return;
   if (push) history.pushState({ ...(history.state || { view: "entry" }), detailsSheet: true }, "");
   fill(entry);
   clearModalPull(backdrop);
@@ -85,7 +85,7 @@ export function openDetailsSheet(entry, { push = true } = {}) {
  *        nicht angetastet werden (Seitenwechsel); sonst wird er still verbraucht
  */
 export function closeDetailsSheet({ fromHistory = false } = {}) {
-  if (!isOpen()) return;
+  if (!isDetailsSheetOpen()) return;
   backdrop.hidden = true;
   document.removeEventListener("keydown", onKey);
   onToggle(false);
@@ -104,7 +104,7 @@ function onPop(event) {
   }
   /* Zurück bei offenem Blatt: nur das Blatt schließen, samt einem Auswahl-
      Blatt darüber (Status, Dringlichkeit) — es hat keinen eigenen Schritt */
-  if (isOpen()) {
+  if (isDetailsSheetOpen()) {
     closeSheet();
     closeDetailsSheet({ fromHistory: true });
     return true;
@@ -119,7 +119,7 @@ function onPop(event) {
 
 /** Offenes Blatt nach einer Änderung neu füllen. */
 export function refreshDetailsSheet(entry) {
-  if (isOpen() && entry) fill(entry);
+  if (isDetailsSheetOpen() && entry) fill(entry);
 }
 
 /**

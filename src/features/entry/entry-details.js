@@ -18,11 +18,9 @@
  * regelt entry-fold.js. Ein Tipp auf „Details“ oder das Symbol rechts klappt
  * die Karte über den Text hoch, ohne die Seite zu bewegen (entry-lift.js);
  * ebenso ein Tipp irgendwo sonst in den Kopf, außer auf das Ketten-Symbol.
- * In der Android-Fassung öffnet derselbe Tipp stattdessen ein Blatt von
- * unten mit denselben Angaben (entry-details-sheet.js); die Karte bleibt dort
- * ein gewöhnlicher Abschnitt. Das Symbol steht direkt hinter „Details“, das
- * Ketten-Symbol oben in der Kopfzeile (styles/android-entry.css) — rechts im
- * Kopf liegt dort der Plus-Knopf darüber.
+ * In der Android-Fassung ist die Karte ausgeblendet (styles/android-entry.css):
+ * dieselben Angaben öffnet dort der Info-Knopf neben „Kopieren“
+ * (entry-tools.js) als Blatt von unten (entry-details-sheet.js).
  * Pfad: src/features/entry/entry-details.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -92,8 +90,11 @@ export function initEntryDetails() {
   listBox = card.querySelector(".details-list");
   dom.entryPanelNotes.append(card);
   initEntryLift(card);
-  /* Das Symbol im Kopf zeigt auch beim Blatt, ob es offen ist */
-  initDetailsSheet((open) => card.querySelector(".details-toggle").setAttribute("aria-expanded", String(open)));
+  /* Das Symbol im Kopf und der Info-Knopf neben „Kopieren“ zeigen auch beim Blatt, ob es offen ist */
+  initDetailsSheet((open) => {
+    card.querySelector(".details-toggle").setAttribute("aria-expanded", String(open));
+    dom.entryTools.querySelector("[data-entry-info]")?.setAttribute("aria-expanded", String(open));
+  });
 
   card.addEventListener("click", (event) => {
     const entry = findEntry(ui.currentEntryId);
@@ -103,7 +104,7 @@ export function initEntryDetails() {
       return;
     }
     if (event.target.closest(".details-head")) {
-      /* Android: dieselben Angaben als Blatt von unten, die Karte bleibt stehen */
+      /* Android zeigt die Karte nicht; falls doch ein Tipp ankommt, wie der Info-Knopf */
       if (isMobileOs("android")) {
         openDetailsSheet(entry);
         return;
