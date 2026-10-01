@@ -5,10 +5,9 @@
  * gesetzt; die Richtung erkennt src/shell/scroll-direction.js, wie es aussieht,
  * steht in styles/android.css, styles/android-tabs.css und styles/android-fab.css.
  *
- * Fassung „Android (Experiment 2: Details)“, Seite eines Eintrags: am
- * Seitenende kommen die Leisten zurück. Dort ist das Seitenende so bemessen,
- * dass der Inhalt einen Abstand über dem Plus-Knopf endet
- * (styles/android-details-top.css); mit weggeglittener Leiste säße der Knopf
+ * Seite eines Eintrags: am Seitenende kommen die Leisten zurück. Dort ist das
+ * Seitenende so bemessen, dass der Inhalt einen Abstand über dem Plus-Knopf
+ * endet (styles/android.css); mit weggeglittener Leiste säße der Knopf
  * tiefer, und darüber klaffte eine Lücke.
  * Pfad: src/shell/android-bars.js
  *
@@ -23,7 +22,6 @@
 
 import { events, on } from "../core/bus.js";
 import { dom } from "../core/dom.js";
-import { isMobileVariant } from "../ui/mobile-variant.js";
 import { isViewActive } from "../ui/views.js";
 import { isMobileOs } from "./platform.js";
 import { directionTracker } from "./scroll-direction.js";
@@ -48,9 +46,9 @@ function barsPinned() {
   return document.body.classList.contains("is-search") || !dom.composer.hidden;
 }
 
-/* Experiment 2, Eintragsseite: ganz unten angekommen? */
+/* Eintragsseite: ganz unten angekommen? */
 function atEntryEnd() {
-  if (!isMobileVariant("details-oben") || !isViewActive("entry")) return false;
+  if (!isViewActive("entry")) return false;
   const box = dom.content;
   return box.scrollTop + box.clientHeight >= box.scrollHeight - END_SLACK_PX;
 }

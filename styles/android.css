@@ -22,6 +22,11 @@
  * --m3-content-end            -> Platz am Seitenende
  * --details-head-h            -> so viel schaut die Karte „Details“ hervor; der Plus-Knopf
  *                                steht um so viel höher (styles/tokens-pages.css)
+ * --m3-fab-lift               -> wie weit der Plus-Knopf gerade gehoben ist (gesetzt hier
+ *                                bzw. in styles/android-details-top.css, nicht in den Tokens)
+ * --m3-fab-size / --m3-fab-gap / --m3-nav-shift
+ *                             -> Eintragsseite: der Inhalt endet ganz gescrollt einen
+ *                                --m3-fab-gap über dem Plus-Knopf (Leiste, Knopf, zwei Abstände)
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel: Suchtext 16px,
  * Namen unter den Icons 12px (Material 3 „Label medium“).
@@ -201,8 +206,20 @@
      (styles/entry-details.css) hervorschaut, steht der Plus-Knopf über ihrem
      Kopf statt darauf. Die Karte „Ansicht“ ist hier ein Blatt von unten und
      schaut nicht hervor (styles/android-sheet.css). */
+  [data-mobile-os="android"] body:has(.view.is-active .details-card) {
+    --m3-fab-lift: var(--details-head-h);
+  }
+
   [data-mobile-os="android"] body:has(.view.is-active .details-card) .m3-fab {
-    bottom: calc(100% + var(--details-head-h) + var(--m3-fab-gap));
+    bottom: calc(100% + var(--m3-fab-lift) + var(--m3-fab-gap));
+  }
+
+  /* Eintragsseite: ganz gescrollt endet der Inhalt (meist die Karte „Details“)
+     so weit über dem Plus-Knopf, wie der Knopf über der Leiste steht. Am
+     Seitenende kommt die Leiste dafür zurück (src/shell/android-bars.js). Die
+     übrigen Seiten behalten --m3-content-end. */
+  [data-mobile-os="android"] body:has(#view-entry.is-active) .content {
+    padding-bottom: calc(var(--m3-nav-shift) + var(--safe-bottom) + var(--m3-fab-lift, 0px) + var(--m3-fab-size) + 2 * var(--m3-fab-gap));
   }
 
   /* Die Medien-Knöpfe rücken nach links, rechts steht der Plus-Knopf */

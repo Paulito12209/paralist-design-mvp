@@ -18,7 +18,7 @@
  * regelt entry-fold.js. Ein Tipp auf „Details“ oder das Symbol rechts klappt
  * die Karte über den Text hoch, ohne die Seite zu bewegen (entry-lift.js);
  * ebenso ein Tipp irgendwo sonst in den Kopf, außer auf das Ketten-Symbol.
- * In der Fassung „Android (Experiment 2: Details)“ öffnet derselbe Tipp
+ * In der Fassung „Android (Experiment)“ öffnet derselbe Tipp
  * stattdessen ein Blatt von unten mit denselben Angaben
  * (entry-details-sheet.js); die Karte bleibt dort ein gewöhnlicher Abschnitt.
  * Das Symbol steht direkt hinter „Details“, das Ketten-Symbol oben in der
@@ -104,8 +104,8 @@ export function initEntryDetails() {
       return;
     }
     if (event.target.closest(".details-head")) {
-      /* Experiment 2: dieselben Angaben als Blatt von unten, die Karte bleibt stehen */
-      if (isMobileVariant("details-oben")) {
+      /* Experiment: dieselben Angaben als Blatt von unten, die Karte bleibt stehen */
+      if (isMobileVariant("experiment")) {
         openDetailsSheet(entry);
         return;
       }

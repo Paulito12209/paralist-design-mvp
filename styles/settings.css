@@ -180,6 +180,17 @@
   flex: 1;
 }
 
+/* Name mit ⓘ (Einstellungen › Mehr › Versionen): das ⓘ steht gleich hinter
+   dem Wort und behält seine Größe (Aussehen wie im Blatt, styles/sheet-tabs.css) */
+.settings-row-label:has(.sheet-info) {
+  display: flex;
+  align-items: center;
+}
+
+.settings-row .sheet-info {
+  flex: 0 0 auto;
+}
+
 /* Haken rechts: nur bei der gewählten Option sichtbar */
 .settings-row .settings-check {
   width: 20px;

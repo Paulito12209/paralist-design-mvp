@@ -1,5 +1,5 @@
 /*
- * Fassung „Android (Experiment 2: Details)“: das Ketten-Symbol „Verknüpfen“
+ * Fassung „Android (Experiment)“: das Ketten-Symbol „Verknüpfen“
  * oben in der Kopfzeile der Eintragsseite, links neben dem Drei-Punkte-Menü.
  * Es ersetzt das Symbol im Kopf der Karte „Details“ und öffnet dasselbe
  * Blatt (src/ui/link-sheet.js). Den Knopf gibt es immer im Dokument; zu sehen

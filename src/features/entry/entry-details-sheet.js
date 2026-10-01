@@ -1,5 +1,5 @@
 /*
- * Fassung „Android (Experiment 2: Details)“: die Angaben der Karte „Details“
+ * Fassung „Android (Experiment)“: die Angaben der Karte „Details“
  * als Blatt von unten (Material 3 „Bottom sheet“). Auf der Seite bleibt die
  * Karte ein gewöhnlicher Abschnitt am Textende; ein Tipp auf ihren Kopf holt
  * nicht sie selbst hoch, sondern öffnet dieses Blatt mit denselben

@@ -1,5 +1,5 @@
 /*
- * Fassung „Android (Experiment 1: Ansicht)“: der runde Knopf „Ansicht“ mittig über der
+ * Fassung „Android (Experiment)“: der runde Knopf „Ansicht“ mittig über der
  * Leiste. Er ersetzt das Symbol rechts in der Reiterzeile (bzw. in der
  * Kopfzeile und neben „KW“) — oben bleibt die Zeile ganz den Reitern. Ein Tipp
  * holt wie das Symbol das Blatt der offenen Seite herauf; das erledigt der

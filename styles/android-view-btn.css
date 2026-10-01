@@ -1,12 +1,15 @@
 /*
- * Fassung „Android (Experiment 1: Ansicht)“: das Symbol „Ansicht“ verlässt die
+ * Fassung „Android (Experiment)“: das Symbol „Ansicht“ verlässt die
  * Reiterzeile (auch Kopfzeile der Sammlungen und Kalender neben „KW“) und
  * sitzt als runder Knopf mittig über der Leiste — zwischen Archiv-Knopf links
  * und Plus-Knopf rechts. Oben laufen die Reiter dadurch ohne Linie und Symbol
  * bis an den Rand. Der Knopf erscheint nur auf Seiten mit einer Karte
  * „Ansicht“ — dieselben Klassen am body, die sie zeigen (styles/tasks-settings.css,
  * styles/calendar.css). Angelegt in src/shell/android-view-btn.js.
- * Gilt nur mit data-mobile-os="android" und data-mobile-variant="ansicht-unten"
+ * Die übrigen Unterschiede der Fassung stehen in styles/android-details-top.css;
+ * die Liste für das ⓘ unter Einstellungen › Mehr › Versionen in
+ * src/data/platform-versions.js.
+ * Gilt nur mit data-mobile-os="android" und data-mobile-variant="experiment"
  * an <html> und unterhalb von 1024px.
  * Pfad: styles/android-view-btn.css
  *
@@ -52,34 +55,34 @@
 }
 
 @media (max-width: 1023px) {
-  [data-mobile-variant="ansicht-unten"] body:is(.is-tasks, .is-projects, .is-collection, .is-calendar) .m3-view-btn {
+  [data-mobile-variant="experiment"] body:is(.is-tasks, .is-projects, .is-collection, .is-calendar) .m3-view-btn {
     display: grid;
   }
 
   /* Beim Anlegen und Suchen hat der Knopf nichts zu tun */
-  [data-mobile-variant="ansicht-unten"] .nav-shell.is-composing .m3-view-btn {
+  [data-mobile-variant="experiment"] .nav-shell.is-composing .m3-view-btn {
     display: none;
   }
 
   /* Die Symbole oben entfallen. !important: die Regeln, die sie in
      styles/android-sheet.css je Ort einblenden, sind sehr spezifisch
      (:has mit id) — so bleibt es eine Regel statt einer Kopie von jeder. */
-  [data-mobile-variant="ansicht-unten"] .view-panel-btn {
+  [data-mobile-variant="experiment"] .view-panel-btn {
     display: none !important;
   }
 
   /* Mit dem Symbol geht auch die Trennlinie davor; die Reiter bekommen den
      Platz bis auf das Ausblenden am Rand */
-  [data-mobile-variant="ansicht-unten"] .tab-pills-split {
+  [data-mobile-variant="experiment"] .tab-pills-split {
     display: none;
   }
 
-  [data-mobile-variant="ansicht-unten"] .tab-pills-row {
+  [data-mobile-variant="experiment"] .tab-pills-row {
     --tab-pills-tools-width: calc(var(--content-side) + var(--tab-pills-fade));
   }
 
   /* Kalender: ohne Symbol steht „KW“ wieder an seinem gewohnten Platz */
-  [data-mobile-variant="ansicht-unten"] .cal-kw {
+  [data-mobile-variant="experiment"] .cal-kw {
     margin-left: 0;
   }
 }

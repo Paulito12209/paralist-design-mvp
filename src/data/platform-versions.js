@@ -19,6 +19,14 @@
  *                          `os` und `variant` machen aus einer Fassung eine
  *                          Spielart einer anderen (gleiche Stile, dazu
  *                          data-mobile-variant an <html>, ebenso im Skript in index.html)
+ * options[*].differences -> was die Spielart anders macht als ihre Fassung: je
+ *                          Bereich ein Satz; das ⓘ hinter dem Namen listet sie
+ *                          in einem Blatt auf (src/features/profile/versions.js)
+ * formerIds             -> frühere Namen von Fassungen und was heute an ihrer Stelle steht
+ *
+ * Es gibt genau eine Android-Fassung, die später die App wird, und genau eine
+ * experimentelle daneben. Neue Versuche kommen in „Android (Experiment)“ und
+ * eine Zeile in deren `differences` — keine weitere Fassung.
  */
 
 import { readJson, storageKeys, writeJson } from "../core/storage.js";
@@ -32,12 +40,22 @@ export const platforms = [
     options: [
       { id: "erster-test", label: "Erster Test", icon: "pencil" },
       { id: "android", label: "Android", icon: "smartphone" },
-      /* Versuch: ohne Symbol „Ansicht“ in der Reiterzeile, stattdessen ein runder
-         Knopf mittig über der Leiste (styles/android-view-btn.css) */
-      { id: "android-ohne-ansicht", label: "Android (Experiment 1: Ansicht)", icon: "smartphone", os: "android", variant: "ansicht-unten" },
-      /* Versuch: „Verknüpfen“ oben in der Kopfzeile, Plus-Knopf auf gewohnter
-         Höhe über dem Kopf der Karte „Details“ (styles/android-details-top.css) */
-      { id: "android-details-oben", label: "Android (Experiment 2: Details)", icon: "smartphone", os: "android", variant: "details-oben" },
+      /* Die Versuche, gesammelt in einer Fassung (styles/android-view-btn.css,
+         styles/android-details-top.css) */
+      {
+        id: "android-experiment",
+        label: "Android (Experiment)",
+        icon: "smartphone",
+        os: "android",
+        variant: "experiment",
+        differences: [
+          { area: "Ansicht", text: "Das Symbol „Ansicht“ sitzt als runder Knopf mittig über der Leiste — statt rechts in der Reiterzeile, in der Kopfzeile einer Sammlung oder neben „KW“." },
+          { area: "Eintrag · Verknüpfen", text: "Das Ketten-Symbol steht oben in der Kopfzeile links neben dem Drei-Punkte-Menü statt im Kopf der Karte „Details“." },
+          { area: "Eintrag · Details", text: "Ein Tipp auf den Kopf der Karte öffnet ein Blatt von unten mit denselben Angaben, statt die Karte über den Text zu heben. Das Symbol steht direkt hinter „Details“." },
+          { area: "Eintrag · Plus-Knopf", text: "„Neu“ bleibt auf gewohnter Höhe und liegt auf dem Kopf der Karte „Details“, statt darüber gehoben zu werden." },
+          { area: "Eintrag · Mehr anzeigen", text: "Textknopf in der Akzentfarbe nach Material 3 — im Dunkeln graublau statt Blau." },
+        ],
+      },
       { id: "ios", label: "iOS", icon: "smartphone" },
     ],
   },
@@ -53,6 +71,9 @@ export const platforms = [
   },
 ];
 
+/* Frühere Namen: wer eines der beiden Experimente gewählt hatte, landet in „Android (Experiment)“ */
+const formerIds = { "android-ohne-ansicht": "android-experiment", "android-details-oben": "android-experiment" };
+
 function platformOf(id) {
   return platforms.find((platform) => platform.id === id);
 }
@@ -61,7 +82,8 @@ function platformOf(id) {
 export function chosenVersion(platformId) {
   const platform = platformOf(platformId);
   if (!platform) return "";
-  const saved = readJson(storageKeys.versions, {})[platformId];
+  const stored = readJson(storageKeys.versions, {})[platformId];
+  const saved = formerIds[stored] || stored;
   return platform.options.some((option) => option.id === saved) ? saved : platform.fallback;
 }
 
@@ -70,6 +92,11 @@ export function chosenLook(platformId) {
   const id = chosenVersion(platformId);
   const option = platformOf(platformId)?.options.find((item) => item.id === id);
   return { os: option?.os || id, variant: option?.variant || "" };
+}
+
+/** Eine Fassung mit ihren Angaben (Name, Unterschiede) — oder undefined. */
+export function versionOption(platformId, versionId) {
+  return platformOf(platformId)?.options.find((option) => option.id === versionId);
 }
 
 /** Der Name der gewählten Fassung, z.B. „iOS“ — für die Zeile unter „Mehr“. */

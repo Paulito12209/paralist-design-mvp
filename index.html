@@ -22,7 +22,7 @@
       /* Gewählte Fassung (Einstellungen › Mehr › Versionen) ebenso früh, damit ihre Stile schon im ersten Bild greifen. Vorgaben und Spielarten (Android-Stile plus data-mobile-variant) wie in src/data/platform-versions.js. */
       var versions = {};
       try { versions = JSON.parse(localStorage.getItem("paralist-versions")) || {}; } catch (error) {}
-      var variant = { "android-ohne-ansicht": "ansicht-unten", "android-details-oben": "details-oben" }[versions.mobile];
+      var variant = { "android-experiment": "experiment", "android-ohne-ansicht": "experiment", "android-details-oben": "experiment" }[versions.mobile];
       var mobile = variant ? "android" : versions.mobile;
       if (variant) document.documentElement.dataset.mobileVariant = variant;
       document.documentElement.dataset.mobileOs = /^(erster-test|android|ios)$/.test(mobile) ? mobile : "android";

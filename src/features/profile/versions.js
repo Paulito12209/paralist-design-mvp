@@ -6,16 +6,23 @@
  * kommen aus src/features/profile/profile.js über onVersionsClick.
  * Pfad: src/features/profile/versions.js
  *
+ * Eine Fassung mit Unterschieden („Android (Experiment)“) trägt ein ⓘ hinter
+ * ihrem Namen; ein Tipp darauf öffnet ein Blatt, das je Bereich auflistet,
+ * was sie anders macht als ihre Grundfassung — und wählt sie nicht aus.
+ *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * note -> der graue Satz unter den Gruppen
+ * note         -> der graue Satz unter den Gruppen
+ * diffHeading  -> Überschrift über der Liste im Blatt
  *
  * Aussehen der Zeilen und Hinweise in styles/settings.css.
  */
 
-import { icon } from "../../core/html.js";
-import { chosenLabel, chosenLook, chosenVersion, platforms, setVersion } from "../../data/platform-versions.js";
+import { escapeHtml, icon } from "../../core/html.js";
+import { chosenLabel, chosenLook, chosenVersion, platforms, setVersion, versionOption } from "../../data/platform-versions.js";
+import { openSheet } from "../../ui/sheet.js";
 
+const diffHeading = "Anders als „Android“";
 const note = "Die gewählte Fassung bleibt, bis du sie hier änderst. Am Handy und Tablet gilt „Mobil“, am Computer „Desktop“.";
 
 /** Die Wahl an <html> schreiben, damit die Stile der Fassung sofort greifen. */
@@ -42,10 +49,14 @@ function groupMarkup(platform) {
   const rows = platform.options
     .map((option) => {
       const on = option.id === chosen;
+      /* Kein Knopf im Knopf: das ⓘ ist ein span, den onVersionsClick zuerst prüft */
+      const info = option.differences
+        ? `<span class="sheet-info" role="button" tabindex="0" data-version-info="${platform.id}:${option.id}" aria-label="Was ist anders an „${escapeHtml(option.label)}“?">${icon("info")}</span>`
+        : "";
       return `
       <button class="settings-row${on ? " is-active" : ""}" type="button" data-version="${platform.id}:${option.id}" aria-pressed="${on}">
         ${icon(option.icon)}
-        <span>${option.label}</span>
+        <span class="settings-row-label">${option.label}${info}</span>
         ${icon("check", "settings-check")}
       </button>`;
     })
@@ -58,8 +69,23 @@ export function versionsCard() {
   return `${platforms.map(groupMarkup).join("")}<p class="settings-note">${note}</p>`;
 }
 
+/* Blatt mit den Unterschieden einer Fassung: je Bereich Name und Satz */
+function openDifferences(platformId, versionId) {
+  const option = versionOption(platformId, versionId);
+  if (!option?.differences) return;
+  openSheet(option.label, [
+    { heading: true, label: diffHeading },
+    ...option.differences.map((item) => ({ detail: true, label: item.area, value: item.text })),
+  ]);
+}
+
 /** Klick auf eine Fassung erledigen. Gibt true zurück, wenn er hierher gehörte. */
 export function onVersionsClick(event) {
+  const info = event.target.closest("[data-version-info]");
+  if (info) {
+    openDifferences(...info.dataset.versionInfo.split(":"));
+    return true;
+  }
   const row = event.target.closest("[data-version]");
   if (!row) return false;
   const [platformId, versionId] = row.dataset.version.split(":");
