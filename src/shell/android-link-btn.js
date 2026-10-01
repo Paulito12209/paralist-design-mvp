@@ -1,9 +1,9 @@
 /*
- * Fassung „Android (Experiment 2: Details)“: der runde Knopf „Verknüpfen“
- * links über der Leiste, gegenüber dem Plus-Knopf — dort, wo auf den
- * Sammlungen der Archiv-Knopf steht. Er ersetzt das Ketten-Symbol im Kopf der
- * Karte „Details“ und öffnet dasselbe Blatt (src/ui/link-sheet.js). Zu sehen
- * ist er nur auf der Seite eines Eintrags; das entscheidet allein
+ * Fassung „Android (Experiment 2: Details)“: das Ketten-Symbol „Verknüpfen“
+ * oben in der Kopfzeile der Eintragsseite, links neben dem Drei-Punkte-Menü.
+ * Es ersetzt das Symbol im Kopf der Karte „Details“ und öffnet dasselbe
+ * Blatt (src/ui/link-sheet.js). Den Knopf gibt es immer im Dokument; zu sehen
+ * ist er nur in dieser Fassung — das entscheidet allein
  * styles/android-details-top.css.
  * Pfad: src/shell/android-link-btn.js
  *
@@ -11,7 +11,8 @@
  * -----------------------------------
  * buttonLabel -> Vorlesetext und Hinweis des Knopfs
  *
- * Größe, Lage und Farben in styles/android-details-top.css.
+ * Größe wie alle Knöpfe der Kopfzeile (--head-btn-size, Klasse .head-btn in
+ * styles/entry.css), Sichtbarkeit in styles/android-details-top.css.
  */
 
 import { dom } from "../core/dom.js";
@@ -22,10 +23,10 @@ import { openLinkSheet } from "../ui/link-sheet.js";
 
 const buttonLabel = "Verknüpfen";
 
-/** Knopf einhängen. Er hängt an der Leiste, damit er beim Wegscrollen mit ihr nach unten rückt. */
+/** Knopf links vor das Menü der Kopfzeile hängen. */
 export function initAndroidLinkBtn() {
   const button = document.createElement("button");
-  button.className = "m3-link-btn";
+  button.className = "head-btn entry-link-btn";
   button.type = "button";
   button.setAttribute("aria-label", buttonLabel);
   button.title = buttonLabel;
@@ -34,5 +35,5 @@ export function initAndroidLinkBtn() {
     const entry = findEntry(ui.currentEntryId);
     if (entry) openLinkSheet(entry);
   });
-  dom.navShell.append(button);
+  dom.entryMenu.before(button);
 }

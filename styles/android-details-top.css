@@ -5,9 +5,9 @@
  * „Details“. Die Karte „Details“ schaut nicht mehr über der Leiste hervor:
  * sie ist nur zu sehen, solange sie hochgeklappt ist — ein Tipp auf das
  * Symbol oben holt sie über den Text (src/features/entry/entry-lift.js), ein
- * zweiter legt sie zurück. Ihr Ketten-Symbol „Verknüpfen“ wird ein runder
- * Knopf links über der Leiste, gegenüber dem Plus-Knopf, wie der Archiv-Knopf
- * auf den Sammlungen (src/shell/android-link-btn.js). Filter und Plus neben
+ * zweiter legt sie zurück. Ihr Ketten-Symbol „Verknüpfen“ wandert oben in
+ * die Kopfzeile, links neben das Drei-Punkte-Menü
+ * (src/shell/android-link-btn.js). Filter und Plus neben
  * den Reitern entfallen; Anlegen geht über den Plus-Knopf. Die Werkzeuge
  * zeichnet src/features/entry/entry-tools.js.
  * Gilt nur mit data-mobile-os="android" und data-mobile-variant="details-oben"
@@ -18,41 +18,16 @@
  * -----------------------------------
  * --m3-tab-tool-pull          -> um so viel rückt ein Symbol näher an seinen Reiter heran
  * --m3-tab-group-gap          -> zusätzliche Luft zwischen Kopieren-Symbol und „Verknüpfte Einträge“
- * --m3-fab-size / --m3-fab-radius -> Größe und Rundung des Verknüpfen-Knopfs (wie Plus- und Archiv-Knopf)
- * --m3-fab-gap                -> sein Abstand zum linken Rand und zur Leiste
- * --m3-surface-container-high -> Fläche des Verknüpfen-Knopfs
- * --m3-on-surface-variant     -> das Ketten-Symbol darauf
+ * --m3-fab-gap                -> Abstand des Plus-Knopfs zur Leiste (hier wieder die gewohnte Höhe)
+ * --head-btn-size             -> Tippfläche des Ketten-Symbols in der Kopfzeile; um so viel rückt
+ *                                auch die Kategorie mittig nach (styles/tokens.css)
  * --page-tool-size / --page-tool-icon -> Tippfläche und Symbol neben den Reitern (styles/tokens.css)
  * --tasks-panel-slide         -> wie schnell die Karte „Details“ kommt und geht (styles/tokens-pages.css)
- *
- * Direkt bei ihrer Regel: das Ketten-Symbol auf dem Knopf (24px, wie beim Archiv-Knopf).
  */
 
-/* position: schwebt links über der Leiste; hängt wie Plus- und Archiv-Knopf an
-   .nav-shell und rückt so beim Wegscrollen mit ihr nach unten.
-   Außerhalb dieser Fassung unsichtbar. */
-.m3-link-btn {
+/* Außerhalb dieser Fassung gibt es das Ketten-Symbol in der Kopfzeile nicht */
+.entry-link-btn {
   display: none;
-  position: absolute;
-  left: var(--m3-fab-gap);
-  bottom: calc(100% + var(--m3-fab-gap));
-  width: var(--m3-fab-size);
-  height: var(--m3-fab-size);
-  place-items: center;
-  border-radius: var(--m3-fab-radius);
-  background: var(--m3-surface-container-high);
-  color: var(--m3-on-surface-variant);
-  /* box-shadow: dieselbe Ebene wie Plus- und Archiv-Knopf (Material 3, Ebene 3) */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16), 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.m3-link-btn .icon {
-  width: 24px;
-  height: 24px;
-}
-
-.m3-link-btn:active {
-  opacity: 0.8;
 }
 
 @media (max-width: 1023px) {
@@ -136,15 +111,18 @@
     display: none;
   }
 
-  /* ---------- Knopf „Verknüpfen“ links über der Leiste ---------- */
+  /* ---------- „Verknüpfen“ in der Kopfzeile ---------- */
 
-  /* Nur auf der Seite eines Eintrags: sie trägt is-active, solange sie offen ist (src/ui/views.js) */
-  [data-mobile-variant="details-oben"] body:has(#view-entry.is-active) .m3-link-btn {
+  /* margin-left 0: .head-btn schiebt sich sonst selbst an den Rand — das
+     übernimmt hier die Kategorie, die die Mitte füllt */
+  [data-mobile-variant="details-oben"] .entry-link-btn {
     display: grid;
+    margin-left: 0;
   }
 
-  /* Beim Anlegen und Suchen hat der Knopf nichts zu tun */
-  [data-mobile-variant="details-oben"] .nav-shell.is-composing .m3-link-btn {
-    display: none;
+  /* Rechts stehen jetzt zwei Knöpfe, links nur der Zurück-Pfeil: dieselbe
+     Breite links als Luft, damit die Kategorie genau mittig bleibt */
+  [data-mobile-variant="details-oben"] #entry-back {
+    margin-right: var(--head-btn-size);
   }
 }
