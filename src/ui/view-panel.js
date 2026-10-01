@@ -82,7 +82,7 @@ export function viewPanelButton(asFilter = false) {
 
 /** Die Karte der offenen Seite aufklappen. Welche das ist, entscheidet das
     Stylesheet (Klassen am body): nur sie nimmt gerade Platz ein. Von außen
-    ruft das die Werkzeugzeile der Projektkarte (src/features/overview/project-card.js). */
+    ruft das Filtern in der Werkzeugzeile über den Projekten (src/features/overview/project-card.js). */
 export function openViewPanel() {
   openers.forEach((open, panel) => {
     if (panel.getClientRects().length) open();

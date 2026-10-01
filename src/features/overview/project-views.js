@@ -40,7 +40,7 @@ import {
   setProjectViewIcon,
 } from "../../data/project-views.js";
 import { state, ui } from "../../data/state.js";
-import { openCtxMenu } from "../../ui/ctx-menu.js";
+import { showTabMenu } from "../../ui/tab-menu.js";
 import { isDesk } from "../../ui/desk-mode.js";
 import { addLongPressMenu, cancelHold } from "../../ui/long-press.js";
 import { iconPickerAction } from "../../ui/pickers.js";
@@ -147,7 +147,7 @@ export function openProjectViewMenu(pill) {
     }
     options.push({ label: menuLabels.delete, icon: "trash", danger: true, onSelect: () => deleteProjectView(id) });
   }
-  openCtxMenu(pill, options);
+  showTabMenu(pill, options);
 }
 
 /* Den getippten Namen übernehmen — nur, solange wirklich eine Ansicht benannt wird. */

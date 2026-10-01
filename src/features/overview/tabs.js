@@ -19,7 +19,7 @@ import { tabLabel } from "../../data/queries.js";
 import { saveState, state, ui } from "../../data/state.js";
 import { setTabIconsOn } from "../../data/tab-icons.js";
 import { awardXp } from "../../data/xp.js";
-import { openCtxMenu } from "../../ui/ctx-menu.js";
+import { showTabMenu } from "../../ui/tab-menu.js";
 import { iconPickerAction } from "../../ui/pickers.js";
 import { fitPillInput } from "../../ui/pill-input.js";
 import { revealActive } from "../../ui/pill-swipe.js";
@@ -128,7 +128,7 @@ export function openTabMenu(pill) {
   if (state.tabs.length > 1) {
     options.push({ label: "Löschen", icon: "trash", danger: true, onSelect: () => deleteTab(id) });
   }
-  openCtxMenu(pill, options);
+  showTabMenu(pill, options);
 }
 
 /* Tippen, Enter und Fokusverlust im Namensfeld eines Tabs. */

@@ -5,19 +5,17 @@ Gilt, wenn unter Einstellungen › Mehr › Versionen „Android“ oder „Andr
 von 1024 px. Zusätzlich zu den Flows in `README.md`.
 
 **Übersicht, Projekte**
-- Die Seite ist getönt, die vier Übersichtskarten und die Projektkarte liegen
-  eine Stufe tiefer darauf (hell: weiß auf Blaugrau, dunkel: dunkler als die
-  Seite). Hell und Dunkel ansehen.
-- Reiterzeile ohne Trennlinie und ohne Symbol rechts; die Reiter laufen bis an
-  den Rand und rasten beim Scrollen oben ein.
-- Werkzeugzeile oben in der Karte: links „12 Projekte“, bei einer Ansicht, die
-  aussiebt, „4 von 12“ und das Filter-Symbol in der Akzentfarbe. Sortieren
-  öffnet das Blatt „Sortieren“; Filtern öffnet „Projekte aus“ — bei „Alle“ das
-  ⓘ, bei handverlesenen Projekten das Blatt „Ansicht“; die drei Punkte holen
-  das Blatt „Ansicht“ herauf. Dasselbe auf der Seite Projekte.
-- Karte „Archiviert (n)“ unter der Liste, nur wenn Projekte im Archiv liegen:
-  Tipp klappt auf und zu (der Pfeil dreht sich), aufgeklappt bleibt sie beim
-  Neuzeichnen offen. Wischen nach rechts holt zurück, nach links löscht; die
-  drei Punkte zeigen „Zurückholen“. Der Archiv-Knopf links unten bleibt.
+- Seite, Liste und Projekte ohne eigene Fläche; getönt sind nur Leiste,
+  Kacheln und Suchleiste. Hell und Dunkel ansehen.
+- Reiterzeile mit Trennlinie, ohne Symbol rechts; die Reiter laufen bis an den
+  Rand und rasten beim Scrollen oben ein.
+- Werkzeugzeile über der Liste: links „Archiv (n)“ in der Akzentfarbe, nur wenn
+  Projekte im Archiv liegen — Tipp öffnet das Archiv mit der Pille Projekte.
+  Rechts Sortieren (Blatt „Sortieren“); außer bei „Alle“ auch Filtern, das das
+  Blatt „Ansicht“ holt und sich in der Akzentfarbe zeigt, sobald die Ansicht
+  aussiebt. Dasselbe auf der Seite Projekte.
+- Reiter gedrückt halten (Projekte, Aufgaben, Arbeitsbereiche): das Menü kommt
+  als Blatt von unten über die ganze Breite, ohne Griff; Schleier, Ziehen und
+  Zurück schließen es. Umbenennen startet im Namensfeld, Löschen ist rot.
 - Eine Zeile gedrückt halten: keine blaue Fläche von Chrome, sondern die eigene
-  Tönung über die ganze Kartenbreite; danach hebt sich die Zeile zum Verschieben.
+  Tönung; danach hebt sich die Zeile zum Verschieben.

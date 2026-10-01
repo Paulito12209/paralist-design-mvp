@@ -40,7 +40,7 @@ import {
   selectTaskView,
   setTaskViewIcon,
 } from "../../data/task-views.js";
-import { openCtxMenu } from "../../ui/ctx-menu.js";
+import { showTabMenu } from "../../ui/tab-menu.js";
 import { addLongPressMenu, cancelHold } from "../../ui/long-press.js";
 import { openInfoDialog } from "../../ui/info-dialog.js";
 import { iconPickerAction } from "../../ui/pickers.js";
@@ -140,7 +140,7 @@ function openViewMenu(pill) {
     }
     options.push({ label: menuLabels.delete, icon: "trash", danger: true, onSelect: () => deleteTaskView(id) });
   }
-  openCtxMenu(pill, options);
+  showTabMenu(pill, options);
 }
 
 /** Klicks in der Zeile: Ansicht wählen, neue Ansicht, neue Aufgabe. */

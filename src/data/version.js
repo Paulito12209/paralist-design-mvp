@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "fd6ceb9a34f8";
+export const appVersion = "cc371ed86d3e";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -284,6 +284,7 @@ export const appFiles = [
   "src/ui/sort-sheet.js",
   "src/ui/swipe.js",
   "src/ui/tab-glyph.js",
+  "src/ui/tab-menu.js",
   "src/ui/task-status.js",
   "src/ui/toast.js",
   "src/ui/type-menu.js",
@@ -298,6 +299,7 @@ export const appFiles = [
   "styles/android-entry.css",
   "styles/android-fab.css",
   "styles/android-list.css",
+  "styles/android-menu-sheet.css",
   "styles/android-reorder.css",
   "styles/android-sheet.css",
   "styles/android-tabs.css",

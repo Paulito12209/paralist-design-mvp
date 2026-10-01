@@ -25,9 +25,9 @@
  * infoTitle / infoText   -> das Blatt hinter dem ⓘ
  *
  * Aussehen: styles/tasks-settings.css (Schalter, gesperrte Zeile, ⓘ) und
- * styles/entry-details.css (Karte, Zeilen). Die Blätter „Sortieren“, „Projekte
- * aus“ und das ⓘ öffnet in der Android-Fassung auch die Werkzeugzeile der
- * Projektkarte (src/features/overview/project-card.js).
+ * styles/entry-details.css (Karte, Zeilen). Das Blatt „Sortieren“ öffnet in der
+ * Android-Fassung auch die Werkzeugzeile über den Projekten
+ * (src/features/overview/project-card.js).
  */
 
 import { escapeHtml, icon } from "../../core/html.js";
@@ -109,8 +109,8 @@ export function openProjectSort(view) {
   });
 }
 
-/** Blatt „Projekte aus“: alle Orte, der Eingang und jeder Arbeitsbereich. */
-export function openPlaceSheet(view) {
+/* Blatt „Projekte aus“: alle Orte, der Eingang und jeder Arbeitsbereich. */
+function openPlaceSheet(view) {
   const option = (ref, label, iconName) => ({
     label,
     icon: iconName,
@@ -149,11 +149,6 @@ function openPickSheet() {
   openSheet(pickTitle, options);
 }
 
-/** Das Blatt hinter dem ⓘ: warum „Alle“ sich nicht filtern lässt. */
-export function openProjectInfo() {
-  openSheet(infoTitle, [{ lead: true, label: infoText }]);
-}
-
 /** Klicks in der Karte; `view` ist die gewählte Ansicht. */
 export function handleProjectSettingsClick(event, view) {
   const button = event.target.closest("[data-settings]");
@@ -161,7 +156,7 @@ export function handleProjectSettingsClick(event, view) {
   const setting = button.dataset.settings;
   if (setting === "sort") openProjectSort(view);
   else if (setting === "place") openPlaceSheet(view);
-  else if (setting === "info") openProjectInfo();
+  else if (setting === "info") openSheet(infoTitle, [{ lead: true, label: infoText }]);
   else if (setting === "favorites") updateProjectView({ favoritesOnly: !view.favoritesOnly });
   else if (setting === "pick") openPickSheet();
 }
