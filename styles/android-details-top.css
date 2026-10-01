@@ -9,7 +9,10 @@
  * - Der Plus-Knopf steht auf seiner gewohnten Höhe und liegt über dem rechten
  *   Teil des Kartenkopfs, statt über ihn gehoben zu werden. Darum steht das
  *   Symbol direkt hinter „Details“. Die Karte bleibt ein Abschnitt der Seite;
- *   ganz gescrollt endet sie über dem Plus-Knopf (styles/android.css).
+ *   ganz gescrollt endet sie mit demselben Abstand über dem Plus-Knopf, den
+ *   der Plus-Knopf zur Leiste hat. Dafür kommt die Leiste am Seitenende
+ *   zurück (src/shell/android-bars.js) — sonst rutschte der Plus-Knopf mit
+ *   ihr nach unten und die Lücke wüchse wieder.
  * - Ein Tipp irgendwo in den Kartenkopf öffnet ein Blatt von unten mit
  *   denselben Angaben (Klasse .details-sheet,
  *   src/features/entry/entry-details-sheet.js): am unteren Rand verankert,
@@ -23,7 +26,10 @@
  *
  * ANPASSBARE WERTE (alle in styles/tokens-android.css, außer wo genannt)
  * -----------------------------------
- * --m3-fab-gap           -> Abstand des Plus-Knopfs zur Leiste (hier die gewohnte Höhe)
+ * --m3-fab-gap           -> Abstand des Plus-Knopfs zur Leiste (hier die gewohnte Höhe) — und
+ *                           ebenso zwischen Seitenende und Plus-Knopf
+ * --m3-fab-size          -> Höhe des Plus-Knopfs; zählt zum Platz am Seitenende
+ * --m3-nav-shift         -> Höhe der Leiste (mit oder ohne Namen, styles/android.css); zählt ebenso
  * --m3-primary           -> Schrift von „Mehr anzeigen“ (Material 3: Textknopf in der Akzentfarbe)
  * --head-btn-size        -> Tippfläche des Ketten-Symbols in der Kopfzeile; um so viel rückt
  *                           auch die Kategorie mittig nach (styles/tokens.css)
@@ -54,6 +60,13 @@
      auf ihm, der Kopf bleibt links daneben zu sehen */
   [data-mobile-variant="details-oben"] body:has(#view-entry.is-active) .m3-fab {
     bottom: calc(100% + var(--m3-fab-gap));
+  }
+
+  /* Seitenende: Leiste, Plus-Knopf und zweimal sein Abstand — so endet der
+     Inhalt (meist die Karte „Details“) genau einen Abstand über dem Knopf.
+     Die übrigen Seiten behalten --m3-content-end (styles/android.css). */
+  [data-mobile-variant="details-oben"] body:has(#view-entry.is-active) .content {
+    padding-bottom: calc(var(--m3-nav-shift) + var(--safe-bottom) + var(--m3-fab-size) + 2 * var(--m3-fab-gap));
   }
 
   /* ---------- Kopf der Karte „Details“ ---------- */

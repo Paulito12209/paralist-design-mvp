@@ -4,19 +4,33 @@
  * wie in Google Mail. Hier wird nur die Klasse „is-bars-hidden“ an .device
  * gesetzt; die Richtung erkennt src/shell/scroll-direction.js, wie es aussieht,
  * steht in styles/android.css, styles/android-tabs.css und styles/android-fab.css.
+ *
+ * Fassung „Android (Experiment 2: Details)“, Seite eines Eintrags: am
+ * Seitenende kommen die Leisten zurück. Dort ist das Seitenende so bemessen,
+ * dass der Inhalt einen Abstand über dem Plus-Knopf endet
+ * (styles/android-details-top.css); mit weggeglittener Leiste säße der Knopf
+ * tiefer, und darüber klaffte eine Lücke.
  * Pfad: src/shell/android-bars.js
  *
- * Keine anpassbaren visuellen Werte: wie früh die Leisten reagieren, steht in
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * END_SLACK_PX -> so nah am Seitenende gilt die Seite als ganz gescrollt
+ *
+ * Wie früh die Leisten reagieren, steht in
  * src/shell/scroll-direction.js, wie schnell sie gleiten, in
  * styles/tokens-android.css (--m3-hide-time).
  */
 
 import { events, on } from "../core/bus.js";
 import { dom } from "../core/dom.js";
+import { isMobileVariant } from "../ui/mobile-variant.js";
+import { isViewActive } from "../ui/views.js";
 import { isMobileOs } from "./platform.js";
 import { directionTracker } from "./scroll-direction.js";
 
 const direction = directionTracker();
+/* So nah am Seitenende gilt die Seite als ganz gescrollt (Rundung bei krummer Pixeldichte) */
+const END_SLACK_PX = 2;
 
 /** Ist gerade die Android-Fassung am Handy oder Tablet zu sehen? */
 export function isAndroidMobile() {
@@ -34,9 +48,20 @@ function barsPinned() {
   return document.body.classList.contains("is-search") || !dom.composer.hidden;
 }
 
+/* Experiment 2, Eintragsseite: ganz unten angekommen? */
+function atEntryEnd() {
+  if (!isMobileVariant("details-oben") || !isViewActive("entry")) return false;
+  const box = dom.content;
+  return box.scrollTop + box.clientHeight >= box.scrollHeight - END_SLACK_PX;
+}
+
 function onScroll() {
   if (!isAndroidMobile() || barsPinned()) return;
   const hidden = dom.device.classList.contains("is-bars-hidden");
+  if (atEntryEnd()) {
+    if (hidden) showBars();
+    return;
+  }
   const turn = direction.step(dom.content.scrollTop, hidden);
   if (turn === "away") dom.device.classList.add("is-bars-hidden");
   else if (turn === "back") dom.device.classList.remove("is-bars-hidden");
