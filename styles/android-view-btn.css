@@ -6,8 +6,7 @@
  * bis an den Rand. Der Knopf erscheint nur auf Seiten mit einer Karte
  * „Ansicht“ — dieselben Klassen am body, die sie zeigen (styles/tasks-settings.css,
  * styles/calendar.css). Angelegt in src/shell/android-view-btn.js.
- * Die übrigen Unterschiede der Fassung stehen in styles/android-details-top.css;
- * die Liste für das ⓘ unter Einstellungen › Mehr › Versionen in
+ * Mehr unterscheidet die Fassung derzeit nicht von „Android“; die Liste für das ⓘ unter Einstellungen › Mehr › Versionen in
  * src/data/platform-versions.js.
  * Gilt nur mit data-mobile-os="android" und data-mobile-variant="experiment"
  * an <html> und unterhalb von 1024px.

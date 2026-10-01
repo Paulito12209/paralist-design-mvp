@@ -40,8 +40,7 @@ export const platforms = [
     options: [
       { id: "erster-test", label: "Erster Test", icon: "pencil" },
       { id: "android", label: "Android", icon: "smartphone" },
-      /* Die Versuche, gesammelt in einer Fassung (styles/android-view-btn.css,
-         styles/android-details-top.css) */
+      /* Die Versuche, gesammelt in einer Fassung (styles/android-view-btn.css) */
       {
         id: "android-experiment",
         label: "Android (Experiment)",
@@ -50,10 +49,6 @@ export const platforms = [
         variant: "experiment",
         differences: [
           { area: "Ansicht", text: "Das Symbol „Ansicht“ sitzt als runder Knopf mittig über der Leiste — statt rechts in der Reiterzeile, in der Kopfzeile einer Sammlung oder neben „KW“." },
-          { area: "Eintrag · Verknüpfen", text: "Das Ketten-Symbol steht oben in der Kopfzeile links neben dem Drei-Punkte-Menü statt im Kopf der Karte „Details“." },
-          { area: "Eintrag · Details", text: "Ein Tipp auf den Kopf der Karte öffnet ein Blatt von unten mit denselben Angaben, statt die Karte über den Text zu heben. Das Symbol steht direkt hinter „Details“." },
-          { area: "Eintrag · Plus-Knopf", text: "„Neu“ bleibt auf gewohnter Höhe und liegt auf dem Kopf der Karte „Details“, statt darüber gehoben zu werden." },
-          { area: "Eintrag · Mehr anzeigen", text: "Textknopf in der Akzentfarbe nach Material 3 — im Dunkeln graublau statt Blau." },
         ],
       },
       { id: "ios", label: "iOS", icon: "smartphone" },

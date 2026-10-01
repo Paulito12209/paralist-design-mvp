@@ -21,7 +21,7 @@ import { events, on } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { icon } from "../core/html.js";
 import { showSearch } from "../ui/router.js";
-import { isMobileOs } from "./platform.js";
+import { isMobileOs } from "../ui/platform.js";
 import { directionTracker } from "./scroll-direction.js";
 
 const edgeFrom = 2;

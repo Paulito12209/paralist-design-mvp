@@ -23,7 +23,7 @@
 import { events, on } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { isViewActive } from "../ui/views.js";
-import { isMobileOs } from "./platform.js";
+import { isMobileOs } from "../ui/platform.js";
 import { directionTracker } from "./scroll-direction.js";
 
 const direction = directionTracker();

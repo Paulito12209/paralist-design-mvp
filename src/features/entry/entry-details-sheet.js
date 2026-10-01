@@ -1,5 +1,5 @@
 /*
- * Fassung „Android (Experiment)“: die Angaben der Karte „Details“
+ * Android-Fassung: die Angaben der Karte „Details“
  * als Blatt von unten (Material 3 „Bottom sheet“). Auf der Seite bleibt die
  * Karte ein gewöhnlicher Abschnitt am Textende; ein Tipp auf ihren Kopf holt
  * nicht sie selbst hoch, sondern öffnet dieses Blatt mit denselben
@@ -22,7 +22,7 @@
  * -----------------------------------
  * sheetLabel -> Überschrift des Blatts und Name für Vorlesehilfen
  *
- * Aussehen in styles/android-details-top.css (Klasse .details-sheet).
+ * Aussehen in styles/android-entry.css (Klasse .details-sheet).
  */
 
 import { events, on } from "../../core/bus.js";

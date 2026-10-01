@@ -18,12 +18,11 @@
  * regelt entry-fold.js. Ein Tipp auf „Details“ oder das Symbol rechts klappt
  * die Karte über den Text hoch, ohne die Seite zu bewegen (entry-lift.js);
  * ebenso ein Tipp irgendwo sonst in den Kopf, außer auf das Ketten-Symbol.
- * In der Fassung „Android (Experiment)“ öffnet derselbe Tipp
- * stattdessen ein Blatt von unten mit denselben Angaben
- * (entry-details-sheet.js); die Karte bleibt dort ein gewöhnlicher Abschnitt.
- * Das Symbol steht direkt hinter „Details“, das Ketten-Symbol oben in der
- * Kopfzeile (styles/android-details-top.css) — rechts im Kopf liegt dort der
- * Plus-Knopf darüber.
+ * In der Android-Fassung öffnet derselbe Tipp stattdessen ein Blatt von
+ * unten mit denselben Angaben (entry-details-sheet.js); die Karte bleibt dort
+ * ein gewöhnlicher Abschnitt. Das Symbol steht direkt hinter „Details“, das
+ * Ketten-Symbol oben in der Kopfzeile (styles/android-entry.css) — rechts im
+ * Kopf liegt dort der Plus-Knopf darüber.
  * Pfad: src/features/entry/entry-details.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -42,7 +41,7 @@ import { findEntry } from "../../data/queries.js";
 import { ui } from "../../data/state.js";
 import { detailsMarkup, fillDetails, handleCardClick } from "../../ui/details-card.js";
 import { openLinkSheet } from "../../ui/link-sheet.js";
-import { isMobileVariant } from "../../ui/mobile-variant.js";
+import { isMobileOs } from "../../ui/platform.js";
 import { initDetailsSheet, openDetailsSheet, refreshDetailsSheet } from "./entry-details-sheet.js";
 import { initEntryLift, refreshLift, toggleLift } from "./entry-lift.js";
 
@@ -104,8 +103,8 @@ export function initEntryDetails() {
       return;
     }
     if (event.target.closest(".details-head")) {
-      /* Experiment: dieselben Angaben als Blatt von unten, die Karte bleibt stehen */
-      if (isMobileVariant("experiment")) {
+      /* Android: dieselben Angaben als Blatt von unten, die Karte bleibt stehen */
+      if (isMobileOs("android")) {
         openDetailsSheet(entry);
         return;
       }

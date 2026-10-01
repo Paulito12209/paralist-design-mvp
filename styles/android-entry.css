@@ -1,7 +1,7 @@
 /*
- * Fassung „Android (Experiment)“, Seite eines Eintrags. Reiter und
- * Werkzeuge daneben bleiben wie in der Android-Fassung (links die Reiter,
- * rechts Kopieren bzw. Filter und Plus). Anders ist:
+ * Android-Fassung, Seite eines Eintrags. Reiter und Werkzeuge daneben wie
+ * sonst (links die Reiter, rechts Kopieren bzw. Filter und Plus). Anders als
+ * in den übrigen Fassungen:
  *
  * - „Verknüpfen“ steht oben in der Kopfzeile, links neben dem Drei-Punkte-Menü
  *   (src/shell/android-link-btn.js); das Ketten-Symbol im Kopf der Karte
@@ -9,22 +9,22 @@
  * - Der Plus-Knopf steht auf seiner gewohnten Höhe und liegt über dem rechten
  *   Teil des Kartenkopfs, statt über ihn gehoben zu werden. Darum steht das
  *   Symbol direkt hinter „Details“. Die Karte bleibt ein Abschnitt der Seite;
- *   ganz gescrollt endet sie wie in „Android“ einen Abstand über dem
- *   Plus-Knopf (styles/android.css).
+ *   ganz gescrollt endet sie einen Abstand über dem Plus-Knopf
+ *   (styles/android.css).
  * - Ein Tipp irgendwo in den Kartenkopf öffnet ein Blatt von unten mit
  *   denselben Angaben (Klasse .details-sheet,
- *   src/features/entry/entry-details-sheet.js): am unteren Rand verankert,
- *   oben gerundet, mit Griff, über Leiste und Plus-Knopf.
+ *   src/features/entry/entry-details-sheet.js), statt die Karte über Text und
+ *   Cover zu heben: am unteren Rand verankert, oben gerundet, mit Griff, über
+ *   Leiste und Plus-Knopf.
  * - „Mehr anzeigen“ ist ein Textknopf nach Material 3: Schrift in der
  *   Akzentfarbe der Fassung — im Dunkeln graublau statt Blau.
  *
- * Gilt nur mit data-mobile-os="android" und data-mobile-variant="experiment"
- * an <html> und unterhalb von 1024px.
- * Pfad: styles/android-details-top.css
+ * Gilt nur mit data-mobile-os="android" an <html> (auch „Android
+ * (Experiment)“) und unterhalb von 1024px.
+ * Pfad: styles/android-entry.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens-android.css, außer wo genannt)
  * -----------------------------------
- * --m3-fab-lift          -> wie weit der Plus-Knopf gehoben ist: hier 0 (styles/android.css)
  * --m3-primary           -> Schrift von „Mehr anzeigen“ (Material 3: Textknopf in der Akzentfarbe)
  * --head-btn-size        -> Tippfläche des Ketten-Symbols in der Kopfzeile; um so viel rückt
  *                           auch die Kategorie mittig nach (styles/tokens.css)
@@ -43,41 +43,32 @@
  * Griff oben (32 × 4px, Material 3) und die Überschrift im Blatt (16px).
  */
 
-/* Außerhalb dieser Fassung gibt es das Ketten-Symbol in der Kopfzeile nicht */
+/* Außerhalb der Android-Fassung gibt es das Ketten-Symbol in der Kopfzeile nicht */
 .entry-link-btn {
   display: none;
 }
 
 @media (max-width: 1023px) {
-  /* ---------- Plus-Knopf auf gewohnter Höhe ---------- */
-
-  /* styles/android.css hebt ihn sonst über den Kopf der Karte; hier liegt er
-     auf ihm, der Kopf bleibt links daneben zu sehen. Das Seitenende rechnet
-     mit derselben Hebung und rückt so mit. */
-  [data-mobile-variant="experiment"] body:has(#view-entry.is-active) {
-    --m3-fab-lift: 0px;
-  }
-
   /* ---------- Kopf der Karte „Details“ ---------- */
 
   /* Das Ketten-Symbol ist jetzt oben in der Kopfzeile */
-  [data-mobile-variant="experiment"] #entry-panel-notes > .details-card .details-link:not(.details-toggle) {
+  [data-mobile-os="android"] #entry-panel-notes > .details-card .details-link:not(.details-toggle) {
     display: none;
   }
 
   /* „Details“ nur so breit wie das Wort, das Symbol direkt dahinter — rechts
      liegt der Plus-Knopf. Tippfläche bleibt der ganze Kopf (entry-details.js). */
-  [data-mobile-variant="experiment"] #entry-panel-notes > .details-card .details-title {
+  [data-mobile-os="android"] #entry-panel-notes > .details-card .details-title {
     flex: 0 0 auto;
   }
 
-  [data-mobile-variant="experiment"] #entry-panel-notes > .details-card .details-toggle {
+  [data-mobile-os="android"] #entry-panel-notes > .details-card .details-toggle {
     margin-left: 4px;
   }
 
   /* ---------- „Mehr anzeigen“ ---------- */
 
-  [data-mobile-variant="experiment"] .entry-more {
+  [data-mobile-os="android"] .entry-more {
     color: var(--m3-primary);
   }
 
@@ -85,14 +76,14 @@
 
   /* Am unteren Rand verankert, ohne Luft drumherum (das Auswahl-Blatt schwebt
      mit 12px Rand). transition: der Schleier blendet weich ein. */
-  [data-mobile-variant="experiment"] .details-sheet {
+  [data-mobile-os="android"] .details-sheet {
     padding: 0;
     transition: background-color var(--tasks-panel-slide) ease;
   }
 
   /* position: Bezug für den Griff. transition: gleitet von unten herein;
      beim Ziehen setzt src/ui/modal-pull.js Lage und Übergang selbst. */
-  [data-mobile-variant="experiment"] .details-sheet .sheet {
+  [data-mobile-os="android"] .details-sheet .sheet {
     position: relative;
     display: flex;
     flex-direction: column;
@@ -106,17 +97,17 @@
   /* @starting-style: woher Blatt und Schleier beim Öffnen kommen — sonst
      stünden sie sofort da, weil sie eben erst aus display: none auftauchen */
   @starting-style {
-    [data-mobile-variant="experiment"] .details-sheet:not([hidden]) {
+    [data-mobile-os="android"] .details-sheet:not([hidden]) {
       background-color: transparent;
     }
 
-    [data-mobile-variant="experiment"] .details-sheet:not([hidden]) .sheet {
+    [data-mobile-os="android"] .details-sheet:not([hidden]) .sheet {
       transform: translateY(100%);
     }
   }
 
   /* Der Griff oben in der Mitte: das Blatt lässt sich nach unten ziehen */
-  [data-mobile-variant="experiment"] .details-sheet .sheet::before {
+  [data-mobile-os="android"] .details-sheet .sheet::before {
     content: "";
     position: absolute; /* position: mittig über der Überschrift, ohne Platz zu nehmen */
     top: 8px;
@@ -129,7 +120,7 @@
     opacity: 0.4;
   }
 
-  [data-mobile-variant="experiment"] .details-sheet-title {
+  [data-mobile-os="android"] .details-sheet-title {
     display: flex;
     align-items: center;
     flex: 0 0 auto;
@@ -141,14 +132,14 @@
 
   /* Der Inhalt scrollt in sich (.modal-body, styles/overlays.css); hier ohne
      dessen Seitenrand und Lücken — die Angaben bringen ihre eigenen mit */
-  [data-mobile-variant="experiment"] .details-sheet-body {
+  [data-mobile-os="android"] .details-sheet-body {
     gap: 0;
     padding: 0 0 calc(16px + var(--safe-bottom));
   }
 
   /* Im Blatt ist alles sofort zu sehen; auf der Karte blenden die Angaben
      erst beim Hochscrollen ein (styles/entry-details.css) */
-  [data-mobile-variant="experiment"] .details-sheet :is(.details-stats, .details-list) {
+  [data-mobile-os="android"] .details-sheet :is(.details-stats, .details-list) {
     opacity: 1;
   }
 
@@ -156,7 +147,7 @@
 
   /* margin-left 0: .head-btn schiebt sich sonst selbst an den Rand — das
      übernimmt hier die Kategorie, die die Mitte füllt */
-  [data-mobile-variant="experiment"] .entry-link-btn {
+  [data-mobile-os="android"] .entry-link-btn {
     display: grid;
     margin-left: 0;
     margin-right: calc(-1 * var(--m3-head-tools-pull));
@@ -164,7 +155,7 @@
 
   /* Rechts stehen zwei Knöpfe, links nur der Zurück-Pfeil: fast dieselbe
      Breite links als Luft, damit die Kategorie genau mittig bleibt */
-  [data-mobile-variant="experiment"] #entry-back {
+  [data-mobile-os="android"] #entry-back {
     margin-right: calc(var(--head-btn-size) - var(--m3-head-tools-pull));
   }
 }

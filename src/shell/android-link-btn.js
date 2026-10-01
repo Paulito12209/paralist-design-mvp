@@ -1,10 +1,10 @@
 /*
- * Fassung „Android (Experiment)“: das Ketten-Symbol „Verknüpfen“
+ * Android-Fassung: das Ketten-Symbol „Verknüpfen“
  * oben in der Kopfzeile der Eintragsseite, links neben dem Drei-Punkte-Menü.
  * Es ersetzt das Symbol im Kopf der Karte „Details“ und öffnet dasselbe
  * Blatt (src/ui/link-sheet.js). Den Knopf gibt es immer im Dokument; zu sehen
  * ist er nur in dieser Fassung — das entscheidet allein
- * styles/android-details-top.css.
+ * styles/android-entry.css.
  * Pfad: src/shell/android-link-btn.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -12,7 +12,7 @@
  * buttonLabel -> Vorlesetext und Hinweis des Knopfs
  *
  * Größe wie alle Knöpfe der Kopfzeile (--head-btn-size, Klasse .head-btn in
- * styles/entry.css), Sichtbarkeit in styles/android-details-top.css.
+ * styles/entry.css), Sichtbarkeit in styles/android-entry.css.
  */
 
 import { dom } from "../core/dom.js";

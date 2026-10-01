@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "3c53270f4ee8";
+export const appVersion = "9d5d66dfb042";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -212,7 +212,6 @@ export const appFiles = [
   "src/shell/level-gauge.js",
   "src/shell/lifecycle.js",
   "src/shell/nav-bar.js",
-  "src/shell/platform.js",
   "src/shell/reminder-banner.js",
   "src/shell/scroll-direction.js",
   "src/shell/search-bar.js",
@@ -256,7 +255,6 @@ export const appFiles = [
   "src/ui/long-press.js",
   "src/ui/media-cell.js",
   "src/ui/media-strip.js",
-  "src/ui/mobile-variant.js",
   "src/ui/modal-pull.js",
   "src/ui/modal-top.js",
   "src/ui/move-menu.js",
@@ -268,6 +266,7 @@ export const appFiles = [
   "src/ui/pill-add.js",
   "src/ui/pill-input.js",
   "src/ui/pill-swipe.js",
+  "src/ui/platform.js",
   "src/ui/pull-search.js",
   "src/ui/rail-parts.js",
   "src/ui/remind-sheet.js",
@@ -292,7 +291,7 @@ export const appFiles = [
   "src/ui/wheel.js",
   "src/ui/write-tap.js",
   "styles/android-archive.css",
-  "styles/android-details-top.css",
+  "styles/android-entry.css",
   "styles/android-fab.css",
   "styles/android-sheet.css",
   "styles/android-tabs.css",
