@@ -19,6 +19,7 @@
  * --m3-surface-container   -> Fläche des Blatts
  * --m3-scrim               -> Schleier hinter dem Blatt
  * --m3-on-surface-variant  -> Griff oben am Blatt und das Symbol in der Reiterzeile
+ * --icon-soft, --page-tool-icon -> Farbe und Größe der zwei Regler in der Projekte-Zeile
  * --tasks-panel-slide      -> wie schnell das Blatt kommt und geht (styles/tokens-pages.css)
  * --head-btn-size          -> Tippfläche des Symbols in der Kopfzeile einer Sammlung (styles/tokens.css)
  * --m3-tab-tools-air       -> Luft vor dem Symbol in der Reiterzeile statt der Trennlinie
@@ -118,6 +119,18 @@
 
   [data-mobile-os="android"] .view-panel-btn:active {
     opacity: 0.55;
+  }
+
+  /* Die Projekte-Zeile trägt statt des Kartensymbols die zwei Regler, in
+     derselben Farbe und Größe wie die Werkzeuge neben „Verknüpfte Einträge“
+     (--icon-soft, --page-tool-icon) */
+  [data-mobile-os="android"] .view-panel-btn.is-filter {
+    color: var(--icon-soft);
+  }
+
+  [data-mobile-os="android"] .view-panel-btn.is-filter .icon {
+    width: var(--page-tool-icon);
+    height: var(--page-tool-icon);
   }
 
   /* Es steht an der Stelle von „… hinzufügen“ in der Reiterzeile; Anlegen

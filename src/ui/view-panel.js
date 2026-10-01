@@ -70,9 +70,12 @@ function collapseAll() {
   collapsers.forEach((collapse) => collapse());
 }
 
-/** Der Knopf, der die Karte der offenen Seite heraufholt (nur im Blatt zu sehen). */
-export function viewPanelButton() {
-  return `<button class="view-panel-btn" type="button" data-view-panel-open aria-label="${buttonLabel}" title="${buttonLabel}">${icon("panel-open")}</button>`;
+/** Der Knopf, der die Karte der offenen Seite heraufholt (nur im Blatt zu sehen).
+    `asFilter`: statt des Kartensymbols die zwei Regler, in der Farbe der Werkzeuge
+    neben den Pillen (Projekte-Zeile auf Übersicht und Seite Projekte). */
+export function viewPanelButton(asFilter = false) {
+  const cls = asFilter ? "view-panel-btn is-filter" : "view-panel-btn";
+  return `<button class="${cls}" type="button" data-view-panel-open aria-label="${buttonLabel}" title="${buttonLabel}">${icon(asFilter ? "sliders" : "panel-open")}</button>`;
 }
 
 /* Die Karte der offenen Seite aufklappen. Welche das ist, entscheidet das

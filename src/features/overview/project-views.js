@@ -100,7 +100,7 @@ export function projectViewsMarkup() {
           <button class="add-btn" type="button" data-project-add="1" aria-label="${addProjectLabel}" title="${addProjectLabel}">
             ${icon("rocket-plus")}
           </button>
-          ${viewPanelButton()}
+          ${viewPanelButton(true)}
         </div>
       </div>
     </div>`;
