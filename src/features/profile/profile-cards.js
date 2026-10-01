@@ -199,6 +199,15 @@ export function streakCard() {
  * Kontoeinstellungen (account.js) — ganz unten im Blatt träfe man es zu leicht.
  */
 const listSections = [
+  /* „Mehr“ zuerst: am Handy steht es so direkt unter „Darstellung“ — die
+     Versionen wechselt man beim Ausprobieren oft */
+  {
+    title: "Mehr",
+    rows: [
+      { icon: "layers", label: "Versionen", trail: "chevron", detail: "versions", value: versionsSummary },
+      { icon: "import", label: "Nach Updates suchen", action: "update" },
+    ],
+  },
   {
     title: "App",
     rows: [
@@ -221,13 +230,6 @@ const listSections = [
       { icon: "note", label: "Feedback", trail: "external", link: supportLinks.feedback },
       { icon: "roadmap", label: "Roadmap", trail: "external", link: supportLinks.roadmap },
       { icon: "cube", label: "Danksagungen", trail: "chevron", detail: "credits" },
-    ],
-  },
-  {
-    title: "Mehr",
-    rows: [
-      { icon: "layers", label: "Versionen", trail: "chevron", detail: "versions", value: versionsSummary },
-      { icon: "import", label: "Nach Updates suchen", action: "update" },
     ],
   },
 ];

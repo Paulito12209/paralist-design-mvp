@@ -1,7 +1,7 @@
 /*
  * Das Untermenü der Profilseite am Desktop: links die Punkte Konto,
- * Darstellung, Navigation, Suche, Design, Tabs, Analyse, Feedback, Kurzbefehle,
- * Hilfe; rechts
+ * Darstellung, Mehr, Navigation, Suche, Design, Tabs, Analyse, Feedback,
+ * Kurzbefehle, Hilfe; rechts
  * steht der Inhalt des gewählten Punkts — dieselben Karten, die am Handy
  * untereinander im Einstellungs-Blatt stehen. Am Handy gibt es kein
  * Untermenü; dort zeichnet src/features/profile/profile.js die ganze Liste.
@@ -29,6 +29,7 @@ export const defaultPane = "konto";
 const panes = [
   { id: "konto", label: "Konto", icon: "person", render: () => identityCard() + listSection("Konto") + closingMarkup() },
   { id: "darstellung", label: "Darstellung", icon: "display", render: () => `<p class="psection">Darstellung</p>${themeListMarkup()}` },
+  { id: "mehr", label: "Mehr", icon: "layers", render: () => listSection("Mehr") },
   { id: "navigation", label: "Navigation", icon: "sidebar", render: () => navigationCard("Navigation") },
   { id: "suche", label: "Suche", icon: "search", render: () => searchCard("Suche") },
   { id: "design", label: "Design", icon: "image", render: () => designCard("Design") },
@@ -36,7 +37,7 @@ const panes = [
   { id: "analyse", label: "Analyse", icon: "trend", render: insightsSection },
   { id: "feedback", label: "Feedback", icon: "note", render: feedbackCard, enter: enterFeedback },
   { id: "kurzbefehle", label: "Kurzbefehle", icon: "sliders", render: shortcutsMarkup },
-  { id: "hilfe", label: "Hilfe", icon: "help", render: () => listSection("Support") + listSection("Mehr") },
+  { id: "hilfe", label: "Hilfe", icon: "help", render: () => listSection("Support") },
 ];
 
 function paneOf(id) {
