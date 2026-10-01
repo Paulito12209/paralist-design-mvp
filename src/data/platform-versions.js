@@ -33,7 +33,7 @@ export const platforms = [
       { id: "android", label: "Android", icon: "smartphone" },
       /* Versuch: ohne Symbol „Ansicht“ in der Reiterzeile, stattdessen ein runder
          Knopf mittig über der Leiste (styles/android-view-btn.css) */
-      { id: "android-ohne-ansicht", label: "Android (ohne Ansicht)", icon: "smartphone", os: "android", variant: "ansicht-unten" },
+      { id: "android-ohne-ansicht", label: "Android (Experiment 1: Ansicht)", icon: "smartphone", os: "android", variant: "ansicht-unten" },
       { id: "ios", label: "iOS", icon: "smartphone" },
     ],
   },
