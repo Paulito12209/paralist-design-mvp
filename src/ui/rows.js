@@ -6,7 +6,8 @@
  * Keine anpassbaren visuellen Werte: Höhe, Farben und Abstände stehen in
  * styles/rows.css (Klasse .workspace-row, das Favoriten-Icon in .row-glyph),
  * styles/swipe-rows.css (.swipe, .swipe-action, der grüne Abhaken-Knopf),
- * der durchgestrichene Titel einer erledigten Aufgabe in styles/task-status.css.
+ * der durchgestrichene Titel einer erledigten Aufgabe (im Archiv: grünes Icon)
+ * in styles/task-status.css.
  */
 
 import { escapeHtml, icon } from "../core/html.js";
@@ -125,14 +126,15 @@ export function archiveActions(restoreKind, deleteKind) {
  */
 export function entryRow(entry, prefix = "", actions = entryActions(entry, true)) {
   /* Auch eine Aufgabe trägt hier ihr Icon — abgehakt wird sie über den
-     grünen Wisch-Knopf; erledigt bleibt sie am durchgestrichenen Titel erkennbar. */
+     grünen Wisch-Knopf; erledigt bleibt sie am durchgestrichenen Titel erkennbar
+     („is-task-done“ an der Zeile: im Archiv statt dessen ein grünes Icon). */
   const done = entry.type === "aufgabe" && isTaskDone(entry);
   return swipeRow(
     `data-entry="${entry.id}"`,
     actions.left,
     actions.right,
     `
-      <button class="workspace-row entry-row" type="button" data-open-entry="${entry.id}">
+      <button class="workspace-row entry-row${done ? " is-task-done" : ""}" type="button" data-open-entry="${entry.id}">
         ${favoriteGlyph(entryGlyph(entry), entry.favorite)}
         ${prefix}
         <span${done ? ' class="is-done"' : ""}>${escapeHtml(entry.title)}</span>

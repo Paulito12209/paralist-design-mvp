@@ -174,7 +174,10 @@
   flex: 0 1 auto;
 }
 
-.task-main {
+/* Der mittlere Block nimmt den freien Platz, damit der Pfeil am rechten Rand
+   steht wie bei Projekten und Arbeitsbereichen. „.task-row“ davor ist nötig:
+   „.task-row span“ oben wiegt sonst schwerer und hielte ihn schmal. */
+.task-row .task-main {
   flex: 1 1 auto;
   min-width: 0;
   display: flex;

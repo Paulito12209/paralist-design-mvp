@@ -125,15 +125,6 @@
   }
 
   /* ---------- Aufgaben: Liste und Board ---------- */
-  /* Der mittlere Block einer Aufgabe nimmt den freien Platz, damit der Pfeil am
-     rechten Rand steht statt direkt hinter dem Titel. Die ID ist nötig:
-     „.task-row span“ in styles/tasks.css hält jedes span der Zeile schmal und
-     wiegt schwerer als „.task-main“ daneben. Board-Zeilen haben eigene Klassen
-     (.board-row-main in styles/tasks-board.css) und bleiben unberührt. */
-  #view-tasks .task-row .task-main {
-    flex: 1 1 auto;
-  }
-
   /* Grundbreite 0: alle Spalten teilen sich die Breite gleich und schrumpfen
      mit, statt von der Handy-Breite (--board-col-width, wird hier nicht mehr
      gelesen) aus nur zu wachsen — so passen mehr Spalten ohne seitliches Rollen.

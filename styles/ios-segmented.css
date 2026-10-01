@@ -14,8 +14,10 @@
  * --ios-segment-thumb -> das gewählte Segment
  * --ios-separator     -> Trennlinie zwischen nicht gewählten Segmenten
  * --ios-label         -> Schrift der Segmente
+ * --ios-secondary-label -> Schrift und Plus von „Neue Ansicht“
  *
- * Schriftgröße der Segmente: 13px direkt bei .tab-pill (wie Apples Segmented Control).
+ * Schriftgröße der Segmente: 13px direkt bei .tab-pill (wie Apples Segmented Control),
+ * ebenso bei .tab-pill-add-text; das Plus davor 14px groß (.tab-pill-add .icon).
  */
 
 @media (max-width: 1023px) {
@@ -89,10 +91,29 @@
     color: var(--ios-secondary-label);
   }
 
-  /* Das kleine Plus für eine neue Ansicht ist das letzte, schmale Segment */
+  /* Das Plus für eine neue Ansicht ist das letzte Segment: „+ Neue Ansicht“
+     in der Schrift der übrigen Segmente, nur nie gewählt */
   [data-mobile-os="ios"] .tab-pills .tab-pill-add {
-    width: 30px;
+    width: auto;
     height: 30px;
-    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 14px 0 12px;
+    border-radius: 999px;
+    color: var(--ios-secondary-label);
+  }
+
+  [data-mobile-os="ios"] .tab-pill-add .icon {
+    width: 14px;
+    height: 14px;
+    color: inherit;
+  }
+
+  [data-mobile-os="ios"] .tab-pill-add-text {
+    display: inline;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
   }
 }

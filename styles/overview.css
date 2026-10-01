@@ -319,6 +319,12 @@
 .tab-pill-add:active {
   opacity: 0.55;
 }
+
+/* „Neue Ansicht“ neben dem Plus gibt es nur in der Android- und iOS-Fassung
+   (styles/android-tabs.css, styles/ios-segmented.css) */
+.tab-pill-add-text {
+  display: none;
+}
 /* Eine Projekt-Ansicht findet nichts: ein Satz statt einer leeren Fläche */
 .project-empty-note {
   padding: 14px 2px;

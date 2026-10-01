@@ -1,6 +1,7 @@
 /*
  * Status einer Aufgabe außerhalb der Aufgaben-Seite: der durchgestrichene
- * Titel einer erledigten Aufgabe in jeder Liste (Projekt, Arbeitsbereich,
+ * Titel einer erledigten Aufgabe in jeder Liste (im Archiv statt dessen ein
+ * grün umrandetes Icon) (Projekt, Arbeitsbereich,
  * verknüpfte Einträge, Kalender — abgehakt wird dort über den grünen
  * Wisch-Knopf, styles/swipe-rows.css) und mittig in der Kopfzeile jeder
  * Eintragsseite die Kategorie („Aufgabe“, „Notiz“) als Pille zum Typ-Wechsel
@@ -13,6 +14,7 @@
  * --task-crumb-gap      -> Abstand zwischen Wort und kleinem Pfeil
  * --tab-pill-active-bg  -> Fläche unter dem Schriftzug, solange man draufdrückt
  * --muted               -> Farbe eines erledigten Titels
+ * --xp-done             -> Grün des Icons einer erledigten Aufgabe im Archiv (styles/tokens-pages.css)
  * --icon-soft           -> Farbe des kleinen Pfeils
  * --crumb-chevron-size  -> Größe des kleinen Pfeils (auch der Leerraum links, der das Wort mittig hält)
 */
@@ -23,6 +25,18 @@
 .entry-row .is-done {
   text-decoration: line-through;
   color: var(--muted);
+}
+
+/* Im Archiv ist „erledigt“ kein Zustand des Tages mehr, sondern Rückblick:
+   der Titel bleibt normal lesbar, nur die Kontur des Icons wird grün.
+   Das Aufgaben-Icon ist reine Linie — die Farbe füllt also nichts aus. */
+.archive-list .entry-row .is-done {
+  text-decoration: none;
+  color: inherit;
+}
+
+.archive-list .entry-row.is-task-done .row-glyph .icon {
+  color: var(--xp-done);
 }
 
 /* ---------- Kopfzeile jeder Eintragsseite: die Kategorie als Pille ---------- */

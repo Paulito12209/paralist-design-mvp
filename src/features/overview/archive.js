@@ -9,7 +9,9 @@
  * Pfad: src/features/overview/archive.js
  *
  * Keine anpassbaren visuellen Werte: die Zeilen sehen aus wie überall
- * (styles/rows.css), die Pillen wie auf der Ressourcen-Seite
+ * (styles/rows.css) — nur eine erledigte Aufgabe trägt hier ein grünes Icon
+ * statt des durchgestrichenen Titels (styles/task-status.css, .archive-list) —,
+ * die Pillen wie auf der Ressourcen-Seite
  * (styles/overview.css, styles/media.css), der Platzhalter steht in
  * styles/empty-state.css.
  */
@@ -96,7 +98,7 @@ export function renderArchive() {
   const list = filteredAway
     ? filterEmptyState()
     : spaces.length || entries.length
-      ? `<div class="workspace-list">${spaces.map(workspaceArchiveRow).join("")}${entries
+      ? `<div class="workspace-list archive-list">${spaces.map(workspaceArchiveRow).join("")}${entries
           .map(entryArchiveRow)
           .join("")}</div>`
       : emptyState(pill === "all" ? emptyArchive : { ...emptyArchive, title: `Keine ${pillLabel(pill)} im Archiv` });

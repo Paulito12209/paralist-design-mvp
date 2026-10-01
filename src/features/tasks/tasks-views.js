@@ -1,7 +1,8 @@
 /*
  * Die Pillen über der Aufgaben-Liste — gebaut wie die Tabs über den
  * Arbeitsbereichen der Übersicht: links „Alle“ und die eigenen Ansichten,
- * dahinter das kleine Plus für eine neue Ansicht; rechts hinter der
+ * dahinter das kleine Plus für eine neue Ansicht
+ * (am Handy mit „Neue Ansicht“ daneben, src/ui/pill-add.js); rechts hinter der
  * Trennlinie der runde Knopf ✓+, der eine Aufgabe anlegt — dieselbe Zeile
  * wie ein Tipp in die Liste (tasks-inline.js), nicht das Eingabefeld unten.
  * In der Android-Fassung steht dort stattdessen das Symbol „Ansicht“
@@ -16,7 +17,6 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * addViewLabel -> Vorlesetext des kleinen Plus
  * addTaskLabel -> Vorlesetext des runden ✓+
  * menuLabels   -> Beschriftungen im Halte-Menü
  * allInfo      -> Überschrift und Text der Erklärung hinter dem ⓘ an „Alle“
@@ -45,12 +45,12 @@ import { addLongPressMenu, cancelHold } from "../../ui/long-press.js";
 import { openInfoDialog } from "../../ui/info-dialog.js";
 import { iconPickerAction } from "../../ui/pickers.js";
 import { fitPillInput, } from "../../ui/pill-input.js";
+import { addViewPill } from "../../ui/pill-add.js";
 import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
 import { viewPanelButton } from "../../ui/view-panel.js";
 import { startTaskRow } from "./tasks-inline.js";
 import { isSelecting } from "./tasks-pick.js";
 
-const addViewLabel = "Ansicht hinzufügen";
 const addTaskLabel = "Aufgabe hinzufügen";
 const menuLabels = {
   rename: "Umbenennen",
@@ -97,7 +97,7 @@ export function taskViewsMarkup(end = "") {
     <div class="tab-pills-row">
       <div class="tab-pills" id="task-view-pills">
         ${state.taskViews.map(pillMarkup).join("")}
-        <button class="tab-pill-add" type="button" data-task-view-add aria-label="${addViewLabel}">${icon("plus")}</button>
+        ${addViewPill("data-task-view-add")}
       </div>
       <div class="tab-pills-tools">
         <div class="tab-pills-fade"></div>

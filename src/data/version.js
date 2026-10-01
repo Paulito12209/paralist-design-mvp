@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "07b61400afd4";
+export const appVersion = "27f244a238f3";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -260,6 +260,7 @@ export const appFiles = [
   "src/ui/page-tools.js",
   "src/ui/panel-rows.js",
   "src/ui/pickers.js",
+  "src/ui/pill-add.js",
   "src/ui/pill-input.js",
   "src/ui/pill-swipe.js",
   "src/ui/pull-search.js",

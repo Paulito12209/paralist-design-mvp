@@ -2,7 +2,8 @@
  * Die Pillen der Projekt-Ansichten — auf der Übersicht unter „Projekte ↗“
  * und oben auf der Seite Projekte, gebaut wie die Pillen der Aufgaben-Seite
  * (src/features/tasks/tasks-views.js): links „Alle“ und die eigenen
- * Ansichten, dahinter das kleine Plus für eine neue Ansicht; rechts hinter
+ * Ansichten, dahinter das kleine Plus für eine neue Ansicht
+ * (am Handy mit „Neue Ansicht“ daneben, src/ui/pill-add.js); rechts hinter
  * der Trennlinie der runde Knopf „Projekt hinzufügen“ (Rakete mit Plus) —
  * in der Android-Fassung steht dort stattdessen das Symbol „Ansicht“
  * (viewPanelButton aus src/ui/view-panel.js, styles/android-sheet.css). Eine
@@ -15,7 +16,6 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * addViewLabel    -> Vorlesetext des kleinen Plus
  * addProjectLabel -> Vorlesetext und Hinweis des runden Knopfs rechts
  * menuLabels      -> Beschriftungen im Halte-Menü
  *
@@ -45,11 +45,11 @@ import { isDesk } from "../../ui/desk-mode.js";
 import { addLongPressMenu, cancelHold } from "../../ui/long-press.js";
 import { iconPickerAction } from "../../ui/pickers.js";
 import { fitPillInput } from "../../ui/pill-input.js";
+import { addViewPill } from "../../ui/pill-add.js";
 import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
 import { viewPanelButton } from "../../ui/view-panel.js";
 import { currentView, isViewActive } from "../../ui/views.js";
 
-const addViewLabel = "Ansicht hinzufügen";
 const addProjectLabel = "Projekt hinzufügen";
 const menuLabels = {
   rename: "Umbenennen",
@@ -90,7 +90,7 @@ export function projectViewsMarkup() {
     <div class="tab-pills-row">
       <div class="tab-pills">
         ${state.projectViews.map(pillMarkup).join("")}
-        <button class="tab-pill-add" type="button" data-project-view-add aria-label="${addViewLabel}">${icon("plus")}</button>
+        ${addViewPill("data-project-view-add")}
       </div>
       <div class="tab-pills-tools">
         <div class="tab-pills-fade"></div>
