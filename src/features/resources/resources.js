@@ -17,7 +17,6 @@
 
 import { dom, el } from "../../core/dom.js";
 import { groupByMonth } from "../../core/format.js";
-import { icon } from "../../core/html.js";
 import { filterCollectionEntries } from "../../data/collection-filters.js";
 import { collectionSort, sortCollectionEntries } from "../../data/collection-sorts.js";
 import { resourceFilters } from "../../data/config.js";
@@ -27,6 +26,7 @@ import { emptyState } from "../../ui/empty-state.js";
 import { filterEmptyState } from "../../ui/filter-empty.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { entryRow } from "../../ui/rows.js";
+import { tabGlyph } from "../../ui/tab-glyph.js";
 import { isViewActive } from "../../ui/views.js";
 
 /* Platzhalter je Filter-Pille: Icon und Farbe passen zu dem, was fehlt. */
@@ -89,7 +89,7 @@ export function renderResources() {
       const mark = filter.id === active ? " is-active" : "";
       return `
         <button class="tab-pill${mark}" type="button" data-resource-filter="${filter.id}">
-          ${icon(filter.icon, "tab-pill-icon")}${filter.label}${count ? `<span class="media-count">${count}</span>` : ""}
+          ${tabGlyph("resources", filter.icon)}${filter.label}${count ? `<span class="media-count">${count}</span>` : ""}
         </button>`;
     })
     .join("");

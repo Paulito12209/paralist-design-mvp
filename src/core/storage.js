@@ -20,6 +20,7 @@ export const storageKeys = {
   searchKeyboard: "paralist-search-keyboard",
   navGlow: "paralist-nav-glow",
   pageHead: "paralist-page-head",
+  tabIcons: "paralist-tab-icons",
   /* Gewählte Fassung je Gerät, {mobile, desk} — index.html liest denselben Namen. */
   versions: "paralist-versions",
   milestones: "paralist-milestones",

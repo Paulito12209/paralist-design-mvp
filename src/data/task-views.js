@@ -20,6 +20,7 @@ import { emit, events } from "../core/bus.js";
 import { nextId, sameId } from "../core/ids.js";
 import { taskDefaults } from "./config-tasks.js";
 import { saveState, state, ui } from "./state.js";
+import { setTabIconsOn } from "./tab-icons.js";
 
 export const allViewName = "Alle";
 const viewPlaceholder = (n) => `Ansicht ${n}`;
@@ -106,6 +107,8 @@ export function setTaskViewIcon(id, iconName) {
   const view = findTaskView(id);
   if (!view) return;
   view.icon = iconName || null;
+  /* Ein gewähltes Icon soll man sehen — auch wenn die Ansichten bisher nur Text zeigten */
+  if (iconName) setTabIconsOn("tasks", true);
   commit();
 }
 

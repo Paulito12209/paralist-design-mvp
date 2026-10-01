@@ -27,6 +27,7 @@ import { filterEmptyState } from "../../ui/filter-empty.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { setPagePill } from "../../ui/router.js";
 import { archiveActions, entryRow, workspaceRow } from "../../ui/rows.js";
+import { tabGlyph } from "../../ui/tab-glyph.js";
 import { isViewActive } from "../../ui/views.js";
 
 /* Ein leeres Archiv bekommt keine Pille: hier legt man nichts an, hier landet etwas. */
@@ -73,7 +74,7 @@ function pillsMarkup(active) {
       const mark = pill.id === active ? " is-active" : "";
       return `
         <button class="tab-pill${mark}" type="button" data-archive-pill="${pill.id}">
-          ${pill.label}${count ? `<span class="media-count">${count}</span>` : ""}
+          ${tabGlyph("archive", pill.icon)}${pill.label}${count ? `<span class="media-count">${count}</span>` : ""}
         </button>`;
     })
     .join("")}</div>`;

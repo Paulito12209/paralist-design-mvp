@@ -18,13 +18,13 @@ import { events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { load } from "../../core/lazy.js";
 import { groupByMonth } from "../../core/format.js";
-import { icon } from "../../core/html.js";
 import { mediaFilters } from "../../data/config.js";
 import { findEntry, mediaEntries, mediaKindOf } from "../../data/queries.js";
 import { saveState, state } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { mediaCell } from "../../ui/media-cell.js";
 import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
+import { tabGlyph } from "../../ui/tab-glyph.js";
 import { onDeskChange } from "../../ui/desk-mode.js";
 import { isViewActive } from "../../ui/views.js";
 import { isMediaList, mediaListMarkup, mountMediaTools, renderMediaTools } from "./media-desk.js";
@@ -82,7 +82,7 @@ function renderFilters() {
       const active = filter.id === state.prefs.media.filter ? " is-active" : "";
       return `
         <button class="tab-pill media-filter${active}" type="button" data-media-filter="${filter.id}">
-          ${icon(filter.icon, "tab-pill-icon")}${filter.label}${count ? `<span class="media-count">${count}</span>` : ""}
+          ${tabGlyph("media", filter.icon)}${filter.label}${count ? `<span class="media-count">${count}</span>` : ""}
         </button>`;
     })
     .join("");

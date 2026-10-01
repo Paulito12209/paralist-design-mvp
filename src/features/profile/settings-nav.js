@@ -1,6 +1,6 @@
 /*
  * Das Untermenü der Profilseite am Desktop: links die Punkte Konto,
- * Darstellung, Navigation, Suche, Design, Analyse, Feedback, Kurzbefehle,
+ * Darstellung, Navigation, Suche, Design, Tabs, Analyse, Feedback, Kurzbefehle,
  * Hilfe; rechts
  * steht der Inhalt des gewählten Punkts — dieselben Karten, die am Handy
  * untereinander im Einstellungs-Blatt stehen. Am Handy gibt es kein
@@ -16,7 +16,7 @@
  */
 
 import { icon } from "../../core/html.js";
-import { designCard, navigationCard, searchCard } from "./app-settings.js";
+import { designCard, navigationCard, searchCard, tabsCard } from "./app-settings.js";
 import { enterFeedback, feedbackCard } from "./feedback.js";
 import { closingMarkup, identityCard, listSection } from "./profile-cards.js";
 import { insightsSection } from "./settings-cards.js";
@@ -32,6 +32,7 @@ const panes = [
   { id: "navigation", label: "Navigation", icon: "sidebar", render: () => navigationCard("Navigation") },
   { id: "suche", label: "Suche", icon: "search", render: () => searchCard("Suche") },
   { id: "design", label: "Design", icon: "image", render: () => designCard("Design") },
+  { id: "tabs", label: "Tabs", icon: "tag", render: () => tabsCard("Tabs") },
   { id: "analyse", label: "Analyse", icon: "trend", render: insightsSection },
   { id: "feedback", label: "Feedback", icon: "note", render: feedbackCard, enter: enterFeedback },
   { id: "kurzbefehle", label: "Kurzbefehle", icon: "sliders", render: shortcutsMarkup },

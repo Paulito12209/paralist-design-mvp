@@ -17,15 +17,17 @@ import { noHistoryForm } from "../../core/no-history.js";
 import { deleteTab } from "../../data/mutations.js";
 import { tabLabel } from "../../data/queries.js";
 import { saveState, state, ui } from "../../data/state.js";
+import { setTabIconsOn } from "../../data/tab-icons.js";
 import { awardXp } from "../../data/xp.js";
 import { openCtxMenu } from "../../ui/ctx-menu.js";
 import { iconPickerAction } from "../../ui/pickers.js";
 import { fitPillInput } from "../../ui/pill-input.js";
 import { revealActive } from "../../ui/pill-swipe.js";
+import { tabGlyph } from "../../ui/tab-glyph.js";
 import { currentView } from "../../ui/views.js";
 
 function pillMarkup(tab) {
-  const glyph = tab.icon ? icon(tab.icon, "tab-pill-icon") : "";
+  const glyph = tabGlyph("workspaces", tab.icon);
 
   if (sameId(tab.id, ui.editingTabId)) {
     return `
@@ -116,6 +118,8 @@ export function openTabMenu(pill) {
     { label: "Umbenennen", icon: "pencil", onSelect: () => beginRenameTab(id) },
     iconPickerAction(tab.icon, (name) => {
       tab.icon = name;
+      /* Ein gewähltes Icon soll man sehen — auch wenn die Tabs bisher nur Text zeigten */
+      if (name) setTabIconsOn("workspaces", true);
       saveState();
       emit(events.dataChanged);
     }),

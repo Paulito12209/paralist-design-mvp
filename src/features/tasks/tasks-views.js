@@ -44,6 +44,7 @@ import { openCtxMenu } from "../../ui/ctx-menu.js";
 import { addLongPressMenu, cancelHold } from "../../ui/long-press.js";
 import { openInfoDialog } from "../../ui/info-dialog.js";
 import { iconPickerAction } from "../../ui/pickers.js";
+import { tabGlyph } from "../../ui/tab-glyph.js";
 import { fitPillInput, } from "../../ui/pill-input.js";
 import { addViewPill } from "../../ui/pill-add.js";
 import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
@@ -69,7 +70,7 @@ const INPUT_ID = "task-view-input";
 
 /* Eine Pille — oder das Eingabefeld, solange ihr Name getippt wird. */
 function pillMarkup(view) {
-  const glyph = view.icon ? icon(view.icon, "tab-pill-icon") : "";
+  const glyph = tabGlyph("tasks", view.icon, { fixed: view.fixed });
   if (sameId(view.id, ui.editingTaskViewId)) {
     return `
       <div class="tab-pill is-active">

@@ -26,6 +26,7 @@ import { projectSorts, projectViewDefaults } from "./config.js";
 import { entriesOf, projectEntries } from "./queries.js";
 import { entryRef, isWorkspaceRef, workspaceRef } from "./refs.js";
 import { saveState, state, ui } from "./state.js";
+import { setTabIconsOn } from "./tab-icons.js";
 
 export const allProjectViewName = "Alle";
 const viewPlaceholder = (n) => `Ansicht ${n}`;
@@ -128,6 +129,8 @@ export function setProjectViewIcon(id, iconName) {
   const view = findProjectView(id);
   if (!view) return;
   view.icon = iconName || null;
+  /* Ein gewähltes Icon soll man sehen — auch wenn die Ansichten bisher nur Text zeigten */
+  if (iconName) setTabIconsOn("projects", true);
   commit();
 }
 

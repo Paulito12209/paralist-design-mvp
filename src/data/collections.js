@@ -19,7 +19,7 @@
  * Aussehen der Karten: styles/overview-more.css.
  */
 
-import { typeOrder, typePlurals } from "./config.js";
+import { typeIcon, typeOrder, typePlurals } from "./config.js";
 
 /* Steht oben rechts auf jeder Karte, die noch nichts tut. */
 export const SOON_LABEL = "Demnächst verfügbar";
@@ -41,9 +41,9 @@ export const moreCards = [
  * Pille in der Reihenfolge der Gruppen unter „Verknüpfte Einträge“.
  */
 export const archivePills = [
-  { id: "all", label: "Alle" },
-  { id: "workspaces", label: "Arbeitsbereiche" },
-  ...typeOrder.map((type) => ({ id: type, label: typePlurals[type] })),
+  { id: "all", label: "Alle", icon: "archive" },
+  { id: "workspaces", label: "Arbeitsbereiche", icon: "layers" },
+  ...typeOrder.map((type) => ({ id: type, label: typePlurals[type], icon: typeIcon(type) })),
 ];
 
 /* Die Seite Arbeitsbereiche (Karte 3): alle Arbeitsbereiche, je Tab eine Pille. */

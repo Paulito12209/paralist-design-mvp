@@ -4,7 +4,7 @@
  * Sie zeigen nur den Kopfwert und einen winzigen Verlauf; das ganze Diagramm
  * erscheint erst beim Antippen. Darunter der Abschnitt „Darstellung“.
  * Hier steht außerdem, welche große Seite hinter welchem Schlüssel liegt —
- * auch Navigation, Suche und Design unter „App“, die Kontoeinstellungen, die
+ * auch Navigation, Suche, Design und Tabs unter „App“, die Kontoeinstellungen, die
  * Feedback- und Danksagungs-Seite und die Versionen unter „Mehr“.
  * Pfad: src/features/profile/settings-cards.js
  *
@@ -23,7 +23,7 @@ import { dayShift, startOfDay } from "../../core/dates.js";
 import { icon } from "../../core/html.js";
 import { usageOfDay, usageStreaks } from "../../data/usage.js";
 import { accountCard } from "./account.js";
-import { designCard, navigationCard, searchCard } from "./app-settings.js";
+import { designCard, navigationCard, searchCard, tabsCard } from "./app-settings.js";
 import { creditsCard, startCreditsVideo } from "./credits.js";
 import { enterFeedback, feedbackCard } from "./feedback.js";
 import { streakCard, usageCard } from "./profile-cards.js";
@@ -131,6 +131,7 @@ const details = {
   navigation: { hash: "navigation", title: "Navigation", card: () => navigationCard() },
   search: { hash: "suche", title: "Suche", card: () => searchCard() },
   design: { hash: "design", title: "Design", card: () => designCard() },
+  tabs: { hash: "tabs", title: "Tabs", card: () => tabsCard() },
   account: { hash: "konto", title: "Kontoeinstellungen", card: accountCard },
   versions: { hash: "versionen", title: "Versionen", card: versionsCard },
   credits: { hash: "danksagungen", title: "Danksagungen", card: creditsCard, settle: startCreditsVideo },

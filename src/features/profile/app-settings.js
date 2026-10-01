@@ -1,10 +1,11 @@
 /*
- * Die drei Unterseiten unter „App“ im Einstellungs-Blatt — Navigation, Suche,
- * Design; am Desktop je ein Punkt im Untermenü des Profils.
+ * Die vier Unterseiten unter „App“ im Einstellungs-Blatt — Navigation, Suche,
+ * Design, Tabs; am Desktop je ein Punkt im Untermenü des Profils.
  * - Navigation: „Namen unter den Reitern“ (src/features/profile/nav-labels.js)
  * - Suche: „Tastatur sofort öffnen“ (src/data/search-keyboard.js)
  * - Design: der Verlauf hinter Leiste und Eingabefeld und womit neue Seiten
  *   beginnen, Cover oder Icon (src/data/design-prefs.js)
+ * - Tabs: je Sammlung, ob ihre Pillen oben Icons zeigen (src/data/tab-icons.js)
  * Klicks kommen aus src/features/profile/profile.js über onAppSettingsClick.
  * Pfad: src/features/profile/app-settings.js
  *
@@ -20,6 +21,7 @@ import { emit, events } from "../../core/bus.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { navGlowOn, pageHeadChoice, setNavGlowOn, setPageHeadChoice } from "../../data/design-prefs.js";
 import { searchKeyboardOn, setSearchKeyboardOn } from "../../data/search-keyboard.js";
+import { setTabIconsOn, tabIconAreas, tabIconsOn } from "../../data/tab-icons.js";
 import { isDesk } from "../../ui/desk-mode.js";
 import { navLabelsRowMarkup, toggleNavLabels } from "./nav-labels.js";
 
@@ -29,6 +31,7 @@ const notes = {
   searchDesk: "Am Computer öffnet das Suchfeld stattdessen die Such-Palette.",
   glow: "Heller Verlauf am unteren Rand der Hauptreiter, der Leiste und Eingabefeld vom Inhalt abhebt. Nur am Handy und Tablet.",
   head: "Gilt für neue Einträge und Arbeitsbereiche. Ändern lässt sich beides je Seite im Menü oben rechts.",
+  tabs: "Mit Haken steht vor dem Namen jeder Pille oben ein kleines Icon, ohne Haken nur Text. Ein eigenes Icon gibst du einer Ansicht, indem du ihre Pille gedrückt hältst.",
 };
 
 const headRows = [
@@ -77,6 +80,15 @@ export function designCard(title = "") {
   `;
 }
 
+/** Unterseite Tabs: je Sammlung eine Haken-Zeile. */
+export function tabsCard(title = "") {
+  const rows = tabIconAreas
+    .map((area) => toggleRow(`data-tab-icons="${area.id}"`, area.icon, area.label, tabIconsOn(area.id)))
+    .join("");
+  /* Am Desktop steht „Tabs“ schon als Überschrift; ein zweiter Titel darunter wäre doppelt */
+  return `${heading(title || "Icons in den Tabs")}${group(rows)}${note(notes.tabs)}`;
+}
+
 /** Klick auf eine der Zeilen erledigen. Gibt true zurück, wenn er hierher gehörte. */
 export function onAppSettingsClick(event) {
   if (event.target.closest("[data-nav-labels-toggle]")) {
@@ -91,6 +103,14 @@ export function onAppSettingsClick(event) {
     const next = !navGlowOn();
     setNavGlowOn(next);
     emit(events.navGlowChanged, next);
+    return true;
+  }
+  const tabs = event.target.closest("[data-tab-icons]");
+  if (tabs) {
+    const area = tabs.dataset.tabIcons;
+    setTabIconsOn(area, !tabIconsOn(area));
+    /* Die Pillen der offenen Sammlung sollen sofort folgen, nicht erst beim nächsten Zeichnen */
+    emit(events.dataChanged);
     return true;
   }
   const head = event.target.closest("[data-page-head]");

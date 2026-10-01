@@ -44,6 +44,7 @@ import { openCtxMenu } from "../../ui/ctx-menu.js";
 import { isDesk } from "../../ui/desk-mode.js";
 import { addLongPressMenu, cancelHold } from "../../ui/long-press.js";
 import { iconPickerAction } from "../../ui/pickers.js";
+import { tabGlyph } from "../../ui/tab-glyph.js";
 import { fitPillInput } from "../../ui/pill-input.js";
 import { addViewPill } from "../../ui/pill-add.js";
 import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
@@ -68,7 +69,7 @@ export function isProjectsPageOpen() {
 
 /* Eine Pille — oder das Namensfeld, solange ihr Name getippt wird. */
 function pillMarkup(view) {
-  const glyph = view.icon ? icon(view.icon, "tab-pill-icon") : "";
+  const glyph = tabGlyph("projects", view.icon, { fixed: view.fixed });
   if (sameId(view.id, ui.editingProjectViewId)) {
     return `
       <div class="tab-pill is-active">

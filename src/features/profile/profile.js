@@ -3,7 +3,7 @@
  * beiden Kacheln unter „Analyse“, die Darstellung und die Konto-Listen. Tippt
  * man eine Kachel an, tritt an die Stelle der Liste die volle Karte mit
  * Diagramm. Der Bereich heißt weiter „profile“, weil das Blatt am Profilkopf
- * hängt. Unter „App“ führen drei Zeilen zu Navigation, Suche und Design
+ * hängt. Unter „App“ führen vier Zeilen zu Navigation, Suche, Design und Tabs
  * (app-settings.js), unter „Konto“ eine zu den Kontoeinstellungen, unter
  * „Support“ zwei auf das Feedback-Formular und die Danksagungen; „Roadmap“
  * ist dagegen ein Link nach draußen und braucht hier nichts (Adresse in

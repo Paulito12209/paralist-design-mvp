@@ -205,6 +205,7 @@ const listSections = [
       { icon: "sidebar", label: "Navigation", trail: "chevron", detail: "navigation" },
       { icon: "search", label: "Suche", trail: "chevron", detail: "search" },
       { icon: "image", label: "Design", trail: "chevron", detail: "design" },
+      { icon: "tag", label: "Tabs", trail: "chevron", detail: "tabs" },
     ],
   },
   {

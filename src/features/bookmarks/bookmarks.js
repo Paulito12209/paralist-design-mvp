@@ -34,6 +34,7 @@ import { emptyState } from "../../ui/empty-state.js";
 import { filterEmptyState } from "../../ui/filter-empty.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { setPagePill } from "../../ui/router.js";
+import { tabGlyph } from "../../ui/tab-glyph.js";
 import { isViewActive } from "../../ui/views.js";
 
 /* Platzhalter je Pille; alle im Lila der Lesezeichen. */
@@ -59,7 +60,7 @@ function pillsMarkup(active) {
       const count = counts[pill.id];
       return `
         <button class="tab-pill${mark}" type="button" data-bookmark-pill="${pill.id}">
-          ${icon(pill.icon, "tab-pill-icon")}${pill.label}${count ? `<span class="media-count">${count}</span>` : ""}
+          ${tabGlyph("bookmarks", pill.icon)}${pill.label}${count ? `<span class="media-count">${count}</span>` : ""}
         </button>`;
     })
     .join("")}</div>`;
