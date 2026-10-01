@@ -19,6 +19,7 @@
  * --m3-surface-container   -> Fläche des Blatts
  * --m3-scrim               -> Schleier hinter dem Blatt
  * --m3-on-surface-variant  -> Griff oben am Blatt und das Symbol in der Reiterzeile
+ * --m3-secondary-container, --m3-on-secondary-container -> Fläche und Strich des ✕ im Kopf des Blatts
  * --icon-soft, --page-tool-icon -> Farbe und Größe der zwei Regler in der Projekte-Zeile
  * --tasks-panel-slide      -> wie schnell das Blatt kommt und geht (styles/tokens-pages.css)
  * --head-btn-size          -> Tippfläche des Symbols in der Kopfzeile einer Sammlung (styles/tokens.css)
@@ -92,6 +93,13 @@
 
   [data-mobile-os="android"] .view-panel-toggle .view-panel-close {
     display: block;
+  }
+
+  /* Als „Tonal icon button“ (Material 3): runde Fläche in der Sekundärfarbe,
+     damit das ✕ sich vom Blatt abhebt und als Knopf erkennbar ist */
+  [data-mobile-os="android"] .view-panel-toggle {
+    background: var(--m3-secondary-container);
+    color: var(--m3-on-secondary-container);
   }
 
   /* Der Schleier: nur da, solange das Blatt offen ist. position/inset: deckt das
