@@ -14,14 +14,19 @@
  */
 
 import { icon } from "../../core/html.js";
-import { chosenLabel, chosenVersion, platforms, setVersion } from "../../data/platform-versions.js";
+import { chosenLabel, chosenLook, chosenVersion, platforms, setVersion } from "../../data/platform-versions.js";
 
 const note = "Die gewählte Fassung bleibt, bis du sie hier änderst. Am Handy und Tablet gilt „Mobil“, am Computer „Desktop“.";
 
 /** Die Wahl an <html> schreiben, damit die Stile der Fassung sofort greifen. */
 export function applyVersions() {
-  document.documentElement.dataset.mobileOs = chosenVersion("mobile");
-  document.documentElement.dataset.deskOs = chosenVersion("desk");
+  const mobile = chosenLook("mobile");
+  const root = document.documentElement;
+  root.dataset.mobileOs = mobile.os;
+  /* Spielart einer Fassung, z.B. Android ohne Symbol „Ansicht“ oben */
+  if (mobile.variant) root.dataset.mobileVariant = mobile.variant;
+  else delete root.dataset.mobileVariant;
+  root.dataset.deskOs = chosenVersion("desk");
 }
 
 /** Kurzfassung für den rechten Rand der Zeile, z.B. „Android · macOS“; gleiche Wahl nur einmal. */

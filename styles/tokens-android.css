@@ -41,6 +41,8 @@
  * --m3-content-end             -> Platz am Seitenende, damit nichts hinter Plus-Knopf und Leiste liegt
  * --m3-sheet-radius            -> Rundung oben an der Karte „Ansicht“ als Blatt (Material 3: 28dp)
  * --m3-sheet-max               -> wie hoch dieses Blatt höchstens wird (Anteil des Geräts)
+ * --m3-view-btn-size           -> Größe des runden Knopfs „Ansicht“ mittig über der Leiste
+ *                                 (nur Android ohne Ansicht; Material 3 „Small FAB“: 40dp)
  */
 
 :root[data-mobile-os="android"] {
@@ -76,6 +78,7 @@
   --m3-content-end: calc(var(--m3-nav-height-labels) + var(--m3-fab-size) + 3 * var(--m3-fab-gap));
   --m3-sheet-radius: 28px;
   --m3-sheet-max: 80%;
+  --m3-view-btn-size: 40px;
 }
 
 @media (prefers-color-scheme: dark) {

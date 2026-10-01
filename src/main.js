@@ -40,6 +40,7 @@ import { initNavBar } from "./shell/nav-bar.js";
 import { initAndroidArchive } from "./shell/android-archive.js";
 import { initAndroidBars } from "./shell/android-bars.js";
 import { initAndroidFab } from "./shell/android-fab.js";
+import { initAndroidViewBtn } from "./shell/android-view-btn.js";
 import { initIosAdd } from "./shell/ios-add.js";
 import { initIosBars } from "./shell/ios-bars.js";
 import { checkReminders, initReminderBanner } from "./shell/reminder-banner.js";
@@ -135,6 +136,7 @@ function initShell() {
   initAndroidBars();
   initAndroidFab();
   initAndroidArchive();
+  initAndroidViewBtn();
   initIosBars();
   initIosAdd();
   initKeyboardInset();

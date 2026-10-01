@@ -15,7 +15,10 @@
  * platforms[*].title    -> Überschrift der Gruppe auf der Unterseite
  * platforms[*].fallback -> welche Fassung gilt, solange nichts gewählt ist
  *                          (dieselbe Vorgabe steht im Skript oben in index.html)
- * platforms[*].options  -> die wählbaren Fassungen: Name und Icon der Zeile
+ * platforms[*].options  -> die wählbaren Fassungen: Name und Icon der Zeile;
+ *                          `os` und `variant` machen aus einer Fassung eine
+ *                          Spielart einer anderen (gleiche Stile, dazu
+ *                          data-mobile-variant an <html>, ebenso im Skript in index.html)
  */
 
 import { readJson, storageKeys, writeJson } from "../core/storage.js";
@@ -28,6 +31,9 @@ export const platforms = [
     options: [
       { id: "erster-test", label: "Erster Test", icon: "pencil" },
       { id: "android", label: "Android", icon: "smartphone" },
+      /* Versuch: ohne Symbol „Ansicht“ in der Reiterzeile, stattdessen ein runder
+         Knopf mittig über der Leiste (styles/android-view-btn.css) */
+      { id: "android-ohne-ansicht", label: "Android (ohne Ansicht)", icon: "smartphone", os: "android", variant: "ansicht-unten" },
       { id: "ios", label: "iOS", icon: "smartphone" },
     ],
   },
@@ -53,6 +59,13 @@ export function chosenVersion(platformId) {
   if (!platform) return "";
   const saved = readJson(storageKeys.versions, {})[platformId];
   return platform.options.some((option) => option.id === saved) ? saved : platform.fallback;
+}
+
+/** Was an <html> steht: die Plattform der Fassung und ihre Spielart ("" für keine). */
+export function chosenLook(platformId) {
+  const id = chosenVersion(platformId);
+  const option = platformOf(platformId)?.options.find((item) => item.id === id);
+  return { os: option?.os || id, variant: option?.variant || "" };
 }
 
 /** Der Name der gewählten Fassung, z.B. „iOS“ — für die Zeile unter „Mehr“. */

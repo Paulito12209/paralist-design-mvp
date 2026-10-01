@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "19997377a01d";
+export const appVersion = "2ed13aa1075c";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -195,6 +195,7 @@ export const appFiles = [
   "src/shell/android-archive.js",
   "src/shell/android-bars.js",
   "src/shell/android-fab.js",
+  "src/shell/android-view-btn.js",
   "src/shell/create-menu.js",
   "src/shell/desk-head.js",
   "src/shell/desk-nav-parts.js",
@@ -291,6 +292,7 @@ export const appFiles = [
   "styles/android-fab.css",
   "styles/android-sheet.css",
   "styles/android-tabs.css",
+  "styles/android-view-btn.css",
   "styles/android.css",
   "styles/avatar-crop.css",
   "styles/base.css",
