@@ -62,10 +62,12 @@
  * --m3-reorder-shadow          -> Schatten der gezogenen Zeile
  * --m3-reorder-slot-inset      -> Luft der Lücke zu Zeilen darüber und darunter
  * --m3-error / --m3-on-error   -> Wisch-Knopf „Löschen“ (Material 3: gefüllt in der Fehlerfarbe)
- * --m3-surface-container-lowest -> Fläche der Projektkarte und der vier Übersichtskarten — im Hellen
- *                                 weiß auf der getönten Seite, im Dunkeln dunkler als die Seite
- *                                 (styles/android-card.css); die Seite selbst liegt auf --m3-surface-container
- * --m3-surface-container-low   -> Fläche der zweiten Karte „Archiviert“ unter den Projekten
+ * --m3-surface-container-lowest / -low -> die zwei tiefsten Stufen der Flächen (Material 3)
+ * --m3-page                    -> Fläche der Seite in der Android-Fassung (styles/android-card.css):
+ *                                 hell die getönte Stufe, dunkel die tiefste — außen ist es immer dunkler
+ * --m3-card                    -> Fläche der Projektkarte und der vier Übersichtskarten: hell weiß,
+ *                                 dunkel eine Stufe heller als die Seite
+ * --m3-card-low                -> Fläche der zweiten Karte „Archiviert“, zwischen Seite und Karte
  * --m3-card-radius             -> Rundung der Projektkarte (Google Tasks: 24dp)
  * --m3-card-pad                -> Rand in der Projektkarte links und rechts
  * --m3-card-gap                -> Luft zwischen Projektkarte und Karte „Archiviert“
@@ -80,6 +82,9 @@
   --m3-surface-container-lowest: #ffffff;
   --m3-surface-container-low: #f6f8fc;
   --m3-surface-container-high: #e5eaf2;
+  --m3-page: var(--m3-surface-container);
+  --m3-card: var(--m3-surface-container-lowest);
+  --m3-card-low: var(--m3-surface-container-low);
   --m3-secondary-container: #c2e7ff;
   --m3-on-secondary-container: #001d35;
   --m3-primary-container: #d3e3fd;
@@ -145,6 +150,9 @@
     --m3-surface-container-lowest: #0e0f12;
     --m3-surface-container-low: #16171b;
     --m3-surface-container-high: #2a2b30;
+    --m3-page: var(--m3-surface-container-lowest);
+    --m3-card: var(--m3-surface-container);
+    --m3-card-low: var(--m3-surface-container-low);
     --m3-secondary-container: #4a4e5a;
     --m3-on-secondary-container: #e3e3e8;
     --m3-primary-container: #5c6070;
@@ -166,6 +174,9 @@
   --m3-surface-container-lowest: #0e0f12;
   --m3-surface-container-low: #16171b;
   --m3-surface-container-high: #2a2b30;
+  --m3-page: var(--m3-surface-container-lowest);
+  --m3-card: var(--m3-surface-container);
+  --m3-card-low: var(--m3-surface-container-low);
   --m3-secondary-container: #4a4e5a;
   --m3-on-secondary-container: #e3e3e8;
   --m3-primary-container: #5c6070;

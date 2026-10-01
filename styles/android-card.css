@@ -1,22 +1,22 @@
 /*
- * Android-Fassung, die Projekte als Karte nach Google Tasks: die Seite liegt
- * getönt auf surface-container, die Karte darauf eine Stufe „tiefer“
- * (surface-container-lowest — im Hellen weiß, im Dunkeln dunkler als die
- * Seite); die vier Übersichtskarten bekommen dieselbe Fläche. Oben in der
+ * Android-Fassung, die Projekte als Karte nach Google Tasks: außen ist es
+ * immer dunkler als innen — im Hellen liegt eine weiße Karte auf der getönten
+ * Seite, im Dunkeln eine hellere Karte auf der tiefsten Fläche; die vier
+ * Übersichtskarten bekommen dieselbe Fläche. Oben in der
  * Karte eine Werkzeugzeile: links der Zähler, rechts Sortieren, Filtern und
  * drei Punkte (src/features/overview/project-card.js). Die Reiterzeile darüber
  * verliert dadurch Trennlinie und Symbol „Ansicht“ — die Kante der Karte ist
  * die Grenze. Unter der Liste die Karte „Archiviert (n)“ auf
- * surface-container-low, aufklappbar wie „Erledigt“ in Tasks.
+ * einer Stufe dazwischen, aufklappbar wie „Erledigt“ in Tasks.
  * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px;
  * Werkzeugzeile und Karte „Archiviert“ sind in den anderen Fassungen unsichtbar.
  * Pfad: styles/android-card.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens-android.css)
  * -----------------------------------
- * --m3-surface-container        -> Fläche der Seite
- * --m3-surface-container-lowest -> Fläche der Projektkarte und der vier Übersichtskarten
- * --m3-surface-container-low    -> Fläche der Karte „Archiviert“
+ * --m3-page                     -> Fläche der Seite
+ * --m3-card                     -> Fläche der Projektkarte und der vier Übersichtskarten
+ * --m3-card-low                 -> Fläche der Karte „Archiviert“
  * --m3-card-radius              -> Rundung beider Karten
  * --m3-card-pad                 -> Rand in den Karten links und rechts; muss --content-side entsprechen,
  *                                  damit die Wisch-Hüllen der Zeilen genau bis an die Rundung reichen
@@ -46,8 +46,8 @@
   /* Am body, nicht an :root: die Werte der Dunkel-Datei stehen an :root und
      gewännen sonst je nach Reihenfolge. Das Gerät und alles darin erbt von hier. */
   [data-mobile-os="android"] body {
-    --bg: var(--m3-surface-container);
-    --overview-card-bg: var(--m3-surface-container-lowest);
+    --bg: var(--m3-page);
+    --overview-card-bg: var(--m3-card);
   }
 
   /* ---------- Die Reiterzeile ohne Linie und Symbol ---------- */
@@ -72,7 +72,7 @@
   [data-mobile-os="android"] .project-card {
     padding: 0 var(--m3-card-pad) 8px;
     border-radius: var(--m3-card-radius);
-    background: var(--m3-surface-container-lowest);
+    background: var(--m3-card);
   }
 
   /* Die Wisch-Hüllen der Zeilen reichen von sich aus um --content-side über
@@ -82,11 +82,11 @@
   /* Die Wisch-Hülle deckt die Knöpfe hinter der Zeile mit der Seitenfarbe ab
      (styles/swipe-rows.css) — in den Karten muss das die Kartenfarbe sein */
   [data-mobile-os="android"] .project-card .swipe-body {
-    background: var(--m3-surface-container-lowest);
+    background: var(--m3-card);
   }
 
   [data-mobile-os="android"] .project-archived .swipe-body {
-    background: var(--m3-surface-container-low);
+    background: var(--m3-card-low);
   }
 
   [data-mobile-os="android"] .project-card .workspace-add {
@@ -152,7 +152,7 @@
     margin-top: var(--m3-card-gap);
     padding: 0 var(--m3-card-pad);
     border-radius: var(--m3-card-radius);
-    background: var(--m3-surface-container-low);
+    background: var(--m3-card-low);
   }
 
   [data-mobile-os="android"] .project-archived-head {
