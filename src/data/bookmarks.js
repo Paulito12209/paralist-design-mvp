@@ -68,6 +68,16 @@ export function bookmarkItems(kind) {
   return items;
 }
 
+/**
+ * Gehört der Eintrag zur Lesezeichen-Sammlung — egal ob archiviert? Dieselbe
+ * Regel wie in bookmarkItems: eine Link-Karte im Inhalt oder der Typ
+ * „Lesezeichen“. Der Archiv-Knopf fragt damit, ob archivierte Lesezeichen da sind.
+ */
+export function holdsBookmark(entry) {
+  if (entry.type === BOOKMARK_TYPE) return true;
+  return parseBlocks(entry.body).some((block) => block.url && embedKinds.includes(block.kind));
+}
+
 /** Alle Lesezeichen zusammen — die Zahl auf der Karte der Startseite. */
 export function bookmarkTotal() {
   return bookmarkItems(null).length;

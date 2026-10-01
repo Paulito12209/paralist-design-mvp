@@ -1,11 +1,13 @@
 /*
  * Android-Fassung: der Archiv-Knopf links unten, gegenüber dem Plus-Knopf.
- * Er ersetzt die Pille „Zum Archiv“ unter den Listen. Zu sehen ist er erst,
- * wenn etwas im Archiv liegt, und nur auf Seiten mit Einträgen — Übersicht,
- * Aufgaben, Eingang, Favoriten, Ressourcen, Lesezeichen, Projekte,
- * Arbeitsbereiche und die Seite eines Arbeitsbereichs (Medien, Kalender und
- * das Archiv selbst nicht). Ein Tipp öffnet das Archiv mit der Pille, die zur
- * Seite passt.
+ * Er ersetzt die Pille „Zum Archiv“ unter den Listen. Er steht nur auf
+ * Seiten mit Einträgen — Übersicht, Aufgaben, Eingang, Favoriten,
+ * Ressourcen, Lesezeichen, Projekte, Arbeitsbereiche und die Seite eines
+ * Arbeitsbereichs (Medien, Kalender und das Archiv selbst nicht) — und dort
+ * erst, wenn im Archiv etwas zu genau dieser Seite liegt
+ * (src/data/archive-context.js): auf der Übersicht ein Projekt, auf den
+ * Lesezeichen ein Lesezeichen. Ein Tipp öffnet das Archiv mit der Pille, die
+ * zur Seite passt.
  *
  * Er ist zugleich Ziel zum Ablegen: hält man eine Zeile lange gedrückt und
  * zieht dann (src/ui/row-lift.js), erscheint der Knopf auch bei leerem
@@ -27,7 +29,8 @@ import { emit, events, on } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { icon } from "../core/html.js";
 import { archiveWorkspace, restoreFromArchive } from "../data/mutations.js";
-import { archivedEntries, archivedWorkspaces, findEntry, findWorkspace } from "../data/queries.js";
+import { archivedForView } from "../data/archive-context.js";
+import { findEntry, findWorkspace } from "../data/queries.js";
 import { ui } from "../data/state.js";
 import { archiveEntry } from "../data/xp.js";
 import { setRowLift } from "../ui/row-lift.js";
@@ -62,8 +65,10 @@ function archivePill() {
   return entryPages[ui.currentPage.kind || "inbox"] || null;
 }
 
+/* Liegt im Archiv etwas, das zur offenen Seite gehört? Sonst bleibt der Knopf weg —
+   alles Archivierte zeigt die Karte „Archiv“ auf der Übersicht. */
 function hasArchived() {
-  return archivedEntries().length > 0 || archivedWorkspaces().length > 0;
+  return archivedForView(currentView(), ui.currentPage).length > 0;
 }
 
 /* Sichtbar schalten. Ob gerade die Android-Fassung gilt, entscheidet das Stylesheet. */
