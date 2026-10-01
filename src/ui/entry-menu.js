@@ -141,8 +141,10 @@ export function addEntryMenuLead(fn) {
 /**
  * Das kleine Menü neben einer gedrückt gehaltenen Eintrags-Zeile — in einer
  * Liste (data-open-entry) oder im Board der Aufgaben (data-board-row).
+ * @param anchor wo das Menü aufgeht, wenn nicht an der Zeile: die drei Punkte
+ *   rechts in der Android-Fassung.
  */
-export function openEntryCtxMenu(row) {
+export function openEntryCtxMenu(row, anchor = row) {
   const entry = findEntry(row.dataset.openEntry || row.dataset.boardRow);
-  if (entry) openCtxMenu(row, [...leads.flatMap((lead) => lead(entry, row)), ...entryMenuOptions(entry)]);
+  if (entry) openCtxMenu(anchor, [...leads.flatMap((lead) => lead(entry, row)), ...entryMenuOptions(entry)]);
 }

@@ -38,6 +38,7 @@ import {
   openWorkspacesPage,
   showTab,
 } from "./router.js";
+import { isReorderRow } from "./row-reorder.js";
 import { closeSwipes, isSwipedOpen } from "./swipe.js";
 import { toggleGroup } from "./groups.js";
 import { toggleTaskFromCheck } from "./task-status.js";
@@ -222,6 +223,15 @@ function onClick(event) {
     return;
   }
 
+  /* Die drei Punkte rechts (Android): dasselbe Menü, das sonst beim gedrückt Halten aufging,
+     direkt unter den Punkten. */
+  const more = event.target.closest("[data-row-more]");
+  if (more) {
+    if (isSwipedOpen(more)) closeSwipes();
+    else openRowMenu(more.closest("[data-open-entry], [data-open-workspace]"), more);
+    return;
+  }
+
   /* Das Icon vor dem Titel schaltet Favorit um, statt die Zeile zu öffnen. */
   const glyph = event.target.closest("[data-fav-toggle]");
   if (glyph) {
@@ -240,6 +250,13 @@ function onClick(event) {
   /* Ein Medium geht als Datei auf, nicht als Seite — man will das Foto sehen. */
   if (row.dataset.openEntry) openEntryOrFile(row.dataset.openEntry, linkedMediaIds(row));
   else openTarget("workspace", row.dataset.openWorkspace);
+}
+
+/* Das Menü einer Eintrags- oder Arbeitsbereichs-Zeile, am Anker geöffnet. */
+function openRowMenu(row, anchor) {
+  if (!row) return;
+  if (row.dataset.openEntry) openEntryCtxMenu(row, anchor);
+  else menus.openWorkspaceMenu(row, anchor);
 }
 
 /* Eine Kachel unter „Verknüpfte Einträge“: die Dateiansicht blättert nur durch
@@ -283,6 +300,13 @@ export function initListClicks(handlers) {
       return;
     }
     const workspaceBtn = event.target.closest("[data-open-workspace]");
+    /* Verschiebbare Zeilen der Android-Fassung: gedrückt Halten verschiebt, das Menü liegt hinter den drei Punkten.
+       Auch am Handy löst langes Drücken dieses Ereignis aus — es darf das Menü nicht trotzdem öffnen. */
+    if ((workspaceBtn || event.target.closest("[data-open-entry]")) && isReorderRow(event.target)) {
+      event.preventDefault();
+      cancelHold();
+      return;
+    }
     if (workspaceBtn) {
       event.preventDefault();
       cancelHold();

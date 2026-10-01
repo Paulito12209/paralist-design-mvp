@@ -69,6 +69,8 @@ export const state = {
     collectionSorts: {},
     /* Filter je Sammlung — geprüft in src/data/collection-filters.js */
     collectionFilters: {},
+    /* Eigene Reihenfolge je Liste, z.B. { inbox: ["e:12", "w:3"] } — src/data/manual-order.js */
+    manualOrders: {},
   },
 };
 
@@ -158,6 +160,7 @@ function snapshot() {
     pageHeads: state.prefs.pageHeads,
     collectionSorts: state.prefs.collectionSorts,
     collectionFilters: state.prefs.collectionFilters,
+    manualOrders: state.prefs.manualOrders,
     mediaSeeded,
   };
 }
@@ -217,6 +220,11 @@ function adoptPrefs(saved) {
   }
   if (saved.collectionFilters && typeof saved.collectionFilters === "object") {
     state.prefs.collectionFilters = { ...saved.collectionFilters };
+  }
+  if (saved.manualOrders && typeof saved.manualOrders === "object") {
+    state.prefs.manualOrders = Object.fromEntries(
+      Object.entries(saved.manualOrders).filter(([, keys]) => Array.isArray(keys))
+    );
   }
   const calendar = state.prefs.calendar;
   calendar.span = pickValid(Number(calendar.span), calendarSpans.map((span) => span.id), 1);

@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "0674e3d5328c";
+export const appVersion = "3af1a150d843";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -61,6 +61,7 @@ export const appFiles = [
   "src/data/insights.js",
   "src/data/link-kinds.js",
   "src/data/links.js",
+  "src/data/manual-order.js",
   "src/data/migrate.js",
   "src/data/milestone-tracks.js",
   "src/data/milestones.js",
@@ -273,6 +274,7 @@ export const appFiles = [
   "src/ui/router-restore.js",
   "src/ui/router.js",
   "src/ui/row-lift.js",
+  "src/ui/row-reorder.js",
   "src/ui/rows.js",
   "src/ui/select-bar.js",
   "src/ui/selection.js",
@@ -294,6 +296,7 @@ export const appFiles = [
   "styles/android-entry.css",
   "styles/android-fab.css",
   "styles/android-list.css",
+  "styles/android-reorder.css",
   "styles/android-sheet.css",
   "styles/android-tabs.css",
   "styles/android-view-btn.css",

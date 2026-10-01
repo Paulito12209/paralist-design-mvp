@@ -64,6 +64,7 @@ import { initPullSearch } from "./ui/pull-search.js";
 import { initHistoryRestore } from "./ui/router-restore.js";
 import { initSheet } from "./ui/sheet.js";
 import { initRowLift } from "./ui/row-lift.js";
+import { isReorderRow } from "./ui/row-reorder.js";
 import { initSwipe } from "./ui/swipe.js";
 
 /* Was erst beim ersten Öffnen geholt wird. Nur diese Datei kennt die Pfade. */
@@ -124,7 +125,16 @@ function initShell() {
   initModalTop();
   initPullSearch();
   initPillTapReveal();
-  setLongPressMenus({ tab: openTabMenu, workspace: openWorkspaceMenu, entry: openEntryCtxMenu, copy: openCopyChoice });
+  /* Eine verschiebbare Zeile (Android) öffnet ihr Menü nur über die drei Punkte; gedrückt Halten verschiebt sie */
+  const unlessReorder = (open) => (row) => {
+    if (!isReorderRow(row)) open(row);
+  };
+  setLongPressMenus({
+    tab: openTabMenu,
+    workspace: unlessReorder(openWorkspaceMenu),
+    entry: unlessReorder(openEntryCtxMenu),
+    copy: openCopyChoice,
+  });
   initSwipe();
   initRowLift();
   initPageTools();

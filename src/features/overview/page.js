@@ -98,7 +98,7 @@ const emptyStates = {
 
 function listMarkup(entries, empty) {
   return entries.length
-    ? `<div class="workspace-list">${entries.map((entry) => entryRow(entry)).join("")}</div>`
+    ? `<div class="workspace-list" data-reorder="inbox">${entries.map((entry) => entryRow(entry)).join("")}</div>`
     : emptyState(empty);
 }
 
@@ -123,7 +123,7 @@ function renderFavorites() {
   dom.pageBody.innerHTML = filteredAway
     ? filterEmptyState()
     : spaces.length || entries.length
-      ? `<div class="workspace-list">${spaces
+      ? `<div class="workspace-list" data-reorder="favorites">${spaces
           .map((workspace) => workspaceRow(workspace, canEdit))
           .join("")}${entries.map((entry) => entryRow(entry)).join("")}</div>`
       : emptyState(emptyStates.favorites);

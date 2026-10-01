@@ -1,0 +1,76 @@
+/*
+ * Android-Fassung, Zeilen verschieben (Material 3 „Lists“, Zeilen umordnen):
+ * Hält man eine Zeile lange gedrückt und zieht, löst sie sich als Karte mit
+ * Schatten und getönter Fläche vom Rest der Liste und folgt dem Finger
+ * (src/ui/row-lift.js). An ihrem Platz bleibt eine getönte Lücke, die
+ * mitwandert (src/ui/row-reorder.js); die übrigen Zeilen zeigen statt der
+ * drei Punkte den Griff „=“. Nach dem Loslassen gilt die neue Reihenfolge.
+ * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
+ * Pfad: styles/android-reorder.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css, außer wo genannt)
+ * -----------------------------------
+ * --m3-reorder-radius        -> Rundung der gezogenen Zeile und der Lücke
+ * --m3-reorder-shadow        -> Schatten der gezogenen Zeile (Material 3: Höhe 3)
+ * --m3-reorder-slot-inset    -> Luft der Lücke zu Zeilen darüber und darunter
+ * --m3-secondary-container / --m3-on-secondary-container -> Fläche der gezogenen Zeile und Schrift darauf
+ * --m3-surface-container-high -> Tönung der Lücke
+ * --content-side (styles/tokens.css) -> Abstand der Lücke zum Seitenrand
+ */
+
+@media (max-width: 1023px) {
+  /* Die gezogene Zeile: gleiche Höhe wie die Zeile, aber als Karte. Fläche
+     deckend (statt des blassen Archiv-Looks aus styles/android-archive.css). */
+  [data-mobile-os="android"] .row-lift.is-reordering {
+    box-sizing: border-box; /* box-sizing: die Breite aus row-lift.js enthält den Seitenrand schon */
+    padding: 8px var(--content-side);
+    border-radius: var(--m3-reorder-radius);
+    background: var(--m3-secondary-container);
+    color: var(--m3-on-secondary-container);
+    box-shadow: var(--m3-reorder-shadow);
+    opacity: 1;
+  }
+
+  /* Die Kopie steht außerhalb der Liste, daher greift die Regel aus styles/android-list.css nicht: Pfeil auch hier weg */
+  [data-mobile-os="android"] .row-lift.is-reordering .chevron {
+    display: none;
+  }
+
+  /* Titel und Icon der Karte in der Schrift darauf */
+  [data-mobile-os="android"] .row-lift.is-reordering .icon:not(.chevron) {
+    color: var(--m3-on-secondary-container);
+  }
+
+  /* An der alten Stelle: statt der blassen Zeile eine getönte Lücke. Die
+     Zeile selbst wird unsichtbar, ihr Platz bleibt erhalten. */
+  [data-mobile-os="android"] .swipe.is-reorder-slot {
+    opacity: 1;
+  }
+
+  [data-mobile-os="android"] .swipe.is-reorder-slot .workspace-row {
+    visibility: hidden; /* visibility: behält die Höhe, zeigt aber nichts */
+  }
+
+  [data-mobile-os="android"] .swipe.is-reorder-slot .swipe-body::before {
+    content: "";
+    position: absolute; /* position: legt die Tönung hinter die unsichtbare Zeile */
+    inset: var(--m3-reorder-slot-inset) var(--content-side);
+    border-radius: var(--m3-reorder-radius);
+    background: var(--m3-surface-container-high);
+  }
+
+  /* Während des Ziehens zeigen alle Zeilen den Griff statt der drei Punkte */
+  [data-mobile-os="android"] .row-more .icon-drag {
+    display: none;
+  }
+
+  [data-mobile-os="android"] body.is-row-lifting .row-more .icon-dots,
+  [data-mobile-os="android"] .row-lift .row-more .icon-dots {
+    display: none;
+  }
+
+  [data-mobile-os="android"] body.is-row-lifting .row-more .icon-drag,
+  [data-mobile-os="android"] .row-lift .row-more .icon-drag {
+    display: block;
+  }
+}

@@ -12,6 +12,8 @@
  * -----------------------------------
  * entrySorts      -> wonach sich Einträge sortieren lassen, samt Wortlaut beider Richtungen
  * workspaceSorts  -> dasselbe für die Seite Arbeitsbereiche
+ * manualId / manualKinds -> „Eigene Reihenfolge“ (entsteht durch Verschieben einer Zeile, src/data/manual-order.js)
+ *                   und die Sammlungen, die sie anbieten
  * collectionSortDefaults -> womit jede Sammlung startet: Sortierung und Richtung
  *                   (asc: true = aufsteigend, also Älteste zuerst bzw. A bis Z)
  */
@@ -19,14 +21,21 @@
 import { emit, events } from "../core/bus.js";
 import { openStats } from "./opens.js";
 import { entriesOf, workspaceLabel } from "./queries.js";
+import { manualRank } from "./manual-order.js";
 import { workspaceRef } from "./refs.js";
 import { saveState, state } from "./state.js";
+
+/* „Eigene Reihenfolge“: kommt in die Auswahl der Sammlungen, in denen sich Zeilen verschieben lassen. */
+export const manualId = "manuell";
+export const manualKinds = ["inbox", "favorites", "resources", "workspaces"];
+const manualSort = { id: manualId, label: "Eigene Reihenfolge", icon: "list", up: "Von oben nach unten", down: "Von unten nach oben", asc: true };
 
 export const entrySorts = [
   { id: "erstellt", label: "Erstellt", icon: "plus-circle", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
   { id: "geaendert", label: "Zuletzt geändert", icon: "pencil", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
   { id: "geoeffnet", label: "Zuletzt geöffnet", icon: "history", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
   { id: "name", label: "Name", icon: "text", up: "A bis Z", down: "Z bis A", asc: true },
+  manualSort,
 ];
 
 export const workspaceSorts = [
@@ -34,6 +43,7 @@ export const workspaceSorts = [
   { id: "geoeffnet", label: "Zuletzt geöffnet", icon: "history", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
   { id: "name", label: "Name", icon: "text", up: "A bis Z", down: "Z bis A", asc: true },
   { id: "eintraege", label: "Einträge", icon: "list", up: "Wenigste zuerst", down: "Meiste zuerst", asc: false },
+  manualSort,
 ];
 
 /* Vorgaben so, wie die Listen bisher standen: Arbeitsbereiche und Archiv in
@@ -52,7 +62,8 @@ export const sortableCollections = Object.keys(collectionSortDefaults);
 
 /** Die Sortier-Optionen einer Sammlung. */
 export function collectionSortOptions(kind) {
-  return kind === "workspaces" ? workspaceSorts : entrySorts;
+  const options = kind === "workspaces" ? workspaceSorts : entrySorts;
+  return manualKinds.includes(kind) ? options : options.filter((option) => option.id !== manualId);
 }
 
 /** Die gültige Wahl einer Sammlung: { sort, asc }. */
@@ -120,14 +131,14 @@ const workspaceKeys = {
 };
 
 /** Arbeitsbereiche sortieren. */
-export function sortWorkspaces(list, sortId, asc) {
-  return sortList(list, sortId, asc, workspaceKeys, workspaceLabel);
+export function sortWorkspaces(list, sortId, asc, extraKeys = {}) {
+  return sortList(list, sortId, asc, { ...workspaceKeys, ...extraKeys }, workspaceLabel);
 }
 
 /** Einträge einer Sammlung nach ihrer Wahl sortieren. */
 export function sortCollectionEntries(kind, list) {
   const { sort, asc } = collectionSort(kind);
-  return sortEntries(list, sort, asc);
+  return sortEntries(list, sort, asc, { [manualId]: manualRank(kind, "e") });
 }
 
 /**
@@ -147,5 +158,5 @@ export function sortCollectionItems(kind, list, entryOf, nameOf) {
 export function sortCollectionWorkspaces(kind, list) {
   const { sort, asc } = collectionSort(kind);
   const fits = workspaceSorts.some((option) => option.id === sort);
-  return sortWorkspaces(list, fits ? sort : "erstellt", asc);
+  return sortWorkspaces(list, fits ? sort : "erstellt", asc, { [manualId]: manualRank(kind, "w") });
 }

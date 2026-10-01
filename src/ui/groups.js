@@ -21,6 +21,7 @@
 
 import { icon } from "../core/html.js";
 import { groupedLinks } from "../data/links.js";
+import { orderByManual } from "../data/manual-order.js";
 import { groupedEntriesOf } from "../data/queries.js";
 import { ui } from "../data/state.js";
 import { emptyState } from "./empty-state.js";
@@ -62,7 +63,7 @@ function linkScope(entry) {
 /** Eine Gruppe: Überschrift mit Anzahl und Pfeil, darunter ihr Inhalt.
     Kein Icon vor der Überschrift — jede Zeile darunter trägt schon das Icon
     ihres Typs, doppelt wäre es nur Unruhe. Eine Null wird nicht angezeigt. */
-function groupMarkup(scope, group, body, bodyClass) {
+function groupMarkup(scope, group, body, bodyClass, bodyAttrs = "") {
   const key = groupKey(scope, group.type);
   const open = !ui.collapsedGroups.has(key);
   const count = group.items.length ? `<span class="group-count">${group.items.length}</span>` : "";
@@ -73,16 +74,20 @@ function groupMarkup(scope, group, body, bodyClass) {
         ${count}
         ${icon("chevron", "group-chevron")}
       </button>
-      <div class="group-body ${bodyClass}"${open ? "" : " hidden"}>
+      <div class="group-body ${bodyClass}"${bodyAttrs}${open ? "" : " hidden"}>
         ${body}
       </div>
     </div>
   `;
 }
 
-/* Eine Gruppe als Zeilen — so sieht jede Liste in der App aus. */
+/* Eine Gruppe als Zeilen — so sieht jede Liste in der App aus. Ihre Zeilen
+   lassen sich verschieben (Android, src/ui/row-reorder.js); die Reihenfolge
+   merkt sich src/data/manual-order.js unter dem Schlüssel „g:“ + Gruppe. */
 function rowGroup(scope, group) {
-  return groupMarkup(scope, group, group.items.map((entry) => entryRow(entry)).join(""), "workspace-list");
+  const order = `g:${groupKey(scope, group.type)}`;
+  const rows = orderByManual(order, group.items).map((entry) => entryRow(entry)).join("");
+  return groupMarkup(scope, group, rows, "workspace-list", ` data-reorder="${order}"`);
 }
 
 /* Medien stehen nicht als Zeilen da: unter der Überschrift „Medien“ folgen

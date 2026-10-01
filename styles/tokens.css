@@ -61,7 +61,7 @@
  * styles/viewer.css          -> Dateiansicht: Foto, Video, Aufnahme und PDF
  * styles/drawing.css         -> Zeichenfläche und Werkzeugleiste
  * styles/video-player.css    -> YouTube-Player als dunkler Block an der Stelle einer Video-Karte (Eintrag, Lesezeichen)
- * styles/android.css, ios.css -> Fassungen Android/iOS; dazu android-tabs/-fab/-sheet/-archive/-view-btn/-entry/-list, ios-segmented/-menu, tokens-android/-ios.css
+ * styles/android.css, ios.css -> Fassungen Android/iOS; dazu android-tabs/-fab/-sheet/-archive/-view-btn/-entry/-list/-reorder, ios-segmented/-menu, tokens-android/-ios.css
  * styles/tokens-desk.css     -> die Werte der Desktop-Fassung (Spalten, Flächen, große Zahlen)
  * styles/desk.css            -> Desktop: Raster aus Seitenleiste, Reiterzeile, Seite und rechter Spalte; Zuklappen, Suchfeld, Eingabefeld unten
  * styles/desk-head.css       -> Desktop: Wortmarke mit Klapp-Knopf; Reiterzeile mit Zurück, Vorwärts und den vier Reitern

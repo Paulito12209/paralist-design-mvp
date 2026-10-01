@@ -50,6 +50,18 @@
  *                                 (nur Android (Experiment); Material 3 „Small FAB“: 40dp)
  * --m3-head-tools-pull         -> um so viel rückt das Symbol „Verknüpfen“ in der Kopfzeile näher
  *                                 an das Drei-Punkte-Menü (nur Android (Experiment))
+ * --m3-list-row-h              -> Mindesthöhe einer Listenzeile (Material 3: Liste mit Bild, 64dp)
+ * --m3-list-gap                -> Abstand zwischen Bild/Icon und Titel (Material 3: 16dp)
+ * --m3-list-leading            -> Größe des Bilds und der Icon-Fläche vor dem Titel
+ * --m3-list-icon               -> Größe des Icons darin (Material 3: 24dp)
+ * --m3-list-thumb-radius       -> Rundung der Vorschaubilder vor dem Titel
+ * --m3-swipe-action-w / -h     -> Breite und Höhe der Wisch-Knöpfe (hochkant, voll gerundet)
+ * --m3-swipe-action-gap        -> Abstand der Wisch-Knöpfe zueinander und zum Rand
+ * --m3-row-more-size           -> Tippfläche der drei Punkte rechts in der Zeile (Material 3: 48dp)
+ * --m3-reorder-radius          -> Rundung der gezogenen Zeile und der Lücke, wo sie herkam (styles/android-reorder.css)
+ * --m3-reorder-shadow          -> Schatten der gezogenen Zeile
+ * --m3-reorder-slot-inset      -> Luft der Lücke zu Zeilen darüber und darunter
+ * --m3-error / --m3-on-error   -> Wisch-Knopf „Löschen“ (Material 3: gefüllt in der Fehlerfarbe)
  */
 
 :root[data-mobile-os="android"] {
@@ -99,6 +111,10 @@
   --m3-swipe-action-w: 48px;
   --m3-swipe-action-h: 56px;
   --m3-swipe-action-gap: 8px;
+  --m3-row-more-size: 48px;
+  --m3-reorder-radius: 16px;
+  --m3-reorder-shadow: 0 6px 16px rgba(0, 0, 0, 0.22), 0 2px 4px rgba(0, 0, 0, 0.14);
+  --m3-reorder-slot-inset: 4px;
   --m3-error: #b3261c;
   --m3-on-error: #ffffff;
 }

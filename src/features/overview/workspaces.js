@@ -120,12 +120,12 @@ export function beginRenameWorkspace(id) {
   emit(events.dataChanged);
 }
 
-/** Das Menü einer Zeile (gedrückt halten oder Rechtsklick). */
-export function openWorkspaceMenu(button) {
+/** Das Menü einer Zeile (gedrückt halten, Rechtsklick oder die drei Punkte; `anchor` ist dann der Punkt). */
+export function openWorkspaceMenu(button, anchor = button) {
   const workspace = findWorkspace(button.dataset.openWorkspace);
   if (!workspace) return;
 
-  openCtxMenu(button, [
+  openCtxMenu(anchor, [
     /* Auf einer Sammlung steht „Auswählen“ ganz oben (src/features/overview/page-select.js) */
     ...pageSelectLead(button),
     { label: "Umbenennen", icon: "pencil", onSelect: () => beginRenameWorkspace(workspace.id) },

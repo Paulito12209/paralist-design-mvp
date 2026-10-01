@@ -8,7 +8,10 @@
  * die Zeile an die angemeldete Stelle weiter, sonst passiert nichts.
  *
  * Was angehoben werden darf und was beim Ablegen passiert, weiß diese Datei
- * nicht — das meldet die obere Schicht mit setRowLift() an.
+ * nicht — das meldet die obere Schicht mit setRowLift() an. Eine Zeile in
+ * einer Liste mit data-reorder darf immer angehoben werden: sie lässt sich
+ * dann auch verschieben (src/ui/row-reorder.js), und die Kopie sieht aus wie
+ * die „gezogene Zeile“ in Material 3.
  *
  * Damit es flüssig bleibt: die Kopie bewegt sich nur über `translate`, ihre
  * Maße werden einmal beim Anheben genommen, und das Ziel unter dem Finger
@@ -18,13 +21,16 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * liftBuzzMs   -> Länge des kurzen Vibrierens beim Anheben (0 = aus)
+ * --content-side (styles/tokens.css) -> so weit ragt die Kopie einer verschiebbaren Zeile links und rechts über die Zeile hinaus
  * clickBlockMs -> wie lange nach dem Ablegen ein Klick verworfen wird (Millisekunden)
  *
  * Aussehen der angehobenen Zeile und des Ziels: styles/android-archive.css.
  */
 
+import { cssNumber } from "../core/css-vars.js";
 import { dom } from "../core/dom.js";
 import { firedHoldTarget } from "./long-press.js";
+import { beginReorder, finishReorder, isReorderRow, updateReorder } from "./row-reorder.js";
 
 const liftBuzzMs = 10;
 const clickBlockMs = 400;
@@ -42,7 +48,7 @@ export function setRowLift(next) {
 
 /** Darf diese Zeile (das Ziel des langen Drückens) angehoben werden? */
 export function canLift(row) {
-  return Boolean(handler && row && handler.canLift(row));
+  return Boolean(row && (isReorderRow(row) || handler?.canLift(row)));
 }
 
 /** Läuft gerade ein Zug? */
@@ -62,6 +68,8 @@ function frame() {
   const { ghost, x, y, startX, startY } = lift;
   /* translate statt transform: so verschiebt das Schrumpfen über dem Ziel (scale) die Kopie nicht mit */
   ghost.style.translate = `${x - startX}px ${y - startY}px`;
+  /* Beim Verschieben rückt die Zeile am Rand nach; rollt die Seite, folgt gleich ein weiteres Bild */
+  if (lift.reorder && updateReorder(y)) lift.frame = requestAnimationFrame(frame);
   const zone = zoneAt(x, y);
   if (zone === lift.zone) return;
   lift.zone?.classList.remove("is-drop-over");
@@ -79,15 +87,19 @@ export function startLift(event, row) {
   const source = row.closest(".swipe") || row;
   const rect = row.getBoundingClientRect();
   const deviceRect = dom.device.getBoundingClientRect();
+  const reorder = isReorderRow(row);
+  /* Als gezogene Zeile reicht die Kopie über den Seitenrand hinaus, damit der Text nicht an ihrer Kante klebt */
+  const bleed = reorder ? cssNumber("--content-side", 16) : 0;
   const ghost = row.cloneNode(true);
   ghost.classList.add("row-lift");
+  if (reorder) ghost.classList.add("is-reordering");
   ghost.setAttribute("aria-hidden", "true");
-  ghost.style.left = `${rect.left - deviceRect.left}px`;
+  ghost.style.left = `${rect.left - deviceRect.left - bleed}px`;
   ghost.style.top = `${rect.top - deviceRect.top}px`;
-  ghost.style.width = `${rect.width}px`;
+  ghost.style.width = `${rect.width + 2 * bleed}px`;
   ghost.style.height = `${rect.height}px`;
   /* Über dem Ziel schrumpft die Kopie zum Finger hin, nicht zu ihrer Mitte */
-  ghost.style.transformOrigin = `${event.clientX - rect.left}px ${event.clientY - rect.top}px`;
+  ghost.style.transformOrigin = `${event.clientX - rect.left + bleed}px ${event.clientY - rect.top}px`;
   dom.device.append(ghost);
   source.classList.add("is-lift-source");
   document.body.classList.add("is-row-lifting");
@@ -103,9 +115,11 @@ export function startLift(event, row) {
     y: event.clientY,
     zone: null,
     frame: 0,
+    reorder,
   };
+  if (reorder) beginReorder(row);
   if (liftBuzzMs && navigator.vibrate) navigator.vibrate(liftBuzzMs);
-  handler.start();
+  handler?.start();
   lift.frame = requestAnimationFrame(frame);
 }
 
@@ -114,7 +128,7 @@ export function startLift(event, row) {
    Zug kann das letzte Bild noch fehlen. */
 function endLift(drop) {
   if (!lift) return;
-  const { row, source, ghost } = lift;
+  const { row, source, ghost, reorder } = lift;
   const zone = drop ? zoneAt(lift.x, lift.y) : null;
   lift.zone?.classList.remove("is-drop-over");
   cancelAnimationFrame(lift.frame);
@@ -124,8 +138,10 @@ function endLift(drop) {
   document.body.classList.remove("is-row-lifting");
   /* Der Klick nach dem Loslassen gehört zum Zug, nicht zur Zeile oder zum Knopf darunter */
   blockClickUntil = Date.now() + clickBlockMs;
-  if (drop && zone) handler.drop(row, zone);
-  handler.end();
+  /* Über einem Ziel (Archiv) bleibt die Reihenfolge, wie sie war; sonst gilt der neue Platz */
+  if (reorder) finishReorder(drop && !zone);
+  if (drop && zone) handler?.drop(row, zone);
+  handler?.end();
 }
 
 function onPointerMove(event) {

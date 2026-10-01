@@ -89,7 +89,7 @@ export function renderWorkspaceCollection() {
   const filteredAway = !rows && tabWorkspaces().length > 0;
   const empty = filteredAway ? filterEmptyState() : rows ? "" : emptyState(emptyTab);
   dom.pageBody.innerHTML = `${pillsRowMarkup()}${empty}
-    <div class="workspace-list">${rows}${workspaceTailMarkup(Boolean(rows) || filteredAway)}</div>`;
+    <div class="workspace-list" data-reorder="workspaces">${rows}${workspaceTailMarkup(Boolean(rows) || filteredAway)}</div>`;
   dom.pageBody.querySelector(".collection-pills").scrollLeft = scrolled;
   afterTabsRender();
   focusWorkspaceName();

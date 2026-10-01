@@ -46,6 +46,16 @@ export function swipeAction(action, label, iconName, tone = action) {
 }
 
 /**
+ * Die drei Punkte rechts in der Zeile (Android-Fassung): ein Tipp öffnet das
+ * Menü der Zeile, das sonst beim gedrückt Halten aufging. Beim Verschieben
+ * einer Zeile wechselt das Zeichen zum Griff „=“ (styles/android-list.css).
+ * Ein span mit role="button": ein Knopf im Zeilen-Knopf wäre ungültiges HTML.
+ */
+function rowMore() {
+  return `<span class="row-more" role="button" tabindex="0" data-row-more aria-label="Mehr">${icon("dots", "icon-dots")}${icon("drag-handle", "icon-drag")}</span>`;
+}
+
+/**
  * Bild vor dem Titel: kleine Vorschau bei Fotos, Videos und Zeichnungen,
  * sonst das Typ-Icon. Medien zeigen ihre Art statt des allgemeinen Icons.
  */
@@ -139,6 +149,7 @@ export function entryRow(entry, prefix = "", actions = entryActions(entry, true)
         ${prefix}
         <span${done ? ' class="is-done"' : ""}>${escapeHtml(entry.title)}</span>
         ${icon("chevron", "chevron")}
+        ${rowMore()}
       </button>
     `
   );
@@ -187,6 +198,7 @@ export function workspaceRow(workspace, canEdit = false, actions = workspaceActi
         ${favoriteGlyph(icon(workspaceIcon(workspace)), workspace.favorite)}
         <span>${escapeHtml(workspaceLabel(workspace))}</span>
         ${icon("chevron", "chevron")}
+        ${rowMore()}
       </button>
     `
   );

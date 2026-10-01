@@ -98,7 +98,7 @@ export function renderResources() {
   /* Monatsüberschriften nur, solange nach dem Anlegen sortiert ist — sonst
      stünde derselbe Monat mehrmals zwischen den Zeilen. */
   const byMonth = collectionSort("resources").sort === "erstellt";
-  const rows = (items) => `<div class="workspace-list">${items.map((entry) => entryRow(entry)).join("")}</div>`;
+  const rows = (items) => `<div class="workspace-list" data-reorder="resources">${items.map((entry) => entryRow(entry)).join("")}</div>`;
   let body = emptyState({
     ...(emptyArt[active] || emptyArt.all),
     action: { label: emptyLabels[active] || emptyLabels.all },
