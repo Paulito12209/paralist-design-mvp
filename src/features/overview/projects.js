@@ -4,7 +4,8 @@
  * ihren eigenen Behälter: oben die Pillen der Ansichten
  * (src/features/overview/project-views.js), darunter die Projekte der
  * gewählten Ansicht als schlichte Zeilen, die Zeile „Projekt hinzufügen“ und
- * „Zum Archiv“ mit der Pille Projekte. Über der Navigation hängt die Karte
+ * „Zum Archiv“ mit der Pille Projekte. Ein Tipp in die freie Fläche unter der
+ * Liste legt ein Projekt direkt an (src/features/overview/project-inline.js). Über der Navigation hängt die Karte
  * „Ansicht“ mit Sortieren und Filtern (src/features/overview/project-settings.js).
  * In der Android-Fassung steht über der Liste eine Werkzeugzeile („Archiv (n)“,
  * Sortieren, Filtern — src/features/overview/project-card.js); die Pille
@@ -37,6 +38,7 @@ import { createViewPanel } from "../../ui/view-panel.js";
 import { isViewActive } from "../../ui/views.js";
 import { handleProjectSettingsClick, projectSettingsMarkup } from "./project-settings.js";
 import { handleProjectCardClick, projectCardHead } from "./project-card.js";
+import { initProjectInline } from "./project-inline.js";
 import { afterProjectViewsRender, initProjectViews, isProjectsPageOpen, projectViewsMarkup } from "./project-views.js";
 
 /* Noch kein einziges Projekt: Emblem, Satz und die Pille zum Anlegen. Die
@@ -140,6 +142,7 @@ function onCardClick(event) {
 /** Anmelden: die Übersicht frischt ihre Projekte auf, solange sie offen ist. */
 export function initProjects() {
   initProjectViews();
+  initProjectInline();
   dom.projectList.addEventListener("click", onCardClick);
   dom.pageBody.addEventListener("click", onCardClick);
   panel = createViewPanel({

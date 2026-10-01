@@ -83,6 +83,12 @@
   border-bottom: 0;
 }
 
+/* Solange ein Projekt direkt in der Liste getippt wird
+   (src/features/overview/project-inline.js), ist die Zeile darunter überflüssig */
+.workspace-list.is-adding > .workspace-add {
+  display: none;
+}
+
 .workspace-row.workspace-add .icon:not(.chevron) {
   width: var(--icon-folder-plus-width);
   height: var(--icon-folder-plus-height);

@@ -9,6 +9,9 @@
  * Lesezeichen ein Lesezeichen. Ein Tipp öffnet das Archiv mit der Pille, die
  * zur Seite passt.
  *
+ * Auf der Übersicht und der Seite Projekte steht er nicht: dort führt schon
+ * „Archiv (n)“ über der Liste ins Archiv (src/features/overview/project-card.js).
+ *
  * Er ist zugleich Ziel zum Ablegen: hält man eine Zeile lange gedrückt und
  * zieht dann (src/ui/row-lift.js), erscheint der Knopf auch bei leerem
  * Archiv — sonst ließe sich der erste Eintrag nie hineinziehen. Loslassen
@@ -71,9 +74,15 @@ function hasArchived() {
   return archivedForView(currentView(), ui.currentPage).length > 0;
 }
 
-/* Sichtbar schalten. Ob gerade die Android-Fassung gilt, entscheidet das Stylesheet. */
+/* Übersicht und Seite Projekte haben „Archiv (n)“ über der Liste — dort wäre der Knopf doppelt. */
+function hasOwnArchiveLink() {
+  return currentView() === "home" || (currentView() === "page" && ui.currentPage?.kind === "projects");
+}
+
+/* Sichtbar schalten. Ob gerade die Android-Fassung gilt, entscheidet das Stylesheet.
+   Beim Ziehen einer Zeile erscheint er überall, wo er Ziel sein kann. */
 function sync() {
-  const shown = Boolean(archivePill()) && (lifting || hasArchived());
+  const shown = Boolean(archivePill()) && (lifting || (hasArchived() && !hasOwnArchiveLink()));
   button.classList.toggle("is-shown", shown);
 }
 

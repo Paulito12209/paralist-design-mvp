@@ -99,6 +99,32 @@ export function createTaskInline(title, column) {
   return entry;
 }
 
+/**
+ * Ein Projekt direkt in der Liste anlegen — nur mit Titel (Tipp in die freie
+ * Fläche unter den Projekten, src/features/overview/project-inline.js).
+ * `viewId` ist die gewählte Ansicht: das Projekt bekommt deren Ort bzw. landet
+ * in ihrer Auswahl, genau wie über „Projekt hinzufügen“ (applyProjectDraft).
+ */
+export function createProjectInline(title, viewId) {
+  const entry = {
+    id: state.nextEntryId++,
+    type: "projekt",
+    title,
+    body: "",
+    places: [],
+    links: [],
+    archived: false,
+    favorite: false,
+    createdAt: Date.now(),
+  };
+  ui.projectDraftView = viewId;
+  applyEntryDefaults(entry);
+  state.entries.push(entry);
+  awardXp("created", "projekt", title);
+  commit();
+  return entry;
+}
+
 /*
  * Wechselt eine Aufgabe auf „erledigt“, wird das wie beim Archivieren im
  * XP-Protokoll vermerkt (xpKinds.done). `doneAwarded` merkt sich, dass es die

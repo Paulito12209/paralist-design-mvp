@@ -17,5 +17,15 @@ von 1024 px. Zusätzlich zu den Flows in `README.md`.
 - Reiter gedrückt halten (Projekte, Aufgaben, Arbeitsbereiche): das Menü kommt
   als Blatt von unten über die ganze Breite, ohne Griff; Schleier, Ziehen und
   Zurück schließen es. Umbenennen startet im Namensfeld, Löschen ist rot.
+- Archiv-Knopf links unten fehlt auf Übersicht und Seite Projekte (dort gibt
+  es „Archiv (n)“); beim Ziehen einer Zeile erscheint er als Ablageziel.
+- Tipp in die freie Fläche unter dem letzten Projekt bis zur Leiste: neue Zeile
+  „Neues Projekt“ mit Cursor, „Projekt hinzufügen“ verschwindet so lange.
+  Enter legt an und öffnet die nächste Zeile, leer verlassen entfernt sie. In
+  einer gefilterten Ansicht landet das Projekt in dieser Ansicht. Scrollen
+  legt nichts an.
+- Alle Blätter von unten (Auswahl, Verknüpfen, Icon wählen, Sortieren, Typ
+  ändern, Filtern, Datum): ganze Breite, oben gerundet, kein ✕, kein Griff;
+  Haken rechts in der Akzentfarbe, „Fertig“ als gefüllter Knopf.
 - Eine Zeile gedrückt halten: keine blaue Fläche von Chrome, sondern die eigene
   Tönung; danach hebt sich die Zeile zum Verschieben.

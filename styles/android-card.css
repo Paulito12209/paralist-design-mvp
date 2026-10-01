@@ -7,7 +7,7 @@
  * Kacheln und Suchleiste vorbehalten. Die Reiterzeile darüber behält ihre
  * Trennlinie (styles/android-tabs.css), nur das Symbol „Ansicht“ rechts
  * entfällt — Umbenennen, Löschen & Co. kommen beim Halten eines Reiters als
- * Blatt von unten (styles/android-menu-sheet.css).
+ * Blatt von unten (styles/android-bottom-sheet.css).
  * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px;
  * die Werkzeugzeile ist in den anderen Fassungen unsichtbar.
  * Pfad: styles/android-card.css

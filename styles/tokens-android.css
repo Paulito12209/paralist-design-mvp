@@ -68,7 +68,7 @@
  * --m3-text-btn-h              -> Höhe des Text-Knopfs „Archiv (n)“ (Material 3 „Text button“: 40dp)
  * --m3-text-btn-pad            -> Innenabstand links und rechts darin (Material 3: 12dp)
  * --m3-state-pressed           -> wie stark eine Zeile beim Drücken getönt wird (Material 3 „state layer“: 12%)
- * --m3-menu-sheet-pad          -> Luft über und unter den Zeilen im Blatt beim Halten eines Reiters
+ * --m3-menu-sheet-pad          -> Luft über der ersten und unter der letzten Zeile in einem Auswahl-Blatt
  */
 
 :root[data-mobile-os="android"] {

@@ -22,9 +22,8 @@
  * des Hakens eine blasse Zahl rechts hin: bei mehreren gewählten Aufgaben,
  * wie viele davon diesen Wert schon haben.
  *
- * Spielart `m3` (drittes Argument): ein Blatt nach Material 3 ohne Titel und
- * ohne Griff, über die ganze Breite — das Menü beim Halten eines Reiters in
- * der Android-Fassung (src/ui/tab-menu.js, styles/android-menu-sheet.css).
+ * In der Android-Fassung trägt das Blatt die Klasse is-m3 und sieht aus wie
+ * ein Material-3-Blatt über die ganze Breite (styles/android-bottom-sheet.css).
  *
  * Mit Tabs (das Blatt einer Aufgabe): oben Icon und Name, eine Trennlinie
  * über die ganze Breite, darunter Pillen. Antippen oder waagerecht wischen
@@ -45,6 +44,7 @@ import { escapeHtml, icon } from "../core/html.js";
 import { closeCtxMenu } from "./ctx-menu.js";
 import { openInfoDialog } from "./info-dialog.js";
 import { bindModalPull } from "./modal-pull.js";
+import { isMobileOs } from "./platform.js";
 import { initPillSwipe, revealActive } from "./pill-swipe.js";
 
 let actions = [];
@@ -164,12 +164,12 @@ function renderTabs(previous) {
 /**
  * Blatt mit Titel und Optionen öffnen.
  * extra (optional): icon und iconColor vor dem Titel; tabs, tab und onTab(id)
- * für Pillen über der Liste — onTab öffnet das Blatt mit dem neuen Tab neu;
- * m3: true für das Blatt nach Material 3 (siehe oben).
+ * für Pillen über der Liste — onTab öffnet das Blatt mit dem neuen Tab neu.
  */
-export function openSheet(title, options, { icon: titleIcon, iconColor, tabs, tab, onTab, m3 = false } = {}) {
+export function openSheet(title, options, { icon: titleIcon, iconColor, tabs, tab, onTab } = {}) {
   closeCtxMenu();
-  dom.sheet.classList.toggle("is-m3", m3);
+  /* Beim Öffnen gefragt, nicht einmal beim Start: die Fassung lässt sich in den Einstellungen wechseln */
+  dom.sheet.classList.toggle("is-m3", isMobileOs("android"));
   /* Nur ein Wechsel im offenen Blatt gleitet, nicht das erste Öffnen */
   const previous = tabbed && tabs && !dom.sheet.hidden ? tabbed.tab : null;
   tabbed = tabs ? { tabs, tab, onTab } : null;
