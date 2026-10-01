@@ -2,10 +2,7 @@
  * Hochklappen der Karte „Details“ auf einer Eintragsseite — wie die Karte
  * „Ansicht“ auf der Aufgaben-Seite: ein Tipp auf „Details“ oder
  * das Symbol rechts im Kopf holt die Karte über die Navigation, ein zweiter
- * Tipp legt sie zurück. In der Fassung „Android (Experiment 2: Details)“
- * steht dasselbe Symbol neben den Reitern (entry-tools.js); die Seite trägt
- * den Zustand als Klasse is-details-lifted, damit das Stylesheet auch dieses
- * Symbol drehen kann.
+ * Tipp legt sie zurück.
  *
  * Die Seite selbst bewegt sich dabei nicht: die Karte gleitet nur als Ebene
  * über den Text (transform). Sie hört immer unter dem Titel auf — ist er
@@ -21,6 +18,9 @@
  * Karte wieder zurück — sie hinge sonst losgelöst über einer anderen Stelle.
  * Gemessen wird nur beim Umschalten und wenn sich der Inhalt der Karte
  * ändert, nie beim Scrollen.
+ *
+ * Schwebt über der Leiste ein Knopf (Plus-Knopf der Android-Fassung), endet
+ * die hochgeklappte Karte über ihm — sonst läge er auf ihren letzten Zeilen.
  * Pfad: src/features/entry/entry-lift.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -59,6 +59,15 @@ function coveredFrom() {
   return rect && rect.height ? rect.top : dom.content.getBoundingClientRect().bottom;
 }
 
+/* Bis hierhin darf die Karte nach unten reichen: über der Navigation und über
+   dem Plus-Knopf, falls er zu sehen ist (nur in der Android-Fassung; sonst
+   ist er ausgeblendet und hat keine Höhe). */
+function floor() {
+  const fab = dom.navShell?.querySelector(".m3-fab")?.getBoundingClientRect();
+  const covered = coveredFrom();
+  return fab && fab.height ? Math.min(covered, fab.top) : covered;
+}
+
 /* Höher als bis hierhin darf die Karte nicht: unter dem Titel, und nie in die Kopfzeile. */
 function ceiling() {
   const head = el("entry-head").getBoundingClientRect().bottom;
@@ -74,7 +83,7 @@ function ceiling() {
 function place() {
   const top = card.offsetParent.getBoundingClientRect().top + card.offsetTop;
   const full = card.scrollHeight;
-  const bottom = coveredFrom() - cssNumber("--tasks-panel-gap", 12);
+  const bottom = floor() - cssNumber("--tasks-panel-gap", 12);
   const limit = ceiling();
   const target = Math.max(limit, bottom - full);
   shift = Math.max(0, top - target);
@@ -91,11 +100,7 @@ function place() {
 function setLifted(next) {
   lifted = next;
   card.classList.toggle("is-lifted", next);
-  /* Beide Symbole, die die Karte holen — im Kopf der Karte und neben den
-     Reitern —, zeigen denselben Zustand */
-  const view = el("view-entry");
-  view.classList.toggle("is-details-lifted", next);
-  view.querySelectorAll(".details-toggle").forEach((toggle) => toggle.setAttribute("aria-expanded", String(next)));
+  card.querySelector(".details-toggle").setAttribute("aria-expanded", String(next));
   if (next) {
     liftScroll = dom.content.scrollTop;
     place();
@@ -157,11 +162,6 @@ function onTouchEnd() {
   card.classList.remove("is-dragging");
   if (done.dy >= SNAP_PX) setLifted(false);
   else card.style.transform = `translateY(${-shift}px)`;
-}
-
-/** Ist die Karte gerade hochgeklappt? */
-export function isLifted() {
-  return lifted;
 }
 
 /** Karte hoch- bzw. zurückklappen. */

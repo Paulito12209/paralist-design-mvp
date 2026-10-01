@@ -41,7 +41,8 @@ export function coveredFrom() {
 
 /**
  * Ein Beobachter für eine Karte: sie bekommt „is-revealed“, sobald ihre
- * Kennzahlen oberhalb dessen auftauchen, was unten über der Seite liegt.
+ * Kennzahlen oberhalb dessen auftauchen, was unten über der Seite liegt, und
+ * behält es, solange sie oben aus dem Bild gescrollt sind.
  * Der Rand des Beobachters zieht genau diese verdeckte Zone vom unteren Rand
  * der Anzeigefläche ab — und einen Pixel mehr: beim Öffnen beginnen die
  * Kennzahlen genau an dieser Kante, und eine bloße Berührung zählt für den
@@ -58,10 +59,20 @@ export function revealWatcher(card) {
     if (observer && next === margin) return;
     if (observer) observer.disconnect();
     margin = next;
-    observer = new IntersectionObserver(([hit]) => card.classList.toggle("is-revealed", hit.isIntersecting), {
+    /* Sichtbar heißt: Kennzahlen oder Abschnitte stehen im freien Bereich —
+       oder die Kennzahlen sind schon oben hinausgescrollt. Beobachtet werden
+       beide: ein schneller Wisch springt sonst in einem Bild an den
+       Kennzahlen vorbei, der Beobachter meldet keinen Wechsel, und die Karte
+       bliebe leer. */
+    const seen = new Map();
+    const reveal = (hits) => {
+      hits.forEach((hit) => seen.set(hit.target, hit.isIntersecting || hit.boundingClientRect.top < hit.rootBounds.top));
+      card.classList.toggle("is-revealed", [...seen.values()].some(Boolean));
+    };
+    observer = new IntersectionObserver(reveal, {
       root: dom.content,
       rootMargin: next,
     });
-    observer.observe(card.querySelector(".details-stats"));
+    card.querySelectorAll(".details-stats, .details-list").forEach((part) => observer.observe(part));
   };
 }

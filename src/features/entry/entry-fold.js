@@ -116,11 +116,8 @@ export function layoutEntryFold() {
      einer Zeichnung dazu die Werkzeugleiste. Gemessen statt aus dem CSS
      gelesen — so zählt alles mit, was dort gerade steht. Über offsetTop,
      nicht über die Lage auf dem Schirm: gleitet die Karte gerade zurück
-     (entry-lift.js), zählte ihre Verschiebung sonst mit. Ist die Karte
-     gar nicht in der Fläche — die Fassung „Android (Experiment 2: Details)“
-     zeigt sie nur hochgeklappt (styles/android-details-top.css) —, steht
-     nichts dazwischen, und ihr Kopf misst null: der Text reicht bis zur Leiste. */
-  const between = card.offsetParent ? card.offsetTop - fold.offsetTop - fold.offsetHeight : 0;
+     (entry-lift.js), zählte ihre Verschiebung sonst mit. */
+  const between = card.offsetTop - fold.offsetTop - fold.offsetHeight;
   const covered = coveredFrom();
   const cardTop = covered - PEEK_BELOW_HEAD_PX - head.offsetHeight;
   if (!watchReveal) watchReveal = revealWatcher(card);
