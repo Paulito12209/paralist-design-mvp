@@ -21,6 +21,7 @@
  * --m3-fab-gap                -> Abstand des Plus-Knopfs zur Leiste (hier wieder die gewohnte Höhe)
  * --head-btn-size             -> Tippfläche des Ketten-Symbols in der Kopfzeile; um so viel rückt
  *                                auch die Kategorie mittig nach (styles/tokens.css)
+ * --m3-head-tools-pull        -> um so viel rückt das Ketten-Symbol näher an das Drei-Punkte-Menü
  * --page-tool-size / --page-tool-icon -> Tippfläche und Symbol neben den Reitern (styles/tokens.css)
  * --tasks-panel-slide         -> wie schnell die Karte „Details“ kommt und geht (styles/tokens-pages.css)
  */
@@ -118,11 +119,12 @@
   [data-mobile-variant="details-oben"] .entry-link-btn {
     display: grid;
     margin-left: 0;
+    margin-right: calc(-1 * var(--m3-head-tools-pull));
   }
 
   /* Rechts stehen jetzt zwei Knöpfe, links nur der Zurück-Pfeil: dieselbe
      Breite links als Luft, damit die Kategorie genau mittig bleibt */
   [data-mobile-variant="details-oben"] #entry-back {
-    margin-right: var(--head-btn-size);
+    margin-right: calc(var(--head-btn-size) - var(--m3-head-tools-pull));
   }
 }

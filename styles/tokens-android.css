@@ -49,6 +49,8 @@
  *                                 seinen Reiter heran (nur Experiment 2: Details)
  * --m3-tab-group-gap           -> zusätzliche Luft zwischen Kopieren-Symbol und dem Reiter
  *                                 „Verknüpfte Einträge“ (nur Experiment 2: Details)
+ * --m3-head-tools-pull         -> um so viel rückt das Symbol „Verknüpfen“ in der Kopfzeile näher
+ *                                 an das Drei-Punkte-Menü (nur Experiment 2: Details)
  */
 
 :root[data-mobile-os="android"] {
@@ -88,6 +90,7 @@
   --m3-view-btn-size: 40px;
   --m3-tab-tool-pull: 8px;
   --m3-tab-group-gap: 8px;
+  --m3-head-tools-pull: 8px;
 }
 
 @media (prefers-color-scheme: dark) {
