@@ -20,6 +20,11 @@ Mehrere Sitzungen laufen parallel, jede an genau **einer** Idee oder einem Probl
 5. Vergib einen kurzen Titel im Format `JJJJ-MM-TT-kurztitel`
    (z. B. `2026-10-02-login-button-fix`). Diesen Titel nutzt du für Branch-Namen
    (falls du ihn wählen kannst) und für die spätere Doku-Datei.
+6. Hole `origin/main` (`git fetch origin main`) und beginne deinen Branch dort,
+   nicht auf einem älteren Stand. Lies außerdem die offenen Pull Requests
+   (Nummer, Titel): Baut einer schon an derselben Stelle der App, sag es mir,
+   bevor du anfängst — zwei Lösungen für dasselbe Problem lassen sich später
+   nicht zusammenführen.
 
 ## 2. Während der Arbeit
 
@@ -30,6 +35,16 @@ Mehrere Sitzungen laufen parallel, jede an genau **einer** Idee oder einem Probl
 - Wenn eine Änderung zentrale, gemeinsam genutzte Dateien betreffen muss
   (z. B. `styles/tokens.css`, `src/main.js`, `index.html`, `src/ui/router.js`,
   `CLAUDE.md`, der Skill), weise im Review ausdrücklich darauf hin.
+- **Ein Thread, ein Branch, ein Ordner.** Arbeite nur in deinem eigenen Branch,
+  nie in dem einer anderen Sitzung. Zeigt `git status` Dateien, die nicht zu
+  deiner Aufgabe gehören, fass sie nicht an und stage sie nicht.
+  `python3 tools/version.py` erst laufen lassen, wenn `git status` nur deine
+  Dateien zeigt — sonst zählt der Versionsstempel fremde Dateien mit.
+- **Vor dem Review `origin/main` in deinen Branch holen**
+  (`git fetch origin main && git merge origin/main`). Einen Konflikt in
+  `src/data/version.js` löst `python3 tools/version.py`; andere Konflikte löst
+  du nach der Doku in `docs/changes/` der betroffenen Änderung und nennst sie im
+  Review. So kommt dein PR ohne Konflikt beim Git Commit Manager an.
 - **Noch nicht committen und nicht pushen.** Erst nach meiner Freigabe (Abschnitt 4).
 - **Noch keine Doku-Datei anlegen.** Doku entsteht erst nach der Freigabe.
 - **Stop-Hook der Cloud-Umgebung:** Am Ende jeder Antwort meldet ein Hook
@@ -71,7 +86,8 @@ Die Freigabe erfolgt mit Formulierungen wie „passt“, „freigegeben“ oder
 4. Commit-Message im Format:
    `JJJJ-MM-TT-kurztitel: kurze Beschreibung der Änderung`
 5. Pushe den Branch (`git push -u origin <branch>`) und erstelle einen
-   Pull Request mit der Doku als Beschreibung.
+   Pull Request mit der Doku als Beschreibung. Der PR-Titel ist die
+   Commit-Message, also mit Beschreibung hinter dem Doppelpunkt.
 
 Wenn ich die Änderung ablehne, wird **nichts** dokumentiert und **nichts**
 committet.
@@ -109,8 +125,14 @@ Die verbindlichen Regeln stehen in `.claude/skills/paralist-clean-code/SKILL.md`
 Die harten Punkte:
 
 1. **Maximal 400 Zeilen je Datei** — wird eine Datei größer, vorher teilen.
+   Hat eine Datei, die du änderst, schon mehr als 360 Zeilen, teile sie zuerst
+   in einem eigenen Schritt und sag es im Review.
 2. **Struktur einhalten:** `src/core → src/data → src/ui → src/features|src/shell`,
    Stile je Bereich unter `styles/`, alle Werte in `styles/tokens.css`.
+   **Jede neue CSS-Datei steht an drei Stellen:** `<link>` in `index.html`,
+   Dateiliste im Kopf von `styles/tokens.css`, Versionsstempel über
+   `tools/version.py`. Soll eine Android-Datei eine andere Android-Datei
+   überstimmen, wird sie in `index.html` **nach** ihr geladen.
 3. **Kommentar-Header in jeder Datei** mit Pfad und allen anpassbaren Werten,
    auf Deutsch, in Alltagssprache.
 4. **Performance:** große Bereiche über `src/core/lazy.js` nachladen, nur die
@@ -135,27 +157,43 @@ mit dem Datum des Tages, an dem sie angelegt wurde (Berliner Zeit).
   mit dem Werkzeug `set_session_title` auf dieses Format setzen. Danach
   `origin/main` holen und die offenen Pull Requests auflisten (Nummer, Titel,
   Branch), damit ich sie nach **Nummer** benennen kann.
-- **Ich nenne die Threads nach ihrer PR-Nummer** („merge 66, 67 und 70“).
-  Fehlt eine Nummer oder ist sie mehrdeutig, einmal kurz nachfragen.
-- **Bei jedem Wiederkommen** („merge jetzt die neuen“, „alle außer 68“):
+- **Ich nenne die Threads nach ihrer PR-Nummer** („merge 66, 67 und 70“) oder
+  sage **„merge alle offenen“** — dann gelten alle offenen Pull Requests, auch
+  die, bei denen GitHub einen Konflikt anzeigt. Fehlt eine Nummer oder ist sie
+  mehrdeutig, einmal kurz nachfragen.
+- **Bei jedem Wiederkommen** („merge alle offenen“, „alle außer 68“):
   erst `origin/main` neu holen und die Liste der offenen PRs frisch ziehen,
   nicht den alten Stand aus dem Gedächtnis verwenden.
 
 Ablauf je Durchgang:
 
 1. Lies zuerst die zugehörigen Dateien in `docs/changes/` der genannten PRs.
-2. Führe die Branches **einzeln und nacheinander** zusammen, nicht alle auf
-   einmal. Nach jedem Merge `python3 tools/check.py` — muss „alles in Ordnung“
-   melden, sonst stoppen.
-3. Bei Konflikten: Stoppe, erkläre den Konflikt kurz mit Bezug auf die Doku
-   beider Änderungen und schlage eine Lösung vor, bevor du sie umsetzt.
-   Konflikt in `src/data/version.js`: einfach `python3 tools/version.py`
-   erneut laufen lassen und die ganze Datei stagen.
-4. Liste am Ende auf, welche PRs (Nummer + Titel) übernommen und welche
-   ausgelassen wurden, und warum.
+   Prüfe je PR: genau **ein** Commit über `origin/main` und genau **eine** neue
+   Doku-Datei. Trifft das nicht zu, haben zwei Sitzungen denselben Branch
+   benutzt — dann jeden Commit einzeln mit seiner Doku behandeln und mich
+   darauf hinweisen.
+2. Baut ein PR ohne Konflikt auf dem aktuellen `main` auf, merge ihn direkt auf
+   GitHub. Sonst führe die Branches **einzeln und nacheinander** lokal in den
+   Sammel-Branch zusammen, nicht alle auf einmal, und lege danach **einen**
+   Sammel-PR nach `main` an, dessen Beschreibung PR-Nummern, Konflikte und
+   Prüfung nennt. Nach jedem Merge `python3 tools/check.py` — muss „alles in
+   Ordnung“ melden, sonst stoppen.
+3. Bei Konflikten: Lies die Doku beider Änderungen und übernimm **beide
+   Absichten**. Haben zwei PRs dasselbe gebaut, behalte die Lösung, die schon
+   in `main` ist, und schreib einen kurzen Abschnitt „Nachtrag beim
+   Zusammenführen“ in die Doku-Datei des anderen PRs. Konflikt in
+   `src/data/version.js`: `python3 tools/version.py` laufen lassen und die
+   ganze Datei stagen. Frag nur nach, wenn sich zwei Änderungen wirklich
+   widersprechen und jede Lösung Verhalten verliert.
+4. Nach den Merges die App im Browser bei 375 px öffnen (hell und dunkel,
+   Konsole leer) und die geänderten Stellen einmal ansehen.
+5. Liste am Ende auf, welche PRs (Nummer + Titel) übernommen und welche
+   ausgelassen wurden, und warum. Nenne je Konflikt: welche Dateien, was aus
+   welchem PR übernommen wurde, was ich am Gerät testen sollte.
 
 Diese Sitzung schreibt selbst keinen Code und braucht keine eigene Doku-Datei;
-die Doku steckt in den gemergten PRs.
+die Doku steckt in den gemergten PRs. Ausnahme: Änderungen an `CLAUDE.md` oder
+am Skill bekommen wie jede Änderung eine Doku-Datei.
 
 ## 7. Entwicklungsserver
 
@@ -165,6 +203,23 @@ die Doku steckt in den gemergten PRs.
 
 Kein Build-Schritt, keine Abhängigkeiten: die App lädt als ES-Module direkt im
 Browser.
+
+### Sitzungen anlegen und Worktrees aufräumen (Notiz für mich)
+
+Neue Arbeits-Sitzungen in der **Cloud** starten oder lokal mit Haken
+**„Worktree“**. Nur so hat jeder Thread seinen eigenen Ordner und Branch; zwei
+Threads im selben Ordner schreiben sonst in denselben PR.
+
+Lokale Worktrees liegen unter `.claude/worktrees/` und bleiben nach dem Mergen
+stehen. Aufräumen im Projektordner, wenn die Threads fertig sind:
+
+```
+git worktree list
+git worktree remove .claude/worktrees/<name>
+git worktree prune
+git checkout main
+git pull
+```
 
 ## 8. Allgemein
 

@@ -233,7 +233,8 @@ Der Ablauf steht in `CLAUDE.md`, Abschnitte 2–4. Kurz:
 - **Zusammenführen nur in der Sammel-Sitzung „Git Commit Manager JJJJ-MM-TT“**
   (CLAUDE.md, Abschnitt 6): sie setzt beim Start ihren Titel mit
   `set_session_title`, holt `origin/main` neu, listet die offenen Pull Requests
-  und merged die nach **Nummer** genannten PRs einzeln nacheinander, mit
-  `python3 tools/check.py` nach jedem Merge. Arbeits-Sitzungen mergen nie
-  selbst.
+  und merged die nach **Nummer** genannten PRs (oder „alle offenen“) einzeln
+  nacheinander, mit `python3 tools/check.py` nach jedem Merge; Konflikte löst
+  sie nach der Doku beider Änderungen. Arbeits-Sitzungen mergen nie selbst,
+  holen aber vor dem Review `origin/main` in ihren Branch.
 - Nie `git stash`, `git reset --hard` oder `--force`. Keine Secrets committen.
