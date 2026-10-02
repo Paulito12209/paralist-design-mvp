@@ -49,6 +49,7 @@ export const platforms = [
         variant: "experiment",
         differences: [
           { area: "Ansicht", text: "Das Symbol „Ansicht“ sitzt als runder Knopf mittig über der Leiste — statt rechts in der Reiterzeile, in der Kopfzeile einer Sammlung oder neben „KW“." },
+          { area: "Reiter", text: "Die Reiter (Projekte, Aufgaben, Medien, Arbeitsbereiche …) liegen wie in der iOS-Fassung in einer grauen Kapsel, der gewählte hell darauf — statt reinem Text mit Linie darunter." },
         ],
       },
       { id: "ios", label: "iOS", icon: "smartphone" },

@@ -21,6 +21,9 @@
  * --m3-on-surface              -> Schrift des aktiven Reiters unten
  * --m3-on-surface-variant      -> Icons und Schrift der übrigen Reiter, Platzhalter der Suche
  * --m3-outline-variant         -> Trennlinie unter den Reitern
+ * --m3-seg-fill                -> Grund der Reiter-Kapsel (nur Android (Experiment))
+ * --m3-seg-thumb               -> das gewählte Segment darauf
+ * --m3-seg-separator           -> Trennlinie zwischen zwei nicht gewählten Segmenten
  * --m3-scrim                   -> Schleier über der App, solange das Plus-Menü offen ist
  *                                 (dunkel im Dunkelmodus, weißlich im Hellmodus)
  * MASSE
@@ -50,6 +53,11 @@
  * --m3-sheet-width            -> wie breit das Blatt auf einem Tablet höchstens wird (Material 3: 640dp)
  * --m3-sheet-handle-zone      -> Höhe des Streifens mit dem Griff über dem Inhalt (Material 3: 48dp)
  * --m3-sheet-row-h            -> Höhe einer Zeile im Blatt (Material 3 Liste, eine Zeile: 56dp)
+ * --m3-seg-thumb-shadow       -> Schatten unter dem gewählten Segment (nur Android (Experiment))
+ * --m3-seg-height             -> Höhe eines Segments der Reiter-Kapsel (iOS: 30)
+ * --m3-seg-pad                -> Rand zwischen Kapsel und Segmenten
+ * --m3-seg-air                -> Luft über und unter der Kapsel, damit die Zeile so hoch bleibt wie --m3-tab-height
+ *                                 (errechnet; nur bei Medien und den Reitern direkt auf einer Seite nötig)
  * --m3-tab-tools-air          -> zusätzliche Luft zwischen den Reitern und dem Symbol
  *                                 „Ansicht“ rechts, dort wo sonst die Trennlinie stand
  * --m3-view-btn-size           -> Größe des runden Knopfs „Ansicht“ mittig über der Leiste
@@ -93,6 +101,9 @@
   --m3-on-surface-variant: #444746;
   --m3-outline-variant: #c4c7c5;
   --m3-scrim: rgba(255, 255, 255, 0.86);
+  --m3-seg-fill: rgba(118, 118, 128, 0.12);
+  --m3-seg-thumb: #ffffff;
+  --m3-seg-separator: rgba(60, 60, 67, 0.29);
 
   --m3-nav-height: 64px;
   --m3-nav-height-labels: 80px;
@@ -119,6 +130,10 @@
   --m3-sheet-width: 640px;
   --m3-sheet-handle-zone: 48px;
   --m3-sheet-row-h: 56px;
+  --m3-seg-thumb-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 3px 1px rgba(0, 0, 0, 0.04);
+  --m3-seg-height: 30px;
+  --m3-seg-pad: 2px;
+  --m3-seg-air: calc((var(--m3-tab-height) - var(--m3-seg-height) - 2 * var(--m3-seg-pad)) / 2);
   --m3-tab-tools-air: 4px;
   --m3-view-btn-size: 40px;
   --m3-head-tools-pull: 8px;
@@ -161,6 +176,9 @@
     --m3-on-surface-variant: #c4c7c5;
     --m3-outline-variant: #3c3f44;
     --m3-scrim: rgba(10, 10, 12, 0.82);
+    --m3-seg-fill: rgba(118, 118, 128, 0.24);
+    --m3-seg-thumb: #636366;
+    --m3-seg-separator: rgba(84, 84, 88, 0.65);
     --m3-error: #f2b8b5;
     --m3-on-error: #601410;
   }
@@ -180,6 +198,9 @@
   --m3-on-surface-variant: #c4c7c5;
   --m3-outline-variant: #3c3f44;
   --m3-scrim: rgba(10, 10, 12, 0.82);
+  --m3-seg-fill: rgba(118, 118, 128, 0.24);
+  --m3-seg-thumb: #636366;
+  --m3-seg-separator: rgba(84, 84, 88, 0.65);
   --m3-error: #f2b8b5;
   --m3-on-error: #601410;
 }
