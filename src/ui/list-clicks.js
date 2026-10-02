@@ -38,7 +38,7 @@ import {
   openWorkspacesPage,
   showTab,
 } from "./router.js";
-import { isReorderRow } from "./row-reorder.js";
+import { hasRowMore } from "./rows.js";
 import { closeSwipes, isSwipedOpen } from "./swipe.js";
 import { toggleGroup } from "./groups.js";
 import { toggleTaskFromCheck } from "./task-status.js";
@@ -300,11 +300,11 @@ export function initListClicks(handlers) {
       return;
     }
     const workspaceBtn = event.target.closest("[data-open-workspace]");
-    /* Verschiebbare Zeilen der Android-Fassung: gedrückt Halten verschiebt, das Menü liegt hinter den drei Punkten.
-       Auch am Handy löst langes Drücken dieses Ereignis aus — es darf das Menü nicht trotzdem öffnen. */
-    if ((workspaceBtn || event.target.closest("[data-open-entry]")) && isReorderRow(event.target)) {
+    /* Zeilen mit drei Punkten (Android): gedrückt Halten verschiebt, das Menü liegt hinter den Punkten.
+       Auch am Handy löst langes Drücken dieses Ereignis aus — es darf das Menü nicht trotzdem öffnen,
+       und das Halten läuft weiter, damit die Zeile sich gleich anhebt. */
+    if (hasRowMore(workspaceBtn || event.target.closest("[data-open-entry]"))) {
       event.preventDefault();
-      cancelHold();
       return;
     }
     if (workspaceBtn) {

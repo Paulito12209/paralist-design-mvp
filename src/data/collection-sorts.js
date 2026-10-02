@@ -12,13 +12,14 @@
  * -----------------------------------
  * entrySorts      -> wonach sich Einträge sortieren lassen, samt Wortlaut beider Richtungen
  * workspaceSorts  -> dasselbe für die Seite Arbeitsbereiche
- * manualId / manualKinds -> „Eigene Reihenfolge“ (entsteht durch Verschieben einer Zeile, src/data/manual-order.js)
- *                   und die Sammlungen, die sie anbieten
+ * manualKinds     -> die Sammlungen, die „Eigene Reihenfolge“ anbieten (Wortlaut: manualSort in
+ *                   src/data/config.js; entsteht durch Verschieben einer Zeile, src/data/manual-order.js)
  * collectionSortDefaults -> womit jede Sammlung startet: Sortierung und Richtung
  *                   (asc: true = aufsteigend, also Älteste zuerst bzw. A bis Z)
  */
 
 import { emit, events } from "../core/bus.js";
+import { manualSort } from "./config.js";
 import { openStats } from "./opens.js";
 import { entriesOf, workspaceLabel } from "./queries.js";
 import { manualRank } from "./manual-order.js";
@@ -26,9 +27,8 @@ import { workspaceRef } from "./refs.js";
 import { saveState, state } from "./state.js";
 
 /* „Eigene Reihenfolge“: kommt in die Auswahl der Sammlungen, in denen sich Zeilen verschieben lassen. */
-export const manualId = "manuell";
+export const manualId = manualSort.id;
 export const manualKinds = ["inbox", "favorites", "resources", "workspaces"];
-const manualSort = { id: manualId, label: "Eigene Reihenfolge", icon: "list", up: "Von oben nach unten", down: "Von unten nach oben", asc: true };
 
 export const entrySorts = [
   { id: "erstellt", label: "Erstellt", icon: "plus-circle", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },

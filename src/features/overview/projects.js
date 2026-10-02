@@ -29,7 +29,7 @@
 import { events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
-import { activeProjectView, visibleProjects } from "../../data/project-views.js";
+import { activeProjectView, projectOrderScope, visibleProjects } from "../../data/project-views.js";
 import { archivedEntries, projectEntries } from "../../data/queries.js";
 import { isDesk, onDeskChange } from "../../ui/desk-mode.js";
 import { emptyState } from "../../ui/empty-state.js";
@@ -99,7 +99,8 @@ function listMarkup(onPage) {
     <button class="workspace-row workspace-add" type="button" data-project-add="1">
       ${icon("rocket-plus")}<span>${addRowLabel}</span>
     </button>`;
-  return `${projectCardHead(view)}${lead}<div class="workspace-list">${rows}${addRow}</div>${archiveMarkup()}`;
+  /* data-reorder: gedrückt Halten verschiebt eine Zeile (Android, src/ui/row-reorder.js) — je Ansicht eine eigene Reihenfolge */
+  return `${projectCardHead(view)}${lead}<div class="workspace-list" data-reorder="${projectOrderScope(view.id)}">${rows}${addRow}</div>${archiveMarkup()}`;
 }
 
 /* Neu zeichnen, ohne dass die Pillenleiste an den Anfang zurückspringt. */

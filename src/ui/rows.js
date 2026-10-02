@@ -19,6 +19,7 @@ import { mediaKindOf, workspaceIcon, workspaceLabel } from "../data/queries.js";
 import { ui } from "../data/state.js";
 import { thumbOf } from "../data/thumbs.js";
 import { canMoveWorkspace } from "./move-menu.js";
+import { isMobileOs } from "./platform.js";
 
 /** Eine Zeile mit Wisch-Knöpfen; die Knöpfe liegen hinter der Zeile. */
 export function swipeRow(dataAttr, actionsLeft, actionsRight, rowHtml) {
@@ -46,13 +47,23 @@ export function swipeAction(action, label, iconName, tone = action) {
 }
 
 /**
- * Die drei Punkte rechts in der Zeile (Android-Fassung): ein Tipp öffnet das
- * Menü der Zeile, das sonst beim gedrückt Halten aufging. Beim Verschieben
- * einer Zeile wechselt das Zeichen zum Griff „=“ (styles/android-list.css).
+ * Die drei Punkte rechts in der Zeile (Android-Fassung): nur ein Tipp darauf
+ * öffnet das Menü der Zeile — gedrückt Halten hebt die Zeile zum Verschieben an
+ * (src/ui/swipe.js), und das Zeichen wechselt dabei zum Griff „=“ aus Material 3
+ * (styles/android-reorder.css).
  * Ein span mit role="button": ein Knopf im Zeilen-Knopf wäre ungültiges HTML.
  */
 function rowMore() {
   return `<span class="row-more" role="button" tabindex="0" data-row-more aria-label="Mehr">${icon("dots", "icon-dots")}${icon("drag-handle", "icon-drag")}</span>`;
+}
+
+/**
+ * Zeigt diese Zeile gerade die drei Punkte? Dann öffnet nur ein Tipp darauf ihr
+ * Menü — weder gedrückt Halten noch das lange Drücken, das Android als
+ * Rechtsklick meldet. Außerhalb der Android-Fassung sind die Punkte verborgen.
+ */
+export function hasRowMore(row) {
+  return isMobileOs("android") && Boolean(row?.querySelector("[data-row-more]"));
 }
 
 /**
