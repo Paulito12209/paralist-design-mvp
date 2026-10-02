@@ -15,19 +15,23 @@
  * - Projekte wählen: Blatt mit Häkchen über alle Projekte (die handverlesene Liste)
  *
  * Solange Projekte handverlesen sind, ruhen Filtern und Favoriten — die Zeile
- * sagt „Handverlesen, 3 Projekte“. „Alle“ kann nur sortieren; der ⓘ neben
- * der gesperrten Filter-Zeile erklärt, wie man eine eigene Ansicht baut.
+ * sagt „Handverlesen, 3 Projekte“. „Alle“ kann nur sortieren; die
+ * Filter-Zeile sagt dort „Nicht möglich“, der ⓘ daneben erklärt, warum und wie
+ * man eine eigene Ansicht baut, und führt in Einstellungen › Tabs.
  * Pfad: src/features/overview/project-settings.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * rowLabels             -> Beschriftungen der Zeilen
  * layouts                -> die beiden Knöpfe der Zeile „Layout“ (Beschriftung und Symbol)
- * noFilter               -> was die Filter-Zeile sagt, wenn nichts gefiltert ist
+ * noFilter               -> was die Filter-Zeile einer eigenen Ansicht sagt, solange nichts gefiltert ist
+ * noPick                 -> was die Zeile „Projekte wählen“ sagt, solange nichts gewählt ist
+ * notPossible            -> was sie bei „Alle“ sagt, das sich nicht filtern lässt
  * handpicked(n)          -> was die Filter-Zeile bei handverlesenen Projekten sagt
  * pickTitle              -> Überschrift des Blatts „Projekte wählen“ (das Blatt „Sortieren“ hat keinen Titel)
  * clearPickLabel         -> letzte Zeile im Blatt „Projekte wählen“
- * infoTitle / infoText   -> das Blatt hinter dem ⓘ
+ * infoTitle / infoTexts  -> das Blatt hinter dem ⓘ: die Absätze, warum „Alle“ nicht filterbar ist
+ * settingsLabel          -> die Zeile im Blatt, die in Einstellungen › Tabs springt
  *
  * Aussehen: styles/tasks-settings.css (Schalter, gesperrte Zeile, ⓘ) und
  * styles/entry-details.css (Karte, Zeilen). Das Blatt „Sortieren“ öffnet in der
@@ -47,6 +51,7 @@ import {
 import { projectEntries } from "../../data/queries.js";
 import { filterChipsMarkup } from "../../ui/filter-chips.js";
 import { panelSegment, panelToggle } from "../../ui/panel-rows.js";
+import { openTabSettings } from "../../ui/settings-link.js";
 import { openSheet } from "../../ui/sheet.js";
 import { openSortSheet, sortSummary } from "../../ui/sort-sheet.js";
 import { openProjectFilterSheet, projectFilterChips } from "./project-filter.js";
@@ -64,16 +69,24 @@ const layouts = [
   { id: "list", label: "Liste", icon: "list" },
   { id: "board", label: "Board", icon: "board" },
 ];
-const noFilter = "Keine";
+const noFilter = "Hinzufügen";
+const noPick = "Auswählen";
+const notPossible = "Nicht möglich";
 const handpicked = (n) => `Handverlesen, ${n} ${n === 1 ? "Projekt" : "Projekte"}`;
 const pickTitle = "Projekte wählen";
 const clearPickLabel = "Auswahl aufheben";
-const infoTitle = "Eigene Ansicht";
-const infoText =
-  "„Alle“ zeigt immer jedes Projekt. Tippe auf das kleine Plus neben den Pillen: die neue Ansicht beginnt als Kopie von „Alle“ und lässt sich filtern, sortieren und mit handverlesenen Projekten füllen, wie du willst.";
+const infoTitle = "Warum nicht filtern?";
+const infoTexts = [
+  "„Alle“ ist dein Gesamtüberblick: Hier stehen immer alle Projekte, mit einem Tipp erreichbar. Deshalb gibt es hier keine Filter.",
+  "Archivierte Projekte zeigt „Alle“ nicht. Sie liegen hinter „Archiv (n)“ oben links über der Liste, dort siehst du auch, wie viele es sind. Das zählt nicht als Filter.",
+  "Möchtest du eine Auswahl, lege eine eigene Ansicht an: Tippe auf „Neue Ansicht“. Sie beginnt als Kopie von „Alle“, und dort filterst und sortierst du, wie du es brauchst. „Alle“ bleibt unverändert.",
+  "Ob neue Ansichten vor „Alle“ oder ganz rechts erscheinen, stellst du in den Einstellungen ein.",
+];
+const settingsLabel = "Einstellungen › Tabs";
 
 /* Was in der Filter-Zeile steht: die Zahl der gefilterten Abschnitte */
 function filterValue(view) {
+  if (view.fixed) return notPossible;
   if (view.ids.length) return handpicked(view.ids.length);
   return projectFilterChips(view).length || noFilter;
 }
@@ -117,7 +130,7 @@ export function projectSettingsMarkup(view) {
         <span class="details-row-label">${rowLabels.favorites}</span>${panelToggle("favorites", view.favoritesOnly, rowLabels.favorites, locked)}
       </div>
       <button class="details-row is-editable" type="button" data-settings="pick">
-        <span class="details-row-label">${rowLabels.pick}</span><span class="details-row-value">${pickCount || "Keine"}</span>
+        <span class="details-row-label">${rowLabels.pick}</span><span class="details-row-value">${pickCount || noPick}</span>
       </button>
     </div>`;
 }
@@ -175,7 +188,12 @@ export function handleProjectSettingsClick(event, view) {
   else if (setting === "group") updateProjectView({ group: button.dataset.value });
   else if (setting === "sort") openProjectSort(view);
   else if (setting === "filter") openProjectFilter(view, button.dataset.value);
-  else if (setting === "info") openSheet(infoTitle, [{ lead: true, label: infoText }]);
+  else if (setting === "info") {
+    openSheet(infoTitle, [
+      ...infoTexts.map((label) => ({ note: true, label })),
+      { label: settingsLabel, icon: "sliders", split: true, onSelect: openTabSettings },
+    ]);
+  }
   else if (setting === "favorites") updateProjectView({ favoritesOnly: !view.favoritesOnly });
   else if (setting === "pick") openPickSheet();
 }

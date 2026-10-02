@@ -21,6 +21,7 @@ export const storageKeys = {
   navGlow: "paralist-nav-glow",
   pageHead: "paralist-page-head",
   tabIcons: "paralist-tab-icons",
+  newViewPlace: "paralist-new-view-place",
   /* Gewählte Fassung je Gerät, {mobile, desk} — index.html liest denselben Namen. */
   versions: "paralist-versions",
   milestones: "paralist-milestones",

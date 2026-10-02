@@ -6,7 +6,8 @@
  * oder die Filter: „Verknüpft mit“ (Arbeitsbereiche und Inhalt,
  * src/data/link-filter.js), Status, Dringlichkeit und „Nur Favoriten“. Sind
  * `ids` gefüllt, zählen nur sie; die Filter ruhen dann. Die erste Ansicht „Alle“
- * ist fest: sie zeigt jedes Projekt, darf aber sortieren. Eine neue Ansicht
+ * ist fest (sie steht vorn, solange neue Ansichten nicht davor eingereiht werden —
+ * src/data/view-place.js): sie zeigt jedes Projekt, darf aber sortieren. Eine neue Ansicht
  * beginnt als Kopie von „Alle“. Verschiebt man eine Projektzeile mit dem
  * Finger (src/ui/row-reorder.js) oder im Board (src/features/overview/projects-board.js),
  * wechselt die Ansicht auf „Eigene Reihenfolge“; gemerkt wird sie je Ansicht unter dem Schlüssel
@@ -36,6 +37,7 @@ import { entriesOf, projectEntries } from "./queries.js";
 import { entryRef, isWorkspaceRef, workspaceRef } from "./refs.js";
 import { saveState, state, ui } from "./state.js";
 import { setTabIconsOn } from "./tab-icons.js";
+import { fixedViewOf, newViewIndex } from "./view-place.js";
 
 export const projectOrderPrefix = "pv:";
 export const allProjectViewName = "Alle";
@@ -54,7 +56,7 @@ export function findProjectView(id) {
 
 /** Die gewählte Ansicht — im Zweifel „Alle“. */
 export function activeProjectView() {
-  return findProjectView(state.activeProjectViewId) || state.projectViews[0];
+  return findProjectView(state.activeProjectViewId) || fixedViewOf(state.projectViews);
 }
 
 /** Der Schlüssel, unter dem eine Ansicht ihre eigene Reihenfolge merkt (data-reorder der Liste). */
@@ -121,10 +123,10 @@ function insertCopy(source, index, placeholder) {
   return copy;
 }
 
-/** Neue Ansicht über das kleine Plus: eine Kopie von „Alle“ am Ende. */
+/** Neue Ansicht über das kleine Plus: eine Kopie von „Alle“, vor „Alle“ oder am Ende (Einstellungen › Tabs). */
 export function addProjectView() {
   const views = state.projectViews;
-  return insertCopy(views[0], views.length, viewPlaceholder(views.length + 1));
+  return insertCopy(fixedViewOf(views), newViewIndex(views), viewPlaceholder(views.length + 1));
 }
 
 /** Eine bestimmte Ansicht verdoppeln — direkt hinter dem Original. */
@@ -163,12 +165,12 @@ export function setProjectViewIcon(id, iconName) {
   commit();
 }
 
-/** Eine Ansicht um einen Platz nach links (-1) oder rechts (+1) rücken; „Alle“ bleibt vorn. */
+/** Eine Ansicht um einen Platz nach links (-1) oder rechts (+1) rücken; „Alle“ selbst bleibt, wo sie ist. */
 export function moveProjectView(id, dir) {
   const views = state.projectViews;
   const from = views.findIndex((view) => sameId(view.id, id));
   const to = from + dir;
-  if (from < 1 || to < 1 || to >= views.length) return;
+  if (from < 0 || views[from].fixed || to < 0 || to >= views.length) return;
   const [view] = views.splice(from, 1);
   views.splice(to, 0, view);
   commit();
@@ -179,7 +181,7 @@ export function deleteProjectView(id) {
   const view = findProjectView(id);
   if (!view || view.fixed) return;
   state.projectViews = state.projectViews.filter((item) => item !== view);
-  if (sameId(state.activeProjectViewId, id)) state.activeProjectViewId = state.projectViews[0].id;
+  if (sameId(state.activeProjectViewId, id)) state.activeProjectViewId = fixedViewOf(state.projectViews).id;
   /* Ihre eigene Reihenfolge braucht niemand mehr */
   if (state.prefs.manualOrders) delete state.prefs.manualOrders[projectOrderScope(view.id)];
   commit();
@@ -287,9 +289,9 @@ function pick(value, allowed, fallback) {
  */
 export function adoptProjectViews(saved) {
   const list = Array.isArray(saved.projectViews) ? saved.projectViews.filter((view) => view && typeof view === "object") : [];
+  if (!list.some((view) => view.fixed)) list.unshift(allProjectView());
+  /* Genau eine Ansicht ist „Alle“: die erste mit dem Merkmal, wo sie auch steht */
   const fixedAt = list.findIndex((view) => view.fixed);
-  if (fixedAt > 0) list.unshift(...list.splice(fixedAt, 1));
-  if (!list.length || !list[0].fixed) list.unshift(allProjectView());
 
   const projects = new Set(state.entries.filter((entry) => entry.type === "projekt").map((entry) => String(entry.id)));
   const validRefs = new Set(state.workspaces.map((workspace) => workspaceRef(workspace.id)).concat(state.entries.map((entry) => entryRef(entry.id))));
@@ -300,10 +302,10 @@ export function adoptProjectViews(saved) {
     const ids = Array.isArray(view.ids) ? [...new Set(view.ids.map(Number))].filter((id) => projects.has(String(id))) : [];
     const clean = {
       id: Number(view.id) || index + 1,
-      name: index === 0 ? allProjectViewName : String(view.name || ""),
+      name: index === fixedAt ? allProjectViewName : String(view.name || ""),
       placeholder: typeof view.placeholder === "string" ? view.placeholder : undefined,
       icon: typeof view.icon === "string" ? view.icon : null,
-      fixed: index === 0,
+      fixed: index === fixedAt,
       layout: pick(view.layout, taskLayouts, projectViewDefaults.layout),
       group: pick(view.group, groups, projectViewDefaults.group),
       sort: pick(view.sort, sorts, projectViewDefaults.sort),
@@ -320,7 +322,7 @@ export function adoptProjectViews(saved) {
     return clean;
   });
   const active = Number(saved.activeProjectViewId);
-  state.activeProjectViewId = state.projectViews.some((view) => view.id === active) ? active : state.projectViews[0].id;
+  state.activeProjectViewId = state.projectViews.some((view) => view.id === active) ? active : fixedViewOf(state.projectViews).id;
   return (
     JSON.stringify(state.projectViews) !== JSON.stringify(saved.projectViews) ||
     state.activeProjectViewId !== saved.activeProjectViewId
