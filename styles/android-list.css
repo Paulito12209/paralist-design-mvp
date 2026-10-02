@@ -21,6 +21,7 @@
  * --m3-list-row-h          -> Mindesthöhe einer Zeile
  * --m3-list-gap            -> Abstand zwischen Bild/Icon und Titel
  * --m3-list-leading        -> Größe des Bilds und der Icon-Fläche vor dem Titel
+ * --m3-tab-edge            -> Abstand des Icons vom Geräterand (styles/tokens-android.css)
  * --m3-list-icon           -> Größe des Icons darin
  * --m3-list-thumb-radius   -> Rundung der Vorschaubilder
  * --m3-swipe-action-w / -h -> Breite und Höhe der Wisch-Knöpfe; die Breite nimmt auch
@@ -76,6 +77,19 @@
   [data-mobile-os="android"] .workspace-add:active,
   [data-mobile-os="android"] .workspace-row .row-more:active {
     background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), transparent);
+  }
+
+  /* Das Icon der Zeile steht --m3-tab-edge vom Rand, auf einer Linie mit dem ersten
+     Reiter und „Archiv“. Der Abstand liegt am Wisch-Körper (er wandert beim Wischen
+     mit); rechts bleibt der Seitenrand für die drei Punkte. Die Zeilen ohne Hülle
+     („… hinzufügen“, die Geister- und Eingabezeile der Aufgaben) rücken ebenso ein. */
+  [data-mobile-os="android"] .swipe-body {
+    padding-left: var(--m3-tab-edge);
+  }
+
+  [data-mobile-os="android"] .workspace-add,
+  [data-mobile-os="android"] :is(.task-ghost, .task-inline) {
+    padding-left: calc(var(--m3-tab-edge) - var(--content-side));
   }
 
   [data-mobile-os="android"] .workspace-row .icon:not(.chevron) {

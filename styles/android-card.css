@@ -28,6 +28,7 @@
  * --m3-on-surface-variant     -> Sortieren und Filtern in Ruhe
  * --m3-card-head-pull       -> wie dicht die erste Zeile an der Werkzeugzeile sitzt
  * --m3-card-head-plain-gap  -> Luft zwischen Titel und Werkzeugzeile, wo keine Reiter darüber stehen
+ * --m3-tab-edge               -> Abstand des Archiv-Icons vom Geräterand, auf einer Linie mit dem ersten Reiter
  * --content-side              -> Rand der Reiter, sobald rechts kein Symbol mehr steht (styles/tokens.css)
  *
  * Direkt bei ihrer Regel: Schrift von „Archiv“ 14px halbfett (Material 3
@@ -96,7 +97,7 @@
     align-items: center;
     gap: 8px;
     height: var(--m3-text-btn-h);
-    margin-left: calc(-1 * var(--m3-text-btn-pad));
+    margin-left: calc(var(--m3-tab-edge) - var(--content-side) - var(--m3-text-btn-pad));
     padding: 0 var(--m3-text-btn-pad);
     border-radius: calc(var(--m3-text-btn-h) / 2);
     font-size: 14px;

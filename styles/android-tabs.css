@@ -10,7 +10,7 @@
  * ANPASSBARE WERTE (alle in styles/tokens-android.css)
  * -----------------------------------
  * --m3-tab-height        -> Höhe eines Reiters (Innenabstand 16px zwischen den Reitern)
- * --m3-tab-edge          -> wie weit der Inhalt des ersten Reiters vom Geräterand steht (ebenso Titel und Überschriften, styles/android.css)
+ * --m3-tab-edge          -> wie weit der Inhalt des ersten Reiters vom Geräterand steht (ebenso Listen-Icons und „Archiv“; Titel stehen auf --m3-title-edge, styles/android.css)
  * --m3-tab-info-w        -> Platz des ⓘ hinter „Alle“ (Aufgaben): die Linie unter dem Reiter lässt ihn frei
  * --m3-tab-indicator     -> Dicke der Linie unter dem aktiven Reiter
  * --m3-primary           -> Farbe von Schrift und Linie des aktiven Reiters
