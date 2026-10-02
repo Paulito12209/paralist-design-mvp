@@ -190,7 +190,7 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 - Lange auf eine Pille oder Zeile drücken (oder Rechtsklick): das Menü
   geht auf und die Seite darunter öffnet sich **nicht**.
 - Zeile nach links wischen (Archivieren, Löschen) und nach rechts (Favorit,
-  Verknüpfen). Eine aufgewischte Zeile schiebt sich beim Antippen erst zu.
+  Verknüpfen). Eine aufgewischte Zeile schließt beim Antippen, sonst nach 8 s.
 - Arbeitsbereich umwandeln — über das Menü der Zeile, das Seitenmenü oder die
   Pille „Arbeitsbereich“ oben auf seiner Seite: „Typ ändern“ → Projekt. Das
   Blatt sagt vorher, dass sein Inhalt ins Projekt zieht und das Projekt im

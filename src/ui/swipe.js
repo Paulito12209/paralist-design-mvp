@@ -12,6 +12,8 @@
  *                           -> die Zeile wird angehoben und lässt sich auf ein
  *                              Ziel legen (src/ui/row-lift.js), wo das angemeldet ist
  * Eine schon offene Zeile ist sofort angefasst: kurz wischen schiebt sie zu.
+ * Tippt man keinen ihrer Knöpfe an, schiebt sie sich nach autoCloseMs von
+ * selbst wieder zu — man soll sich nicht lange entscheiden müssen.
  * Pfad: src/ui/swipe.js
  *
  * ANPASSBARE WERTE
@@ -24,6 +26,7 @@
  *                   kürzer als das Menü in long-press.js, damit man vorher ziehen kann
  * grabSlack      -> wie weit der Finger beim Halten wackeln darf, ohne dass es als Wischen gilt
  * grabBuzzMs     -> Länge des kurzen Vibrierens beim Anfassen (0 = aus)
+ * autoCloseMs    -> nach so vielen Millisekunden schiebt sich eine offene Zeile von selbst zu (0 = nie)
  */
 
 import { cssNumber } from "../core/css-vars.js";
@@ -43,8 +46,11 @@ const axisSlack = 6;
 const grabDelay = 280;
 const grabSlack = 8;
 const grabBuzzMs = 10;
+const autoCloseMs = 8000;
 
 let drag = null;
+/* Der Zeit-Schalter der gerade offenen Zeile: { body, timer } — sonst null. */
+let autoClose = null;
 /* Hat die laufende Berührung eine Zeile angefasst? Dann darf sie keinen Tab
    wechseln. Bleibt bis zur nächsten Berührung stehen, weil pill-swipe erst bei
    touchend fragt — und das kann nach pointerup kommen. */
@@ -82,10 +88,26 @@ function limitsOf(body) {
   return { left: span("left"), right: span("right") };
 }
 
+/* Den Zeit-Schalter der offenen Zeile ausschalten. */
+function clearAutoClose() {
+  if (!autoClose) return;
+  clearTimeout(autoClose.timer);
+  autoClose = null;
+}
+
+/* Die Zeile ist offen eingerastet: nach autoCloseMs ohne Tipp schiebt sie sich zu. */
+function armAutoClose(body) {
+  clearAutoClose();
+  if (!autoCloseMs) return;
+  autoClose = { body, timer: setTimeout(() => setOffset(body, 0), autoCloseMs) };
+}
+
 /* transform: schiebt die Zeile, ohne die Liste neu zu berechnen — nur so bleibt es flüssig */
 function setOffset(body, x) {
   body.dataset.x = String(x);
   body.style.transform = `translateX(${x}px)`;
+  /* Zu heißt: nichts mehr zu warten — auch wenn jemand anderes sie zuschiebt (Tipp daneben, Knopf) */
+  if (x === 0 && autoClose?.body === body) clearAutoClose();
 }
 
 /** Alle offenen Zeilen wieder zuschieben (außer einer). */
@@ -152,8 +174,10 @@ function onPointerDown(event) {
     limits: limitsOf(body),
   };
   /* Offene Zeile: gleich angefasst, damit ein kurzes Wischen sie wieder zuschiebt
-     (ohne Farbe und Vibrieren — sie ist ja schon sichtbar „in Arbeit“). */
+     (ohne Farbe und Vibrieren — sie ist ja schon sichtbar „in Arbeit“). Solange
+     der Finger sie hält, läuft die Zeit nicht; beim Loslassen beginnt sie neu. */
   if (start !== 0) {
+    clearAutoClose();
     drag.grabbed = true;
     rowGesture = true;
     return;
@@ -234,6 +258,7 @@ function endDrag() {
   if (limits.right && x <= -limits.right / 2) setOffset(body, -limits.right);
   else if (limits.left && x >= limits.left / 2) setOffset(body, limits.left);
   else setOffset(body, 0);
+  if (Number(body.dataset.x) !== 0) armAutoClose(body);
 }
 
 /** Die Wisch-Geste aktivieren. Wird einmal beim Start aufgerufen. */
