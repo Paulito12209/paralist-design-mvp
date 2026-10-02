@@ -189,6 +189,12 @@ body:has(.nav-shell.is-composing) .view-panel {
   height: 18px;
 }
 
+/* Haken und Wort neben dem Icon zeigt nur die Android-Fassung (styles/android-sheet.css) */
+.tasks-seg-check,
+.tasks-seg-btn.has-icon .tasks-seg-label {
+  display: none;
+}
+
 .tasks-seg-btn.is-on {
   background: var(--bg);
   color: var(--text);
