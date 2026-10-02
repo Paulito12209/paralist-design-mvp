@@ -62,7 +62,7 @@ export function initPillTapReveal() {
   document.addEventListener(
     "click",
     (event) => {
-      if (!event.target.closest(".tab-pills :is(.tab-pill, .tab-pill-add)")) return;
+      if (!event.target.closest(".tab-pills :is(.tab-pill, .tab-pill-add, .tab-pill-add-text)")) return;
       const view = event.target.closest(".view");
       if (view) requestAnimationFrame(() => revealActive(view));
     },

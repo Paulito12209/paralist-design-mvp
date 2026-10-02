@@ -70,8 +70,12 @@
  * --m3-ov-gap-tabs             -> ebenso „Projekte“ bis zur Reiter-Kapsel
  * --m3-tab-tools-air          -> zusätzliche Luft zwischen den Reitern und dem Symbol
  *                                 „Ansicht“ rechts, dort wo sonst die Trennlinie stand
- * --m3-view-btn-size           -> Größe des runden Knopfs „Ansicht“ mittig über der Leiste
- *                                 (nur Android (Experiment); Material 3 „Small FAB“: 40dp)
+ * --m3-snap-edge               -> Abstand des Plus-Symbols („Neue Ansicht“) zum rechten Rand der Reiterzeile,
+ *                                 solange es dort einrastet
+ * --m3-snap-bleed              -> um so viel ragt das festgehaltene Plus über den Rand hinaus (1px gegen Teilpixel-Reste)
+ * --m3-snap-reach              -> Platz rechts, den ein ins Bild gerollter Reiter frei lässt: Plus (16 + Symbol 16
+ *                                 + Rand) samt Verlauf; ändert man Rand oder Symbol, hier mitziehen
+ * --m3-seg-snap-reach          -> dasselbe für die Kapsel in Android (Experiment): 12 + Symbol 14 + Rand + Verlauf
  * --m3-head-tools-pull         -> um so viel rückt das Symbol „Verknüpfen“ in der Kopfzeile näher
  *                                 an das Drei-Punkte-Menü (nur Android (Experiment))
  * --m3-list-row-h              -> Mindesthöhe einer Listenzeile (Material 3: Liste, eine Zeile, 56dp — Google Tasks wirkt dichter)
@@ -171,7 +175,10 @@
   --m3-ov-gap-section: 40px;
   --m3-ov-gap-tabs: 20px;
   --m3-tab-tools-air: 4px;
-  --m3-view-btn-size: 40px;
+  --m3-snap-edge: 16px;
+  --m3-snap-bleed: 1px;
+  --m3-snap-reach: calc(16px + 16px + var(--m3-snap-edge) + var(--tab-pills-fade));
+  --m3-seg-snap-reach: calc(12px + 14px + var(--m3-snap-edge) + var(--tab-pills-fade));
   --m3-head-tools-pull: 8px;
   --m3-list-row-h: 52px;
   --m3-list-gap: 12px;

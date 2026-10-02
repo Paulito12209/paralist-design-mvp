@@ -321,8 +321,14 @@
 }
 
 /* „Neue Ansicht“ neben dem Plus gibt es nur in der Android- und iOS-Fassung
-   (styles/android-tabs.css, styles/ios-segmented.css) */
+   (styles/android-tab-snap.css, styles/ios-segmented.css) */
 .tab-pill-add-text {
+  display: none;
+}
+
+/* Die unsichtbare Marke hinter dem Plus dient nur dem Einrasten in der
+   Android-Fassung (styles/android-tab-snap.css); sonst nimmt sie keinen Platz */
+.tab-pill-add-edge {
   display: none;
 }
 /* Eine Projekt-Ansicht findet nichts: ein Satz statt einer leeren Fläche */
