@@ -1,0 +1,52 @@
+/*
+ * Android-Fassung, Einstellungen: jede Zeile steht als eigene Kachel auf dem
+ * Seitengrund, getrennt durch eine schmale Fuge, und über jeder Gruppe steht
+ * ihre Abschnittsüberschrift („Darstellung“, „Mehr“, „App“ …). So sehen
+ * Einstellungen in Material 3 aus: Kachel mit 16dp Rundung in der Fläche
+ * „Surface container“, Icon links, Name, rechts Wert und Pfeil.
+ * Überschreibt die flachen Zeilen aus styles/android-pages-content.css, gilt
+ * aber nur für die Einstellungen (#profile), nicht für den Fortschritt, und
+ * nicht im „Android (Experiment)“. Nur unterhalb von 1024px.
+ * Pfad: styles/android-settings-tiles.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-page-tile-gap      -> Fuge zwischen zwei Kacheln einer Gruppe
+ * --m3-page-section-gap   -> Luft über einer Abschnittsüberschrift
+ * --m3-page-card-radius   -> Rundung einer Kachel
+ * --m3-page-row-h         -> Mindesthöhe einer Kachel
+ * --m3-page-edge          -> Abstand der Kacheln zum Geräterand und Innenabstand darin
+ * --m3-surface-container  -> Fläche der Kachel
+ * --m3-state-pressed      -> Tönung beim Drücken
+ *
+ * Direkt bei ihrer Regel: Abschnittsüberschrift rückt 16px ein, damit ihr
+ * Text über dem Text der Kachel steht.
+ */
+
+@media (max-width: 1023px) {
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) #profile .modal-body > :is(.plist, .settings-group) {
+    margin-inline: var(--m3-page-edge); /* margin-inline: die Kacheln halten den Rand selbst und sind keine Vollbreite-Zeilen mehr */
+    display: flex;
+    flex-direction: column;
+    gap: var(--m3-page-tile-gap);
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) #profile :is(.plist-row, .settings-row) {
+    background: var(--m3-surface-container);
+    border-radius: var(--m3-page-card-radius);
+  }
+
+  /* Gedrückt: Tönung über der Kachelfläche statt über dem Seitengrund */
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) #profile :is(.plist-row, .settings-row):active {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), var(--m3-surface-container));
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) #profile .psection {
+    padding: 0 var(--m3-page-edge); /* padding-inline: Text steht über dem Text der Kachel, nicht über ihrer Kante */
+    margin-bottom: 0;
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) #profile :is(.settings-note, .account-note) {
+    padding-inline: var(--m3-page-edge);
+  }
+}
