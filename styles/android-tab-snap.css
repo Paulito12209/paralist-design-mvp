@@ -1,0 +1,153 @@
+/*
+ * Android-Fassung (auch „Android (Experiment)“), das Plus am Ende der Reiter:
+ * „+ Neue Ansicht“ steht hinter dem letzten Reiter. Gibt es so viele Reiter,
+ * dass es nach rechts aus der Zeile geschoben wird, verschwindet zuerst die
+ * Beschriftung hinter dem Rand — das Plus selbst darf nie angeschnitten
+ * werden: es rastet am rechten Rand ein und bleibt dort stehen, die Reiter
+ * laufen unter ihm durch. Links daneben blendet ein Verlauf die Reiter aus,
+ * damit sie nicht hart am Plus abbrechen. Die Beschriftung scrollt mit den
+ * Reitern weg; das Plus hat dazu eigene Geschwister-Elemente (src/ui/pill-add.js).
+ * Ob das Plus gerade festgehalten wird, setzt src/ui/pill-snap.js als Klasse
+ * `is-snapped` — nur dann ist der Verlauf zu sehen und das Plus deckend.
+ * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px;
+ * „Android (Experiment)“ bekommt Maße und Farben der Kapsel dazu.
+ * Pfad: styles/android-tab-snap.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css, außer wo genannt)
+ * -----------------------------------
+ * --m3-snap-edge      -> Abstand des Plus-Symbols zum rechten Rand der Zeile, solange es einrastet
+ * --m3-snap-bleed     -> um so viel ragt das festgehaltene Plus über den Rand der Leiste hinaus (nur ein
+ *                        Pixel, damit am Rand kein Rest eines Reiters durchblitzt)
+ * --m3-snap-reach     -> Platz, den ein ins Bild gerollter Reiter rechts frei lässt (Plus samt Verlauf)
+ * --m3-seg-snap-reach -> dasselbe für die Kapsel in „Android (Experiment)“
+ * --tab-pills-fade    -> Breite des Verlaufs links vom Plus (styles/tokens.css)
+ * --m3-tab-height / --m3-seg-height -> Höhe von Plus und Beschriftung (Reiter / Kapsel)
+ * --m3-seg-fill       -> Farbe der Kapsel, in die der Verlauf ausläuft
+ * --bg                -> Farbe der Zeile, in die der Verlauf ausläuft (styles/tokens.css)
+ *
+ * Direkt bei ihren Regeln: Abstand Symbol–Beschriftung 6px (Reiter) und 4px (Kapsel);
+ * Innenabstand links vom Plus 16px und 12px; rechts hinter der Beschriftung 16px und 14px;
+ * Schrift der Beschriftung 14px und 13px — wie die übrigen Reiter bzw. Segmente.
+ */
+
+@media (max-width: 1023px) {
+  /* ---------- Das Plus rastet ein ---------- */
+
+  /* position: sticky — das Plus bleibt am rechten Rand der Leiste stehen, wenn
+     es sonst weiter rausgeschoben würde. Sein Innenabstand rechts ist der
+     Abstand des Symbols zum Rand. z-index: über den Reitern, die darunter durchlaufen.
+     Den Abstand zwischen Symbol und Beschriftung (6px) holt der negative
+     Außenabstand der Beschriftung zurück, damit er nicht mit dem Rand wächst.
+     right ist leicht negativ: das Plus ragt --m3-snap-bleed über den Rand hinaus
+     (der Innenabstand gleicht es aus), damit zwischen Plus und Rand kein
+     Teilpixel bleibt, durch das ein Reiter blitzt. */
+  [data-mobile-os="android"] .tab-pills .tab-pill-add {
+    position: sticky;
+    right: calc(-1 * var(--m3-snap-bleed));
+    z-index: 1;
+    gap: 0;
+    padding: 0 calc(var(--m3-snap-edge) + var(--m3-snap-bleed)) 0 16px;
+  }
+
+  /* Der Verlauf links vom Plus, genau so breit wie --tab-pills-fade, direkt an
+     seiner Tippfläche. position: absolute hängt ihn an das Plus, so rastet er mit ein.
+     pointer-events: ein Tipp im Verlauf trifft noch den Reiter darunter. */
+  [data-mobile-os="android"] .tab-pill-add::before {
+    content: "";
+    position: absolute;
+    right: 100%;
+    top: 0;
+    bottom: 1px; /* bottom: lässt die Trennlinie unter der Zeile frei */
+    width: var(--tab-pills-fade);
+    background: linear-gradient(to right, transparent, var(--bg));
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  /* Nur festgehalten: Plus deckend (sonst schiene der Reiter dahinter durch)
+     und der Verlauf davor sichtbar. Ohne Klasse liegt nichts über den Reitern.
+     Die untersten 1px bleiben frei, damit die Trennlinie unter der Zeile
+     (styles/android-tabs.css) auch hier durchläuft. */
+  [data-mobile-os="android"] .tab-pill-add.is-snapped {
+    background: linear-gradient(var(--bg), var(--bg)) top / 100% calc(100% - 1px) no-repeat;
+  }
+
+  [data-mobile-os="android"] .tab-pill-add.is-snapped::before {
+    opacity: 1;
+  }
+
+  /* Die Marke zwischen Plus und Beschriftung: ohne Breite, sie dient nur zum
+     Messen (src/ui/pill-snap.js) */
+  [data-mobile-os="android"] .tab-pill-add-edge {
+    display: block;
+    flex: 0 0 0;
+    width: 0;
+    height: 0;
+  }
+
+  /* Die Beschriftung scrollt mit den Reitern. position: relative legt sie über
+     das Plus, in dessen Innenabstand sie hineinragt. */
+  [data-mobile-os="android"] .tab-pill-add-text {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    height: var(--m3-tab-height);
+    margin-left: calc(6px - var(--m3-snap-edge) - var(--m3-snap-bleed));
+    padding-right: 16px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--m3-on-surface-variant);
+    user-select: none; /* user-select: ein Tipp darauf soll nichts markieren */
+  }
+
+  [data-mobile-os="android"] .tab-pill-add-text:active {
+    opacity: 0.55;
+  }
+
+  /* Ins Bild gerollte Reiter (Antippen, Wischen, Tippen im Namensfeld) bleiben
+     links vom festgehaltenen Plus samt Verlauf.
+     padding-right: 0 — ein sticky Element hält Abstand zum Innenabstand der
+     Leiste; der Rand rechts käme sonst zum Abstand des Symbols dazu. Den
+     Abstand am Ende liefert die Beschriftung selbst.
+     !important bei beidem: die Regeln, die den Rand je Zeile setzen
+     (styles/android-card.css, android-segmented.css), tragen eine id und
+     wären sonst stärker. */
+  [data-mobile-os="android"] .tab-pills:has(> .tab-pill-add-edge) {
+    padding-right: 0 !important;
+    scroll-padding-right: var(--m3-snap-reach) !important;
+  }
+
+  /* ---------- „Android (Experiment)“: die Kapsel ---------- */
+
+  [data-mobile-variant="experiment"] .tab-pills .tab-pill-add {
+    height: var(--m3-seg-height);
+    padding: 0 calc(var(--m3-snap-edge) + var(--m3-snap-bleed)) 0 12px;
+    border-radius: 0; /* border-radius: eckig — das Plus füllt die Rundung der Kapsel bis in die Ecken, sonst blitzt dort ein Reiter hervor */
+  }
+
+  /* Die Kapsel ist halbdurchsichtig grau: Plus und Verlauf müssen genau ihre
+     Farbe treffen. Darum liegt die Kapselfarbe über der Seitenfarbe — beim
+     Plus als zwei Flächen, beim Verlauf als zwei Verläufe. */
+  [data-mobile-variant="experiment"] .tab-pill-add::before {
+    bottom: 0; /* die Kapsel hat keine Trennlinie */
+    background:
+      linear-gradient(to right, transparent, var(--m3-seg-fill)),
+      linear-gradient(to right, transparent, var(--bg));
+  }
+
+  [data-mobile-variant="experiment"] .tab-pill-add.is-snapped {
+    background: linear-gradient(var(--m3-seg-fill), var(--m3-seg-fill)), var(--bg);
+  }
+
+  [data-mobile-variant="experiment"] .tab-pill-add-text {
+    height: var(--m3-seg-height);
+    margin-left: calc(4px - var(--m3-snap-edge) - var(--m3-snap-bleed));
+    padding-right: 14px;
+    font-size: 13px;
+  }
+
+  [data-mobile-variant="experiment"] .tab-pills:has(> .tab-pill-add-edge) {
+    scroll-padding-right: var(--m3-seg-snap-reach) !important; /* !important: siehe oben; padding-right: 0 gilt von oben auch hier */
+  }
+}

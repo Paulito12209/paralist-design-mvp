@@ -25,8 +25,9 @@
  * --m3-on-surface-variant -> Schrift und Plus von „Neue Ansicht“
  * --content-side       -> Abstand der Kapsel zum Geräterand (styles/tokens.css)
  *
- * Schriftgröße der Segmente: 13px direkt bei .tab-pill (wie in der iOS-Fassung),
- * ebenso bei .tab-pill-add-text; das Plus davor 14px groß (.tab-pill-add .icon).
+ * Schriftgröße der Segmente: 13px direkt bei .tab-pill (wie in der iOS-Fassung);
+ * das Plus davor 14px groß (.tab-pill-add .icon). Beschriftung „Neue Ansicht“ und
+ * Einrasten des Plus: styles/android-tab-snap.css.
  * Die Zeilen zwischen Kapsel und Liste behalten ihre Höhe aus styles/android-tabs.css
  * (--m3-tab-height), die Kapsel steht mittig darin.
  */
@@ -156,8 +157,6 @@
     height: var(--m3-seg-height);
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 0 14px 0 12px;
     border-radius: 999px;
     color: var(--m3-on-surface-variant);
   }
@@ -165,9 +164,5 @@
   [data-mobile-variant="experiment"] .tab-pill-add .icon {
     width: 14px;
     height: 14px;
-  }
-
-  [data-mobile-variant="experiment"] .tab-pill-add-text {
-    font-size: 13px;
   }
 }

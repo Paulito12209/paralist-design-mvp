@@ -1,0 +1,259 @@
+/*
+ * Android-Fassung, Inhalt von Einstellungen und Fortschritt nach Material 3
+ * (nicht im „Android (Experiment)“: dort bleibt der Inhalt wie in der
+ * iOS-Fassung, nur die Seite drumherum — Kopfleiste, Pfeil, Vollbild — ist
+ * dieselbe, siehe styles/android-pages.css). Gemeint ist die Lesart von
+ * Google-Einstellungen: Zeilen ohne Kasten und Trennlinie, Icon links,
+ * Abschnittsüberschriften klein und in der Akzentfarbe, Karten mit
+ * 16dp Rundung, der Zeitraum-Schalter als „Segmented button“, der Profilkopf
+ * links ausgerichtet wie in Google Mail. Die Zeilen laufen über die ganze
+ * Breite und tragen den Seitenrand selbst; Karten und Überschriften haben ihn
+ * als Außenabstand.
+ * Gilt nur mit data-mobile-os="android" an <html>, ohne data-mobile-variant
+ * "experiment", und unterhalb von 1024px.
+ * Pfad: styles/android-pages-content.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-page-edge          -> Abstand von Karten und Zeilen zum Geräterand
+ * --m3-page-row-h         -> Mindesthöhe einer Zeile
+ * --m3-page-icon          -> Größe der Icons vor den Zeilen
+ * --m3-page-card-radius   -> Rundung der Karten und Kacheln
+ * --m3-page-gap           -> Luft zwischen zwei Karten
+ * --m3-page-section-gap   -> Luft über einer Abschnittsüberschrift
+ * --m3-page-seg-h         -> Höhe des Zeitraum-Schalters
+ * --m3-state-pressed      -> Tönung einer Zeile beim Drücken
+ * --m3-primary            -> Überschriften der Abschnitte, Haken, „Abmelden“
+ * --m3-on-surface / --m3-on-surface-variant -> Schrift bzw. Icons und Nebentext
+ * --m3-outline-variant    -> Rand von Zeitraum-Schalter und „Abmelden“
+ * --m3-secondary-container / --m3-on-secondary-container -> gewählter Zeitraum
+ * Aus styles/tokens.css: --card (Fläche der Karten)
+ *
+ * Direkt bei ihrer Regel: Schrift der Zeilen 16px (Material 3 „Body large“),
+ * Nebentext 14px, Abschnittstitel 14px halbfett, Kartentitel 16px halbfett,
+ * Name im Profilkopf 22px, Mailadresse 14px, Größe des Profilbilds 72px,
+ * Stift darauf 28px.
+ */
+
+@media (max-width: 1023px) {
+  /* ---------- Gerüst: Zeilen über die ganze Breite, alles andere mit Rand ---------- */
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .modal-body {
+    padding: 0 0 calc(24px + var(--safe-bottom));
+    gap: var(--m3-page-gap);
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .modal-body > * {
+    margin-inline: var(--m3-page-edge); /* margin-inline: Karten und Überschriften halten den Rand selbst */
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .modal-body > .ms-teaser {
+    width: auto; /* width: die Karte ist ein Knopf mit 100 % Breite und ragte mit dem Außenabstand über den rechten Rand */
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .modal-body > :is(.plist, .settings-group) {
+    margin-inline: 0; /* margin-inline: die Zeilen tragen den Rand innen, damit ihre Berührungsfläche bis an den Gerätrand reicht */
+  }
+
+  /* ---------- Abschnittsüberschriften ---------- */
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .psection {
+    margin-top: var(--m3-page-section-gap);
+    padding: 0 0 4px;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.1px;
+    color: var(--m3-primary);
+  }
+
+  /* ---------- Zeilen: ohne Kasten, ohne Linie ---------- */
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) :is(.plist, .settings-group) {
+    background: none;
+    border-radius: 0;
+    margin-bottom: 0;
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) :is(.plist-row, .settings-row) {
+    min-height: var(--m3-page-row-h);
+    padding: 8px var(--m3-page-edge);
+    gap: 16px;
+    border-bottom: 0;
+    font-size: 16px;
+    color: var(--m3-on-surface);
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) :is(.plist-row, .settings-row) .icon {
+    width: var(--m3-page-icon);
+    height: var(--m3-page-icon);
+    color: var(--m3-on-surface-variant);
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .plist-row .plist-trail {
+    width: 20px;
+    height: 20px;
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .plist-row .plist-value {
+    font-size: 14px;
+    color: var(--m3-on-surface-variant);
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .plist-row.is-danger,
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .plist-row.is-danger .icon {
+    color: var(--m3-error);
+  }
+
+  /* Gedrückt: eine getönte Fläche statt der grauen Fläche der anderen Fassungen („state layer“) */
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) :is(.plist-row, .settings-row):active {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), transparent);
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .settings-row .settings-check {
+    color: var(--m3-primary);
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) :is(.settings-note, .account-note) {
+    padding-inline: 0;
+    font-size: 14px;
+    color: var(--m3-on-surface-variant);
+  }
+
+  /* ---------- Profilkopf: links ausgerichtet wie in Google Mail ---------- */
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .profile-id {
+    --profile-avatar-size: 72px;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 16px;
+    align-items: center;
+    justify-items: start;
+    text-align: left;
+    padding: 8px 0 16px;
+    border-bottom: 0;
+    margin-bottom: 0;
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .profile-avatar-wrap {
+    grid-row: 1 / span 3; /* grid-row: das Bild steht links neben allen drei Textzeilen */
+    margin-bottom: 0;
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .profile-avatar {
+    font-size: 28px;
+  }
+
+  /* Der Stift ist kleiner und sitzt weiter außen, sonst verdeckt er die Initialen des kleineren Bilds */
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .profile-avatar-edit {
+    --profile-avatar-edit-size: 28px;
+    right: -4px;
+    bottom: -4px;
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .profile-avatar-edit .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) :is(.profile-name, .profile-mail, .profile-meta) {
+    grid-column: 2;
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .profile-name {
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .profile-mail {
+    font-size: 14px;
+    color: var(--m3-on-surface-variant);
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .profile-meta {
+    margin-top: 0;
+    font-size: 14px;
+    color: var(--m3-on-surface-variant);
+  }
+
+  /* „Abmelden“ als „Outlined button“, die Versionszeile linksbündig darunter */
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .profile-signout {
+    align-self: flex-start;
+    min-height: 40px;
+    margin-top: var(--m3-page-section-gap);
+    padding: 0 24px;
+    border: 1px solid var(--m3-outline-variant);
+    border-radius: 20px; /* border-radius: voll gerundet bei 40px Höhe */
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--m3-primary);
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .profile-version {
+    text-align: left;
+    padding: 8px 0 0;
+    color: var(--m3-on-surface-variant);
+  }
+
+  /* ---------- Karten und Kacheln ---------- */
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) :is(.pcard, .mini-card) {
+    border-radius: var(--m3-page-card-radius);
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .pcard {
+    padding: 16px;
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .pcard-head {
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0.15px;
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .pcard-head .icon {
+    width: var(--m3-page-icon);
+    height: var(--m3-page-icon);
+    color: var(--m3-on-surface-variant);
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .mini-grid {
+    margin-bottom: 0;
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .mini-title {
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  /* ---------- Zeitraum-Schalter: „Segmented button“ ---------- */
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .seg {
+    height: var(--m3-page-seg-h);
+    padding: 0;
+    overflow: hidden; /* overflow: schneidet das gewählte Segment an der runden Kante ab */
+    border: 1px solid var(--m3-outline-variant);
+    border-radius: calc(var(--m3-page-seg-h) / 2);
+    background: none;
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .seg button {
+    padding: 0;
+    border-radius: 0;
+    border-left: 1px solid var(--m3-outline-variant);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--m3-on-surface);
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .seg button:first-child {
+    border-left: 0;
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .seg button.is-active {
+    background: var(--m3-secondary-container);
+    color: var(--m3-on-secondary-container);
+    font-weight: 500;
+  }
+}

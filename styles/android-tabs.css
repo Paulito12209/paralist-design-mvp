@@ -22,8 +22,8 @@
  * --content-top / --page-head-top / --search-bar-height (styles/tokens.css)
  *                        -> wo die Zeile einrastet; daraus folgt der nötige Scrollweg
  *
- * Schriftgröße der Reiter: 14px direkt bei .tab-pill (Material 3 „Title small“),
- * ebenso bei .tab-pill-add-text („Neue Ansicht“ hinter dem Plus).
+ * Schriftgröße der Reiter: 14px direkt bei .tab-pill (Material 3 „Title small“);
+ * die von „Neue Ansicht“ hinter dem Plus steht in styles/android-tab-snap.css.
  * Zähler hinter einem Reiter (.media-count) zeigt nur der Reiter, in dem man
  * gerade nicht steht — wie in Google Tasks.
  */
@@ -175,26 +175,18 @@
   }
 
   /* Das Plus am Ende wird ein Reiter mit Text: „+ Neue Ansicht“, so hoch und
-     so gefärbt wie die übrigen Reiter, nur nie aktiv */
+     so gefärbt wie die übrigen Reiter, nur nie aktiv. Innenabstand, Einrasten
+     und Beschriftung: styles/android-tab-snap.css */
   [data-mobile-os="android"] .tab-pills .tab-pill-add {
     width: auto;
     height: var(--m3-tab-height);
     display: flex;
     align-items: center;
-    gap: 6px;
-    padding: 0 16px;
     color: var(--m3-on-surface-variant);
   }
 
   [data-mobile-os="android"] .tab-pill-add .icon {
     color: inherit;
-  }
-
-  [data-mobile-os="android"] .tab-pill-add-text {
-    display: inline;
-    font-size: 14px;
-    font-weight: 600;
-    white-space: nowrap;
   }
 
   /* ---------- Genug Scrollweg zum Einrasten ---------- */

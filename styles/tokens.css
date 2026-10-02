@@ -44,7 +44,7 @@
  * styles/profile.css         -> Profil-Blatt: Bild, Nutzungszeit, Serie, Listen
  * styles/usage-split.css     -> Nutzungszeit: Karte „Wo die Zeit hingeht“ mit Band und Bereichszeilen
  * styles/avatar-crop.css     -> Ausschnitt fürs Profilbild: Fenster, Zoom-Regler, Auswählen
- * styles/settings.css        -> Einstellungs-Blatt: Analyse-Kacheln und Darstellung; styles/support.css: Feedback-Formular und Danksagungen
+ * styles/settings.css        -> Einstellungs-Blatt: Darstellung und Haken-Zeilen, dazu die Analyse-Kacheln des Fortschritt-Blatts; styles/support.css: Feedback-Formular und Danksagungen
  * styles/tasks.css           -> Aufgaben-Seite: Pillen der Ansichten, Liste, Haken, Anlegen durch Tippen; styles/tasks-desk.css: Desktop-Werkzeuge und Spalten
  * styles/tasks-board.css     -> Aufgaben-Seite: die Spalten des Kanban-Boards; styles/tasks-select.css: Auswahlmodus (Kreise, Zählzeile, Leiste, Stapel)
  * styles/task-status.css     -> Haken vor Aufgaben in jeder Liste, Kategorie-Pille oben auf jeder Eintragsseite
@@ -61,7 +61,7 @@
  * styles/viewer.css          -> Dateiansicht: Foto, Video, Aufnahme und PDF
  * styles/drawing.css         -> Zeichenfläche und Werkzeugleiste
  * styles/video-player.css    -> YouTube-Player als dunkler Block an der Stelle einer Video-Karte (Eintrag, Lesezeichen)
- * styles/android.css, ios.css -> Fassungen Android/iOS; dazu android-tabs/-fab/-sheet/-archive/-view-btn/-entry/-list/-reorder/-card/-bottom-sheet/-segmented/-overview-gaps/-quiet-tools/-calendar, ios-segmented/-menu, tokens-android/-ios.css
+ * styles/android.css, ios.css -> Fassungen Android/iOS; dazu android-tabs/-fab/-sheet/-archive/-view-btn/-entry/-list/-reorder/-card/-bottom-sheet/-segmented/-tab-snap/-overview-gaps/-quiet-tools/-calendar/-pages (Einstellungen und Fortschritt als ganze Seite)/-pages-content (deren Inhalt nach Material 3, ohne Experiment), ios-segmented/-menu, tokens-android/-ios.css
  * styles/tokens-desk.css     -> die Werte der Desktop-Fassung (Spalten, Flächen, große Zahlen)
  * styles/desk.css            -> Desktop: Raster aus Seitenleiste, Reiterzeile, Seite und rechter Spalte; Zuklappen, Suchfeld, Eingabefeld unten
  * styles/desk-head.css       -> Desktop: Wortmarke mit Klapp-Knopf; Reiterzeile mit Zurück, Vorwärts und den vier Reitern

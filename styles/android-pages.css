@@ -1,0 +1,91 @@
+/*
+ * Android-Fassung (und „Android (Experiment)“): Einstellungen und Fortschritt
+ * sind keine Blätter von unten mehr, sondern ganze Seiten, wie Material 3 es
+ * für Einstellungen vorsieht: eine Kopfleiste („Small top app bar“) mit dem
+ * Pfeil links und dem Titel daneben, darunter der Inhalt über die ganze
+ * Fläche. Der Pfeil führt auf der ersten Ebene aus der Seite heraus und auf
+ * einer Unterseite eine Ebene zurück; ein Kreuz, einen Griff und Wischen nach
+ * unten gibt es nicht. Der Titel nennt in der Leiste die Unterseite, deshalb
+ * entfällt die Überschrift darüber. Das Menü-Symbol oben links (Drawer) kommt
+ * bewusst nicht dazu: es gibt nur zwei Ziele, beide liegen schon als Knöpfe in
+ * der Kopfzeile. Der Inhalt bleibt hier unverändert; erst
+ * styles/android-pages-content.css baut ihn nach Material 3 um (nicht im
+ * Experiment).
+ * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
+ * Pfad: styles/android-pages.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-page-bar-h      -> Höhe der Kopfleiste
+ * --m3-page-bar-pad    -> Abstand von Pfeil und Titel zum Geräterand
+ * --m3-page-bar-title  -> Schriftgröße des Titels
+ * --m3-page-in-time    -> Dauer des Hereingleitens
+ * --m3-page-in-shift   -> wie weit die Seite von rechts kommt
+ *
+ * Aus styles/tokens.css: --bg (Grund der Seite), --head-btn-size (Tippfläche des Pfeils)
+ */
+
+@keyframes m3-page-in {
+  from {
+    transform: translateX(var(--m3-page-in-shift));
+    opacity: 0;
+  }
+}
+
+@media (max-width: 1023px) {
+  /* Die Seite deckt das ganze Gerät ohne Schleier. Der Grund ist --bg statt
+     eines durchscheinenden Schwarz, damit nichts von der Übersicht durchschimmert. */
+  [data-mobile-os="android"] :is(#profile, #progress) {
+    padding: 0;
+    background: var(--bg);
+  }
+
+  [data-mobile-os="android"] :is(#profile, #progress) .modal {
+    height: 100%;
+    border-radius: 0;
+    box-shadow: none;
+    /* animation: gleitet beim Öffnen von rechts herein (Material 3 „Shared axis“) */
+    animation: m3-page-in var(--m3-page-in-time) cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  /* ---------- Kopfleiste ---------- */
+
+  [data-mobile-os="android"] :is(#profile, #progress) .modal-head {
+    justify-content: flex-start;
+    gap: 0;
+    min-height: var(--m3-page-bar-h);
+    padding: 0 var(--m3-page-bar-pad);
+  }
+
+  [data-mobile-os="android"] :is(#profile, #progress) :is(.modal-grip, .modal-close) {
+    display: none;
+  }
+
+  [data-mobile-os="android"] :is(#profile, #progress) .modal-back {
+    flex: 0 0 auto;
+    margin: 0; /* margin: der Pfeil der Blätter rückte über den Rand; hier sitzt er in seiner Tippfläche */
+  }
+
+  [data-mobile-os="android"] :is(#profile, #progress) .modal-head h2 {
+    flex: 1;
+    min-width: 0;
+    margin-left: 4px; /* margin-left: Luft zwischen Pfeil und Titel */
+    overflow: hidden;
+    text-overflow: ellipsis; /* text-overflow: ein langer Titel endet mit „…“ statt die Leiste zu sprengen */
+    white-space: nowrap;
+    font-size: var(--m3-page-bar-title);
+    font-weight: 400;
+    letter-spacing: 0;
+  }
+
+  /* Der Name der Unterseite steht in der Leiste, nicht noch einmal darüber */
+  [data-mobile-os="android"] :is(#profile, #progress) :is(.settings-detail-title, .ms-heading) {
+    display: none;
+  }
+}
+
+@media (max-width: 1023px) and (prefers-reduced-motion: reduce) {
+  [data-mobile-os="android"] :is(#profile, #progress) .modal {
+    animation: none; /* animation: wer Bewegung abgeschaltet hat, sieht die Seite sofort */
+  }
+}

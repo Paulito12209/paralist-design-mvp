@@ -92,14 +92,15 @@
   }
 
   /* Das Plus für eine neue Ansicht ist das letzte Segment: „+ Neue Ansicht“
-     in der Schrift der übrigen Segmente, nur nie gewählt */
+     in der Schrift der übrigen Segmente, nur nie gewählt. Plus und
+     Beschriftung sind Geschwister (src/ui/pill-add.js); der Abstand von 4px
+     dazwischen steckt im Innenabstand rechts vom Plus. */
   [data-mobile-os="ios"] .tab-pills .tab-pill-add {
     width: auto;
     height: 30px;
     display: flex;
     align-items: center;
-    gap: 4px;
-    padding: 0 14px 0 12px;
+    padding: 0 4px 0 12px;
     border-radius: 999px;
     color: var(--ios-secondary-label);
   }
@@ -111,9 +112,14 @@
   }
 
   [data-mobile-os="ios"] .tab-pill-add-text {
-    display: inline;
+    display: flex;
+    align-items: center;
+    flex: 0 0 auto;
+    height: 30px;
+    padding-right: 14px;
     font-size: 13px;
     font-weight: 600;
+    color: var(--ios-secondary-label);
     white-space: nowrap;
   }
 }

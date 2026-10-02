@@ -5,6 +5,8 @@
  * wenn der Inhalt schon oben steht — sonst scrollt man ganz normal. Das gilt
  * auch über Zeilen, Knöpfen und Karten im Inhalt, nicht nur am Kopf; im
  * Auswahl-Blatt zählt dafür die Liste darin (.sheet-options).
+ * Ausnahme: Blätter mit data-android-page sind in der Android-Fassung eine
+ * ganze Seite und lassen sich nicht ziehen.
  * Pfad: src/ui/modal-pull.js
  *
  * ANPASSBARE WERTE
@@ -19,6 +21,7 @@
 
 import { cssNumber } from "../core/css-vars.js";
 import { dom } from "../core/dom.js";
+import { isMobileOs } from "./platform.js";
 
 const startSlack = 8;
 const dimDistance = 420;
@@ -101,6 +104,8 @@ export function bindModalPull(backdrop, closeFn) {
   backdrop.addEventListener("pointerdown", (event) => {
     if (backdrop.hidden || event.button) return;
     if (backdrop.dataset.dismissing === "1") return;
+    /* In der Android-Fassung ist das Blatt eine ganze Seite: sie schließt über den Pfeil, nicht durch Ziehen */
+    if (backdrop.hasAttribute("data-android-page") && isMobileOs("android")) return;
     /* Liegt das Auswahl-Blatt darüber, gehört die Geste ihm */
     if (!dom.sheet.hidden && backdrop !== dom.sheet) return;
     /* Die Rollen des Datum-Blatts rollen selbst; nur daneben zieht man das Blatt zu.

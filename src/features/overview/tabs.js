@@ -11,7 +11,7 @@
 
 import { emit, events } from "../../core/bus.js";
 import { dom, el, focusAtEnd } from "../../core/dom.js";
-import { escapeHtml, icon } from "../../core/html.js";
+import { escapeHtml } from "../../core/html.js";
 import { sameId } from "../../core/ids.js";
 import { noHistoryForm } from "../../core/no-history.js";
 import { deleteTab } from "../../data/mutations.js";
@@ -21,6 +21,7 @@ import { setTabIconsOn } from "../../data/tab-icons.js";
 import { awardXp } from "../../data/xp.js";
 import { showTabMenu } from "../../ui/tab-menu.js";
 import { iconPickerAction } from "../../ui/pickers.js";
+import { addPill } from "../../ui/pill-add.js";
 import { fitPillInput } from "../../ui/pill-input.js";
 import { revealActive } from "../../ui/pill-swipe.js";
 import { tabGlyph } from "../../ui/tab-glyph.js";
@@ -50,9 +51,7 @@ function pillMarkup(tab) {
 /** Alle Tab-Pillen samt kleinem Plus — auf der Übersicht und der Seite Arbeitsbereiche. */
 export function tabPillsMarkup() {
   return `${state.tabs.map(pillMarkup).join("")}
-    <button class="tab-pill-add" type="button" data-tab-add="1" aria-label="Tab hinzufügen">
-      ${icon("plus")}
-    </button>`;
+    ${addPill("data-tab-add=\"1\"", "Tab hinzufügen")}`;
 }
 
 /* Die Seite, auf der gerade getippt wird — dort soll die Pille ins Bild rollen. */
