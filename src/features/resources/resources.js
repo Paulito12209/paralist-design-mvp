@@ -19,11 +19,13 @@ import { dom, el } from "../../core/dom.js";
 import { groupByMonth } from "../../core/format.js";
 import { filterCollectionEntries } from "../../data/collection-filters.js";
 import { collectionSort, sortCollectionEntries } from "../../data/collection-sorts.js";
-import { resourceFilters } from "../../data/config.js";
+import { resourceFilters, resourceFilterTypes } from "../../data/config.js";
+import { createEntryInline } from "../../data/mutations-inline.js";
 import { resourceEntries } from "../../data/queries.js";
 import { saveState, state, ui } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { filterEmptyState } from "../../ui/filter-empty.js";
+import { addInlineList, openEntryRow, reopenIn } from "../../ui/inline-add.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { entryRow } from "../../ui/rows.js";
 import { tabGlyph } from "../../ui/tab-glyph.js";
@@ -133,3 +135,23 @@ initPillSwipe(el("view-page"), {
   select: selectResourceFilter,
   enabled: () => isViewActive("page") && ui.currentPage?.kind === "resources",
 });
+
+/* Tipp unter die letzte Zeile (Android): legt den Typ der aktiven Pille an.
+   Bei Monatsüberschriften stehen mehrere Listen untereinander — dann zählt die ganze Seite. */
+const inlineList = {
+  area() {
+    if (!isViewActive("page") || ui.currentPage?.kind !== "resources") return null;
+    const lists = dom.pageBody.querySelectorAll(":scope > .workspace-list");
+    if (lists.length > 1) return dom.pageBody;
+    return lists[0] || null;
+  },
+  open(area) {
+    const type = resourceFilterTypes[state.prefs.resources.filter] || resourceFilterTypes.all;
+    openEntryRow(area, {
+      type,
+      onCommit: (title) => createEntryInline({ title, type }),
+      reopen: () => reopenIn(inlineList),
+    });
+  },
+};
+addInlineList(inlineList);

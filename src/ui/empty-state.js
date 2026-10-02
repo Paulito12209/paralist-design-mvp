@@ -106,6 +106,8 @@ function emblemMarkup(withBadge) {
  * @param options.art     Auf false weglassen: nur Titel (und Text), ohne Emblem —
  *                        für Platzhalter, die dicht neben anderen Abschnitten stehen
  *                        (Übersicht der allgemeinen Suche).
+ * @param options.plain   Statt des Emblems nur das große, graue Icon — wie am leeren
+ *                        Tag der Kalenderliste (Aufgaben-Seite in der Android-Fassung).
  */
 export function emptyState({
   icon: iconName,
@@ -116,6 +118,7 @@ export function emptyState({
   data = "",
   compact = false,
   art = true,
+  plain = false,
 }) {
   const pill = action
     ? `<button class="empty-add" type="button" ${data || `data-empty-add="${action.pick || ""}"`}>
@@ -123,10 +126,12 @@ export function emptyState({
       </button>`
     : "";
 
+  const look = `${compact ? " is-compact" : ""}${art ? "" : " is-bare"}${plain ? " is-plain" : ""}`;
   return `
-    <div class="empty-state${compact ? " is-compact" : ""}${art ? "" : " is-bare"}" style="--empty-accent:${accent}; --empty-add-accent:${pillTone(accent)}">
+    <div class="empty-state${look}" style="--empty-accent:${accent}; --empty-add-accent:${pillTone(accent)}">
+      ${plain ? icon(iconName, "empty-plain-icon") : ""}
       ${
-        art
+        art && !plain
           ? `<div class="empty-art">
         ${emblemMarkup(Boolean(action) && !action.icon)}
         ${icon(iconName, "empty-emblem-icon")}

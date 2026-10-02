@@ -7,7 +7,9 @@
  * des gewählten Tabs, die Zeile „Arbeitsbereich hinzufügen“ und „Zum Archiv“
  * (in der Android-Fassung der Archiv-Knopf links unten, src/shell/android-archive.js).
  * Ist der Tab leer, steht statt der Zeile der Platzhalter mit einer Pille
- * zum Anlegen in der Mitte — wie auf den übrigen Seiten.
+ * zum Anlegen in der Mitte — wie auf den übrigen Seiten. In der
+ * Android-Fassung fehlt die Zeile auch neben Arbeitsbereichen: dort legt ein
+ * Tipp unter den letzten an (src/features/overview/page-inline.js).
  * Die gewählte Pille ist der Tab der App (state.activeTabId) — so legt „neu“
  * dort an, wo man hinsieht, und Browser-Zurück findet dieselbe Pille wieder.
  * Waagerecht wischen wechselt den Tab. Antippen, Halten und Rechtsklick
@@ -32,6 +34,7 @@ import { state, ui } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { filterEmptyState } from "../../ui/filter-empty.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
+import { isMobileOs } from "../../ui/platform.js";
 import { viewPanelButton } from "../../ui/view-panel.js";
 import { isViewActive } from "../../ui/views.js";
 import { afterTabsRender, tabPillsMarkup } from "./tabs.js";
@@ -88,8 +91,11 @@ export function renderWorkspaceCollection() {
      steht der Filter-Platzhalter da und die Zeile zum Anlegen bleibt. */
   const filteredAway = !rows && tabWorkspaces().length > 0;
   const empty = filteredAway ? filterEmptyState() : rows ? "" : emptyState(emptyTab);
+  /* Android: keine Zeile „Arbeitsbereich hinzufügen“ — ein Tipp unter den
+     letzten Arbeitsbereich legt an (src/features/overview/page-inline.js). */
+  const withAdd = (Boolean(rows) || filteredAway) && !isMobileOs("android");
   dom.pageBody.innerHTML = `${pillsRowMarkup()}${empty}
-    <div class="workspace-list" data-reorder="workspaces">${rows}${workspaceTailMarkup(Boolean(rows) || filteredAway)}</div>`;
+    <div class="workspace-list" data-reorder="workspaces">${rows}${workspaceTailMarkup(withAdd)}</div>`;
   dom.pageBody.querySelector(".collection-pills").scrollLeft = scrolled;
   afterTabsRender();
   focusWorkspaceName();
