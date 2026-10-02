@@ -100,6 +100,10 @@
  * --m3-menu-sheet-pad          -> Luft über der ersten und unter der letzten Zeile in einem Auswahl-Blatt
  * --m3-menu-radius             -> Rundung des kleinen Menüs beim gedrückt Halten (Material 3 „Menu“: 4dp, wie in Google Drive)
  * --m3-menu-pad                -> Luft über der ersten und unter der letzten Zeile in diesem Menü (Material 3: 8dp)
+ * --m3-chip-h / --m3-chip-radius -> Höhe und Rundung der Auswahl-Chips „Aufgabe ▾“ und „Eingang ▾“ im
+ *                                 Blatt „Neu“ (Material 3 „Filter chip“: 32dp, 8dp — eckig gerundet, keine Pille)
+ * --m3-composer-attach         -> Größe des runden Anhang-Knopfs (+) links unten in diesem Blatt (40dp)
+ * --m3-composer-pad            -> Innenabstand des Blatts „Neu“ links, rechts und oben (Google Tasks: 24dp)
  */
 
 :root[data-mobile-os="android"] {
@@ -181,6 +185,10 @@
   --m3-text-btn-pad: 12px;
   --m3-state-pressed: 12%;
   --m3-menu-sheet-pad: 8px;
+  --m3-chip-h: 32px;
+  --m3-chip-radius: 8px;
+  --m3-composer-attach: 40px;
+  --m3-composer-pad: 24px;
   --m3-error: #b3261c;
   --m3-on-error: #ffffff;
 }

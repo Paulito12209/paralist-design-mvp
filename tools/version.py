@@ -19,16 +19,20 @@ ANPASSBARE WERTE IN DIESER DATEI
 -----------------------------------
 SERVED     -> welche Dateien und Ordner zur ausgelieferten App gehören
 STAMP_LEN  -> wie viele Zeichen des Prüfwerts im Stempel stehen
+LINE_WIDTH -> so breit wird eine Zeile der Dateiliste höchstens; mehrere Namen
+              je Zeile halten src/data/version.js unter der Grenze von 400 Zeilen
 """
 
 import hashlib
 import pathlib
 import sys
+import textwrap
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 TARGET = ROOT / "src" / "data" / "version.js"
 SERVED = ("index.html", "manifest.webmanifest", "assets", "src", "styles")
 STAMP_LEN = 12
+LINE_WIDTH = 100
 
 HEADER = """/*
  * Versionsstempel der App und die Liste aller Dateien, die sie lädt.
@@ -68,7 +72,10 @@ def expected_text():
     files = served_files()
     # "./" ist die Startadresse selbst: der Browser merkt sich index.html auch darunter.
     listed = ["./", "src/data/version.js"] + files
-    lines = "\n".join(f'  "{name}",' for name in listed)
+    # Mehrere Namen je Zeile: eine Zeile je Datei sprengte die 400-Zeilen-Grenze.
+    names = " ".join(f'"{name}",' for name in listed)
+    lines = "\n".join(textwrap.wrap(names, LINE_WIDTH, initial_indent="  ", subsequent_indent="  ",
+                                     break_on_hyphens=False, break_long_words=False))
     return (
         f"{HEADER}\n"
         f'export const appVersion = "{stamp(files)}";\n\n'
