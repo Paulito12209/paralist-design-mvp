@@ -94,6 +94,8 @@
  * --m3-text-btn-pad            -> Innenabstand links und rechts darin (Material 3: 12dp)
  * --m3-state-pressed           -> wie stark eine Zeile beim Drücken getönt wird (Material 3 „state layer“: 12%)
  * --m3-menu-sheet-pad          -> Luft über der ersten und unter der letzten Zeile in einem Auswahl-Blatt
+ * --m3-menu-radius             -> Rundung des kleinen Menüs beim gedrückt Halten (Material 3 „Menu“: 4dp, wie in Google Drive)
+ * --m3-menu-pad                -> Luft über der ersten und unter der letzten Zeile in diesem Menü (Material 3: 8dp)
  */
 
 :root[data-mobile-os="android"] {
@@ -139,6 +141,8 @@
   --m3-sheet-width: 640px;
   --m3-sheet-handle-zone: 48px;
   --m3-sheet-row-h: 56px;
+  --m3-menu-radius: 4px;
+  --m3-menu-pad: 8px;
   --m3-seg-thumb-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 3px 1px rgba(0, 0, 0, 0.04);
   --m3-seg-height: 30px;
   --m3-seg-pad: 2px;
