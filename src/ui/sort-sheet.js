@@ -4,6 +4,11 @@
  * „Reihenfolge“ mit den beiden Richtungen, deren Wortlaut die linke Wahl
  * liefert — „A bis Z“ / „Z bis A“, „Älteste zuerst“ / „Neueste zuerst“.
  * Jede Rolle wählt sofort, die Liste dahinter zieht mit; „Fertig“ schließt.
+ * In der Android-Fassung erscheint stattdessen eine einfache Liste wie in
+ * Google Tasks: kleine Überschrift „Sortieren nach“, die Möglichkeiten mit
+ * Haken links, darunter „Reihenfolge“ mit den zwei Richtungen. Ein Tipp wählt
+ * und schließt sofort — keine Rollen, kein „Fertig“ (Auswahl-Blatt aus
+ * src/ui/sheet.js, Stile in styles/android-bottom-sheet.css).
  *
  * Eine Option ist { id, label, icon, up, down, asc }: `up` ist der Wortlaut
  * für aufsteigend, `down` für absteigend, `asc` die natürliche Richtung —
@@ -14,7 +19,8 @@
  * -----------------------------------
  * title        -> Überschrift des Blatts
  * byHeading    -> Überschrift über der linken Rolle
- * dirHeading   -> Überschrift über der rechten Rolle
+ * dirHeading   -> Überschrift über der rechten Rolle und über den Richtungen in der Android-Liste
+ * listHeading  -> kleine Überschrift über den Möglichkeiten in der Android-Liste
  * doneLabel    -> Aufschrift des Knopfs unten
  *
  * Wie lange nach dem Rollen gewartet wird, bis die Auswahl gilt, steht in
@@ -30,11 +36,14 @@ import { events, on } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { escapeHtml, icon } from "../core/html.js";
 import { bindModalPull, clearModalPull } from "./modal-pull.js";
+import { isMobileOs } from "./platform.js";
+import { openSheet } from "./sheet.js";
 import { fillWheel, markWheel, scrollWheelTo, watchWheel } from "./wheel.js";
 
 const title = "Sortieren";
 const byHeading = "Wonach";
 const dirHeading = "Reihenfolge";
+const listHeading = "Sortieren nach";
 const doneLabel = "Fertig";
 
 let root = null;
@@ -155,6 +164,32 @@ function build() {
   on(events.viewWillChange, closeSortSheet);
 }
 
+/*
+ * Android: die Liste wie in Google Tasks. Zu einer anderen Möglichkeit zu
+ * wechseln setzt ihre natürliche Richtung (Namen von A, Daten vom neuesten an);
+ * dieselbe noch einmal zu wählen ändert nichts.
+ */
+function openSortList({ options, current, asc, onChange }) {
+  const natural = naturalOf(current);
+  const by = options.map((option) => ({
+    label: option.label,
+    leadCheck: true,
+    active: option.id === current.id,
+    onSelect: () => {
+      if (option.id !== current.id) onChange(option.id, naturalOf(option));
+    },
+  }));
+  const order = [natural, !natural].map((dirAsc) => ({
+    label: dirAsc ? current.up : current.down,
+    leadCheck: true,
+    active: dirAsc === asc,
+    onSelect: () => {
+      if (dirAsc !== asc) onChange(current.id, dirAsc);
+    },
+  }));
+  openSheet("", [{ heading: true, label: listHeading }, ...by, { heading: true, label: dirHeading }, ...order]);
+}
+
 /**
  * Das Blatt öffnen.
  * @param options  die Optionen wie oben beschrieben
@@ -163,6 +198,11 @@ function build() {
  * @param onChange (sort, asc) — speichert die Wahl; die Liste dahinter zeichnet sich selbst neu
  */
 export function openSortSheet({ options, sort, asc, onChange }) {
+  /* Beim Öffnen gefragt, nicht einmal beim Start: die Fassung lässt sich in den Einstellungen wechseln */
+  if (isMobileOs("android")) {
+    openSortList({ options, current: optionOf(options, sort), asc, onChange });
+    return;
+  }
   if (!root) build();
   open = { options, sort: optionOf(options, sort).id, asc, onChange };
   clearModalPull(root);

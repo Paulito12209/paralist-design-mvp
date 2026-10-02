@@ -18,7 +18,9 @@
  * lässt das Blatt offen).
  *
  * Eine gewählte Option (`active`) trägt rechts einen Haken — nicht nur die
- * Fläche, die man bei hellem Licht leicht übersieht. `count` stellt statt
+ * Fläche, die man bei hellem Licht leicht übersieht. Mit `leadCheck` steht der
+ * Haken stattdessen links an der Stelle des Icons (die übrigen Zeilen lassen
+ * dort Platz) — so wählt man in Google Tasks die Sortierung. `count` stellt statt
  * des Hakens eine blasse Zahl rechts hin: bei mehreren gewählten Aufgaben,
  * wie viele davon diesen Wert schon haben.
  *
@@ -80,7 +82,10 @@ function optionMarkup(option, index) {
   if (option.gap) classes.push("is-gap");
   /* pair: halbe Breite, damit zwei Optionen nebeneinander in eine Zeile passen */
   if (option.pair) classes.push("is-pair");
-  const check = option.active && !option.pair ? icon("check", "sheet-check") : "";
+  const check = option.active && !option.pair && !option.leadCheck ? icon("check", "sheet-check") : "";
+  /* leadCheck: links der Haken (gewählt) oder eine leere Fläche gleicher Größe, damit alle Namen auf einer Linie stehen */
+  if (option.leadCheck) classes.push("is-lead-check");
+  const lead = option.leadCheck ? (option.active ? icon("check", "sheet-check-lead") : '<span class="sheet-icon-gap"></span>') : icon(option.icon);
   const count = option.count ? `<span class="sheet-count">${option.count}</span>` : "";
   /* Kein Knopf im Knopf: das ⓘ ist ein span, den der Klick-Empfänger unten zuerst prüft */
   const info = option.info
@@ -88,7 +93,7 @@ function optionMarkup(option, index) {
     : "";
   return `
     <button class="${classes.join(" ")}" type="button" data-sheet="${index}"${option.active ? ' aria-current="true"' : ""}>
-      ${icon(option.icon)}
+      ${lead}
       <span class="sheet-option-label">${escapeHtml(option.label)}${info}</span>${count}${check}
     </button>
   `;

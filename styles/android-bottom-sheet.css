@@ -2,9 +2,9 @@
  * Android-Fassung, alle Blätter von unten nach Material 3 („Modal bottom
  * sheet“), wie in Google Tasks: über die ganze Breite, oben 16px gerundet,
  * Fläche surface-container, ohne Schatten (auch nicht den hellen Schein des
- * Dunkelmodus) und ohne sichtbaren Griff —
- * Material 3 lässt ihn bei modalen Blättern weg; Ziehen nach unten
- * (src/ui/modal-pull.js), Schleier und Zurück schließen trotzdem.
+ * Dunkelmodus) und ohne Griff — wie in Google Tasks (Material 3 stellt ihn bei
+ * modalen Blättern frei); Ziehen nach unten (src/ui/modal-pull.js), Schleier
+ * und Zurück schließen trotzdem.
  * Zwei Arten von Blättern:
  * - das Auswahl-Blatt (#sheet, src/ui/sheet.js): Menüs beim Halten eines
  *   Reiters, Verknüpfen, Icon wählen, Ort wählen, Erinnerung … Die Klasse
@@ -118,6 +118,22 @@
     width: 24px;
     height: 24px;
     color: var(--m3-on-surface-variant);
+  }
+
+  /* Auswahl wie in Google Tasks („Sortieren nach“): Haken links in der Schriftfarbe,
+     bei den übrigen Zeilen eine leere Fläche gleicher Größe, Schrift nicht fett */
+  [data-mobile-os="android"] .sheet-backdrop.is-m3 .sheet-option .sheet-icon-gap {
+    flex: none;
+    width: 24px;
+    height: 24px;
+  }
+
+  [data-mobile-os="android"] .sheet-backdrop.is-m3 .sheet-option .sheet-check-lead {
+    color: var(--m3-on-surface);
+  }
+
+  [data-mobile-os="android"] .sheet-backdrop.is-m3 .sheet-option.is-lead-check.is-active {
+    font-weight: 400;
   }
 
   /* Gewählt: keine Fläche, sondern der Haken rechts in der Akzentfarbe */
