@@ -22,7 +22,7 @@
  * linkableTypes           -> welche Typen sich mit einem Eintrag verknüpfen lassen
  * workspaceDefaultName    -> Vorgabename eines neuen Arbeitsbereichs
  * levelSteps / levelStep  -> ab wie vielen XP die nächste Stufe beginnt
- * calendarSegments[*].add -> Beschriftung der Pille am leeren Kalendertag
+ * calendarSegments       -> die drei Spalten der Kalenderliste; steht in src/data/config-calendar.js
  * manualSort              -> „Eigene Reihenfolge“: Wortlaut der Sortierung, die beim Verschieben einer Zeile entsteht
  * projectSorts            -> wonach sich die Projekte sortieren lassen, samt Wortlaut beider Richtungen
  * linkFilterDefaults     -> womit der Filter „Verknüpft mit“ startet (nichts gewählt)
@@ -259,15 +259,7 @@ export const calendarSpans = [
 /** Ansicht der grauen Fläche unter dem Kalenderstreifen. */
 export const calendarModes = ["grid", "list"];
 
-/**
- * Die drei Spalten der Kalenderliste. `pick` sagt, welchen Typ das Eingabefeld
- * vorwählt, wenn man am leeren Tag auf die Pille zum Anlegen tippt.
- */
-export const calendarSegments = [
-  { id: "aufgaben", label: "Aufgaben", empty: "Keine Aufgaben", pick: "aufgabe", add: "Aufgabe hinzufügen" },
-  { id: "termine", label: "Termine", empty: "Nichts geplant", pick: "termin", add: "Termin eintragen" },
-  { id: "projekte", label: "Projekte", empty: "Keine Projekte", pick: "projekt", add: "Projekt anlegen" },
-];
+export { calendarSegments } from "./config-calendar.js";
 
 /** Der Schalter über der Bühne der Übersicht (src/features/dashboard/dashboard-stage.js). */
 export const stageModes = [

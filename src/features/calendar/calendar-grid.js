@@ -21,6 +21,7 @@ import { typeIcon } from "../../data/config.js";
 import { ui } from "../../data/state.js";
 import { entriesOfDay, entryColor, entryTime } from "../../data/queries.js";
 import { cssNumber } from "../../core/css-vars.js";
+import { isMobileOs } from "../../ui/platform.js";
 import { cal, gridTopOffset, hourHeight, nowOffset } from "./calendar-state.js";
 
 const overlapShift = 12;
@@ -114,6 +115,22 @@ function stuckPanelHeight() {
 }
 
 /*
+ * Android: genau der Platz unter dem eingerasteten Kopf bis zum unteren Rand.
+ * Die Seite lässt sich dadurch nur so weit schieben, bis Titel und Datum weg
+ * sind und der Kopf oben steht — ein einzelner Eintrag oder der Platzhalter
+ * rutscht nie unter die Trennlinie der Reiter. Erst wenn die Einträge nicht
+ * mehr auf den Bildschirm passen, wächst die Fläche und die obersten
+ * verschwinden unter der Linie. Der Kopf rastet bei Innenabstand des
+ * Scrollbereichs plus `top` der Kopfzeile ein (position: sticky).
+ */
+function androidListHeight() {
+  const headStyle = getComputedStyle(dom.calHead);
+  const stuckTop = parseFloat(getComputedStyle(dom.content).paddingTop) + parseFloat(headStyle.top);
+  const gapBelowHead = parseFloat(headStyle.marginBottom) || 0;
+  return Math.max(minGridHeight, dom.content.clientHeight - stuckTop - dom.calHead.offsetHeight - gapBelowHead);
+}
+
+/*
  * Die Liste wächst mit ihren Einträgen, reicht aber mindestens so weit wie
  * das Raster: sonst hat die Seite an einem leeren oder kurzen Tag keinen
  * Weg zum Scrollen, und Titel und Monat lassen sich nicht wegschieben, bis
@@ -121,7 +138,8 @@ function stuckPanelHeight() {
  */
 export function sizeList() {
   dom.calPanel.style.height = "";
-  dom.calPanel.style.minHeight = `${stuckPanelHeight()}px`;
+  const minHeight = isMobileOs("android") ? androidListHeight() : stuckPanelHeight();
+  dom.calPanel.style.minHeight = `${minHeight}px`;
   /* Die Reiterzeile (Aufgaben, Termine, Projekte) rastet unter dem Kopf ein
      und braucht dafür dessen Höhe — sie hängt von der Zeitspanne ab (1 W, 2 W, 1 M) */
   dom.calPanel.style.setProperty("--cal-head-stuck", `${stuckHeadHeight()}px`);
