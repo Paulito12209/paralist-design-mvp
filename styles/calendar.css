@@ -38,11 +38,17 @@
 
 #view-calendar .screen-title {
   margin-bottom: 18px;
+  /* position/z-index: die Verlaengerung des Kopfes (.cal-head) reicht in Ruhe
+     14px in den Titel hinein; ohne eigene Ebene wuerde sie seine Unterkante verdecken */
+  position: relative;
+  z-index: 4;
 }
 
 /*
- * Einrastender Kopf um den Wochenstreifen. Titel und Monat scrollen darueber
- * weg und verblassen unter der Suchleiste; der Streifen bleibt stehen.
+ * Einrastender Kopf um Datumszeile und Wochenstreifen. Nur der Titel
+ * „Kalender“ scrollt darueber weg; Datum, KW, das Symbol „Ansicht“ und der
+ * Streifen bleiben stehen, damit man beim Scrollen durch die Stunden immer
+ * sieht, wo man ist, und die Ansicht jederzeit umstellen kann.
  *
  * Der Scrollbereich hat oben --content-top Innenabstand, und dort wuerde beim
  * Einrasten das Raster durchscheinen. Darum wird der Kopf um genau diese Hoehe
@@ -51,7 +57,7 @@
  * margin-top gleicht die Verlaengerung aus, damit der Streifen in Ruhe an
  * derselben Stelle steht wie zuvor.
  * position: sticky -> bleibt am oberen Rand des Scrollbereichs haengen
- * z-index: 3 -> ueber Jetzt-Linie (2) und Terminen (1), unter dem Monat (4)
+ * z-index: 3 -> ueber Jetzt-Linie (2) und Terminen (1), unter dem Titel (4)
  */
 .cal-head {
   position: sticky;
@@ -65,7 +71,7 @@
   border-bottom: 1px solid var(--line);
 }
 
-/* Zeile unter „Kalender“: links der gewählte Tag, rechts seine KW */
+/* Zeile unter „Kalender“, oben im einrastenden Kopf: links der gewählte Tag, rechts seine KW */
 .cal-date-row {
   display: flex;
   align-items: center;
@@ -73,10 +79,6 @@
   gap: 12px;
   padding: 0 var(--title-side);
   margin-bottom: 18px;
-  /* position/z-index: die Verlaengerung des Kopfes (.cal-head) reicht in Ruhe
-     14px in diese Zeile hinein; ohne eigene Ebene wuerde sie das „p“ verdecken */
-  position: relative;
-  z-index: 4;
 }
 
 /* Der gewählte Tag mit kleinem Pfeil, öffnet das Blatt „Datum“ */

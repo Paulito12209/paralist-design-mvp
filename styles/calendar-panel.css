@@ -11,6 +11,8 @@
  * --cal-now-label           -> Schriftfarbe in ihrer Uhrzeit-Pille
  * --cal-accent              -> gewählte Spalte in der Liste und Ton der Pille zum Anlegen
  * --event-color             -> wird je Termin aus src/data/config.js gesetzt
+ * --cal-head-stuck          -> setzt src/features/calendar/calendar-grid.js (sizeList):
+ *                              so weit unter dem Rand rastet die Reiterzeile der Liste ein
  *
  * DIREKT IN DIESER DATEI (Tabs der Liste, .cal-seg-btn)
  * -----------------------------------
@@ -74,6 +76,10 @@
  * container-type: die Tabs richten ihre Größe nach der Breite dieser Zeile
  * (Abfragen unten), nicht nach dem Fenster — im Desktop-Rahmen ist die Zeile
  * schmaler als das Browserfenster.
+ * position: sticky — beim Scrollen durch die Liste bleibt die Zeile direkt
+ * unter dem eingerasteten Kopf (Datum und Wochenstreifen) stehen, statt
+ * darunter zu verschwinden; top ist dessen sichtbare Höhe (--cal-head-stuck).
+ * z-index: 2 -> über den Einträgen der Liste, unter dem Kopf (3)
  */
 .cal-seg {
   container-type: inline-size;
@@ -81,6 +87,10 @@
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   margin-bottom: 8px;
+  position: sticky;
+  top: var(--cal-head-stuck, 0px);
+  z-index: 2;
+  background: var(--bg); /* deckt die Einträge ab, die darunter durchlaufen */
 }
 
 /* Die Hülle der drei Reiter nimmt hier keinen Platz ein: die Reiter stehen

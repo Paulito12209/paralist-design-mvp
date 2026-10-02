@@ -9,6 +9,9 @@
  * overlapShift -> um wie viele Pixel gleichzeitige Termine versetzt werden
  * nowTopGap    -> Abstand der Jetzt-Linie zum oberen Rand des Rasters beim Öffnen
  * minGridHeight -> Mindesthöhe des Rasters (und der Liste), falls der Kopf einmal sehr hoch wird
+ * --cal-head-stuck -> wird hier an die Fläche geschrieben: sichtbare Höhe des
+ *                    eingerasteten Kopfes; darunter rastet die Reiterzeile der
+ *                    Liste ein (styles/calendar-panel.css)
  */
 
 import { dayKey, pad2, timeKey } from "../../core/dates.js";
@@ -99,10 +102,15 @@ export function sizeGrid() {
   dom.calPanel.style.height = `${stuckPanelHeight()}px`;
 }
 
+/* Sichtbare Höhe des eingerasteten Kopfes: seine Verlängerung nach oben
+   (--content-top, styles/calendar.css) liegt außerhalb des Scrollbereichs. */
+function stuckHeadHeight() {
+  return dom.calHead.offsetHeight - cssNumber("--content-top", 40);
+}
+
 /* Der Platz vom eingerasteten Kopf bis zum unteren Rand. */
 function stuckPanelHeight() {
-  const stuckHead = dom.calHead.offsetHeight - cssNumber("--content-top", 40);
-  return Math.max(minGridHeight, dom.content.clientHeight - stuckHead);
+  return Math.max(minGridHeight, dom.content.clientHeight - stuckHeadHeight());
 }
 
 /*
@@ -114,6 +122,9 @@ function stuckPanelHeight() {
 export function sizeList() {
   dom.calPanel.style.height = "";
   dom.calPanel.style.minHeight = `${stuckPanelHeight()}px`;
+  /* Die Reiterzeile (Aufgaben, Termine, Projekte) rastet unter dem Kopf ein
+     und braucht dafür dessen Höhe — sie hängt von der Zeitspanne ab (1 W, 2 W, 1 M) */
+  dom.calPanel.style.setProperty("--cal-head-stuck", `${stuckHeadHeight()}px`);
 }
 
 /* Monat am Desktop: die Fläche richtet sich ganz nach ihrem Inhalt. */
