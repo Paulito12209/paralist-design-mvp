@@ -29,7 +29,9 @@
  * --m3-swipe-action-gap    -> Abstand der Wisch-Knöpfe (ebenso von swipe.js gelesen)
  * --m3-secondary-container / --m3-on-secondary-container -> tonale Wisch-Knöpfe
  * --m3-error / --m3-on-error -> Wisch-Knopf „Löschen“
- * --m3-on-surface / --m3-on-surface-variant -> Titel bzw. Icon vor dem Titel
+ * --m3-on-surface / --m3-on-surface-variant -> Titel bzw. Icon vor dem Titel; auch die Schrift
+ *                             in den Eingabefeldern neuer Zeilen
+ * --m3-on-surface-muted    -> Vorgabetext (Platzhalter) in den Eingabefeldern neuer Zeilen
  * --m3-row-more-size       -> Tippfläche der drei Punkte (Material 3: 48dp); sie ragt über den Rand
  *                             der Zeile hinaus, damit die Punkte bündig mit dem Seitenrand stehen
  * --m3-state-pressed       -> wie stark Zeile und drei Punkte beim Drücken getönt werden
@@ -89,8 +91,30 @@
   }
 
   [data-mobile-os="android"] .workspace-add,
-  [data-mobile-os="android"] :is(.task-ghost, .task-inline, .project-inline) {
+  [data-mobile-os="android"] :is(.task-ghost, .task-inline, .project-inline, .workspace-edit) {
     padding-left: calc(var(--m3-tab-edge) - var(--content-side));
+  }
+
+  /* Geister- und Eingabezeile der Aufgabenliste messen wie eine fertige Zeile:
+     gleiche Höhe, gleicher Abstand zum Titel, 16px und ohne Trennlinie. Die Zeilen im
+     Board (.board-row) haben ihr eigenes Maß und bleiben außen vor. */
+  [data-mobile-os="android"] :is(.task-ghost, .task-inline:not(.board-row)) {
+    min-height: var(--m3-list-row-h);
+    gap: var(--m3-list-gap);
+    font-size: 16px;
+    border-bottom: 0;
+  }
+
+  /* Die Eingabefelder in neuen Zeilen (Arbeitsbereich, Projekt, Aufgabe) lesen
+     sich wie der Titel einer fertigen Zeile: 16px in der Titelfarbe. Der Vorgabetext
+     davor steht eine Stufe leiser, in der Farbe der Nebenzeilen („Archiv“, „… hinzufügen“). */
+  [data-mobile-os="android"] :is(.workspace-name-input, .task-inline-input) {
+    font: inherit;
+    color: var(--m3-on-surface);
+  }
+
+  [data-mobile-os="android"] :is(.workspace-name-input, .task-inline-input)::placeholder {
+    color: var(--m3-on-surface-muted);
   }
 
   [data-mobile-os="android"] .workspace-row .icon:not(.chevron) {

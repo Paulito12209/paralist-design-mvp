@@ -193,8 +193,8 @@ export function workspaceRow(workspace, canEdit = false, actions = workspaceActi
        Schon Getipptes bleibt stehen, auch wenn die Liste zwischendurch neu gezeichnet wird. */
     const draft = ui.nameDraft && sameId(ui.nameDraft.id, workspace.id) ? ui.nameDraft.value : workspace.name;
     return `
-      <div class="workspace-row">
-        ${icon(workspaceIcon(workspace))}
+      <div class="workspace-row workspace-edit">
+        <span class="row-glyph">${icon(workspaceIcon(workspace))}</span>
         <input class="workspace-name-input" id="workspace-name-input" type="text" data-editing="${workspace.id}" value="${escapeHtml(draft)}" placeholder="${escapeHtml(workspace.placeholder || workspaceLabel(workspace))}" aria-label="Arbeitsbereich benennen" form="${noHistoryForm}" enterkeyhint="go" />
       </div>
     `;
