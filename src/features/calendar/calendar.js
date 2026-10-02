@@ -33,6 +33,7 @@ import {
   sizeList,
   unsizePanel,
 } from "./calendar-grid.js";
+import { initCalendarInline } from "./calendar-inline.js";
 import { renderList } from "./calendar-list.js";
 import {
   goToDay,
@@ -263,6 +264,7 @@ function init() {
   /* Die KW rechts daneben öffnet dasselbe Blatt mit den Rollen Jahr | KW. */
   dom.calKwBtn.addEventListener("click", () => openDatePicker("week"));
   dom.calPanel.addEventListener("click", onPanelClick);
+  initCalendarInline();
   toolbarElement().addEventListener("click", onToolbarClick);
   /* Nur auf der Fläche unter dem Streifen: dort blättert waagerechtes Wischen
      schon Wochen um. Das Stundenraster hat keine Tabs. */

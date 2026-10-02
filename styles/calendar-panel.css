@@ -187,6 +187,20 @@
   margin-bottom: 8px;
 }
 
+/* Solange eine Zeile geschrieben wird (src/features/calendar/calendar-inline.js), tritt der Platzhalter zurück */
+.cal-panel.is-adding .cal-empty {
+  display: none;
+}
+
+/* Der Satz zum schnellsten Weg: leise, auf zwei Zeilen begrenzt */
+.cal-empty p {
+  max-width: 280px;
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
 /* Die Pille zum Anlegen erbt sonst das große Kalender-Icon von oben. Ihr
    Ton ist der des Kalenders (styles/empty-state.css mischt daraus Fläche und Schrift). */
 .cal-empty .empty-add {
