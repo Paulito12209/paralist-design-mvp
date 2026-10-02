@@ -19,9 +19,9 @@ import {
   resourcePick,
   types,
 } from "../../data/config.js";
-import { findProjectView } from "../../data/project-views.js";
+import { draftSpace, findProjectView } from "../../data/project-views.js";
 import { findEntry, isContainer, mainPlace } from "../../data/queries.js";
-import { entryRef, isWorkspaceRef } from "../../data/refs.js";
+import { entryRef } from "../../data/refs.js";
 import { state, ui } from "../../data/state.js";
 import { currentView } from "../../ui/views.js";
 
@@ -46,7 +46,7 @@ function calendarType() {
  */
 function projectDraftPlace() {
   const view = ui.projectDraftView != null ? findProjectView(ui.projectDraftView) : null;
-  return view && !view.fixed && !view.ids.length && isWorkspaceRef(view.place) ? view.place : null;
+  return view && !view.fixed && !view.ids.length ? draftSpace(view) : null;
 }
 
 /**

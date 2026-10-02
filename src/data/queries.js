@@ -19,12 +19,12 @@ import {
   overviewPages,
   resourceTypes,
   typeIcon,
-  typeSingular,
   typeOrder,
   typePlurals,
   xpItems,
 } from "./config.js";
 import { archiveColumn, isTaskDone, taskGroupings, taskPriorities, taskPriorityOf, taskStatusOf } from "./config-tasks.js";
+import { filterByLinks } from "./link-filter.js";
 import { entryRef, isEntryRef, isWorkspaceRef, refId, workspaceRef } from "./refs.js";
 import { state } from "./state.js";
 
@@ -288,14 +288,6 @@ export function sortTasks(list, sortId = "erstellt", asc = true) {
   return [...list].sort((a, b) => doneRank(a) - doneRank(b) || sign * rest(a, b));
 }
 
-/** Gehört die Aufgabe zu dem Ort, den der Filter verlangt — abgelegt oder verknüpft? „alle“ lässt alles durch. */
-function matchesPlace(entry, place) {
-  if (place === "alle") return true;
-  if (place === "inbox") return hasPlace(entry, null);
-  if (hasPlace(entry, place)) return true;
-  return isEntryRef(place) && (entry.links || []).some((id) => sameId(id, refId(place)));
-}
-
 /* Lässt der Filter der Ansicht Status und Dringlichkeit dieser Aufgabe durch?
    Archiviertes hängt nur am Schalter „Archiviert“ und an der Dringlichkeit. */
 function matchesFilter(entry, prefs) {
@@ -305,10 +297,10 @@ function matchesFilter(entry, prefs) {
   return !(prefs.hiddenPriorities || []).includes(taskPriorityOf(entry.priority).id);
 }
 
-/** Aufgaben der Seite: nach Ort, Status und Dringlichkeit gesiebt, sortiert. Archiviertes fehlt immer. */
+/** Aufgaben der Seite: nach Verknüpfungen, Status und Dringlichkeit gesiebt, sortiert. Archiviertes fehlt immer. */
 export function visibleTasks(prefs) {
   const source = prefs.showArchived ? state.entries.filter((entry) => entry.type === "aufgabe") : taskEntries();
-  const list = source.filter((entry) => matchesFilter(entry, prefs) && matchesPlace(entry, prefs.place));
+  const list = filterByLinks(source.filter((entry) => matchesFilter(entry, prefs)), prefs);
   return sortTasks(list, prefs.sort, prefs.sortAsc);
 }
 
@@ -341,27 +333,6 @@ export function taskGroups(prefs) {
 export function taskColumns(prefs) {
   const grouping = taskGroupings.find((item) => item.id === prefs.group) ? prefs.group : taskGroupings[0].id;
   return taskGroups({ ...prefs, group: grouping });
-}
-
-/**
- * Wonach sich die Aufgaben-Seite filtern lässt: jeder Ort, an dem eine
- * Aufgabe liegt oder mit dem eine verknüpft ist — Arbeitsbereiche, Projekte,
- * Notizen. Was keine Aufgabe hat, taucht nicht auf.
- */
-export function taskPlaces() {
-  const tasks = taskEntries();
-  const used = new Set();
-  tasks.forEach((entry) => {
-    (entry.places || []).forEach((ref) => used.add(ref));
-    (entry.links || []).forEach((id) => used.add(entryRef(id)));
-  });
-  const spaces = state.workspaces
-    .filter((workspace) => used.has(workspaceRef(workspace.id)))
-    .map((workspace) => ({ ref: workspaceRef(workspace.id), label: workspaceLabel(workspace), icon: workspaceIcon(workspace) }));
-  const entries = state.entries
-    .filter((entry) => !entry.archived && entry.type !== "aufgabe" && used.has(entryRef(entry.id)))
-    .map((entry) => ({ ref: entryRef(entry.id), label: entry.title || typeSingular(entry.type), icon: typeIcon(entry.type) }));
-  return [...spaces, ...entries];
 }
 
 /** Der erste Ablageort einer Aufgabe — dafür steht das kleine Label in der Zeile. */

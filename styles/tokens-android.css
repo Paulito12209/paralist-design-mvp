@@ -105,6 +105,8 @@
  * --m3-menu-pad                -> Luft über der ersten und unter der letzten Zeile in diesem Menü (Material 3: 8dp)
  * --m3-chip-h / --m3-chip-radius -> Höhe und Rundung der Auswahl-Chips „Aufgabe ▾“ und „Eingang ▾“ im
  *                                 Blatt „Neu“ (Material 3 „Filter chip“: 32dp, 8dp — eckig gerundet, keine Pille)
+ * --m3-filter-gap             -> Abstand zwischen den Chips im Blatt „Filtern“ (Material 3: 8dp)
+ * --m3-filter-section-gap      -> Luft zwischen zwei Abschnitten in diesem Blatt (16dp)
  * --m3-composer-attach         -> Größe des runden Anhang-Knopfs (+) links unten in diesem Blatt (40dp)
  * --m3-composer-pad            -> Innenabstand des Blatts „Neu“ links, rechts und oben (Google Tasks: 24dp)
  * --m3-page-bar-h              -> Höhe der Kopfleiste auf den Seiten Einstellungen und Fortschritt (Material 3 „Small top app bar“: 64dp)
@@ -204,6 +206,8 @@
   --m3-menu-sheet-pad: 8px;
   --m3-chip-h: 32px;
   --m3-chip-radius: 8px;
+  --m3-filter-gap: 8px;
+  --m3-filter-section-gap: 16px;
   --m3-composer-attach: 40px;
   --m3-composer-pad: 24px;
   --m3-page-bar-h: 64px;

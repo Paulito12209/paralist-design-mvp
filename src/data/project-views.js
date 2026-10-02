@@ -3,8 +3,9 @@
  * Übersicht und der Seite Projekte, gebaut wie die Ansichten der
  * Aufgaben-Seite (src/data/task-views.js). Jede Ansicht merkt sich ihre
  * Sortierung und entweder eine handverlesene Liste von Projekten (`ids`)
- * oder zwei Filter: den Ort (`place`) und „Nur Favoriten“. Sind `ids`
- * gefüllt, zählen nur sie; die Filter ruhen dann. Die erste Ansicht „Alle“
+ * oder die Filter: „Verknüpft mit“ (Arbeitsbereiche und Inhalt,
+ * src/data/link-filter.js), Status, Dringlichkeit und „Nur Favoriten“. Sind
+ * `ids` gefüllt, zählen nur sie; die Filter ruhen dann. Die erste Ansicht „Alle“
  * ist fest: sie zeigt jedes Projekt, darf aber sortieren. Eine neue Ansicht
  * beginnt als Kopie von „Alle“. Verschiebt man eine Projektzeile mit dem
  * Finger (src/ui/row-reorder.js), wechselt die Ansicht auf „Eigene
@@ -27,6 +28,9 @@ import { emit, events } from "../core/bus.js";
 import { nextId, sameId } from "../core/ids.js";
 import { manualId, sortEntries } from "./collection-sorts.js";
 import { projectSorts, projectViewDefaults } from "./config.js";
+import { taskPriorities, taskPriorityOf, taskStatuses, taskStatusOf } from "./config-tasks.js";
+import { filterByLinks } from "./link-filter.js";
+import { cleanLinkFields } from "./link-filter-fields.js";
 import { manualRank } from "./manual-order.js";
 import { entriesOf, projectEntries } from "./queries.js";
 import { entryRef, isWorkspaceRef, workspaceRef } from "./refs.js";
@@ -78,9 +82,17 @@ function commit() {
 /* „Alle“ bleibt ungefiltert und ohne Auswahl — nur die Sortierung darf sie sich merken. */
 function keepAllOpen(view) {
   if (!view.fixed) return;
-  view.place = projectViewDefaults.place;
-  view.favoritesOnly = false;
-  view.ids = [];
+  Object.assign(view, {
+    linkKinds: [],
+    linkRefs: [],
+    linkNot: false,
+    hiddenStatuses: [],
+    hiddenPriorities: [],
+    statusNot: false,
+    priorityNot: false,
+    favoritesOnly: false,
+    ids: [],
+  });
 }
 
 /** Eine Ansicht wählen. */
@@ -198,12 +210,9 @@ export function sortProjects(list, sortId, asc, scope = "") {
   return sortEntries(list, sortId, asc, { ...projectKeys, [manualId]: manualRank(scope, "e") });
 }
 
-/* Liegt das Projekt an dem Ort, den der Filter verlangt? */
-function matchesPlace(project, place) {
-  if (place === "alle") return true;
-  const places = project.places || [];
-  if (place === "inbox") return places.length === 0;
-  return places.includes(place);
+/* Lässt der Filter Status und Dringlichkeit dieses Projekts durch? */
+function matchesStatus(project, view) {
+  return !view.hiddenStatuses.includes(taskStatusOf(project.status).id) && !view.hiddenPriorities.includes(taskPriorityOf(project.priority).id);
 }
 
 /** Die Projekte einer Ansicht, sortiert — archivierte bleiben draußen. */
@@ -211,17 +220,30 @@ export function visibleProjects(view = activeProjectView()) {
   const pool = projectEntries();
   const list = view.ids.length
     ? pool.filter((project) => view.ids.some((id) => sameId(id, project.id)))
-    : pool.filter((project) => matchesPlace(project, view.place) && (!view.favoritesOnly || project.favorite));
+    : filterByLinks(
+        pool.filter((project) => matchesStatus(project, view) && (!view.favoritesOnly || project.favorite)),
+        view
+      );
   return sortProjects(list, view.sort, view.sortAsc, projectOrderScope(view.id));
 }
 
 /* ---------- Anlegen, Löschen, Laden ---------- */
 
 /**
+ * Der Arbeitsbereich, den eine Ansicht fürs Anlegen vorgibt: nur wenn sie
+ * genau einen Arbeitsbereich verlangt und sonst nichts — sonst ist offen, wohin.
+ */
+export function draftSpace(view) {
+  const only = !view.linkNot && view.linkKinds.length === 0 && view.linkRefs.length === 1;
+  return only && isWorkspaceRef(view.linkRefs[0]) ? view.linkRefs[0] : null;
+}
+
+/**
  * Ein frisch angelegtes Projekt der Ansicht zuordnen, aus der „Projekt
  * hinzufügen“ kam — sonst wäre es in einer gefilterten Ansicht sofort
  * unsichtbar. Mit Auswahl kommt es in die Liste; ohne Auswahl bekommt es den
- * Arbeitsbereich des Filters als Ort und bei „Nur Favoriten“ den Stern.
+ * einzigen Arbeitsbereich des Filters „Verknüpft mit“ als Ort und bei „Nur
+ * Favoriten“ den Stern.
  * Ruft src/data/mutations-tasks.js (applyEntryDefaults) beim Anlegen auf.
  */
 export function applyProjectDraft(entry) {
@@ -233,7 +255,8 @@ export function applyProjectDraft(entry) {
     view.ids.push(entry.id);
     return;
   }
-  if (isWorkspaceRef(view.place) && !entry.places.includes(view.place)) entry.places.push(view.place);
+  const space = draftSpace(view);
+  if (space && !entry.places.includes(space)) entry.places.push(space);
   if (view.favoritesOnly) entry.favorite = true;
 }
 
@@ -244,10 +267,10 @@ export function dropProjectFromViews(id) {
   });
 }
 
-/** Einen Ort, den es nicht mehr gibt, aus den Filtern nehmen: die Ansicht zeigt dann wieder alle Orte. */
+/** Einen Ort, den es nicht mehr gibt, aus den Filtern „Verknüpft mit“ nehmen — der Rest des Filters bleibt. */
 export function dropPlaceFromViews(ref) {
   state.projectViews.forEach((view) => {
-    if (view.place === ref) view.place = projectViewDefaults.place;
+    view.linkRefs = view.linkRefs.filter((item) => item !== ref);
   });
 }
 
@@ -269,7 +292,8 @@ export function adoptProjectViews(saved) {
   if (!list.length || !list[0].fixed) list.unshift(allProjectView());
 
   const projects = new Set(state.entries.filter((entry) => entry.type === "projekt").map((entry) => String(entry.id)));
-  const places = ["alle", "inbox", ...state.workspaces.map((workspace) => workspaceRef(workspace.id))];
+  const validRefs = new Set(state.workspaces.map((workspace) => workspaceRef(workspace.id)).concat(state.entries.map((entry) => entryRef(entry.id))));
+  const known = (value, items) => (Array.isArray(value) ? [...new Set(value)].filter((id) => items.some((item) => item.id === id)) : []);
   const sorts = projectSorts.map((item) => item.id);
   state.projectViews = list.map((view, index) => {
     const ids = Array.isArray(view.ids) ? [...new Set(view.ids.map(Number))].filter((id) => projects.has(String(id))) : [];
@@ -281,7 +305,11 @@ export function adoptProjectViews(saved) {
       fixed: index === 0,
       sort: pick(view.sort, sorts, projectViewDefaults.sort),
       sortAsc: typeof view.sortAsc === "boolean" ? view.sortAsc : projectViewDefaults.sortAsc,
-      place: pick(view.place, places, projectViewDefaults.place),
+      ...cleanLinkFields(view, validRefs),
+      hiddenStatuses: known(view.hiddenStatuses, taskStatuses),
+      hiddenPriorities: known(view.hiddenPriorities, taskPriorities),
+      statusNot: view.statusNot === true,
+      priorityNot: view.priorityNot === true,
       favoritesOnly: view.favoritesOnly === true,
       ids,
     };

@@ -53,7 +53,7 @@
  * styles/calendar.css        -> Kalender: Datum, Wochenstreifen, Rollen-Blatt, Knopf „Heute“ im Panel „Ansicht“
  * styles/calendar-rings.css  -> Kalender: Ringe mit Murmeln um die Tageszahlen
  * styles/calendar-panel.css  -> Kalender: graue Fläche mit Stundenraster und Liste; styles/calendar-week.css: Desktop-Werkzeugzeile, Woche, Monat
- * styles/sort-wheels.css     -> Blatt „Sortieren“: Rollen „Wonach“ | „Reihenfolge“; styles/filter-sheet.css: „Filtern“ mit Übersicht und Unterseiten je Abschnitt
+ * styles/sort-wheels.css     -> Blatt „Sortieren“: Rollen „Wonach“ | „Reihenfolge“; styles/filter-sheet.css: „Filtern“ mit Übersicht und Unterseiten je Abschnitt (iOS, Desktop)
  * styles/info-dialog.css     -> kleiner Erklär-Dialog hinter einem ⓘ im Auswahl-Blatt
  * styles/media.css           -> Medien- und Ressourcen-Seite; styles/media-desk.css: Desktop-Werkzeuge, Liste, Markierung
  * styles/bookmarks.css       -> Lesezeichen-Seite: Zeilen mit großer Kachel, Website und Herkunft
@@ -61,7 +61,7 @@
  * styles/viewer.css          -> Dateiansicht: Foto, Video, Aufnahme und PDF
  * styles/drawing.css         -> Zeichenfläche und Werkzeugleiste
  * styles/video-player.css    -> YouTube-Player als dunkler Block an der Stelle einer Video-Karte (Eintrag, Lesezeichen)
- * styles/android.css, ios.css -> Fassungen Android/iOS; dazu android-tabs/-fab/-sheet/-archive/-view-btn/-entry/-list/-reorder/-card/-bottom-sheet/-segmented/-tab-snap/-overview-gaps/-quiet-tools/-calendar/-pages (Einstellungen und Fortschritt als ganze Seite)/-pages-content (deren Inhalt nach Material 3, ohne Experiment), ios-segmented/-menu, tokens-android/-ios.css
+ * styles/android.css, ios.css -> Fassungen Android/iOS; dazu android-tabs/-fab/-sheet/-archive/-view-btn/-entry/-list/-reorder/-card/-bottom-sheet/-filter-sheet (Filtern als Chips)/-segmented/-tab-snap/-overview-gaps/-quiet-tools/-calendar/-pages (Einstellungen und Fortschritt als ganze Seite)/-pages-content (deren Inhalt nach Material 3, ohne Experiment), ios-segmented/-menu, tokens-android/-ios.css
  * styles/tokens-desk.css     -> die Werte der Desktop-Fassung (Spalten, Flächen, große Zahlen)
  * styles/desk.css            -> Desktop: Raster aus Seitenleiste, Reiterzeile, Seite und rechter Spalte; Zuklappen, Suchfeld, Eingabefeld unten
  * styles/desk-head.css       -> Desktop: Wortmarke mit Klapp-Knopf; Reiterzeile mit Zurück, Vorwärts und den vier Reitern

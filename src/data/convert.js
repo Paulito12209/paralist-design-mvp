@@ -148,10 +148,12 @@ function contentsIntoLinks(entry, ref, fallback) {
   contents.forEach((item) => connectEntries(entry, item));
 }
 
-/* Der Orts-Filter jeder Ansicht der Aufgaben-Seite folgt dem Ort — oder fällt auf „alle“ zurück. */
+/* Der Filter „Verknüpft mit“ jeder Ansicht der Aufgaben-Seite folgt dem Ort — oder verliert ihn. */
 function movePlaceFilter(fromRef, toRef) {
   state.taskViews.forEach((view) => {
-    if (view.place === fromRef) view.place = toRef || "alle";
+    if (!view.linkRefs.includes(fromRef)) return;
+    const rest = view.linkRefs.filter((ref) => ref !== fromRef);
+    view.linkRefs = toRef && !rest.includes(toRef) ? [...rest, toRef] : rest;
   });
 }
 
