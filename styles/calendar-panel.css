@@ -83,6 +83,13 @@
   margin-bottom: 8px;
 }
 
+/* Die Hülle der drei Reiter nimmt hier keinen Platz ein: die Reiter stehen
+   direkt im Raster von .cal-seg. display: contents — nur die Android-Fassungen
+   machen eine Zeile bzw. Kapsel daraus (styles/android-calendar-tabs.css). */
+.cal-seg-tabs {
+  display: contents;
+}
+
 /* grid-column fest vergeben: jeder Tab bleibt in seiner Spalte, auch wenn
    einmal einer fehlen sollte; Aussen-Tabs hängen an ihrer Kante. */
 .cal-seg-btn:nth-child(1) {
