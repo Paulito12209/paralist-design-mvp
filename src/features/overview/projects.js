@@ -4,7 +4,9 @@
  * ihren eigenen Behälter: oben die Pillen der Ansichten
  * (src/features/overview/project-views.js), darunter die Projekte der
  * gewählten Ansicht als schlichte Zeilen, die Zeile „Projekt hinzufügen“ und
- * „Zum Archiv“ mit der Pille Projekte. Steht die Ansicht auf „Board“, liegen die
+ * „Zum Archiv“ mit der Pille Projekte. Die Zeile steht in der iOS-Fassung immer
+ * unter der Liste, in der Android-Fassung nur, solange die Ansicht kein Projekt
+ * zeigt. Steht die Ansicht auf „Board“, liegen die
  * Projekte stattdessen in Spalten nach Status oder Dringlichkeit
  * (src/features/overview/projects-board.js). Ein Tipp in die freie Fläche unter der
  * Liste legt ein Projekt direkt an (src/features/overview/project-inline.js). Über der Navigation hängt die Karte
@@ -35,6 +37,7 @@ import { activeProjectView, projectOrderScope, visibleProjects } from "../../dat
 import { archivedEntries, projectEntries } from "../../data/queries.js";
 import { isDesk, onDeskChange } from "../../ui/desk-mode.js";
 import { emptyState } from "../../ui/empty-state.js";
+import { isMobileOs } from "../../ui/platform.js";
 import { entryRow } from "../../ui/rows.js";
 import { createViewPanel } from "../../ui/view-panel.js";
 import { isViewActive } from "../../ui/views.js";
@@ -89,22 +92,32 @@ function archiveMarkup() {
    Gibt es noch gar kein Projekt, zeigt nur die Seite Projekte (`onPage`) den
    großen Platzhalter mit seiner Pille — die Zeile darunter sagte dasselbe
    noch einmal. Auf der Übersicht wäre er zu wuchtig: dort steht allein die
-   Zeile „Projekt hinzufügen“, wie bei den Arbeitsbereichen. */
+   Zeile „Projekt hinzufügen“, wie bei den Arbeitsbereichen.
+   Android: die Zeile steht nur, solange die Ansicht kein Projekt zeigt, und
+   dann ohne Satz darüber — danach legen „Neu“ und ein Tipp in die freie Fläche
+   (project-inline.js) Projekte an. Im Board gehört sie in die leeren Spalten
+   (projects-board.js), darunter steht nichts. Der leere Listen-Behälter bleibt
+   in der Liste stehen, damit der Tipp in die freie Fläche eine Liste findet. */
 function listMarkup(onPage) {
   const view = activeProjectView();
   const projects = visibleProjects(view);
   const none = !projectEntries().length;
+  const android = isMobileOs("android");
   if (none && onPage) return emptyState(emptyProjects) + archiveMarkup();
   /* Der Satz „kein Projekt in dieser Ansicht“ nur, wenn es woanders welche gibt */
-  const lead = projects.length || none ? "" : `<p class="project-empty-note">${emptyViewText}</p>`;
+  const lead = projects.length || none || android ? "" : `<p class="project-empty-note">${emptyViewText}</p>`;
   const rows = projects.map((project) => entryRow(project)).join("");
-  const addRow = `
+  const showAdd = !android || !projects.length;
+  const addRow = showAdd
+    ? `
     <button class="workspace-row workspace-add" type="button" data-project-add="1">
       ${icon("rocket-plus")}<span>${addRowLabel}</span>
-    </button>`;
-  /* Board: die Spalten statt der Zeilen; „Projekt hinzufügen“ steht darunter als einzelne Zeile */
+    </button>`
+    : "";
+  /* Board: die Spalten statt der Zeilen; „Projekt hinzufügen“ steht darunter als einzelne Zeile (iOS) */
   if (view.layout === "board") {
-    return `${projectCardHead(view)}${lead}${projectBoardMarkup(view)}<div class="workspace-list">${addRow}</div>${archiveMarkup()}`;
+    const tail = android ? "" : `<div class="workspace-list">${addRow}</div>`;
+    return `${projectCardHead(view)}${lead}${projectBoardMarkup(view)}${tail}${archiveMarkup()}`;
   }
   /* data-reorder: gedrückt Halten verschiebt eine Zeile (Android, src/ui/row-reorder.js) — je Ansicht eine eigene Reihenfolge */
   return `${projectCardHead(view)}${lead}<div class="workspace-list" data-reorder="${projectOrderScope(view.id)}">${rows}${addRow}</div>${archiveMarkup()}`;

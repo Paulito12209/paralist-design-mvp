@@ -12,13 +12,14 @@
  *
  * Solange es gar keine Aufgabe gibt, liegt eine blasse Geister-Zeile da, die
  * das Anlegen durch Tippen ein einziges Mal erklärt
- * (src/features/tasks/tasks-inline.js).
+ * (src/features/tasks/tasks-inline.js). In der Android-Fassung steht sie auch,
+ * wenn der Filter alles aussiebt — dort gibt es keinen Satz unter der Liste.
  * Pfad: src/features/tasks/tasks-list.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * ghostLabel  -> Text der Geister-Zeile, solange es keine Aufgabe gibt
- * emptyFilter -> Text, wenn der Ort-Filter keine Aufgabe übrig lässt
+ * emptyFilter -> Text, wenn der Ort-Filter keine Aufgabe übrig lässt (iOS)
  *
  * Aussehen und Abstände stehen in styles/rows.css und styles/tasks.css, die
  * Spalten am Desktop in styles/tasks-desk.css.
@@ -27,6 +28,7 @@
 import { icon } from "../../core/html.js";
 import { isTaskDone } from "../../data/config-tasks.js";
 import { taskEntries, taskGroups } from "../../data/queries.js";
+import { isMobileOs } from "../../ui/platform.js";
 import { entryActions, swipeRow } from "../../ui/rows.js";
 import { taskCheck } from "../../ui/task-status.js";
 import { taskColumns, taskMeta, taskTitle } from "./tasks-parts.js";
@@ -103,9 +105,10 @@ export function taskListMarkup(prefs) {
   const { field, columns } = taskGroups(prefs);
   const empty = columns.every((column) => !column.items.length);
   /* Ohne eine einzige Aufgabe lädt die Geister-Zeile zum Schreiben ein; hat
-     nur der Filter alles ausgesiebt, sagt die Liste das in einem Satz. */
+     nur der Filter alles ausgesiebt, sagt die Liste das in einem Satz (Android: wieder die Zeile). */
   const ghost = isSelecting() ? "" : ghostRow();
-  const tail = empty ? (taskEntries().length ? `<p class="task-empty-note">${emptyFilter}</p>` : ghost) : "";
+  const filtered = taskEntries().length && !isMobileOs("android");
+  const tail = empty ? (filtered ? `<p class="task-empty-note">${emptyFilter}</p>` : ghost) : "";
   return `<div class="task-sections">${columns
     .filter((column, index) => index === 0 || column.items.length)
     .map((column, index) => sectionMarkup(column, field, index === 0 ? tail : ""))

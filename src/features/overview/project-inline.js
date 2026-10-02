@@ -7,10 +7,12 @@
  * verschwindet lautlos, sobald man sie verlässt. Gilt auf der Übersicht (am
  * Handy) und auf der Seite Projekte. Nur ein echter Tipp zählt — wer scrollt,
  * schreibt nicht; im Auswahlmodus wählt ein Tipp nur aus.
- * Auch ein Tipp auf „Projekt hinzufügen“ öffnet in der Android-Fassung diese
- * Zeile statt des Eingabefelds; die Zeile hier kennt nur den Titel. In der
- * iOS-Fassung bleibt „Projekt hinzufügen“ der Weg über das Eingabefeld (Ort,
- * Datum, Anhang).
+ * Android: auch ein Tipp auf die blasse Zeile „Projekt hinzufügen“ öffnet diese
+ * Zeile statt des Eingabefelds — in der leeren Liste unter dem letzten Platz und
+ * im Board in der leeren Spalte, in der sie steht (src/features/overview/projects-board.js);
+ * das Projekt bekommt dann Status bzw. Dringlichkeit dieser Spalte. Die Zeile hier
+ * kennt nur den Titel. In der iOS-Fassung bleibt „Projekt hinzufügen“ der Weg
+ * über das Eingabefeld (Ort, Datum, Anhang).
  * Pfad: src/features/overview/project-inline.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -36,7 +38,8 @@ import { isProjectsPageOpen } from "./project-views.js";
 const TAP_SLOP_PX = 20;
 const placeholder = "Neues Projekt";
 
-/* Die offene Zeile: { row, input, list } — sonst null. */
+/* Die offene Zeile: { row, input, list, column } — sonst null. `list` ist die
+   Liste bzw. der Zeilenbereich der Spalte; `column` ({ field, value }) nur im Board. */
 let editing = null;
 /* Wie es beim Aufsetzen des Fingers war — der Klick kommt erst nach dem Loslassen. */
 let down = null;
@@ -51,12 +54,18 @@ function visibleList() {
   return null;
 }
 
+/* Das Gehäuse, das „is-adding“ trägt: die Liste selbst, im Board die Spalte
+   (dort versteckt es die blasse Zeile, styles/tasks-board.css). */
+function hostOf(list) {
+  return list.closest(".board-col") || list;
+}
+
 function removeRow() {
   if (!editing) return;
   const { row, list } = editing;
   editing = null;
   row.remove();
-  list.classList.remove("is-adding");
+  hostOf(list).classList.remove("is-adding");
 }
 
 /* Abschließen: mit Titel entsteht das Projekt (die Liste zeichnet neu, die
@@ -68,31 +77,41 @@ function commitRow(chain) {
     removeRow();
     return;
   }
+  const { column } = editing;
   committing = true;
   editing = null;
-  createProjectInline(title, state.activeProjectViewId);
+  createProjectInline(title, state.activeProjectViewId, column);
   committing = false;
   if (!chain) return;
-  const list = visibleList();
-  if (list) openRow(list);
+  /* Im Board gleich die nächste Zeile in derselben Spalte (die Liste ist neu gezeichnet) */
+  const list = column ? boardRows(column) : visibleList();
+  if (list) openRow(list, column);
 }
 
-/* Eine leere Zeile ans Ende der Liste, vor „Projekt hinzufügen“, mit Cursor. */
-function openRow(list) {
+/* Der Zeilenbereich der Spalte, die den Wert `column.value` trägt — in der sichtbaren Liste. */
+function boardRows(column) {
+  const host = isViewActive("home") ? el("project-list") : el("view-page");
+  return host?.querySelector(`.board-rows[data-drop="${column.value}"]`) || null;
+}
+
+/* Eine leere Zeile ans Ende der Liste bzw. der Spalte (iOS: vor „Projekt hinzufügen“), mit Cursor. */
+function openRow(list, column = null) {
   if (editing) return;
   const row = document.createElement("div");
-  row.className = "workspace-row project-inline";
+  row.className = column ? "board-row project-inline" : "workspace-row project-inline";
   /* form: gegen Chromes Verlaufs-Chips über der Tastatur (src/core/no-history.js);
      enterkeyhint: die Enter-Taste heißt „Fertig“, nicht „Weiter“ */
-  /* row-glyph: dieselbe Icon-Fläche wie in den Zeilen darüber, sonst rückt der Cursor näher ans Icon */
+  /* row-glyph: dieselbe Icon-Fläche wie in den Zeilen darüber, sonst rückt der Cursor näher ans Icon;
+     im Board dasselbe kleine Icon wie vor den Projekten dort (styles/projects-board.css) */
+  const glyph = column ? icon("rocket", "board-row-icon") : `<span class="row-glyph">${icon("rocket")}</span>`;
   row.innerHTML = `
-    <span class="row-glyph">${icon("rocket")}</span>
+    ${glyph}
     <input class="task-inline-input" type="text" form="${noHistoryForm}" enterkeyhint="done"
       placeholder="${placeholder}" aria-label="${placeholder}" />`;
   list.insertBefore(row, list.querySelector(".workspace-add"));
-  list.classList.add("is-adding");
+  hostOf(list).classList.add("is-adding");
   const input = row.querySelector("input");
-  editing = { row, input, list };
+  editing = { row, input, list, column };
   input.addEventListener("keydown", (event) => {
     if (event.key === "Enter") {
       event.preventDefault();
@@ -124,12 +143,24 @@ function onClick(event) {
   openRow(list);
 }
 
-/* Tipp auf „Projekt hinzufügen“ in der Liste (Android): die Zeile öffnet sich
-   direkt. Aufgefangen wird in der Aufnahmephase, damit der Zuhörer, der sonst
+/* Tipp auf die blasse Zeile „Projekt hinzufügen“ (Android): die Eingabezeile öffnet
+   sich direkt. In der Liste hängt sie an „Projekt hinzufügen“, im Board an der
+   leeren Spalte. Aufgefangen wird in der Aufnahmephase, damit der Zuhörer, der sonst
    das Eingabefeld öffnet (project-views.js), nicht mehr drankommt. */
 function onAddRowClick(event) {
-  const add = event.target.closest(".workspace-add[data-project-add]");
-  if (!add || !isMobileOs("android")) return;
+  if (!isMobileOs("android") || editing) return;
+  const inColumn = event.target.closest("[data-board-add]");
+  const add = inColumn || event.target.closest(".workspace-add[data-project-add]");
+  if (!add) return;
+  if (inColumn) {
+    const box = inColumn.closest(".board-rows");
+    /* Dieselbe blasse Zeile gibt es im Board der Aufgaben — das gehört dem Aufgaben-Empfänger */
+    if (!box?.closest(".project-board")) return;
+    down = null;
+    event.stopPropagation();
+    openRow(box, { field: box.dataset.field, value: box.dataset.drop });
+    return;
+  }
   const list = visibleList();
   if (!list?.contains(add)) return;
   down = null;

@@ -104,8 +104,10 @@ export function createTaskInline(title, column) {
  * Fläche unter den Projekten, src/features/overview/project-inline.js).
  * `viewId` ist die gewählte Ansicht: das Projekt bekommt deren Ort bzw. landet
  * in ihrer Auswahl, genau wie über „Projekt hinzufügen“ (applyProjectDraft).
+ * `column` ist die Spalte des Boards, in der getippt wurde ({ field, value }),
+ * oder null in der Liste: das Projekt bekommt deren Status bzw. Dringlichkeit.
  */
-export function createProjectInline(title, viewId) {
+export function createProjectInline(title, viewId, column = null) {
   const entry = {
     id: state.nextEntryId++,
     type: "projekt",
@@ -119,6 +121,8 @@ export function createProjectInline(title, viewId) {
   };
   ui.projectDraftView = viewId;
   applyEntryDefaults(entry);
+  if (column?.field === "status") applyTaskStatus(entry, column.value);
+  else if (column?.field === "priority") entry.priority = column.value;
   state.entries.push(entry);
   awardXp("created", "projekt", title);
   commit();

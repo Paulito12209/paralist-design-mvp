@@ -25,7 +25,9 @@
  * --card / --line      -> Fläche der angehobenen Zeile und die Trennlinien
  * --muted / --chevron  -> Nebentexte, Griffpunkte und die Lücke beim Ziehen
  *
- * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei
+ * (der Hinweis „Nichts hier“ und die blasse Zeile „Neue Aufgabe“ in einer leeren
+ * Spalte: je 14px, Abstand 10px oben und unten, 10px zwischen Symbol und Text).
 */
 
 /* Die Seite wird eine Spalte, in der der Inhalt den Rest bis zur Karte
@@ -201,6 +203,27 @@
   padding: 10px 4px;
   color: var(--muted);
   font-size: 14px;
+}
+
+/* Android: statt des Hinweises eine blasse Zeile zum Anlegen — Symbol und Text
+   in der Farbe des Hinweises, ohne Rahmen. Beide Varianten teilen sich die Regeln
+   darunter (verschwinden beim Ziehen und beim Schreiben). */
+.board-add {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  text-align: left;
+}
+
+.board-add .icon {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+}
+
+.board-add:active {
+  opacity: 0.55;
 }
 
 /* Solange eine Zeile in der Spalte liegt, ist der Hinweis überflüssig */
