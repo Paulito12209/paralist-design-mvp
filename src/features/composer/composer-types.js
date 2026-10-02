@@ -38,6 +38,7 @@ import {
   composerPickButtons,
   isComposerPreset,
 } from "./composer-state.js";
+import { isWorkspaceDraft, workspaceDraft } from "./composer-workspace.js";
 
 /* Diese Typen stehen im Blatt abgesetzt unter den vier mit eigenem Knopf —
    in der Reihenfolge aus `types`, also Dokument, Zeichnung, Medium, Lesezeichen. */
@@ -67,13 +68,15 @@ function placeholderText(typeId) {
 
 /** Typ-Pille neben dem Ablageort: zeigt den gewählten Typ und setzt den Platzhaltertext. */
 function renderComposerTypePill() {
-  const type =
-    types.find((item) => item.id === composer.type) || types.find((item) => item.id === defaultType);
-  dom.composerTypeIcon.setAttribute("href", `#icon-${type.icon}`);
+  const type = isWorkspaceDraft()
+    ? workspaceDraft
+    : types.find((item) => item.id === composer.type) || types.find((item) => item.id === defaultType);
   /* In der Einzahl: die Pille benennt den einen Eintrag, der gleich entsteht. */
-  dom.composerTypeLabel.textContent = typeSingular(type.id);
+  const name = isWorkspaceDraft() ? workspaceDraft.label : typeSingular(type.id);
+  dom.composerTypeIcon.setAttribute("href", `#icon-${type.icon}`);
+  dom.composerTypeLabel.textContent = name;
   /* Im Blatt der Android-Fassung ist der Name ausgeblendet — Vorleser hören ihn trotzdem */
-  dom.composerTypePill.setAttribute("aria-label", `Typ: ${typeSingular(type.id)}`);
+  dom.composerTypePill.setAttribute("aria-label", `Typ: ${name}`);
   dom.composerInput.placeholder = placeholderText(type.id);
   /* Hat das Feld von selbst auf „Medium“ umgestellt, erklärt ein getippter
      Hinweis, dass Text ein Dokument daraus macht — nur im Blatt (Android) */
@@ -104,16 +107,8 @@ export function renderComposerTypes() {
   renderComposerTypePill();
 }
 
-/*
- * Der Arbeitsbereich ist kein Typ — er hat keinen Eintrag, sondern eine eigene
- * Seite —, steht aber wie im Plus-Menü (src/shell/create-menu.js) in der Liste:
- * wer alles sehen will, was „Neu“ anlegen kann, findet es hier vollständig.
- * Er folgt dem Projekt.
- */
-const workspaceOption = { label: "Arbeitsbereich", icon: "layers" };
-
 /* Die Typ-Pille oben öffnet die volle Liste der Typen. */
-function openTypeSheet(refresh, createWorkspace) {
+function openTypeSheet(refresh) {
   const allowProject = projectAllowed();
   const sheetTypes = types.filter(
     (type) =>
@@ -132,9 +127,22 @@ function openTypeSheet(refresh, createWorkspace) {
       refresh();
     },
   }));
-  /* Hinter dem Projekt; ohne Projekt (schon in einem Projekt abgelegt) vor den Ressourcen */
+  /*
+   * Der Arbeitsbereich ist kein Eintrag, steht aber wie im Plus-Menü
+   * (src/shell/create-menu.js) in der Liste und entsteht im Blatt selbst
+   * (composer-workspace.js). Hinter dem Projekt; ohne Projekt (schon in einem
+   * Projekt abgelegt) vor den Ressourcen.
+   */
   const at = options.findIndex((option) => option.split);
-  options.splice(at, 0, { ...workspaceOption, onSelect: createWorkspace });
+  options.splice(at, 0, {
+    label: workspaceDraft.label,
+    icon: workspaceDraft.icon,
+    active: isWorkspaceDraft(),
+    onSelect: () => {
+      chooseTypeByHand(workspaceDraft.id, null);
+      refresh();
+    },
+  });
   openOverComposer(() => openSheet("Typ wählen", options));
 }
 
@@ -155,9 +163,8 @@ function onTypeClick(event, refresh) {
  * Knöpfe und Pille anmelden.
  * @param refresh zeichnet nach einer Wahl alles nach, was am Typ hängt:
  *   Knöpfe, Ablageort-Pille, Anlegen-Knopf — und setzt den Cursor ins Feld.
- * @param createWorkspace schließt das Eingabefeld und legt einen Arbeitsbereich an.
  */
-export function initComposerTypes(refresh, createWorkspace) {
+export function initComposerTypes(refresh) {
   dom.composerTypes.addEventListener("click", (event) => onTypeClick(event, refresh));
-  dom.composerTypePill.addEventListener("click", () => openTypeSheet(refresh, createWorkspace));
+  dom.composerTypePill.addEventListener("click", () => openTypeSheet(refresh));
 }
