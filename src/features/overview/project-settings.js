@@ -6,7 +6,8 @@
  *
  * - Sortieren: Zeile mit der Wahl („Zuletzt geöffnet · Neueste zuerst“), ein
  *   Tipp öffnet das Blatt „Sortieren“ (src/ui/sort-sheet.js)
- * - Filtern: Blatt „Projekte aus“ — alle Orte, Eingang, jeder Arbeitsbereich
+ * - Filtern: Blatt „Projekte aus“ — Eingang, jeder Arbeitsbereich; den
+ *   gewählten Ort noch einmal antippen hebt den Filter auf („Alle Orte“)
  * - Nur Favoriten: Schalter
  * - Projekte wählen: Blatt mit Häkchen über alle Projekte (die handverlesene Liste)
  *
@@ -18,7 +19,7 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * rowLabels             -> Beschriftungen der Zeilen
- * allPlaces / inboxLabel -> was in der Filter-Zeile steht
+ * allPlaces / inboxLabel -> was in der Filter-Zeile steht (allPlaces: wenn nichts gefiltert ist)
  * handpicked(n)          -> was die Filter-Zeile bei handverlesenen Projekten sagt
  * placeTitle / pickTitle -> Überschriften der Blätter „Projekte aus“ und „Projekte wählen“ (das Blatt „Sortieren“ hat keinen Titel)
  * clearPickLabel         -> letzte Zeile im Blatt „Projekte wählen“
@@ -109,17 +110,20 @@ export function openProjectSort(view) {
   });
 }
 
-/* Blatt „Projekte aus“: alle Orte, der Eingang und jeder Arbeitsbereich. */
+/*
+ * Blatt „Projekte aus“: der Eingang und jeder Arbeitsbereich. „Alle Orte“ ist
+ * keine Zeile, sondern der Ausgangszustand: ohne Haken ist nichts gefiltert,
+ * und ein zweiter Tipp auf den gewählten Ort hebt den Filter wieder auf.
+ */
 function openPlaceSheet(view) {
   const option = (ref, label, iconName) => ({
     label,
     icon: iconName,
     active: view.place === ref,
-    onSelect: () => updateProjectView({ place: ref }),
+    onSelect: () => updateProjectView({ place: view.place === ref ? "alle" : ref }),
   });
   const spaces = state.workspaces.filter((workspace) => !workspace.archived);
   openSheet(placeTitle, [
-    option("alle", allPlaces, "layers"),
     option("inbox", inboxLabel, "inbox"),
     ...spaces.map((workspace) => option(workspaceRef(workspace.id), workspaceLabel(workspace), workspaceIcon(workspace))),
   ]);
