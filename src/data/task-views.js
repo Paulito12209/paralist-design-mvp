@@ -2,7 +2,8 @@
  * Die Ansichten der Aufgaben-Seite — die Pillen über der Liste, wie die Tabs
  * über den Arbeitsbereichen. Jede Ansicht merkt sich ihr Layout (Liste oder
  * Board), Sortierung, Gruppierung, Filter („Verknüpft mit“, Status, Dringlichkeit) und ob Erledigte zu sehen sind.
- * Die erste Ansicht „Alle“ ist fest: sie lässt sich nicht löschen, nicht
+ * Die Ansicht „Alle“ ist fest (sie steht vorn, solange man neue Ansichten nicht
+ * davor einreihen lässt — Einstellungen › Tabs, src/data/view-place.js): sie lässt sich nicht löschen, nicht
  * umbenennen und nicht nach Verknüpfungen filtern — Layout, Sortierung, Gruppierung
  * und der Filter nach Status und Dringlichkeit darf auch sie sich merken. Eine neue Ansicht beginnt als Kopie von „Alle“.
  * Pfad: src/data/task-views.js
@@ -22,6 +23,7 @@ import { linkFilterDefaults } from "./config.js";
 import { taskDefaults } from "./config-tasks.js";
 import { saveState, state, ui } from "./state.js";
 import { setTabIconsOn } from "./tab-icons.js";
+import { fixedViewOf, newViewIndex } from "./view-place.js";
 
 export const allViewName = "Alle";
 const viewPlaceholder = (n) => `Ansicht ${n}`;
@@ -39,7 +41,7 @@ export function findTaskView(id) {
 
 /** Die gewählte Ansicht — im Zweifel „Alle“. */
 export function activeTaskView() {
-  return findTaskView(state.activeTaskViewId) || state.taskViews[0];
+  return findTaskView(state.activeTaskViewId) || fixedViewOf(state.taskViews);
 }
 
 /* Speichern und alle sichtbaren Listen auffrischen. */
@@ -73,9 +75,10 @@ function insertCopy(source, index, placeholder) {
   commit();
 }
 
-/** Neue Ansicht über das kleine Plus: eine Kopie von „Alle“ am Ende. */
+/** Neue Ansicht über das kleine Plus: eine Kopie von „Alle“, vor „Alle“ oder am Ende (Einstellungen › Tabs). */
 export function addTaskView() {
-  insertCopy(state.taskViews[0], state.taskViews.length, viewPlaceholder(state.taskViews.length + 1));
+  const views = state.taskViews;
+  insertCopy(fixedViewOf(views), newViewIndex(views), viewPlaceholder(views.length + 1));
 }
 
 /** Eine bestimmte Ansicht verdoppeln — direkt hinter dem Original. */
@@ -118,7 +121,7 @@ export function moveTaskView(id, dir) {
   const views = state.taskViews;
   const from = views.findIndex((view) => sameId(view.id, id));
   const to = from + dir;
-  if (from < 1 || to < 1 || to >= views.length) return;
+  if (from < 0 || views[from].fixed || to < 0 || to >= views.length) return;
   const [view] = views.splice(from, 1);
   views.splice(to, 0, view);
   commit();

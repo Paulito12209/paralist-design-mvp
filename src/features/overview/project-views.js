@@ -141,7 +141,7 @@ export function openProjectViewMenu(pill) {
   options.push(iconPickerAction(view.icon, (name) => setProjectViewIcon(id, name)));
   options.push({ label: menuLabels.duplicate, icon: "copy", onSelect: () => duplicateProjectView(id) });
   if (!view.fixed) {
-    if (index > 1) options.push({ label: menuLabels.left, icon: "back", onSelect: () => moveProjectView(id, -1) });
+    if (index > 0) options.push({ label: menuLabels.left, icon: "back", onSelect: () => moveProjectView(id, -1) });
     if (index < state.projectViews.length - 1) {
       options.push({ label: menuLabels.right, icon: "arrow-right", onSelect: () => moveProjectView(id, 1) });
     }

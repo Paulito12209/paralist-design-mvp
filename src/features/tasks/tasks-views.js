@@ -134,7 +134,7 @@ function openViewMenu(pill) {
   options.push(iconPickerAction(view.icon, (name) => setTaskViewIcon(id, name)));
   options.push({ label: menuLabels.duplicate, icon: "copy", onSelect: () => duplicateTaskView(id) });
   if (!view.fixed) {
-    if (index > 1) options.push({ label: menuLabels.left, icon: "back", onSelect: () => moveTaskView(id, -1) });
+    if (index > 0) options.push({ label: menuLabels.left, icon: "back", onSelect: () => moveTaskView(id, -1) });
     if (index < state.taskViews.length - 1) {
       options.push({ label: menuLabels.right, icon: "arrow-right", onSelect: () => moveTaskView(id, 1) });
     }
