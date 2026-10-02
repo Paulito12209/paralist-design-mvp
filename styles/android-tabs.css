@@ -9,7 +9,9 @@
  *
  * ANPASSBARE WERTE (alle in styles/tokens-android.css)
  * -----------------------------------
- * --m3-tab-height        -> Höhe eines Reiters (sein Innenabstand von 16px liegt mit --content-side auf einer Linie)
+ * --m3-tab-height        -> Höhe eines Reiters (Innenabstand 16px zwischen den Reitern)
+ * --m3-tab-edge          -> wie weit der Inhalt des ersten Reiters vom Geräterand steht (liegt auf einer Linie mit den Listen-Icons)
+ * --m3-tab-info-w        -> Platz des ⓘ hinter „Alle“ (Aufgaben): die Linie unter dem Reiter lässt ihn frei
  * --m3-tab-indicator     -> Dicke der Linie unter dem aktiven Reiter
  * --m3-primary           -> Farbe von Schrift und Linie des aktiven Reiters
  * --m3-on-surface-variant -> Schrift der übrigen Reiter
@@ -22,6 +24,8 @@
  *
  * Schriftgröße der Reiter: 14px direkt bei .tab-pill (Material 3 „Title small“),
  * ebenso bei .tab-pill-add-text („Neue Ansicht“ hinter dem Plus).
+ * Zähler hinter einem Reiter (.media-count) zeigt nur der Reiter, in dem man
+ * gerade nicht steht — wie in Google Tasks.
  */
 
 @media (max-width: 1023px) {
@@ -112,13 +116,14 @@
 
   /* ---------- Die Reiter selbst ---------- */
 
-  /* Der Text des ersten Reiters steht auf derselben Linie wie „Projekte“, die
-     Listen und die Symbole (--content-side): das Tippfeld des Reiters beginnt
-     am Geräterand, nur sein Innenabstand von 16px schiebt den Text auf die Linie */
+  /* Der Inhalt des ersten Reiters steht --m3-tab-edge vom Geräterand (wie das
+     Sternchen in Google Tasks) und damit auf einer Linie mit den Icons der Listen.
+     Das Tippfeld des Reiters beginnt dazu früher: sein Innenabstand von 16px
+     schiebt den Inhalt auf die Linie, den Rest macht der Abstand der Zeile. */
   [data-mobile-os="android"] .tab-pills {
     gap: 0;
-    padding-left: 0;
-    scroll-padding-left: 0;
+    padding-left: calc(var(--m3-tab-edge) - 16px);
+    scroll-padding-left: calc(var(--m3-tab-edge) - 16px);
   }
 
   [data-mobile-os="android"] .tab-pills-row {
@@ -157,6 +162,16 @@
   [data-mobile-os="android"] .tab-pill .media-count {
     color: inherit;
     opacity: 0.7;
+  }
+
+  /* Im Reiter, in dem man steht, entfällt der Zähler — dann zeigt die Liste ihn ohnehin */
+  [data-mobile-os="android"] .tab-pill.is-active .media-count {
+    display: none;
+  }
+
+  /* „Alle“ mit ⓘ: die Linie liegt nur unter dem Namen, das ⓘ bleibt frei */
+  [data-mobile-os="android"] .tab-pill.is-active:has(.tab-pill-info)::after {
+    right: calc(16px + var(--m3-tab-info-w));
   }
 
   /* Das Plus am Ende wird ein Reiter mit Text: „+ Neue Ansicht“, so hoch und

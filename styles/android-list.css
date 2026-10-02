@@ -1,7 +1,8 @@
 /*
  * Android-Fassung, Listenzeilen nach Material 3 („Lists“): eine Zeile ist
- * 64px hoch, davor steht ein Icon (24px) oder ein gerundetes Vorschaubild
- * (40px) mit 16px Abstand zum Titel, der Titel in 16px. Der Pfeil am rechten
+ * 56px hoch, davor steht ein Icon (20px) oder ein gerundetes Vorschaubild
+ * (36px) mit 16px Abstand zum Titel — dichter als die 64px der Material-3-Liste mit Bild,
+ * so wie die Zeilen in Google Tasks, der Titel in 16px. Der Pfeil am rechten
  * Rand entfällt — Material 3 zeigt dort nur Aktionen, keine Navigation —, und
  * zwischen den Zeilen steht keine Linie. Wischt man eine Zeile zur Seite
  * (src/ui/swipe.js), erscheinen dahinter hochkant stehende, voll gerundete

@@ -35,6 +35,10 @@
  * --m3-menu-item-height        -> Höhe eines Eintrags im Plus-Menü
  * --m3-menu-gap                -> Luft zwischen den Einträgen im Plus-Menü
  * --m3-tab-height              -> Höhe eines Reiters (Material 3: 48dp)
+ * --m3-tab-edge                -> Abstand vom Geräterand bis zum Inhalt des ersten Reiters (Google Tasks: etwa 24dp);
+ *                                 er steht auf einer Linie mit den Icons der Listenzeilen darunter
+ * --m3-tab-info-w              -> Platz, den das ⓘ hinter „Alle“ (Aufgaben) neben dem Namen einnimmt; die Linie
+ *                                 unter dem Reiter endet um so viel früher und liegt nur unter dem Namen
  * --m3-tab-indicator           -> Dicke der Linie unter dem aktiven Reiter (Material 3: 3dp)
  * --m3-tabs-gap                -> Luft zwischen einer Reiterzeile und der Liste darunter
  * --m3-hide-time               -> wie schnell Kopfzeile und Leiste beim Scrollen weg- und wiederkommen
@@ -50,10 +54,11 @@
  *                                 (nur Android (Experiment); Material 3 „Small FAB“: 40dp)
  * --m3-head-tools-pull         -> um so viel rückt das Symbol „Verknüpfen“ in der Kopfzeile näher
  *                                 an das Drei-Punkte-Menü (nur Android (Experiment))
- * --m3-list-row-h              -> Mindesthöhe einer Listenzeile (Material 3: Liste mit Bild, 64dp)
+ * --m3-list-row-h              -> Mindesthöhe einer Listenzeile (Material 3: Liste, eine Zeile, 56dp — Google Tasks wirkt noch dichter)
  * --m3-list-gap                -> Abstand zwischen Bild/Icon und Titel (Material 3: 16dp)
- * --m3-list-leading            -> Größe des Bilds und der Icon-Fläche vor dem Titel
- * --m3-list-icon               -> Größe des Icons darin (Material 3: 24dp)
+ * --m3-list-leading            -> Größe des Bilds und der Icon-Fläche vor dem Titel; mit dem Icon darin
+ *                                 liegt der Icon-Rand bei 16px + (Fläche − Icon) / 2, also auf --m3-tab-edge
+ * --m3-list-icon               -> Größe des Icons darin (so klein wie das Kästchen in Google Tasks: 20dp)
  * --m3-list-thumb-radius       -> Rundung der Vorschaubilder vor dem Titel
  * --m3-swipe-action-w / -h     -> Breite und Höhe der Wisch-Knöpfe (hochkant, voll gerundet)
  * --m3-swipe-action-gap        -> Abstand der Wisch-Knöpfe zueinander und zum Rand
@@ -99,6 +104,8 @@
   --m3-menu-gap: 8px;
   --m3-tab-height: 48px;
   --m3-tab-indicator: 3px;
+  --m3-tab-edge: 24px;
+  --m3-tab-info-w: 18px;
   --m3-tabs-gap: 12px;
   --m3-hide-time: 220ms;
   --m3-content-end: calc(var(--m3-nav-height-labels) + var(--m3-fab-size) + 3 * var(--m3-fab-gap));
@@ -110,10 +117,10 @@
   --m3-tab-tools-air: 4px;
   --m3-view-btn-size: 40px;
   --m3-head-tools-pull: 8px;
-  --m3-list-row-h: 64px;
+  --m3-list-row-h: 56px;
   --m3-list-gap: 16px;
-  --m3-list-leading: 40px;
-  --m3-list-icon: 24px;
+  --m3-list-leading: 36px;
+  --m3-list-icon: 20px;
   --m3-list-thumb-radius: 8px;
   --m3-swipe-action-w: 48px;
   --m3-swipe-action-h: 56px;
