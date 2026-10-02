@@ -7,6 +7,10 @@
  * Dringlichkeiten bzw. Status in src/data/config.js.
  * Am Handy rastet das Board beim Wischen an einer Spalte ein; seitlich wischen
  * geht überall, auch über den Zeilen — nur am Griff wird gezogen.
+ * Die Kopfzeilen der Spalten bleiben beim Scrollen unter der Werkzeugzeile
+ * stehen (src/shell/board-heads.js); in der Android-Fassung rückt das Board
+ * dazu um --m3-card-head-pull nach unten, damit die Werkzeugzeile den Kopf
+ * nicht oben anschneidet (styles/android-card.css).
  * Pfad: styles/tasks-board.css
  *
  * ANPASSBARE WERTE (in styles/tokens.css, die Board-Werte in styles/tokens-pages.css)
@@ -104,6 +108,17 @@
   color: var(--col-color);
   font-size: 15px;
   font-weight: 600;
+  position: relative; /* position: nötig, damit z-index greift — die Zeilen laufen beim Scrollen unter dem Kopf durch */
+  z-index: 2; /* z-index: über den Zeilen der Spalte, unter der gezogenen Zeile (40) */
+  /* transform: src/shell/board-heads.js schiebt den Kopf beim Scrollen nach
+     unten, damit er unter der Werkzeugzeile stehen bleibt; ohne Wert steht er an seinem Platz */
+  transform: translateY(var(--board-head-shift, 0px));
+}
+
+/* Solange der Kopf festgehalten ist, läuft die Liste unter ihm durch. Die Fuge
+   zur ersten Zeile bekommt dann die Farbe der Seite, sonst schiene dort Text durch. */
+[data-board-stuck] .board-head {
+  box-shadow: 0 var(--board-head-gap) 0 var(--bg); /* box-shadow: deckt die Fuge unter dem Kopf ab, ohne etwas zu verschieben */
 }
 
 /* Die Spaltenfarben sind für den dunklen Grund gebaut und auf dem hellen

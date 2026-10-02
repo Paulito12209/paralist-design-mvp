@@ -79,6 +79,13 @@
     margin-bottom: calc(-1 * var(--m3-card-head-pull));
   }
 
+  /* Die Werkzeugzeile zieht den Inhalt um --m3-card-head-pull unter sich — bei
+     Zeilen gewollt, beim Board würde sie dadurch den oberen Rand der Spaltenköpfe
+     abschneiden. Das Board rückt um dasselbe Maß wieder nach unten. */
+  [data-mobile-os="android"] .project-card-head ~ .board {
+    margin-top: var(--m3-card-head-pull);
+  }
+
   /* Reiter einer Sammlung (Ressourcen, Archiv, Arbeitsbereiche): wie bei Projekten und
      Aufgaben lässt die Reiterzeile nur --m3-tabs-gap Luft, die Werkzeugzeile zieht sie wieder zurück */
   [data-mobile-os="android"] .page-body > :is(.tab-pills, .tab-pills-row):has(+ .project-card-head) {
