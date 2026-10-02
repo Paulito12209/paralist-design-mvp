@@ -9,6 +9,12 @@
  * Seitenende so bemessen, dass der Inhalt einen Abstand über dem Plus-Knopf
  * endet (styles/android.css); mit weggeglittener Leiste säße der Knopf
  * tiefer, und darüber klaffte eine Lücke.
+ *
+ * Kalender: das Stundenraster rollt in sich selbst, sobald die Seite oben
+ * eingerastet ist. Dessen Rollen zählt hier mit: wer im Raster nach oben
+ * wischt, holt Suche und Navigation zurück — der Kopf mit Titel und Datum
+ * bleibt dabei stehen. Auch im Kalender (Raster wie Liste) kommen die Leisten
+ * am Ende zurück (styles/android-calendar.css).
  * Pfad: src/shell/android-bars.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -38,7 +44,7 @@ export function isAndroidMobile() {
 /** Beide Leisten zurückholen — beim Seitenwechsel, Anlegen und Öffnen des Menüs. */
 export function showBars() {
   dom.device.classList.remove("is-bars-hidden");
-  direction.reset(dom.content.scrollTop);
+  direction.reset(scrolled());
 }
 
 /* Beim Suchen und Anlegen bleiben die Leisten stehen: dort stehen Knöpfe darin. */
@@ -46,29 +52,58 @@ function barsPinned() {
   return document.body.classList.contains("is-search") || !dom.composer.hidden;
 }
 
-/* Eintragsseite: ganz unten angekommen? */
-function atEntryEnd() {
-  if (!isViewActive("entry")) return false;
+/* Rollt gerade das Stundenraster des Kalenders in sich selbst? Das darf es nur
+   mit der Klasse is-free (src/features/calendar/calendar.js): vorher gehört
+   das Rollen der Seite. */
+function gridIsFree() {
+  return isViewActive("calendar") && dom.calPanel.classList.contains("is-free");
+}
+
+/* Wie weit ist man gescrollt? Rollt das Raster im Kalender in sich selbst, zählt
+   es zur Seite dazu, damit Hoch und Runter über beide Bereiche ohne Sprung
+   gemessen wird. Gesperrt zählt es nicht: sein Stand springt dann von selbst
+   (Jetzt-Linie beim Öffnen) und würde sonst wie ein Wisch nach unten wirken. */
+function scrolled() {
+  const box = dom.content;
+  return gridIsFree() ? box.scrollTop + dom.calPanel.scrollTop : box.scrollTop;
+}
+
+/* Ist ganz unten angekommen — Eintragsseite oder Kalender (Raster oder Liste)? */
+function atPageEnd() {
+  const inCalendar = isViewActive("calendar");
+  if (!inCalendar && !isViewActive("entry")) return false;
+  if (inCalendar && dom.calPanel.classList.contains("is-grid")) {
+    if (!gridIsFree()) return false;
+    const grid = dom.calPanel;
+    return grid.scrollTop + grid.clientHeight >= grid.scrollHeight - END_SLACK_PX;
+  }
   const box = dom.content;
   return box.scrollTop + box.clientHeight >= box.scrollHeight - END_SLACK_PX;
 }
 
-function onScroll() {
+function onScroll(event) {
   if (!isAndroidMobile() || barsPinned()) return;
+  /* Springt das Raster von selbst (beim Öffnen zur Jetzt-Linie), während die
+     Seite noch rollt, ist das keine Bewegung der Hand: nur den Bezugspunkt nachziehen. */
+  if (event.target === dom.calPanel && !gridIsFree()) {
+    direction.reset(scrolled());
+    return;
+  }
   const hidden = dom.device.classList.contains("is-bars-hidden");
-  if (atEntryEnd()) {
+  if (atPageEnd()) {
     if (hidden) showBars();
     return;
   }
-  const turn = direction.step(dom.content.scrollTop, hidden);
+  const turn = direction.step(scrolled(), hidden);
   if (turn === "away") dom.device.classList.add("is-bars-hidden");
   else if (turn === "back") dom.device.classList.remove("is-bars-hidden");
 }
 
 /** Den Zuhörer am Inhalt anmelden. */
 export function initAndroidBars() {
-  /* passive: der Zuhörer hält das Scrollen nie auf */
-  dom.content.addEventListener("scroll", onScroll, { passive: true });
+  /* passive: der Zuhörer hält das Scrollen nie auf; capture: das Ereignis „scroll“
+     steigt nicht auf, so hört der Inhalt auch das Raster im Kalender mit */
+  dom.content.addEventListener("scroll", onScroll, { passive: true, capture: true });
   on(events.viewOpened, showBars);
   on(events.overlayOpened, showBars);
 }
