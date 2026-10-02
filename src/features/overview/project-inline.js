@@ -23,7 +23,7 @@
  * Feld darin sieht aus wie das der Aufgaben (styles/tasks.css, .task-inline-input).
  */
 
-import { el } from "../../core/dom.js";
+import { dom, el } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
 import { noHistoryForm } from "../../core/no-history.js";
 import { createProjectInline } from "../../data/mutations-tasks.js";
@@ -137,12 +137,13 @@ function onAddRowClick(event) {
   openRow(list);
 }
 
-/** Das Anlegen per Tipp auf Übersicht und Seite Projekte einschalten. */
+/** Das Anlegen per Tipp auf Übersicht und Seite Projekte einschalten.
+    Die Zuhörer hängen am ganzen Scrollbereich, nicht an der Seite: ist die
+    Liste kurz, endet die Seite über dem Polster für Plus-Knopf und Leiste
+    (--m3-content-end, styles/android.css) — auch ein Tipp dorthin soll zählen. */
 export function initProjectInline() {
-  ["view-home", "view-page"].forEach((id) => {
-    const view = el(id);
-    view.addEventListener("pointerdown", onPointerDown);
-    view.addEventListener("click", onAddRowClick, true);
-    view.addEventListener("click", onClick);
-  });
+  const content = dom.content;
+  content.addEventListener("pointerdown", onPointerDown);
+  content.addEventListener("click", onAddRowClick, true);
+  content.addEventListener("click", onClick);
 }
