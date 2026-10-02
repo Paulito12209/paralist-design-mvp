@@ -7,6 +7,10 @@
  * übrigen Zeilen zeigen statt der drei Punkte den Griff „=“ aus Material 3
  * („drag handle“). Nach dem Loslassen gilt die neue Reihenfolge; ein Menü
  * gibt es beim Halten nicht mehr, nur über die drei Punkte.
+ * Dasselbe Bild bekommt eine Zeile im Board (Aufgaben, Projekte), die man am
+ * Griff gelöst hat (src/ui/board-drag.js): getönte Karte mit Schatten, an der
+ * alten Stelle eine getönte Lücke statt der gestrichelten aus
+ * styles/tasks-board.css.
  * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
  * Pfad: styles/android-reorder.css
  *
@@ -16,7 +20,7 @@
  * --m3-reorder-shadow        -> Schatten der gezogenen Zeile (Material 3: Höhe 3)
  * --m3-reorder-slot-inset    -> Luft der Lücke zu Zeilen darüber und darunter
  * --m3-secondary-container / --m3-on-secondary-container -> Fläche der gezogenen Zeile und Schrift darauf
- * --m3-surface-container-high -> Tönung der Lücke
+ * --m3-surface-container-high -> Tönung der Lücke (Liste und Board)
  * --m3-reorder-edge          -> Abstand der gezogenen Zeile zum Geräterand (gesetzt von src/ui/row-lift.js)
  * --content-side (styles/tokens.css) -> Abstand der Lücke zum Seitenrand
  */
@@ -75,5 +79,29 @@
   [data-mobile-os="android"] body.is-row-lifting .row-more .icon-drag,
   [data-mobile-os="android"] .row-lift .row-more .icon-drag {
     display: block;
+  }
+
+  /* ---------- Board ---------- */
+
+  /* Die gelöste Zeile im Board: Karte wie die gezogene Zeile in der Liste */
+  [data-mobile-os="android"] .board-row.is-dragging {
+    padding-left: 12px;
+    padding-right: 4px;
+    border-radius: var(--m3-reorder-radius);
+    background: var(--m3-secondary-container);
+    color: var(--m3-on-secondary-container);
+    box-shadow: var(--m3-reorder-shadow);
+    opacity: 1;
+  }
+
+  [data-mobile-os="android"] .board-row.is-dragging .icon,
+  [data-mobile-os="android"] .board-row.is-dragging .task-meta {
+    color: var(--m3-on-secondary-container);
+  }
+
+  /* An der alten Stelle und am Ziel: eine getönte Lücke statt der gestrichelten */
+  [data-mobile-os="android"] .board-gap {
+    border: 0;
+    background: var(--m3-surface-container-high);
   }
 }

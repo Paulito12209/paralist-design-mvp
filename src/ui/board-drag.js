@@ -1,8 +1,16 @@
 /*
  * Zeilen im Board verschieben — mit der Maus und mit dem Finger (Pointer
- * Events). Angefasst wird am Griffstreifen rechts; die Zeile hebt sich als
- * Karte ab, hängt am Zeiger, und die Lücke zeigt, wo sie landet. Zieht man an
- * den Rand, rollt die Seite bzw. das Board von selbst weiter.
+ * Events). Angefasst wird am Griffstreifen rechts (die sechs Punkte). Mit dem
+ * Finger löst sich die Zeile erst, wenn man den Griff kurz gedrückt hält —
+ * wie beim Verschieben in den Listen der Android-Fassung (src/ui/row-lift.js):
+ * das Handy tickt kurz, alle Griffe zeigen den Doppelstrich „=“, und die
+ * Zeile hängt ab jetzt am Finger, nach oben, unten, links und rechts. Ein
+ * bloßer Wisch über den Griff rollt dagegen das Board bzw. die Seite, wie
+ * überall sonst. Mit der Maus greift die Zeile sofort — die Maus rollt nicht
+ * durch Wischen, da gibt es nichts zu unterscheiden.
+ * Die Zeile hebt sich als Karte ab, die Lücke zeigt, wo sie landet, und die
+ * Kopfzeile der Spalte, in der die Lücke steht, bekommt einen Rahmen. Zieht
+ * man an den Rand, rollt die Seite bzw. das Board von selbst weiter.
  *
  * Damit es flüssig bleibt: die Zeile bewegt sich nur über `transform`, ihre
  * Maße werden einmal beim Anfassen genommen, und während der Bewegung wird
@@ -24,9 +32,14 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * scrollSpeed  -> wie schnell am Rand mitgerollt wird (Pixel je Bild)
- * startSlack   -> ab wie vielen Pixeln Bewegung das Ziehen wirklich beginnt
+ * startSlack   -> ab wie vielen Pixeln Bewegung die gelöste Zeile wirklich wandert
+ * holdMs       -> wie lange der Finger den Griff halten muss, bis sich die Zeile löst (Millisekunden)
+ * holdSlack    -> wie weit der Finger dabei wandern darf; mehr heißt: Wischen, nicht Halten (Pixel)
+ * liftBuzzMs   -> Länge des kurzen Vibrierens, wenn sich die Zeile löst (0 = aus)
  *
  * Wie breit der Randstreifen ist, steht als --board-edge in styles/tokens.css.
+ * Aussehen von Griff, Karte, Lücke und Spaltenrahmen: styles/tasks-board.css,
+ * in der Android-Fassung styles/android-reorder.css.
  */
 
 import { cssNumber } from "../core/css-vars.js";
@@ -34,9 +47,14 @@ import { dom } from "../core/dom.js";
 
 const scrollSpeed = 12;
 const startSlack = 4;
+const holdMs = 480;
+const holdSlack = 8;
+const liftBuzzMs = 10;
 
 /* Der laufende Zug; außerhalb eines Zuges null. */
 let drag = null;
+/* Ein Finger liegt auf dem Griff und wartet, dass das Halten greift; sonst null. */
+let pending = null;
 /* Nach einem Zug kommt noch ein Klick — der darf den Eintrag nicht öffnen. */
 let blockClick = false;
 /* Die Fenster-Zuhörer genügen einmal, auch wenn mehrere Seiten ein Board anmelden. */
@@ -50,12 +68,21 @@ export function consumeDragClick() {
   return true;
 }
 
+/* Die Spalte markieren, in der die Lücke gerade steht. */
+function markColumn(column) {
+  if (column === drag.column) return;
+  drag.column?.classList.remove("is-drop-over");
+  column?.classList.add("is-drop-over");
+  drag.column = column;
+}
+
 /* Die Lücke an eine neue Stelle setzen; `before` ist die Zeile, über der sie steht. */
 function placeGap(box, before) {
   const { gap } = drag;
   if (before) box.insertBefore(gap, before);
   else box.append(gap);
   drag.box = box;
+  markColumn(box.closest(".board-col"));
 }
 
 /*
@@ -120,6 +147,7 @@ function endDrag(save) {
 
   const box = gap.parentElement;
   gap.replaceWith(card);
+  markColumn(null);
   card.classList.remove("is-dragging", "is-stack");
   card.removeAttribute("style");
   delete card.dataset.stack;
@@ -138,16 +166,12 @@ function endDrag(save) {
   config.redraw();
 }
 
-/* Anfassen am Griff: Maße einmal nehmen, Lücke einsetzen, Zeile lösen. */
-function onPointerDown(event, config) {
-  blockClick = false;
-  const grip = event.target.closest("[data-grip]");
-  if (!grip || drag) return;
-  const card = grip.closest(".board-row");
-  const board = grip.closest(".board");
-  if (!card || !board) return;
-  event.preventDefault();
-
+/*
+ * Die Zeile lösen: Maße einmal nehmen, Lücke einsetzen, Zeile ans Gerät
+ * hängen. `point` ist die Stelle, an der der Zeiger sie greift — beim Halten
+ * steht der Finger dort noch still.
+ */
+function liftCard({ point, grip, card, board, config }) {
   const rect = card.getBoundingClientRect();
   const deviceRect = dom.device.getBoundingClientRect();
   /* Gewählte Zeile im Auswahlmodus: alle gewählten kommen mit, in ihrer Reihenfolge im Board */
@@ -163,11 +187,12 @@ function onPointerDown(event, config) {
     gap,
     board,
     box: card.parentElement,
-    pointerId: event.pointerId,
-    startX: event.clientX,
-    startY: event.clientY,
-    x: event.clientX,
-    y: event.clientY,
+    column: null,
+    pointerId: point.pointerId,
+    startX: point.clientX,
+    startY: point.clientY,
+    x: point.clientX,
+    y: point.clientY,
     moved: false,
     boardRect: board.getBoundingClientRect(),
     contentRect: dom.content.getBoundingClientRect(),
@@ -184,6 +209,7 @@ function onPointerDown(event, config) {
   }
 
   card.parentElement.insertBefore(gap, card);
+  markColumn(gap.closest(".board-col"));
   card.classList.add("is-dragging");
   card.style.width = `${rect.width}px`;
   card.style.height = `${rect.height}px`;
@@ -191,17 +217,63 @@ function onPointerDown(event, config) {
   card.style.top = `${rect.top - deviceRect.top}px`;
   dom.device.append(card);
   document.body.classList.add("is-dragging-task");
+  if (liftBuzzMs && navigator.vibrate) navigator.vibrate(liftBuzzMs);
   drag.frame = requestAnimationFrame(autoScroll);
   /* Der Griff fängt den Zeiger ein, damit die Bewegung auch dann bei uns
      ankommt, wenn der Finger die Zeile verlässt. */
   try {
-    grip.setPointerCapture(event.pointerId);
+    grip.setPointerCapture(point.pointerId);
   } catch (error) {
     /* ohne Einfangen laufen die Bewegungen über das Fenster — das reicht auch */
   }
 }
 
+/* Das Warten auf das Halten abbrechen — der Finger ist gewandert oder wieder weg. */
+function cancelPending() {
+  if (!pending) return;
+  clearTimeout(pending.timer);
+  pending.card.classList.remove("is-grip-hold");
+  pending = null;
+}
+
+/* Anfassen am Griff: die Maus löst die Zeile sofort, der Finger erst nach dem Halten. */
+function onPointerDown(event, config) {
+  blockClick = false;
+  const grip = event.target.closest("[data-grip]");
+  if (!grip || drag || pending) return;
+  const card = grip.closest(".board-row");
+  const board = grip.closest(".board");
+  if (!card || !board) return;
+  /* Nur der erste Finger bzw. die linke Maustaste; ein zweiter Finger gehört dem Board */
+  if (!event.isPrimary || event.button > 0) return;
+  /* Verhindert das Markieren von Text — nicht das Rollen, das läuft weiter */
+  event.preventDefault();
+
+  const point = { pointerId: event.pointerId, clientX: event.clientX, clientY: event.clientY };
+  if (event.pointerType === "mouse") {
+    liftCard({ point, grip, card, board, config });
+    return;
+  }
+  /* Finger oder Stift: solange gehalten wird, färben sich die Punkte; wischt
+     der Finger stattdessen, rollt der Browser das Board und das Warten endet. */
+  card.classList.add("is-grip-hold");
+  pending = {
+    point,
+    card,
+    timer: setTimeout(() => {
+      pending = null;
+      card.classList.remove("is-grip-hold");
+      liftCard({ point, grip, card, board, config });
+    }, holdMs),
+  };
+}
+
 function onPointerMove(event) {
+  if (pending && event.pointerId === pending.point.pointerId) {
+    const away = Math.hypot(event.clientX - pending.point.clientX, event.clientY - pending.point.clientY);
+    if (away > holdSlack) cancelPending();
+    return;
+  }
   if (!drag || event.pointerId !== drag.pointerId) return;
   const dx = event.clientX - drag.startX;
   const dy = event.clientY - drag.startY;
@@ -210,6 +282,13 @@ function onPointerMove(event) {
   drag.x = event.clientX;
   drag.y = event.clientY;
   drag.card.style.transform = `translate(${dx}px, ${dy}px)`;
+}
+
+/* Hängt die Zeile am Finger, rollt der Finger nicht mehr die Seite — sonst
+   bräche der Browser den Zug ab (pointercancel). Vor dem Halten bleibt das
+   Rollen frei, deshalb steht am Griff kein touch-action. */
+function onTouchMove(event) {
+  if (drag) event.preventDefault();
 }
 
 /**
@@ -224,7 +303,13 @@ function onPointerMove(event) {
  */
 export function initBoardDrag({ hosts, redraw, drop, pick = noSelection }) {
   const config = { redraw, drop, pick };
-  hosts.forEach((host) => host.addEventListener("pointerdown", (event) => onPointerDown(event, config)));
+  hosts.forEach((host) => {
+    host.addEventListener("pointerdown", (event) => onPointerDown(event, config));
+    /* Langes Drücken am Griff löst am Handy dieses Ereignis aus — es soll die Zeile lösen, kein Menü */
+    host.addEventListener("contextmenu", (event) => {
+      if (event.target.closest("[data-grip]")) event.preventDefault();
+    });
+  });
   if (windowBound) return;
   windowBound = true;
   /* Die gezogene Zeile hängt am Gerät statt in der Spalte, damit sie über den
@@ -232,6 +317,7 @@ export function initBoardDrag({ hosts, redraw, drop, pick = noSelection }) {
      im Board. */
   window.addEventListener("pointermove", onPointerMove);
   window.addEventListener("pointerup", (event) => {
+    if (pending && event.pointerId === pending.point.pointerId) cancelPending();
     if (!drag || event.pointerId !== drag.pointerId) return;
     blockClick = drag.moved;
     endDrag(true);
@@ -239,8 +325,14 @@ export function initBoardDrag({ hosts, redraw, drop, pick = noSelection }) {
   /* Mitten in der Bewegung abgebrochen (Anruf, Escape, Zeiger verloren):
      die Zeile geht dorthin zurück, wo die Lücke gerade steht — gespeichert
      wird nichts. */
-  window.addEventListener("pointercancel", () => endDrag(false));
+  window.addEventListener("pointercancel", () => {
+    cancelPending();
+    endDrag(false);
+  });
   window.addEventListener("keydown", (event) => {
     if (event.key === "Escape" && drag) endDrag(false);
   });
+  /* Am Gerät, nicht am Inhalt: die gelöste Zeile hängt am Gerät, und die
+     Berührung bleibt bei ihr. passive: false, sonst wäre preventDefault wirkungslos. */
+  dom.device.addEventListener("touchmove", onTouchMove, { passive: false });
 }

@@ -6,7 +6,10 @@
  * src/features/tasks/tasks-board.js und stammt aus der Liste der
  * Dringlichkeiten bzw. Status in src/data/config.js.
  * Am Handy rastet das Board beim Wischen an einer Spalte ein; seitlich wischen
- * geht überall, auch über den Zeilen — nur am Griff wird gezogen.
+ * geht überall, auch über den Griff. Gezogen wird erst, wenn man den Griff
+ * kurz gedrückt hält (src/ui/board-drag.js): dann zeigen alle Griffe den
+ * Doppelstrich „=“ statt der Punkte, die Zeile hebt sich als Karte ab, und
+ * die Spalte, in der sie landen würde, bekommt einen Rahmen um die Kopfzeile.
  * Die Kopfzeilen der Spalten bleiben beim Scrollen unter der Werkzeugzeile
  * stehen (src/shell/board-heads.js); in der Android-Fassung rückt das Board
  * dazu um --m3-card-head-pull nach unten, damit die Werkzeugzeile den Kopf
@@ -28,10 +31,13 @@
  * --content-side       -> Abstand des Boards zum Rand
  * --card / --line      -> Fläche der angehobenen Zeile und die Trennlinien
  * --muted / --chevron  -> Nebentexte, Griffpunkte und die Lücke beim Ziehen
+ * --text               -> Griffpunkte, solange der Finger den Griff hält, und der Doppelstrich der gezogenen Zeile
  *
- * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei
- * (der Hinweis „Nichts hier“ und die blasse Zeile „Neue Aufgabe“ in einer leeren
- * Spalte: je 14px, Abstand 10px oben und unten, 10px zwischen Symbol und Text).
+ * Direkt bei ihrer Regel: Schriftgrößen einzelner Elemente (der Hinweis
+ * „Nichts hier“ und die blasse Zeile „Neue Aufgabe“ in einer leeren Spalte:
+ * je 14px, Abstand 10px oben und unten, 10px zwischen Symbol und Text), die
+ * Maße der Griffpunkte (12 × 18px, Raster 6px) und des Doppelstrichs
+ * (18 × 8px) sowie die Stärke des Rahmens um die Zielspalte (1.5px).
 */
 
 /* Die Seite wird eine Spalte, in der der Inhalt den Rest bis zur Karte
@@ -191,7 +197,9 @@
 
 /* Griffstreifen: so hoch wie die Zeile und breit genug für den Daumen. Die
    sechs Punkte darin (zwei Spalten, drei Reihen — wie die Sechs auf einem
-   Würfel, hochkant) werden gezeichnet statt als eigenes Icon geladen. */
+   Würfel, hochkant) werden gezeichnet statt als eigenes Icon geladen.
+   Kein touch-action: vor dem Halten rollt ein Wisch über den Griff das Board
+   wie überall; erst die gelöste Zeile nimmt dem Browser das Rollen ab. */
 .board-grip {
   flex: 0 0 auto;
   align-self: stretch;
@@ -199,7 +207,6 @@
   display: grid;
   place-items: center;
   cursor: grab;
-  touch-action: none; /* touch-action: am Griff gehört die Bewegung uns, nicht dem Scrollen */
 }
 
 .board-grip::before {
@@ -212,6 +219,25 @@
 
 .board-grip:active {
   cursor: grabbing;
+}
+
+/* Der Finger liegt auf dem Griff und wartet: die Punkte werden kräftiger,
+   damit man sieht, dass das Halten gleich greift */
+.board-row.is-grip-hold .board-grip::before {
+  background-image: radial-gradient(circle, var(--text) 1.4px, transparent 1.6px);
+}
+
+/* Solange eine Zeile gelöst ist, zeigen alle Griffe den Doppelstrich „=“
+   (Material 3 „drag handle“) — zwei Striche, 2px stark, 4px Luft dazwischen */
+body.is-dragging-task .board-grip::before {
+  width: 18px;
+  height: 8px;
+  background-image: repeating-linear-gradient(to bottom, var(--chevron) 0 2px, transparent 2px 6px);
+  background-size: 100% 100%;
+}
+
+body.is-dragging-task .board-row.is-dragging .board-grip::before {
+  background-image: repeating-linear-gradient(to bottom, var(--text) 0 2px, transparent 2px 6px);
 }
 
 .board-empty {
@@ -279,6 +305,12 @@
   box-sizing: border-box;
   border-radius: var(--board-card-radius);
   border: 1px dashed var(--chevron);
+}
+
+/* Die Spalte, in der die Lücke steht: ein Rahmen in ihrer Farbe um die
+   Kopfzeile sagt schon von weitem, wo die Zeile landen würde */
+.board-col.is-drop-over .board-head {
+  box-shadow: inset 0 0 0 1.5px var(--col-color);
 }
 
 /* Während des Ziehens soll nichts markiert werden */
