@@ -1,9 +1,9 @@
 /*
  * Die Ansichten der Aufgaben-Seite — die Pillen über der Liste, wie die Tabs
  * über den Arbeitsbereichen. Jede Ansicht merkt sich ihr Layout (Liste oder
- * Board), Sortierung, Gruppierung, Ort-Filter und ob Erledigte zu sehen sind.
+ * Board), Sortierung, Gruppierung, Filter („Verknüpft mit“, Status, Dringlichkeit) und ob Erledigte zu sehen sind.
  * Die erste Ansicht „Alle“ ist fest: sie lässt sich nicht löschen, nicht
- * umbenennen und nicht nach Ort filtern — Layout, Sortierung, Gruppierung
+ * umbenennen und nicht nach Verknüpfungen filtern — Layout, Sortierung, Gruppierung
  * und der Filter nach Status und Dringlichkeit darf auch sie sich merken. Eine neue Ansicht beginnt als Kopie von „Alle“.
  * Pfad: src/data/task-views.js
  *
@@ -18,6 +18,7 @@
 
 import { emit, events } from "../core/bus.js";
 import { nextId, sameId } from "../core/ids.js";
+import { linkFilterDefaults } from "./config.js";
 import { taskDefaults } from "./config-tasks.js";
 import { saveState, state, ui } from "./state.js";
 import { setTabIconsOn } from "./tab-icons.js";
@@ -54,11 +55,11 @@ export function selectTaskView(id) {
   commit();
 }
 
-/** Einstellungen der gewählten Ansicht ändern; „Alle“ zeigt immer jeden Ort. */
+/** Einstellungen der gewählten Ansicht ändern; „Alle“ filtert nie nach Verknüpfungen. */
 export function updateTaskView(changes) {
   const view = activeTaskView();
   Object.assign(view, changes);
-  if (view.fixed) view.place = taskDefaults.place;
+  if (view.fixed) Object.assign(view, linkFilterDefaults);
   commit();
 }
 

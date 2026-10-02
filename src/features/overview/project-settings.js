@@ -6,8 +6,9 @@
  *
  * - Sortieren: Zeile mit der Wahl („Zuletzt geöffnet · Neueste zuerst“), ein
  *   Tipp öffnet das Blatt „Sortieren“ (src/ui/sort-sheet.js)
- * - Filtern: Blatt „Projekte aus“ — Eingang, jeder Arbeitsbereich; den
- *   gewählten Ort noch einmal antippen hebt den Filter auf („Alle Orte“)
+ * - Filtern: das Blatt „Filtern“ (src/features/overview/project-filter.js) —
+ *   Status, Dringlichkeit und „Verknüpft mit“; darunter ein Chip je
+ *   gefiltertem Abschnitt
  * - Nur Favoriten: Schalter
  * - Projekte wählen: Blatt mit Häkchen über alle Projekte (die handverlesene Liste)
  *
@@ -19,16 +20,16 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * rowLabels             -> Beschriftungen der Zeilen
- * allPlaces / inboxLabel -> was in der Filter-Zeile steht (allPlaces: wenn nichts gefiltert ist)
+ * noFilter               -> was die Filter-Zeile sagt, wenn nichts gefiltert ist
  * handpicked(n)          -> was die Filter-Zeile bei handverlesenen Projekten sagt
- * placeTitle / pickTitle -> Überschriften der Blätter „Projekte aus“ und „Projekte wählen“ (das Blatt „Sortieren“ hat keinen Titel)
+ * pickTitle              -> Überschrift des Blatts „Projekte wählen“ (das Blatt „Sortieren“ hat keinen Titel)
  * clearPickLabel         -> letzte Zeile im Blatt „Projekte wählen“
  * infoTitle / infoText   -> das Blatt hinter dem ⓘ
  *
  * Aussehen: styles/tasks-settings.css (Schalter, gesperrte Zeile, ⓘ) und
  * styles/entry-details.css (Karte, Zeilen). Das Blatt „Sortieren“ öffnet in der
  * Android-Fassung auch die Werkzeugzeile über den Projekten, ebenso das Blatt
- * „Projekte aus“ beim Filtern (src/features/overview/project-card.js).
+ * „Filtern“ (src/features/overview/project-card.js).
  */
 
 import { escapeHtml, icon } from "../../core/html.js";
@@ -39,12 +40,12 @@ import {
   toggleProjectInView,
   updateProjectView,
 } from "../../data/project-views.js";
-import { parentName, projectEntries, workspaceIcon, workspaceLabel } from "../../data/queries.js";
-import { workspaceRef } from "../../data/refs.js";
-import { state } from "../../data/state.js";
+import { projectEntries } from "../../data/queries.js";
+import { filterChipsMarkup } from "../../ui/filter-chips.js";
 import { panelToggle } from "../../ui/panel-rows.js";
 import { openSheet } from "../../ui/sheet.js";
 import { openSortSheet, sortSummary } from "../../ui/sort-sheet.js";
+import { openProjectFilterSheet, projectFilterChips } from "./project-filter.js";
 
 const rowLabels = {
   sort: "Sortieren",
@@ -53,22 +54,18 @@ const rowLabels = {
   pick: "Projekte wählen",
   info: "Warum lässt sich „Alle“ nicht filtern?",
 };
-const allPlaces = "Alle Orte";
-const inboxLabel = "Eingang";
+const noFilter = "Keine";
 const handpicked = (n) => `Handverlesen, ${n} ${n === 1 ? "Projekt" : "Projekte"}`;
-const placeTitle = "Projekte aus";
 const pickTitle = "Projekte wählen";
 const clearPickLabel = "Auswahl aufheben";
 const infoTitle = "Eigene Ansicht";
 const infoText =
   "„Alle“ zeigt immer jedes Projekt. Tippe auf das kleine Plus neben den Pillen: die neue Ansicht beginnt als Kopie von „Alle“ und lässt sich filtern, sortieren und mit handverlesenen Projekten füllen, wie du willst.";
 
-/* Was in der Filter-Zeile steht. */
-function placeValue(view) {
+/* Was in der Filter-Zeile steht: die Zahl der gefilterten Abschnitte */
+function filterValue(view) {
   if (view.ids.length) return handpicked(view.ids.length);
-  if (view.place === "alle") return allPlaces;
-  if (view.place === "inbox") return inboxLabel;
-  return parentName(view.place);
+  return projectFilterChips(view).length || noFilter;
 }
 
 /** Die Zeilen der Karte für die gewählte Ansicht. */
@@ -80,8 +77,8 @@ export function projectSettingsMarkup(view) {
     </button>`;
   const placeRow = `
     <div class="details-row tasks-filter-row${locked ? " is-locked" : ""}">
-      <button class="tasks-filter-btn" type="button" data-settings="place"${locked ? " disabled" : ""}>
-        <span class="details-row-label">${rowLabels.place}</span><span class="details-row-value">${escapeHtml(placeValue(view))}</span>
+      <button class="tasks-filter-btn" type="button" data-settings="filter"${locked ? " disabled" : ""}>
+        <span class="details-row-label">${rowLabels.place}</span><span class="details-row-value">${escapeHtml(String(filterValue(view)))}</span>
       </button>
       ${view.fixed ? `<button class="tasks-info" type="button" data-settings="info" aria-label="${escapeHtml(rowLabels.info)}">${icon("info")}</button>` : ""}
     </div>`;
@@ -91,6 +88,7 @@ export function projectSettingsMarkup(view) {
     <div class="details-list tasks-settings">
       ${sortRow}
       ${placeRow}
+      ${locked ? "" : filterChipsMarkup(projectFilterChips(view))}
       <div class="details-row${locked ? " is-muted" : ""}">
         <span class="details-row-label">${rowLabels.favorites}</span>${panelToggle("favorites", view.favoritesOnly, rowLabels.favorites, locked)}
       </div>
@@ -108,25 +106,6 @@ export function openProjectSort(view) {
     asc: view.sortAsc,
     onChange: (sort, sortAsc) => updateProjectView({ sort, sortAsc }),
   });
-}
-
-/*
- * Blatt „Projekte aus“: der Eingang und jeder Arbeitsbereich. „Alle Orte“ ist
- * keine Zeile, sondern der Ausgangszustand: ohne Haken ist nichts gefiltert,
- * und ein zweiter Tipp auf den gewählten Ort hebt den Filter wieder auf.
- */
-function openPlaceSheet(view) {
-  const option = (ref, label, iconName) => ({
-    label,
-    icon: iconName,
-    active: view.place === ref,
-    onSelect: () => updateProjectView({ place: view.place === ref ? "alle" : ref }),
-  });
-  const spaces = state.workspaces.filter((workspace) => !workspace.archived);
-  openSheet(placeTitle, [
-    option("inbox", inboxLabel, "inbox"),
-    ...spaces.map((workspace) => option(workspaceRef(workspace.id), workspaceLabel(workspace), workspaceIcon(workspace))),
-  ]);
 }
 
 /*
@@ -155,11 +134,12 @@ function openPickSheet() {
 
 /**
  * Das Filtern aus der Werkzeugzeile: dasselbe Blatt wie die Zeile „Filtern“ der Karte.
- * Bei handverlesenen Projekten ruht der Ort — dann ist die Auswahl der Filter.
+ * Bei handverlesenen Projekten ruhen die Filter — dann ist die Auswahl der Filter.
+ * @param page Unterseite, die ein Chip der Karte gleich öffnen soll — sonst weggelassen
  */
-export function openProjectFilter(view) {
+export function openProjectFilter(view, page) {
   if (view.ids.length) openPickSheet();
-  else openPlaceSheet(view);
+  else openProjectFilterSheet(page);
 }
 
 /** Klicks in der Karte; `view` ist die gewählte Ansicht. */
@@ -168,7 +148,7 @@ export function handleProjectSettingsClick(event, view) {
   if (!button || button.disabled) return;
   const setting = button.dataset.settings;
   if (setting === "sort") openProjectSort(view);
-  else if (setting === "place") openPlaceSheet(view);
+  else if (setting === "filter") openProjectFilter(view, button.dataset.value);
   else if (setting === "info") openSheet(infoTitle, [{ lead: true, label: infoText }]);
   else if (setting === "favorites") updateProjectView({ favoritesOnly: !view.favoritesOnly });
   else if (setting === "pick") openPickSheet();

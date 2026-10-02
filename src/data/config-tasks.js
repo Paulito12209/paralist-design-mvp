@@ -20,6 +20,8 @@
  * defaultDocStatus        -> Status, mit dem ein neues Dokument startet („Entwurf“)
  */
 
+import { linkFilterDefaults } from "./config.js";
+
 /**
  * Status einer Aufgabe. `done: true` heißt „zählt als erledigt“ — davon hängt
  * ab, ob der Titel durchgestrichen wird und die Zeile ganz nach unten rutscht.
@@ -125,14 +127,16 @@ export const taskSorts = [
  * `statusNot` und `priorityNot` sagen, wie das Blatt „Filtern“ den Abschnitt
  * zeigt: false heißt „ist“ (Haken an dem, was zu sehen ist), true heißt
  * „ist nicht“ (Haken an dem, was ausgeblendet ist) — was die Liste zeigt,
- * steht in beiden Fällen allein in den Feldern darüber.
+ * steht in beiden Fällen allein in den Feldern darüber. `linkKinds`,
+ * `linkRefs` und `linkNot` sind der Filter „Verknüpft mit“ (Felder und
+ * Bedeutung: src/data/link-filter-fields.js); leer heißt nicht gefiltert.
  */
 export const taskDefaults = {
   layout: "list",
   group: "none",
   sort: "erstellt",
   sortAsc: true,
-  place: "alle",
+  ...linkFilterDefaults,
   hideDone: true,
   hiddenStatuses: [],
   hiddenPriorities: [],

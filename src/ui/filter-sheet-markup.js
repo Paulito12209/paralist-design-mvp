@@ -15,7 +15,8 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * modeLabels -> Wortlaut der beiden Segment-Knöpfe („ist“, „ist nicht“)
+ * modeLabels -> Wortlaut der beiden Segment-Knöpfe („ist“, „ist nicht“); ein Abschnitt kann eigene
+ *                mitbringen (modeLabels im Abschnitt, z.B. „enthält“)
  *
  * Aussehen: styles/filter-sheet.css; die zentrierte Überschrift der
  * Unterseite kommt aus styles/settings.css (.settings-detail-title).
@@ -75,14 +76,15 @@ function itemMarkup(item, index) {
 /* Das Segment „ist | ist nicht“ — nur bei Mehrfachwahl */
 function modeMarkup(section) {
   if (!section.mode) return "";
+  const words = section.modeLabels || modeLabels;
   const button = (id) =>
-    `<button class="filter-mode-btn${section.mode === id ? " is-on" : ""}" type="button" data-filter-mode="${id}" aria-pressed="${section.mode === id}">${modeLabels[id]}</button>`;
+    `<button class="filter-mode-btn${section.mode === id ? " is-on" : ""}" type="button" data-filter-mode="${id}" aria-pressed="${section.mode === id}">${escapeHtml(words[id])}</button>`;
   return `<div class="filter-mode" role="group" aria-label="${escapeHtml(section.label)}">${button("is")}${button("not")}</div>`;
 }
 
 /**
  * Die Unterseite eines Abschnitts.
- * @param section { label, mode?, items: [{ label, icon, color?, active, info? }], note? }
+ * @param section { label, mode?, modeLabels?, items: [{ label, icon, color?, active, info? }], note? }
  */
 export function pageMarkup(section) {
   return `
