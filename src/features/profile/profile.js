@@ -76,6 +76,8 @@ export function renderProfile() {
   const list = isDesk()
     ? paneMarkup(ui.settingsPane)
     : identityCard() + appearanceSection() + listsMarkup();
+  /* is-list: nur die Liste bekommt in der Android-Fassung Kachelgruppen ohne Titel */
+  dom.profileBody.classList.toggle("is-list", !shownDetail);
   dom.profileBody.innerHTML = shownDetail ? detailMarkup(shownDetail) : list;
   renderPageChrome();
   /* Nur auf einer Unterseite: der Pfeil erscheint und „Einstellungen“ rückt
