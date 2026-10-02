@@ -31,6 +31,9 @@
  * --m3-seg-fill / --m3-seg-thumb / --m3-seg-thumb-shadow / --m3-seg-separator /
  * --m3-seg-height / --m3-seg-pad -> Kapsel der Experiment-Fassung
  * --content-side (styles/tokens.css) -> Rand der Zeile zum Gerät
+ * --m3-hide-time         -> wie schnell die Reiterzeile nachrückt, wenn die Suchleiste geht
+ * --cal-head-stuck (setzt src/features/calendar/calendar-grid.js) -> Höhe des
+ *                           eingerasteten Kopfes, darunter rastet die Reiterzeile ein
  *
  * Direkt bei ihrer Regel: Schrift der Reiter 14px (Material 3 „Title small“),
  * in der Kapsel 13px (wie die iOS-Fassung).
@@ -88,6 +91,14 @@
 
   [data-mobile-os="android"]:not([data-mobile-variant="experiment"]) .cal-seg {
     box-shadow: inset 0 -1px 0 var(--m3-outline-variant); /* box-shadow: Linie nach innen, verschiebt nichts */
+  }
+
+  /* Eingerastet (styles/calendar-panel.css) rückt die Zeile mit dem Kopf um
+     die weggerutschte Suchleiste nach, wie die Reiterzeilen in styles/android-tabs.css.
+     transition: in derselben Zeit wie der Kopf, statt zu springen */
+  [data-mobile-os="android"] .cal-seg {
+    top: calc(var(--cal-head-stuck, 0px) - var(--m3-bar-shift, 0px));
+    transition: top var(--m3-hide-time) ease;
   }
 
   [data-mobile-os="android"] .cal-seg-tabs {

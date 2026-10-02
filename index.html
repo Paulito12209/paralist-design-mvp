@@ -64,7 +64,7 @@
     <link rel="stylesheet" href="styles/calendar-panel.css" /><link rel="stylesheet" href="styles/calendar-week.css" />
     <link rel="stylesheet" href="styles/sort-wheels.css" /><link rel="stylesheet" href="styles/filter-sheet.css" /><link rel="stylesheet" href="styles/info-dialog.css" />
     <link rel="stylesheet" href="styles/tasks.css" />
-    <link rel="stylesheet" href="styles/tasks-board.css" /><link rel="stylesheet" href="styles/tasks-select.css" /><link rel="stylesheet" href="styles/task-status.css" /><link rel="stylesheet" href="styles/tasks-settings.css" /><link rel="stylesheet" href="styles/view-end.css" /><link rel="stylesheet" href="styles/tasks-desk.css" />
+    <link rel="stylesheet" href="styles/tasks-board.css" /><link rel="stylesheet" href="styles/projects-board.css" /><link rel="stylesheet" href="styles/tasks-select.css" /><link rel="stylesheet" href="styles/task-status.css" /><link rel="stylesheet" href="styles/tasks-settings.css" /><link rel="stylesheet" href="styles/view-end.css" /><link rel="stylesheet" href="styles/tasks-desk.css" />
     <link rel="stylesheet" href="styles/media.css" /><link rel="stylesheet" href="styles/media-desk.css" /><link rel="stylesheet" href="styles/bookmarks.css" />
     <link rel="stylesheet" href="styles/viewer.css" />
     <link rel="stylesheet" href="styles/drawing.css" /><link rel="stylesheet" href="styles/video-player.css" />
@@ -183,17 +183,17 @@
           <!-- Kalender: gewählter Tag, Wochenstreifen und darunter die Fläche mit Stundenraster oder Liste; das Panel „Ansicht“ legt src/features/calendar/calendar-settings.js an -->
           <section class="view" id="view-calendar" data-view="calendar" hidden>
             <h1 class="screen-title">Kalender</h1>
-            <div class="cal-date-row">
-              <button class="cal-month" id="cal-month" type="button" aria-label="Datum wählen">
-                <span id="cal-month-label">Datum</span>
-                <svg class="icon"><use href="#icon-chevron"></use></svg>
-              </button>
-              <button class="cal-kw" id="cal-kw" type="button" aria-label="Woche wählen">KW</button>
-              <!-- Symbol „Ansicht“ (Regler) der Android-Fassungen; in der Listenansicht steht es stattdessen rechts in der Reiterzeile (styles/android-calendar-tabs.css) -->
-              <button class="view-panel-btn" type="button" data-view-panel-open aria-label="Ansicht" title="Ansicht"><svg class="icon"><use href="#icon-tune"></use></svg></button>
-            </div>
-            <!-- cal-head rastet unter der Suchleiste ein; Titel und Datum scrollen weg (styles/calendar.css) -->
+            <!-- cal-head rastet unter der Suchleiste ein: Datumszeile und Wochenstreifen bleiben stehen, nur der Titel scrollt weg (styles/calendar.css) -->
             <div class="cal-head" id="cal-head">
+              <div class="cal-date-row">
+                <button class="cal-month" id="cal-month" type="button" aria-label="Datum wählen">
+                  <span id="cal-month-label">Datum</span>
+                  <svg class="icon"><use href="#icon-chevron"></use></svg>
+                </button>
+                <button class="cal-kw" id="cal-kw" type="button" aria-label="Woche wählen">KW</button>
+                <!-- Symbol „Ansicht“ (Regler) der Android-Fassungen; in der Listenansicht steht es stattdessen rechts in der Reiterzeile (styles/android-calendar-tabs.css) -->
+                <button class="view-panel-btn" type="button" data-view-panel-open aria-label="Ansicht" title="Ansicht"><svg class="icon"><use href="#icon-tune"></use></svg></button>
+              </div>
               <div class="cal-strip" id="cal-strip">
                 <div class="cal-week-head">
                   <span>Mo</span><span>Di</span><span>Mi</span><span>Do</span><span>Fr</span><span>Sa</span><span>So</span>

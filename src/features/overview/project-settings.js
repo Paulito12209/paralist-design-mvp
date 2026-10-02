@@ -4,6 +4,8 @@
  * src/ui/view-panel.js (wie „Ansicht“ der Aufgaben-Seite);
  * hier stehen nur die Zeilen der gewählten Ansicht:
  *
+ * - Layout: Liste | Board (wie bei den Aufgaben); im Board dahinter „Spalten
+ *   nach“ Status | Dringlichkeit. Auch „Alle“ merkt sich das
  * - Sortieren: Zeile mit der Wahl („Zuletzt geöffnet · Neueste zuerst“), ein
  *   Tipp öffnet das Blatt „Sortieren“ (src/ui/sort-sheet.js)
  * - Filtern: das Blatt „Filtern“ (src/features/overview/project-filter.js) —
@@ -20,6 +22,7 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * rowLabels             -> Beschriftungen der Zeilen
+ * layouts                -> die beiden Knöpfe der Zeile „Layout“ (Beschriftung und Symbol)
  * noFilter               -> was die Filter-Zeile sagt, wenn nichts gefiltert ist
  * handpicked(n)          -> was die Filter-Zeile bei handverlesenen Projekten sagt
  * pickTitle              -> Überschrift des Blatts „Projekte wählen“ (das Blatt „Sortieren“ hat keinen Titel)
@@ -34,6 +37,7 @@
 
 import { escapeHtml, icon } from "../../core/html.js";
 import { projectSorts } from "../../data/config.js";
+import { taskGroupings } from "../../data/config-tasks.js";
 import {
   activeProjectView,
   sortProjects,
@@ -42,18 +46,24 @@ import {
 } from "../../data/project-views.js";
 import { projectEntries } from "../../data/queries.js";
 import { filterChipsMarkup } from "../../ui/filter-chips.js";
-import { panelToggle } from "../../ui/panel-rows.js";
+import { panelSegment, panelToggle } from "../../ui/panel-rows.js";
 import { openSheet } from "../../ui/sheet.js";
 import { openSortSheet, sortSummary } from "../../ui/sort-sheet.js";
 import { openProjectFilterSheet, projectFilterChips } from "./project-filter.js";
 
 const rowLabels = {
+  layout: "Layout",
+  groupBy: "Spalten nach",
   sort: "Sortieren",
   place: "Filtern",
   favorites: "Nur Favoriten",
   pick: "Projekte wählen",
   info: "Warum lässt sich „Alle“ nicht filtern?",
 };
+const layouts = [
+  { id: "list", label: "Liste", icon: "list" },
+  { id: "board", label: "Board", icon: "board" },
+];
 const noFilter = "Keine";
 const handpicked = (n) => `Handverlesen, ${n} ${n === 1 ? "Projekt" : "Projekte"}`;
 const pickTitle = "Projekte wählen";
@@ -66,6 +76,19 @@ const infoText =
 function filterValue(view) {
   if (view.ids.length) return handpicked(view.ids.length);
   return projectFilterChips(view).length || noFilter;
+}
+
+/* Die Zeile „Layout“ und, im Board, darunter „Spalten nach“. */
+function layoutRows(view) {
+  const groups = taskGroupings.map((item) => ({ id: item.id, label: item.label }));
+  const groupRow =
+    view.layout === "board"
+      ? `<div class="details-row tasks-group-row"><span class="details-row-label">${rowLabels.groupBy}</span>${panelSegment(groups, view.group, "group")}</div>`
+      : "";
+  return `
+    <div class="details-row">
+      <span class="details-row-label">${rowLabels.layout}</span>${panelSegment(layouts, view.layout, "layout")}
+    </div>${groupRow}`;
 }
 
 /** Die Zeilen der Karte für die gewählte Ansicht. */
@@ -82,10 +105,11 @@ export function projectSettingsMarkup(view) {
       </button>
       ${view.fixed ? `<button class="tasks-info" type="button" data-settings="info" aria-label="${escapeHtml(rowLabels.info)}">${icon("info")}</button>` : ""}
     </div>`;
-  if (view.fixed) return `<div class="details-list tasks-settings">${sortRow}${placeRow}</div>`;
+  if (view.fixed) return `<div class="details-list tasks-settings">${layoutRows(view)}${sortRow}${placeRow}</div>`;
   const pickCount = view.ids.length;
   return `
     <div class="details-list tasks-settings">
+      ${layoutRows(view)}
       ${sortRow}
       ${placeRow}
       ${locked ? "" : filterChipsMarkup(projectFilterChips(view))}
@@ -147,7 +171,9 @@ export function handleProjectSettingsClick(event, view) {
   const button = event.target.closest("[data-settings]");
   if (!button || button.disabled) return;
   const setting = button.dataset.settings;
-  if (setting === "sort") openProjectSort(view);
+  if (setting === "layout") updateProjectView({ layout: button.dataset.value });
+  else if (setting === "group") updateProjectView({ group: button.dataset.value });
+  else if (setting === "sort") openProjectSort(view);
   else if (setting === "filter") openProjectFilter(view, button.dataset.value);
   else if (setting === "info") openSheet(infoTitle, [{ lead: true, label: infoText }]);
   else if (setting === "favorites") updateProjectView({ favoritesOnly: !view.favoritesOnly });
