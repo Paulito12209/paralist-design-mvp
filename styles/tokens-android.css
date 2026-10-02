@@ -125,6 +125,7 @@
  * --m3-page-card-radius        -> Rundung der Karten und Kacheln auf diesen Seiten (Material 3 „Large“: 16dp)
  * --m3-page-gap                -> Luft zwischen zwei Karten auf diesen Seiten (Material 3: 8dp)
  * --m3-page-section-gap        -> Luft über einer Abschnittsüberschrift („Darstellung“, „Analyse“)
+ * --m3-page-tile-gap           -> Fuge zwischen zwei Kachel-Zeilen der Einstellungen (styles/android-settings-tiles.css)
  * --m3-page-seg-h              -> Höhe des Zeitraum-Schalters „7 Tage | 30 Tage | 90 Tage“ (Material 3 „Segmented button“: 40dp)
  * --m3-page-in-time            -> Dauer, mit der eine Seite hereingleitet (Material 3: 300ms)
  * --m3-page-in-shift           -> wie weit sie dabei von rechts kommt (Material 3 „Shared axis“: 30dp)
@@ -230,6 +231,7 @@
   --m3-page-card-radius: 16px;
   --m3-page-gap: 8px;
   --m3-page-section-gap: 24px;
+  --m3-page-tile-gap: 4px;
   --m3-page-seg-h: 40px;
   --m3-page-in-time: 300ms;
   --m3-page-in-shift: 30px;
