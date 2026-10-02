@@ -49,7 +49,7 @@ const emptyTab = {
   icon: "layers",
   accent: "var(--workspace-icon-color)",
   title: "Noch keine Arbeitsbereiche",
-  text: "Ein Arbeitsbereich sammelt Einträge zu einem Thema — Notizen, Aufgaben, Termine.",
+  text: "Ein Arbeitsbereich ist ein Verantwortungsbereich ohne Enddatum, in dem du einen Standard dauerhaft halten willst.",
   action: { label: "Arbeitsbereich anlegen" },
   data: 'data-add-workspace="1"',
 };

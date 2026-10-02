@@ -35,7 +35,7 @@
  * --m3-menu-item-height        -> Höhe eines Eintrags im Plus-Menü
  * --m3-menu-gap                -> Luft zwischen den Einträgen im Plus-Menü
  * --m3-tab-height              -> Höhe eines Reiters (Material 3: 48dp)
- * --m3-tab-edge                -> Abstand vom Geräterand bis zum Inhalt des ersten Reiters (Google Tasks: etwa 24dp, hier ein Kompromiss);
+ * --m3-tab-edge                -> Abstand vom Geräterand bis zum Inhalt des ersten Reiters (Google Tasks: etwa 24dp);
  *                                 ebenso weit stehen die großen Titel und Abschnittsüberschriften vom Rand
  * --m3-tab-info-w              -> Platz, den das ⓘ hinter „Alle“ (Aufgaben) neben dem Namen einnimmt; die Linie
  *                                 unter dem Reiter endet um so viel früher und liegt nur unter dem Namen
@@ -106,7 +106,7 @@
   --m3-menu-gap: 8px;
   --m3-tab-height: 48px;
   --m3-tab-indicator: 3px;
-  --m3-tab-edge: 20px;
+  --m3-tab-edge: 24px;
   --m3-tab-info-w: 18px;
   --m3-tabs-gap: 12px;
   --m3-hide-time: 220ms;

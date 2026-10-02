@@ -48,10 +48,11 @@
     --title-side: 0px;
   }
 
-  /* Titel und Abschnittsüberschriften („Übersicht“, „Projekte“) stehen dafür
-     so weit vom Rand wie der erste Reiter (--m3-tab-edge, wie in Google Tasks);
-     Kacheln und Listen darunter bleiben auf dem Seitenrand. */
-  [data-mobile-os="android"] :is(.screen-title, .section-head) {
+  /* Titel, Abschnittsüberschriften („Übersicht“, „Projekte“), der graue Satz
+     darunter (.page-intro) und der Titel einer Eintragsseite stehen so weit vom
+     Rand wie der erste Reiter (--m3-tab-edge, wie in Google Tasks); Kacheln
+     und Listen darunter bleiben auf dem Seitenrand. */
+  [data-mobile-os="android"] :is(.screen-title, .section-head, .page-intro, .entry-title) {
     padding-left: calc(var(--m3-tab-edge) - var(--content-side));
   }
 

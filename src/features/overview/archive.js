@@ -35,7 +35,7 @@ const emptyArchive = {
   icon: "archive",
   accent: "var(--archive-color)",
   title: "Das Archiv ist leer",
-  text: "Wisch eine Zeile nach links und tippe auf den grauen Knopf, dann liegt sie hier.",
+  text: "Hier landet, was inaktiv geworden ist: abgeschlossene Projekte und alles, was du gerade nicht brauchst. Wisch eine Zeile nach links und tippe auf den grauen Knopf.",
 };
 
 /* Beide Zeilenarten haben dieselben zwei Knöpfe, nur andere Namen dahinter

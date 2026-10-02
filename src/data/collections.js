@@ -63,11 +63,11 @@ export const bookmarksPage = { title: "Lesezeichen", kind: "bookmarks" };
  * auch auf kleinen Geräten nie an diese Grenze stößt.
  */
 export const collectionHeads = {
-  inbox: { icon: "inbox", color: "var(--inbox-icon-color)", intro: "Alles, was noch keinen Ort hat." },
+  inbox: { icon: "inbox", color: "var(--inbox-icon-color)", intro: "Alles, was du erfasst hast und noch nicht eingeordnet ist." },
   favorites: { icon: "star", color: "var(--star-color)", intro: "Alles, was du markiert hast." },
-  projects: { icon: "rocket", color: "var(--project-icon-color)", intro: "Aufgaben, Notizen und Termine je Vorhaben." },
-  resources: { icon: "cube", color: "var(--resource-icon-color)", intro: "Notizen, Dokumente, Zeichnungen und Medien." },
-  archive: { icon: "archive", color: "var(--archive-color)", intro: "Weggelegtes, jederzeit zurückholbar." },
-  workspaces: { icon: "layers", color: "var(--prio-next)", intro: "Alle Arbeitsbereiche nach Tabs." },
+  projects: { icon: "rocket", color: "var(--project-icon-color)", intro: "Eine Reihe von Aufgaben, die auf ein Ziel mit Termin hinführt." },
+  resources: { icon: "cube", color: "var(--resource-icon-color)", intro: "Themen und Material, das dir später nützen kann." },
+  archive: { icon: "archive", color: "var(--archive-color)", intro: "Alles Inaktive aus Projekten, Bereichen und Ressourcen." },
+  workspaces: { icon: "layers", color: "var(--prio-next)", intro: "Verantwortungsbereiche ohne Enddatum, in denen du einen Standard halten willst." },
   bookmarks: { icon: "bookmark", color: "var(--bookmark-color)", intro: "Websites, Videos und Orte aus deinen Einträgen." },
 };

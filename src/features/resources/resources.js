@@ -35,7 +35,7 @@ const emptyArt = {
     icon: "cube",
     accent: "var(--xp-done)",
     title: "Noch keine Ressourcen",
-    text: "Notizen, eigene Dokumente und Zeichnungen sammeln sich hier — egal, wo sie liegen.",
+    text: "Ressourcen sind Themen und Material, das dir später nützen kann — egal, wo es liegt.",
   },
   notes: {
     icon: "note",

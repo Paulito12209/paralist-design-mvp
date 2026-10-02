@@ -47,7 +47,7 @@ const emptyProjects = {
   icon: "rocket",
   accent: "var(--prio-jetzt)",
   title: "Noch keine Projekte",
-  text: "Ein Projekt bündelt Aufgaben, Notizen und Termine an einem Ort.",
+  text: "Ein Projekt ist eine Reihe von Aufgaben, die auf ein Ziel hinführt — mit einem Termin, bis zu dem es erledigt sein soll.",
   action: { label: "Projekt anlegen" },
   data: 'data-project-add="1"',
 };
