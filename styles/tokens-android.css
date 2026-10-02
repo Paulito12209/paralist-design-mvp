@@ -55,6 +55,8 @@
  * --m3-cal-day-inset           -> Kalender („Android“): wie weit der gefüllte Kreis des gewählten Tages vom
  *                                 Rand des Tages wegbleibt (2px: 40px-Kreis wie im Material-3-Datumswähler)
  * --m3-cal-ring-gap            -> Luft zwischen Ring und gefülltem Kreis, wenn der Tag Einträge hat
+ * --m3-cal-title-gap           -> Kalender: Luft zwischen Titel „Kalender“ und Datumszeile; zugleich die Luft
+ *                                 über der Datumszeile, wenn der Kopf oben eingerastet ist
  * --m3-hide-time               -> wie schnell Kopfzeile und Leiste beim Scrollen weg- und wiederkommen
  * --m3-content-end             -> Platz am Seitenende, damit nichts hinter Plus-Knopf und Leiste liegt
  * --m3-sheet-radius            -> Rundung oben an allen Blättern von unten (Material 3 „Large“: 16dp;
@@ -167,6 +169,7 @@
   --m3-cal-weekday-tighten: 3px;
   --m3-cal-day-inset: 2px;
   --m3-cal-ring-gap: 2px;
+  --m3-cal-title-gap: 18px;
   --m3-hide-time: 220ms;
   --m3-content-end: calc(var(--m3-nav-height-labels) + var(--m3-fab-size) + 3 * var(--m3-fab-gap));
   --m3-sheet-radius: 16px;
