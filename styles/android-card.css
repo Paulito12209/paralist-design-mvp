@@ -23,7 +23,7 @@
  *                                Akzentfarbe) und das Filter-Symbol, sobald die Ansicht aussiebt
  * --m3-on-surface             -> Grundfarbe der Tönung beim Drücken
  * --m3-on-surface-variant     -> Sortieren und Filtern in Ruhe
- * --m3-tab-edge              -> Linie, auf der das Icon von „Archiv“ steht (wie erster Reiter und Listen-Icons)
+ * --m3-card-head-pull       -> wie dicht die erste Zeile an der Werkzeugzeile sitzt
  * --content-side              -> Rand der Reiter, sobald rechts kein Symbol mehr steht (styles/tokens.css)
  *
  * Direkt bei ihrer Regel: Schrift von „Archiv“ 14px halbfett (Material 3
@@ -58,17 +58,17 @@
     align-items: center;
     min-height: var(--m3-card-head-h);
     margin-top: calc(-1 * var(--m3-tabs-gap));
+    margin-bottom: calc(-1 * var(--m3-card-head-pull));
   }
 
   /* Text-Knopf nach Material 3: kein Rahmen, keine Fläche, Schrift in der
-     Akzentfarbe. Der Rand setzt das Icon auf --m3-tab-edge, die Fluchtlinie von
-     erstem Reiter und Listen-Icons. */
+     Akzentfarbe. Der negative Rand setzt das Icon auf die Fluchtlinie der Liste. */
   [data-mobile-os="android"] .project-card-archive {
     display: inline-flex;
     align-items: center;
     gap: 8px;
     height: var(--m3-text-btn-h);
-    margin-left: calc(var(--m3-tab-edge) - var(--content-side) - var(--m3-text-btn-pad));
+    margin-left: calc(-1 * var(--m3-text-btn-pad));
     padding: 0 var(--m3-text-btn-pad);
     border-radius: calc(var(--m3-text-btn-h) / 2);
     font-size: 14px;

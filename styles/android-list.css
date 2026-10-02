@@ -1,7 +1,7 @@
 /*
  * Android-Fassung, Listenzeilen nach Material 3 („Lists“): eine Zeile ist
- * 56px hoch, davor steht ein Icon (20px) oder ein gerundetes Vorschaubild
- * (36px) mit 16px Abstand zum Titel — dichter als die 64px der Material-3-Liste mit Bild,
+ * 52px hoch, davor steht links bündig ein Icon (20px) oder ein gerundetes Vorschaubild
+ * (28px) mit 12px Abstand zum Titel — dichter als die Material-3-Liste,
  * so wie die Zeilen in Google Tasks, der Titel in 16px. Der Pfeil am rechten
  * Rand entfällt — Material 3 zeigt dort nur Aktionen, keine Navigation —, und
  * zwischen den Zeilen steht keine Linie. Wischt man eine Zeile zur Seite
@@ -85,11 +85,11 @@
   }
 
   /* Die Zeile „… hinzufügen“ trägt ihr Icon in derselben Leading-Fläche wie die
-     Zeilen darüber (Icon mittig in --m3-list-leading): Icon und Text stehen
+     Zeilen darüber (Icon links in --m3-list-leading): Icon und Text stehen
      senkrecht untereinander mit den Icons und Titeln der Liste */
   [data-mobile-os="android"] .workspace-add .icon {
     box-sizing: content-box; /* box-sizing: der seitliche Rand kommt zur Icon-Größe dazu */
-    padding-inline: calc((var(--m3-list-leading) - var(--m3-list-icon)) / 2);
+    padding-inline: 0 calc(var(--m3-list-leading) - var(--m3-list-icon));
   }
 
   /* Das Favoriten-Gold bleibt, auch wenn Icons sonst in der Variant-Farbe stehen */
@@ -105,7 +105,7 @@
     margin: 0;
     padding: 0;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start; /* justify-content: das Icon steht links auf dem Seitenrand, nicht mittig in der Fläche */
   }
 
   [data-mobile-os="android"] .entry-thumb,
@@ -134,7 +134,7 @@
     place-items: center;
     width: var(--m3-row-more-size);
     height: var(--m3-row-more-size);
-    margin: calc((var(--m3-list-row-h) - var(--m3-row-more-size)) / -2) -12px calc((var(--m3-list-row-h) - var(--m3-row-more-size)) / -2) 0;
+    margin: calc(var(--m3-row-more-size) / -2) -12px calc(var(--m3-row-more-size) / -2) 0; /* oben und unten nimmt die Tippfläche keine Höhe ein: die Zeile bleibt so niedrig wie --m3-list-row-h */
     border-radius: 50%;
     color: var(--m3-on-surface-variant);
   }

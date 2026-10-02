@@ -7,7 +7,7 @@
  * .device setzt src/shell/android-bars.js.
  * Auch hier: Listeneinträge haben keine Trennlinie am unteren Rand. Titel und
  * Abschnittsüberschriften verlieren den iOS-Einzug (--title-side → 0) und
- * stehen auf der Linie des Seitenrands.
+ * stehen stattdessen --m3-tab-edge vom Rand, auf einer Linie mit dem ersten Reiter.
  * Alles hier gilt nur mit data-mobile-os="android" an <html> (Einstellungen ›
  * Mehr › Versionen) und unterhalb der Desktop-Breite von 1024px.
  * Pfad: styles/android.css
@@ -22,6 +22,7 @@
  * --m3-indicator-w / -h       -> Pille hinter dem aktiven Icon
  * --m3-secondary-container    -> Farbe dieser Pille
  * --m3-hide-time              -> Dauer des Weg- und Wiederkommens
+ * --m3-tab-edge               -> Abstand von Titeln und Überschriften zum Geräterand
  * --m3-content-end            -> Platz am Seitenende
  * --details-head-h            -> so viel schaut die Karte „Details“ hervor; der Plus-Knopf
  *                                steht um so viel höher (styles/tokens-pages.css)
@@ -45,6 +46,13 @@
      an :root, und ein Wert am body gewinnt unabhängig von der Reihenfolge. */
   [data-mobile-os="android"] body {
     --title-side: 0px;
+  }
+
+  /* Titel und Abschnittsüberschriften („Übersicht“, „Projekte“) stehen dafür
+     so weit vom Rand wie der erste Reiter (--m3-tab-edge, wie in Google Tasks);
+     Kacheln und Listen darunter bleiben auf dem Seitenrand. */
+  [data-mobile-os="android"] :is(.screen-title, .section-head) {
+    padding-left: calc(var(--m3-tab-edge) - var(--content-side));
   }
 
   /* ---------- Kopfzeile mit Suchleiste ---------- */
