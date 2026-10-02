@@ -5,8 +5,10 @@
  * wird wie im Board der Aufgaben (styles/tasks-board.css): blasse Kopfzeile je
  * Spalte, darunter schlichte Zeilen — vorn das Icon des Projekts, dann Titel
  * mit Nebenzeile (Fälligkeit und die jeweils andere Angabe), rechts der
- * Griffstreifen. Am Griff zieht man ein Projekt in eine andere Spalte: es
- * bekommt deren Status bzw. Dringlichkeit (src/data/project-board.js). Ein Tipp
+ * Griffstreifen. Hält man den Griff kurz gedrückt (mit der Maus: sofort),
+ * löst sich das Projekt und lässt sich in eine andere Spalte ziehen: es
+ * bekommt deren Status bzw. Dringlichkeit (src/data/project-board.js). Ein
+ * bloßer Wisch über den Griff rollt das Board wie überall sonst. Ein Tipp
  * auf die Zeile öffnet das Projekt. Ziehen und Mitrollen steckt in
  * src/ui/board-drag.js und ist mit dem Board der Aufgaben geteilt.
  * Neue Projekte entstehen wie in der Liste über „Projekt hinzufügen“.
