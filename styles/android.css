@@ -31,6 +31,9 @@
  * --m3-fab-size / --m3-fab-gap / --m3-nav-shift
  *                             -> Eintragsseite: der Inhalt endet ganz gescrollt einen
  *                                --m3-fab-gap über dem Plus-Knopf (Leiste, Knopf, zwei Abstände)
+ * --m3-menu-radius / --m3-menu-pad
+ *                             -> kleines Menü beim gedrückt Halten: Rundung der Karte und
+ *                                Luft über der ersten bzw. unter der letzten Zeile
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel: Suchtext 16px,
  * Namen unter den Icons 12px (Material 3 „Label medium“).
@@ -260,5 +263,22 @@
      Zeilen (Einträge, Projekte, Aufgaben), Board-Einträge und Lesezeichen. */
   [data-mobile-os="android"] :is(.workspace-row, .board-row, .bookmark-row) {
     border-bottom: 0;
+  }
+
+  /* ---------- Menü beim gedrückt Halten ---------- */
+
+  /* Wie das Menü in Google Drive: kaum gerundet, ohne Schatten (der helle
+     Schein im Dunkelmodus aus styles/overlays.css entfällt) und mit Zeilen,
+     die bis an den Rand der Karte reichen. Die Auswahl über :root und
+     .ctx-backdrop ist so genau, dass sie die Dunkel-Regeln dort übertrifft. */
+  :root[data-mobile-os="android"] .ctx-backdrop .ctx-card {
+    padding: var(--m3-menu-pad) 0;
+    border-radius: var(--m3-menu-radius); /* border-radius: Ecken wie bei Material 3 „Menu“ */
+    box-shadow: none; /* box-shadow: kein Schein um die Karte */
+  }
+
+  [data-mobile-os="android"] .ctx-item {
+    padding-inline: 16px;
+    border-radius: 0; /* border-radius: das Drücken färbt die ganze Zeile bis zum Rand */
   }
 }
