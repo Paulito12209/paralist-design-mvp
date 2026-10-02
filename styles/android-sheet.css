@@ -19,7 +19,7 @@
  * --m3-sheet-radius        -> Rundung der oberen Ecken des Blatts
  * --m3-sheet-max           -> wie hoch das Blatt höchstens wird
  * --m3-surface-container   -> Fläche des Blatts
- * --m3-scrim               -> Schleier hinter dem Blatt
+ * --m3-sheet-scrim-alpha   -> Deckkraft des schwarzen Schleiers hinter dem Blatt (Material 3: 32 %)
  * --m3-on-surface-variant  -> Griff oben am Blatt und das Symbol in der Reiterzeile
  * --m3-sheet-width         -> größte Breite des Blatts (Tablet)
  * --m3-sheet-handle-zone   -> Höhe des Griff-Streifens; der Griff sitzt darin 22px vom oberen Rand
@@ -140,7 +140,7 @@
     position: absolute;
     inset: 0;
     z-index: 25;
-    background: var(--m3-scrim);
+    background: rgba(0, 0, 0, var(--m3-sheet-scrim-alpha));
     opacity: 0;
     pointer-events: none; /* pointer-events: unsichtbar lässt er jeden Tipp zur Seite durch */
     transition: opacity var(--tasks-panel-slide) ease; /* transition: blendet mit dem Blatt ein und aus */
