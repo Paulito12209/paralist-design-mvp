@@ -53,7 +53,7 @@ export function projectCardHead(view) {
   return `
     <div class="project-card-head">
       ${archiveButton()}
-      <div class="project-card-tools">${tool("sort", "sort")}${filter}</div>
+      <div class="project-card-tools">${tool("sort", "swap-vert")}${filter}</div>
     </div>`;
 }
 

@@ -7,8 +7,10 @@
  * verschwindet lautlos, sobald man sie verlässt. Gilt auf der Übersicht (am
  * Handy) und auf der Seite Projekte. Nur ein echter Tipp zählt — wer scrollt,
  * schreibt nicht; im Auswahlmodus wählt ein Tipp nur aus.
- * Die Zeile „Projekt hinzufügen“ bleibt der Weg über das Eingabefeld (Ort,
- * Datum, Anhang); die Zeile hier kennt nur den Titel.
+ * Auch ein Tipp auf „Projekt hinzufügen“ öffnet in der Android-Fassung diese
+ * Zeile statt des Eingabefelds; die Zeile hier kennt nur den Titel. In der
+ * iOS-Fassung bleibt „Projekt hinzufügen“ der Weg über das Eingabefeld (Ort,
+ * Datum, Anhang).
  * Pfad: src/features/overview/project-inline.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -27,6 +29,7 @@ import { noHistoryForm } from "../../core/no-history.js";
 import { createProjectInline } from "../../data/mutations-tasks.js";
 import { state } from "../../data/state.js";
 import { isDesk } from "../../ui/desk-mode.js";
+import { isMobileOs } from "../../ui/platform.js";
 import { isViewActive } from "../../ui/views.js";
 import { isProjectsPageOpen } from "./project-views.js";
 
@@ -81,8 +84,9 @@ function openRow(list) {
   row.className = "workspace-row project-inline";
   /* form: gegen Chromes Verlaufs-Chips über der Tastatur (src/core/no-history.js);
      enterkeyhint: die Enter-Taste heißt „Fertig“, nicht „Weiter“ */
+  /* row-glyph: dieselbe Icon-Fläche wie in den Zeilen darüber, sonst rückt der Cursor näher ans Icon */
   row.innerHTML = `
-    ${icon("rocket")}
+    <span class="row-glyph">${icon("rocket")}</span>
     <input class="task-inline-input" type="text" form="${noHistoryForm}" enterkeyhint="done"
       placeholder="${placeholder}" aria-label="${placeholder}" />`;
   list.insertBefore(row, list.querySelector(".workspace-add"));
@@ -120,11 +124,25 @@ function onClick(event) {
   openRow(list);
 }
 
+/* Tipp auf „Projekt hinzufügen“ in der Liste (Android): die Zeile öffnet sich
+   direkt. Aufgefangen wird in der Aufnahmephase, damit der Zuhörer, der sonst
+   das Eingabefeld öffnet (project-views.js), nicht mehr drankommt. */
+function onAddRowClick(event) {
+  const add = event.target.closest(".workspace-add[data-project-add]");
+  if (!add || !isMobileOs("android")) return;
+  const list = visibleList();
+  if (!list?.contains(add)) return;
+  down = null;
+  event.stopPropagation();
+  openRow(list);
+}
+
 /** Das Anlegen per Tipp auf Übersicht und Seite Projekte einschalten. */
 export function initProjectInline() {
   ["view-home", "view-page"].forEach((id) => {
     const view = el(id);
     view.addEventListener("pointerdown", onPointerDown);
+    view.addEventListener("click", onAddRowClick, true);
     view.addEventListener("click", onClick);
   });
 }
