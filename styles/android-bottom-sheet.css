@@ -22,6 +22,7 @@
  * --m3-sheet-radius        -> Rundung der oberen Ecken
  * --m3-sheet-width         -> größte Breite auf einem Tablet
  * --m3-sheet-row-h         -> Höhe einer Zeile im Auswahl-Blatt
+ * --m3-sheet-max           -> wie hoch das Auswahl-Blatt höchstens wird, bevor die Liste scrollt
  * --m3-menu-sheet-pad      -> Luft über der ersten und unter der letzten Zeile
  * --m3-surface-container   -> Fläche der Blätter
  * --m3-surface-container-high -> Kacheln (Icon wählen) und die zwei Knöpfe nebeneinander
@@ -76,6 +77,26 @@
 
   [data-mobile-os="android"] .sheet-backdrop.is-m3 .sheet {
     padding: var(--m3-menu-sheet-pad) 0 calc(var(--m3-menu-sheet-pad) + var(--safe-bottom));
+  }
+
+  /* Das Blatt wächst mit seiner Liste bis --m3-sheet-max (80 % des Geräts) und
+     erst darüber scrollt die Liste in sich. Die feste Grenze 52vh aus
+     overlays.css ließ lange Listen schon früh scrollen. Titel und Reiter
+     behalten ihre Höhe (flex: none), die Liste nimmt den Rest (min-height: 0). */
+  [data-mobile-os="android"] .sheet-backdrop.is-m3 .sheet {
+    display: flex;
+    flex-direction: column;
+    max-height: var(--m3-sheet-max);
+  }
+
+  [data-mobile-os="android"] .sheet-backdrop.is-m3 .sheet > :is(.sheet-title, .sheet-tabs) {
+    flex: none;
+  }
+
+  [data-mobile-os="android"] .sheet-backdrop.is-m3 .sheet-options {
+    flex: 0 1 auto;
+    min-height: 0;
+    max-height: none;
   }
 
   [data-mobile-os="android"] .sheet-backdrop.is-m3 .sheet-title,

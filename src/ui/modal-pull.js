@@ -3,7 +3,8 @@
  * (Fortschritt, Einstellungen mit allen Unterseiten, Profilbild, Datum,
  * Auswahl-Blatt) und die bildschirmfüllende Dateiansicht. Gezogen wird nur,
  * wenn der Inhalt schon oben steht — sonst scrollt man ganz normal. Das gilt
- * auch über Zeilen, Knöpfen und Karten im Inhalt, nicht nur am Kopf.
+ * auch über Zeilen, Knöpfen und Karten im Inhalt, nicht nur am Kopf; im
+ * Auswahl-Blatt zählt dafür die Liste darin (.sheet-options).
  * Pfad: src/ui/modal-pull.js
  *
  * ANPASSBARE WERTE
@@ -32,9 +33,12 @@ function panelOf(backdrop) {
   return backdrop.querySelector(".modal, .sheet, .viewer");
 }
 
-/* Die Fläche, die in sich rollt — nur wenn sie oben steht, darf gezogen werden. */
+/* Die Fläche, die in sich rollt — nur wenn sie oben steht, darf gezogen werden.
+   Im Auswahl-Blatt ist es die Liste (.sheet-options): ohne sie gälte das Blatt
+   immer als „oben“, und ein Wisch nach unten würde es schließen, statt die
+   gescrollte Liste zurück nach oben zu rollen. */
 function bodyOf(backdrop) {
-  return backdrop.querySelector(".modal-body, .viewer-stage");
+  return backdrop.querySelector(".modal-body, .viewer-stage, .sheet-options");
 }
 
 /** Reste einer Ziehbewegung entfernen, damit das Blatt beim nächsten Öffnen sauber steht. */
