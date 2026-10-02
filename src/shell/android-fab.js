@@ -74,6 +74,12 @@ function openFabMenu() {
   const deviceBox = dom.device.getBoundingClientRect();
   menu.style.setProperty("--m3-menu-bottom", `${Math.round(deviceBox.bottom - fabBox.bottom)}px`);
   menu.hidden = false;
+  /* Auf kleinen Geräten passt die Spalte nicht ganz hinein: sie startet unten,
+     damit die häufigsten Arten (Termin, Aufgabe) am Knopf voll sichtbar sind und
+     man für die seltenen (Medium, Lesezeichen) nach oben wischt. Bei jedem Öffnen,
+     sonst startet eine scrollbare Liste oben und schneidet den untersten Eintrag ab. */
+  const list = menu.querySelector(".m3-fab-menu-list");
+  list.scrollTop = list.scrollHeight;
   dom.device.classList.add("is-fab-open");
   fab.setAttribute("aria-expanded", "true");
   /* Erst im nächsten Bild die Klasse: sonst blendet der Schleier nicht ein, sondern ist sofort da. */
