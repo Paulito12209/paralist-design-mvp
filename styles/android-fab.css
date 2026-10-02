@@ -123,7 +123,8 @@
 }
 
 /* Die Einträge stapeln sich rechts über dem Schließen-Knopf; bei sehr
-   niedrigen Geräten lässt sich die Spalte scrollen, statt oben abzureißen. */
+   niedrigen Geräten lässt sich die Spalte scrollen, statt oben abzureißen.
+   Sie startet unten (gesetzt in android-fab.js): der Eintrag am Knopf ist immer ganz da. */
 .m3-fab-menu-list {
   position: absolute;
   right: var(--m3-fab-gap);
