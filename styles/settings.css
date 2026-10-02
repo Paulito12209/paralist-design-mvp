@@ -1,6 +1,6 @@
 /*
- * Einstellungs-Blatt: die beiden kleinen Karten unter „Analyse“, die Liste für
- * Hell, Dunkel und System, die Haken-Zeilen und grauen Hinweise der
+ * Einstellungs- und Fortschritt-Blatt: die beiden kleinen Karten unter „Analyse“
+ * (stehen im Fortschritt), die Liste für Hell, Dunkel und System, die Haken-Zeilen und grauen Hinweise der
  * App-Einstellungen und die Kopfzeile der aufgeklappten Karte.
  * Pfad: styles/settings.css
  *
@@ -21,7 +21,15 @@
  * (u.a. der graue Hinweis unter einer Gruppe: 13px).
 */
 
-/* ---------- Analyse: zwei Kacheln nebeneinander ---------- */
+/* ---------- Analyse (Fortschritt-Blatt): zwei Kacheln nebeneinander ---------- */
+
+/* Rahmen um Überschrift und Kacheln (src/features/progress/progress-insights.js) */
+.progress-insights {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  flex: 0 0 auto; /* flex: im Blatt sonst auf null zusammengedrückt */
+}
 
 .mini-grid {
   display: grid;

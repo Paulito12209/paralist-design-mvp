@@ -2,7 +2,7 @@
  * Karte „Wo die Zeit hingeht“ unter dem Balkenverlauf der Nutzungszeit:
  * ein geteiltes Band über die ganze Breite und darunter je Bereich eine Zeile
  * mit Icon, Dauer und Anteil. Zeitraum wie der Umschalter darüber.
- * Pfad: src/features/profile/usage-split.js
+ * Pfad: src/ui/usage-split.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
@@ -13,10 +13,10 @@
  * Größen und Abstände in styles/usage-split.css.
  */
 
-import { formatSpan } from "../../core/format.js";
-import { escapeHtml, icon } from "../../core/html.js";
-import { usageAreaStyle } from "../../data/usage-areas.js";
-import { usageByArea } from "../../data/usage.js";
+import { formatSpan } from "../core/format.js";
+import { escapeHtml, icon } from "../core/html.js";
+import { usageAreaStyle } from "../data/usage-areas.js";
+import { usageByArea } from "../data/usage.js";
 
 const minShownShare = 0.01;
 
