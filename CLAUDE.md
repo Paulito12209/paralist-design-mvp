@@ -120,17 +120,42 @@ Die harten Punkte:
    betroffene Flows anklicken — leerer und voller Speicher, hell und dunkel,
    375 px Breite, Zurück-Pfeil und Browser-Zurück.
 
-## 6. Sammel-Sitzung (mehrere Branches zusammenführen)
+## 6. Sammel-Sitzung „Git Commit Manager“ (Branches zusammenführen)
 
-Wenn ich sage „führe diese Branches zusammen“ oder „nimm alle außer …“:
+Für das Zusammenführen gibt es **eine** eigene Sitzung, die immer wieder
+benutzt wird. Sie heißt verbindlich
 
-1. Lies zuerst die zugehörigen Dateien in `docs/changes/`.
-2. Führe die Branches einzeln und nacheinander zusammen, nicht alle auf einmal.
+```
+Git Commit Manager JJJJ-MM-TT
+```
+
+mit dem Datum des Tages, an dem sie angelegt wurde (Berliner Zeit).
+
+- **Beim Start der Sitzung:** den eigenen Titel prüfen und, falls er abweicht,
+  mit dem Werkzeug `set_session_title` auf dieses Format setzen. Danach
+  `origin/main` holen und die offenen Pull Requests auflisten (Nummer, Titel,
+  Branch), damit ich sie nach **Nummer** benennen kann.
+- **Ich nenne die Threads nach ihrer PR-Nummer** („merge 66, 67 und 70“).
+  Fehlt eine Nummer oder ist sie mehrdeutig, einmal kurz nachfragen.
+- **Bei jedem Wiederkommen** („merge jetzt die neuen“, „alle außer 68“):
+  erst `origin/main` neu holen und die Liste der offenen PRs frisch ziehen,
+  nicht den alten Stand aus dem Gedächtnis verwenden.
+
+Ablauf je Durchgang:
+
+1. Lies zuerst die zugehörigen Dateien in `docs/changes/` der genannten PRs.
+2. Führe die Branches **einzeln und nacheinander** zusammen, nicht alle auf
+   einmal. Nach jedem Merge `python3 tools/check.py` — muss „alles in Ordnung“
+   melden, sonst stoppen.
 3. Bei Konflikten: Stoppe, erkläre den Konflikt kurz mit Bezug auf die Doku
    beider Änderungen und schlage eine Lösung vor, bevor du sie umsetzt.
    Konflikt in `src/data/version.js`: einfach `python3 tools/version.py`
    erneut laufen lassen und die ganze Datei stagen.
-4. Liste am Ende auf, welche Branches übernommen und welche ausgelassen wurden.
+4. Liste am Ende auf, welche PRs (Nummer + Titel) übernommen und welche
+   ausgelassen wurden, und warum.
+
+Diese Sitzung schreibt selbst keinen Code und braucht keine eigene Doku-Datei;
+die Doku steckt in den gemergten PRs.
 
 ## 7. Entwicklungsserver
 
