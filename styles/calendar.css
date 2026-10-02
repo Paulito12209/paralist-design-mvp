@@ -39,7 +39,8 @@
 /* margin-bottom: mindestens so hoch wie die Verlaengerung des Kopfes (.cal-head,
    --content-top), damit der Titel nie unter der Kopffläche liegt. So ist
    „Kalender“ genau dann ganz verschwunden, wenn der Kopf einrastet — auch beim
-   Hochwischen unter der noch sichtbaren Suchleiste bleibt kein Rest stehen */
+   Hochwischen unter der noch sichtbaren Suchleiste bleibt kein Rest stehen.
+   Android löst es ohne Verlängerung (styles/android-calendar.css). */
 #view-calendar .screen-title {
   margin-bottom: max(18px, var(--content-top));
 }
