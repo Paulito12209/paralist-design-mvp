@@ -1,9 +1,10 @@
 /*
- * Gedrückt halten: nach kurzer Zeit öffnet sich das Kontextmenü eines Tabs,
- * Arbeitsbereichs oder Eintrags. Der Klick danach wird unterdrückt, damit die Seite
- * nicht zusätzlich aufgeht. Wandert der Finger nach dem Halten, statt
- * loszulassen, kann die Zeile stattdessen angehoben werden (src/ui/row-lift.js,
- * angestoßen aus src/ui/swipe.js) — dafür liefert holdTurnedDrag() das Ziel.
+ * Gedrückt halten: nach kurzer Zeit „greift“ das Halten. Beim Loslassen öffnet
+ * sich dann das Kontextmenü eines Tabs, Arbeitsbereichs oder Eintrags, und der
+ * Klick danach wird unterdrückt, damit die Seite nicht zusätzlich aufgeht.
+ * Sobald das Halten greift, erfährt es auch src/ui/swipe.js (setHoldFired):
+ * eine verschiebbare Zeile der Android-Fassung hebt sich dann sofort an, statt
+ * ein Menü zu bekommen — das Halten wird dafür abgebrochen.
  * Pfad: src/ui/long-press.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -21,6 +22,8 @@ let hold = null;
 let blockClick = false;
 /* Wird beim Start gesetzt: { tab, workspace, entry, copy } — je Art die Funktion, die das Menü öffnet. */
 let openers = {};
+/* Wird gerufen, sobald ein Halten greift — mit dem Halten selbst (target, kind, pointerId, startX, startY). */
+let onFired = null;
 
 /** Die Menü-Öffner hinterlegen. */
 export function setLongPressMenus(handlers) {
@@ -30,6 +33,11 @@ export function setLongPressMenus(handlers) {
 /** Ein weiteres Menü anmelden — für Bereiche, die erst später nachgeladen werden (Aufgaben-Ansichten). */
 export function addLongPressMenu(kind, open) {
   openers = { ...openers, [kind]: open };
+}
+
+/** Wer erfahren will, dass ein Halten gegriffen hat (src/ui/swipe.js hebt dann verschiebbare Zeilen an). */
+export function setHoldFired(handler) {
+  onFired = handler;
 }
 
 /** Laufendes Halten abbrechen (z.B. weil der Finger wandert oder gewischt wird). */
@@ -50,24 +58,11 @@ export function startHold(event, target, kind) {
     kind,
     fired: false,
     timer: setTimeout(() => {
-      if (hold) hold.fired = true;
+      if (!hold) return;
+      hold.fired = true;
+      onFired?.(hold);
     }, holdDelay),
   };
-}
-
-/** Das Ziel eines Haltens, das schon gegriffen hat (das Menü käme beim Loslassen) — sonst null. */
-export function firedHoldTarget() {
-  return hold && hold.fired ? hold.target : null;
-}
-
-/**
- * Ist der Finger nach einem gegriffenen Halten losgewandert? Dann gibt es das
- * Ziel zurück — aus dem Menü wird ein Ziehen. Sonst null.
- */
-export function holdTurnedDrag(event) {
-  if (!hold || !hold.fired || event.pointerId !== hold.pointerId) return null;
-  const moved = Math.hypot(event.clientX - hold.startX, event.clientY - hold.startY);
-  return moved > holdSlack ? hold.target : null;
 }
 
 /** Prüft beim Bewegen, ob der Finger zu weit gewandert ist. */

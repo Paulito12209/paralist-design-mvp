@@ -1,10 +1,12 @@
 /*
  * Android-Fassung, Zeilen verschieben (Material 3 „Lists“, Zeilen umordnen):
- * Hält man eine Zeile lange gedrückt und zieht, löst sie sich als Karte mit
- * Schatten und getönter Fläche vom Rest der Liste und folgt dem Finger
- * (src/ui/row-lift.js). An ihrem Platz bleibt eine getönte Lücke, die
- * mitwandert (src/ui/row-reorder.js); die übrigen Zeilen zeigen statt der
- * drei Punkte den Griff „=“. Nach dem Loslassen gilt die neue Reihenfolge.
+ * Hält man eine Zeile gedrückt, löst sie sich — noch bevor sich der Finger
+ * bewegt — als Karte mit Schatten und getönter Fläche vom Rest der Liste und
+ * folgt dem Finger senkrecht (src/ui/row-lift.js). An ihrem Platz bleibt eine
+ * getönte Lücke, die mitwandert (src/ui/row-reorder.js); die Karte und die
+ * übrigen Zeilen zeigen statt der drei Punkte den Griff „=“ aus Material 3
+ * („drag handle“). Nach dem Loslassen gilt die neue Reihenfolge; ein Menü
+ * gibt es beim Halten nicht mehr, nur über die drei Punkte.
  * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
  * Pfad: styles/android-reorder.css
  *
@@ -15,6 +17,7 @@
  * --m3-reorder-slot-inset    -> Luft der Lücke zu Zeilen darüber und darunter
  * --m3-secondary-container / --m3-on-secondary-container -> Fläche der gezogenen Zeile und Schrift darauf
  * --m3-surface-container-high -> Tönung der Lücke
+ * --m3-reorder-edge          -> Abstand der gezogenen Zeile zum Geräterand (gesetzt von src/ui/row-lift.js)
  * --content-side (styles/tokens.css) -> Abstand der Lücke zum Seitenrand
  */
 
@@ -22,8 +25,8 @@
   /* Die gezogene Zeile: gleiche Höhe wie die Zeile, aber als Karte. Fläche
      deckend (statt des blassen Archiv-Looks aus styles/android-archive.css). */
   [data-mobile-os="android"] .row-lift.is-reordering {
-    box-sizing: border-box; /* box-sizing: die Breite aus row-lift.js enthält den Seitenrand schon */
-    padding: 8px var(--content-side);
+    box-sizing: border-box; /* box-sizing: Breite und Innenabstände setzt row-lift.js passend zur Zeile */
+    padding: 8px var(--content-side); /* links und rechts überschreibt row-lift.js, damit der Inhalt über der Liste bleibt */
     border-radius: var(--m3-reorder-radius);
     background: var(--m3-secondary-container);
     color: var(--m3-on-secondary-container);

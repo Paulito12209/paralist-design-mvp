@@ -4,9 +4,9 @@
  * mit data-reorder, wandert ihr Platz in der Liste mit dem Finger, die übrigen
  * Zeilen weichen gleitend aus — wie in Material 3 („Lists“, Zeilen umordnen).
  * Beim Loslassen wird die neue Reihenfolge gemerkt (src/data/manual-order.js).
- * In einer Sammlung (Eingang, Favoriten, Ressourcen, Arbeitsbereiche) schaltet
- * das ihre Sortierung auf „Eigene Reihenfolge“; eine Gruppe im Arbeitsbereich
- * oder Projekt folgt ihr einfach.
+ * In einer Sammlung (Eingang, Favoriten, Ressourcen, Arbeitsbereiche) und in
+ * einer Ansicht der Projekte schaltet das die Sortierung auf „Eigene
+ * Reihenfolge“; eine Gruppe im Arbeitsbereich oder Projekt folgt ihr einfach.
  *
  * Eine Liste steht als Element mit data-reorder="<Schlüssel>"; ihre Zeilen
  * sind die .swipe-Kinder. Arbeitsbereiche und Einträge lassen sich nur unter
@@ -28,6 +28,7 @@ import { emit, events } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { collectionSort, manualId, setCollectionSort } from "../data/collection-sorts.js";
 import { rowKey, saveManualOrder } from "../data/manual-order.js";
+import { projectViewOfScope, updateProjectView } from "../data/project-views.js";
 import { isMobileOs } from "./platform.js";
 
 const slideMs = 180;
@@ -115,7 +116,9 @@ function shownKeys(scope) {
   );
 }
 
-/* Merken und die Seite neu zeichnen lassen. */
+/* Merken und die Seite neu zeichnen lassen. Steht die Liste schon auf „Eigene
+   Reihenfolge“, aber umgekehrt, wird rückwärts gemerkt — gezeigt wird dann
+   wieder rückwärts, also wie gesehen. */
 function persist(scope) {
   const keys = shownKeys(scope);
   if (scope.startsWith(groupPrefix)) {
@@ -123,11 +126,17 @@ function persist(scope) {
     emit(events.dataChanged);
     return;
   }
-  /* Steht die Sammlung schon auf „Eigene Reihenfolge“, aber umgekehrt, wird
-     rückwärts gemerkt — gezeigt wird dann wieder rückwärts, also wie gesehen. */
+  const remember = (reversed) => saveManualOrder(scope, reversed ? [...keys].reverse() : keys);
+  const view = projectViewOfScope(scope);
+  if (view) {
+    const reversed = view.sort === manualId && !view.sortAsc;
+    remember(reversed);
+    updateProjectView({ sort: manualId, sortAsc: !reversed }, view.id);
+    return;
+  }
   const current = collectionSort(scope);
   const reversed = current.sort === manualId && !current.asc;
-  saveManualOrder(scope, reversed ? [...keys].reverse() : keys);
+  remember(reversed);
   setCollectionSort(scope, manualId, !reversed);
 }
 

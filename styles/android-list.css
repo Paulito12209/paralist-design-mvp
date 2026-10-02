@@ -10,9 +10,9 @@
  * (Material 3: der Hauptknopf steht ganz außen und ist gefüllt).
  * Je Seite öffnen sich höchstens drei Knöpfe; die App nutzt heute zwei links
  * und zwei rechts (src/ui/rows.js, entryActions).
- * Rechts steht ein Drei-Punkte-Symbol (Klasse .row-more, src/ui/rows.js): ein Tipp
- * öffnet das Menü der Zeile. Gedrückt Halten verschiebt die Zeile stattdessen
- * (styles/android-reorder.css).
+ * Rechts steht ein Drei-Punkte-Symbol (Klasse .row-more, src/ui/rows.js): nur ein
+ * Tipp darauf öffnet das Menü der Zeile. Gedrückt Halten hebt die Zeile zum
+ * Verschieben an (styles/android-reorder.css).
  * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
  * Pfad: styles/android-list.css
  *

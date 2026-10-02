@@ -84,6 +84,7 @@
  * --m3-reorder-radius          -> Rundung der gezogenen Zeile und der Lücke, wo sie herkam (styles/android-reorder.css)
  * --m3-reorder-shadow          -> Schatten der gezogenen Zeile
  * --m3-reorder-slot-inset      -> Luft der Lücke zu Zeilen darüber und darunter
+ * --m3-reorder-edge            -> Abstand der gezogenen Zeile zum linken und rechten Geräterand (src/ui/row-lift.js)
  * --m3-error / --m3-on-error   -> Wisch-Knopf „Löschen“ (Material 3: gefüllt in der Fehlerfarbe)
  * --m3-card-head-h             -> Höhe der Werkzeugzeile über den Projekten (Archiv, Sortieren, Filtern)
  * --m3-card-head-pull          -> um so viel rückt die erste Zeile näher an die Werkzeugzeile heran
@@ -166,6 +167,7 @@
   --m3-reorder-radius: 16px;
   --m3-reorder-shadow: 0 6px 16px rgba(0, 0, 0, 0.22), 0 2px 4px rgba(0, 0, 0, 0.14);
   --m3-reorder-slot-inset: 4px;
+  --m3-reorder-edge: 8px;
   --m3-card-head-h: 48px;
   --m3-card-head-pull: 4px;
   --m3-card-head-plain-gap: 4px;

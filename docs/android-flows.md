@@ -33,8 +33,14 @@ von 1024 px. Zusätzlich zu den Flows in `README.md`.
   ändern, Filtern, Datum): ganze Breite, oben gerundet, kein ✕, kein Griff;
   Haken rechts in der Akzentfarbe, „Fertig“ als gefüllter Knopf.
 - Eine Zeile gedrückt halten: keine blaue Fläche von Chrome, sondern die eigene
-  Tönung, deckend — die Wisch-Knöpfe dahinter scheinen nie durch; danach hebt
-  sich die Zeile zum Verschieben.
+  Tönung, deckend — die Wisch-Knöpfe dahinter scheinen nie durch. Hält man
+  still, hebt sich die Zeile als Karte an (Griff „=“ rechts, kurzes Tippen des
+  Handys) und wandert senkrecht mit dem Finger durch die Liste; Loslassen merkt
+  die Reihenfolge („Eigene Reihenfolge“ im Sortieren). Das gilt für Projekte
+  (je Ansicht), Eingang, Favoriten, Ressourcen, Arbeitsbereiche und die Gruppen
+  einer Seite. Kein Menü beim Halten — das öffnet nur ein Tipp auf die drei
+  Punkte. Kurz seitlich wischen wechselt den Reiter; halten und seitlich ziehen
+  öffnet die Wisch-Knöpfe; angehoben wechselt nichts mehr den Reiter.
 
 **Aufgaben und Sammlungen** (Eingang, Favoriten, Ressourcen, Lesezeichen,
 Arbeitsbereiche, Archiv)
