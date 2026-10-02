@@ -13,6 +13,9 @@
  * und scrollt dorthin: bei einer langen Liste muss man dafür nicht erst
  * nach unten.
  *
+ * Auch ein Tipp auf die blasse Zeile in einer leeren Board-Spalte (Android,
+ * tasks-board.js) öffnet die Zeile in genau dieser Spalte.
+ *
  * Das Eingabefeld unten bleibt der Weg für alles Weitere (Datum, Ort, Anhang);
  * die Zeile hier kennt nur den Titel.
  * Pfad: src/features/tasks/tasks-inline.js
@@ -167,7 +170,8 @@ function onClick(event) {
   /* Im Auswahlmodus wählt ein Tipp nur aus — er legt nichts an */
   if (!start || !isViewActive("tasks") || isSelecting()) return;
   const target = event.target;
-  const ghost = target.closest("[data-task-ghost]");
+  /* Die blasse Zeile der Liste und die der leeren Board-Spalte (Android) */
+  const ghost = target.closest("[data-task-ghost], [data-board-add]");
   /* Ein Tipp während des Schreibens hat nur die Zeile abgeschlossen. */
   if (start.wasEditing || editing) return;
   if (!ghost) {
@@ -175,7 +179,9 @@ function onClick(event) {
     if (target.closest("button, a, input, [data-grip], .swipe-actions, .board-row, .board-head, .tasks-tools, .project-card-head")) return;
     if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > TAP_SLOP_PX) return;
   }
-  const section = ghost ? el("tasks-body").querySelector(".task-section") : sectionAt(target, event.clientX, event.clientY);
+  const section = ghost
+    ? ghost.closest("[data-section]") || el("tasks-body").querySelector(".task-section")
+    : sectionAt(target, event.clientX, event.clientY);
   if (section) openRow(section);
 }
 

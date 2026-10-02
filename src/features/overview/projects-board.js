@@ -9,12 +9,17 @@
  * bekommt deren Status bzw. Dringlichkeit (src/data/project-board.js). Ein Tipp
  * auf die Zeile öffnet das Projekt. Ziehen und Mitrollen steckt in
  * src/ui/board-drag.js und ist mit dem Board der Aufgaben geteilt.
- * Neue Projekte entstehen wie in der Liste über „Projekt hinzufügen“.
+ * Neue Projekte entstehen in der iOS-Fassung über „Projekt hinzufügen“ unter dem
+ * Board. In der Android-Fassung steht stattdessen in jeder Spalte ohne Projekt
+ * die blasse Zeile „Projekt hinzufügen“; ein Tipp öffnet dort die Eingabezeile
+ * (src/features/overview/project-inline.js), das Projekt bekommt den Status bzw.
+ * die Dringlichkeit der Spalte. Liegt ein Projekt darin, ist die Zeile weg.
  * Pfad: src/features/overview/projects-board.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * emptyNote     -> Text in einer Spalte, in der nichts liegt
+ * emptyNote     -> Text in einer Spalte, in der nichts liegt (iOS)
+ * addLabel      -> Beschriftung der blassen Zeile in einer leeren Spalte (Android)
  * untitled      -> wie ein Projekt ohne Titel heißt
  * defaultIcon   -> Icon eines Projekts, das keins gewählt hat
  *
@@ -31,9 +36,11 @@ import { isTaskDone, taskPriorityOf, taskStatusOf } from "../../data/config-task
 import { dropProjectCard, projectColumns } from "../../data/project-board.js";
 import { findEntry } from "../../data/queries.js";
 import { consumeDragClick, initBoardDrag } from "../../ui/board-drag.js";
+import { isMobileOs } from "../../ui/platform.js";
 import { openEntry } from "../../ui/router.js";
 
 const emptyNote = "Nichts hier";
+const addLabel = "Projekt hinzufügen";
 const untitled = "Ohne Titel";
 const defaultIcon = "rocket";
 
@@ -67,6 +74,16 @@ function boardRow(project, field) {
     </div>`;
 }
 
+/* Der Inhalt einer Spalte ohne Projekt: Android die blasse Zeile zum Anlegen
+   (trägt „board-empty“, damit sie beim Ziehen und Schreiben verschwindet wie der Hinweis). */
+function emptyColumn() {
+  if (!isMobileOs("android")) return `<p class="board-empty">${emptyNote}</p>`;
+  return `
+    <button class="board-add board-empty" type="button" data-board-add>
+      ${icon("rocket-plus", "board-add-icon")}<span class="board-add-label">${addLabel}</span>
+    </button>`;
+}
+
 /* Eine Spalte mit Kopfzeile und Zeilen; data-drop und data-field liest das Ziehen. */
 function boardColumn(column, field) {
   const rows = column.items.map((project) => boardRow(project, field)).join("");
@@ -78,7 +95,7 @@ function boardColumn(column, field) {
         <span class="board-count">${column.items.length}</span>
       </div>
       <div class="board-rows" data-drop="${column.id}" data-field="${field}">
-        ${rows || `<p class="board-empty">${emptyNote}</p>`}
+        ${rows || emptyColumn()}
       </div>
     </div>`;
 }

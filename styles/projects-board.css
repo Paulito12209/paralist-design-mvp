@@ -7,12 +7,18 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * Icon vor dem Titel -> 20px, Farbe --muted (so groß und blass wie in der Projektliste)
- * Abstand unter dem Board -> 8px, bevor „Projekt hinzufügen“ folgt
+ * Abstand unter dem Board -> 8px, bevor „Projekt hinzufügen“ folgt (iOS)
  * Abstand über dem Board  -> so viel, wie die Werkzeugzeile (Android) nach unten über die Liste greift
  *                            (--m3-card-head-pull in styles/tokens-android.css); sonst läge die Kopfzeile der Spalten darunter
  *
  * Alle übrigen Werte: die Board-Maße in styles/tokens-pages.css und der Seitenrand in styles/tokens.css.
  */
+
+/* Die Zeile zum Anlegen in einer Spalte (src/features/overview/project-inline.js):
+   rechts frei wie der Griff der übrigen Zeilen */
+.board-row.project-inline {
+  padding-right: var(--board-grip-width);
+}
 
 /* Das Icon des Projekts steht vorn, wo bei Aufgaben der Haken steht */
 .board-row .board-row-icon {

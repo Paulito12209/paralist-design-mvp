@@ -7,7 +7,9 @@
  * rechten Rand jeder Zeile allein der Griffstreifen mit sechs Punkten, an dem
  * man sie in eine andere Spalte zieht. Eine neue Aufgabe entsteht, indem man
  * in die freie Fläche unter den Zeilen einer Spalte tippt
- * (src/features/tasks/tasks-inline.js) — deshalb gibt es keinen Knopf dafür.
+ * (src/features/tasks/tasks-inline.js). Nur in der Android-Fassung steht in
+ * einer Spalte ohne Aufgabe statt „Nichts hier“ die blasse Zeile „Neue Aufgabe“
+ * (Tipp öffnet dort die Eingabezeile); sobald eine Aufgabe darin liegt, ist sie weg.
  * Im Auswahlmodus (src/features/tasks/tasks-select.js) steht vor jeder Zeile
  * ein Kreis und im Kopf jeder Spalte einer für die ganze Spalte; der Griff
  * einer gewählten Zeile zieht dann alle gewählten als Stapel.
@@ -15,7 +17,8 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * emptyNote -> Text in einer Spalte, in der nichts liegt
+ * emptyNote -> Text in einer Spalte, in der nichts liegt (iOS)
+ * addLabel  -> Beschriftung der blassen Zeile in einer leeren Spalte (Android)
  *
  * Breite, Fugen, Griff und Rundungen stehen in styles/tasks-board.css
  * (--board-col-width, --board-gap, --board-grip-width, --board-card-radius).
@@ -24,11 +27,26 @@
 import { icon } from "../../core/html.js";
 import { isTaskDone } from "../../data/config-tasks.js";
 import { taskColumns } from "../../data/queries.js";
+import { isMobileOs } from "../../ui/platform.js";
 import { taskCheck } from "../../ui/task-status.js";
 import { taskMeta, taskTitle } from "./tasks-parts.js";
-import { groupPickMark, isPicked, pickMark } from "./tasks-pick.js";
+import { groupPickMark, isPicked, isSelecting, pickMark } from "./tasks-pick.js";
 
 const emptyNote = "Nichts hier";
+const addLabel = "Neue Aufgabe";
+
+/* Der Inhalt einer Spalte ohne Aufgabe. Android: die blasse Zeile zum Anlegen,
+   mit leerem Ring in der Farbe der Spalte — nicht in „Archiviert“ (dort entsteht
+   nichts Neues) und nicht im Auswahlmodus. Sie trägt „board-empty“, damit sie wie
+   der Hinweis verschwindet, sobald gezogen oder geschrieben wird. */
+function emptyColumn(column) {
+  if (!isMobileOs("android") || column.locked || isSelecting()) return `<p class="board-empty">${emptyNote}</p>`;
+  return `
+    <button class="board-add board-empty" type="button" data-board-add>
+      <span class="task-check task-ghost-ring" aria-hidden="true"></span>
+      <span class="board-add-label">${addLabel}</span>
+    </button>`;
+}
 
 /** Eine Zeile: links der Haken, dann Titel mit Nebenzeile, ganz rechts der Griffstreifen. */
 function boardRow(entry, field) {
@@ -61,7 +79,7 @@ function boardColumn(column, field) {
         <span class="board-count">${column.items.length}</span>
       </div>
       <div class="board-rows" data-drop="${column.id}" data-field="${field}">
-        ${rows || `<p class="board-empty">${emptyNote}</p>`}
+        ${rows || emptyColumn(column)}
       </div>
     </div>
   `;
