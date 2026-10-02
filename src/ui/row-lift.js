@@ -23,7 +23,8 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * liftBuzzMs   -> Länge des kurzen Vibrierens beim Anheben (0 = aus)
- * --content-side (styles/tokens.css) -> so weit ragt die Kopie einer verschiebbaren Zeile links und rechts über die Zeile hinaus
+ * --m3-reorder-edge (styles/tokens-android.css) -> Abstand der Kopie einer verschiebbaren Zeile zum linken und rechten Geräterand;
+ *                 Icon und Titel bleiben dabei genau über ihrer Stelle in der Liste
  * clickBlockMs -> wie lange nach dem Ablegen ein Klick verworfen wird (Millisekunden)
  *
  * Aussehen der angehobenen Zeile und des Ziels: styles/android-archive.css.
@@ -92,18 +93,26 @@ export function startLift(event, row) {
   const rect = row.getBoundingClientRect();
   const deviceRect = dom.device.getBoundingClientRect();
   const reorder = isReorderRow(row);
-  /* Als gezogene Zeile reicht die Kopie über den Seitenrand hinaus, damit der Text nicht an ihrer Kante klebt */
-  const bleed = reorder ? cssNumber("--content-side", 16) : 0;
+  /* Als gezogene Zeile spannt sich die Kopie fast über das ganze Gerät, links
+     und rechts gleich weit vom Rand; ihr Innenabstand gleicht das aus, damit
+     Icon und Titel genau über ihrer Stelle in der Liste stehen bleiben. */
+  const edge = reorder ? cssNumber("--m3-reorder-edge", 8) : 0;
+  const left = reorder ? edge : rect.left - deviceRect.left;
+  const width = reorder ? deviceRect.width - 2 * edge : rect.width;
   const ghost = row.cloneNode(true);
   ghost.classList.add("row-lift");
-  if (reorder) ghost.classList.add("is-reordering");
+  if (reorder) {
+    ghost.classList.add("is-reordering");
+    ghost.style.paddingLeft = `${rect.left - deviceRect.left - left}px`;
+    ghost.style.paddingRight = `${deviceRect.left + left + width - rect.right}px`;
+  }
   ghost.setAttribute("aria-hidden", "true");
-  ghost.style.left = `${rect.left - deviceRect.left - bleed}px`;
+  ghost.style.left = `${left}px`;
   ghost.style.top = `${rect.top - deviceRect.top}px`;
-  ghost.style.width = `${rect.width + 2 * bleed}px`;
+  ghost.style.width = `${width}px`;
   ghost.style.height = `${rect.height}px`;
   /* Über dem Ziel schrumpft die Kopie zum Finger hin, nicht zu ihrer Mitte */
-  ghost.style.transformOrigin = `${event.clientX - rect.left + bleed}px ${event.clientY - rect.top}px`;
+  ghost.style.transformOrigin = `${event.clientX - deviceRect.left - left}px ${event.clientY - rect.top}px`;
   dom.device.append(ghost);
   source.classList.add("is-lift-source");
   document.body.classList.add("is-row-lifting");
