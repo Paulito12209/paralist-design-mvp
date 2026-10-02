@@ -46,7 +46,7 @@
  * styles/avatar-crop.css     -> Ausschnitt fürs Profilbild: Fenster, Zoom-Regler, Auswählen
  * styles/settings.css        -> Einstellungs-Blatt: Darstellung und Haken-Zeilen, dazu die Analyse-Kacheln des Fortschritt-Blatts; styles/support.css: Feedback-Formular und Danksagungen
  * styles/tasks.css           -> Aufgaben-Seite: Pillen der Ansichten, Liste, Haken, Anlegen durch Tippen; styles/tasks-desk.css: Desktop-Werkzeuge und Spalten
- * styles/tasks-board.css     -> Aufgaben-Seite: die Spalten des Kanban-Boards; styles/tasks-select.css: Auswahlmodus (Kreise, Zählzeile, Leiste, Stapel)
+ * styles/tasks-board.css     -> Aufgaben-Seite: die Spalten des Kanban-Boards (auch für das Board der Projekte); styles/projects-board.css: was dort bei Projekten anders ist; styles/tasks-select.css: Auswahlmodus (Kreise, Zählzeile, Leiste, Stapel)
  * styles/task-status.css     -> Haken vor Aufgaben in jeder Liste, Kategorie-Pille oben auf jeder Eintragsseite
  * styles/tasks-settings.css  -> Karte „Ansicht“ über der Navigation der Aufgaben-Seite: Ebene, Segment, Schalter, Filter
  * styles/view-end.css        -> wo Übersicht, Projekte und Arbeitsbereiche unten enden; die Pille „Zum Archiv“ darüber

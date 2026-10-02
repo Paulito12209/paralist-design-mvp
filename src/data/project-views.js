@@ -2,14 +2,14 @@
  * Die Ansichten der Projekte — die Pillen über der Projektliste auf der
  * Übersicht und der Seite Projekte, gebaut wie die Ansichten der
  * Aufgaben-Seite (src/data/task-views.js). Jede Ansicht merkt sich ihre
- * Sortierung und entweder eine handverlesene Liste von Projekten (`ids`)
+ * Sortierung, ihr Layout (Liste oder Board, `layout` und `group`) und entweder eine handverlesene Liste von Projekten (`ids`)
  * oder die Filter: „Verknüpft mit“ (Arbeitsbereiche und Inhalt,
  * src/data/link-filter.js), Status, Dringlichkeit und „Nur Favoriten“. Sind
  * `ids` gefüllt, zählen nur sie; die Filter ruhen dann. Die erste Ansicht „Alle“
  * ist fest: sie zeigt jedes Projekt, darf aber sortieren. Eine neue Ansicht
  * beginnt als Kopie von „Alle“. Verschiebt man eine Projektzeile mit dem
- * Finger (src/ui/row-reorder.js), wechselt die Ansicht auf „Eigene
- * Reihenfolge“; gemerkt wird sie je Ansicht unter dem Schlüssel
+ * Finger (src/ui/row-reorder.js) oder im Board (src/features/overview/projects-board.js),
+ * wechselt die Ansicht auf „Eigene Reihenfolge“; gemerkt wird sie je Ansicht unter dem Schlüssel
  * projectOrderScope(id) in src/data/manual-order.js.
  * Pfad: src/data/project-views.js
  *
@@ -28,7 +28,7 @@ import { emit, events } from "../core/bus.js";
 import { nextId, sameId } from "../core/ids.js";
 import { manualId, sortEntries } from "./collection-sorts.js";
 import { projectSorts, projectViewDefaults } from "./config.js";
-import { taskPriorities, taskPriorityOf, taskStatuses, taskStatusOf } from "./config-tasks.js";
+import { taskGroupings, taskLayouts, taskPriorities, taskPriorityOf, taskStatuses, taskStatusOf } from "./config-tasks.js";
 import { filterByLinks } from "./link-filter.js";
 import { cleanLinkFields } from "./link-filter-fields.js";
 import { manualRank } from "./manual-order.js";
@@ -295,6 +295,7 @@ export function adoptProjectViews(saved) {
   const validRefs = new Set(state.workspaces.map((workspace) => workspaceRef(workspace.id)).concat(state.entries.map((entry) => entryRef(entry.id))));
   const known = (value, items) => (Array.isArray(value) ? [...new Set(value)].filter((id) => items.some((item) => item.id === id)) : []);
   const sorts = projectSorts.map((item) => item.id);
+  const groups = taskGroupings.map((item) => item.id);
   state.projectViews = list.map((view, index) => {
     const ids = Array.isArray(view.ids) ? [...new Set(view.ids.map(Number))].filter((id) => projects.has(String(id))) : [];
     const clean = {
@@ -303,6 +304,8 @@ export function adoptProjectViews(saved) {
       placeholder: typeof view.placeholder === "string" ? view.placeholder : undefined,
       icon: typeof view.icon === "string" ? view.icon : null,
       fixed: index === 0,
+      layout: pick(view.layout, taskLayouts, projectViewDefaults.layout),
+      group: pick(view.group, groups, projectViewDefaults.group),
       sort: pick(view.sort, sorts, projectViewDefaults.sort),
       sortAsc: typeof view.sortAsc === "boolean" ? view.sortAsc : projectViewDefaults.sortAsc,
       ...cleanLinkFields(view, validRefs),

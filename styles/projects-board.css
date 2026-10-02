@@ -1,0 +1,31 @@
+/*
+ * Projekte: das Board (Spalten nach Status oder Dringlichkeit). Spalten,
+ * Kopfzeilen, Zeilen und Griff sind dieselben wie bei den Aufgaben
+ * (styles/tasks-board.css); hier steht nur, was bei Projekten anders ist.
+ * Pfad: styles/projects-board.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * Icon vor dem Titel -> 20px, Farbe --muted (so groß und blass wie in der Projektliste)
+ * Abstand unter dem Board -> 8px, bevor „Projekt hinzufügen“ folgt
+ * Abstand über dem Board  -> so viel, wie die Werkzeugzeile (Android) nach unten über die Liste greift
+ *                            (--m3-card-head-pull in styles/tokens-android.css); sonst läge die Kopfzeile der Spalten darunter
+ *
+ * Alle übrigen Werte: die Board-Maße in styles/tokens-pages.css und der Seitenrand in styles/tokens.css.
+ */
+
+/* Das Icon des Projekts steht vorn, wo bei Aufgaben der Haken steht */
+.board-row .board-row-icon {
+  flex: 0 0 auto;
+  width: 20px;
+  height: 20px;
+  color: var(--muted);
+}
+
+/* Oben: die Werkzeugzeile zieht die Liste ein Stück zu sich hoch. Zeilen haben eigene Luft
+   darüber, die Kopfzeile einer Spalte nicht — sie würde angeschnitten. Unten folgt die Zeile
+   „Projekt hinzufügen“; ohne Luft klebte sie an der längsten Spalte. */
+.project-board {
+  margin-top: var(--m3-card-head-pull, 0px);
+  margin-bottom: 8px;
+}
