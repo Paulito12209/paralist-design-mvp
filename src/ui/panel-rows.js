@@ -5,8 +5,14 @@
  * ihre Klicks an einer Stelle behandelt.
  * Pfad: src/ui/panel-rows.js
  *
+ * Ein Knopf trägt immer Haken, Icon und Wort: iOS und Desktop zeigen davon nur
+ * das Icon (oder das Wort, wenn es kein Icon gibt), die Android-Fassung zeigt
+ * wie Material 3 „Segmented button“ das Wort, davor beim gewählten den Haken,
+ * sonst das Icon.
+ *
  * Keine anpassbaren visuellen Werte: Aussehen in styles/tasks-settings.css
- * (Klassen .tasks-seg, .tasks-switch; --tasks-switch-w/-h, --tasks-seg-h).
+ * (Klassen .tasks-seg, .tasks-switch; --tasks-switch-w/-h, --tasks-seg-h),
+ * Android in styles/android-sheet.css.
  */
 
 import { escapeHtml, icon } from "../core/html.js";
@@ -16,9 +22,9 @@ export function panelSegment(items, current, setting) {
   return `<span class="tasks-seg">${items
     .map(
       (item) => `
-        <button class="tasks-seg-btn${item.id === current ? " is-on" : ""}" type="button"
+        <button class="tasks-seg-btn${item.id === current ? " is-on" : ""}${item.icon ? " has-icon" : ""}" type="button"
           data-settings="${setting}" data-value="${item.id}" aria-label="${escapeHtml(item.label)}" title="${escapeHtml(item.label)}"
-          aria-pressed="${item.id === current}">${item.icon ? icon(item.icon) : escapeHtml(item.label)}</button>`
+          aria-pressed="${item.id === current}">${item.id === current ? icon("check", "tasks-seg-check") : ""}${item.icon ? icon(item.icon, "tasks-seg-icon") : ""}<span class="tasks-seg-label">${escapeHtml(item.label)}</span></button>`
     )
     .join("")}</span>`;
 }
