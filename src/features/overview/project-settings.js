@@ -26,8 +26,8 @@
  *
  * Aussehen: styles/tasks-settings.css (Schalter, gesperrte Zeile, ⓘ) und
  * styles/entry-details.css (Karte, Zeilen). Das Blatt „Sortieren“ öffnet in der
- * Android-Fassung auch die Werkzeugzeile über den Projekten
- * (src/features/overview/project-card.js).
+ * Android-Fassung auch die Werkzeugzeile über den Projekten, ebenso das Blatt
+ * „Projekte aus“ beim Filtern (src/features/overview/project-card.js).
  */
 
 import { escapeHtml, icon } from "../../core/html.js";
@@ -147,6 +147,15 @@ function openPickSheet() {
     options.push({ label: clearPickLabel, icon: "close", split: true, onSelect: () => updateProjectView({ ids: [] }) });
   }
   openSheet(pickTitle, options);
+}
+
+/**
+ * Das Filtern aus der Werkzeugzeile: dasselbe Blatt wie die Zeile „Filtern“ der Karte.
+ * Bei handverlesenen Projekten ruht der Ort — dann ist die Auswahl der Filter.
+ */
+export function openProjectFilter(view) {
+  if (view.ids.length) openPickSheet();
+  else openPlaceSheet(view);
 }
 
 /** Klicks in der Karte; `view` ist die gewählte Ansicht. */

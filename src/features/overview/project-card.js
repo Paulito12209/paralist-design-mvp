@@ -4,8 +4,9 @@
  * damit die Zeile nie leer wirkt; liegen Projekte im Archiv, folgt ihre Zahl
  * in Klammern („Archiv (2)“). Ein Tipp öffnet das Archiv mit der Pille
  * Projekte (data-open-archive, src/ui/list-clicks.js). Rechts Sortieren und,
- * außer bei „Alle“ (dort lässt sich nichts filtern), Filtern. Filtern holt
- * das Blatt „Ansicht“ herauf: darin stehen Ort, Nur Favoriten und Projekte
+ * außer bei „Alle“ (dort lässt sich nichts filtern), Filtern und Ansicht.
+ * Filtern öffnet gleich das Blatt „Projekte aus“, Ansicht holt das Blatt
+ * „Ansicht“ herauf: darin stehen Ort, Nur Favoriten und Projekte
  * wählen (src/features/overview/project-settings.js). Umbenennen, Löschen &
  * Co. einer Ansicht gibt es beim Halten ihres Reiters.
  * Die Zeile steht in jeder Fassung im Dokument und ist nur in der
@@ -23,7 +24,7 @@
 import { archivedEntries } from "../../data/queries.js";
 import { handleListHeadClick, listHeadMarkup } from "../../ui/list-head.js";
 import { openViewPanel } from "../../ui/view-panel.js";
-import { openProjectSort } from "./project-settings.js";
+import { openProjectFilter, openProjectSort } from "./project-settings.js";
 
 const archivePill = "projekt";
 
@@ -38,11 +39,12 @@ export function projectCardHead(view) {
   return listHeadMarkup({
     archive: { pill: archivePill, count },
     filter: !view.fixed,
+    view: !view.fixed,
     filtering: isFiltering(view),
   });
 }
 
-/** Klicks auf Sortieren und Filtern; „Archiv (n)“ erledigt src/ui/list-clicks.js. */
+/** Klicks auf Sortieren, Filtern und Ansicht; „Archiv (n)“ erledigt src/ui/list-clicks.js. */
 export function handleProjectCardClick(event, view) {
-  handleListHeadClick(event, { sort: () => openProjectSort(view), filter: openViewPanel });
+  handleListHeadClick(event, { sort: () => openProjectSort(view), filter: () => openProjectFilter(view), view: openViewPanel });
 }

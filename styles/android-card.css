@@ -3,8 +3,8 @@
  * und Seite Projekte, Aufgaben, Eingang, Favoriten, Ressourcen, Lesezeichen,
  * Arbeitsbereiche, Archiv), gebaut nach Google Tasks: links der Text-Knopf
  * „Archiv“ — mit der Zahl der archivierten Dinge in Klammern, sobald es welche
- * gibt —, rechts Sortieren und, wo sich etwas filtern lässt, Filtern
- * (src/ui/list-head.js). Die Klassen heißen project-card-…, gelten aber für
+ * gibt —, rechts Sortieren und, wo sich etwas filtern lässt, Filtern und
+ * Ansicht (src/ui/list-head.js). Die Klassen heißen project-card-…, gelten aber für
  * jede dieser Zeilen. Wo Reiter darüber stehen (Projekte, Aufgaben, Arbeitsbereiche), rückt
  * die Zeile dicht unter ihre Linie; ohne Reiter (`is-plain`) steht sie unter dem Titel. Die Liste darunter
  * liegt ohne eigene Fläche auf der Seite; getönte Flächen bleiben Leiste,
@@ -19,7 +19,7 @@
  * ANPASSBARE WERTE (alle in styles/tokens-android.css)
  * -----------------------------------
  * --m3-card-head-h            -> Höhe der Werkzeugzeile
- * --m3-card-tool-size / -icon -> Tippfläche und Symbol von Sortieren und Filtern
+ * --m3-card-tool-size / -icon -> Tippfläche und Symbol von Sortieren, Filtern und Ansicht
  * --m3-text-btn-h / -pad      -> Höhe und Innenabstand des Text-Knopfs „Archiv“
  * --m3-state-pressed          -> Tönung von Knopf und Symbolen beim Drücken
  * --m3-primary                -> das Filter-Symbol, sobald die Ansicht aussiebt; als Grundfarbe von
