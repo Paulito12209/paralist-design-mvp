@@ -7,6 +7,7 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * Name, Mailadresse, Plan und Version im Kopf stehen in src/data/account.js.
+ * Zeilen mit `plan: true` (und der Plan im Kopf) erscheinen nur außerhalb der Android-Fassung.
  * listSections   -> welche Zeilen unter welcher Überschrift stehen
  * supportLinks   -> wohin „Feedback“ und „Roadmap“ unter „Support“ führen
  * stepSizes      -> die runden Schritte der senkrechten Achse (Minuten)
@@ -24,6 +25,7 @@ import { chartRanges } from "../../data/config.js";
 import { ui } from "../../data/state.js";
 import { usageDays, usageOfDay, usageSince, usageStreaks } from "../../data/usage.js";
 import { chartBox, dateMarks, gridLines, niceStep, rangeSwitch, yAxis } from "../../ui/chart.js";
+import { isMobileOs } from "../../ui/platform.js";
 import { currentPhoto } from "./avatar.js";
 import { usageSplitCard } from "./usage-split.js";
 import { versionsSummary } from "./versions.js";
@@ -59,6 +61,17 @@ export function avatarMarkup() {
   return photo ? `<img src="${photo}" alt="">` : profile.initials;
 }
 
+/* Android bietet im Entwurf kein Abo an (alles läuft offline, kein Cloud-Sync):
+   dort stehen weder der Plan noch „Plan verwalten“. */
+function showsPlan() {
+  return !isMobileOs("android");
+}
+
+/** Die Zeile unter der Mailadresse: „Pro · Dabei seit …“, in Android nur „Dabei seit …“. */
+function metaLine() {
+  return showsPlan() ? `${profile.plan} · ${profile.since}` : profile.since;
+}
+
 /** Kopf des Blatts: Bild, Name, Mailadresse, Plan. */
 export function identityCard() {
   return `
@@ -69,7 +82,7 @@ export function identityCard() {
       </div>
       <p class="profile-name">${escapeHtml(profile.name)}</p>
       <p class="profile-mail">${escapeHtml(profile.mail)}</p>
-      <p class="profile-meta">${escapeHtml(profile.meta)}</p>
+      <p class="profile-meta">${escapeHtml(metaLine())}</p>
     </section>
   `;
 }
@@ -221,7 +234,7 @@ const listSections = [
     title: "Konto",
     rows: [
       { icon: "person", label: "Kontoeinstellungen", trail: "chevron", detail: "account" },
-      { icon: "arrow-up-circle", label: "Plan verwalten", trail: "chevron" },
+      { icon: "arrow-up-circle", label: "Plan verwalten", trail: "chevron", plan: true },
     ],
   },
   {
@@ -263,9 +276,10 @@ function rowMarkup(row) {
   return `<button ${shell} type="button"${data}>${inner}</button>`;
 }
 
-/** Eine Abschnittsüberschrift mit ihrer Zeilenkarte — auch für die Unterseiten. */
+/** Eine Abschnittsüberschrift mit ihrer Zeilenkarte — auch für die Unterseiten. Zeilen mit `plan: true` entfallen in Android. */
 export function sectionMarkup(title, rows) {
-  return `<p class="psection">${escapeHtml(title)}</p><section class="plist">${rows.map(rowMarkup).join("")}</section>`;
+  const shown = rows.filter((row) => !row.plan || showsPlan());
+  return `<p class="psection">${escapeHtml(title)}</p><section class="plist">${shown.map(rowMarkup).join("")}</section>`;
 }
 
 /** Name, Mailadresse und Plan für die Kontoeinstellungen. */

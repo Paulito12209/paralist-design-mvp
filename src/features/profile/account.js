@@ -9,7 +9,8 @@
  * -----------------------------------
  * dangerNote -> der Satz unter „Konto löschen“, der sagt, was dabei verloren geht
  *
- * Name, Mailadresse und Plan kommen aus `profile` in profile-cards.js.
+ * Name, Mailadresse und Plan kommen aus `profile` in profile-cards.js; die
+ * Zeile „Plan“ (`plan: true`) zeigt die Android-Fassung nicht.
  * Aussehen der Zeilen und des Hinweises: styles/profile.css.
  */
 
@@ -25,7 +26,7 @@ export function accountCard() {
   const details = sectionMarkup("Angaben", [
     { icon: "person", label: "Name", value: info.name },
     { icon: "globe", label: "E-Mail", value: info.mail },
-    { icon: "arrow-up-circle", label: "Plan", value: info.plan },
+    { icon: "arrow-up-circle", label: "Plan", value: info.plan, plan: true },
   ]);
   const security = sectionMarkup("Sicherheit", [{ icon: "settings", label: "Passwort ändern", trail: "chevron" }]);
   const danger = sectionMarkup("Gefahrenzone", [{ icon: "trash", label: "Konto löschen", danger: true }]);
