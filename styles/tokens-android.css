@@ -58,6 +58,10 @@
  * --m3-seg-pad                -> Rand zwischen Kapsel und Segmenten
  * --m3-seg-air                -> Luft über und unter der Kapsel, damit die Zeile so hoch bleibt wie --m3-tab-height
  *                                 (errechnet; nur bei Medien und den Reitern direkt auf einer Seite nötig)
+ * --m3-ov-gap-title            -> Übersicht (Android (Experiment)): sichtbarer Abstand Suchleiste bis Überschrift
+ * --m3-ov-gap-cards            -> ebenso Überschrift bis zu den Kacheln
+ * --m3-ov-gap-section          -> ebenso untere Ränder der Kacheln bis „Projekte“
+ * --m3-ov-gap-tabs             -> ebenso „Projekte“ bis zur Reiter-Kapsel
  * --m3-tab-tools-air          -> zusätzliche Luft zwischen den Reitern und dem Symbol
  *                                 „Ansicht“ rechts, dort wo sonst die Trennlinie stand
  * --m3-view-btn-size           -> Größe des runden Knopfs „Ansicht“ mittig über der Leiste
@@ -134,6 +138,10 @@
   --m3-seg-height: 30px;
   --m3-seg-pad: 2px;
   --m3-seg-air: calc((var(--m3-tab-height) - var(--m3-seg-height) - 2 * var(--m3-seg-pad)) / 2);
+  --m3-ov-gap-title: 32px;
+  --m3-ov-gap-cards: 24px;
+  --m3-ov-gap-section: 32px;
+  --m3-ov-gap-tabs: 16px;
   --m3-tab-tools-air: 4px;
   --m3-view-btn-size: 40px;
   --m3-head-tools-pull: 8px;
