@@ -14,6 +14,7 @@ import {
   calendarSegments,
   calendarSpans,
   mediaFilters,
+  linkFilterDefaults,
   projectViewDefaults,
   resourceFilters,
   stageModes,
@@ -26,6 +27,7 @@ import {
   taskSorts,
   taskStatuses,
 } from "./config-tasks.js";
+import { cleanLinkFields } from "./link-filter-fields.js";
 import { migrate } from "./migrate.js";
 import { adoptProjectViews } from "./project-views.js";
 import { entryRef, workspaceRef } from "./refs.js";
@@ -238,11 +240,12 @@ function adoptPrefs(saved) {
 
   /* Ansichten der Aufgaben-Seite: die erste ist immer „Alle“ (fest,
      ungefiltert); jede Angabe fällt auf die Vorgabe zurück, wenn sie nichts
-     Gültiges enthält. Ein Ort, den es nicht mehr gibt, wird zu „alle“ — sonst
-     bliebe die Ansicht leer, ohne dass man sähe, warum. */
-  const places = ["alle", "inbox"]
-    .concat(state.workspaces.map((workspace) => workspaceRef(workspace.id)))
-    .concat(state.entries.map((entry) => entryRef(entry.id)));
+     Gültiges enthält. Verweise im Filter „Verknüpft mit“, die es nicht mehr
+     gibt, fallen heraus — sonst bliebe die Ansicht leer, ohne dass man sähe,
+     warum. */
+  const validRefs = new Set(
+    state.workspaces.map((workspace) => workspaceRef(workspace.id)).concat(state.entries.map((entry) => entryRef(entry.id)))
+  );
   const views = Array.isArray(saved.taskViews) ? saved.taskViews.filter((view) => view && typeof view === "object") : [];
   if (!views.length || !views[0].fixed) views.unshift({ ...state.taskViews[0] });
   state.taskViews = views.map((view, index) => ({
@@ -255,7 +258,7 @@ function adoptPrefs(saved) {
     group: pickValid(view.group, ["none", ...taskGroupings.map((item) => item.id)], taskDefaults.group),
     sort: pickValid(view.sort, taskSorts.map((item) => item.id), taskDefaults.sort),
     sortAsc: typeof view.sortAsc === "boolean" ? view.sortAsc : taskDefaults.sortAsc,
-    place: index === 0 ? "alle" : pickValid(view.place, places, taskDefaults.place),
+    ...(index === 0 ? linkFilterDefaults : cleanLinkFields(view, validRefs)),
     hideDone: typeof view.hideDone === "boolean" ? view.hideDone : taskDefaults.hideDone,
     /* Filter nach Status und Dringlichkeit; ältere Stände kennen ihn nicht und zeigen alles */
     hiddenStatuses: knownIds(view.hiddenStatuses, taskStatuses.filter((item) => !item.done)),

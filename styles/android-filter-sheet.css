@@ -1,0 +1,198 @@
+/*
+ * Android-Fassung, Blatt „Filtern“ als Chips nach Material 3 (src/ui/filter-sheet.js
+ * mit chips: true, Markup in src/ui/filter-sheet-chips.js): alle Abschnitte auf
+ * einer Seite — Überschrift mit dem Segment rechts, darunter die Werte als
+ * Chips, dann ein Satz, was die Wahl bewirkt. „Zurücksetzen“ steht oben rechts
+ * als Text-Knopf, unten zeigt der gefüllte Knopf die Zahl der Treffer. Form,
+ * Fläche und Titel des Blatts kommen aus styles/android-bottom-sheet.css.
+ * Drei Chips: Filter-Chip (Wert, gewählt mit Haken), Eingabe-Chip (gewählter
+ * Eintrag mit ✕) und Hilfs-Chip („Eintrag wählen“, gestrichelt).
+ * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
+ * Pfad: styles/android-filter-sheet.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-chip-h / --m3-chip-radius -> Höhe und Rundung der Chips (Material 3 „Filter chip“: 32dp, 8dp)
+ * --m3-filter-gap         -> Abstand zwischen den Chips und zwischen Überschrift und Chips
+ * --m3-filter-section-gap -> Luft zwischen zwei Abschnitten
+ * --m3-secondary-container / --m3-on-secondary-container -> Fläche und Schrift eines gewählten Chips
+ * --m3-outline-variant    -> Rand der Chips und des Segments
+ * --m3-primary            -> „Zurücksetzen“ und der gestrichelte Hilfs-Chip
+ * --m3-on-surface / --m3-on-surface-variant / --m3-on-surface-muted -> Schrift, Überschriften, Sätze
+ * --m3-state-pressed      -> Tönung beim Drücken
+ *
+ * Direkt bei ihrer Regel: Überschrift 14px („Title small“), Chips 14px
+ * („Label large“), Segment 13px, Satz unter den Chips 12px („Body small“),
+ * Icons im Chip 18px, Segment 32px hoch, „Zurücksetzen“ 14px.
+ */
+
+@media (max-width: 1023px) {
+  /* max-height: ein langes Blatt wächst nur bis unter die Statusleiste, der Inhalt scrollt in sich */
+  [data-mobile-os="android"] .date-modal.is-chips {
+    max-height: calc(100% - 24px - var(--safe-top));
+  }
+
+  /* Text-Knopf rechts im Kopf; margin-left: schiebt ihn ganz nach rechts */
+  [data-mobile-os="android"] .filter-top-reset {
+    margin-left: auto;
+    height: var(--m3-text-btn-h);
+    padding-inline: var(--m3-text-btn-pad);
+    border-radius: 999px; /* border-radius: voll gerundet wie jeder Material-Knopf */
+    color: var(--m3-primary);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  /* Ohne diese Zeile würde die Regel oben das hidden-Attribut überstimmen */
+  [data-mobile-os="android"] .filter-top-reset[hidden] {
+    display: none;
+  }
+
+  [data-mobile-os="android"] .filter-top-reset:disabled {
+    color: var(--m3-on-surface-muted);
+  }
+
+  [data-mobile-os="android"] .filter-top-reset:not(:disabled):active {
+    background: color-mix(in srgb, var(--m3-primary) var(--m3-state-pressed), transparent);
+  }
+
+  /* ---------- Abschnitte ---------- */
+
+  [data-mobile-os="android"] .is-chips .filter-content {
+    gap: var(--m3-filter-section-gap);
+  }
+
+  [data-mobile-os="android"] .fc-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--m3-filter-gap);
+    min-height: 32px;
+    margin-bottom: var(--m3-filter-gap);
+  }
+
+  [data-mobile-os="android"] .fc-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--m3-on-surface-variant);
+  }
+
+  [data-mobile-os="android"] .fc-note {
+    margin: var(--m3-filter-gap) 0 0;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--m3-on-surface-muted);
+  }
+
+  /* ---------- Segment „ist | ist nicht“ (Material 3 „Segmented button“) ---------- */
+
+  [data-mobile-os="android"] .fc-mode {
+    display: flex;
+    flex: none;
+    overflow: hidden; /* overflow: die Ecken des gewählten Segments folgen der runden Umrandung */
+    border: 1px solid var(--m3-outline-variant);
+    border-radius: 999px; /* border-radius: voll gerundet wie das Segment in Google Tasks */
+  }
+
+  [data-mobile-os="android"] .fc-mode-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding-inline: 14px;
+    font-size: 13px;
+    color: var(--m3-on-surface);
+  }
+
+  [data-mobile-os="android"] .fc-mode-btn + .fc-mode-btn {
+    border-left: 1px solid var(--m3-outline-variant);
+  }
+
+  [data-mobile-os="android"] .fc-mode-btn.is-on {
+    background: var(--m3-secondary-container);
+    color: var(--m3-on-secondary-container);
+  }
+
+  [data-mobile-os="android"] .fc-mode-check {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* ---------- Chips ---------- */
+
+  [data-mobile-os="android"] .fc-chips {
+    display: flex;
+    flex-wrap: wrap; /* flex-wrap: zu viele Chips für eine Zeile brechen um */
+    gap: var(--m3-filter-gap);
+  }
+
+  [data-mobile-os="android"] .fc-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 100%;
+    height: var(--m3-chip-h);
+    padding-inline: 12px;
+    border: 1px solid var(--m3-outline-variant);
+    border-radius: var(--m3-chip-radius);
+    color: var(--m3-on-surface-variant);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  [data-mobile-os="android"] .fc-chip.is-on {
+    padding-inline-start: 8px; /* padding: der Haken sitzt enger am Rand als ein Text */
+    border-color: transparent;
+    background: var(--m3-secondary-container);
+    color: var(--m3-on-secondary-container);
+  }
+
+  [data-mobile-os="android"] .fc-chip.is-entry {
+    padding-inline: 8px;
+  }
+
+  [data-mobile-os="android"] .fc-chip.is-action {
+    padding-inline-start: 8px;
+    border-style: dashed; /* border-style: gestrichelt heißt „hier kommt etwas dazu“ */
+    color: var(--m3-primary);
+  }
+
+  [data-mobile-os="android"] .fc-chip:active {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), transparent);
+  }
+
+  [data-mobile-os="android"] .fc-icon {
+    flex: none;
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Ein zu langer Name endet mit „…“ statt zu umbrechen */
+  [data-mobile-os="android"] .fc-name {
+    overflow: hidden;
+    text-overflow: ellipsis; /* text-overflow: „Wohnung_Grundriss…“ statt Umbruch */
+    white-space: nowrap;
+  }
+
+  /* ⓘ im Chip: kleiner, in der Schriftfarbe des Chips */
+  [data-mobile-os="android"] .fc-chip .sheet-info {
+    display: inline-flex;
+    flex: none;
+    width: 18px;
+    height: 18px;
+    color: inherit;
+  }
+
+  /* ---------- Knopf unten: bleibt beim Rollen stehen ---------- */
+
+  [data-mobile-os="android"] .date-modal.is-chips .date-done {
+    position: sticky; /* position: der Knopf klebt unten im Blatt, während die Abschnitte rollen */
+    bottom: 0;
+    flex: none;
+    margin-top: 8px;
+    /* box-shadow + clip-path: ein Band in der Farbe des Blatts hinter und neben dem Knopf (12px darüber,
+       sonst nach unten und zu den Seiten offen), damit darunter durchrollende Chips nicht danebenstehen */
+    box-shadow: 0 0 0 100vmax var(--m3-surface-container);
+    clip-path: inset(-12px -100vmax -100vmax);
+  }
+}

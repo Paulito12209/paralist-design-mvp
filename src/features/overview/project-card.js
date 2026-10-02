@@ -5,9 +5,9 @@
  * in Klammern („Archiv (2)“). Ein Tipp öffnet das Archiv mit der Pille
  * Projekte (data-open-archive, src/ui/list-clicks.js). Rechts Sortieren und,
  * außer bei „Alle“ (dort lässt sich nichts filtern), Filtern und Ansicht.
- * Filtern öffnet gleich das Blatt „Projekte aus“, Ansicht holt das Blatt
- * „Ansicht“ herauf: darin stehen Ort, Nur Favoriten und Projekte
- * wählen (src/features/overview/project-settings.js). Umbenennen, Löschen &
+ * Filtern öffnet gleich das Blatt „Filtern“ (src/features/overview/project-filter.js),
+ * Ansicht holt das Blatt „Ansicht“ herauf: darin stehen Filtern, Nur
+ * Favoriten und Projekte wählen (src/features/overview/project-settings.js). Umbenennen, Löschen &
  * Co. einer Ansicht gibt es beim Halten ihres Reiters.
  * Die Zeile steht in jeder Fassung im Dokument und ist nur in der
  * Android-Fassung zu sehen (styles/android-card.css).
@@ -24,13 +24,14 @@
 import { archivedEntries } from "../../data/queries.js";
 import { handleListHeadClick, listHeadMarkup } from "../../ui/list-head.js";
 import { openViewPanel } from "../../ui/view-panel.js";
+import { projectFilterChips } from "./project-filter.js";
 import { openProjectFilter, openProjectSort } from "./project-settings.js";
 
 const archivePill = "projekt";
 
 /* Siebt die Ansicht etwas aus? Dann steht das Filter-Symbol in der Akzentfarbe. */
 function isFiltering(view) {
-  return view.ids.length > 0 || view.place !== "alle" || Boolean(view.favoritesOnly);
+  return view.ids.length > 0 || projectFilterChips(view).length > 0 || Boolean(view.favoritesOnly);
 }
 
 /** Die Werkzeugzeile für die gewählte Ansicht. */

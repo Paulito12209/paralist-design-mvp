@@ -25,6 +25,7 @@
  * calendarSegments[*].add -> Beschriftung der Pille am leeren Kalendertag
  * manualSort              -> „Eigene Reihenfolge“: Wortlaut der Sortierung, die beim Verschieben einer Zeile entsteht
  * projectSorts            -> wonach sich die Projekte sortieren lassen, samt Wortlaut beider Richtungen
+ * linkFilterDefaults     -> womit der Filter „Verknüpft mit“ startet (nichts gewählt)
  * projectViewDefaults     -> womit „Alle“ und jede neue Ansicht der Projekte startet
  * stageModes              -> die drei Modi der Bühne auf der Übersicht (Desktop): Icon im Schalter und
  *                            Beschriftung, die beim Überfahren erscheint
@@ -344,8 +345,28 @@ export const projectSorts = [
 ];
 
 /**
- * Womit „Alle“ und jede neue Ansicht der Projekte startet: zuletzt Geöffnetes
- * oben, ohne Filter. `place` ist "alle", "inbox" oder ein Verweis wie „w:3“;
- * `ids` ist die handverlesene Liste — leer heißt „nach den Filtern“.
+ * Der Filter „Verknüpft mit“, mit dem jede Ansicht der Aufgaben-Seite und der
+ * Projekte startet: nichts gewählt, also nichts gefiltert (Bedeutung der
+ * Felder: src/data/link-filter-fields.js).
  */
-export const projectViewDefaults = { sort: "geoeffnet", sortAsc: false, place: "alle", favoritesOnly: false, ids: [] };
+export const linkFilterDefaults = { linkKinds: [], linkRefs: [], linkNot: false };
+
+/**
+ * Womit „Alle“ und jede neue Ansicht der Projekte startet: zuletzt Geöffnetes
+ * oben, ohne Filter. `hiddenStatuses` und `hiddenPriorities` zählen auf, was
+ * der Filter ausblendet (leer = alles zu sehen), `statusNot` und
+ * `priorityNot` sagen nur, welche Seite im Blatt die Haken trägt (wie bei den
+ * Aufgaben, src/data/config-tasks.js). `ids` ist die handverlesene Liste —
+ * leer heißt „nach den Filtern“.
+ */
+export const projectViewDefaults = {
+  sort: "geoeffnet",
+  sortAsc: false,
+  ...linkFilterDefaults,
+  hiddenStatuses: [],
+  hiddenPriorities: [],
+  statusNot: false,
+  priorityNot: false,
+  favoritesOnly: false,
+  ids: [],
+};
