@@ -3,7 +3,8 @@
  * überlassen — das Symbol „Ansicht“ steht dort (und in der Kopfzeile einer
  * Sammlung) nicht mehr. Das Blatt „Ansicht“ öffnet das dritte Symbol der
  * Werkzeugzeile unter den Reitern (src/ui/list-head.js); nur der Kalender hat
- * keine solche Zeile und behält sein Symbol neben „KW“.
+ * keine solche Zeile und behält sein Symbol — rechts neben seinen Reitern,
+ * im Stundenraster neben „KW“ (styles/android-calendar-tabs.css).
  * Mit dem Symbol geht auch die Trennlinie davor; die Reiter bekommen den Platz
  * bis auf das Ausblenden am Rand.
  * Die Liste der Unterschiede unter Einstellungen › Mehr › Versionen steht in

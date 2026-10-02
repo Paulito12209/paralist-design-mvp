@@ -1,0 +1,208 @@
+/*
+ * Android-Fassungen, Kalender: die drei Reiter der Listenansicht (Aufgaben,
+ * Termine, Projekte) in der Sprache der übrigen Reiter, rechts daneben das
+ * Symbol „Ansicht“ (Regler). Sortieren und Filtern gibt es hier nicht — neben
+ * drei Reitern ist dafür auf kleinen Geräten kein Platz; alles Weitere steht im
+ * Blatt „Ansicht“. „KW“ steht in der Listenansicht allein oben rechts; im
+ * Stundenraster (dort gibt es keine Reiter) bleibt das Symbol neben „KW“.
+ * Datum und Reiter stehen links auf denselben Linien wie auf der Übersicht;
+ * die Wochentage stehen enger über den Kreisen, wie im Google-Kalender.
+ *
+ * - „Android“: Material-3-Reiter wie auf der Übersicht — reiner Text, der
+ *   aktive in der Akzentfarbe mit Linie darunter, Trennlinie unter der Zeile.
+ * - „Android (Experiment)“: die Reiter liegen wie in der iOS-Fassung in einer
+ *   grauen Kapsel, der gewählte hell darauf (wie styles/android-segmented.css).
+ *
+ * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
+ * Pfad: styles/android-calendar-tabs.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-title-edge        -> Abstand vom Geräterand bis zum Datum (wie der Titel „Kalender“)
+ * --m3-cal-weekday-tighten -> um so viel rücken die Kreise näher an die Wochentage (MO, DI …); 3px ergibt 4px Abstand
+ * --m3-tab-edge          -> Abstand vom Geräterand bis zum Text des ersten Reiters
+ * --m3-tab-height        -> Höhe der Reiterzeile
+ * --m3-tab-indicator     -> Dicke der Linie unter dem aktiven Reiter
+ * --m3-tabs-gap          -> Luft zwischen Reiterzeile und Liste
+ * --m3-primary           -> Schrift und Linie des aktiven Reiters
+ * --m3-on-surface-variant -> Schrift der übrigen Reiter und Farbe des Symbols
+ * --m3-outline-variant   -> Trennlinie unter der Zeile
+ * --m3-card-tool-size / --m3-card-tool-icon -> Tippfläche und Größe des Symbols „Ansicht“
+ * --m3-seg-fill / --m3-seg-thumb / --m3-seg-thumb-shadow / --m3-seg-separator /
+ * --m3-seg-height / --m3-seg-pad -> Kapsel der Experiment-Fassung
+ * --content-side (styles/tokens.css) -> Rand der Zeile zum Gerät
+ *
+ * Direkt bei ihrer Regel: Schrift der Reiter 14px (Material 3 „Title small“),
+ * in der Kapsel 13px (wie die iOS-Fassung).
+ */
+
+@media (max-width: 1023px) {
+  /* ---------- Kopf: Datum und KW ---------- */
+
+  /* Das Datum steht auf der Linie des Titels „Kalender“ (styles/android.css) */
+  [data-mobile-os="android"] .cal-date-row {
+    padding-left: calc(var(--m3-title-edge) - var(--content-side));
+  }
+
+  /* Wochentage näher an die Kreise darunter, wie im Google-Kalender: 4px
+     statt 7px. Die Zeile wird --m3-cal-weekday-tighten niedriger, aber nur
+     unten — der Innenabstand oben hält die Schrift an ihrer Stelle, der
+     Abstand zum Datum darüber bleibt gleich (Höhe der Zeile: styles/calendar.css). */
+  [data-mobile-os="android"] .cal-week-head {
+    height: calc(28px - var(--m3-cal-weekday-tighten));
+    padding-top: var(--m3-cal-weekday-tighten);
+  }
+
+  /* Listenansicht: das Symbol wandert in die Reiterzeile, „KW“ bleibt allein.
+     visibility statt display: die Zeile behält ihre Höhe, der Streifen
+     darunter springt beim Wechsel zwischen Raster und Liste nicht. */
+  [data-mobile-os="android"] #view-calendar:has(.cal-seg) .cal-date-row .view-panel-btn {
+    visibility: hidden;
+    width: 0;
+    margin-left: -12px; /* hebt die 12px Lücke der Zeile auf (gap in styles/calendar.css), „KW“ bleibt am Rand */
+  }
+
+  /* Die Trennlinie unter dem Streifen übernimmt die Reiterzeile (nur „Android“) */
+  [data-mobile-os="android"]:not([data-mobile-variant="experiment"]) #view-calendar:has(.cal-seg) .cal-head {
+    border-bottom-color: transparent;
+  }
+
+  /* Die Reiter schließen direkt an den Streifen an, ohne Luft der Fläche darüber */
+  [data-mobile-os="android"] .cal-panel:not(.is-grid) {
+    padding-top: 0;
+  }
+
+  /* ---------- Die Zeile ---------- */
+
+  /* Reicht wie die übrigen Reiterzeilen bis an den Geräterand (die Fläche hat
+     16px Innenrand); der Innenabstand setzt den ersten Reiter auf --m3-tab-edge,
+     sein eigener Innenabstand von 16px macht den Rest. */
+  [data-mobile-os="android"] .cal-seg {
+    container-type: normal;
+    display: flex;
+    align-items: center;
+    min-height: var(--m3-tab-height);
+    margin: 0 -16px var(--m3-tabs-gap);
+    padding: 0 var(--content-side) 0 calc(var(--m3-tab-edge) - 16px);
+  }
+
+  [data-mobile-os="android"]:not([data-mobile-variant="experiment"]) .cal-seg {
+    box-shadow: inset 0 -1px 0 var(--m3-outline-variant); /* box-shadow: Linie nach innen, verschiebt nichts */
+  }
+
+  [data-mobile-os="android"] .cal-seg-tabs {
+    display: flex;
+    align-items: center;
+    min-width: 0;
+  }
+
+  /* Das Symbol „Ansicht“ wie in der Werkzeugzeile über den Listen
+     (styles/android-card.css): 48px Tippfläche, das Symbol bündig am Rand */
+  [data-mobile-os="android"] .cal-seg .cal-seg-view {
+    flex: 0 0 auto;
+    width: var(--m3-card-tool-size);
+    height: var(--m3-card-tool-size);
+    margin-left: auto;
+    margin-right: calc((var(--m3-card-tool-icon) - var(--m3-card-tool-size)) / 2);
+    border-radius: 50%;
+  }
+
+  [data-mobile-os="android"] .cal-seg .cal-seg-view .icon {
+    width: var(--m3-card-tool-icon);
+    height: var(--m3-card-tool-icon);
+  }
+
+  /* ---------- „Android“: Reiter nach Material 3 ---------- */
+
+  /* position: Bezug für die Linie unter dem aktiven Reiter */
+  [data-mobile-os="android"] .cal-seg-btn {
+    position: relative;
+    height: var(--m3-tab-height);
+    padding: 0 16px;
+    border-radius: 0;
+    background: none;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--m3-on-surface-variant);
+  }
+
+  [data-mobile-os="android"] .cal-seg-btn.is-active {
+    background: none;
+    color: var(--m3-primary);
+  }
+
+  /* Die Linie unter dem aktiven Reiter: so breit wie sein Text, oben gerundet */
+  [data-mobile-os="android"]:not([data-mobile-variant="experiment"]) .cal-seg-btn.is-active::after {
+    content: "";
+    position: absolute; /* position: sitzt am unteren Rand des Reiters, ohne ihn höher zu machen */
+    left: 16px;
+    right: 16px;
+    bottom: 0;
+    height: var(--m3-tab-indicator);
+    border-radius: var(--m3-tab-indicator) var(--m3-tab-indicator) 0 0;
+    background: var(--m3-primary);
+  }
+
+  /* Zähler wie bei den übrigen Reitern: in deren Schrift, etwas leiser; im
+     gewählten Reiter entfällt er, die Liste darunter zeigt die Einträge ja */
+  [data-mobile-os="android"] .cal-seg-btn .card-count {
+    color: inherit;
+    opacity: 0.7;
+  }
+
+  [data-mobile-os="android"] .cal-seg-btn.is-active .card-count {
+    display: none;
+  }
+
+  [data-mobile-os="android"] .cal-seg-btn:active {
+    opacity: 1;
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), transparent);
+  }
+
+  /* ---------- „Android (Experiment)“: Kapsel wie iOS ---------- */
+
+  /* Die Kapsel beginnt am Inhaltsrand, wie die Kapseln der übrigen Seiten */
+  [data-mobile-variant="experiment"] .cal-seg {
+    padding-left: var(--content-side);
+  }
+
+  [data-mobile-variant="experiment"] .cal-seg-tabs {
+    padding: var(--m3-seg-pad);
+    border-radius: 999px; /* border-radius: Kapsel statt Linie */
+    background: var(--m3-seg-fill);
+  }
+
+  [data-mobile-variant="experiment"] .cal-seg-btn {
+    height: var(--m3-seg-height);
+    padding: 0 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    color: var(--m3-on-surface);
+  }
+
+  [data-mobile-variant="experiment"] .cal-seg-btn.is-active {
+    color: var(--m3-on-surface);
+    background: var(--m3-seg-thumb);
+    box-shadow: var(--m3-seg-thumb-shadow);
+  }
+
+  /* Trennlinie zwischen zwei nicht gewählten Segmenten; neben dem gewählten fällt sie weg */
+  [data-mobile-variant="experiment"] .cal-seg-btn:not(.is-active) + .cal-seg-btn:not(.is-active)::before {
+    content: "";
+    position: absolute; /* position: steht am linken Rand, ohne Platz zu nehmen */
+    left: 0;
+    top: 25%;
+    bottom: 25%;
+    width: 1px;
+    background: var(--m3-seg-separator);
+  }
+
+  [data-mobile-variant="experiment"] .cal-seg-btn:active {
+    background: none;
+    opacity: 0.55;
+  }
+
+  [data-mobile-variant="experiment"] .cal-seg-btn.is-active:active {
+    background: var(--m3-seg-thumb);
+  }
+}
