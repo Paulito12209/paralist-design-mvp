@@ -5,10 +5,10 @@
  * gesetzt; die Richtung erkennt src/shell/scroll-direction.js, wie es aussieht,
  * steht in styles/android.css, styles/android-tabs.css und styles/android-fab.css.
  *
- * Seite eines Eintrags: am Seitenende kommen die Leisten zurück. Dort ist das
- * Seitenende so bemessen, dass der Inhalt einen Abstand über dem Plus-Knopf
- * endet (styles/android.css); mit weggeglittener Leiste säße der Knopf
- * tiefer, und darüber klaffte eine Lücke.
+ * Auf jeder Seite kommen die Leisten am Seitenende zurück, auch ohne
+ * Hochwischen — so steht man unten nie ohne Navigation da. Das Seitenende ist
+ * dafür so bemessen, dass der Inhalt über Plus-Knopf und Leiste endet
+ * (styles/android.css, --m3-content-end; Eintragsseite eigens berechnet).
  *
  * Kalender: das Stundenraster rollt in sich selbst, sobald die Seite oben
  * eingerastet ist. Dessen Rollen zählt hier mit: wer im Raster nach oben
@@ -68,11 +68,9 @@ function scrolled() {
   return gridIsFree() ? box.scrollTop + dom.calPanel.scrollTop : box.scrollTop;
 }
 
-/* Ist ganz unten angekommen — Eintragsseite oder Kalender (Raster oder Liste)? */
+/* Ist ganz unten angekommen — auf jeder Seite; im Kalender-Raster zählt dessen eigenes Ende. */
 function atPageEnd() {
-  const inCalendar = isViewActive("calendar");
-  if (!inCalendar && !isViewActive("entry")) return false;
-  if (inCalendar && dom.calPanel.classList.contains("is-grid")) {
+  if (isViewActive("calendar") && dom.calPanel.classList.contains("is-grid")) {
     if (!gridIsFree()) return false;
     const grid = dom.calPanel;
     return grid.scrollTop + grid.clientHeight >= grid.scrollHeight - END_SLACK_PX;
