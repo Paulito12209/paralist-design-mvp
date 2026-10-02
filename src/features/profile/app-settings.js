@@ -5,7 +5,8 @@
  * - Suche: „Tastatur sofort öffnen“ (src/data/search-keyboard.js)
  * - Design: der Verlauf hinter Leiste und Eingabefeld und womit neue Seiten
  *   beginnen, Cover oder Icon (src/data/design-prefs.js)
- * - Tabs: je Sammlung, ob ihre Pillen oben Icons zeigen (src/data/tab-icons.js)
+ * - Tabs: je Sammlung, ob ihre Pillen oben Icons zeigen (src/data/tab-icons.js),
+ *   und ob neue Ansichten vor „Alle“ oder am Ende erscheinen (src/data/view-place.js)
  * Klicks kommen aus src/features/profile/profile.js über onAppSettingsClick.
  * Pfad: src/features/profile/app-settings.js
  *
@@ -13,6 +14,7 @@
  * -----------------------------------
  * notes      -> die grauen Sätze unter den Gruppen
  * headRows   -> die beiden Zeilen „Neue Seiten beginnen mit“: Name und Icon
+ * viewPlaceRows -> die beiden Zeilen „Neue Ansichten erscheinen“: vor „Alle“ oder am Ende
  *
  * Aussehen der Zeilen und Hinweise in styles/settings.css.
  */
@@ -22,6 +24,7 @@ import { escapeHtml, icon } from "../../core/html.js";
 import { navGlowOn, pageHeadChoice, setNavGlowOn, setPageHeadChoice } from "../../data/design-prefs.js";
 import { searchKeyboardOn, setSearchKeyboardOn } from "../../data/search-keyboard.js";
 import { setTabIconsOn, tabIconAreas, tabIconsOn } from "../../data/tab-icons.js";
+import { newViewAtStart, setNewViewAtStart } from "../../data/view-place.js";
 import { isDesk } from "../../ui/desk-mode.js";
 import { navLabelsRowMarkup, toggleNavLabels } from "./nav-labels.js";
 
@@ -32,7 +35,13 @@ const notes = {
   glow: "Heller Verlauf am unteren Rand der Hauptreiter, der Leiste und Eingabefeld vom Inhalt abhebt. Nur am Handy und Tablet.",
   head: "Ohne Haken beginnen neue Einträge und Arbeitsbereiche nur mit dem Titel. Icon und Cover lassen sich je Seite im Menü oben rechts ein- und ausschalten.",
   tabs: "Mit Haken steht vor dem Namen jeder Pille oben ein kleines Icon, ohne Haken nur Text. Ein eigenes Icon gibst du einer Ansicht, indem du ihre Pille gedrückt hältst.",
+  viewPlace: "Gilt für Projekte und Aufgaben. „Neue Ansicht“ bleibt in beiden Fällen hinter der letzten Pille. Einzelne Pillen verschiebst du, indem du sie gedrückt hältst.",
 };
+
+const viewPlaceRows = [
+  { id: "start", label: "Vor „Alle“", icon: "back" },
+  { id: "end", label: "Am Ende, rechts", icon: "arrow-right" },
+];
 
 const headRows = [
   { id: "icon", label: "Icon", icon: "smile" },
@@ -85,8 +94,13 @@ export function tabsCard(title = "") {
   const rows = tabIconAreas
     .map((area) => toggleRow(`data-tab-icons="${area.id}"`, area.icon, area.label, tabIconsOn(area.id)))
     .join("");
+  const atStart = newViewAtStart();
+  const places = viewPlaceRows
+    .map((row) => toggleRow(`data-view-place="${row.id}"`, row.icon, row.label, (row.id === "start") === atStart))
+    .join("");
   /* Am Desktop steht „Tabs“ schon als Überschrift; ein zweiter Titel darunter wäre doppelt */
-  return `${heading(title || "Icons in den Tabs")}${group(rows)}${note(notes.tabs)}`;
+  return `${heading(title || "Icons in den Tabs")}${group(rows)}${note(notes.tabs)}
+    ${heading("Neue Ansichten erscheinen")}${group(places)}${note(notes.viewPlace)}`;
 }
 
 /** Klick auf eine der Zeilen erledigen. Gibt true zurück, wenn er hierher gehörte. */
@@ -111,6 +125,11 @@ export function onAppSettingsClick(event) {
     setTabIconsOn(area, !tabIconsOn(area));
     /* Die Pillen der offenen Sammlung sollen sofort folgen, nicht erst beim nächsten Zeichnen */
     emit(events.dataChanged);
+    return true;
+  }
+  const place = event.target.closest("[data-view-place]");
+  if (place) {
+    setNewViewAtStart(place.dataset.viewPlace === "start");
     return true;
   }
   const head = event.target.closest("[data-page-head]");

@@ -247,18 +247,20 @@ function adoptPrefs(saved) {
     state.workspaces.map((workspace) => workspaceRef(workspace.id)).concat(state.entries.map((entry) => entryRef(entry.id)))
   );
   const views = Array.isArray(saved.taskViews) ? saved.taskViews.filter((view) => view && typeof view === "object") : [];
-  if (!views.length || !views[0].fixed) views.unshift({ ...state.taskViews[0] });
+  if (!views.some((view) => view.fixed)) views.unshift({ ...state.taskViews[0] });
+  /* „Alle“ ist die erste Ansicht mit dem Merkmal — vorn oder (Einstellungen › Tabs) wo man sie hingestellt hat */
+  const fixedAt = views.findIndex((view) => view.fixed);
   state.taskViews = views.map((view, index) => ({
     id: Number(view.id) || index + 1,
-    name: index === 0 ? "Alle" : String(view.name || ""),
+    name: index === fixedAt ? "Alle" : String(view.name || ""),
     placeholder: typeof view.placeholder === "string" ? view.placeholder : undefined,
     icon: typeof view.icon === "string" ? view.icon : null,
-    fixed: index === 0,
+    fixed: index === fixedAt,
     layout: pickValid(view.layout, taskLayouts, taskDefaults.layout),
     group: pickValid(view.group, ["none", ...taskGroupings.map((item) => item.id)], taskDefaults.group),
     sort: pickValid(view.sort, taskSorts.map((item) => item.id), taskDefaults.sort),
     sortAsc: typeof view.sortAsc === "boolean" ? view.sortAsc : taskDefaults.sortAsc,
-    ...(index === 0 ? linkFilterDefaults : cleanLinkFields(view, validRefs)),
+    ...(index === fixedAt ? linkFilterDefaults : cleanLinkFields(view, validRefs)),
     hideDone: typeof view.hideDone === "boolean" ? view.hideDone : taskDefaults.hideDone,
     /* Filter nach Status und Dringlichkeit; ältere Stände kennen ihn nicht und zeigen alles */
     hiddenStatuses: knownIds(view.hiddenStatuses, taskStatuses.filter((item) => !item.done)),
@@ -269,7 +271,7 @@ function adoptPrefs(saved) {
     priorityNot: view.priorityNot === true,
   }));
   const active = Number(saved.activeTaskViewId);
-  state.activeTaskViewId = state.taskViews.some((view) => view.id === active) ? active : state.taskViews[0].id;
+  state.activeTaskViewId = state.taskViews.some((view) => view.id === active) ? active : state.taskViews[fixedAt].id;
 }
 
 /** Liest den gespeicherten Stand; beim allerersten Start entstehen die Beispieldaten. */
