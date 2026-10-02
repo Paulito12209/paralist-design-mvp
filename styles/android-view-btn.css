@@ -1,87 +1,36 @@
 /*
- * Fassung „Android (Experiment)“: das Symbol „Ansicht“ verlässt die
- * Reiterzeile (auch Kopfzeile der Sammlungen und Kalender neben „KW“) und
- * sitzt als runder Knopf mittig über der Leiste — zwischen Archiv-Knopf links
- * und Plus-Knopf rechts. Oben laufen die Reiter dadurch ohne Linie und Symbol
- * bis an den Rand. Der Knopf erscheint nur auf Seiten mit einer Karte
- * „Ansicht“ — dieselben Klassen am body, die sie zeigen (styles/tasks-settings.css,
- * styles/calendar.css). Angelegt in src/shell/android-view-btn.js.
- * Mehr unterscheidet die Fassung derzeit nicht von „Android“; die Liste für das ⓘ unter Einstellungen › Mehr › Versionen in
+ * Fassung „Android (Experiment)“: die Reiterzeile bleibt ganz den Reitern
+ * überlassen — das Symbol „Ansicht“ steht dort (und in der Kopfzeile einer
+ * Sammlung) nicht mehr. Das Blatt „Ansicht“ öffnet das dritte Symbol der
+ * Werkzeugzeile unter den Reitern (src/ui/list-head.js); nur der Kalender hat
+ * keine solche Zeile und behält sein Symbol neben „KW“.
+ * Mit dem Symbol geht auch die Trennlinie davor; die Reiter bekommen den Platz
+ * bis auf das Ausblenden am Rand.
+ * Die Liste der Unterschiede unter Einstellungen › Mehr › Versionen steht in
  * src/data/platform-versions.js.
  * Gilt nur mit data-mobile-os="android" und data-mobile-variant="experiment"
  * an <html> und unterhalb von 1024px.
  * Pfad: styles/android-view-btn.css
  *
- * ANPASSBARE WERTE (alle in styles/tokens-android.css, außer wo genannt)
+ * ANPASSBARE WERTE
  * -----------------------------------
- * --m3-view-btn-size          -> Größe des runden Knopfs
- * --m3-fab-gap                -> Abstand zur Leiste: seine Unterkante steht auf
- *                                einer Linie mit Plus- und Archiv-Knopf
- * --m3-surface-container-high -> Fläche des Knopfs
- * --m3-on-surface-variant     -> das Symbol darauf
  * --tab-pills-fade / --content-side -> was rechts in der Reiterzeile frei bleibt (styles/tokens.css)
- *
- * Direkt bei ihrer Regel: das Symbol im Knopf (22px).
  */
 
-/* position: schwebt mittig über der Leiste; hängt wie Plus- und Archiv-Knopf an
-   .nav-shell und rückt so beim Wegscrollen mit ihr nach unten.
-   transform: zieht ihn um die halbe Breite zurück, damit er genau mittig steht.
-   Außerhalb dieser Fassung unsichtbar. */
-.m3-view-btn {
-  display: none;
-  position: absolute;
-  left: 50%;
-  bottom: calc(100% + var(--m3-fab-gap));
-  width: var(--m3-view-btn-size);
-  height: var(--m3-view-btn-size);
-  place-items: center;
-  border-radius: 50%;
-  background: var(--m3-surface-container-high);
-  color: var(--m3-on-surface-variant);
-  transform: translateX(-50%);
-  /* box-shadow: dieselbe Ebene wie Plus- und Archiv-Knopf (Material 3, Ebene 3) */
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.16), 0 1px 3px rgba(0, 0, 0, 0.2);
-}
-
-.m3-view-btn .icon {
-  width: 22px;
-  height: 22px;
-}
-
-.m3-view-btn:active {
-  opacity: 0.8;
-}
-
 @media (max-width: 1023px) {
-  [data-mobile-variant="experiment"] body:is(.is-tasks, .is-projects, .is-collection, .is-calendar) .m3-view-btn {
-    display: grid;
-  }
-
-  /* Beim Anlegen und Suchen hat der Knopf nichts zu tun */
-  [data-mobile-variant="experiment"] .nav-shell.is-composing .m3-view-btn {
-    display: none;
-  }
-
-  /* Die Symbole oben entfallen. !important: die Regeln, die sie in
-     styles/android-sheet.css je Ort einblenden, sind sehr spezifisch
-     (:has mit id) — so bleibt es eine Regel statt einer Kopie von jeder. */
-  [data-mobile-variant="experiment"] .view-panel-btn {
+  /* Die Symbole oben entfallen, außer im Kalender (body.is-calendar).
+     !important: die Regeln, die sie in styles/android-sheet.css je Ort
+     einblenden, sind sehr spezifisch (:has mit id) — so bleibt es eine Regel
+     statt einer Kopie von jeder. */
+  [data-mobile-variant="experiment"] body:not(.is-calendar) .view-panel-btn {
     display: none !important;
   }
 
-  /* Mit dem Symbol geht auch die Trennlinie davor; die Reiter bekommen den
-     Platz bis auf das Ausblenden am Rand */
   [data-mobile-variant="experiment"] .tab-pills-split {
     display: none;
   }
 
   [data-mobile-variant="experiment"] .tab-pills-row {
     --tab-pills-tools-width: calc(var(--content-side) + var(--tab-pills-fade));
-  }
-
-  /* Kalender: ohne Symbol steht „KW“ wieder an seinem gewohnten Platz */
-  [data-mobile-variant="experiment"] .cal-kw {
-    margin-left: 0;
   }
 }

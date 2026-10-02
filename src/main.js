@@ -40,7 +40,6 @@ import { initNavBar } from "./shell/nav-bar.js";
 import { initAndroidArchive } from "./shell/android-archive.js";
 import { initAndroidBars } from "./shell/android-bars.js";
 import { initAndroidFab } from "./shell/android-fab.js";
-import { initAndroidViewBtn } from "./shell/android-view-btn.js";
 import { initAndroidLinkBtn } from "./shell/android-link-btn.js";
 import { initIosAdd } from "./shell/ios-add.js";
 import { initIosBars } from "./shell/ios-bars.js";
@@ -59,6 +58,7 @@ import { initPageTools, openCopyChoice } from "./ui/page-tools.js";
 import { initHeadTitle } from "./ui/head-title.js";
 import { initModalPull } from "./ui/modal-pull.js";
 import { initModalTop } from "./ui/modal-top.js";
+import { initPillSnap } from "./ui/pill-snap.js";
 import { initPillTapReveal } from "./ui/pill-swipe.js";
 import { initPullSearch } from "./ui/pull-search.js";
 import { initHistoryRestore } from "./ui/router-restore.js";
@@ -125,6 +125,7 @@ function initShell() {
   initModalTop();
   initPullSearch();
   initPillTapReveal();
+  initPillSnap();
   /* Eine Zeile mit drei Punkten (Android) öffnet ihr Menü nur dort; gedrückt Halten hebt sie zum Verschieben an (src/ui/swipe.js) */
   const unlessRowMore = (open) => (row) => {
     if (!hasRowMore(row)) open(row);
@@ -147,7 +148,6 @@ function initShell() {
   initAndroidBars();
   initAndroidFab();
   initAndroidArchive();
-  initAndroidViewBtn();
   initAndroidLinkBtn();
   initIosBars();
   initIosAdd();
