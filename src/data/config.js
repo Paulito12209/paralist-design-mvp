@@ -84,6 +84,7 @@ export const composerPlaceholders = {
   /* Ein Medium besteht aus seiner Datei — ohne sie lässt es sich nicht anlegen. */
   medien: "Über + eine Datei anhängen …",
   lesezeichen: "Link oder Name des Lesezeichens …",
+  arbeitsbereich: "Neuen Arbeitsbereich anlegen …",
 };
 
 /* Im Blatt „Neu“ der Android-Fassung steht nur, was entsteht — wie „New task“
@@ -99,6 +100,7 @@ export const sheetPlaceholders = {
   zeichnung: "Neue Zeichnung",
   lesezeichen: "Neues Lesezeichen",
   medien: "Neues Medium",
+  arbeitsbereich: "Neuer Arbeitsbereich",
 };
 
 /*

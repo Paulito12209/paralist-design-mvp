@@ -3,7 +3,9 @@
  * reiner Text, der aktive in der Akzentfarbe mit einer Linie darunter, unter
  * der ganzen Zeile eine dünne Trennlinie. Beim Scrollen rasten die Zeilen oben
  * ein: auf den Hauptseiten direkt unter der Suchleiste (ist sie weggerutscht,
- * ganz oben), auf Unterseiten unter der Kopfzeile mit dem Zurück-Pfeil.
+ * ganz oben), auf Unterseiten unter der Kopfzeile mit dem Zurück-Pfeil. Die
+ * Werkzeugzeile darunter (Archiv, Sortieren, Filtern, Ansicht) rastet mit ein.
+ * Scrollbar ist die Seite nur, wenn die Liste länger ist als der Bildschirm.
  * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
  * Pfad: styles/android-tabs.css
  *
@@ -18,9 +20,9 @@
  * --m3-outline-variant   -> Trennlinie unter der ganzen Zeile
  * --m3-hide-time         -> wie schnell die Zeile nachrückt, wenn die Suchleiste geht
  * --m3-tabs-gap          -> Luft zwischen der Reiterzeile und der Liste darunter
- * --m3-top-bar-height    -> Höhe der Suchleiste; um so viel weiter lässt sich scrollen
+ * --m3-top-bar-height    -> Höhe der Suchleiste; im Kalender lässt sich um so viel weiter scrollen
  * --content-top / --page-head-top / --search-bar-height (styles/tokens.css)
- *                        -> wo die Zeile einrastet; daraus folgt der nötige Scrollweg
+ *                        -> wo Reiterzeile und Werkzeugzeile einrasten
  *
  * Schriftgröße der Reiter: 14px direkt bei .tab-pill (Material 3 „Title small“);
  * die von „Neue Ansicht“ hinter dem Plus steht in styles/android-tab-snap.css.
@@ -189,33 +191,52 @@
     color: inherit;
   }
 
-  /* ---------- Genug Scrollweg zum Einrasten ---------- */
+  /* ---------- Werkzeugzeile rastet mit den Reitern ein ---------- */
 
-  /* container-type: der Scrollbereich wird zum Maßstab, damit die Teile unter
-     einer Reiterzeile seine Höhe in cqh kennen. Er hat ohnehin eine feste Höhe
-     aus dem Gerät — sein Inhalt bestimmt sie nicht, es verschiebt sich nichts. */
+  /* position: sticky — die Werkzeugzeile (Archiv, Sortieren, Filtern, Ansicht)
+     rastet direkt unter der Reiterzeile ein und bleibt dort stehen, die Liste
+     läuft darunter durch. Sie liegt (anders als die Reiterzeile) nicht in
+     einer eigenen Hülle, sondern in der Liste; das reicht, denn sie bleibt
+     haften, solange die Liste im Bild ist.
+     top: wie bei den Reitern darüber, plus deren Höhe.
+     background: sonst schiene die Liste durch. z-index: wie die Reiterzeile. */
+  [data-mobile-os="android"] .project-card-head {
+    position: sticky;
+    top: calc(-1 * var(--content-top) - var(--m3-bar-shift, 0px) + var(--m3-tab-height));
+    z-index: 1;
+    background: var(--bg);
+    transition: top var(--m3-hide-time) ease; /* transition: rückt mit der Suchleiste nach, statt zu springen */
+  }
+
+  /* Unterseiten: unter Kopfzeile und Reiterzeile */
+  [data-mobile-os="android"] .page-body .project-card-head {
+    top: calc(var(--safe-top) + var(--page-head-top) + var(--search-bar-height) + var(--m3-tab-height));
+    transition: none;
+  }
+
+  /* Unterseiten ohne Reiter: die Zeile rastet gleich unter der Kopfzeile ein */
+  [data-mobile-os="android"] .page-body .project-card-head.is-plain {
+    top: calc(var(--safe-top) + var(--page-head-top) + var(--search-bar-height));
+  }
+
+  /* ---------- Scrollweg ---------- */
+
+  /* Listen sind nur so lang, wie ihr Inhalt es ist: gibt es wenig Einträge,
+     lässt sich die Seite nicht scrollen — es gäbe nichts einzurasten. Erst
+     wenn die Liste länger ist als der Bildschirm, rasten Reiter und
+     Werkzeugzeile beim Scrollen ein. */
+
+  /* container-type: der Scrollbereich wird zum Maßstab, damit der Kalender
+     seine Höhe in cqh kennt. Er hat ohnehin eine feste Höhe aus dem Gerät —
+     sein Inhalt bestimmt sie nicht, es verschiebt sich nichts. */
   [data-mobile-os="android"] .content {
     container-type: size;
   }
 
-  /* Hauptseiten: eingerastet steht die Zeile ganz oben (die Suchleiste ist
-     beim Runterscrollen weg). Darunter muss mindestens so viel liegen, wie
-     von dort bis zum Seitenende zu sehen ist — die Höhe des Scrollbereichs
-     plus der Platz, den Suchleiste und Luft oben einnehmen, abzüglich der
-     Zeile selbst und ihres Abstands zur Liste. */
-  [data-mobile-os="android"] :is(#project-list, .tasks-body, .media-body) {
-    min-height: calc(100cqh + var(--m3-top-bar-height) + var(--content-top) - var(--m3-tab-height) - var(--m3-tabs-gap));
-  }
-
-  /* Kalender: der Kopf mit dem Wochenstreifen ist höher als eine Reiterzeile;
-     ohne ihn abzuziehen bleibt am Ende etwas Luft, nie zu wenig */
+  /* Kalender: der Kopf mit dem Wochenstreifen muss oben einrasten können, weil
+     erst dann das Stundenraster in sich selbst rollt (src/shell/android-bars.js);
+     darum bekommt die Seite hier immer genug Scrollweg. */
   [data-mobile-os="android"] .cal-panel {
     min-height: calc(100cqh + var(--m3-top-bar-height));
-  }
-
-  /* Unterseiten: die Zeile ist das erste Stück der Seite und rastet unter der
-     Kopfzeile ein — von dort bis unten muss die Seite reichen */
-  [data-mobile-os="android"] .page-body:has(> :is(.tab-pills, .tab-pills-row, .page-pills-row, .project-views):first-child) {
-    min-height: calc(100cqh - var(--safe-top) - var(--page-head-top) - var(--search-bar-height));
   }
 }

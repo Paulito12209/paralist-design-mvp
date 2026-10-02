@@ -5,7 +5,8 @@
  * nicht hier, sondern im Fortschritt; am Desktop bleiben sie unter „Analyse“.
  * Der Bereich heißt weiter „profile“, weil das Blatt am Profilkopf hängt.
  * Unter „App“ führen vier Zeilen zu Navigation, Suche, Design und Tabs
- * (app-settings.js), unter „Konto“ eine zu den Kontoeinstellungen, unter
+ * (app-settings.js), unter „Konto“ die Konto-Seiten (account.js) — ohne Konto
+ * stattdessen „Profil“ und „Daten“ (account-phase.js) —, unter
  * „Support“ zwei auf das Feedback-Formular und die Danksagungen; „Roadmap“
  * ist dagegen ein Link nach draußen und braucht hier nichts (Adresse in
  * profile-cards.js). Unter „Mehr“ führt „Versionen“ zur Wahl der Fassung je
@@ -41,6 +42,7 @@ import {
   renderProfileButton,
   setDraft,
 } from "./avatar.js";
+import { onAccountClick } from "./account.js";
 import { onAppSettingsClick } from "./app-settings.js";
 import { noteFeedbackInput, onFeedbackClick } from "./feedback.js";
 import { initProfilePage, renderPageChrome, selectPane } from "./profile-page.js";
@@ -296,6 +298,7 @@ function checkForUpdateNow(row) {
 
 /* Klicks im Blatt: Feedback-Seite, Bild, Unterseiten, Darstellung, Kurzbefehle, Versionen, Zeitraum (Desktop). */
 function onBodyClick(event) {
+  if (onAccountClick(event)) return;
   if (onFeedbackClick(event)) {
     rerenderKeepingScroll();
     return;

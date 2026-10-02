@@ -63,10 +63,11 @@ function nextWorkspacePlaceholder() {
 }
 
 /**
- * Neuen Arbeitsbereich im gerade gewählten Tab anlegen. Er beginnt ohne Namen
- * im Umbenennen-Feld; wer nichts tippt, bekommt den Vorgabenamen.
+ * Neuen Arbeitsbereich im gerade gewählten Tab anlegen. Ohne `name` beginnt er
+ * ohne Namen im Umbenennen-Feld; wer nichts tippt, bekommt den Vorgabenamen.
+ * @param name fertiger Name, etwa aus dem Blatt „Neu“ — dann kein Namensfeld.
  */
-export function addWorkspace() {
+export function addWorkspace(name = "") {
   const id = nextId(state.workspaces);
   const workspace = {
     id,
@@ -84,6 +85,11 @@ export function addWorkspace() {
   /* Cover, wenn neue Seiten damit beginnen sollen (Einstellungen › Design) */
   applyPageHead(workspace);
   state.workspaces.push(workspace);
+  /* Mit Namen (aus dem Blatt „Neu“) steht er gleich fertig da, ohne Namensfeld */
+  if (name) {
+    nameWorkspace(workspace, name);
+    return workspace;
+  }
   ui.editingWorkspaceId = id;
   saveState();
   emit(events.dataChanged);

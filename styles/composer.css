@@ -37,6 +37,14 @@
   display: none;
 }
 
+/* Gewählt „Arbeitsbereich“ (src/features/composer/composer-workspace.js): er
+   liegt auf derselben Ebene wie der Eingang — der Ort-Chip fällt weg. Die
+   Kennung #composer-link schlägt die Regeln der Android-Fassung
+   (styles/android-composer.css). */
+.composer.is-workspace #composer-link {
+  display: none;
+}
+
 /* Verknüpfen-Knopf oben links: wählt den Eintrag, von dessen Seite man kommt, oder Arbeitsbereich bzw. Projekt */
 .composer-link {
   align-self: flex-start;
