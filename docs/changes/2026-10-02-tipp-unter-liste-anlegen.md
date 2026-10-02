@@ -76,3 +76,10 @@ Ressourcen › Zeichnungen
 - Im Eingang steht der neue Eintrag nach Enter oben (neueste zuerst), die
   Eingabezeile unten. Bei Monaten und Gruppen steht die Zeile etwas abgesetzt.
 - Siebt der Filter in Aufgaben alles aus, bleibt die Geisterzeile.
+
+## Nachtrag beim Zusammenführen (Git Commit Manager 2026-10-02)
+Die Kalenderliste ist hier **nicht** angemeldet. `2026-10-02-kalender-leere-liste`
+hat das Anlegen per Tipp im Kalender schon eigens gebaut
+(`src/features/calendar/calendar-inline.js`); mit beiden Anmeldungen öffnete ein
+Tipp zwei Eingabezeilen. `src/features/calendar/calendar-list.js` bleibt deshalb
+wie in `main`, der Eintrag dazu oben unter „Angemeldete Listen“ gilt nicht.
