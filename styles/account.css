@@ -1,0 +1,142 @@
+/*
+ * Die Konto- und Daten-Seiten im Einstellungs-Blatt: „Persönliche Daten“ mit
+ * Kopier-Knopf je Zeile, die Passwort-Felder und die beiden Löschen-Seiten.
+ * Die Zeilenkarten selbst (.plist, .plist-row) stehen in styles/profile.css.
+ * Pfad: styles/account.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css und styles/tokens-pages.css)
+ * -----------------------------------
+ * --support-field-radius -> Rundung der Passwort-Felder (wie im Feedback-Formular)
+ * --radius-xl            -> Rundung der großen Knöpfe und der Löschen-Karte
+ * --card / --line        -> Fläche und Rand der Felder und Karten
+ * --add                  -> Blau des Knopfs „Passwort ändern“ und des Feldrands beim Tippen
+ * --danger               -> Rot des Knopfs „… löschen“
+ * --muted / --chevron    -> grauer Kopier-Knopf und leere Werte
+ * --account-copy-size    -> Tippfläche des Kopier-Knopfs; so weit rückt auch ein
+ *                           leerer Wert („Hinzufügen“) ein, damit alle Werte bündig stehen
+ * --xp-done              -> Grün des Hakens nach dem Kopieren
+ *
+ * Schriftgrößen und Maße einzelner Elemente stehen direkt bei ihrer Regel:
+ * .account-copy .icon 18px -> Größe des Kopier-Symbols
+ * .account-field-label 13px, .account-delete-list 15px, .account-button 17px
+ */
+
+/* ---------- Persönliche Daten ---------- */
+
+/* Die Zeile ist ein div (kein Knopf): rechts sitzt der Kopier-Knopf. Der
+   Abstand rechts schrumpft, damit der Knopf bündig mit den Pfeilen der
+   übrigen Zeilen abschließt. */
+.account-row {
+  cursor: default;
+  padding-right: 6px;
+}
+
+.plist-row .plist-value.is-empty {
+  margin-right: var(--account-copy-size);
+  color: var(--chevron);
+}
+
+.account-copy {
+  display: grid;
+  place-items: center;
+  width: var(--account-copy-size);
+  height: var(--account-copy-size);
+  flex: 0 0 auto; /* flex: der Knopf behält seine Größe, auch bei langer Mailadresse */
+  border-radius: 50%;
+  color: var(--muted);
+}
+
+.plist-row .account-copy .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.account-copy.is-done {
+  color: var(--xp-done);
+}
+
+.account-copy:active {
+  background: var(--bg);
+}
+
+.account-add,
+.account-add .icon {
+  color: var(--add);
+}
+
+/* ---------- Passwort ändern ---------- */
+
+.account-form {
+  display: grid;
+  gap: 12px;
+}
+
+.account-field {
+  display: grid;
+  gap: 6px;
+}
+
+.account-field-label {
+  font-size: 13px;
+  color: var(--muted);
+  padding: 0 4px;
+}
+
+.account-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: var(--card);
+  border: 0.5px solid var(--line);
+  border-radius: var(--support-field-radius);
+  font: inherit;
+  font-size: 16px; /* 16px: darunter zoomt iOS beim Antippen in das Feld hinein */
+  color: var(--text);
+}
+
+.account-input:focus {
+  outline: none; /* outline: statt des Systemrahmens wird der Rand selbst blau */
+  border-color: var(--add);
+}
+
+/* ---------- Löschen-Seiten ---------- */
+
+.account-delete {
+  padding: 16px;
+  background: var(--card);
+  border-radius: var(--radius-xl);
+}
+
+.account-delete-intro {
+  font-size: 15px;
+  color: var(--muted);
+}
+
+.account-delete-list {
+  display: grid;
+  gap: 8px;
+  padding: 10px 0 0 20px;
+  font-size: 15px;
+  line-height: 1.35;
+  list-style: disc; /* list-style: die Punkte machen die Aufzählung als Liste lesbar */
+}
+
+/* ---------- Große Knöpfe ---------- */
+
+.account-button {
+  width: 100%;
+  min-height: 52px;
+  margin-top: 8px;
+  background: var(--card);
+  border-radius: var(--radius-xl);
+  font-size: 17px;
+  font-weight: 600;
+  color: var(--add);
+}
+
+.account-button.is-danger {
+  color: var(--danger);
+}
+
+.account-button:active {
+  transform: scale(0.99); /* transform: der Knopf gibt beim Tippen leicht nach */
+}

@@ -7,8 +7,9 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * Name, Mailadresse, Plan und Version im Kopf stehen in src/data/account.js.
- * Zeilen mit `plan: true` (und der Plan im Kopf) erscheinen nur außerhalb der Android-Fassung.
- * listSections   -> welche Zeilen unter welcher Überschrift stehen
+ * listSections   -> welche Zeilen unter welcher Überschrift stehen; `when`
+ *                   zeigt eine Zeile oder einen Abschnitt nur ohne Konto
+ *                   („local“, Phase 1) oder nur mit Konto („account“, Phase 2)
  * supportLinks   -> wohin „Feedback“ und „Roadmap“ unter „Support“ führen
  *
  * Farben und Größen stehen in styles/profile.css (--profile-avatar-size).
@@ -16,7 +17,7 @@
 
 import { escapeHtml, icon } from "../../core/html.js";
 import { account } from "../../data/account.js";
-import { isMobileOs } from "../../ui/platform.js";
+import { hasAccount } from "./account-phase.js";
 import { currentPhoto } from "./avatar.js";
 import { versionsSummary } from "./versions.js";
 
@@ -46,15 +47,9 @@ export function avatarMarkup() {
   return photo ? `<img src="${photo}" alt="">` : profile.initials;
 }
 
-/* Android bietet im Entwurf kein Abo an (alles läuft offline, kein Cloud-Sync):
-   dort stehen weder der Plan noch „Plan verwalten“. */
-function showsPlan() {
-  return !isMobileOs("android");
-}
-
-/** Die Zeile unter der Mailadresse: „Pro · Dabei seit …“, in Android nur „Dabei seit …“. */
+/** Die Zeile unter der Mailadresse: „Pro · Dabei seit …“, ohne Konto (Phase 1) nur „Dabei seit …“. */
 function metaLine() {
-  return showsPlan() ? `${profile.plan} · ${profile.since}` : profile.since;
+  return hasAccount() ? `${profile.plan} · ${profile.since}` : profile.since;
 }
 
 /** Kopf des Blatts: Bild, Name, Mailadresse, Plan. */
@@ -66,7 +61,7 @@ export function identityCard() {
         <button class="profile-avatar-edit" type="button" data-avatar-edit="1" aria-label="Profilbild ändern">${icon("pencil")}</button>
       </div>
       <p class="profile-name">${escapeHtml(profile.name)}</p>
-      <p class="profile-mail">${escapeHtml(profile.mail)}</p>
+      ${hasAccount() ? `<p class="profile-mail">${escapeHtml(profile.mail)}</p>` : ""}
       <p class="profile-meta">${escapeHtml(metaLine())}</p>
     </section>
   `;
@@ -76,9 +71,10 @@ export function identityCard() {
  * Die Zeilenkarten unter den Diagrammen. `detail` nennt die Seite, die sich
  * beim Antippen auftut (siehe `details` in settings-cards.js), `link` eine
  * Adresse außerhalb der App, `action` etwas, das profile.js beim Antippen
- * ausführt; Zeilen ohne all das zeigen im MVP nur den Aufbau. „Konto löschen“
- * steht absichtlich nicht hier, sondern eine Ebene tiefer in den
- * Kontoeinstellungen (account.js) — ganz unten im Blatt träfe man es zu leicht.
+ * ausführt; Zeilen ohne all das zeigen im MVP nur den Aufbau. Die
+ * Löschen-Zeilen öffnen erst eine eigene Seite (account-delete.js), damit ein
+ * Tipp beim Herunterrollen nichts löscht. Ein Abschnitt ohne Titel steht als
+ * einzelne Karte ohne Überschrift da.
  */
 const listSections = [
   /* „Mehr“ zuerst: am Handy steht es so direkt unter „Darstellung“ — die
@@ -101,10 +97,31 @@ const listSections = [
   },
   {
     title: "Konto",
+    when: "account",
     rows: [
-      { icon: "person", label: "Kontoeinstellungen", trail: "chevron", detail: "account" },
-      { icon: "arrow-up-circle", label: "Plan verwalten", trail: "chevron", plan: true },
+      { icon: "person", label: "Persönliche Daten", trail: "chevron", detail: "personal" },
+      { icon: "settings", label: "Passwort ändern", trail: "chevron", detail: "password" },
+      { icon: "swap-vert", label: "Synchronisierung", trail: "chevron", detail: "sync" },
+      { icon: "arrow-up-circle", label: "Plan verwalten", trail: "chevron", value: profile.plan },
     ],
+  },
+  {
+    title: "Profil",
+    when: "local",
+    rows: [{ icon: "person", label: "Persönliche Daten", trail: "chevron", detail: "personal" }],
+  },
+  {
+    title: "Daten",
+    rows: [
+      { icon: "share", label: "Daten exportieren", trail: "chevron" },
+      { icon: "import", label: "Daten importieren", trail: "chevron" },
+      { icon: "trash", label: "Alle Daten löschen", trail: "chevron", detail: "delete-data", danger: true, when: "local" },
+    ],
+  },
+  {
+    title: "",
+    when: "account",
+    rows: [{ icon: "trash", label: "Konto löschen", trail: "chevron", detail: "delete-account", danger: true }],
   },
   {
     title: "Support",
@@ -117,7 +134,7 @@ const listSections = [
 ];
 
 /* Eine Zeile: Link, Unterseite, Aktion oder nur Aufbau. `value` steht grau am
-   rechten Rand (z.B. die Mailadresse in den Kontoeinstellungen); als Funktion
+   rechten Rand (z.B. der Plan bei „Plan verwalten“); als Funktion
    wird er bei jedem Zeichnen frisch gelesen (die gewählten Versionen). */
 function rowMarkup(row) {
   const shell = `class="plist-row${row.danger ? " is-danger" : ""}"`;
@@ -145,15 +162,20 @@ function rowMarkup(row) {
   return `<button ${shell} type="button"${data}>${inner}</button>`;
 }
 
-/** Eine Abschnittsüberschrift mit ihrer Zeilenkarte — auch für die Unterseiten. Zeilen mit `plan: true` entfallen in Android. */
+/** Eine Abschnittsüberschrift mit ihrer Zeilenkarte — auch für die Unterseiten. Ohne Titel nur die Karte. */
 export function sectionMarkup(title, rows) {
-  const shown = rows.filter((row) => !row.plan || showsPlan());
-  return `<p class="psection">${escapeHtml(title)}</p><section class="plist">${shown.map(rowMarkup).join("")}</section>`;
+  const heading = title ? `<p class="psection">${escapeHtml(title)}</p>` : "";
+  return `${heading}<section class="plist">${rows.map(rowMarkup).join("")}</section>`;
 }
 
-/** Name, Mailadresse und Plan für die Kontoeinstellungen. */
-export function accountInfo() {
-  return { name: profile.name, mail: profile.mail, plan: profile.plan };
+/* Passt eine Zeile oder ein Abschnitt zur gezeigten Stufe (mit oder ohne Konto)? */
+function fits(item) {
+  if (!item.when) return true;
+  return item.when === (hasAccount() ? "account" : "local");
+}
+
+function sectionOf(section) {
+  return fits(section) ? sectionMarkup(section.title, section.rows.filter(fits)) : "";
 }
 
 /**
@@ -162,20 +184,25 @@ export function accountInfo() {
  * ganz unten die Versionszeile.
  */
 export function listsMarkup() {
-  const sections = listSections.map((section) => sectionMarkup(section.title, section.rows)).join("");
-  return sections + closingMarkup();
+  return listSections.map(sectionOf).join("") + closingMarkup();
 }
 
 /** Ein einzelner Abschnitt der Listen („Konto“, „Support“, „Mehr“) — für die Profilseite am Desktop. */
 export function listSection(title) {
   const section = listSections.find((item) => item.title === title);
-  return section ? sectionMarkup(section.title, section.rows) : "";
+  return section ? sectionOf(section) : "";
 }
 
-/** „Abmelden“ und die Versionszeile, der Schluss der Seite. */
+/** „Konto“, „Daten“ und „Konto löschen“ — der Punkt „Konto“ der Profilseite am Desktop. */
+export function accountSections() {
+  return ["Konto", "Daten", ""].map(listSection).join("");
+}
+
+/** „Abmelden“ (nur mit Konto) und die Versionszeile, der Schluss der Seite. */
 export function closingMarkup() {
+  const signout = hasAccount() ? `<button class="profile-signout" type="button">Abmelden</button>` : "";
   return `
-    <button class="profile-signout" type="button">Abmelden</button>
+    ${signout}
     <p class="profile-version">${escapeHtml(profile.version)}</p>
   `;
 }

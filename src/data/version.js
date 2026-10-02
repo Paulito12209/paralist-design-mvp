@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "e33aabeccb8b";
+export const appVersion = "d73da5bcbd47";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -67,7 +67,8 @@ export const appFiles = [
   "src/features/overview/tabs.js", "src/features/overview/workspace-collection.js",
   "src/features/overview/workspace-details.js", "src/features/overview/workspace-page.js",
   "src/features/overview/workspace-rail.js", "src/features/overview/workspace-title.js",
-  "src/features/overview/workspaces.js", "src/features/profile/account.js",
+  "src/features/overview/workspaces.js", "src/features/profile/account-delete.js",
+  "src/features/profile/account-phase.js", "src/features/profile/account.js",
   "src/features/profile/app-settings.js", "src/features/profile/avatar-crop.js",
   "src/features/profile/avatar.js", "src/features/profile/credits.js",
   "src/features/profile/feedback.js", "src/features/profile/nav-labels.js",
@@ -117,10 +118,10 @@ export const appFiles = [
   "src/ui/tab-menu.js", "src/ui/task-status.js", "src/ui/toast.js", "src/ui/type-menu.js",
   "src/ui/type-wheel.js", "src/ui/usage-pages.js", "src/ui/usage-split.js",
   "src/ui/video-player.js", "src/ui/view-panel.js", "src/ui/views.js", "src/ui/wheel.js",
-  "src/ui/write-tap.js", "styles/android-archive.css", "styles/android-bottom-sheet.css",
-  "styles/android-calendar.css", "styles/android-card.css", "styles/android-composer.css",
-  "styles/android-entry.css", "styles/android-fab.css", "styles/android-list.css",
-  "styles/android-overview-gaps.css", "styles/android-pages-content.css",
+  "src/ui/write-tap.js", "styles/account.css", "styles/android-archive.css",
+  "styles/android-bottom-sheet.css", "styles/android-calendar.css", "styles/android-card.css",
+  "styles/android-composer.css", "styles/android-entry.css", "styles/android-fab.css",
+  "styles/android-list.css", "styles/android-overview-gaps.css", "styles/android-pages-content.css",
   "styles/android-pages.css", "styles/android-quiet-tools.css", "styles/android-reorder.css",
   "styles/android-segmented.css", "styles/android-sheet.css", "styles/android-tab-snap.css",
   "styles/android-tabs.css", "styles/android-view-btn.css", "styles/android.css",

@@ -11,7 +11,7 @@
  * --profile-avatar-edit-size -> Größe des kleinen Stift-Knopfes
  * --dot-empty / --dot-1..4  -> Helligkeitsstufen im Punkte-Raster
  * --xp-line                 -> Farbe der Balken
- * --danger                  -> Rot in der Gefahrenzone und von „Abmelden“
+ * --danger                  -> Rot der Löschen-Zeilen und von „Abmelden“
  * --radius-xl               -> Rundung der Zeilenkarten
  
  *
@@ -357,14 +357,6 @@
 
 .profile-signout:active {
   opacity: 0.5;
-}
-
-/* Der Hinweis unter „Konto löschen“ in den Kontoeinstellungen */
-.account-note {
-  font-size: 13px;
-  line-height: 1.4;
-  color: var(--muted);
-  padding: 0 4px;
 }
 
 .profile-version {
