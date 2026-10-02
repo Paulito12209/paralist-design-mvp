@@ -18,7 +18,7 @@
  * --icon-soft               -> abgeschwächter Pfeil neben dem Datum
  * --line                    -> Trennlinie unter dem Streifen, zum Raster hin
  * --content-side            -> Seitenabstand, den die Trennlinie automatisch übernimmt
- * --content-top             -> um so viel wird der einrastende Kopf nach oben verlängert
+ * --content-top             -> um so viel wird der einrastende Kopf nach oben verlängert; mindestens so groß ist auch der Abstand „Kalender“ → Datumszeile (bei 40 wäre er 40)
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei
  * (Datum 18px, KW daneben 15px, Wochentage 12px, Tageszahlen 16px, „Heute“ 15px, Rollen-Zeilen 20px, „Fertig“ 17px).
@@ -36,12 +36,12 @@
   flex-direction: column;
 }
 
+/* margin-bottom: mindestens so hoch wie die Verlaengerung des Kopfes (.cal-head,
+   --content-top), damit der Titel nie unter der Kopffläche liegt. So ist
+   „Kalender“ genau dann ganz verschwunden, wenn der Kopf einrastet — auch beim
+   Hochwischen unter der noch sichtbaren Suchleiste bleibt kein Rest stehen */
 #view-calendar .screen-title {
-  margin-bottom: 18px;
-  /* position/z-index: die Verlaengerung des Kopfes (.cal-head) reicht in Ruhe
-     14px in den Titel hinein; ohne eigene Ebene wuerde sie seine Unterkante verdecken */
-  position: relative;
-  z-index: 4;
+  margin-bottom: max(18px, var(--content-top));
 }
 
 /*
@@ -57,7 +57,7 @@
  * margin-top gleicht die Verlaengerung aus, damit der Streifen in Ruhe an
  * derselben Stelle steht wie zuvor.
  * position: sticky -> bleibt am oberen Rand des Scrollbereichs haengen
- * z-index: 3 -> ueber Jetzt-Linie (2) und Terminen (1), unter dem Titel (4)
+ * z-index: 3 -> ueber Jetzt-Linie (2), Terminen (1) und dem Titel (der Titel hat keine eigene Ebene)
  */
 .cal-head {
   position: sticky;
