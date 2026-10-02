@@ -20,9 +20,8 @@
  * --m3-sheet-max           -> wie hoch das Blatt höchstens wird
  * --m3-surface-container   -> Fläche des Blatts
  * --m3-sheet-scrim-alpha   -> Deckkraft des schwarzen Schleiers hinter dem Blatt (Material 3: 32 %)
- * --m3-on-surface-variant  -> Griff oben am Blatt und das Symbol in der Reiterzeile
+ * --m3-on-surface-variant  -> das Symbol in der Reiterzeile
  * --m3-sheet-width         -> größte Breite des Blatts (Tablet)
- * --m3-sheet-handle-zone   -> Höhe des Griff-Streifens; der Griff sitzt darin 22px vom oberen Rand
  * --m3-sheet-row-h         -> Höhe jeder Zeile im Blatt
  * --m3-on-surface / --m3-on-surface-variant -> Zeilenbezeichnung bzw. ihr Wert
  * --m3-outline-variant     -> Trennlinie unter der Überschrift
@@ -32,7 +31,7 @@
  * --tab-pills-btn-gap      -> Grundabstand vor dem Symbol (styles/tokens.css)
  *
  * Direkt bei ihrer Regel: die Schrift der Überschrift „Ansicht“ (22px, Title
- * Large), der Zeilen (16px, Body Large), der Griff oben (32 × 4px, Material 3)
+ * Large), der Zeilen (16px, Body Large), der Luft über der Überschrift (24px)
  * und das Symbol in der Reiterzeile (22px).
  */
 
@@ -53,7 +52,7 @@
     /* max-width + margin auto: auf einem Tablet steht das Blatt mittig und nicht über die ganze Breite */
     max-width: var(--m3-sheet-width);
     margin-inline: auto;
-    /* padding oben 0: den Platz über dem Inhalt macht der Griff-Streifen im Kopf */
+    /* padding oben 0: den Platz über dem Inhalt macht der Kopf */
     padding: 0 16px calc(8px + var(--safe-bottom));
     border-radius: var(--m3-sheet-radius) var(--m3-sheet-radius) 0 0;
     background: var(--m3-surface-container);
@@ -76,31 +75,16 @@
     transition: none;
   }
 
-  /* Der Griff oben in der Mitte zeigt: das Blatt lässt sich nach unten ziehen.
-     Er sitzt in einem Streifen von 48px (Material 3), darunter beginnt der Inhalt.
-     position: Bezug für den Griff, der im Streifen über dem Titel schwebt. */
+  /* Kein Griff: wie in Google Tasks schließt man das Blatt über den Schleier,
+     Zurück oder Ziehen am Blatt. Oben 24px Luft über der Überschrift. */
   [data-mobile-os="android"] .view-panel-head {
-    position: relative;
-    height: auto; /* height: auto statt fester Kopfhöhe — Streifen, Titel und Luft darunter */
-    padding: var(--m3-sheet-handle-zone) 0 8px;
+    height: auto; /* height: auto statt fester Kopfhöhe — Luft, Titel und Luft darunter */
+    padding: 24px 0 8px;
     margin-right: 0; /* margin-right: die Karte „Details“ zieht ihren Kopf sonst 8px nach rechts */
   }
 
-  [data-mobile-os="android"] .view-panel-head::before {
-    content: "";
-    position: absolute; /* position: im Streifen oben, ohne Platz zu nehmen */
-    top: calc((var(--m3-sheet-handle-zone) - 4px) / 2);
-    left: 50%;
-    width: 32px;
-    height: 4px;
-    margin-left: -16px;
-    border-radius: 2px;
-    background: var(--m3-on-surface-variant);
-    opacity: 0.4;
-  }
-
   /* Die Überschrift als „Title Large“ (22/28) in der Hauptfarbe der Fläche;
-     das Kartensymbol entfällt — geschlossen wird über Griff, Schleier, Ziehen und Zurück */
+     das Kartensymbol entfällt — geschlossen wird über Schleier, Ziehen und Zurück */
   [data-mobile-os="android"] .view-panel-head .details-title {
     font-size: 22px;
     line-height: 28px;

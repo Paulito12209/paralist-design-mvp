@@ -58,7 +58,6 @@
  *                                 (Material 3: 0.32 — 0 = kein Schleier, 1 = ganz schwarz)
  * --m3-sheet-max               -> wie hoch dieses Blatt höchstens wird (Anteil des Geräts)
  * --m3-sheet-width            -> wie breit das Blatt auf einem Tablet höchstens wird (Material 3: 640dp)
- * --m3-sheet-handle-zone      -> Höhe des Streifens mit dem Griff über dem Inhalt (Material 3: 48dp)
  * --m3-sheet-row-h            -> Höhe einer Zeile im Blatt (Material 3 Liste, eine Zeile: 56dp)
  * --m3-seg-thumb-shadow       -> Schatten unter dem gewählten Segment (nur Android (Experiment))
  * --m3-seg-height             -> Höhe eines Segments der Reiter-Kapsel (iOS: 30)
@@ -100,6 +99,10 @@
  * --m3-menu-sheet-pad          -> Luft über der ersten und unter der letzten Zeile in einem Auswahl-Blatt
  * --m3-menu-radius             -> Rundung des kleinen Menüs beim gedrückt Halten (Material 3 „Menu“: 4dp, wie in Google Drive)
  * --m3-menu-pad                -> Luft über der ersten und unter der letzten Zeile in diesem Menü (Material 3: 8dp)
+ * --m3-chip-h / --m3-chip-radius -> Höhe und Rundung der Auswahl-Chips „Aufgabe ▾“ und „Eingang ▾“ im
+ *                                 Blatt „Neu“ (Material 3 „Filter chip“: 32dp, 8dp — eckig gerundet, keine Pille)
+ * --m3-composer-attach         -> Größe des runden Anhang-Knopfs (+) links unten in diesem Blatt (40dp)
+ * --m3-composer-pad            -> Innenabstand des Blatts „Neu“ links, rechts und oben (Google Tasks: 24dp)
  */
 
 :root[data-mobile-os="android"] {
@@ -144,7 +147,6 @@
   --m3-sheet-scrim-alpha: 0.32;
   --m3-sheet-max: 80%;
   --m3-sheet-width: 640px;
-  --m3-sheet-handle-zone: 48px;
   --m3-sheet-row-h: 56px;
   --m3-menu-radius: 4px;
   --m3-menu-pad: 8px;
@@ -181,6 +183,10 @@
   --m3-text-btn-pad: 12px;
   --m3-state-pressed: 12%;
   --m3-menu-sheet-pad: 8px;
+  --m3-chip-h: 32px;
+  --m3-chip-radius: 8px;
+  --m3-composer-attach: 40px;
+  --m3-composer-pad: 24px;
   --m3-error: #b3261c;
   --m3-on-error: #ffffff;
 }

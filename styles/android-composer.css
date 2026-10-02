@@ -1,0 +1,262 @@
+/*
+ * Android-Fassung: das Eingabefeld zum Anlegen als Blatt von unten nach
+ * Material 3, wie „Neue Aufgabe“ in Google Tasks. Oben das Textfeld mit dem
+ * Platzhalter „Neue Aufgabe“ (je Typ, src/data/config.js sheetPlaceholders),
+ * darunter eine Zeile: links der runde Anhang-Knopf (+), daneben der Typ-Chip
+ * (nur Icon und Pfeil, öffnet die Typen), dann der Ort-Chip „Eingang ▾“ und
+ * rechts der Text-Knopf „Speichern“. Die Reihe runder Typ-Knöpfe, Diktat
+ * und ✕ entfallen: der Schleier und Zurück schließen das Blatt
+ * (src/features/composer/composer-sheet.js). Angehängte Bilder schweben wie
+ * bisher über dem Blatt.
+ * In der Spielart „Android (Experiment)“ (data-mobile-variant) steht statt
+ * „Speichern“ das Mikrofon neben einem runden Pfeil-Knopf: grau ohne Inhalt,
+ * gefärbt mit Text oder Anhang.
+ * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
+ * Pfad: styles/android-composer.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-sheet-radius          -> Rundung der oberen Ecken (wie alle Blätter von unten)
+ * --m3-sheet-scrim-alpha     -> Deckkraft des Schleiers über der App
+ * --m3-composer-pad          -> Innenabstand links, rechts und oben
+ * --m3-composer-attach       -> Größe des runden Anhang-Knopfs
+ * --m3-chip-h / --m3-chip-radius -> Höhe und Rundung der beiden Auswahl-Chips
+ * --m3-surface-container     -> Fläche des Blatts
+ * --m3-surface-container-high -> der etwas hellere Grauton des Anhang-Knopfs
+ * --m3-outline-variant       -> Rand der Chips, solange dort noch der Vorschlag der Seite steht
+ * --m3-secondary-container   -> Fläche eines Chips, sobald man selbst etwas gewählt hat
+ * --m3-on-surface / --m3-on-surface-variant -> Text bzw. Icons und Chip-Beschriftung
+ * --m3-primary               -> „Speichern“ bzw. der runde Pfeil (Experiment), sobald etwas zum Anlegen da ist
+ * --m3-on-primary            -> Pfeil darin (Experiment)
+ * --m3-on-surface-muted      -> „Speichern“ bzw. Pfeil, solange nichts zum Anlegen da ist
+ *
+ * Direkt bei ihrer Regel: Textfeld 16px („Body large“), Chips und „Speichern“
+ * 14px („Label large“), Icons in den Chips 18px, Plus 24px.
+ */
+
+@media (max-width: 1023px) {
+  /* ---------- Schleier ---------- */
+
+  /* position/z-index: liegt über Kopfzeile und Liste (20), unter dem Blatt
+     selbst (die Leiste rückt beim Anlegen auf 22) und unter Auswahl-Blättern (ab 36) */
+  [data-mobile-os="android"] .composer-scrim {
+    position: absolute;
+    inset: 0;
+    z-index: 21;
+    background: rgba(0, 0, 0, var(--m3-sheet-scrim-alpha));
+    animation: m3-composer-fade 200ms ease-out; /* animation: der Schleier blendet ein statt aufzuspringen */
+  }
+
+  [data-mobile-os="android"] .composer-scrim[hidden] {
+    display: none;
+  }
+
+  [data-mobile-os="android"] .bottom-bar:has(.nav-shell.is-composing) {
+    z-index: 22; /* z-index: das Blatt liegt über seinem Schleier */
+  }
+
+  /* ---------- Das Blatt ---------- */
+
+  [data-mobile-os="android"] .nav-shell.is-composing {
+    border-radius: var(--m3-sheet-radius) var(--m3-sheet-radius) 0 0;
+    padding: var(--m3-composer-pad) var(--m3-composer-pad) calc(12px + var(--safe-bottom));
+    background: var(--m3-surface-container);
+    animation: m3-composer-up 250ms cubic-bezier(0.2, 0.8, 0.2, 1); /* animation: fährt von unten herein wie die übrigen Blätter */
+  }
+
+  /* Die Zeilen der iOS-Anordnung lösen sich auf (display: contents), damit
+     Anhang-Knopf, Chips und „Speichern“ in EINER Zeile unter dem Textfeld
+     stehen — ohne das Markup für eine Fassung umzubauen. `order` legt fest,
+     was wo steht. */
+  [data-mobile-os="android"] .composer {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+  }
+
+  [data-mobile-os="android"] :is(.composer-top, .composer-chips, .composer-tools, .composer-end) {
+    display: contents;
+  }
+
+  [data-mobile-os="android"] :is(.composer-types, .composer-mic, .composer-close) {
+    display: none;
+  }
+
+  /* Anhänge schweben wie in den übrigen Fassungen über dem Blatt
+     (styles/composer-attachments.css); hier nur der Platz für den Schatten. */
+  [data-mobile-os="android"] .composer-attachments {
+    padding-inline: var(--m3-composer-pad);
+  }
+
+  [data-mobile-os="android"] .composer-input {
+    order: 1;
+    flex: 0 0 100%;
+    padding: 0 0 12px;
+    font-size: 16px;
+    color: var(--m3-on-surface);
+  }
+
+  [data-mobile-os="android"] .composer-input::placeholder {
+    color: var(--m3-on-surface-variant);
+  }
+
+  /* Anhang-Knopf: runder Knopf im etwas helleren Grau, auf derselben Linie
+     wie Textfeld und Chips (--m3-composer-pad vom Rand) */
+  [data-mobile-os="android"] .composer-attach {
+    order: 2;
+    width: var(--m3-composer-attach);
+    height: var(--m3-composer-attach);
+    background: var(--m3-surface-container-high);
+    color: var(--m3-on-surface);
+  }
+
+  [data-mobile-os="android"] .composer-attach .icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  /* ---------- Auswahl-Chips: Typ, dann Ablageort ---------- */
+
+  /* align-self: composer.css hängt die Pillen oben an (flex-start) — in
+     dieser Zeile stehen sie mittig zu Plus und „Speichern“ */
+  [data-mobile-os="android"] .composer .composer-link {
+    align-self: center;
+    min-height: var(--m3-chip-h);
+    height: var(--m3-chip-h);
+    gap: 4px;
+    padding: 0 8px;
+    border-radius: var(--m3-chip-radius);
+    border: 1px solid var(--m3-outline-variant);
+    background: transparent;
+    color: var(--m3-on-surface-variant);
+    font-size: 14px;
+  }
+
+  /* Typ-Chip nur mit Icon und Pfeil: den Namen sagt schon der Platzhalter
+     („Neue Aufgabe“); den Namen für Vorleser setzt composer-types.js */
+  [data-mobile-os="android"] #composer-type-pill {
+    order: 3;
+    flex-shrink: 0;
+  }
+
+  [data-mobile-os="android"] #composer-type-label {
+    display: none;
+  }
+
+  /* flex-basis 0: sonst bricht die Zeile um, bevor der Chip schrumpfen darf.
+     Er wächst bis zu seiner vollen Breite (max-width), ein langer Ortsname
+     kürzt sich mit „…“, „Speichern“ bleibt in der Zeile. */
+  [data-mobile-os="android"] #composer-link {
+    order: 4;
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: max-content;
+  }
+
+  /* Selbst gewählt: gefüllt und ohne Rand (Material 3 „Filter chip, selected“) */
+  [data-mobile-os="android"] .composer .composer-link:not(.is-preset) {
+    border-color: transparent;
+    background: var(--m3-secondary-container);
+    color: var(--m3-on-secondary-container);
+  }
+
+  [data-mobile-os="android"] .composer .composer-link .icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  [data-mobile-os="android"] .composer-link span {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ---------- Speichern ---------- */
+
+  /* Text-Knopf rechts außen (Material 3 „Text button“) statt runder Pfeil */
+  [data-mobile-os="android"] .composer-send {
+    order: 5;
+    margin-left: auto; /* margin: schiebt den Knopf an den rechten Rand */
+    width: auto;
+    height: var(--m3-text-btn-h);
+    padding: 0 var(--m3-text-btn-pad);
+    margin-right: calc(-1 * var(--m3-text-btn-pad)); /* margin: das Wort endet auf dem Innenrand des Blatts */
+    border-radius: 999px; /* border-radius: Pillenform des Drückzustands */
+    background: transparent;
+    color: var(--m3-primary);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  [data-mobile-os="android"] .composer-send:disabled {
+    background: transparent;
+    color: var(--m3-on-surface-muted);
+  }
+
+  [data-mobile-os="android"] .composer-send .icon {
+    display: none;
+  }
+
+  [data-mobile-os="android"] .composer-send-label {
+    display: inline;
+  }
+
+  /* ---------- Spielart „Android (Experiment)“: Mikrofon und runder Pfeil ---------- */
+
+  /* Statt „Speichern“ rechts außen: links davon das Mikrofon, dann der runde
+     Pfeil-Knopf (Material 3 „Icon button, filled“). Grau, solange nichts zum
+     Anlegen da ist, gefärbt, sobald Text oder ein Anhang drinsteht. */
+  [data-mobile-variant="experiment"] .composer-mic {
+    display: grid; /* display: überstimmt das Ausblenden der normalen Android-Fassung oben */
+    order: 4;
+    margin-left: auto; /* margin: schiebt Mikrofon und Pfeil an den rechten Rand */
+    width: var(--m3-composer-attach);
+    height: var(--m3-composer-attach);
+    background: var(--m3-surface-container-high);
+    color: var(--m3-on-surface);
+  }
+
+  [data-mobile-variant="experiment"] .composer-mic .icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  [data-mobile-variant="experiment"] .composer-send {
+    order: 5;
+    margin: 0;
+    width: var(--m3-composer-attach);
+    height: var(--m3-composer-attach);
+    padding: 0;
+    border-radius: 50%; /* border-radius: rund wie Plus und Mikrofon */
+    background: var(--m3-primary);
+    color: var(--m3-on-primary);
+  }
+
+  [data-mobile-variant="experiment"] .composer-send:disabled {
+    background: var(--m3-surface-container-high);
+    color: var(--m3-on-surface-muted);
+  }
+
+  [data-mobile-variant="experiment"] .composer-send .icon {
+    display: block;
+    width: 24px;
+    height: 24px;
+  }
+
+  [data-mobile-variant="experiment"] .composer-send-label {
+    display: none;
+  }
+
+  @keyframes m3-composer-up {
+    from {
+      transform: translateY(100%);
+    }
+  }
+
+  @keyframes m3-composer-fade {
+    from {
+      opacity: 0;
+    }
+  }
+}
