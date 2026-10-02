@@ -18,6 +18,9 @@
  * --empty-add-tint       -> wie kräftig die Farbe der Kategorie die Pille „… anlegen“ füllt
  * --empty-add-ink        -> wie viel Farbe der Kategorie in Schrift und Icon der Pille steckt
  *                           (der Rest ist Schriftfarbe — so bleibt sie hell wie dunkel lesbar)
+ * --empty-plain-icon     -> Größe des grauen Icons im schlichten Platzhalter (wie am leeren Kalendertag)
+ * --empty-plain-title    -> Schriftgröße seiner Überschrift
+ * --empty-plain-pad-top  -> Luft über dem schlichten Platzhalter
  *
  * Die Farbe des Emblems selbst (--empty-accent) gibt die jeweilige Seite mit,
  * damit jedes Thema seinen eigenen Ton behält. Die Pille nimmt denselben Ton
@@ -44,6 +47,9 @@
   --empty-badge-ink: #ffffff;
   --empty-add-tint: 16%;
   --empty-add-ink: 78%;
+  --empty-plain-icon: 64px;
+  --empty-plain-title: 22px;
+  --empty-plain-pad-top: 44px;
 }
 
 .empty-state {
@@ -150,4 +156,23 @@
 /* Ganz ohne Emblem: nur die Zeile mit dem Titel, für dicht stehende Abschnitte */
 .empty-state.is-bare {
   padding: 4px 12px 14px;
+}
+
+/* Schlicht: großes graues Icon statt Emblem, kräftige Überschrift — dieselbe
+   Sprache wie der leere Tag der Kalenderliste (styles/calendar-panel.css, .cal-empty) */
+.empty-state.is-plain {
+  padding-top: var(--empty-plain-pad-top);
+}
+
+.empty-plain-icon {
+  width: var(--empty-plain-icon);
+  height: var(--empty-plain-icon);
+  margin-bottom: var(--empty-gap);
+  color: var(--muted);
+  opacity: 0.8;
+}
+
+.empty-state.is-plain .empty-title {
+  font-size: var(--empty-plain-title);
+  font-weight: 700;
 }

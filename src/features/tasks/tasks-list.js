@@ -12,14 +12,17 @@
  *
  * Solange es gar keine Aufgabe gibt, liegt eine blasse Geister-Zeile da, die
  * das Anlegen durch Tippen ein einziges Mal erklärt
- * (src/features/tasks/tasks-inline.js). In der Android-Fassung steht sie auch,
- * wenn der Filter alles aussiebt — dort gibt es keinen Satz unter der Liste.
+ * (src/features/tasks/tasks-inline.js). In der Android-Fassung steht statt
+ * ihrer der Platzhalter wie am leeren Kalendertag (Icon, Satz, Pille); siebt
+ * dort nur der Filter alles aus, bleibt die Geister-Zeile — einen Satz unter
+ * der Liste gibt es da nicht.
  * Pfad: src/features/tasks/tasks-list.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * ghostLabel  -> Text der Geister-Zeile, solange es keine Aufgabe gibt
  * emptyFilter -> Text, wenn der Ort-Filter keine Aufgabe übrig lässt (iOS)
+ * emptyTasks  -> Platzhalter ohne eine einzige Aufgabe (Android): Icon, Satz, Pille
  *
  * Aussehen und Abstände stehen in styles/rows.css und styles/tasks.css, die
  * Spalten am Desktop in styles/tasks-desk.css.
@@ -28,6 +31,7 @@
 import { icon } from "../../core/html.js";
 import { isTaskDone } from "../../data/config-tasks.js";
 import { taskEntries, taskGroups } from "../../data/queries.js";
+import { emptyState } from "../../ui/empty-state.js";
 import { isMobileOs } from "../../ui/platform.js";
 import { entryActions, swipeRow } from "../../ui/rows.js";
 import { taskCheck } from "../../ui/task-status.js";
@@ -36,6 +40,14 @@ import { groupPickMark, isPicked, isSelecting, pickMark } from "./tasks-pick.js"
 
 const ghostLabel = "Neue Aufgabe";
 const emptyFilter = "Hier liegt keine offene Aufgabe.";
+/* Wortlaut wie in der Spalte „Aufgaben“ der Kalenderliste (calendarSegments in src/data/config.js) */
+const emptyTasks = {
+  icon: "task",
+  accent: "var(--cal-accent)",
+  title: "Keine Aufgaben",
+  action: { label: "Aufgabe hinzufügen", pick: "aufgabe" },
+  plain: true,
+};
 
 /**
  * Eine Zeile: Haken-Knopf, Titel mit Nebenzeile, Pfeil — dahinter dieselben
@@ -107,10 +119,15 @@ export function taskListMarkup(prefs) {
   /* Ohne eine einzige Aufgabe lädt die Geister-Zeile zum Schreiben ein; hat
      nur der Filter alles ausgesiebt, sagt die Liste das in einem Satz (Android: wieder die Zeile). */
   const ghost = isSelecting() ? "" : ghostRow();
-  const filtered = taskEntries().length && !isMobileOs("android");
-  const tail = empty ? (filtered ? `<p class="task-empty-note">${emptyFilter}</p>` : ghost) : "";
+  const android = isMobileOs("android");
+  const none = !taskEntries().length;
+  const filtered = !none && !android;
+  /* Android ohne eine Aufgabe: der Platzhalter statt der Geister-Zeile. Der leere
+     Abschnitt bleibt stehen, damit ✓+ und ein Tipp in die Fläche dort eine Zeile öffnen. */
+  const placeholder = android && none && !isSelecting() ? emptyState(emptyTasks) : "";
+  const tail = !empty || placeholder ? "" : filtered ? `<p class="task-empty-note">${emptyFilter}</p>` : ghost;
   return `<div class="task-sections">${columns
     .filter((column, index) => index === 0 || column.items.length)
     .map((column, index) => sectionMarkup(column, field, index === 0 ? tail : ""))
-    .join("")}</div>`;
+    .join("")}</div>${placeholder}`;
 }

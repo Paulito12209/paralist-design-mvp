@@ -85,13 +85,13 @@
      Reiter und „Archiv“. Der Abstand liegt am Wisch-Körper (er wandert beim Wischen
      mit); rechts bleibt der Seitenrand für die drei Punkte. Die Zeilen ohne Hülle
      („… hinzufügen“, die Geister- und Eingabezeile der Aufgaben, die neue
-     Projektzeile beim Anlegen) rücken ebenso ein — sonst stünden sie 4px weiter links. */
+     Projektzeile und die Eingabezeile jeder anderen Liste, src/ui/inline-add.js) rücken ebenso ein — sonst stünden sie 4px weiter links. */
   [data-mobile-os="android"] .swipe-body {
     padding-left: var(--m3-tab-edge);
   }
 
   [data-mobile-os="android"] .workspace-add,
-  [data-mobile-os="android"] :is(.task-ghost, .task-inline, .project-inline, .workspace-edit) {
+  [data-mobile-os="android"] :is(.task-ghost, .task-inline, .project-inline, .inline-add-row, .workspace-edit) {
     padding-left: calc(var(--m3-tab-edge) - var(--content-side));
   }
 

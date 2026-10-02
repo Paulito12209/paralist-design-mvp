@@ -6,11 +6,15 @@
  * Symbol „Ansicht“ (Regler), das nur die Android-Fassungen zeigen
  * (styles/android-calendar-tabs.css); ein Tipp darauf öffnet das Blatt
  * „Ansicht“ (src/ui/view-panel.js, data-view-panel-open).
+ * Android: ein Tipp unter die letzte Zeile legt an, was die Spalte zeigt, an
+ * dem Tag, den man ansieht (src/ui/inline-add.js) — ein Termin um die
+ * aktuelle Uhrzeit (heute) bzw. um `inlineTime` (jeder andere Tag).
  * Pfad: src/features/calendar/calendar-list.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * viewLabel -> Vorlesetext und Hinweis des Symbols „Ansicht“
+ * viewLabel  -> Vorlesetext und Hinweis des Symbols „Ansicht“
+ * inlineTime -> Uhrzeit eines per Tipp angelegten Termins an einem anderen Tag als heute
  *
  * Aussehen: styles/calendar-panel.css
  * (Klassen .cal-empty, .cal-time, .cal-seg-btn) und styles/overview.css
@@ -18,17 +22,24 @@
  * Pille am leeren Tag steht bei `calendarSegments` in src/data/config.js.
  */
 
+import { dayKey, timeKey } from "../../core/dates.js";
+import { dom } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
 import { calendarSegments } from "../../data/config.js";
+import { createEntryInline } from "../../data/mutations-inline.js";
 import { entriesOfDay, entryTime } from "../../data/queries.js";
 import { state, ui } from "../../data/state.js";
+import { addInlineList, openEntryRow, reopenIn } from "../../ui/inline-add.js";
 import { entryRow } from "../../ui/rows.js";
+import { isViewActive } from "../../ui/views.js";
 import { cal } from "./calendar-state.js";
 
 /** Ordnet der Spalte den Eintragstyp zu, den sie zeigt. */
 const segTypes = { aufgaben: "aufgabe", termine: "termin", projekte: "projekt" };
 
 const viewLabel = "Ansicht";
+/* Dieselbe Uhrzeit wie beim Eingabefeld (applyCalendarDate in src/features/composer/composer.js) */
+const inlineTime = "09:00";
 
 /* Dasselbe Regler-Symbol wie in der Werkzeugzeile über den Listen (src/ui/list-head.js) */
 const viewButton = `<button class="view-panel-btn cal-seg-view" type="button" data-view-panel-open aria-label="${viewLabel}" title="${viewLabel}">${icon("tune")}</button>`;
@@ -86,3 +97,24 @@ export function renderList() {
      bzw. Reiterzeile neben das Symbol stellen kann; sonst ohne eigene Box */
   return `<div class="cal-seg"><div class="cal-seg-tabs">${tabs}</div>${viewButton}</div>${body}`;
 }
+
+/* Tipp unter die letzte Zeile (Android): ein Eintrag der gewählten Spalte am gezeigten Tag */
+const inlineList = {
+  area() {
+    if (!isViewActive("calendar") || state.prefs.calendar.mode !== "list") return null;
+    return dom.calPanel.querySelector(":scope > .workspace-list");
+  },
+  open(area) {
+    const seg = calendarSegments.find((item) => item.id === state.prefs.calendar.seg) || calendarSegments[0];
+    const type = seg.pick;
+    const date = ui.calendarDay;
+    const fields = { date };
+    if (type === "termin") fields.time = date === dayKey(new Date()) ? timeKey(Date.now()) : inlineTime;
+    openEntryRow(area, {
+      type,
+      onCommit: (title) => createEntryInline({ title, type, fields }),
+      reopen: () => reopenIn(inlineList),
+    });
+  },
+};
+addInlineList(inlineList);
