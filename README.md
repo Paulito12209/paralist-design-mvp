@@ -190,7 +190,7 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 - Pille oder Zeile lange drücken (oder Rechtsklick): Menü auf, Seite darunter
   bleibt zu. Android: Halten verschiebt die Zeile, Menü nur über die drei Punkte.
 - Zeile nach links wischen (Archivieren, Löschen) und nach rechts (Favorit,
-  Verknüpfen). Eine aufgewischte Zeile schiebt sich beim Antippen erst zu.
+  Verknüpfen). Eine aufgewischte Zeile schließt beim Antippen, sonst nach 8 s.
 - Arbeitsbereich umwandeln — über das Menü der Zeile, das Seitenmenü oder die
   Pille „Arbeitsbereich“ oben auf seiner Seite: „Typ ändern“ → Projekt. Das
   Blatt sagt vorher, dass sein Inhalt ins Projekt zieht und das Projekt im
