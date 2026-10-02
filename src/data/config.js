@@ -12,6 +12,7 @@
  * xpKinds[*].amount       -> wie viele XP ein Ereignis bringt
  * composerPlaceholders    -> Platzhaltertext im Eingabefeld je gewähltem Typ
  * mediaPlaceholders       -> Platzhalter eines Mediums, sobald eine Datei angehängt ist
+ * sheetPlaceholders       -> kürzerer Platzhalter im Blatt „Neu“ der Android-Fassung („Neue Aufgabe“)
  * fileDraftTypes          -> welcher Typ von selbst entsteht, wenn eine Datei dranhängt
  * proposedType            -> Typ, den das Eingabefeld ohne nähere Angabe vorschlägt
  * typeSingulars           -> Einzahl der Typen, deren Name in der Mehrzahl steht
@@ -83,6 +84,21 @@ export const composerPlaceholders = {
   /* Ein Medium besteht aus seiner Datei — ohne sie lässt es sich nicht anlegen. */
   medien: "Über + eine Datei anhängen …",
   lesezeichen: "Link oder Name des Lesezeichens …",
+};
+
+/* Im Blatt „Neu“ der Android-Fassung steht nur, was entsteht — wie „New task“
+   in Google Tasks. Fehlt ein Typ hier, gilt sein Text aus composerPlaceholders.
+   Der Hinweis mediaPlaceholders.auto tippt sich dort nur ab und zu hinein
+   (src/features/composer/composer-hint.js). */
+export const sheetPlaceholders = {
+  aufgabe: "Neue Aufgabe",
+  notiz: "Neue Notiz",
+  termin: "Neuer Termin",
+  projekt: "Neues Projekt",
+  dokument: "Neues Dokument",
+  zeichnung: "Neue Zeichnung",
+  lesezeichen: "Neues Lesezeichen",
+  medien: "Neues Medium",
 };
 
 /*

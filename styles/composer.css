@@ -283,6 +283,12 @@
   height: 20px;
 }
 
+/* Das Wort „Speichern“ zeigt nur das Blatt der Android-Fassung
+   (styles/android-composer.css); sonst trägt der runde Knopf nur den Pfeil */
+.composer-send-label {
+  display: none;
+}
+
 /* Ohne Text und ohne Anhang gibt es nichts anzulegen: dann ist der Knopf grau statt blau */
 .composer-send:disabled {
   background: var(--composer-fill);

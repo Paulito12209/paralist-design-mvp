@@ -1,7 +1,8 @@
 /*
  * Das Eingabefeld unten: öffnet sich über der Navigation, nimmt Titel, Typ,
  * Ablageort und Anhänge und legt daraus einen Eintrag an. Die Typ-Wahl steht
- * in composer-types.js, die Anhänge in attachments.js.
+ * in composer-types.js, die Anhänge in attachments.js, der Schleier des
+ * Blatts der Android-Fassung in composer-sheet.js.
  * Pfad: src/features/composer/composer.js
  *
  * Keine anpassbaren visuellen Werte: Schriftgrößen, Pillen und Knöpfe stehen in
@@ -14,6 +15,7 @@ import { dom, el } from "../../core/dom.js";
 import { dayKey, timeKey } from "../../core/dates.js";
 import { overviewPages, typeIcon, typePlurals, typeSingular, xpKinds } from "../../data/config.js";
 import { connectEntries } from "../../data/links.js";
+import { addWorkspace } from "../../data/mutations.js";
 import { applyEntryDefaults } from "../../data/mutations-tasks.js";
 import { findEntry, mainPlace, parentName } from "../../data/queries.js";
 import { entryRef } from "../../data/refs.js";
@@ -21,7 +23,7 @@ import { state, ui } from "../../data/state.js";
 import { awardXp, commitXp } from "../../data/xp.js";
 import { closeCtxMenu } from "../../ui/ctx-menu.js";
 import { openPlacePicker } from "../../ui/pickers.js";
-import { openEntry, openEntryOrFile } from "../../ui/router.js";
+import { openEntry, openEntryOrFile, openWorkspacesPage } from "../../ui/router.js";
 import { hideToast, showToast } from "../../ui/toast.js";
 import { isViewActive } from "../../ui/views.js";
 import { fillVideoTitle } from "../../ui/bookmark-title.js";
@@ -40,6 +42,8 @@ import {
   rememberComposerPreset,
   resetComposerDraft,
 } from "./composer-state.js";
+import { stopPlaceholderHint } from "./composer-hint.js";
+import { hideComposerScrim, initComposerSheet, openOverComposer, showComposerScrim } from "./composer-sheet.js";
 import { initComposerTypes, renderComposerTypes } from "./composer-types.js";
 import { stopDictation } from "./dictation.js";
 
@@ -125,6 +129,7 @@ export function openComposer(overrides = {}) {
   dom.composer.hidden = false;
   dom.mediaActions.hidden = true;
   dom.drawTools.hidden = true;
+  showComposerScrim();
   renderComposerTypes();
   renderComposerLink();
   renderComposerAttachments(updateComposerSend);
@@ -140,6 +145,8 @@ export function closeComposer() {
   dom.tabBar.hidden = false;
   dom.mediaActions.hidden = false;
   dom.drawTools.hidden = false;
+  hideComposerScrim();
+  stopPlaceholderHint();
   dom.composerInput.value = "";
   resetComposerDraft();
   /* Die Spalte, um die der Knopf am Board-Ende gebeten hat, gilt nur für den
@@ -299,11 +306,20 @@ export function initComposer() {
   });
 
   el("composer-close").addEventListener("click", closeComposer);
+  initComposerSheet(closeComposer);
   dom.composerSend.addEventListener("click", createEntry);
-  initComposerTypes(() => {
-    renderTypeDependents();
-    dom.composerInput.focus();
-  });
+  initComposerTypes(
+    () => {
+      renderTypeDependents();
+      dom.composerInput.focus();
+    },
+    /* Ein Arbeitsbereich entsteht auf seiner Seite mit Namensfeld, nicht im Eingabefeld */
+    () => {
+      closeComposer();
+      openWorkspacesPage();
+      addWorkspace();
+    }
+  );
   initComposerAttachments(onFilesChanged);
 
   dom.composerLink.addEventListener("click", () => {
@@ -315,16 +331,18 @@ export function initComposer() {
     };
     /* Der Typ des Entwurfs kommt mit: ein Projekt bekommt nur Arbeitsbereiche
        angeboten, nie ein anderes Projekt. */
-    openPlacePicker(
-      "Ablegen in",
-      composer.place,
-      (place) => {
-        composer.place = place;
-        composer.link = null;
-        refresh();
-      },
-      composer.type,
-      originOption(refresh)
+    openOverComposer(() =>
+      openPlacePicker(
+        "Ablegen in",
+        composer.place,
+        (place) => {
+          composer.place = place;
+          composer.link = null;
+          refresh();
+        },
+        composer.type,
+        originOption(refresh)
+      )
     );
   });
 
