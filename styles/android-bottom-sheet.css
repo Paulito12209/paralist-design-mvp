@@ -1,7 +1,8 @@
 /*
  * Android-Fassung, alle Blätter von unten nach Material 3 („Modal bottom
- * sheet“), wie in Google Tasks: über die ganze Breite, oben 28px gerundet,
- * Fläche surface-container, ohne Schatten und ohne sichtbaren Griff —
+ * sheet“), wie in Google Tasks: über die ganze Breite, oben 16px gerundet,
+ * Fläche surface-container, ohne Schatten (auch nicht den hellen Schein des
+ * Dunkelmodus) und ohne sichtbaren Griff —
  * Material 3 lässt ihn bei modalen Blättern weg; Ziehen nach unten
  * (src/ui/modal-pull.js), Schleier und Zurück schließen trotzdem.
  * Zwei Arten von Blättern:
@@ -25,7 +26,7 @@
  * --m3-surface-container   -> Fläche der Blätter
  * --m3-surface-container-high -> Kacheln (Icon wählen) und die zwei Knöpfe nebeneinander
  * --m3-secondary-container -> gewählte Kachel und das Band hinter der gewählten Zeile einer Rolle
- * --m3-scrim               -> Schleier dahinter
+ * --m3-sheet-scrim-alpha   -> Deckkraft des schwarzen Schleiers dahinter (Material 3: 32 %)
  * --m3-on-surface / --m3-on-surface-variant -> Schrift bzw. Icons, Überschriften und Werte
  * --m3-primary / --m3-on-primary -> Haken der gewählten Zeile, Knopf „Fertig“
  * --m3-outline-variant     -> Trennlinien im Blatt
@@ -41,10 +42,11 @@
 @media (max-width: 1023px) {
   /* ---------- Schleier und Form, für beide Arten ---------- */
 
+  /* --modal-dim: wird beim Nach-unten-Ziehen kleiner (src/ui/modal-pull.js), der Schleier blendet mit aus */
   [data-mobile-os="android"] .sheet-backdrop.is-m3,
   [data-mobile-os="android"] .date-backdrop {
     padding: 0;
-    background: var(--m3-scrim);
+    background: rgba(0, 0, 0, calc(var(--m3-sheet-scrim-alpha) * var(--modal-dim, 1)));
   }
 
   [data-mobile-os="android"] .sheet-backdrop.is-m3 .sheet,
@@ -57,6 +59,17 @@
     box-shadow: none;
     color: var(--m3-on-surface);
     animation: m3-sheet-up 250ms cubic-bezier(0.2, 0.8, 0.2, 1); /* animation: fährt ganz von unten herein */
+  }
+
+  /* Kein Schatten, in keinem Modus: Material 3 hebt ein modales Blatt nur durch
+     den Schleier ab. overlays.css legt im Dunkelmodus einen hellen Schein um
+     Blätter (iOS-Look) — mit dem Vorsatz html gewinnt diese Regel dagegen,
+     egal in welcher Reihenfolge die Dateien laden. Das Blatt „Details“
+     (android-entry.css) gehört dazu. */
+  html[data-mobile-os="android"] .sheet-backdrop.is-m3 .sheet,
+  html[data-mobile-os="android"] .details-sheet .sheet,
+  html[data-mobile-os="android"] .modal.date-modal {
+    box-shadow: none;
   }
 
   /* ---------- Das Auswahl-Blatt ---------- */

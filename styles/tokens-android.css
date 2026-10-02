@@ -52,7 +52,10 @@
  * --m3-tabs-gap                -> Luft zwischen einer Reiterzeile und der Liste darunter
  * --m3-hide-time               -> wie schnell Kopfzeile und Leiste beim Scrollen weg- und wiederkommen
  * --m3-content-end             -> Platz am Seitenende, damit nichts hinter Plus-Knopf und Leiste liegt
- * --m3-sheet-radius            -> Rundung oben an der Karte „Ansicht“ als Blatt (Material 3: 28dp)
+ * --m3-sheet-radius            -> Rundung oben an allen Blättern von unten (Material 3 „Large“: 16dp;
+ *                                 28dp wäre „Extra large“ und wirkt zu rund)
+ * --m3-sheet-scrim-alpha       -> Deckkraft des schwarzen Schleiers hinter einem Blatt von unten
+ *                                 (Material 3: 0.32 — 0 = kein Schleier, 1 = ganz schwarz)
  * --m3-sheet-max               -> wie hoch dieses Blatt höchstens wird (Anteil des Geräts)
  * --m3-sheet-width            -> wie breit das Blatt auf einem Tablet höchstens wird (Material 3: 640dp)
  * --m3-sheet-handle-zone      -> Höhe des Streifens mit dem Griff über dem Inhalt (Material 3: 48dp)
@@ -137,7 +140,8 @@
   --m3-tabs-gap: 12px;
   --m3-hide-time: 220ms;
   --m3-content-end: calc(var(--m3-nav-height-labels) + var(--m3-fab-size) + 3 * var(--m3-fab-gap));
-  --m3-sheet-radius: 28px;
+  --m3-sheet-radius: 16px;
+  --m3-sheet-scrim-alpha: 0.32;
   --m3-sheet-max: 80%;
   --m3-sheet-width: 640px;
   --m3-sheet-handle-zone: 48px;
