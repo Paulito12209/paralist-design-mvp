@@ -62,6 +62,9 @@ import { onVersionsClick } from "./versions.js";
    und welcher Punkt des Untermenüs (nur am Desktop sichtbar). */
 let shownDetail = null;
 let shownPane = null;
+/* Wie weit die Liste gescrollt war, als eine Unterseite aufging — beim Zurück
+   landet man wieder an derselben Stelle statt ganz oben. */
+let listScroll = 0;
 
 /** Das Blatt zeichnen: entweder die Liste oder die aufgeklappte Kachel. */
 export function renderProfile() {
@@ -109,6 +112,7 @@ function dropDraft() {
 function openDetail(key) {
   if (!isDetail(key)) return;
   enterDetail(key);
+  listScroll = dom.profileBody.scrollTop;
   ui.settingsDetail = key;
   renderProfile();
   dom.profileBody.scrollTop = 0;
@@ -132,6 +136,7 @@ function closeDetail() {
   }
   ui.settingsDetail = null;
   renderProfile();
+  dom.profileBody.scrollTop = listScroll;
 }
 
 /** Das Blatt und die große Bildansicht ohne Umweg über den Verlauf schließen. */
@@ -140,6 +145,7 @@ export function hide() {
   dom.avatarView.hidden = true;
   hideCropper();
   ui.settingsDetail = null;
+  listScroll = 0;
   dropDraft();
   clearModalPull(dom.profileModal);
   clearModalPull(dom.avatarView);
@@ -165,8 +171,10 @@ export function open(push = true, entry = null) {
   /* Neu gezeichnet wird nur, wenn das Blatt zu war oder eine andere Ebene dran
      ist — sonst bliebe die Liste stehen, wo die Kachel hingehört. */
   if (dom.profileModal.hidden || ui.settingsDetail !== shownDetail || ui.settingsPane !== shownPane) {
+    /* Zurück von einer Unterseite auf dieselbe Liste: Scrollstand von vorher. */
+    const backToList = !dom.profileModal.hidden && !ui.settingsDetail && shownDetail && ui.settingsPane === shownPane;
     renderProfile();
-    dom.profileBody.scrollTop = 0;
+    dom.profileBody.scrollTop = backToList ? listScroll : 0;
   }
   clearModalPull(dom.profileModal);
   dom.profileModal.hidden = false;
