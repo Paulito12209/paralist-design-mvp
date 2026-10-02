@@ -1,0 +1,44 @@
+/*
+ * Android-Fassung, Kalender: Stundenraster und Liste enden ganz gescrollt
+ * genau einen Abstand über dem Plus-Knopf — nicht mehr, nicht weniger.
+ * Vorher kamen am Ende drei Reserven übereinander (Seitenende der Android-Fassung,
+ * Platz unter der Navigation und Platz für die Karte „Details“, die es im
+ * Kalender hier gar nicht gibt); das ergab eine breite leere Fläche unter 23:00.
+ * Am Seitenende kommt die Navigationsleiste zurück (src/shell/android-bars.js),
+ * der Plus-Knopf steht dann auf seiner normalen Höhe; der letzte Eintrag endet
+ * einen Knopf-Abstand darüber. Dieselbe Rechnung gilt für die Eintragsseite
+ * (styles/android.css).
+ * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
+ * Pfad: styles/android-calendar.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-fab-gap   -> Abstand zwischen letztem Eintrag und Plus-Knopf (Material 3: 16px)
+ * --m3-fab-size  -> Höhe des Plus-Knopfs; der Eintrag endet entsprechend höher
+ * --m3-content-end -> Seitenende der Android-Fassung; wird hier nur ausgeglichen
+ *
+ * Direkt bei ihrer Regel: die Stunden unten ohne eigenen Innenabstand (0).
+ */
+
+@media (max-width: 1023px) {
+  /* Wie weit der letzte Eintrag vom unteren Rand wegbleibt: Leiste, Knopf und
+     zwei Abstände (einer unter, einer über dem Knopf) */
+  [data-mobile-os="android"] .device {
+    --m3-cal-end: calc(var(--m3-nav-shift) + var(--safe-bottom) + var(--m3-fab-size) + 2 * var(--m3-fab-gap));
+  }
+
+  /* margin-bottom: die Fläche reicht bis zum unteren Rand des Scrollbereichs
+     (gleicht das Seitenende der Android-Fassung aus); padding-bottom ist dann
+     der einzige Platz unter dem letzten Eintrag. */
+  [data-mobile-os="android"] body.is-calendar .cal-panel {
+    margin-bottom: calc(-1 * var(--m3-content-end));
+    padding-bottom: var(--m3-cal-end);
+  }
+
+  /* Die 8px Innenabstand unter 23:00 (styles/calendar-panel.css) entfallen:
+     der Abstand zum Plus-Knopf soll vom letzten Stundenfeld aus gemessen
+     genau --m3-fab-gap sein. */
+  [data-mobile-os="android"] .cal-hours {
+    padding-bottom: 0;
+  }
+}
