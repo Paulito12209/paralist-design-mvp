@@ -58,7 +58,6 @@
  *                                 (Material 3: 0.32 — 0 = kein Schleier, 1 = ganz schwarz)
  * --m3-sheet-max               -> wie hoch dieses Blatt höchstens wird (Anteil des Geräts)
  * --m3-sheet-width            -> wie breit das Blatt auf einem Tablet höchstens wird (Material 3: 640dp)
- * --m3-sheet-handle-zone      -> Höhe des Streifens mit dem Griff über dem Inhalt (Material 3: 48dp)
  * --m3-sheet-row-h            -> Höhe einer Zeile im Blatt (Material 3 Liste, eine Zeile: 56dp)
  * --m3-seg-thumb-shadow       -> Schatten unter dem gewählten Segment (nur Android (Experiment))
  * --m3-seg-height             -> Höhe eines Segments der Reiter-Kapsel (iOS: 30)
@@ -144,7 +143,6 @@
   --m3-sheet-scrim-alpha: 0.32;
   --m3-sheet-max: 80%;
   --m3-sheet-width: 640px;
-  --m3-sheet-handle-zone: 48px;
   --m3-sheet-row-h: 56px;
   --m3-menu-radius: 4px;
   --m3-menu-pad: 8px;
