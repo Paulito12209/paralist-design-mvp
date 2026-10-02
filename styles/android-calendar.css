@@ -8,6 +8,11 @@
  * der Plus-Knopf steht dann auf seiner normalen Höhe; der letzte Eintrag endet
  * einen Knopf-Abstand darüber. Dieselbe Rechnung gilt für die Eintragsseite
  * (styles/android.css).
+ *
+ * Oben: der Kopf (Datumszeile und Wochenstreifen) rastet genau in dem Moment
+ * unter der Suchleiste ein, in dem der Titel „Kalender“ ganz unter ihr
+ * verschwunden ist — kein Rest des Titels, und in Ruhe bleibt der gewohnte
+ * kurze Abstand zwischen Titel und Datum.
  * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
  * Pfad: styles/android-calendar.css
  *
@@ -16,6 +21,8 @@
  * --m3-fab-gap   -> Abstand zwischen letztem Eintrag und Plus-Knopf (Material 3: 16px)
  * --m3-fab-size  -> Höhe des Plus-Knopfs; der Eintrag endet entsprechend höher
  * --m3-content-end -> Seitenende der Android-Fassung; wird hier nur ausgeglichen
+ * --m3-cal-title-gap -> Luft zwischen „Kalender“ und Datumszeile; genau so viel Luft
+ *                     hat die Datumszeile auch, wenn der Kopf oben eingerastet ist
  *
  * Direkt bei ihrer Regel: die Stunden unten ohne eigenen Innenabstand (0).
  */
@@ -33,6 +40,22 @@
   [data-mobile-os="android"] body.is-calendar .cal-panel {
     margin-bottom: calc(-1 * var(--m3-content-end));
     padding-bottom: var(--m3-cal-end);
+  }
+
+  /* Der Abstand zwischen Titel und Datumszeile steckt ganz im Kopf (padding-top)
+     statt unter dem Titel. Der Kopf rastet mit seiner Oberkante an der
+     Suchleiste ein (top in styles/android-tabs.css); in dem Moment liegt die
+     Unterkante des Titels genau dort, der Titel ist also ganz weg. Die
+     allgemeine Verlängerung um --content-top (styles/calendar.css) entfällt:
+     sie ragte in Ruhe in den Titel hinein, darum musste dort der Abstand auf
+     --content-top wachsen. */
+  [data-mobile-os="android"] #view-calendar .screen-title {
+    margin-bottom: 0;
+  }
+
+  [data-mobile-os="android"] .cal-head {
+    margin-top: 0;
+    padding-top: var(--m3-cal-title-gap);
   }
 
   /* Die 8px Innenabstand unter 23:00 (styles/calendar-panel.css) entfallen:

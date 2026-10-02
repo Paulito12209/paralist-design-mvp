@@ -55,6 +55,16 @@
     z-index: 22; /* z-index: das Blatt liegt über seinem Schleier */
   }
 
+  /* transform: none — das Blatt steht immer ganz im Bild, auch wenn die Leiste
+     gerade weggeglitten war (Kalender: hochgewischt, dann eine Stunde
+     angetippt). Sonst hinge es um die Leistenhöhe unter dem Rand, und der
+     Browser schöbe beim Fokussieren das ganze Gerät hoch — auch nach dem
+     Schließen fehlte oben dann ein Stück. Die Leisten bleiben dabei weg:
+     Kopf und Raster unter dem Schleier rücken nicht. */
+  [data-mobile-os="android"] .device.is-bars-hidden .bottom-bar:has(.nav-shell.is-composing) {
+    transform: none;
+  }
+
   /* ---------- Das Blatt ---------- */
 
   [data-mobile-os="android"] .nav-shell.is-composing {

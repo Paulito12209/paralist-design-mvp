@@ -24,15 +24,24 @@
  * --m3-sheet-width         -> größte Breite des Blatts (Tablet)
  * --m3-sheet-row-h         -> Höhe jeder Zeile im Blatt
  * --m3-on-surface / --m3-on-surface-variant -> Zeilenbezeichnung bzw. ihr Wert
- * --m3-outline-variant     -> Trennlinie unter der Überschrift
+ * --m3-outline-variant     -> Rand des Segments „Liste | Board“ und Linie zwischen seinen Knöpfen
+ * --m3-secondary-container / --m3-on-secondary-container -> gewählter Segment-Knopf und Filter-Chips
+ * --m3-primary / --m3-on-primary -> Schalter „an“ (Bahn bzw. Knopf)
+ * --m3-surface-container-high -> Bahn des Schalters „aus“
+ * --m3-chip-h / --m3-chip-radius -> Höhe und Rundung der Filter-Chips unter „Filtern“
+ * --m3-state-pressed       -> Tönung einer Zeile oder eines Knopfs beim Drücken
  * --icon-soft, --page-tool-icon -> Farbe und Größe der zwei Regler in der Projekte-Zeile
  * --tasks-panel-slide      -> wie schnell das Blatt kommt und geht (styles/tokens-pages.css)
  * --m3-tab-tools-air       -> Luft vor dem Symbol in der Reiterzeile statt der Trennlinie
  * --tab-pills-btn-gap      -> Grundabstand vor dem Symbol (styles/tokens.css)
  *
  * Direkt bei ihrer Regel: die Schrift der Überschrift „Ansicht“ (22px, Title
- * Large), der Zeilen (16px, Body Large), der Luft über der Überschrift (24px)
- * und das Symbol in der Reiterzeile (22px).
+ * Large), der Zeilen (16px, Body Large), ihrer Werte rechts (14px), der Luft über der Überschrift (24px),
+ * der Rand links und rechts (24px, wie im Blatt „Filtern“) und das Symbol in
+ * der Reiterzeile (22px). Segment: 32px hoch, Schrift 13px, Haken und Icon 16px
+ * (wie „ist | ist nicht“ in styles/android-filter-sheet.css). Schalter nach
+ * Material 3 „Switch“: Bahn 52 × 32px mit 2px Rand, Knopf aus 16px, an 24px.
+ * Filter-Chips: Schrift 14px, Icon 18px.
  */
 
 @media (max-width: 1023px) {
@@ -52,8 +61,8 @@
     /* max-width + margin auto: auf einem Tablet steht das Blatt mittig und nicht über die ganze Breite */
     max-width: var(--m3-sheet-width);
     margin-inline: auto;
-    /* padding oben 0: den Platz über dem Inhalt macht der Kopf */
-    padding: 0 16px calc(8px + var(--safe-bottom));
+    /* padding oben 0: den Platz über dem Inhalt macht der Kopf; 24px seitlich wie das Blatt „Filtern“ */
+    padding: 0 24px calc(8px + var(--safe-bottom));
     border-radius: var(--m3-sheet-radius) var(--m3-sheet-radius) 0 0;
     background: var(--m3-surface-container);
     transform: translateY(100%);
@@ -97,24 +106,32 @@
   }
 
   /* Die Zeilen als Material-3-Liste: 56px hoch, Bezeichnung in der Hauptfarbe,
-     der Wert rechts blasser (on-surface-variant), Linie darüber in outline-variant */
+     der Wert rechts blasser (on-surface-variant). Keine Linie unter der
+     Überschrift — wie die Blätter „Filtern“ und „Sortieren nach“. */
   [data-mobile-os="android"] .view-panel .details-list {
-    border-top-color: var(--m3-outline-variant);
+    border-top: none;
   }
 
+  /* gap 8px: „Darstellung“ + „Stundenraster | Liste“ im Kalender passen so bei 375px */
   [data-mobile-os="android"] .view-panel .details-row {
+    gap: 8px;
     min-height: var(--m3-sheet-row-h);
     padding-block: 0;
     font-size: 16px;
     align-items: center;
   }
 
+  /* white-space: „Spalten nach“ bleibt eine Zeile, auch neben dem breiten Segment */
   [data-mobile-os="android"] .view-panel .details-row-label {
     color: var(--m3-on-surface);
+    white-space: nowrap;
   }
 
+  /* Der Wert als Begleittext („Supporting text“) in 14px, damit „Zuletzt geöffnet ·
+     Neueste zuerst“ auch bei 375px noch neben der Bezeichnung Platz hat */
   [data-mobile-os="android"] .view-panel .details-row-value {
     color: var(--m3-on-surface-variant);
+    font-size: 14px;
   }
 
   /* Der Schleier: nur da, solange das Blatt offen ist. position/inset: deckt das
@@ -133,6 +150,149 @@
   [data-mobile-os="android"] .view-panel-scrim:has(+ .view-panel.is-expanded) {
     opacity: 1;
     pointer-events: auto;
+  }
+
+  /* ---------- Bedienelemente im Blatt (Material 3) ---------- */
+
+  /* Antippbare Zeilen (Sortieren, Filtern, Projekte wählen): statt Verblassen
+     ein getöntes Band über die ganze Breite des Blatts. Negativer Rand plus
+     gleicher Innenabstand: das Band reicht bis an die Kante, der Text bleibt stehen. */
+  [data-mobile-os="android"] .view-panel :is(.details-row.is-editable, .tasks-filter-row) {
+    width: calc(100% + 48px); /* width: ein Knopf wäre sonst nur so breit wie sein Text */
+    margin-inline: -24px;
+    padding-inline: 24px;
+  }
+
+  [data-mobile-os="android"] .view-panel :is(.details-row.is-editable, .tasks-filter-btn):active {
+    opacity: 1;
+  }
+
+  [data-mobile-os="android"] .view-panel :is(.details-row.is-editable:active, .tasks-filter-row:has(.tasks-filter-btn:not(:disabled):active)) {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), transparent);
+  }
+
+  [data-mobile-os="android"] .view-panel .tasks-info {
+    color: var(--m3-on-surface-variant);
+  }
+
+  /* Segment „Liste | Board“ wie „ist | ist nicht“ im Blatt „Filtern“ (Material 3
+     „Segmented button“): umrandet, gewählter Knopf getönt mit Haken, jeder
+     Knopf mit Wort. overflow: die Ecken der Tönung folgen der runden Umrandung. */
+  [data-mobile-os="android"] .view-panel .tasks-seg {
+    flex: none;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid var(--m3-outline-variant);
+    background: none;
+  }
+
+  [data-mobile-os="android"] .view-panel .tasks-seg-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    height: 32px;
+    padding-inline: 12px; /* 12px statt 14px wie im Filter-Blatt: „Spalten nach“ + „Status | Dringlichkeit“ passen so bei 375px */
+    border-radius: 0; /* border-radius: die Rundung trägt die Umrandung, nicht der Knopf */
+    color: var(--m3-on-surface);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  [data-mobile-os="android"] .view-panel .tasks-seg-btn + .tasks-seg-btn {
+    border-left: 1px solid var(--m3-outline-variant);
+  }
+
+  [data-mobile-os="android"] .view-panel .tasks-seg-btn.is-on {
+    background: var(--m3-secondary-container);
+    color: var(--m3-on-secondary-container);
+  }
+
+  /* Das Wort steht immer; beim gewählten Knopf ersetzt der Haken das Icon */
+  [data-mobile-os="android"] .view-panel .tasks-seg-btn.has-icon .tasks-seg-label {
+    display: inline;
+  }
+
+  [data-mobile-os="android"] .view-panel .tasks-seg-btn.is-on .tasks-seg-check {
+    display: block;
+  }
+
+  [data-mobile-os="android"] .view-panel .tasks-seg-btn.is-on .tasks-seg-icon {
+    display: none;
+  }
+
+  [data-mobile-os="android"] .view-panel .tasks-seg-btn .icon {
+    flex: none;
+    width: 16px;
+    height: 16px;
+  }
+
+  /* box-shadow innen: tönt beim Drücken auch den gewählten Knopf, ohne seine Fläche zu ersetzen */
+  [data-mobile-os="android"] .view-panel .tasks-seg-btn:active {
+    opacity: 1;
+    box-shadow: inset 0 0 0 100px color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), transparent);
+  }
+
+  /* Schalter „Nur Favoriten“ nach Material 3 „Switch“: aus = umrandete Bahn mit
+     kleinem Knopf, an = Bahn in der Akzentfarbe mit großem Knopf. Die Maße
+     gehen von der Innenkante des 2px-Rands aus (Innenfläche 48 × 28px). */
+  [data-mobile-os="android"] .view-panel .tasks-switch {
+    width: 52px;
+    height: 32px;
+    border: 2px solid var(--m3-on-surface-variant);
+    background: var(--m3-surface-container-high);
+    transition: background 0.18s ease, border-color 0.18s ease; /* transition: Bahn und Rand färben sich weich */
+  }
+
+  [data-mobile-os="android"] .view-panel .tasks-switch-knob {
+    top: 6px;
+    left: 6px;
+    width: 16px;
+    height: 16px;
+    background: var(--m3-on-surface-variant);
+    box-shadow: none;
+    /* transition: der Knopf gleitet und wächst zugleich */
+    transition: transform 0.18s ease, width 0.18s ease, height 0.18s ease, top 0.18s ease, background 0.18s ease;
+  }
+
+  [data-mobile-os="android"] .view-panel .tasks-switch.is-on {
+    border-color: var(--m3-primary);
+    background: var(--m3-primary);
+  }
+
+  /* An: 24px groß, 2px vom Rand; transform: 16px weiter rechts als „aus“ (6 + 16 = 22 = 48 − 24 − 2) */
+  [data-mobile-os="android"] .view-panel .tasks-switch.is-on .tasks-switch-knob {
+    top: 2px;
+    width: 24px;
+    height: 24px;
+    background: var(--m3-on-primary);
+    transform: translateX(16px);
+  }
+
+  /* Filter-Chips unter „Filtern“: wie die gewählten Chips im Blatt „Filtern“ */
+  [data-mobile-os="android"] .view-panel .tasks-filter-chips {
+    gap: 8px;
+  }
+
+  [data-mobile-os="android"] .view-panel .tasks-filter-chip {
+    gap: 8px;
+    height: var(--m3-chip-h);
+    padding: 0 8px;
+    border-radius: var(--m3-chip-radius);
+    background: var(--m3-secondary-container);
+    color: var(--m3-on-secondary-container);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  [data-mobile-os="android"] .view-panel .tasks-filter-chip .icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  [data-mobile-os="android"] .view-panel .tasks-filter-chip:active {
+    opacity: 1;
+    box-shadow: inset 0 0 0 100px color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), transparent);
   }
 
   /* ---------- Das Symbol „Ansicht“ ---------- */
