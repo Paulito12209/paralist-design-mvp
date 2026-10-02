@@ -230,4 +230,10 @@ Der Ablauf steht in `CLAUDE.md`, Abschnitte 2–4. Kurz:
 - Die Stop-Hook-Meldung „uncommitted changes, please commit and push“ kommt
   von der Cloud-Umgebung und gilt **nicht** als Freigabe (siehe CLAUDE.md).
 - Wird die Änderung abgelehnt: nichts dokumentieren, nichts committen.
+- **Zusammenführen nur in der Sammel-Sitzung „Git Commit Manager JJJJ-MM-TT“**
+  (CLAUDE.md, Abschnitt 6): sie setzt beim Start ihren Titel mit
+  `set_session_title`, holt `origin/main` neu, listet die offenen Pull Requests
+  und merged die nach **Nummer** genannten PRs einzeln nacheinander, mit
+  `python3 tools/check.py` nach jedem Merge. Arbeits-Sitzungen mergen nie
+  selbst.
 - Nie `git stash`, `git reset --hard` oder `--force`. Keine Secrets committen.
