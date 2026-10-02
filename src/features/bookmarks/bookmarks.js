@@ -7,7 +7,9 @@
  * (src/features/overview/page-hero.js). Waagerecht wischen wechselt die
  * Pille. Ein Tipp auf das Vorschaubild eines Videos spielt es an der Stelle
  * der Zeile ab (src/ui/video-player.js); die Zeile selbst öffnet den Eintrag.
- * Wird erst beim ersten Öffnen nachgeladen.
+ * Wird erst beim ersten Öffnen nachgeladen. Android: ein Tipp unter die
+ * letzte Zeile legt ein Lesezeichen an — ist der Titel ein Link, wird er
+ * gleich zur Karte (src/ui/inline-add.js, fillBookmarkEntry).
  * Pfad: src/features/bookmarks/bookmarks.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -28,10 +30,12 @@ import { sortCollectionItems } from "../../data/collection-sorts.js";
 import { BOOKMARK_TYPE, bookmarkItems, bookmarkPills, validBookmarkPill } from "../../data/bookmarks.js";
 import { typeIcon, typeSingular } from "../../data/config.js";
 import { hostOf, youtubeId, youtubeThumb } from "../../data/link-kinds.js";
+import { createEntryInline } from "../../data/mutations-inline.js";
 import { placesLabel } from "../../data/queries.js";
 import { ui } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { filterEmptyState } from "../../ui/filter-empty.js";
+import { addInlineList, openEntryRow, reopenIn } from "../../ui/inline-add.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { setPagePill } from "../../ui/router.js";
 import { tabGlyph } from "../../ui/tab-glyph.js";
@@ -160,3 +164,16 @@ initPillSwipe(el("view-page"), {
   select: selectBookmarkPill,
   enabled: isBookmarksOpen,
 });
+
+/* Tipp unter die letzte Zeile (Android): ein neues Lesezeichen */
+const inlineList = {
+  area: () => (isBookmarksOpen() ? dom.pageBody.querySelector(":scope > .bookmark-list") : null),
+  open(area) {
+    openEntryRow(area, {
+      type: BOOKMARK_TYPE,
+      onCommit: (title) => createEntryInline({ title, type: BOOKMARK_TYPE }),
+      reopen: () => reopenIn(inlineList),
+    });
+  },
+};
+addInlineList(inlineList);

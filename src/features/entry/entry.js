@@ -59,6 +59,7 @@ import { entryMenuOptions } from "../../ui/entry-menu.js";
 import { initEntryCover, renderEntryCover } from "./entry-cover.js";
 import { initEntryDetails, renderEntryDetails } from "./entry-details.js";
 import { initEntryHead, renderEntryHead } from "./entry-head.js";
+import { initEntryInline } from "./entry-inline.js";
 import { entrySteps, mountPath, renderPath } from "../../ui/page-path.js";
 import { expandEntryFold, initEntryFold, layoutEntryFold, resetEntryFold } from "./entry-fold.js";
 import { dropLift } from "./entry-lift.js";
@@ -207,6 +208,7 @@ export function initEntry() {
   initEntryFold();
   initEntryDetails();
   initEntryHead();
+  initEntryInline();
   path = mountPath(el("entry-head"));
   initEntryTitle();
   bodyEditor = createBlockEditor(dom.entryBody, {

@@ -279,3 +279,9 @@
 .task-section.is-adding .task-ghost {
   display: none;
 }
+
+/* Ebenso der Platzhalter der leeren Liste (Android, src/features/tasks/tasks-list.js).
+   :has: der Platzhalter steht neben den Abschnitten, nicht darin */
+.task-sections:has(.is-adding) + .empty-state {
+  display: none;
+}
