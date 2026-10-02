@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "0b9d33ada3a4";
+export const appVersion = "366eea476e80";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -133,7 +133,8 @@ export const appFiles = [
   "styles/android-composer.css", "styles/android-entry.css", "styles/android-fab.css",
   "styles/android-filter-sheet.css", "styles/android-list.css", "styles/android-overview-gaps.css",
   "styles/android-pages-content.css", "styles/android-pages.css", "styles/android-quiet-tools.css",
-  "styles/android-reorder.css", "styles/android-segmented.css", "styles/android-settings-tiles.css",
+  "styles/android-reorder.css", "styles/android-segmented.css",
+  "styles/android-settings-groups.css", "styles/android-settings-tiles.css",
   "styles/android-sheet.css", "styles/android-tab-snap.css", "styles/android-tabs.css",
   "styles/android-view-btn.css", "styles/android.css", "styles/avatar-crop.css", "styles/base.css",
   "styles/block-bar.css", "styles/blocks.css", "styles/bookmarks.css", "styles/calendar-panel.css",
