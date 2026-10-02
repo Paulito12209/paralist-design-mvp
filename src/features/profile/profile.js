@@ -1,10 +1,11 @@
 /*
  * Das Einstellungs-Blatt hinter dem runden Knopf oben rechts: Profilkopf, die
- * beiden Kacheln unter „Analyse“, die Darstellung und die Konto-Listen. Tippt
+ * beiden Kacheln unter „Analyse“ (nicht in den Android-Fassungen), die Darstellung und die Konto-Listen. Tippt
  * man eine Kachel an, tritt an die Stelle der Liste die volle Karte mit
  * Diagramm. Der Bereich heißt weiter „profile“, weil das Blatt am Profilkopf
  * hängt. Unter „App“ führen vier Zeilen zu Navigation, Suche, Design und Tabs
- * (app-settings.js), unter „Konto“ eine zu den Kontoeinstellungen, unter
+ * (app-settings.js), unter „Konto“ die Konto-Seiten (account.js) — ohne Konto
+ * stattdessen „Profil“ und „Daten“ (account-phase.js) —, unter
  * „Support“ zwei auf das Feedback-Formular und die Danksagungen; „Roadmap“
  * ist dagegen ein Link nach draußen und braucht hier nichts (Adresse in
  * profile-cards.js). Unter „Mehr“ führt „Versionen“ zur Wahl der Fassung je
@@ -20,6 +21,7 @@
 
 import { emit, events } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
+import { chosenLook } from "../../data/platform-versions.js";
 import { ui } from "../../data/state.js";
 import { flushUsage, trackUsage } from "../../data/usage.js";
 import { bindModalPull, clearModalPull } from "../../ui/modal-pull.js";
@@ -39,6 +41,7 @@ import {
   renderProfileButton,
   setDraft,
 } from "./avatar.js";
+import { onAccountClick } from "./account.js";
 import { onAppSettingsClick } from "./app-settings.js";
 import { noteFeedbackInput, onFeedbackClick } from "./feedback.js";
 import { initProfilePage, renderPageChrome, selectPane } from "./profile-page.js";
@@ -66,10 +69,10 @@ let shownPane = null;
 export function renderProfile() {
   shownDetail = ui.settingsDetail;
   shownPane = ui.settingsPane;
-  /* Am Handy die ganze Liste, am Desktop nur der Punkt aus dem Untermenü. */
-  const list = isDesk()
-    ? paneMarkup(ui.settingsPane)
-    : identityCard() + insightsSection() + appearanceSection() + listsMarkup();
+  /* Am Handy die ganze Liste, am Desktop nur der Punkt aus dem Untermenü.
+     Die Android-Fassungen zeigen „Analyse“ nicht in den Einstellungen. */
+  const insights = chosenLook("mobile").os === "android" ? "" : insightsSection();
+  const list = isDesk() ? paneMarkup(ui.settingsPane) : identityCard() + insights + appearanceSection() + listsMarkup();
   dom.profileBody.innerHTML = shownDetail ? detailMarkup(shownDetail) : list;
   renderPageChrome();
   /* Nur auf einer Unterseite: der Pfeil erscheint und „Einstellungen“ rückt
@@ -290,6 +293,7 @@ function checkForUpdateNow(row) {
 
 /* Klicks im Blatt: Feedback-Seite, Bild, Kacheln, Darstellung, Zeitraum. */
 function onBodyClick(event) {
+  if (onAccountClick(event)) return;
   if (onFeedbackClick(event)) {
     rerenderKeepingScroll();
     return;

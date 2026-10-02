@@ -4,8 +4,9 @@
  * Sie zeigen nur den Kopfwert und einen winzigen Verlauf; das ganze Diagramm
  * erscheint erst beim Antippen. Darunter der Abschnitt „Darstellung“.
  * Hier steht außerdem, welche große Seite hinter welchem Schlüssel liegt —
- * auch Navigation, Suche, Design und Tabs unter „App“, die Kontoeinstellungen, die
- * Feedback- und Danksagungs-Seite und die Versionen unter „Mehr“.
+ * auch Navigation, Suche, Design und Tabs unter „App“, die Konto-Seiten
+ * (Persönliche Daten, Passwort, Synchronisierung), die beiden Löschen-Seiten,
+ * die Feedback- und Danksagungs-Seite und die Versionen unter „Mehr“.
  * Pfad: src/features/profile/settings-cards.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -22,7 +23,8 @@
 import { dayShift, startOfDay } from "../../core/dates.js";
 import { icon } from "../../core/html.js";
 import { usageOfDay, usageStreaks } from "../../data/usage.js";
-import { accountCard } from "./account.js";
+import { passwordCard, personalCard, syncCard } from "./account.js";
+import { deleteAccountCard, deleteDataCard } from "./account-delete.js";
 import { designCard, navigationCard, searchCard, tabsCard } from "./app-settings.js";
 import { creditsCard, startCreditsVideo } from "./credits.js";
 import { enterFeedback, feedbackCard } from "./feedback.js";
@@ -132,7 +134,11 @@ const details = {
   search: { hash: "suche", title: "Suche", card: () => searchCard() },
   design: { hash: "design", title: "Design", card: () => designCard() },
   tabs: { hash: "tabs", title: "Tabs", card: () => tabsCard() },
-  account: { hash: "konto", title: "Kontoeinstellungen", card: accountCard },
+  personal: { hash: "persoenliche-daten", title: "Persönliche Daten", card: personalCard },
+  password: { hash: "passwort", title: "Passwort ändern", card: passwordCard },
+  sync: { hash: "synchronisierung", title: "Synchronisierung", card: syncCard },
+  "delete-data": { hash: "daten-loeschen", title: "Alle Daten löschen", card: deleteDataCard },
+  "delete-account": { hash: "konto-loeschen", title: "Konto löschen", card: deleteAccountCard },
   versions: { hash: "versionen", title: "Versionen", card: versionsCard },
   credits: { hash: "danksagungen", title: "Danksagungen", card: creditsCard, settle: startCreditsVideo },
 };

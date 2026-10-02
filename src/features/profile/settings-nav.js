@@ -18,7 +18,7 @@
 import { icon } from "../../core/html.js";
 import { designCard, navigationCard, searchCard, tabsCard } from "./app-settings.js";
 import { enterFeedback, feedbackCard } from "./feedback.js";
-import { closingMarkup, identityCard, listSection } from "./profile-cards.js";
+import { accountSections, closingMarkup, identityCard, listSection } from "./profile-cards.js";
 import { insightsSection } from "./settings-cards.js";
 import { shortcutsMarkup } from "./shortcuts.js";
 import { themeListMarkup } from "./theme.js";
@@ -27,7 +27,7 @@ export const defaultPane = "konto";
 
 /* `render` baut den Inhalt rechts, `enter` macht den Bereich vor dem ersten Zeigen frisch. */
 const panes = [
-  { id: "konto", label: "Konto", icon: "person", render: () => identityCard() + listSection("Konto") + closingMarkup() },
+  { id: "konto", label: "Konto", icon: "person", render: () => identityCard() + accountSections() + closingMarkup() },
   { id: "darstellung", label: "Darstellung", icon: "display", render: () => `<p class="psection">Darstellung</p>${themeListMarkup()}` },
   { id: "mehr", label: "Mehr", icon: "layers", render: () => listSection("Mehr") },
   { id: "navigation", label: "Navigation", icon: "sidebar", render: () => navigationCard("Navigation") },
