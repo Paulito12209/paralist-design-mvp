@@ -1,0 +1,173 @@
+/*
+ * Fassung „Android (Experiment)“, Reiter als Kapsel nach iOS: alle Ansichten
+ * einer Zeile („Alle“, eigene Ansichten, Bilder/Videos, die Reiter der
+ * Arbeitsbereiche …) liegen in einer grauen Kapsel, die gewählte liegt hell
+ * und leicht erhaben darauf, zwischen zwei nicht gewählten steht eine feine
+ * Trennlinie. Statt der Linie unter dem aktiven Reiter und der Trennlinie unter
+ * der ganzen Zeile (styles/android-tabs.css) — Einrasten beim Scrollen, Abstände
+ * und alles übrige bleibt wie in „Android“. Passen nicht alle Reiter in die
+ * Zeile, lässt sich die Kapsel waagerecht schieben. Das Plus „Neue Ansicht“
+ * ist das letzte Segment. Die Regeln lehnen sich an styles/ios-segmented.css an,
+ * nur mit Farben aus dem Android-Satz.
+ * Gilt nur mit data-mobile-variant="experiment" an <html> und unterhalb von 1024px.
+ * Pfad: styles/android-segmented.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-seg-fill        -> Grund der Kapsel
+ * --m3-seg-thumb       -> das gewählte Segment
+ * --m3-seg-thumb-shadow -> der kleine Schatten unter dem gewählten Segment
+ * --m3-seg-separator   -> Trennlinie zwischen nicht gewählten Segmenten
+ * --m3-seg-height      -> Höhe eines Segments
+ * --m3-seg-pad         -> Rand zwischen Kapsel und Segmenten
+ * --m3-seg-air         -> Luft über und unter der Kapsel (rechnet sich aus --m3-tab-height)
+ * --m3-on-surface      -> Schrift der Segmente
+ * --m3-on-surface-variant -> Schrift und Plus von „Neue Ansicht“
+ * --content-side       -> Abstand der Kapsel zum Geräterand (styles/tokens.css)
+ *
+ * Schriftgröße der Segmente: 13px direkt bei .tab-pill (wie in der iOS-Fassung),
+ * ebenso bei .tab-pill-add-text; das Plus davor 14px groß (.tab-pill-add .icon).
+ * Die Zeilen zwischen Kapsel und Liste behalten ihre Höhe aus styles/android-tabs.css
+ * (--m3-tab-height), die Kapsel steht mittig darin.
+ */
+
+@media (max-width: 1023px) {
+  /* ---------- Keine Linie unter der Zeile ---------- */
+
+  /* Dieselben Hüllen wie in styles/android-tabs.css; die Trennlinie entfällt,
+     die Kapsel hebt sich selbst vom Grund ab */
+  [data-mobile-variant="experiment"] #project-views,
+  [data-mobile-variant="experiment"] .tasks-tools,
+  [data-mobile-variant="experiment"] #media-filters,
+  [data-mobile-variant="experiment"] .page-pills-row,
+  [data-mobile-variant="experiment"] .page-body > .tab-pills,
+  [data-mobile-variant="experiment"] .page-body > .tab-pills-row,
+  [data-mobile-variant="experiment"] .page-body > .project-views {
+    box-shadow: none;
+  }
+
+  /* ---------- Die Kapsel ---------- */
+
+  /* So breit wie ihre Segmente, höchstens so breit wie die Zeile. Die Hüllen
+     bringen den Rand zum Gerät selbst mit, deshalb hier kein negativer Außenabstand. */
+  [data-mobile-variant="experiment"] .tab-pills {
+    gap: 0;
+    width: fit-content;
+    max-width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+    padding: var(--m3-seg-pad);
+    border-radius: 999px; /* border-radius: Kapsel statt Linie */
+    background: var(--m3-seg-fill);
+    scroll-padding-inline: var(--m3-seg-pad);
+  }
+
+  /* Wo die Reiter früher bis an den Rand liefen (styles/android-card.css),
+     steht rechts jetzt nur noch der Rand der Kapsel. Dieselben Auswahlen wie
+     dort, damit sie gewinnen. */
+  [data-mobile-variant="experiment"] :is(.tasks-tools, .tab-pills-row:has(> .collection-pills)) > .tab-pills,
+  [data-mobile-variant="experiment"] .tasks-tools .tab-pills-row > .tab-pills,
+  [data-mobile-variant="experiment"] :is(#project-views, .page-body > .project-views) .tab-pills,
+  [data-mobile-variant="experiment"] .tab-pills-row .tab-pills,
+  [data-mobile-variant="experiment"] .page-pills-row .page-pills {
+    flex: 0 1 auto;
+    padding-right: var(--m3-seg-pad);
+    scroll-padding-right: var(--m3-seg-pad);
+  }
+
+  /* Knöpfe rechts der Zeile (soweit es sie gibt) stehen neben der Kapsel */
+  [data-mobile-variant="experiment"] .tab-pills-tools {
+    position: static;
+    bottom: auto;
+    margin-left: auto;
+    padding-left: 12px;
+  }
+
+  [data-mobile-variant="experiment"] .tab-pills-fade {
+    display: none;
+  }
+
+  [data-mobile-variant="experiment"] .tab-pills-end {
+    padding-right: 0;
+    background: none;
+  }
+
+  /* ---------- Reiter, die selbst die einrastende Zeile sind ---------- */
+
+  /* Bei Medien und den Reitern direkt auf einer Seite ist die Kapsel zugleich
+     die Zeile, die oben einrastet; ohne Hülle dahinter schiene beim Scrollen
+     die Liste neben und über ihr durch. Darum trägt sie einen Rand in der
+     Seitenfarbe (bringt die Zeile auf --m3-tab-height) und einen riesigen
+     Schatten in derselben Farbe nach links und rechts.
+     box-shadow: Schatten statt Fläche, weil er der Rundung folgt und nichts verschiebt.
+     clip-path: schneidet den Schatten oben und unten ab, damit er die Liste
+     nicht überdeckt. background-clip: die graue Fläche bleibt innerhalb des Rands. */
+  [data-mobile-variant="experiment"] :is(#media-filters, .page-body > .tab-pills) {
+    margin-left: calc(-1 * var(--m3-seg-air));
+    max-width: calc(100% + 2 * var(--m3-seg-air));
+    border: var(--m3-seg-air) solid var(--bg);
+    background: linear-gradient(var(--m3-seg-fill), var(--m3-seg-fill)), var(--bg); /* deckend, damit die Liste nicht durch die Kapsel scheint */
+    background-clip: padding-box;
+    box-shadow: 0 0 0 100vmax var(--bg);
+    clip-path: inset(0 -100vmax);
+  }
+
+  /* ---------- Die Segmente ---------- */
+
+  /* position: Bezug für die Trennlinie davor */
+  [data-mobile-variant="experiment"] .tab-pill {
+    position: relative;
+    height: var(--m3-seg-height);
+    padding: 0 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--m3-on-surface);
+    background: none;
+  }
+
+  /* Das gewählte Segment: heller Daumen mit kleinem Schatten, ohne Linie darunter */
+  [data-mobile-variant="experiment"] .tab-pill.is-active {
+    color: var(--m3-on-surface);
+    background: var(--m3-seg-thumb);
+    box-shadow: var(--m3-seg-thumb-shadow);
+  }
+
+  [data-mobile-variant="experiment"] .tab-pill.is-active::after,
+  [data-mobile-variant="experiment"] .tab-pill.is-active:has(.tab-pill-info)::after {
+    content: none;
+  }
+
+  /* Trennlinie zwischen zwei nicht gewählten Segmenten; neben dem gewählten fällt sie weg */
+  [data-mobile-variant="experiment"] .tab-pill:not(.is-active) + .tab-pill:not(.is-active)::before {
+    content: "";
+    position: absolute; /* position: steht am linken Rand, ohne Platz zu nehmen */
+    left: 0;
+    top: 25%;
+    bottom: 25%;
+    width: 1px;
+    background: var(--m3-seg-separator);
+  }
+
+  /* Das Plus für eine neue Ansicht ist das letzte Segment: „+ Neue Ansicht“
+     in der Schrift der übrigen Segmente, nur nie gewählt */
+  [data-mobile-variant="experiment"] .tab-pills .tab-pill-add {
+    width: auto;
+    height: var(--m3-seg-height);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 0 14px 0 12px;
+    border-radius: 999px;
+    color: var(--m3-on-surface-variant);
+  }
+
+  [data-mobile-variant="experiment"] .tab-pill-add .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  [data-mobile-variant="experiment"] .tab-pill-add-text {
+    font-size: 13px;
+  }
+}
