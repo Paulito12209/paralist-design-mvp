@@ -135,9 +135,15 @@ export function renderProjectsPage() {
   afterProjectViewsRender();
 }
 
-/* Sortieren und Filtern in der Werkzeugzeile der Android-Fassung. */
+/* Sortieren, Filtern und Ansicht in der Werkzeugzeile der Android-Fassung. */
 function onCardClick(event) {
   handleProjectCardClick(event, activeProjectView());
+}
+
+/* Der Seiteninhalt gehört allen Seiten: nur auf der Seite Projekte zählen die Symbole der Projekte,
+   sonst öffnete ein Tipp in Eingang & Co. zusätzlich das Blatt der Projekte. */
+function onPageCardClick(event) {
+  if (isProjectsPageOpen()) onCardClick(event);
 }
 
 /** Anmelden: die Übersicht frischt ihre Projekte auf, solange sie offen ist. */
@@ -145,7 +151,7 @@ export function initProjects() {
   initProjectViews();
   initProjectInline();
   dom.projectList.addEventListener("click", onCardClick);
-  dom.pageBody.addEventListener("click", onCardClick);
+  dom.pageBody.addEventListener("click", onPageCardClick);
   panel = createViewPanel({
     title: panelTitle,
     className: "project-panel",

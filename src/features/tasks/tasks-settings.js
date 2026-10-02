@@ -129,9 +129,9 @@ export function taskHeadMarkup(view) {
   });
 }
 
-/** Klicks auf Sortieren und Filtern in der Werkzeugzeile; „Archiv (n)“ erledigt src/ui/list-clicks.js. */
+/** Klicks auf Sortieren, Filtern und Ansicht in der Werkzeugzeile; „Archiv (n)“ erledigt src/ui/list-clicks.js. */
 export function handleTaskHeadClick(event, view) {
-  return handleListHeadClick(event, { sort: () => openTaskSort(view), filter: openViewPanel });
+  return handleListHeadClick(event, { sort: () => openTaskSort(view), filter: () => openTaskFilter(), view: openViewPanel });
 }
 
 /* Blatt „Sortieren“: wonach, darunter die Richtung (src/ui/sort-sheet.js). */

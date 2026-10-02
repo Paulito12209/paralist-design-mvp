@@ -1,9 +1,9 @@
 /*
  * Die Werkzeugzeile über den Sammlungen in der Android-Fassung — Eingang,
  * Favoriten, Ressourcen, Lesezeichen, Arbeitsbereiche und im Archiv selbst:
- * links „Archiv (n)“ (im Archiv entfällt es), rechts Sortieren und Filtern.
- * Beide Symbole öffnen gleich ihr Blatt, ohne Umweg über die Karte „Ansicht“
- * (src/features/overview/collection-panel.js). Gebaut wie die Zeile über
+ * links „Archiv (n)“ (im Archiv entfällt es), rechts Sortieren, Filtern und Ansicht.
+ * Sortieren und Filtern öffnen gleich ihr Blatt, Ansicht holt die Karte „Ansicht“
+ * herauf (src/features/overview/collection-panel.js). Gebaut wie die Zeile über
  * Projekten und Aufgaben (src/ui/list-head.js).
  *
  * Die Zeile steht im Inhalt der Unterseite: direkt unter den Reitern, wo es
@@ -28,6 +28,7 @@ import { collectionFilterSections } from "../../data/collection-filters.js";
 import { sortableCollections } from "../../data/collection-sorts.js";
 import { ui } from "../../data/state.js";
 import { handleListHeadClick, listHeadMarkup } from "../../ui/list-head.js";
+import { openViewPanel } from "../../ui/view-panel.js";
 import { isViewActive } from "../../ui/views.js";
 import { collectionFilterChips, openCollectionFilter } from "./collection-filter.js";
 import { openCollectionSort } from "./collection-panel.js";
@@ -69,7 +70,11 @@ export function initPageListHead() {
   el("view-page").addEventListener("click", (event) => {
     const kind = openKind();
     if (!kind) return;
-    handleListHeadClick(event, { sort: () => openCollectionSort(kind), filter: () => openCollectionFilter(kind) });
+    handleListHeadClick(event, {
+      sort: () => openCollectionSort(kind),
+      filter: () => openCollectionFilter(kind),
+      view: openViewPanel,
+    });
   });
   /* childList ohne subtree: nur das Ersetzen des ganzen Inhalts zählt, nicht jede Zeile darin */
   new MutationObserver(mountHead).observe(dom.pageBody, { childList: true });

@@ -34,7 +34,7 @@
     color: var(--m3-on-surface);
   }
 
-  /* Sortieren und Filtern in Ruhe ebenso leise; aktiv (die Liste siebt aus)
+  /* Sortieren, Filtern und Ansicht in Ruhe ebenso leise; aktiv (die Liste siebt aus)
      behält das Filter-Symbol die Akzentfarbe aus styles/android-card.css */
   [data-mobile-os="android"] .project-card-tool:not(.is-active) {
     color: var(--m3-on-surface-muted);
