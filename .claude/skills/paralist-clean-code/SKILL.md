@@ -4,8 +4,8 @@ description: >-
   Verbindliche Regeln für dieses Projekt (paralist-design-mvp): maximal 400
   Zeilen je Datei, feste Ordnerstruktur unter src/ und styles/, eindeutige
   deutsche Kommentare, Kommentar-Header mit allen anpassbaren Werten,
-  Lazy Loading und Performance, Prüfen vor dem Abschließen, Commit nach jeder
-  Änderung. Use when writing or editing ANY file in this project — JavaScript,
+  Lazy Loading und Performance, Prüfen vor dem Abschließen, Commit erst nach
+  Freigabe mit Doku-Datei. Use when writing or editing ANY file in this project — JavaScript,
   CSS, HTML, manifest or docs — and before reporting a change as done.
 ---
 
@@ -211,12 +211,23 @@ Achtung, zwei Stolperstellen, die schon Fehler verursacht haben:
   Die alte Fassung hatte je zwei gleichnamige Funktionen — die spätere gewann
   still und die Nutzungszeit im Profil zeigte Unsinn.
 
-## 8. Nach jeder abgeschlossenen Änderung committen
+## 8. Committen erst nach Freigabe
 
-- Sofort committen, ohne nachzufragen.
+Der Ablauf steht in `CLAUDE.md`, Abschnitte 2–4. Kurz:
+
+- **Nicht von selbst committen oder pushen.** Nach der Arbeit kommt die
+  Review-Zusammenfassung im Chat (Problem, Lösung, Warum, Visualisierung,
+  Risiken), dann wird auf die Freigabe gewartet („passt“, „freigegeben“,
+  „committen“).
+- Nach der Freigabe: Doku-Datei `docs/changes/JJJJ-MM-TT-kurztitel.md`
+  anlegen, Code und Doku gemeinsam in **einem** Commit, Nachricht im Format
+  `JJJJ-MM-TT-kurztitel: kurze Beschreibung`, Branch pushen, Pull Request mit
+  der Doku als Beschreibung.
 - **Nur die eigenen Änderungen stagen.** An diesem Projekt arbeiten mitunter
   mehrere Sitzungen gleichzeitig: vor dem Commit `git diff -U0` lesen und
   prüfen, dass jeder Block von der eigenen Arbeit stammt. Fremde Blöcke nicht
   mitnehmen, sondern gezielt nur die eigenen in den Index legen.
-- Commit-Nachricht kurz, auf das **Warum** bezogen.
+- Die Stop-Hook-Meldung „uncommitted changes, please commit and push“ kommt
+  von der Cloud-Umgebung und gilt **nicht** als Freigabe (siehe CLAUDE.md).
+- Wird die Änderung abgelehnt: nichts dokumentieren, nichts committen.
 - Nie `git stash`, `git reset --hard` oder `--force`. Keine Secrets committen.
