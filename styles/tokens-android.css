@@ -21,7 +21,7 @@
  * --m3-on-surface              -> Schrift des aktiven Reiters unten
  * --m3-on-surface-variant      -> Icons und Schrift der übrigen Reiter, Platzhalter der Suche
  * --m3-on-surface-muted        -> dritte, leiseste Stufe: „Archiv (n)“, Sortieren, Filtern und
- *                                 „… hinzufügen“ über und unter den Listen (nur Android (Experiment));
+ *                                 „… hinzufügen“ über und unter den Listen (Android und Experiment);
  *                                 im Dunkeln deutlich dunkler als die Zeilentitel, damit die Werkzeuge
  *                                 hinter den Inhalt zurücktreten
  * --m3-outline-variant         -> Trennlinie unter den Reitern
@@ -62,7 +62,7 @@
  * --m3-seg-pad                -> Rand zwischen Kapsel und Segmenten
  * --m3-seg-air                -> Luft über und unter der Kapsel, damit die Zeile so hoch bleibt wie --m3-tab-height
  *                                 (errechnet; nur bei Medien und den Reitern direkt auf einer Seite nötig)
- * --m3-ov-gap-title            -> Übersicht (Android (Experiment)): sichtbarer Abstand Suchleiste bis Überschrift
+ * --m3-ov-gap-title            -> Übersicht (Android und Experiment): sichtbarer Abstand Suchleiste bis Überschrift
  * --m3-ov-gap-cards            -> ebenso Überschrift bis zu den Kacheln
  * --m3-ov-gap-section          -> ebenso untere Ränder der Kacheln bis „Projekte“
  * --m3-ov-gap-tabs             -> ebenso „Projekte“ bis zur Reiter-Kapsel
@@ -143,9 +143,9 @@
   --m3-seg-height: 30px;
   --m3-seg-pad: 2px;
   --m3-seg-air: calc((var(--m3-tab-height) - var(--m3-seg-height) - 2 * var(--m3-seg-pad)) / 2);
-  --m3-ov-gap-title: 32px;
+  --m3-ov-gap-title: 40px;
   --m3-ov-gap-cards: 24px;
-  --m3-ov-gap-section: 36px;
+  --m3-ov-gap-section: 40px;
   --m3-ov-gap-tabs: 20px;
   --m3-tab-tools-air: 4px;
   --m3-view-btn-size: 40px;

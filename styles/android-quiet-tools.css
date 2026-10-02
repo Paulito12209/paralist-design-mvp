@@ -1,5 +1,5 @@
 /*
- * Fassung „Android (Experiment)“: die Werkzeuge über und unter einer Liste
+ * Android-Fassung (mit und ohne Experiment): die Werkzeuge über und unter einer Liste
  * treten eine Stufe zurück. Vorbild ist die Zeile „Archiviert“ in WhatsApp:
  * sie steht im Listenraster, trägt aber die leise Grauton-Schrift der
  * Nebenzeilen und keine Akzentfarbe — man findet sie, wenn man sie sucht,
@@ -7,9 +7,9 @@
  * „… hinzufügen“ dieselbe dritte Farbstufe (--m3-on-surface-muted) und „Archiv“
  * ein mittleres statt halbfettes Gewicht. Darüber bleiben zwei Stufen:
  * Zeilentitel und Überschriften (--m3-on-surface) und die Reiter
- * (--m3-on-surface-variant). In der Android-Fassung ohne Experiment bleibt
- * „Archiv“ ein Material-Text-Knopf in der Akzentfarbe (styles/android-card.css).
- * Gilt nur mit data-mobile-variant="experiment" an <html> und unterhalb von 1024px.
+ * (--m3-on-surface-variant). Die Grundregeln der Werkzeugzeile stehen in
+ * styles/android-card.css; diese Datei setzt nur Farbe und Gewicht darüber.
+ * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
  * Pfad: styles/android-quiet-tools.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens-android.css)
@@ -24,27 +24,27 @@
 
 @media (max-width: 1023px) {
   /* „Archiv (n)“: leise Nebenzeile statt Akzent-Knopf */
-  [data-mobile-variant="experiment"] .project-card-archive {
+  [data-mobile-os="android"] .project-card-archive {
     font-weight: 500;
     color: var(--m3-on-surface-muted);
   }
 
   /* Beim Drücken antwortet die Zeile mit heller Schrift, nicht nur mit Tönung */
-  [data-mobile-variant="experiment"] .project-card-archive:active {
+  [data-mobile-os="android"] .project-card-archive:active {
     color: var(--m3-on-surface);
   }
 
   /* Sortieren und Filtern in Ruhe ebenso leise; aktiv (die Liste siebt aus)
      behält das Filter-Symbol die Akzentfarbe aus styles/android-card.css */
-  [data-mobile-variant="experiment"] .project-card-tool:not(.is-active) {
+  [data-mobile-os="android"] .project-card-tool:not(.is-active) {
     color: var(--m3-on-surface-muted);
   }
 
   /* „Projekt hinzufügen“, „Arbeitsbereich hinzufügen“: Text und Icon auf derselben
      Stufe wie „Archiv“. Die Deckkraft 0.6 aus styles/rows.css entfällt — mit der
      leisen Farbe zusammen wäre die Zeile kaum noch lesbar. */
-  [data-mobile-variant="experiment"] .workspace-add,
-  [data-mobile-variant="experiment"] .workspace-add .icon {
+  [data-mobile-os="android"] .workspace-add,
+  [data-mobile-os="android"] .workspace-add .icon {
     color: var(--m3-on-surface-muted);
     opacity: 1;
   }
