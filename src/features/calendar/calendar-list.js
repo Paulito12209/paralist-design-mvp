@@ -15,11 +15,12 @@
  * Aussehen: styles/calendar-panel.css
  * (Klassen .cal-empty, .cal-time, .cal-seg-btn) und styles/overview.css
  * (Klasse .card-count, für die Zahl auf der Pille). Die Beschriftung der
- * Pille am leeren Tag steht bei `calendarSegments` in src/data/config.js.
+ * Emblem, Satz und Pille am leeren Tag stehen bei `calendarSegments`
+ * in src/data/config-calendar.js.
  */
 
 import { icon } from "../../core/html.js";
-import { calendarSegments } from "../../data/config.js";
+import { calendarSegments } from "../../data/config-calendar.js";
 import { entriesOfDay, entryTime } from "../../data/queries.js";
 import { state, ui } from "../../data/state.js";
 import { entryRow } from "../../ui/rows.js";
@@ -75,10 +76,11 @@ export function renderList() {
         .join("")}</div>`
     : `
       <div class="cal-empty">
-        ${icon("calendar")}
+        ${icon(seg.icon)}
         <b>${seg.empty}</b>
+        <p>${seg.hint}</p>
         <button class="empty-add" type="button" data-empty-add="${seg.pick}">
-          ${icon("plus", "empty-add-icon")}<span>${seg.add}</span>
+          ${icon(seg.addIcon, "empty-add-icon")}<span>${seg.add}</span>
         </button>
       </div>`;
 
