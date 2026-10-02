@@ -1,0 +1,191 @@
+/*
+ * „Android (Experiment)“, Einstellungen nach dem Vorbild der Google-Einstellungen
+ * („Google-Dienste“): oben links ein runder Zurück-Knopf, darunter der Name der
+ * Seite groß und linksbündig statt klein in der Leiste, dann der Kopf mit Bild,
+ * Name und Mailadresse als schlichte Zeile. Die Zeilen stehen ohne Icons in
+ * Gruppen auf der Fläche „Surface container“: die äußeren Ecken einer Gruppe
+ * sind stark gerundet, die Ecken zwischen zwei Zeilen kaum, dazwischen nur eine
+ * schmale Fuge. Abschnittsüberschriften sind klein und grau. Gilt für die Liste
+ * und alle Unterseiten (#profile), nicht für den Fortschritt, und nur im
+ * Experiment unterhalb von 1024px; das normale Android hat die Kacheln aus
+ * styles/android-settings-tiles.css.
+ * Pfad: styles/android-settings-google.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-settings-title         -> Schriftgröße der großen Überschrift
+ * --m3-settings-group-radius  -> Rundung der Außenecken einer Gruppe
+ * --m3-settings-inner-radius  -> Rundung der Ecken zwischen zwei Zeilen
+ * --m3-settings-back-size     -> Durchmesser des runden Zurück-Knopfes
+ * --m3-page-edge              -> Abstand von Gruppen und Überschrift zum Geräterand
+ * --m3-page-row-h             -> Mindesthöhe einer Zeile
+ * --m3-page-tile-gap          -> Fuge zwischen zwei Zeilen
+ * --m3-page-section-gap       -> Luft über einer Abschnittsüberschrift
+ * --m3-surface-container      -> Fläche von Zeilen und Zurück-Knopf
+ * --m3-on-surface / --m3-on-surface-variant / --m3-primary / --m3-error
+ *                             -> Schrift, Nebentext, Haken, „Löschen“-Zeilen
+ * --m3-state-pressed          -> Tönung beim Drücken
+ *
+ * Direkt bei ihrer Regel: Schrift der Zeilen 16px, Nebentext und
+ * Abschnittsüberschrift 14px (halbfett), Name im Kopf 16px, Bild im Kopf 48px,
+ * Stift darauf 22px.
+ */
+
+@media (max-width: 1023px) {
+  /* ---------- Kopf: Pfeil in der Kugel, Titel groß darunter ---------- */
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile .modal-head {
+    flex-wrap: wrap; /* flex-wrap: der Titel bricht unter den Pfeil in eine eigene Zeile */
+    align-items: flex-start;
+    padding: 12px var(--m3-page-edge) 0;
+  }
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile .modal-back {
+    width: var(--m3-settings-back-size);
+    height: var(--m3-settings-back-size);
+    background: var(--m3-surface-container);
+    color: var(--m3-on-surface);
+  }
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile .modal-head h2 {
+    flex: 1 0 100%; /* flex: der Titel füllt die ganze zweite Zeile */
+    margin: 28px 0 8px;
+    padding-inline: 8px; /* padding-inline: die Schrift steht über dem Text der Zeilen, nicht über ihrer Kante */
+    font-size: var(--m3-settings-title);
+    line-height: 1.2;
+    white-space: normal; /* white-space: ein langer Titel („Persönliche Daten“) darf umbrechen statt mit „…“ zu enden */
+  }
+
+  /* ---------- Gerüst ---------- */
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile .modal-body {
+    padding: 0 var(--m3-page-edge) calc(24px + var(--safe-bottom));
+    gap: 0;
+  }
+
+  /* ---------- Abschnittsüberschriften ---------- */
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile .psection {
+    margin: var(--m3-page-section-gap) 0 0;
+    padding: 0 20px 8px;
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.1px;
+    color: var(--m3-on-surface-variant);
+  }
+
+  /* ---------- Gruppen: außen stark, zwischen den Zeilen kaum gerundet ---------- */
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile :is(.plist, .settings-group) {
+    display: flex;
+    flex-direction: column;
+    gap: var(--m3-page-tile-gap);
+    margin-bottom: 0;
+    background: none;
+    border-radius: 0;
+  }
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile :is(.plist-row, .settings-row) {
+    min-height: var(--m3-page-row-h);
+    padding: 8px 20px;
+    gap: 12px;
+    border: 0;
+    border-radius: var(--m3-settings-inner-radius);
+    background: var(--m3-surface-container);
+    font-size: 16px;
+    color: var(--m3-on-surface);
+  }
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile :is(.plist, .settings-group) > :first-child {
+    border-top-left-radius: var(--m3-settings-group-radius);
+    border-top-right-radius: var(--m3-settings-group-radius);
+  }
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile :is(.plist, .settings-group) > :last-child {
+    border-bottom-left-radius: var(--m3-settings-group-radius);
+    border-bottom-right-radius: var(--m3-settings-group-radius);
+  }
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile :is(.plist-row, .settings-row):active {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), var(--m3-surface-container));
+  }
+
+  /* Wie in Google-Einstellungen: keine Icons vor den Zeilen und keine Pfeile dahinter;
+     nur der Haken der gewählten Darstellung bleibt */
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile :is(.plist-row, .settings-row) .icon:not(.settings-check) {
+    display: none;
+  }
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile .settings-row .settings-check {
+    color: var(--m3-primary);
+  }
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile .plist-row .plist-value {
+    font-size: 14px;
+    color: var(--m3-on-surface-variant);
+  }
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile .plist-row.is-danger {
+    color: var(--m3-error);
+  }
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile :is(.settings-note, .account-note) {
+    padding-inline: 20px;
+    font-size: 14px;
+    color: var(--m3-on-surface-variant);
+  }
+
+  /* ---------- Kopf mit Bild und Namen: eine schlichte Zeile ---------- */
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile .profile-id {
+    --profile-avatar-size: 48px;
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: 16px;
+    align-items: center;
+    justify-items: start;
+    text-align: left;
+    padding: 8px 20px 0;
+    border-bottom: 0;
+    margin-bottom: 0;
+  }
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile .profile-avatar-wrap {
+    grid-row: 1 / span 2; /* grid-row: das Bild steht links neben Name und Mailadresse */
+    margin-bottom: 0;
+  }
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile .profile-avatar {
+    font-size: 18px;
+  }
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile .profile-avatar-edit {
+    --profile-avatar-edit-size: 22px;
+    right: -6px;
+    bottom: -4px;
+  }
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile .profile-avatar-edit .icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile :is(.profile-name, .profile-mail) {
+    grid-column: 2;
+  }
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile .profile-name {
+    font-size: 16px;
+    font-weight: 500;
+    letter-spacing: 0;
+  }
+
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile .profile-mail {
+    font-size: 14px;
+    color: var(--m3-on-surface-variant);
+  }
+
+  /* Plan und „Dabei seit“ stehen im Vorbild nicht im Kopf */
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile .profile-meta {
+    display: none;
+  }
+}
