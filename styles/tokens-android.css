@@ -20,6 +20,10 @@
  * --m3-on-primary              -> das ✕ auf dem Schließen-Knopf
  * --m3-on-surface              -> Schrift des aktiven Reiters unten
  * --m3-on-surface-variant      -> Icons und Schrift der übrigen Reiter, Platzhalter der Suche
+ * --m3-on-surface-muted        -> dritte, leiseste Stufe: „Archiv (n)“, Sortieren, Filtern und
+ *                                 „… hinzufügen“ über und unter den Listen (nur Android (Experiment));
+ *                                 im Dunkeln deutlich dunkler als die Zeilentitel, damit die Werkzeuge
+ *                                 hinter den Inhalt zurücktreten
  * --m3-outline-variant         -> Trennlinie unter den Reitern
  * --m3-seg-fill                -> Grund der Reiter-Kapsel (nur Android (Experiment))
  * --m3-seg-thumb               -> das gewählte Segment darauf
@@ -103,6 +107,7 @@
   --m3-on-primary: #ffffff;
   --m3-on-surface: #1f1f1f;
   --m3-on-surface-variant: #444746;
+  --m3-on-surface-muted: #6b6f73;
   --m3-outline-variant: #c4c7c5;
   --m3-scrim: rgba(255, 255, 255, 0.86);
   --m3-seg-fill: rgba(118, 118, 128, 0.12);
@@ -140,8 +145,8 @@
   --m3-seg-air: calc((var(--m3-tab-height) - var(--m3-seg-height) - 2 * var(--m3-seg-pad)) / 2);
   --m3-ov-gap-title: 32px;
   --m3-ov-gap-cards: 24px;
-  --m3-ov-gap-section: 32px;
-  --m3-ov-gap-tabs: 16px;
+  --m3-ov-gap-section: 36px;
+  --m3-ov-gap-tabs: 20px;
   --m3-tab-tools-air: 4px;
   --m3-view-btn-size: 40px;
   --m3-head-tools-pull: 8px;
@@ -182,6 +187,7 @@
     --m3-on-primary: #1d2030;
     --m3-on-surface: #e3e3e3;
     --m3-on-surface-variant: #c4c7c5;
+    --m3-on-surface-muted: #8a8f99;
     --m3-outline-variant: #3c3f44;
     --m3-scrim: rgba(10, 10, 12, 0.82);
     --m3-seg-fill: rgba(118, 118, 128, 0.24);
@@ -204,6 +210,7 @@
   --m3-on-primary: #1d2030;
   --m3-on-surface: #e3e3e3;
   --m3-on-surface-variant: #c4c7c5;
+  --m3-on-surface-muted: #8a8f99;
   --m3-outline-variant: #3c3f44;
   --m3-scrim: rgba(10, 10, 12, 0.82);
   --m3-seg-fill: rgba(118, 118, 128, 0.24);
