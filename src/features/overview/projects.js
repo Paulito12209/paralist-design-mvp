@@ -4,7 +4,9 @@
  * ihren eigenen Behälter: oben die Pillen der Ansichten
  * (src/features/overview/project-views.js), darunter die Projekte der
  * gewählten Ansicht als schlichte Zeilen, die Zeile „Projekt hinzufügen“ und
- * „Zum Archiv“ mit der Pille Projekte. Ein Tipp in die freie Fläche unter der
+ * „Zum Archiv“ mit der Pille Projekte. Steht die Ansicht auf „Board“, liegen die
+ * Projekte stattdessen in Spalten nach Status oder Dringlichkeit
+ * (src/features/overview/projects-board.js). Ein Tipp in die freie Fläche unter der
  * Liste legt ein Projekt direkt an (src/features/overview/project-inline.js). Über der Navigation hängt die Karte
  * „Ansicht“ mit Sortieren und Filtern (src/features/overview/project-settings.js).
  * In der Android-Fassung steht über der Liste eine Werkzeugzeile („Archiv (n)“,
@@ -37,6 +39,7 @@ import { entryRow } from "../../ui/rows.js";
 import { createViewPanel } from "../../ui/view-panel.js";
 import { isViewActive } from "../../ui/views.js";
 import { handleProjectSettingsClick, projectSettingsMarkup } from "./project-settings.js";
+import { handleProjectBoardClick, initProjectBoard, projectBoardMarkup } from "./projects-board.js";
 import { handleProjectCardClick, projectCardHead } from "./project-card.js";
 import { initProjectInline } from "./project-inline.js";
 import { afterProjectViewsRender, initProjectViews, isProjectsPageOpen, projectViewsMarkup } from "./project-views.js";
@@ -99,16 +102,23 @@ function listMarkup(onPage) {
     <button class="workspace-row workspace-add" type="button" data-project-add="1">
       ${icon("rocket-plus")}<span>${addRowLabel}</span>
     </button>`;
+  /* Board: die Spalten statt der Zeilen; „Projekt hinzufügen“ steht darunter als einzelne Zeile */
+  if (view.layout === "board") {
+    return `${projectCardHead(view)}${lead}${projectBoardMarkup(view)}<div class="workspace-list">${addRow}</div>${archiveMarkup()}`;
+  }
   /* data-reorder: gedrückt Halten verschiebt eine Zeile (Android, src/ui/row-reorder.js) — je Ansicht eine eigene Reihenfolge */
   return `${projectCardHead(view)}${lead}<div class="workspace-list" data-reorder="${projectOrderScope(view.id)}">${rows}${addRow}</div>${archiveMarkup()}`;
 }
 
-/* Neu zeichnen, ohne dass die Pillenleiste an den Anfang zurückspringt. */
+/* Neu zeichnen, ohne dass die Pillenleiste oder das Board an den Anfang zurückspringen. */
 function withPillScroll(container, draw) {
   const scrolled = container.querySelector(".tab-pills")?.scrollLeft || 0;
+  const boardScrolled = container.querySelector(".project-board")?.scrollLeft || 0;
   draw();
   const pills = container.querySelector(".tab-pills");
   if (pills) pills.scrollLeft = scrolled;
+  const board = container.querySelector(".project-board");
+  if (board) board.scrollLeft = boardScrolled;
 }
 
 /** Die Projekte auf der Übersicht zeichnen — am Desktop bleibt die Stelle leer. */
@@ -135,8 +145,9 @@ export function renderProjectsPage() {
   afterProjectViewsRender();
 }
 
-/* Sortieren, Filtern und Ansicht in der Werkzeugzeile der Android-Fassung. */
+/* Sortieren, Filtern und Ansicht in der Werkzeugzeile der Android-Fassung; eine Zeile im Board. */
 function onCardClick(event) {
+  if (handleProjectBoardClick(event)) return;
   handleProjectCardClick(event, activeProjectView());
 }
 
@@ -150,6 +161,7 @@ function onPageCardClick(event) {
 export function initProjects() {
   initProjectViews();
   initProjectInline();
+  initProjectBoard();
   dom.projectList.addEventListener("click", onCardClick);
   dom.pageBody.addEventListener("click", onPageCardClick);
   panel = createViewPanel({

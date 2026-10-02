@@ -3,10 +3,11 @@
  * einer Liste in Google Tasks. Links der Text-Knopf „Archiv“ — steht immer,
  * damit die Zeile nie leer wirkt; liegen Projekte im Archiv, folgt ihre Zahl
  * in Klammern („Archiv (2)“). Ein Tipp öffnet das Archiv mit der Pille
- * Projekte (data-open-archive, src/ui/list-clicks.js). Rechts Sortieren und,
- * außer bei „Alle“ (dort lässt sich nichts filtern), Filtern und Ansicht.
+ * Projekte (data-open-archive, src/ui/list-clicks.js). Rechts Sortieren, Ansicht
+ * und — außer bei „Alle“, wo sich nichts filtern lässt — Filtern.
  * Filtern öffnet gleich das Blatt „Filtern“ (src/features/overview/project-filter.js),
- * Ansicht holt das Blatt „Ansicht“ herauf: darin stehen Filtern, Nur
+ * Ansicht holt das Blatt „Ansicht“ herauf: darin stehen Layout (Liste oder Board;
+ * deshalb auch bei „Alle“), Filtern, Nur
  * Favoriten und Projekte wählen (src/features/overview/project-settings.js). Umbenennen, Löschen &
  * Co. einer Ansicht gibt es beim Halten ihres Reiters.
  * Die Zeile steht in jeder Fassung im Dokument und ist nur in der
@@ -40,7 +41,7 @@ export function projectCardHead(view) {
   return listHeadMarkup({
     archive: { pill: archivePill, count },
     filter: !view.fixed,
-    view: !view.fixed,
+    view: true,
     filtering: isFiltering(view),
   });
 }

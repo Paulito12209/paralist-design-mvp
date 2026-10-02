@@ -357,9 +357,12 @@ export const linkFilterDefaults = { linkKinds: [], linkRefs: [], linkNot: false 
  * der Filter ausblendet (leer = alles zu sehen), `statusNot` und
  * `priorityNot` sagen nur, welche Seite im Blatt die Haken trägt (wie bei den
  * Aufgaben, src/data/config-tasks.js). `ids` ist die handverlesene Liste —
- * leer heißt „nach den Filtern“.
+ * leer heißt „nach den Filtern“. `layout` ist „list“ oder „board“ und `group`
+ * sagt, wonach das Board seine Spalten bildet (eine id aus taskGroupings).
  */
 export const projectViewDefaults = {
+  layout: "list",
+  group: "status",
   sort: "geoeffnet",
   sortAsc: false,
   ...linkFilterDefaults,
