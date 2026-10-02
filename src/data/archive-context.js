@@ -4,10 +4,13 @@
  * etwas liegt: auf der Übersicht nur bei archivierten Projekten, auf den
  * Lesezeichen nur bei archivierten Lesezeichen usw. Wer alles Archivierte
  * sehen will, nimmt die Karte „Archiv“ auf der Übersicht.
+ * Dieselbe Zahl steht in „Archiv (n)“ über den Listen (src/ui/list-head.js).
  * Pfad: src/data/archive-context.js
  *
- * Keine anpassbaren visuellen Werte. Welche Pille der Knopf im Archiv öffnet,
- * steht in src/shell/android-archive.js (entryPages).
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * archivePills -> welche Pille des Archivs zu welcher Sammlung gehört
+ *                 (Karte „Alle“, nur Projekte, nur Arbeitsbereiche)
  */
 
 import { holdsBookmark } from "./bookmarks.js";
@@ -28,6 +31,21 @@ const byKind = {
   projects: ofType("projekt"),
   workspaces: archivedWorkspaces,
 };
+
+/* Art der Sammlung (page.kind; der Eingang hat keine) -> Pille, die das Archiv für sie öffnet */
+const archivePills = {
+  inbox: "all",
+  favorites: "all",
+  resources: "all",
+  bookmarks: "all",
+  projects: "projekt",
+  workspaces: "workspaces",
+};
+
+/** Die Pille des Archivs für eine Sammlung — oder undefined, wo es keinen Archiv-Bezug gibt. */
+export function archivePillForKind(kind) {
+  return archivePills[kind || "inbox"];
+}
 
 /**
  * Die archivierten Dinge, die zur Seite gehören — leer, wenn es keine gibt

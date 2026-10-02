@@ -49,6 +49,7 @@ import { openTypeChangeSheet, typeChangeAction, typeCrumbMarkup } from "../../ui
 import { isViewActive } from "../../ui/views.js";
 import { initArchive, renderArchive } from "./archive.js";
 import { initCollectionPanel } from "./collection-panel.js";
+import { initPageListHead } from "./page-list-head.js";
 import { initPageSelect } from "./page-select.js";
 import { pageHeroOptions, renderPageHero } from "./page-hero.js";
 import { renderProjectsPage } from "./projects.js";
@@ -298,6 +299,7 @@ export function initPage() {
   initArchive();
   initWorkspaceCollection();
   initCollectionPanel();
+  initPageListHead();
   /* Erst die Suchseite zeigen: dort ist die allgemeine Kopfzeile mit dem
      echten Suchfeld wieder da, und ein verstecktes Feld nimmt keinen Fokus an. */
   dom.pageSearchBtn.addEventListener("click", () => {

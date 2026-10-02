@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "8ad128f38bf2";
+export const appVersion = "ff280774a59f";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -137,6 +137,7 @@ export const appFiles = [
   "src/features/overview/collection-panel.js",
   "src/features/overview/overview.js",
   "src/features/overview/page-hero.js",
+  "src/features/overview/page-list-head.js",
   "src/features/overview/page-select-actions.js",
   "src/features/overview/page-select.js",
   "src/features/overview/page.js",
@@ -255,6 +256,7 @@ export const appFiles = [
   "src/ui/key-caps.js",
   "src/ui/link-sheet.js",
   "src/ui/list-clicks.js",
+  "src/ui/list-head.js",
   "src/ui/long-press.js",
   "src/ui/media-cell.js",
   "src/ui/media-strip.js",

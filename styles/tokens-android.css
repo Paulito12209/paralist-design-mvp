@@ -69,6 +69,7 @@
  * --m3-error / --m3-on-error   -> Wisch-Knopf „Löschen“ (Material 3: gefüllt in der Fehlerfarbe)
  * --m3-card-head-h             -> Höhe der Werkzeugzeile über den Projekten (Archiv, Sortieren, Filtern)
  * --m3-card-head-pull          -> um so viel rückt die erste Zeile näher an die Werkzeugzeile heran
+ * --m3-card-head-plain-gap     -> Luft zwischen Titel und Werkzeugzeile, wo keine Reiter darüber stehen (Sammlungen)
  * --m3-card-tool-size          -> Tippfläche eines Symbols in der Werkzeugzeile (Material 3: 48dp)
  * --m3-card-tool-icon          -> Größe des Symbols darin (Material 3: 24dp)
  * --m3-text-btn-h              -> Höhe des Text-Knopfs „Archiv (n)“ (Material 3 „Text button“: 40dp)
@@ -132,6 +133,7 @@
   --m3-reorder-slot-inset: 4px;
   --m3-card-head-h: 48px;
   --m3-card-head-pull: 4px;
+  --m3-card-head-plain-gap: 4px;
   --m3-card-tool-size: 48px;
   --m3-card-tool-icon: 24px;
   --m3-text-btn-h: 40px;

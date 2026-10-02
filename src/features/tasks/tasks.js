@@ -29,7 +29,7 @@ import { taskListMarkup } from "./tasks-list.js";
 import { isSelecting } from "./tasks-pick.js";
 import { afterSelectRender, handleSelectClick, initTaskSelect } from "./tasks-select.js";
 import { selectRowMarkup } from "../../ui/select-bar.js";
-import { deskToolsMarkup, handleSettingsClick, taskSettingsMarkup } from "./tasks-settings.js";
+import { deskToolsMarkup, handleSettingsClick, handleTaskHeadClick, taskHeadMarkup, taskSettingsMarkup } from "./tasks-settings.js";
 import { afterViewsRender, handleViewsClick, initTaskViews, taskViewsMarkup } from "./tasks-views.js";
 
 /** Die ganze Seite neu zeichnen. */
@@ -44,7 +44,9 @@ export function renderTasks() {
   /* Im Auswahlmodus steht an der Stelle der Pillen die Zählzeile */
   dom.tasksTools.innerHTML = isSelecting() ? selectRowMarkup() : taskViewsMarkup(deskToolsMarkup(view));
   afterViewsRender();
-  dom.tasksBody.innerHTML = board ? taskBoardMarkup(view) : taskListMarkup(view);
+  /* Die Werkzeugzeile (Archiv, Sortieren, Filtern) steht über Liste und Board, im Auswahlmodus nicht */
+  const head = isSelecting() ? "" : taskHeadMarkup(view);
+  dom.tasksBody.innerHTML = head + (board ? taskBoardMarkup(view) : taskListMarkup(view));
   panel.setContent(taskSettingsMarkup(view));
   afterSelectRender();
 
@@ -55,6 +57,8 @@ export function renderTasks() {
 /* Klicks im Inhalt: Zeile im Board öffnen. Den Haken-Knopf fängt
    src/ui/list-clicks.js — er gilt in jeder Liste gleich. */
 function onBodyClick(event) {
+  /* Sortieren und Filtern in der Werkzeugzeile der Android-Fassung */
+  if (handleTaskHeadClick(event, activeTaskView())) return;
   /* Nach dem Ablegen einer Zeile kommt noch ein Klick — der öffnet nichts. */
   if (consumeDragClick()) {
     event.preventDefault();

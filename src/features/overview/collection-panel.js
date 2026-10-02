@@ -84,6 +84,17 @@ function syncPanel() {
   if (kind) panel.setContent(panelMarkup(kind));
 }
 
+/** Das Blatt „Sortieren“ einer Sammlung — Zeile „Sortieren“ der Karte und Symbol der Werkzeugzeile öffnen dasselbe. */
+export function openCollectionSort(kind) {
+  const { sort, asc } = collectionSort(kind);
+  openSortSheet({
+    options: collectionSortOptions(kind),
+    sort,
+    asc,
+    onChange: (nextSort, nextAsc) => setCollectionSort(kind, nextSort, nextAsc),
+  });
+}
+
 function handleClick(event) {
   const kind = openCollection();
   const button = kind && event.target.closest("[data-settings]");
@@ -93,14 +104,7 @@ function handleClick(event) {
     openCollectionFilter(kind, button.dataset.value || null);
     return;
   }
-  if (button.dataset.settings !== "sort") return;
-  const { sort, asc } = collectionSort(kind);
-  openSortSheet({
-    options: collectionSortOptions(kind),
-    sort,
-    asc,
-    onChange: (nextSort, nextAsc) => setCollectionSort(kind, nextSort, nextAsc),
-  });
+  if (button.dataset.settings === "sort") openCollectionSort(kind);
 }
 
 /** Karte anlegen und bei jedem Seitenwechsel und jeder Änderung abgleichen. */

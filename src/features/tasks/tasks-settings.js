@@ -22,6 +22,7 @@
  * rowLabels    -> Beschriftungen der Zeilen („groupBy“ je Layout: Liste hat Abschnitte, Board Spalten)
  * noFilter     -> was rechts in der Zeile „Filtern“ steht, solange nichts gefiltert ist
  * deskFiltered -> Aufschrift des Filter-Knopfs am Desktop, wenn etwas gefiltert ist
+ * archivePill  -> welche Pille das Archiv beim Tipp auf „Archiv (n)“ zeigt
  *
  * Was in der Filter-Zeile steht und was das Blatt „Filtern“ anbietet, steht
  * in src/features/tasks/tasks-filter.js.
@@ -31,11 +32,14 @@
  */
 
 import { escapeHtml, icon } from "../../core/html.js";
+import { archivedForView } from "../../data/archive-context.js";
 import { panelSegment as segment, panelToggle as toggle } from "../../ui/panel-rows.js";
 import { taskGroupings, taskSorts } from "../../data/config-tasks.js";
 import { updateTaskView } from "../../data/task-views.js";
 import { filterChipsMarkup as chipsMarkup } from "../../ui/filter-chips.js";
+import { handleListHeadClick, listHeadMarkup } from "../../ui/list-head.js";
 import { openSortSheet, sortSummary } from "../../ui/sort-sheet.js";
+import { openViewPanel } from "../../ui/view-panel.js";
 import { filterChips, openTaskFilter } from "./tasks-filter.js";
 
 const rowLabels = {
@@ -47,6 +51,7 @@ const rowLabels = {
   done: "Erledigte zeigen",
 };
 const noFilter = "Keine";
+const archivePill = "aufgabe";
 const deskFiltered = "Gefiltert";
 
 const layouts = [
@@ -114,6 +119,19 @@ export function taskSettingsMarkup(view) {
         </div>
       </div>
   `;
+}
+
+/** Die Werkzeugzeile über der Liste (nur in der Android-Fassung zu sehen). */
+export function taskHeadMarkup(view) {
+  return listHeadMarkup({
+    archive: { pill: archivePill, count: archivedForView("tasks").length },
+    filtering: filterChips(view).length > 0,
+  });
+}
+
+/** Klicks auf Sortieren und Filtern in der Werkzeugzeile; „Archiv (n)“ erledigt src/ui/list-clicks.js. */
+export function handleTaskHeadClick(event, view) {
+  return handleListHeadClick(event, { sort: () => openTaskSort(view), filter: openViewPanel });
 }
 
 /* Blatt „Sortieren“: wonach, darunter die Richtung (src/ui/sort-sheet.js). */

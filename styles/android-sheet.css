@@ -2,10 +2,12 @@
  * Android-Fassung, Karte „Ansicht“ als Blatt von unten (Material 3 „Bottom
  * sheet“): eingeklappt ist nichts von ihr zu sehen — über der Leiste steht
  * kein Kopf mehr. Stattdessen sitzt rechts in der Reiterzeile das Symbol
- * „Ansicht“ (dort, wo sonst „… hinzufügen“ steht); ein Tipp darauf schiebt
- * das Blatt von unten über Leiste und Plus-Knopf, dahinter ein Schleier.
- * Seiten ohne Reiterzeile tragen das Symbol in der Kopfzeile (Sammlungen)
- * bzw. neben „KW“ (Kalender). Schließen: Tipp auf Schleier, Kopf oder Pfeil,
+ * „Ansicht“ (dort, wo sonst „… hinzufügen“ steht) bzw. im Kalender neben „KW“;
+ * ein Tipp darauf schiebt das Blatt von unten über Leiste und Plus-Knopf,
+ * dahinter ein Schleier. Projekte, Aufgaben und alle Sammlungen tragen kein
+ * Symbol: ihre Werkzeugzeile unter dem Titel (styles/android-card.css) öffnet
+ * Sortieren und Filtern gleich als Blatt, bei Projekten und Aufgaben holt
+ * Filtern die Karte „Ansicht“ herauf. Schließen: Tipp auf Schleier, Kopf oder Pfeil,
  * oder das Blatt nach unten ziehen (src/ui/view-panel.js).
  * Außerdem: neben „Projekte“ auf der Übersicht entfällt der Pfeil — die
  * Überschrift öffnet die Seite Projekte trotzdem.
@@ -26,7 +28,6 @@
  * --m3-outline-variant     -> Trennlinie unter der Überschrift
  * --icon-soft, --page-tool-icon -> Farbe und Größe der zwei Regler in der Projekte-Zeile
  * --tasks-panel-slide      -> wie schnell das Blatt kommt und geht (styles/tokens-pages.css)
- * --head-btn-size          -> Tippfläche des Symbols in der Kopfzeile einer Sammlung (styles/tokens.css)
  * --m3-tab-tools-air       -> Luft vor dem Symbol in der Reiterzeile statt der Trennlinie
  * --tab-pills-btn-gap      -> Grundabstand vor dem Symbol (styles/tokens.css)
  *
@@ -204,17 +205,10 @@
     --tab-pills-tools-width: calc(var(--content-side) + var(--tab-pills-fade) + 1px + var(--tab-pills-btn-gap) + var(--m3-tab-tools-air) + 32px);
   }
 
-  /* Sammlungen ohne Reiterzeile: in der Kopfzeile links vom Menü — nur, wo es
-     eine Karte gibt (is-collection) und die Seite das Symbol nicht schon in
-     ihrer Reiterzeile trägt (Arbeitsbereiche) */
+  /* Sammlungen: kein Symbol „Ansicht“ in der Kopfzeile — Sortieren und Filtern
+     stehen in der Werkzeugzeile unter dem Titel (styles/android-card.css) */
   [data-mobile-os="android"] .page-head .view-panel-btn {
     display: none;
-  }
-
-  [data-mobile-os="android"] body.is-collection:not(:has(#page-body .view-panel-btn)) .page-head .view-panel-btn {
-    display: grid;
-    width: var(--head-btn-size);
-    height: var(--head-btn-size);
   }
 
   /* Kalender: „KW“ rückt nach rechts neben das Symbol, statt mittig zu stehen */

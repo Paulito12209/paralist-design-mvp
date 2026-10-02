@@ -21,8 +21,9 @@ von 1024 px. Zusätzlich zu den Flows in `README.md`.
 - Reiter gedrückt halten (Projekte, Aufgaben, Arbeitsbereiche): das Menü kommt
   als Blatt von unten über die ganze Breite, ohne Griff; Schleier, Ziehen und
   Zurück schließen es. Umbenennen startet im Namensfeld, Löschen ist rot.
-- Archiv-Knopf links unten fehlt auf Übersicht und Seite Projekte (dort gibt
-  es „Archiv (n)“); beim Ziehen einer Zeile erscheint er als Ablageziel.
+- Archiv-Knopf links unten fehlt auf Übersicht, Aufgaben und allen Sammlungen
+  (dort gibt es „Archiv (n)“); er bleibt nur auf der Seite eines
+  Arbeitsbereichs. Beim Ziehen einer Zeile erscheint er überall als Ablageziel.
 - Tipp in die freie Fläche unter dem letzten Projekt bis zur Leiste: neue Zeile
   „Neues Projekt“ mit Cursor, „Projekt hinzufügen“ verschwindet so lange.
   Enter legt an und öffnet die nächste Zeile, leer verlassen entfernt sie. In
@@ -34,3 +35,19 @@ von 1024 px. Zusätzlich zu den Flows in `README.md`.
 - Eine Zeile gedrückt halten: keine blaue Fläche von Chrome, sondern die eigene
   Tönung, deckend — die Wisch-Knöpfe dahinter scheinen nie durch; danach hebt
   sich die Zeile zum Verschieben.
+
+**Aufgaben und Sammlungen** (Eingang, Favoriten, Ressourcen, Lesezeichen,
+Arbeitsbereiche, Archiv)
+- Dieselbe Werkzeugzeile wie bei den Projekten: links „Archiv“ (mit „(n)“, sobald
+  etwas archiviert ist; Tipp öffnet das Archiv mit der passenden Pille), rechts
+  Sortieren und Filtern. Im Archiv selbst fehlt „Archiv“.
+- Aufgaben: Reiterzeile ohne ✓+ und ohne Symbol „Ansicht“; Sortieren öffnet das
+  Blatt „Sortieren“, Filtern holt die Karte „Ansicht“ (Layout, Filtern,
+  Gruppieren, Erledigte). Das Filter-Symbol steht in der Akzentfarbe, sobald
+  gefiltert wird — auf „Alle“ ist das mit der Vorgabe „Erledigte ausblenden“ immer so.
+- Sammlungen: kein Symbol „Ansicht“ in der Kopfzeile mehr; Sortieren und
+  Filtern öffnen gleich ihr Blatt. Wo Reiter stehen (Ressourcen, Archiv,
+  Arbeitsbereiche), sitzt die Zeile dicht unter ihrer Linie, sonst unter dem Titel.
+- Tipp in die freie Fläche der Aufgaben legt weiter eine Zeile an; ein Tipp auf
+  die Werkzeugzeile nicht.
+- Übersicht: die Seitenlinie unter den Karten ist 3px dick.

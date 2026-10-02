@@ -1,9 +1,12 @@
 /*
- * Android-Fassung, die Werkzeugzeile über den Projekten (Übersicht und Seite
- * Projekte), gebaut nach Google Tasks: links der Text-Knopf „Archiv“ —
- * mit der Zahl der archivierten Projekte in Klammern, sobald es welche gibt —,
- * rechts Sortieren und, außer bei
- * „Alle“, Filtern (src/features/overview/project-card.js). Die Liste darunter
+ * Android-Fassung, die Werkzeugzeile über den Listen (Projekte auf Übersicht
+ * und Seite Projekte, Aufgaben, Eingang, Favoriten, Ressourcen, Lesezeichen,
+ * Arbeitsbereiche, Archiv), gebaut nach Google Tasks: links der Text-Knopf
+ * „Archiv“ — mit der Zahl der archivierten Dinge in Klammern, sobald es welche
+ * gibt —, rechts Sortieren und, wo sich etwas filtern lässt, Filtern
+ * (src/ui/list-head.js). Die Klassen heißen project-card-…, gelten aber für
+ * jede dieser Zeilen. Wo Reiter darüber stehen (Projekte, Aufgaben, Arbeitsbereiche), rückt
+ * die Zeile dicht unter ihre Linie; ohne Reiter (`is-plain`) steht sie unter dem Titel. Die Liste darunter
  * liegt ohne eigene Fläche auf der Seite; getönte Flächen bleiben Leiste,
  * Kacheln und Suchleiste vorbehalten. Die Reiterzeile darüber behält ihre
  * Trennlinie (styles/android-tabs.css), nur das Symbol „Ansicht“ rechts
@@ -24,6 +27,7 @@
  * --m3-on-surface             -> Grundfarbe der Tönung beim Drücken
  * --m3-on-surface-variant     -> Sortieren und Filtern in Ruhe
  * --m3-card-head-pull       -> wie dicht die erste Zeile an der Werkzeugzeile sitzt
+ * --m3-card-head-plain-gap  -> Luft zwischen Titel und Werkzeugzeile, wo keine Reiter darüber stehen
  * --content-side              -> Rand der Reiter, sobald rechts kein Symbol mehr steht (styles/tokens.css)
  *
  * Direkt bei ihrer Regel: Schrift von „Archiv“ 14px halbfett (Material 3
@@ -37,6 +41,19 @@
 
 @media (max-width: 1023px) {
   /* ---------- Die Reiterzeile ohne Symbol rechts ---------- */
+
+  /* Aufgaben und Arbeitsbereiche: dieselbe Reiterzeile wie bei den Projekten —
+     ✓+, Ordner-Plus und „Ansicht“ entfallen, Anlegen geht über die Liste und
+     „Neu“, Sortieren und Filtern über die Werkzeugzeile darunter. */
+  [data-mobile-os="android"] :is(.tasks-tools .tab-pills-tools, .tab-pills-row:has(> .collection-pills) > .tab-pills-tools) {
+    display: none;
+  }
+
+  [data-mobile-os="android"] :is(.tasks-tools, .tab-pills-row:has(> .collection-pills)) > .tab-pills,
+  [data-mobile-os="android"] .tasks-tools .tab-pills-row > .tab-pills {
+    padding-right: calc(var(--content-side) + 2px);
+    scroll-padding-right: var(--content-side);
+  }
 
   [data-mobile-os="android"] :is(#project-views, .page-body > .project-views) .tab-pills-tools {
     display: none;
@@ -59,6 +76,17 @@
     min-height: var(--m3-card-head-h);
     margin-top: calc(-1 * var(--m3-tabs-gap));
     margin-bottom: calc(-1 * var(--m3-card-head-pull));
+  }
+
+  /* Reiter einer Sammlung (Ressourcen, Archiv, Arbeitsbereiche): wie bei Projekten und
+     Aufgaben lässt die Reiterzeile nur --m3-tabs-gap Luft, die Werkzeugzeile zieht sie wieder zurück */
+  [data-mobile-os="android"] .page-body > :is(.tab-pills, .tab-pills-row):has(+ .project-card-head) {
+    margin-bottom: var(--m3-tabs-gap);
+  }
+
+  /* Ohne Reiter darüber: unter dem Titel mit etwas Luft, nicht unter eine Linie gezogen */
+  [data-mobile-os="android"] .project-card-head.is-plain {
+    margin-top: var(--m3-card-head-plain-gap);
   }
 
   /* Text-Knopf nach Material 3: kein Rahmen, keine Fläche, Schrift in der

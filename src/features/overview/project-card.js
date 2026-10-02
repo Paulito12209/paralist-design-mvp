@@ -12,55 +12,37 @@
  * Android-Fassung zu sehen (styles/android-card.css).
  * Pfad: src/features/overview/project-card.js
  *
+ * Markup und Klick-Zuordnung teilen sich alle Listen (src/ui/list-head.js).
+ *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * archiveLabel -> Beschriftung des Text-Knopfs; die Zahl der archivierten Projekte steht in Klammern dahinter
- * toolLabels   -> Vorlesetexte und Hinweise der zwei Symbole rechts
+ * archivePill -> welche Pille das Archiv beim Tipp auf „Archiv (n)“ zeigt
+ * Beschriftung und Symbole der Zeile: src/ui/list-head.js.
  */
 
-import { icon } from "../../core/html.js";
 import { archivedEntries } from "../../data/queries.js";
+import { handleListHeadClick, listHeadMarkup } from "../../ui/list-head.js";
 import { openViewPanel } from "../../ui/view-panel.js";
 import { openProjectSort } from "./project-settings.js";
 
-const archiveLabel = "Archiv";
-const toolLabels = { sort: "Sortieren", filter: "Filtern" };
+const archivePill = "projekt";
 
 /* Siebt die Ansicht etwas aus? Dann steht das Filter-Symbol in der Akzentfarbe. */
 function isFiltering(view) {
   return view.ids.length > 0 || view.place !== "alle" || Boolean(view.favoritesOnly);
 }
 
-function tool(name, iconName, active = false) {
-  return `
-    <button class="project-card-tool${active ? " is-active" : ""}" type="button" data-card-tool="${name}"
-      aria-label="${toolLabels[name]}" title="${toolLabels[name]}">${icon(iconName)}</button>`;
-}
-
-/* „Archiv (2)“ wie „Erledigt (2)“ in Google Tasks; ohne Archiviertes nur „Archiv“. */
-function archiveButton() {
-  const count = archivedEntries().filter((entry) => entry.type === "projekt").length;
-  const label = count ? `${archiveLabel} (${count})` : archiveLabel;
-  return `
-    <button class="project-card-archive" type="button" data-open-archive="projekt">
-      ${icon("archive")}<span>${label}</span>
-    </button>`;
-}
-
 /** Die Werkzeugzeile für die gewählte Ansicht. */
 export function projectCardHead(view) {
-  const filter = view.fixed ? "" : tool("filter", "filter", isFiltering(view));
-  return `
-    <div class="project-card-head">
-      ${archiveButton()}
-      <div class="project-card-tools">${tool("sort", "swap-vert")}${filter}</div>
-    </div>`;
+  const count = archivedEntries().filter((entry) => entry.type === "projekt").length;
+  return listHeadMarkup({
+    archive: { pill: archivePill, count },
+    filter: !view.fixed,
+    filtering: isFiltering(view),
+  });
 }
 
 /** Klicks auf Sortieren und Filtern; „Archiv (n)“ erledigt src/ui/list-clicks.js. */
 export function handleProjectCardClick(event, view) {
-  const button = event.target.closest("[data-card-tool]");
-  if (!button) return;
-  if (button.dataset.cardTool === "sort") openProjectSort(view);
-  else openViewPanel();
+  handleListHeadClick(event, { sort: () => openProjectSort(view), filter: openViewPanel });
 }

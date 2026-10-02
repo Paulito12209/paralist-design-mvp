@@ -190,7 +190,7 @@
 
 :root {
   /* Übersicht: zweite Kartenseite, abgeschaltete Karten, Pille „Zum Archiv“ */
-  --overview-pager-h: 1px;
+  --overview-pager-h: 3px;
   --overview-pager-w: 48px;
   --soon-opacity: 0.45;
   --archive-link-gap: 8px;

@@ -1,16 +1,13 @@
 /*
  * Android-Fassung: der Archiv-Knopf links unten, gegenüber dem Plus-Knopf.
- * Er ersetzt die Pille „Zum Archiv“ unter den Listen. Er steht nur auf
- * Seiten mit Einträgen — Übersicht, Aufgaben, Eingang, Favoriten,
- * Ressourcen, Lesezeichen, Projekte, Arbeitsbereiche und die Seite eines
- * Arbeitsbereichs (Medien, Kalender und das Archiv selbst nicht) — und dort
- * erst, wenn im Archiv etwas zu genau dieser Seite liegt
- * (src/data/archive-context.js): auf der Übersicht ein Projekt, auf den
- * Lesezeichen ein Lesezeichen. Ein Tipp öffnet das Archiv mit der Pille, die
- * zur Seite passt.
+ * Er ersetzt die Pille „Zum Archiv“ unter den Listen, steht aber nur noch auf
+ * der Seite eines Arbeitsbereichs — und dort erst, wenn im Archiv etwas zu
+ * genau diesem Arbeitsbereich liegt (src/data/archive-context.js). Ein Tipp
+ * öffnet das Archiv mit der Pille „Alle“.
  *
- * Auf der Übersicht und der Seite Projekte steht er nicht: dort führt schon
- * „Archiv (n)“ über der Liste ins Archiv (src/features/overview/project-card.js).
+ * Auf der Übersicht, den Aufgaben und den Sammlungen (Eingang, Favoriten,
+ * Ressourcen, Lesezeichen, Projekte, Arbeitsbereiche) steht er nicht: dort
+ * führt schon „Archiv (n)“ über der Liste ins Archiv (src/ui/list-head.js).
  *
  * Er ist zugleich Ziel zum Ablegen: hält man eine Zeile lange gedrückt und
  * zieht dann (src/ui/row-lift.js), erscheint der Knopf auch bei leerem
@@ -24,15 +21,15 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * buttonLabel  -> Vorlesetext und Hinweis des Knopfs
- * entryPages   -> Sammlungen, auf denen der Knopf steht, und welche Pille er im Archiv öffnet
  * toastWords   -> Text und Knopf der Meldung nach dem Ablegen
+ * Welche Pille er im Archiv öffnet: src/data/archive-context.js (archivePills).
  */
 
 import { emit, events, on } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { icon } from "../core/html.js";
 import { archiveWorkspace, restoreFromArchive } from "../data/mutations.js";
-import { archivedForView } from "../data/archive-context.js";
+import { archivePillForKind, archivedForView } from "../data/archive-context.js";
 import { findEntry, findWorkspace } from "../data/queries.js";
 import { ui } from "../data/state.js";
 import { archiveEntry } from "../data/xp.js";
@@ -43,15 +40,6 @@ import { currentView } from "../ui/views.js";
 import { isAndroidMobile } from "./android-bars.js";
 
 const buttonLabel = "Archiv öffnen";
-/* Art der Sammlung (ui.currentPage.kind; der Eingang hat keine) -> Pille im Archiv */
-const entryPages = {
-  inbox: "all",
-  favorites: "all",
-  resources: "all",
-  bookmarks: "all",
-  projects: "projekt",
-  workspaces: "workspaces",
-};
 const toastWords = { done: "Archiviert", undo: "Rückgängig" };
 
 let button = null;
@@ -65,7 +53,7 @@ function archivePill() {
   if (view === "tasks") return "aufgabe";
   if (view !== "page" || !ui.currentPage) return null;
   if (ui.currentPage.isWorkspace) return "all";
-  return entryPages[ui.currentPage.kind || "inbox"] || null;
+  return archivePillForKind(ui.currentPage.kind) || null;
 }
 
 /* Liegt im Archiv etwas, das zur offenen Seite gehört? Sonst bleibt der Knopf weg —
@@ -74,9 +62,11 @@ function hasArchived() {
   return archivedForView(currentView(), ui.currentPage).length > 0;
 }
 
-/* Übersicht und Seite Projekte haben „Archiv (n)“ über der Liste — dort wäre der Knopf doppelt. */
+/* Übersicht, Aufgaben und Sammlungen haben „Archiv (n)“ über der Liste — dort wäre der Knopf doppelt.
+   Nur die Seite eines Arbeitsbereichs hat keine Werkzeugzeile. */
 function hasOwnArchiveLink() {
-  return currentView() === "home" || (currentView() === "page" && ui.currentPage?.kind === "projects");
+  const view = currentView();
+  return view === "home" || view === "tasks" || (view === "page" && Boolean(ui.currentPage) && !ui.currentPage.isWorkspace);
 }
 
 /* Sichtbar schalten. Ob gerade die Android-Fassung gilt, entscheidet das Stylesheet.
