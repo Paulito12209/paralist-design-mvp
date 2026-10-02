@@ -1,0 +1,83 @@
+/*
+ * Android-Fassung, die Liste der Einstellungen im Stil der Google-Einstellungen
+ * und des Google-Kontos: keine Abschnittsüberschriften, die Zeilen einer Gruppe
+ * stehen als getönte Kacheln übereinander — außen stark, zwischen den Zeilen
+ * kaum gerundet, mit schmaler Fuge —, und der Profilkopf ist eine eigene Karte
+ * mit Bild, Stift, Name und der Zeile „Pro · Dabei seit …“ statt der Mailadresse.
+ * Gilt nur auf der Liste selbst (.is-list an #profile-body), nicht auf den
+ * Unterseiten, mit data-mobile-os="android", ohne data-mobile-variant
+ * "experiment" und unterhalb von 1024px.
+ * Pfad: styles/android-settings-groups.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-group-radius        -> Rundung außen an Gruppen und Profilkarte
+ * --m3-group-inner-radius  -> Rundung zwischen zwei Zeilen einer Gruppe
+ * --m3-group-gap           -> Fuge zwischen den Zeilen einer Gruppe
+ * --m3-group-space         -> Luft zwischen zwei Gruppen und unter der Profilkarte
+ * --m3-surface-container   -> Fläche der Kacheln und der Profilkarte
+ * --m3-page-edge           -> Abstand zum Geräterand und Innenabstand der Zeilen
+ *
+ * Direkt bei ihrer Regel: Name im Profilkopf 22px, Profilbild 64px.
+ */
+
+@media (max-width: 1023px) {
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) #profile-body.is-list {
+    gap: var(--m3-group-space);
+  }
+
+  /* Titel entfallen: die Gruppen trennt nur die Luft dazwischen */
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) #profile-body.is-list > .psection {
+    display: none;
+  }
+
+  /* Gruppen tragen den Rand selbst, damit die Kacheln nicht bis an den Geräterand laufen */
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) #profile-body.is-list > :is(.plist, .settings-group) {
+    display: grid;
+    gap: var(--m3-group-gap);
+    margin-inline: var(--m3-page-edge);
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) #profile-body.is-list :is(.plist-row, .settings-row) {
+    background: var(--m3-surface-container);
+    border-radius: var(--m3-group-inner-radius);
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) #profile-body.is-list :is(.plist-row, .settings-row):first-child {
+    border-top-left-radius: var(--m3-group-radius);
+    border-top-right-radius: var(--m3-group-radius);
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) #profile-body.is-list :is(.plist-row, .settings-row):last-child {
+    border-bottom-left-radius: var(--m3-group-radius);
+    border-bottom-right-radius: var(--m3-group-radius);
+  }
+
+  /* Gedrückt: Tönung über der Kachelfläche, nicht statt ihr */
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) #profile-body.is-list :is(.plist-row, .settings-row):active {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), var(--m3-surface-container));
+  }
+
+  /* ---------- Profilkarte wie oben im Google-Konto ---------- */
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) #profile-body.is-list > .profile-id {
+    --profile-avatar-size: 64px;
+    padding: 16px var(--m3-page-edge);
+    background: var(--m3-surface-container);
+    border-radius: var(--m3-group-radius);
+  }
+
+  /* Die Mailadresse entfällt: an ihrer Stelle steht die Zeile „Pro · Dabei seit …“ */
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) #profile-body.is-list .profile-mail {
+    display: none;
+  }
+
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) #profile-body.is-list .profile-avatar-wrap {
+    grid-row: 1 / span 2; /* grid-row: das Bild steht links neben Name und Zeile (ohne Mail nur zwei Zeilen) */
+  }
+
+  /* Wie im Google-Konto: der Stift sitzt als dunkler Kreis mit Rand unten rechts am Bild */
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) #profile-body.is-list .profile-avatar-edit {
+    border: 2px solid var(--m3-surface-container);
+  }
+}
