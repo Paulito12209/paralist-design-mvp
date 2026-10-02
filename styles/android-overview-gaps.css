@@ -1,10 +1,14 @@
 /*
- * Fassung „Android (Experiment)“, Übersicht: die vier Abstände von oben nach
+ * Android-Fassung (mit und ohne Experiment), Übersicht: die vier Abstände von oben nach
  * unten sind sichtbare Abstände — gemessen von Kante zu Kante dessen, was man
  * sieht (Unterkante der Suchleiste, Oberkante der Schrift, Kanten der Kacheln,
  * Oberkante der Reiter-Kapsel), nicht von Kästen. Dazu rechnet die Datei den
  * Leerraum ab, den Schrift und Kapsel in ihren Kästen mitbringen.
- * Gilt nur mit data-mobile-variant="experiment" an <html>, auf der Übersicht
+ * Die Reiterzeile ist in beiden Fassungen gleich hoch (--m3-tab-height) und
+ * steht an derselben Stelle; nur ihre Form unterscheidet sich (Kapsel im
+ * Experiment, Linie unter dem aktiven Reiter in „Android“). So liegen die
+ * Reiternamen in beiden Fassungen auf derselben Höhe.
+ * Gilt nur mit data-mobile-os="android" an <html>, auf der Übersicht
  * (#view-home) und unterhalb von 1024px.
  * Pfad: styles/android-overview-gaps.css
  *
@@ -14,7 +18,8 @@
  * --m3-ov-gap-cards   -> Überschrift bis zu den oberen Rändern der Kacheln
  * --m3-ov-gap-section -> untere Ränder der Kacheln bis „Projekte“ (die Seitenlinie
  *                        steht mittig dazwischen)
- * --m3-ov-gap-tabs    -> „Projekte“ bis zur Reiter-Kapsel
+ * --m3-ov-gap-tabs    -> „Projekte“ bis zur Reiter-Kapsel (in „Android“ bis dorthin, wo
+ *                        die Kapsel stünde; die Reiterzeile selbst bleibt gleich)
  *
  * Feste Zahlen in dieser Datei (hängen an Schrift und Kapsel; ändert man
  * Schriftgröße oder Kapselhöhe, hier nachmessen):
@@ -25,22 +30,22 @@
  */
 
 @media (max-width: 1023px) {
-  [data-mobile-variant="experiment"] #view-home .screen-title {
+  [data-mobile-os="android"] #view-home .screen-title {
     margin-top: calc(var(--m3-ov-gap-title) - 40px);
     margin-bottom: calc(var(--m3-ov-gap-cards) - 0.225em);
   }
 
   /* Der Abstand zu „Projekte“ teilt sich je zur Hälfte über und unter die Seitenlinie */
-  [data-mobile-variant="experiment"] #view-home .overview-pager {
+  [data-mobile-os="android"] #view-home .overview-pager {
     margin-top: calc((var(--m3-ov-gap-section) - 3px - 2.6px) / 2);
   }
 
-  [data-mobile-variant="experiment"] #view-home .overview-pager + .section-head {
+  [data-mobile-os="android"] #view-home .overview-pager + .section-head {
     margin-top: calc((var(--m3-ov-gap-section) - 3px - 2.6px) / 2);
   }
 
   /* Die Kapsel bringt oben --m3-seg-air Luft in ihrer Zeile mit */
-  [data-mobile-variant="experiment"] #view-home .project-head {
+  [data-mobile-os="android"] #view-home .project-head {
     margin-bottom: calc(var(--m3-ov-gap-tabs) - var(--m3-seg-air) - 0.4px);
   }
 }
