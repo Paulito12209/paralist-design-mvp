@@ -69,7 +69,7 @@
     <link rel="stylesheet" href="styles/viewer.css" />
     <link rel="stylesheet" href="styles/drawing.css" /><link rel="stylesheet" href="styles/video-player.css" />
     <!-- Android-Fassung (Einstellungen › Mehr › Versionen): nach den Seiten, damit sie deren Handy-Regeln überschreibt -->
-    <link rel="stylesheet" href="styles/tokens-android.css" /><link rel="stylesheet" href="styles/android.css" /><link rel="stylesheet" href="styles/android-tabs.css" /><link rel="stylesheet" href="styles/android-fab.css" /><link rel="stylesheet" href="styles/android-sheet.css" /><link rel="stylesheet" href="styles/android-archive.css" /><link rel="stylesheet" href="styles/android-view-btn.css" /><link rel="stylesheet" href="styles/android-entry.css" /><link rel="stylesheet" href="styles/android-list.css" /><link rel="stylesheet" href="styles/android-reorder.css" /><link rel="stylesheet" href="styles/android-card.css" /><link rel="stylesheet" href="styles/android-bottom-sheet.css" /><link rel="stylesheet" href="styles/android-segmented.css" /><link rel="stylesheet" href="styles/android-overview-gaps.css" /><link rel="stylesheet" href="styles/android-quiet-tools.css" /><link rel="stylesheet" href="styles/android-calendar.css" /><link rel="stylesheet" href="styles/android-composer.css" />
+    <link rel="stylesheet" href="styles/tokens-android.css" /><link rel="stylesheet" href="styles/android.css" /><link rel="stylesheet" href="styles/android-tabs.css" /><link rel="stylesheet" href="styles/android-fab.css" /><link rel="stylesheet" href="styles/android-sheet.css" /><link rel="stylesheet" href="styles/android-archive.css" /><link rel="stylesheet" href="styles/android-view-btn.css" /><link rel="stylesheet" href="styles/android-entry.css" /><link rel="stylesheet" href="styles/android-list.css" /><link rel="stylesheet" href="styles/android-reorder.css" /><link rel="stylesheet" href="styles/android-card.css" /><link rel="stylesheet" href="styles/android-bottom-sheet.css" /><link rel="stylesheet" href="styles/android-segmented.css" /><link rel="stylesheet" href="styles/android-overview-gaps.css" /><link rel="stylesheet" href="styles/android-quiet-tools.css" /><link rel="stylesheet" href="styles/android-calendar.css" /><link rel="stylesheet" href="styles/android-composer.css" /><link rel="stylesheet" href="styles/android-pages.css" /><link rel="stylesheet" href="styles/android-pages-content.css" />
     <!-- iOS-Fassung: ebenso nach den Seiten -->
     <link rel="stylesheet" href="styles/tokens-ios.css" /><link rel="stylesheet" href="styles/ios.css" /><link rel="stylesheet" href="styles/ios-segmented.css" /><link rel="stylesheet" href="styles/ios-menu.css" />
     <!-- Desktop-Fassung ab 1024px (Reiterzeile, Seitenleiste, rechte Spalte, Kopf der Übersicht): zuletzt, damit sie das Handy-Layout überschreibt -->
@@ -324,7 +324,7 @@
         </footer>
 
         <!-- Fortschritt: Blatt mit XP-Verteilung, Meilensteinen, Verlauf, Stufen und Historie -->
-        <div class="modal-backdrop" id="progress" hidden>
+        <div class="modal-backdrop" id="progress" data-android-page hidden>
           <div class="modal" role="dialog" aria-modal="true" aria-labelledby="progress-title">
             <header class="modal-head" id="progress-head">
               <div class="modal-grip"></div><button class="modal-back" id="progress-back" type="button" aria-label="Zurück zum Fortschritt" hidden><svg class="icon"><use href="#icon-back"></use></svg></button><!-- hidden: nur auf den Meilensteinen -->
@@ -338,7 +338,7 @@
         </div>
 
         <!-- Einstellungen: Profilkopf, die beiden Auswertungs-Karten, Darstellung und Konto-Optionen -->
-        <div class="modal-backdrop" id="profile" hidden>
+        <div class="modal-backdrop" id="profile" data-android-page hidden>
           <div class="modal" role="dialog" aria-modal="true" aria-labelledby="profile-title">
             <header class="modal-head" id="profile-head">
               <div class="modal-grip"></div>

@@ -1,9 +1,10 @@
 /*
  * Das Einstellungs-Blatt hinter dem runden Knopf oben rechts: Profilkopf, die
- * beiden Kacheln unter „Analyse“, die Darstellung und die Konto-Listen. Tippt
- * man eine Kachel an, tritt an die Stelle der Liste die volle Karte mit
- * Diagramm. Der Bereich heißt weiter „profile“, weil das Blatt am Profilkopf
- * hängt. Unter „App“ führen vier Zeilen zu Navigation, Suche, Design und Tabs
+ * Darstellung und die Konto-Listen. Tippt man eine Zeile an, tritt an die
+ * Stelle der Liste ihre Unterseite. Nutzungszeit und Serie stehen am Handy
+ * nicht hier, sondern im Fortschritt; am Desktop bleiben sie unter „Analyse“.
+ * Der Bereich heißt weiter „profile“, weil das Blatt am Profilkopf hängt.
+ * Unter „App“ führen vier Zeilen zu Navigation, Suche, Design und Tabs
  * (app-settings.js), unter „Konto“ eine zu den Kontoeinstellungen, unter
  * „Support“ zwei auf das Feedback-Formular und die Danksagungen; „Roadmap“
  * ist dagegen ein Link nach draußen und braucht hier nichts (Adresse in
@@ -25,6 +26,7 @@ import { flushUsage, trackUsage } from "../../data/usage.js";
 import { bindModalPull, clearModalPull } from "../../ui/modal-pull.js";
 import { closeCtxMenu } from "../../ui/ctx-menu.js";
 import { isDesk } from "../../ui/desk-mode.js";
+import { isMobileOs } from "../../ui/platform.js";
 import { registerOverlay } from "../../ui/router.js";
 import { closeSheet, openSheet } from "../../ui/sheet.js";
 import { hideCropper, openCropper } from "./avatar-crop.js";
@@ -48,7 +50,6 @@ import {
   detailHash,
   detailMarkup,
   enterDetail,
-  insightsSection,
   isDetail,
   settleDetail,
 } from "./settings-cards.js";
@@ -69,13 +70,14 @@ export function renderProfile() {
   /* Am Handy die ganze Liste, am Desktop nur der Punkt aus dem Untermenü. */
   const list = isDesk()
     ? paneMarkup(ui.settingsPane)
-    : identityCard() + insightsSection() + appearanceSection() + listsMarkup();
+    : identityCard() + appearanceSection() + listsMarkup();
   dom.profileBody.innerHTML = shownDetail ? detailMarkup(shownDetail) : list;
   renderPageChrome();
   /* Nur auf einer Unterseite: der Pfeil erscheint und „Einstellungen“ rückt
      neben ihn — zusammen sind sie der Weg zurück zur Liste. Auf der Liste
-     selbst führt das Kreuz allein aus dem Blatt heraus. */
-  el("profile-back").hidden = !shownDetail;
+     selbst führt das Kreuz allein aus dem Blatt heraus. In der Android-Fassung
+     gibt es kein Kreuz: dort steht der Pfeil immer und schließt auf der Liste. */
+  el("profile-back").hidden = !shownDetail && !isMobileOs("android");
   el("profile-head").classList.toggle("is-back", Boolean(shownDetail));
   if (shownDetail) settleDetail(shownDetail);
 }
@@ -118,8 +120,12 @@ function openDetail(key) {
   );
 }
 
-/** Von der vollen Karte zurück zur Liste. */
+/** Von der Unterseite zurück zur Liste — auf der Liste (nur Android) schließt der Pfeil das Blatt. */
 function closeDetail() {
+  if (!ui.settingsDetail) {
+    close();
+    return;
+  }
   if (history.state && history.state.view === "profile" && history.state.detail) {
     history.back();
     return;
@@ -288,7 +294,7 @@ function checkForUpdateNow(row) {
   emit(events.updateRequested, { report: show });
 }
 
-/* Klicks im Blatt: Feedback-Seite, Bild, Kacheln, Darstellung, Zeitraum. */
+/* Klicks im Blatt: Feedback-Seite, Bild, Unterseiten, Darstellung, Kurzbefehle, Versionen, Zeitraum (Desktop). */
 function onBodyClick(event) {
   if (onFeedbackClick(event)) {
     rerenderKeepingScroll();

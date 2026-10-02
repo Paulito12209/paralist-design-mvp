@@ -21,6 +21,8 @@ import { events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { ui } from "../../data/state.js";
 import { isDesk, onDeskChange } from "../../ui/desk-mode.js";
+import { isMobileOs } from "../../ui/platform.js";
+import { detailTitle } from "./settings-cards.js";
 import { enterPane, isPane, settingsNavMarkup } from "./settings-nav.js";
 
 const pageTitle = "Profil";
@@ -31,9 +33,14 @@ let nav = null;
 let redraw = () => {};
 let hideSheet = () => {};
 
-/** Titel und Untermenü passend zur Breite und zum gewählten Punkt setzen. */
+/**
+ * Titel und Untermenü passend zur Breite und zum gewählten Punkt setzen. In der
+ * Android-Fassung ist das Blatt eine Seite: ihre Kopfleiste nennt auf einer
+ * Unterseite deren Namen.
+ */
 export function renderPageChrome() {
-  el("profile-title").textContent = isDesk() ? pageTitle : sheetTitle;
+  const subpage = isMobileOs("android") && ui.settingsDetail ? detailTitle(ui.settingsDetail) : "";
+  el("profile-title").textContent = isDesk() ? pageTitle : subpage || sheetTitle;
   if (nav) nav.innerHTML = isDesk() ? settingsNavMarkup(ui.settingsPane) : "";
 }
 

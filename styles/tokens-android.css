@@ -103,6 +103,18 @@
  *                                 Blatt „Neu“ (Material 3 „Filter chip“: 32dp, 8dp — eckig gerundet, keine Pille)
  * --m3-composer-attach         -> Größe des runden Anhang-Knopfs (+) links unten in diesem Blatt (40dp)
  * --m3-composer-pad            -> Innenabstand des Blatts „Neu“ links, rechts und oben (Google Tasks: 24dp)
+ * --m3-page-bar-h              -> Höhe der Kopfleiste auf den Seiten Einstellungen und Fortschritt (Material 3 „Small top app bar“: 64dp)
+ * --m3-page-bar-pad            -> Abstand von Pfeil und Titel dieser Leiste zum Geräterand (Material 3: 4dp)
+ * --m3-page-bar-title          -> Schriftgröße des Titels in der Leiste (Material 3 „Title large“: 22sp)
+ * --m3-page-edge               -> Abstand von Karten und Zeilen auf diesen Seiten zum Geräterand (Material 3: 16dp)
+ * --m3-page-row-h              -> Mindesthöhe einer Listenzeile auf diesen Seiten (Material 3 Liste, eine Zeile: 56dp)
+ * --m3-page-icon               -> Größe der Icons vor den Zeilen dieser Seiten (Material 3: 24dp)
+ * --m3-page-card-radius        -> Rundung der Karten und Kacheln auf diesen Seiten (Material 3 „Large“: 16dp)
+ * --m3-page-gap                -> Luft zwischen zwei Karten auf diesen Seiten (Material 3: 8dp)
+ * --m3-page-section-gap        -> Luft über einer Abschnittsüberschrift („Darstellung“, „Analyse“)
+ * --m3-page-seg-h              -> Höhe des Zeitraum-Schalters „7 Tage | 30 Tage | 90 Tage“ (Material 3 „Segmented button“: 40dp)
+ * --m3-page-in-time            -> Dauer, mit der eine Seite hereingleitet (Material 3: 300ms)
+ * --m3-page-in-shift           -> wie weit sie dabei von rechts kommt (Material 3 „Shared axis“: 30dp)
  */
 
 :root[data-mobile-os="android"] {
@@ -187,6 +199,18 @@
   --m3-chip-radius: 8px;
   --m3-composer-attach: 40px;
   --m3-composer-pad: 24px;
+  --m3-page-bar-h: 64px;
+  --m3-page-bar-pad: 4px;
+  --m3-page-bar-title: 22px;
+  --m3-page-edge: 16px;
+  --m3-page-row-h: 56px;
+  --m3-page-icon: 24px;
+  --m3-page-card-radius: 16px;
+  --m3-page-gap: 8px;
+  --m3-page-section-gap: 24px;
+  --m3-page-seg-h: 40px;
+  --m3-page-in-time: 300ms;
+  --m3-page-in-shift: 30px;
   --m3-error: #b3261c;
   --m3-on-error: #ffffff;
 }
