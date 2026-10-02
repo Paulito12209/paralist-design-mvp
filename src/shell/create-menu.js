@@ -2,8 +2,8 @@
  * Was die Plus-Menüs der Android- und der iOS-Fassung anbieten, und was ein
  * Tipp darauf tut. Beide stapeln die Einträge von unten nach oben, der erste
  * Eintrag steht dem Knopf am nächsten. Ein Eintrag öffnet das Eingabefeld mit
- * dieser Art — der Arbeitsbereich entsteht wie auf seiner Seite gleich mit
- * Namensfeld.
+ * dieser Art — auch der Arbeitsbereich, der dort seinen Namen bekommt
+ * (src/features/composer/composer-workspace.js).
  * Pfad: src/shell/create-menu.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -15,8 +15,6 @@
 
 import { emit, events } from "../core/bus.js";
 import { typeIcon } from "../data/config.js";
-import { addWorkspace } from "../data/mutations.js";
-import { openWorkspacesPage } from "../ui/router.js";
 
 /* Die Arbeitsbereiche sind keine Einträge und haben darum keinen Typ — sie
    bekommen ihr Icon hier. */
@@ -39,12 +37,7 @@ export function createMenuItems() {
   return menuItems.map((item, index) => ({ ...item, icon: item.icon || typeIcon(item.type), index }));
 }
 
-/** Einen Eintrag ausführen: Arbeitsbereich direkt auf seiner Seite, sonst das Eingabefeld. */
+/** Einen Eintrag ausführen: das Eingabefeld geht mit dieser Art auf. */
 export function createFromMenu(type) {
-  if (type === workspaceItem) {
-    openWorkspacesPage();
-    addWorkspace();
-    return;
-  }
   emit(events.createRequested, type);
 }

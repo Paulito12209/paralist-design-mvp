@@ -15,7 +15,6 @@ import { dom, el } from "../../core/dom.js";
 import { dayKey, timeKey } from "../../core/dates.js";
 import { overviewPages, typeIcon, typePlurals, typeSingular, xpKinds } from "../../data/config.js";
 import { connectEntries } from "../../data/links.js";
-import { addWorkspace } from "../../data/mutations.js";
 import { applyEntryDefaults } from "../../data/mutations-tasks.js";
 import { findEntry, mainPlace, parentName } from "../../data/queries.js";
 import { entryRef } from "../../data/refs.js";
@@ -23,7 +22,7 @@ import { state, ui } from "../../data/state.js";
 import { awardXp, commitXp } from "../../data/xp.js";
 import { closeCtxMenu } from "../../ui/ctx-menu.js";
 import { openPlacePicker } from "../../ui/pickers.js";
-import { openEntry, openEntryOrFile, openWorkspacesPage } from "../../ui/router.js";
+import { openEntry, openEntryOrFile } from "../../ui/router.js";
 import { hideToast, showToast } from "../../ui/toast.js";
 import { isViewActive } from "../../ui/views.js";
 import { fillVideoTitle } from "../../ui/bookmark-title.js";
@@ -45,6 +44,7 @@ import {
 import { stopPlaceholderHint } from "./composer-hint.js";
 import { hideComposerScrim, initComposerSheet, openOverComposer, showComposerScrim } from "./composer-sheet.js";
 import { initComposerTypes, renderComposerTypes } from "./composer-types.js";
+import { createWorkspaceFromDraft, isWorkspaceDraft, renderWorkspaceDraft } from "./composer-workspace.js";
 import { stopDictation } from "./dictation.js";
 
 /** Anlegen-Knopf: erst aktiv, wenn Text da ist oder ein Anhang den Titel liefern kann. */
@@ -54,6 +54,11 @@ export function updateComposerSend() {
      Plus-Knopf daneben ist der Weg. */
   if (composer.type === "medien") {
     dom.composerSend.disabled = !composer.files.length;
+    return;
+  }
+  /* Ein Arbeitsbereich braucht seinen Namen — Anhänge allein benennen ihn nicht */
+  if (isWorkspaceDraft()) {
+    dom.composerSend.disabled = !dom.composerInput.value.trim();
     return;
   }
   dom.composerSend.disabled = !dom.composerInput.value.trim() && !composer.files.length;
@@ -106,6 +111,8 @@ function renderComposerLink() {
   /* Angedeutet, solange dort noch der Vorschlag der Seite steht — gefüllt,
      sobald man selbst einen anderen Ort gewählt hat. */
   dom.composerLink.classList.toggle("is-preset", isComposerPreset("place"));
+  /* Ein Arbeitsbereich hat keinen Ablageort: der Ort-Chip weicht */
+  renderWorkspaceDraft();
 }
 
 /**
@@ -217,6 +224,12 @@ function createdTitle(entry, count) {
 /** Aus dem Entwurf einen Eintrag machen — beim Typ „Medium“ nur die Dateien selbst. */
 export function createEntry() {
   const typed = dom.composerInput.value.trim();
+  if (isWorkspaceDraft()) {
+    if (!typed) return;
+    createWorkspaceFromDraft(typed);
+    closeComposer();
+    return;
+  }
   const isMedia = composer.type === "medien";
   /* Ohne Titel reicht ein Anhang: dann heißt der Eintrag wie die erste Datei.
      Ein Medium braucht dagegen immer eine Datei — es IST die Datei. */
@@ -285,7 +298,8 @@ function renderTypeDependents() {
 /* Hängt eine Datei dran, folgt der Typ Anhängen und Text (followFileDraft in
    composer-state.js) — Knöpfe und Pillen müssen dann mit. */
 function onFilesChanged() {
-  followFileDraft(Boolean(dom.composerInput.value.trim()));
+  /* Ein Arbeitsbereich bleibt einer: seine Dateien werden Medien darin */
+  if (!isWorkspaceDraft()) followFileDraft(Boolean(dom.composerInput.value.trim()));
   renderTypeDependents();
 }
 
@@ -294,7 +308,7 @@ function onFilesChanged() {
  * kann mit dem ersten Buchstaben ein Dokument werden und umgekehrt.
  */
 export function onComposerText() {
-  if (followFileDraft(Boolean(dom.composerInput.value.trim()))) renderTypeDependents();
+  if (!isWorkspaceDraft() && followFileDraft(Boolean(dom.composerInput.value.trim()))) renderTypeDependents();
   else updateComposerSend();
 }
 
@@ -308,18 +322,10 @@ export function initComposer() {
   el("composer-close").addEventListener("click", closeComposer);
   initComposerSheet(closeComposer);
   dom.composerSend.addEventListener("click", createEntry);
-  initComposerTypes(
-    () => {
-      renderTypeDependents();
-      dom.composerInput.focus();
-    },
-    /* Ein Arbeitsbereich entsteht auf seiner Seite mit Namensfeld, nicht im Eingabefeld */
-    () => {
-      closeComposer();
-      openWorkspacesPage();
-      addWorkspace();
-    }
-  );
+  initComposerTypes(() => {
+    renderTypeDependents();
+    dom.composerInput.focus();
+  });
   initComposerAttachments(onFilesChanged);
 
   dom.composerLink.addEventListener("click", () => {
