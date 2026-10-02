@@ -22,6 +22,7 @@
  * workspaceDefaultName    -> Vorgabename eines neuen Arbeitsbereichs
  * levelSteps / levelStep  -> ab wie vielen XP die nächste Stufe beginnt
  * calendarSegments[*].add -> Beschriftung der Pille am leeren Kalendertag
+ * manualSort              -> „Eigene Reihenfolge“: Wortlaut der Sortierung, die beim Verschieben einer Zeile entsteht
  * projectSorts            -> wonach sich die Projekte sortieren lassen, samt Wortlaut beider Richtungen
  * projectViewDefaults     -> womit „Alle“ und jede neue Ansicht der Projekte startet
  * stageModes              -> die drei Modi der Bühne auf der Übersicht (Desktop): Icon im Schalter und
@@ -308,12 +309,20 @@ export const resourceFilterTypes = {
  * die beim Wechsel auf diese Option gilt. Die Regeln dahinter stehen in
  * `sortProjects` in src/data/project-views.js.
  */
+/*
+ * „Eigene Reihenfolge“ entsteht, wenn man eine Zeile gedrückt hält und
+ * verschiebt (src/ui/row-reorder.js). Sammlungen und Projekte bieten sie an;
+ * die Reihenfolge selbst merkt src/data/manual-order.js.
+ */
+export const manualSort = { id: "manuell", label: "Eigene Reihenfolge", icon: "list", up: "Von oben nach unten", down: "Von unten nach oben", asc: true };
+
 export const projectSorts = [
   { id: "name", label: "Name", icon: "text", up: "A bis Z", down: "Z bis A", asc: true },
   { id: "erstellt", label: "Erstellt", icon: "plus-circle", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
   { id: "geaendert", label: "Zuletzt geändert", icon: "pencil", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
   { id: "geoeffnet", label: "Zuletzt geöffnet", icon: "history", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
   { id: "eintraege", label: "Einträge", icon: "list", up: "Wenigste zuerst", down: "Meiste zuerst", asc: false },
+  manualSort,
 ];
 
 /**

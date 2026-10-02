@@ -2,15 +2,23 @@
  * Zeilen zur Seite ziehen, damit die runden Knöpfe dahinter zum Vorschein
  * kommen. Wie weit eine Zeile aufgeht, hängt davon ab, wie viele Knöpfe sie hat.
  *
- * Damit sich das nicht mit dem Tab-Wechsel beißt (src/ui/pill-swipe.js), gilt:
- * - kurz wischen            -> nächster oder voriger Tab, die Zeile bleibt stehen
- * - gedrückt halten, ziehen -> nach grabDelay färbt sich die Zeile, das Handy
- *                              tickt kurz; ab dann hängt sie am Finger und rastet
- *                              beim Loslassen offen oder zu ein
- * - halten, loslassen       -> Kontextmenü wie bisher (src/ui/long-press.js)
- * - halten, bis das Menü greift, dann ziehen
- *                           -> die Zeile wird angehoben und lässt sich auf ein
- *                              Ziel legen (src/ui/row-lift.js), wo das angemeldet ist
+ * Vier Gesten teilen sich die Zeile; damit sie sich nicht in die Quere kommen
+ * (Tab-Wechsel in src/ui/pill-swipe.js), entscheidet die Zeit, bevor sich der
+ * Finger bewegt:
+ * - sofort wischen          -> nächster oder voriger Tab, die Zeile bleibt stehen;
+ *                              senkrecht: die Seite scrollt
+ * - grabDelay halten, dann seitlich ziehen
+ *                           -> die Zeile färbt sich, das Handy tickt kurz; ab dann
+ *                              hängt sie am Finger und rastet beim Loslassen offen
+ *                              oder zu ein (senkrecht ziehen lässt sie wieder los)
+ * - holdDelay (src/ui/long-press.js) still halten
+ *                           -> Android, verschiebbare Zeile: sie hebt sich sofort
+ *                              an (src/ui/row-lift.js) und wandert dann mit dem
+ *                              Finger senkrecht durch die Liste (src/ui/row-reorder.js)
+ *                              oder auf den Archiv-Knopf; ihr Menü gibt es nur über
+ *                              die drei Punkte rechts (src/ui/list-clicks.js)
+ *                           -> sonst (iOS, Zeilen ohne drei Punkte): beim Loslassen
+ *                              öffnet sich das Kontextmenü
  * Eine schon offene Zeile ist sofort angefasst: kurz wischen schiebt sie zu.
  * Pfad: src/ui/swipe.js
  *
@@ -21,21 +29,14 @@
  * --swipe-grab-bg (styles/tokens.css) -> Farbe der angefassten Zeile
  * axisSlack      -> ab wie vielen Pixeln entschieden wird, ob waagerecht oder senkrecht gewischt wird
  * grabDelay      -> wie lange man halten muss, bis die Zeile am Finger hängt (Millisekunden);
- *                   kürzer als das Menü in long-press.js, damit man vorher ziehen kann
+ *                   kürzer als holdDelay in long-press.js, damit man vorher seitlich ziehen kann
  * grabSlack      -> wie weit der Finger beim Halten wackeln darf, ohne dass es als Wischen gilt
  * grabBuzzMs     -> Länge des kurzen Vibrierens beim Anfassen (0 = aus)
  */
 
 import { cssNumber } from "../core/css-vars.js";
 import { dom } from "../core/dom.js";
-import {
-  cancelHold,
-  finishHold,
-  holdTurnedDrag,
-  isHolding,
-  startHold,
-  trackHold,
-} from "./long-press.js";
+import { cancelHold, finishHold, isHolding, setHoldFired, startHold, trackHold } from "./long-press.js";
 import { COPY_HOLD } from "./page-tools.js";
 import { canLift, startLift } from "./row-lift.js";
 
@@ -68,6 +69,26 @@ function grab(current) {
 function release(current) {
   clearTimeout(current.timer);
   current.body.classList.remove("is-grabbed", "is-sliding");
+}
+
+/* Das seitliche Ziehen aufgeben und die Zeile zuschieben — eine andere Geste übernimmt. */
+function dropDrag() {
+  if (!drag) return;
+  const { body } = drag;
+  release(drag);
+  drag = null;
+  setOffset(body, 0);
+}
+
+/* Das Halten hat gegriffen, der Finger steht still: eine Zeile, die sich
+   anheben lässt (nur Android, src/ui/row-lift.js), hebt sich jetzt — ohne
+   Menü. Das Halten wird dafür verworfen, sonst käme beim Loslassen doch eins. */
+function liftOnHold(held) {
+  if (!canLift(held.target)) return;
+  cancelHold();
+  dropDrag();
+  rowGesture = true;
+  startLift({ pointerId: held.pointerId, clientX: held.startX, clientY: held.startY }, held.target);
 }
 
 /* Wie weit die Zeile nach links und rechts aufgeht. */
@@ -163,20 +184,6 @@ function onPointerDown(event) {
 }
 
 function onPointerMove(event) {
-  /* Das Halten hat gegriffen und der Finger wandert los: Zeile anheben statt Menü */
-  const held = holdTurnedDrag(event);
-  if (held && canLift(held)) {
-    cancelHold();
-    if (drag) {
-      const { body } = drag;
-      release(drag);
-      drag = null;
-      setOffset(body, 0);
-    }
-    rowGesture = true;
-    startLift(event, held);
-    return;
-  }
   trackHold(event);
   if (!drag || event.pointerId !== drag.pointerId) return;
 
@@ -216,12 +223,7 @@ function onPointerMove(event) {
 /* Beim Loslassen rastet die Zeile ein: ab der halben Strecke bleibt sie offen. */
 function endDrag() {
   if (finishHold()) {
-    if (drag) {
-      const { body } = drag;
-      release(drag);
-      drag = null;
-      setOffset(body, 0);
-    }
+    dropDrag();
     return;
   }
 
@@ -239,6 +241,7 @@ function endDrag() {
 /** Die Wisch-Geste aktivieren. Wird einmal beim Start aufgerufen. */
 export function initSwipe() {
   const { content } = dom;
+  setHoldFired(liftOnHold);
   content.addEventListener("pointerdown", onPointerDown);
   content.addEventListener("pointermove", onPointerMove);
   content.addEventListener("pointerup", endDrag);

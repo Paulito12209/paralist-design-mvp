@@ -1,17 +1,19 @@
 /*
  * Eine Zeile anheben und auf ein Ziel ziehen — z.B. auf den Archiv-Knopf der
- * Android-Fassung (src/shell/android-archive.js). Angehoben wird nach dem
- * langen Drücken (src/ui/long-press.js): wandert der Finger danach, statt
- * loszulassen, öffnet sich kein Menü, sondern eine Kopie der Zeile hängt am
- * Finger. Jedes Element mit data-lift-drop ist ein Ziel; schwebt die Zeile
- * darüber, bekommt es die Klasse is-drop-over. Loslassen über einem Ziel gibt
- * die Zeile an die angemeldete Stelle weiter, sonst passiert nichts.
+ * Android-Fassung (src/shell/android-archive.js). Angehoben wird, sobald das
+ * lange Drücken greift (src/ui/long-press.js, angestoßen aus src/ui/swipe.js):
+ * der Finger steht noch still, das Handy tickt, und eine Kopie der Zeile hängt
+ * ab jetzt am Finger — ein Menü gibt es nicht. Jedes Element mit
+ * data-lift-drop ist ein Ziel; schwebt die Zeile darüber, bekommt es die
+ * Klasse is-drop-over. Loslassen über einem Ziel gibt die Zeile an die
+ * angemeldete Stelle weiter, sonst passiert nichts.
  *
  * Was angehoben werden darf und was beim Ablegen passiert, weiß diese Datei
  * nicht — das meldet die obere Schicht mit setRowLift() an. Eine Zeile in
  * einer Liste mit data-reorder darf immer angehoben werden: sie lässt sich
  * dann auch verschieben (src/ui/row-reorder.js), und die Kopie sieht aus wie
- * die „gezogene Zeile“ in Material 3.
+ * die „gezogene Zeile“ in Material 3 — sie folgt dem Finger nur senkrecht und
+ * bleibt in ihrer Spalte, so wie dort.
  *
  * Damit es flüssig bleibt: die Kopie bewegt sich nur über `translate`, ihre
  * Maße werden einmal beim Anheben genommen, und das Ziel unter dem Finger
@@ -29,7 +31,6 @@
 
 import { cssNumber } from "../core/css-vars.js";
 import { dom } from "../core/dom.js";
-import { firedHoldTarget } from "./long-press.js";
 import { beginReorder, finishReorder, isReorderRow, updateReorder } from "./row-reorder.js";
 
 const liftBuzzMs = 10;
@@ -65,9 +66,10 @@ function zoneAt(x, y) {
 function frame() {
   if (!lift) return;
   lift.frame = 0;
-  const { ghost, x, y, startX, startY } = lift;
-  /* translate statt transform: so verschiebt das Schrumpfen über dem Ziel (scale) die Kopie nicht mit */
-  ghost.style.translate = `${x - startX}px ${y - startY}px`;
+  const { ghost, x, y, startX, startY, reorder } = lift;
+  /* translate statt transform: so verschiebt das Schrumpfen über dem Ziel (scale) die Kopie nicht mit.
+     Eine verschiebbare Zeile bleibt in ihrer Spalte (Material 3): nur senkrecht nachführen. */
+  ghost.style.translate = `${reorder ? 0 : x - startX}px ${y - startY}px`;
   /* Beim Verschieben rückt die Zeile am Rand nach; rollt die Seite, folgt gleich ein weiteres Bild */
   if (lift.reorder && updateReorder(y)) lift.frame = requestAnimationFrame(frame);
   const zone = zoneAt(x, y);
@@ -80,7 +82,9 @@ function frame() {
 
 /**
  * Anheben: eine Kopie der Zeile legt sich genau über sie und folgt ab jetzt
- * dem Finger. `row` ist das Element, auf dem lange gedrückt wurde.
+ * dem Finger. `row` ist das Element, auf dem lange gedrückt wurde; `event`
+ * braucht nur pointerId, clientX und clientY — der Aufrufer gibt die Stelle
+ * des Haltens herein, denn beim Anheben bewegt sich der Finger noch nicht.
  */
 export function startLift(event, row) {
   if (lift || !canLift(row)) return;
@@ -151,10 +155,10 @@ function onPointerMove(event) {
   if (!lift.frame) lift.frame = requestAnimationFrame(frame);
 }
 
-/* Solange eine Zeile angehoben ist — oder gleich angehoben werden kann, weil
-   das lange Drücken schon gegriffen hat —, scrollt der Finger nicht die Seite. */
+/* Solange eine Zeile angehoben ist, scrollt der Finger nicht die Seite —
+   sonst bräche der Browser den Zug ab (pointercancel). */
 function onTouchMove(event) {
-  if (lift || canLift(firedHoldTarget())) event.preventDefault();
+  if (lift) event.preventDefault();
 }
 
 /** Zuhörer einmal anmelden. Wird beim Start aufgerufen. */

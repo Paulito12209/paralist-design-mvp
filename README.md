@@ -187,8 +187,8 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
   deren Einträge wandern in den Eingang). Arbeitsbereich anlegen,
   umbenennen, Icon, Favorit, in anderen Tab verschieben und „Zeigen“,
   archivieren, „Zum Archiv“, zurückholen, löschen. Wischen wechselt den Tab.
-- Lange auf eine Pille oder Zeile drücken (oder Rechtsklick): das Menü
-  geht auf und die Seite darunter öffnet sich **nicht**.
+- Pille oder Zeile lange drücken (oder Rechtsklick): Menü auf, Seite darunter
+  bleibt zu. Android: Halten verschiebt die Zeile, Menü nur über die drei Punkte.
 - Zeile nach links wischen (Archivieren, Löschen) und nach rechts (Favorit,
   Verknüpfen). Eine aufgewischte Zeile schiebt sich beim Antippen erst zu.
 - Arbeitsbereich umwandeln — über das Menü der Zeile, das Seitenmenü oder die

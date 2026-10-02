@@ -6,11 +6,15 @@
  * oder zwei Filter: den Ort (`place`) und „Nur Favoriten“. Sind `ids`
  * gefüllt, zählen nur sie; die Filter ruhen dann. Die erste Ansicht „Alle“
  * ist fest: sie zeigt jedes Projekt, darf aber sortieren. Eine neue Ansicht
- * beginnt als Kopie von „Alle“.
+ * beginnt als Kopie von „Alle“. Verschiebt man eine Projektzeile mit dem
+ * Finger (src/ui/row-reorder.js), wechselt die Ansicht auf „Eigene
+ * Reihenfolge“; gemerkt wird sie je Ansicht unter dem Schlüssel
+ * projectOrderScope(id) in src/data/manual-order.js.
  * Pfad: src/data/project-views.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
+ * projectOrderPrefix -> Anfang des Schlüssels, unter dem eine Ansicht ihre eigene Reihenfolge merkt
  * allProjectViewName -> Name der festen ersten Ansicht
  * viewPlaceholder    -> Vorgabename einer neuen Ansicht („Ansicht 2“)
  * copyPlaceholder    -> Vorgabename einer Kopie („Alle Kopie“)
@@ -21,13 +25,15 @@
 
 import { emit, events } from "../core/bus.js";
 import { nextId, sameId } from "../core/ids.js";
-import { sortEntries } from "./collection-sorts.js";
+import { manualId, sortEntries } from "./collection-sorts.js";
 import { projectSorts, projectViewDefaults } from "./config.js";
+import { manualRank } from "./manual-order.js";
 import { entriesOf, projectEntries } from "./queries.js";
 import { entryRef, isWorkspaceRef, workspaceRef } from "./refs.js";
 import { saveState, state, ui } from "./state.js";
 import { setTabIconsOn } from "./tab-icons.js";
 
+export const projectOrderPrefix = "pv:";
 export const allProjectViewName = "Alle";
 const viewPlaceholder = (n) => `Ansicht ${n}`;
 const copyPlaceholder = (name) => `${name} Kopie`;
@@ -45,6 +51,17 @@ export function findProjectView(id) {
 /** Die gewählte Ansicht — im Zweifel „Alle“. */
 export function activeProjectView() {
   return findProjectView(state.activeProjectViewId) || state.projectViews[0];
+}
+
+/** Der Schlüssel, unter dem eine Ansicht ihre eigene Reihenfolge merkt (data-reorder der Liste). */
+export function projectOrderScope(id) {
+  return `${projectOrderPrefix}${id}`;
+}
+
+/** Die Ansicht zu so einem Schlüssel; null, wenn es keine ist oder sie nicht mehr existiert. */
+export function projectViewOfScope(scope) {
+  if (!String(scope).startsWith(projectOrderPrefix)) return null;
+  return findProjectView(scope.slice(projectOrderPrefix.length));
 }
 
 /** Anzeigename einer Ansicht; leer heißt: der Vorgabename gilt. */
@@ -151,6 +168,8 @@ export function deleteProjectView(id) {
   if (!view || view.fixed) return;
   state.projectViews = state.projectViews.filter((item) => item !== view);
   if (sameId(state.activeProjectViewId, id)) state.activeProjectViewId = state.projectViews[0].id;
+  /* Ihre eigene Reihenfolge braucht niemand mehr */
+  if (state.prefs.manualOrders) delete state.prefs.manualOrders[projectOrderScope(view.id)];
   commit();
 }
 
@@ -171,9 +190,12 @@ const projectKeys = {
   eintraege: (project) => entriesOf(entryRef(project.id)).length,
 };
 
-/** Projekte sortieren; bei Gleichstand entscheidet der Name. */
-export function sortProjects(list, sortId, asc) {
-  return sortEntries(list, sortId, asc, projectKeys);
+/**
+ * Projekte sortieren; bei Gleichstand entscheidet der Name.
+ * @param scope der Schlüssel der eigenen Reihenfolge — nötig nur für „Eigene Reihenfolge“.
+ */
+export function sortProjects(list, sortId, asc, scope = "") {
+  return sortEntries(list, sortId, asc, { ...projectKeys, [manualId]: manualRank(scope, "e") });
 }
 
 /* Liegt das Projekt an dem Ort, den der Filter verlangt? */
@@ -190,7 +212,7 @@ export function visibleProjects(view = activeProjectView()) {
   const list = view.ids.length
     ? pool.filter((project) => view.ids.some((id) => sameId(id, project.id)))
     : pool.filter((project) => matchesPlace(project, view.place) && (!view.favoritesOnly || project.favorite));
-  return sortProjects(list, view.sort, view.sortAsc);
+  return sortProjects(list, view.sort, view.sortAsc, projectOrderScope(view.id));
 }
 
 /* ---------- Anlegen, Löschen, Laden ---------- */

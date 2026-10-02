@@ -1,10 +1,12 @@
 /*
  * Android-Fassung, Zeilen verschieben (Material 3 „Lists“, Zeilen umordnen):
- * Hält man eine Zeile lange gedrückt und zieht, löst sie sich als Karte mit
- * Schatten und getönter Fläche vom Rest der Liste und folgt dem Finger
- * (src/ui/row-lift.js). An ihrem Platz bleibt eine getönte Lücke, die
- * mitwandert (src/ui/row-reorder.js); die übrigen Zeilen zeigen statt der
- * drei Punkte den Griff „=“. Nach dem Loslassen gilt die neue Reihenfolge.
+ * Hält man eine Zeile gedrückt, löst sie sich — noch bevor sich der Finger
+ * bewegt — als Karte mit Schatten und getönter Fläche vom Rest der Liste und
+ * folgt dem Finger senkrecht (src/ui/row-lift.js). An ihrem Platz bleibt eine
+ * getönte Lücke, die mitwandert (src/ui/row-reorder.js); die Karte und die
+ * übrigen Zeilen zeigen statt der drei Punkte den Griff „=“ aus Material 3
+ * („drag handle“). Nach dem Loslassen gilt die neue Reihenfolge; ein Menü
+ * gibt es beim Halten nicht mehr, nur über die drei Punkte.
  * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
  * Pfad: styles/android-reorder.css
  *
