@@ -9,10 +9,14 @@
  * anchorGap -> Abstand zwischen Element und Menü (Pixel)
  *
  * Aussehen und Rundung stehen in styles/overlays.css (Klasse .ctx-card).
+ * In der Android-Fassung steht das Menü stattdessen immer unten rechts, mit
+ * demselben Abstand zur Navigationsleiste und zum Rand wie der Plus-Knopf
+ * (--m3-fab-gap in styles/tokens-android.css, Regel in styles/android.css).
  */
 
 import { dom } from "../core/dom.js";
 import { escapeHtml, icon } from "../core/html.js";
+import { isMobileOs } from "./platform.js";
 
 const edgeGap = 12;
 const anchorGap = 6;
@@ -29,6 +33,17 @@ export function closeCtxMenu() {
    klappt es über das Element; passt es rechts nicht, rutscht es nach links. */
 function placeCard(anchor) {
   const deviceRect = dom.device.getBoundingClientRect();
+  if (isMobileOs("android")) {
+    /* Unten rechts, wo der Daumen hinreicht: Unterkante der Karte so hoch über
+       dem Gerätefuß wie die Oberkante der Leiste plus Plus-Knopf-Abstand. Ist
+       die Leiste weggescrollt, rückt die Karte mit ihr nach unten (die Regel
+       dazu steht in styles/android.css). */
+    const navRect = dom.navShell.getBoundingClientRect();
+    dom.ctxCard.style.top = ""; /* top/left leeren: sonst gewinnt die Stelle der Desktop-Regel */
+    dom.ctxCard.style.left = "";
+    dom.ctxCard.style.setProperty("--ctx-nav-top", `${Math.max(0, Math.round(deviceRect.bottom - navRect.top))}px`);
+    return;
+  }
   const anchorRect = anchor.getBoundingClientRect();
   const cardRect = dom.ctxCard.getBoundingClientRect();
 
