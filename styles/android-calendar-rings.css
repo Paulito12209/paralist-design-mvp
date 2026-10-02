@@ -1,0 +1,85 @@
+/*
+ * Fassung „Android“, Kalender: die Tage im Wochenstreifen nach dem Vorbild
+ * des Material-3-Datumswählers. Die Ringe mit Murmeln (Formen in
+ * src/features/calendar/calendar-rings.js, Farben in styles/calendar-rings.css)
+ * bleiben, wie sie sind; dazu kommt:
+ *
+ * - Gewählter Tag: gefüllter Kreis in der Akzentfarbe, Zahl darauf in
+ *   --m3-on-primary. Hat der Tag einen Ring, liegt der Kreis innen im Ring.
+ * - Heute (nicht gewählt): Zahl in der Akzentfarbe, ohne Ring zusätzlich ein
+ *   dünner Kreis darum.
+ * - Drücken: getönter Kreis („state layer“) statt Verblassen.
+ *
+ * „Android (Experiment)“ und die übrigen Fassungen behalten die bisherige Optik.
+ * Gilt nur mit data-mobile-os="android" ohne data-mobile-variant an <html>
+ * und unterhalb von 1024px.
+ * Pfad: styles/android-calendar-rings.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-primary        -> gefüllter Kreis des gewählten Tages, Zahl und Kreis von „heute“
+ * --m3-on-primary     -> Zahl auf dem gefüllten Kreis
+ * --m3-on-surface     -> Tönung beim Drücken
+ * --m3-state-pressed  -> wie stark die Tönung ist (Material 3: 12%)
+ * --m3-cal-day-inset  -> Abstand des gefüllten Kreises zum Rand des Tages (ohne Ring)
+ * --m3-cal-ring-gap   -> Luft zwischen Ring und gefülltem Kreis (mit Ring)
+ * --cal-ring-w (styles/tokens-pages.css) -> Breite des Rings; der Kreis innen weicht ihm aus
+ *
+ * Direkt bei ihrer Regel: der Kreis um „heute“ ist 1px breit (Material 3).
+ */
+
+@media (max-width: 1023px) {
+  /* position/isolation: Bezug und eigene Ebene für den Kreis hinter der Zahl
+     (Tage mit Ring haben das schon, styles/calendar-rings.css) */
+  [data-mobile-os="android"]:not([data-mobile-variant]) .cal-day-num {
+    position: relative;
+    isolation: isolate;
+  }
+
+  /* Der Kreis hinter der Zahl: nur zu sehen, wenn ein Zustand ihn färbt.
+     z-index: hinter der Zahl; er steht im Dokument vor dem Ring, liegt also
+     auch unter dessen Band. */
+  [data-mobile-os="android"]:not([data-mobile-variant]) .cal-day-num::before {
+    content: "";
+    position: absolute; /* position: deckungsgleich mit der Tageszahl, nach innen gerückt */
+    inset: var(--m3-cal-day-inset);
+    z-index: -1;
+    border-radius: 50%;
+  }
+
+  /* Mit Ring: der Kreis liegt innen im Ring, mit etwas Luft dazwischen */
+  [data-mobile-os="android"]:not([data-mobile-variant]) .cal-day.has-items .cal-day-num::before {
+    inset: calc(var(--cal-ring-w) + var(--m3-cal-ring-gap));
+  }
+
+  /* ---------- Gewählter Tag ---------- */
+
+  [data-mobile-os="android"]:not([data-mobile-variant]) .cal-day.is-selected .cal-day-num {
+    color: var(--m3-on-primary);
+  }
+
+  [data-mobile-os="android"]:not([data-mobile-variant]) .cal-day.is-selected .cal-day-num::before {
+    background: var(--m3-primary);
+  }
+
+  /* ---------- Heute ---------- */
+
+  [data-mobile-os="android"]:not([data-mobile-variant]) .cal-day.is-today:not(.is-selected) .cal-day-num {
+    color: var(--m3-primary);
+  }
+
+  /* Ohne Ring zeigt ein dünner Kreis „heute“; mit Ring reicht die Farbe der Zahl */
+  [data-mobile-os="android"]:not([data-mobile-variant]) .cal-day.is-today:not(.is-selected):not(.has-items) .cal-day-num::before {
+    box-shadow: inset 0 0 0 1px var(--m3-primary); /* box-shadow: Kreislinie nach innen, verschiebt nichts */
+  }
+
+  /* ---------- Drücken ---------- */
+
+  [data-mobile-os="android"]:not([data-mobile-variant]) .cal-day:active .cal-day-num {
+    opacity: 1;
+  }
+
+  [data-mobile-os="android"]:not([data-mobile-variant]) .cal-day:active:not(.is-selected) .cal-day-num::before {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), transparent);
+  }
+}

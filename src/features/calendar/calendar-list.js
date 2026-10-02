@@ -2,10 +2,17 @@
  * Die Listenansicht der Kalenderseite: drei Spalten (Aufgaben, Termine,
  * Projekte) mit der Anzahl ihrer Einträge auf der Pille und darunter die
  * Einträge des gewählten Tages. Die Zahl steht erst ab einem Eintrag da —
- * eine „0“ wird gar nicht erst gezeigt.
+ * eine „0“ wird gar nicht erst gezeigt. Rechts in der Reiterzeile steht das
+ * Symbol „Ansicht“ (Regler), das nur die Android-Fassungen zeigen
+ * (styles/android-calendar-tabs.css); ein Tipp darauf öffnet das Blatt
+ * „Ansicht“ (src/ui/view-panel.js, data-view-panel-open).
  * Pfad: src/features/calendar/calendar-list.js
  *
- * Keine anpassbaren visuellen Werte: siehe styles/calendar-panel.css
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * viewLabel -> Vorlesetext und Hinweis des Symbols „Ansicht“
+ *
+ * Aussehen: styles/calendar-panel.css
  * (Klassen .cal-empty, .cal-time, .cal-seg-btn) und styles/overview.css
  * (Klasse .card-count, für die Zahl auf der Pille). Die Beschriftung der
  * Pille am leeren Tag steht bei `calendarSegments` in src/data/config.js.
@@ -20,6 +27,11 @@ import { cal } from "./calendar-state.js";
 
 /** Ordnet der Spalte den Eintragstyp zu, den sie zeigt. */
 const segTypes = { aufgaben: "aufgabe", termine: "termin", projekte: "projekt" };
+
+const viewLabel = "Ansicht";
+
+/* Dasselbe Regler-Symbol wie in der Werkzeugzeile über den Listen (src/ui/list-head.js) */
+const viewButton = `<button class="view-panel-btn cal-seg-view" type="button" data-view-panel-open aria-label="${viewLabel}" title="${viewLabel}">${icon("tune")}</button>`;
 
 /** Die Einträge, die in der gewählten Spalte stehen — nach Uhrzeit sortiert. */
 export function listEntries() {
@@ -70,5 +82,7 @@ export function renderList() {
         </button>
       </div>`;
 
-  return `<div class="cal-seg">${tabs}</div>${body}`;
+  /* cal-seg-tabs: Hülle der drei Reiter, damit Android sie als eine Kapsel
+     bzw. Reiterzeile neben das Symbol stellen kann; sonst ohne eigene Box */
+  return `<div class="cal-seg"><div class="cal-seg-tabs">${tabs}</div>${viewButton}</div>${body}`;
 }
