@@ -24,6 +24,7 @@
  */
 
 import { isRowGesture } from "./swipe.js";
+import { tabsOnHere } from "./tabs-visibility.js";
 
 const SWIPE_MIN_PX = 60;
 const AXIS_RATIO = 1.5;
@@ -99,7 +100,7 @@ export function initPillSwipe(area, { order, current, select, enabled = () => tr
       if (area.querySelector("[data-selecting]")) return;
       /* Reiter ausgeblendet („Reiter anzeigen“ aus, src/ui/tabs-visibility.js): ein Wischen über die Liste wechselt keine unsichtbare Ansicht */
       const pills = area.querySelector(".tab-pills");
-      if (pills && document.documentElement.dataset.tabs === "off" && !pills.getClientRects().length) return;
+      if (pills && !tabsOnHere() && !pills.getClientRects().length) return;
       const touch = event.touches[0];
       if (event.target.closest(OWN_GESTURES)) return;
       if (touch.clientX < EDGE_PX || touch.clientX > window.innerWidth - EDGE_PX) return;

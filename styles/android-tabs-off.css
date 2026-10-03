@@ -1,14 +1,17 @@
 /*
  * Fassung „Android (Experiment)“: der Schalter „Reiter anzeigen“ im Blatt
- * „Ansicht“. Ist er aus (data-tabs="off" an <html>, src/ui/tabs-visibility.js),
- * verschwinden die Reiterzeilen über den Listen — Projekte auf Übersicht und
- * Seite Projekte, Aufgaben und die Sammlungen — und die Werkzeugzeile
- * (Archiv, Sortieren, Filtern, Ansicht) rückt an ihren Platz und rastet
+ * „Ansicht“. Er gilt je Seite einzeln: Übersicht (Abschnitt „Projekte“), Seite
+ * Projekte, Aufgaben und die übrigen Sammlungen haben je ein eigenes Merkmal an
+ * <html> (data-tabs-home, -projects, -tasks, -pages; src/ui/tabs-visibility.js).
+ * Ist es aus, verschwinden die Reiterzeilen über der Liste dieser Seite und die
+ * Werkzeugzeile (Archiv, Sortieren, Filtern, Ansicht) rückt an ihren Platz und rastet
  * oben ein. Das Symbol „Ansicht“ holt das Blatt mit dem Schalter herauf,
  * ein Tipp darauf bringt die Reiter zurück. Der Kalender und die Medien bleiben,
  * wie sie sind: sie haben keine Werkzeugzeile, die die Reiter ersetzen könnte.
  * Die Zeile mit dem Schalter selbst gibt es nur im Experiment; in allen
  * anderen Fassungen bleibt sie verborgen.
+ * Welche Seite ohne eigene Wahl mit oder ohne Reiter startet (Übersicht: ohne):
+ * src/data/tabs-visibility.js.
  * Gilt nur mit data-mobile-variant="experiment" an <html> und unterhalb von 1024px.
  * Pfad: styles/android-tabs-off.css
  *
@@ -28,29 +31,36 @@
     display: flex;
   }
 
-  /* ---------- Reiterzeilen weg ---------- */
+  /* ---------- Reiterzeilen weg, je Seite ---------- */
 
-  [data-mobile-variant="experiment"][data-tabs="off"] #project-views,
-  [data-mobile-variant="experiment"][data-tabs="off"] .tasks-tools,
-  [data-mobile-variant="experiment"][data-tabs="off"] .page-body > :is(.tab-pills, .tab-pills-row, .project-views) {
+  [data-mobile-variant="experiment"][data-tabs-home="off"] #project-views,
+  [data-mobile-variant="experiment"][data-tabs-tasks="off"] .tasks-tools,
+  [data-mobile-variant="experiment"][data-tabs-projects="off"] .page-body > .project-views,
+  [data-mobile-variant="experiment"][data-tabs-pages="off"] .page-body > :is(.tab-pills, .tab-pills-row) {
     display: none;
   }
 
   /* ---------- Werkzeugzeile an ihrer Stelle ---------- */
 
   /* Ohne Reiterlinie darüber zieht sie sich nicht mehr unter sie, sondern steht
-     wie auf Seiten ohne Reiter unter dem Titel */
-  [data-mobile-variant="experiment"][data-tabs="off"] .project-card-head {
+     wie auf Seiten ohne Reiter unter dem Titel. Übersicht und Aufgaben: sie rastet
+     unter der Suchleiste ein. */
+  [data-mobile-variant="experiment"][data-tabs-home="off"] #view-home .project-card-head,
+  [data-mobile-variant="experiment"][data-tabs-tasks="off"] #view-tasks .project-card-head {
     margin-top: var(--m3-card-head-plain-gap);
     top: calc(-1 * var(--content-top) - var(--m3-bar-shift, 0px));
   }
 
-  [data-mobile-variant="experiment"][data-tabs="off"] .page-body .project-card-head {
+  /* Seiten (Projekte und Sammlungen): sie rastet unter der Kopfzeile ein. Die Seite
+     Projekte erkennt man an ihrer Zeile .project-views, die Sammlungen an den Reitern. */
+  [data-mobile-variant="experiment"][data-tabs-projects="off"] .page-body:has(> .project-views) .project-card-head,
+  [data-mobile-variant="experiment"][data-tabs-pages="off"] .page-body:not(:has(> .project-views)) .project-card-head {
+    margin-top: var(--m3-card-head-plain-gap);
     top: calc(var(--safe-top) + var(--page-head-top) + var(--search-bar-height));
   }
 
   /* Im Container der Übersicht folgt sie gleich auf die Überschrift „Projekte“ */
-  [data-mobile-variant="experiment"][data-tabs="off"] #view-home #project-list .project-card-head {
+  [data-mobile-variant="experiment"][data-tabs-home="off"] #view-home #project-list .project-card-head {
     margin-top: 0;
   }
 }
