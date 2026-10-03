@@ -65,7 +65,7 @@ export const state = {
     /* Aufgaben-Seite: Ansicht, Gruppierung der Spalten, Sortierung und die Filter */
     /* Bühne der Übersicht am Desktop: welcher Modus gewählt ist (stageModes in config.js) */
     dashboard: { mode: "created" },
-    /* Welche Sammlung ihren großen Kopf zeigt, z.B. { bookmarks: true }; fehlt = einfacher Titel */
+    /* Welche Sammlung ihren großen Kopf NICHT zeigt, z.B. { bookmarks: false }; fehlt = Kopf mit Icon und Beschreibung */
     pageHeads: {},
     /* Sortierung je Sammlung, z.B. { inbox: { sort: "name", asc: true } } — geprüft in src/data/collection-sorts.js */
     collectionSorts: {},
@@ -215,7 +215,7 @@ function adoptPrefs(saved) {
     state.prefs.resources = { ...state.prefs.resources, ...saved.resources };
   }
   if (saved.pageHeads && typeof saved.pageHeads === "object") {
-    state.prefs.pageHeads = Object.fromEntries(Object.entries(saved.pageHeads).filter(([, on]) => on === true));
+    state.prefs.pageHeads = Object.fromEntries(Object.entries(saved.pageHeads).filter(([, on]) => on === false));
   }
   if (saved.collectionSorts && typeof saved.collectionSorts === "object") {
     state.prefs.collectionSorts = { ...saved.collectionSorts };

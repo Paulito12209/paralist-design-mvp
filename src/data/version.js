@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "ebc0f03ad76b";
+export const appVersion = "ad5f6df5e7b0";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -22,17 +22,17 @@ export const appFiles = [
   "src/core/lazy.js", "src/core/link-preview.js", "src/core/no-history.js", "src/core/storage.js",
   "src/core/week-range.js", "src/core/youtube.js", "src/data/account.js",
   "src/data/archive-active.js", "src/data/archive-context.js", "src/data/bookmarks.js",
-  "src/data/collection-filters.js", "src/data/collection-sorts.js", "src/data/collections.js",
-  "src/data/config-calendar.js", "src/data/config-tasks.js", "src/data/config.js",
-  "src/data/convert-notes.js", "src/data/convert.js", "src/data/design-prefs.js",
-  "src/data/details.js", "src/data/entry-facts.js", "src/data/entry-stats.js", "src/data/files.js",
-  "src/data/icon-sets.js", "src/data/insights.js", "src/data/link-filter-fields.js",
-  "src/data/link-filter-options.js", "src/data/link-filter.js", "src/data/link-kinds.js",
-  "src/data/links.js", "src/data/manual-order.js", "src/data/migrate.js",
+  "src/data/collection-delete.js", "src/data/collection-filters.js", "src/data/collection-sorts.js",
+  "src/data/collections.js", "src/data/config-calendar.js", "src/data/config-tasks.js",
+  "src/data/config.js", "src/data/convert-notes.js", "src/data/convert.js",
+  "src/data/design-prefs.js", "src/data/details.js", "src/data/entry-facts.js",
+  "src/data/entry-stats.js", "src/data/files.js", "src/data/icon-sets.js", "src/data/insights.js",
+  "src/data/link-filter-fields.js", "src/data/link-filter-options.js", "src/data/link-filter.js",
+  "src/data/link-kinds.js", "src/data/links.js", "src/data/manual-order.js", "src/data/migrate.js",
   "src/data/milestone-tracks.js", "src/data/milestones.js", "src/data/mutations-bulk-spaces.js",
   "src/data/mutations-bulk.js", "src/data/mutations-calendar.js", "src/data/mutations-inline.js",
   "src/data/mutations-tasks.js", "src/data/mutations.js", "src/data/nav-labels.js",
-  "src/data/note-blocks.js", "src/data/opens.js", "src/data/page-text.js",
+  "src/data/note-blocks.js", "src/data/opens.js", "src/data/page-heads.js", "src/data/page-text.js",
   "src/data/platform-versions.js", "src/data/profile.js", "src/data/project-board.js",
   "src/data/project-views.js", "src/data/queries.js", "src/data/refs.js", "src/data/reminders.js",
   "src/data/search-keyboard.js", "src/data/seed.js", "src/data/shortcut-hints.js",

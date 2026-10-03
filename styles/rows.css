@@ -25,6 +25,8 @@
  *                              und die Gruppen-Überschriften unter „Verknüpfte Einträge“
  
  *
+ * .row-title line-clamp    -> nach so vielen Zeilen endet der Titel eines Eintrags mit „…“ (3)
+ *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
 
@@ -55,6 +57,17 @@
 
 .workspace-row span {
   flex: 1;
+}
+
+/* Titel eines Eintrags: nach drei Zeilen endet er mit „…“, die Zeile wächst nicht weiter */
+.workspace-row .row-title {
+  min-width: 0; /* min-width: sonst dehnt ein langes Wort die Zeile über den Rand */
+  overflow: hidden;
+  display: -webkit-box; /* -webkit-box mit line-clamp: der Titel endet nach drei Zeilen mit „…“ */
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow-wrap: anywhere; /* overflow-wrap: ein sehr langes Wort bricht um, statt hinauszuragen */
 }
 
 /* Das Icon vor dem Titel ist zugleich der Favoriten-Schalter. Innen etwas Luft,

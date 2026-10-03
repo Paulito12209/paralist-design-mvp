@@ -28,6 +28,7 @@
  * --m3-on-surface-variant     -> Sortieren und Filtern in Ruhe
  * --m3-card-head-pull       -> wie dicht die erste Zeile an der Werkzeugzeile sitzt
  * --m3-card-head-plain-gap  -> Luft zwischen Titel und Werkzeugzeile, wo keine Reiter darüber stehen
+ * --m3-outline-variant        -> Trennlinie über der Werkzeugzeile, wo keine Reiter darüber stehen
  * --m3-tab-edge               -> Abstand des Archiv-Icons vom Geräterand, auf einer Linie mit dem ersten Reiter
  * --content-side              -> Rand der Reiter, sobald rechts kein Symbol mehr steht (styles/tokens.css)
  *
@@ -92,9 +93,17 @@
     margin-bottom: var(--m3-tabs-gap);
   }
 
-  /* Ohne Reiter darüber: unter dem Titel mit etwas Luft, nicht unter eine Linie gezogen */
+  /* Ohne Reiter darüber: unter dem Titel (oder dem großen Kopf) mit etwas Luft.
+     Statt der Reiterlinie trennt eine Linie über der ganzen Breite die Zeile
+     vom Kopf — als Schatten nach innen wie bei den Reitern (styles/android-tabs.css),
+     die Hülle reicht bis an den Geräterand, der Innenabstand setzt den Inhalt zurück. */
   [data-mobile-os="android"] .project-card-head.is-plain {
     margin-top: var(--m3-card-head-plain-gap);
+    margin-left: calc(-1 * var(--content-side));
+    margin-right: calc(-1 * var(--content-side));
+    padding-left: var(--content-side);
+    padding-right: var(--content-side);
+    box-shadow: inset 0 1px 0 var(--m3-outline-variant);
   }
 
   /* Text-Knopf nach Material 3: kein Rahmen, keine Fläche, Schrift in der

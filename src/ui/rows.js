@@ -158,7 +158,7 @@ export function entryRow(entry, prefix = "", actions = entryActions(entry, true)
       <button class="workspace-row entry-row${done ? " is-task-done" : ""}" type="button" data-open-entry="${entry.id}">
         ${favoriteGlyph(entryGlyph(entry), entry.favorite)}
         ${prefix}
-        <span${done ? ' class="is-done"' : ""}>${escapeHtml(entry.title)}</span>
+        <span class="row-title${done ? " is-done" : ""}">${escapeHtml(entry.title)}</span>
         ${icon("chevron", "chevron")}
         ${rowMore()}
       </button>
