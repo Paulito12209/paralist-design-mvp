@@ -51,6 +51,7 @@ import {
 import { projectEntries } from "../../data/queries.js";
 import { filterChipsMarkup } from "../../ui/filter-chips.js";
 import { panelSegment, panelToggle } from "../../ui/panel-rows.js";
+import { tabsRowMarkup } from "../../ui/tabs-visibility.js";
 import { openTabSettings } from "../../ui/settings-link.js";
 import { openSheet } from "../../ui/sheet.js";
 import { openSortSheet, sortSummary } from "../../ui/sort-sheet.js";
@@ -118,10 +119,11 @@ export function projectSettingsMarkup(view) {
       </button>
       ${view.fixed ? `<button class="tasks-info" type="button" data-settings="info" aria-label="${escapeHtml(rowLabels.info)}">${icon("info")}</button>` : ""}
     </div>`;
-  if (view.fixed) return `<div class="details-list tasks-settings">${layoutRows(view)}${sortRow}${placeRow}</div>`;
+  if (view.fixed) return `<div class="details-list tasks-settings">${tabsRowMarkup()}${layoutRows(view)}${sortRow}${placeRow}</div>`;
   const pickCount = view.ids.length;
   return `
     <div class="details-list tasks-settings">
+      ${tabsRowMarkup()}
       ${layoutRows(view)}
       ${sortRow}
       ${placeRow}

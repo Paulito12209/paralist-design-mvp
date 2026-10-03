@@ -39,6 +39,8 @@ export const events = {
   /* Einstellungen › Design: der Verlauf hinter der Leiste wurde ein- oder
      ausgeschaltet — die Hülle übernimmt es sofort. */
   navGlowChanged: "nav:glow-changed",
+  /* Der Schalter „Reiter anzeigen“ im Blatt „Ansicht“ wurde umgelegt. */
+  tabsVisibilityChanged: "tabs:visibility-changed",
   /* „Nach Updates suchen“ in den Einstellungen: die Hülle sieht sofort nach und
      lädt eine neuere Fassung gleich. `report(status)` meldet zurück, was war. */
   updateRequested: "update:requested",

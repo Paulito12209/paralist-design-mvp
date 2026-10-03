@@ -75,6 +75,12 @@
  * --m3-ov-gap-cards            -> ebenso Überschrift bis zu den Kacheln
  * --m3-ov-gap-section          -> ebenso untere Ränder der Kacheln bis „Projekte“
  * --m3-ov-gap-tabs             -> ebenso „Projekte“ bis zur Reiter-Kapsel
+ * --m3-ov-peek                -> Übersicht (nur Experiment): so viel von der nächsten Kartenseite schaut rechts hervor
+ * --m3-ov-sheet-gap           -> ebenso: Abstand der unteren Kacheln zur Oberkante des Projekte-Containers
+ * --m3-ov-sheet-radius        -> ebenso: Rundung oben am Projekte-Container (volle Breite, Farbe der Navigationsleiste)
+ * --m3-ov-sheet-head-h        -> ebenso: Höhe der Zeile mit „Projekte“ und dem runden Pfeil-Knopf (errechnet: der Knopf steht oben, unten
+ *                                 und rechts gleich weit — --content-side — vom Rand des Containers)
+ * --m3-ov-arrow-size          -> ebenso: Durchmesser des runden Pfeil-Knopfs (Pfeil nach oben rechts) neben „Projekte“
  * --m3-tab-tools-air          -> zusätzliche Luft zwischen den Reitern und dem Symbol
  *                                 „Ansicht“ rechts, dort wo sonst die Trennlinie stand
  * --m3-snap-edge               -> Abstand des Plus-Symbols („Neue Ansicht“) zum rechten Rand der Reiterzeile,
@@ -196,6 +202,11 @@
   --m3-ov-gap-cards: 24px;
   --m3-ov-gap-section: 40px;
   --m3-ov-gap-tabs: 20px;
+  --m3-ov-peek: 24px;
+  --m3-ov-sheet-gap: 24px;
+  --m3-ov-sheet-radius: 28px;
+  --m3-ov-sheet-head-h: calc(var(--m3-ov-arrow-size) + 2 * var(--content-side));
+  --m3-ov-arrow-size: 32px;
   --m3-tab-tools-air: 4px;
   --m3-snap-edge: 16px;
   --m3-snap-bleed: 1px;

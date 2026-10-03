@@ -34,6 +34,7 @@
 import { escapeHtml, icon } from "../../core/html.js";
 import { archivedForView } from "../../data/archive-context.js";
 import { panelSegment as segment, panelToggle as toggle } from "../../ui/panel-rows.js";
+import { tabsRowMarkup } from "../../ui/tabs-visibility.js";
 import { taskGroupings, taskSorts } from "../../data/config-tasks.js";
 import { updateTaskView } from "../../data/task-views.js";
 import { filterChipsMarkup as chipsMarkup } from "../../ui/filter-chips.js";
@@ -94,6 +95,7 @@ export function taskSettingsMarkup(view) {
   const chips = filterChips(view);
   return `
       <div class="details-list tasks-settings">
+        ${tabsRowMarkup()}
         <div class="details-row">
           <span class="details-row-label">${rowLabels.layout}</span>${segment(layouts, view.layout, "layout")}
         </div>
