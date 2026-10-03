@@ -176,3 +176,12 @@
   font-size: var(--empty-plain-title);
   font-weight: 700;
 }
+
+/* Wird über dem Platzhalter schon die erste Zeile getippt (Android: Seite
+   Projekte, src/features/overview/project-inline.js; Eingang, Ressourcen &
+   Co., src/ui/inline-add.js), ist er überflüssig.
+   :has: die Zeile steckt im Kasten davor, nicht im Platzhalter */
+.workspace-list.is-adding + .empty-state,
+.workspace-list:has(> .inline-add-row) + .empty-state {
+  display: none;
+}

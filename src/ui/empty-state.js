@@ -126,14 +126,17 @@ export function emptyState({
       </button>`
     : "";
 
-  const look = `${compact ? " is-compact" : ""}${art ? "" : " is-bare"}${plain ? " is-plain" : ""}`;
+  /* is-addable: die Pille legt an — dann öffnet auf Android auch ein Tipp auf den
+     Platzhalter selbst die erste Zeile (src/ui/inline-add.js) */
+  const addable = Boolean(action) && !action.icon;
+  const look = `${compact ? " is-compact" : ""}${art ? "" : " is-bare"}${plain ? " is-plain" : ""}${addable ? " is-addable" : ""}`;
   return `
     <div class="empty-state${look}" style="--empty-accent:${accent}; --empty-add-accent:${pillTone(accent)}">
       ${plain ? icon(iconName, "empty-plain-icon") : ""}
       ${
         art && !plain
           ? `<div class="empty-art">
-        ${emblemMarkup(Boolean(action) && !action.icon)}
+        ${emblemMarkup(addable)}
         ${icon(iconName, "empty-emblem-icon")}
       </div>`
           : ""

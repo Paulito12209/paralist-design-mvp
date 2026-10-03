@@ -35,7 +35,7 @@ import { placesLabel } from "../../data/queries.js";
 import { ui } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { filterEmptyState } from "../../ui/filter-empty.js";
-import { addInlineList, openEntryRow, reopenIn } from "../../ui/inline-add.js";
+import { addablePlaceholder, addInlineList, openEntryRow, reopenIn } from "../../ui/inline-add.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { setPagePill } from "../../ui/router.js";
 import { tabGlyph } from "../../ui/tab-glyph.js";
@@ -165,9 +165,10 @@ initPillSwipe(el("view-page"), {
   enabled: isBookmarksOpen,
 });
 
-/* Tipp unter die letzte Zeile (Android): ein neues Lesezeichen */
+/* Tipp unter die letzte Zeile (Android): ein neues Lesezeichen — bei leerer Pille ein Tipp auf den Platzhalter */
 const inlineList = {
-  area: () => (isBookmarksOpen() ? dom.pageBody.querySelector(":scope > .bookmark-list") : null),
+  area: () =>
+    isBookmarksOpen() ? dom.pageBody.querySelector(":scope > .bookmark-list") || addablePlaceholder(dom.pageBody) : null,
   open(area) {
     openEntryRow(area, {
       type: BOOKMARK_TYPE,
