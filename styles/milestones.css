@@ -13,7 +13,8 @@
  * --ms-bar-h               -> Höhe der Balken
  * --ms-locked / --ms-track -> Grau gesperrter Plaketten und Grund von Ring und Balken
  * --card / --line / --muted / --radius-xl (styles/tokens.css) -> Karten, Trennlinien, kleine Schrift
- * --icon-soft (styles/tokens.css) -> abgeschwächter Pfeil rechts im Kopf der Vorschaukarte
+ * --icon-soft (styles/tokens.css) -> abgeschwächter Pfeil in den Zeilen der Meilenstein-Seite
+ * Der Pfeil im Kopf der Vorschaukarte ist .mini-go: Größe und Farbe stehen in styles/settings.css
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel:
  * Überschrift 17px, Summe 34px, Name 17px, Stufe und Zähler 13px.
@@ -30,6 +31,11 @@
 
 .ms-teaser .pcard-head {
   margin-bottom: 12px;
+}
+
+/* Runder Pfeil-Knopf wie auf den Analyse-Kacheln (.mini-go in styles/settings.css), ganz rechts im Kopf */
+.ms-teaser .mini-go {
+  margin-left: auto;
 }
 
 .ms-go {

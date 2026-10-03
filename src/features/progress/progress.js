@@ -1,7 +1,7 @@
 /*
- * Das Fortschritt-Blatt hinter der Level-Anzeige oben links: Ring, Analyse
- * (Nutzungszeit und Serie), Meilensteine, Verlauf, nächste Stufen und
- * Historie (die Analyse nur am Handy). Tippt man eine Karte an („Meilensteine“, „Nutzungszeit“, „Serie“),
+ * Die Seite „Statistiken“ hinter der Level-Anzeige oben links: am Handy zuerst der
+ * Abschnitt „Analyse“ (Nutzungszeit und Serie), dann der Abschnitt „Fortschritt“
+ * mit Ring, Meilensteinen, Verlauf, nächsten Stufen und Historie. Tippt man eine Karte an („Meilensteine“, „Nutzungszeit“, „Serie“),
  * tritt deren eigene Seite an die Stelle der Karten — mit Pfeil zurück, wie im
  * Einstellungs-Blatt. In der Android-Fassung ist das Blatt eine ganze Seite
  * mit Kopfleiste (Pfeil links, Titel der Seite) statt eines Blatts von unten. Am Desktop ist es eine Seite in
@@ -12,6 +12,8 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
+ * rootTitle -> Name der Seite oben („Statistiken“); steht auch im Titel in index.html
+ * sectionTitle -> Überschrift über Ring und Rest, nach den beiden Analyse-Kacheln
  * pages -> die Unterseiten: Titel (steht in der Kopfleiste bzw. über dem
  *          Inhalt), Stück Adresse hinter „#/fortschritt/“ und Inhalt
  *
@@ -35,7 +37,8 @@ import { historyPageSize, levelsCard, logCard } from "./progress-lists.js";
 import { handleDeskClick, progressDeskHead } from "./progress-desk.js";
 import { enterMilestones, milestonesPage, milestonesTeaser, toggleMilestone } from "./progress-milestones.js";
 
-const rootTitle = "Fortschritt";
+const rootTitle = "Statistiken";
+const sectionTitle = "Fortschritt";
 
 /* Die Unterseiten: Name, Stück Adresse und Inhalt. Die Karten tragen ihren
    Namen schon selbst im Kopf; die Überschrift davor zeigen nur die anderen
@@ -50,9 +53,11 @@ function pageHeading(title) {
   return `<h3 class="settings-detail-title">${title}</h3>`;
 }
 
-/* Die Analyse steht nur am Handy hier; am Desktop bleibt sie im Profil (Punkt „Analyse“). */
+/* Die Analyse steht nur am Handy hier; am Desktop bleibt sie im Profil (Punkt „Analyse“).
+   Mit ihr kommt die Überschrift „Fortschritt“, die den Ring und den Rest einleitet. */
 function insightsBlock() {
-  return isDesk() ? "" : `<section class="progress-insights">${insightsSection("data-progress-detail")}</section>`;
+  if (isDesk()) return "";
+  return `<section class="progress-insights">${insightsSection("data-progress-detail")}</section><p class="psection">${sectionTitle}</p>`;
 }
 
 /* Offene Unterseite des Blatts: null für die Karten, sonst ein Schlüssel aus `pages`. */
@@ -62,7 +67,7 @@ let detail = null;
 export function renderProgress() {
   dom.progressBody.innerHTML = detail
     ? pages[detail].markup()
-    : progressDeskHead() + donutCard() + insightsBlock() + milestonesTeaser() + historyCard() + levelsCard() + logCard();
+    : progressDeskHead() + insightsBlock() + donutCard() + milestonesTeaser() + historyCard() + levelsCard() + logCard();
   /* is-cards: am Desktop stehen die Karten in zwei Spalten, die Unterseiten nicht */
   dom.progressBody.classList.toggle("is-cards", !detail);
   /* Als Seite (Android) steht links immer der Pfeil — auf den Karten schließt er

@@ -31,7 +31,8 @@
   margin-bottom: 14px;
 }
 
-.pcard-head .icon {
+/* > : nur das Symbol vor dem Titel, nicht der Pfeil-Knopf (.mini-go) rechts im Kopf */
+.pcard-head > .icon {
   width: 22px;
   height: 22px;
 }

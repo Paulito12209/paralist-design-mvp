@@ -299,4 +299,7 @@
     <path d="M9.5 4h-3A2.5 2.5 0 0 0 4 6.5v3a2 2 0 0 0 .6 1.4l8.4 8.4a2 2 0 0 0 2.8 0l4.4-4.4a2 2 0 0 0 0-2.8L11.8 3.7A2 2 0 0 0 10.4 3" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
     <circle cx="8" cy="8" r="1.2" fill="currentColor" />
   </symbol>
+  <symbol id="icon-hourglass" viewBox="0 0 24 24" fill="none">
+    <path d="M5 22h14M5 2h14M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+  </symbol>
 </svg>

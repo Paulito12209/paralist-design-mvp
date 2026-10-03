@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "9c99298ed24e";
+export const appVersion = "e39edbc2cf86";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -124,15 +124,15 @@ export const appFiles = [
   "src/ui/platform.js", "src/ui/pull-search.js", "src/ui/rail-parts.js", "src/ui/remind-sheet.js",
   "src/ui/router-restore.js", "src/ui/router.js", "src/ui/row-lift.js", "src/ui/row-reorder.js",
   "src/ui/rows.js", "src/ui/select-bar.js", "src/ui/selection.js", "src/ui/settings-link.js",
-  "src/ui/sheet.js", "src/ui/slash-menu.js", "src/ui/sort-sheet.js", "src/ui/swipe.js",
-  "src/ui/tab-glyph.js", "src/ui/tab-menu.js", "src/ui/tabs-visibility.js", "src/ui/task-status.js",
-  "src/ui/toast.js", "src/ui/type-menu.js", "src/ui/type-wheel.js", "src/ui/usage-pages.js",
-  "src/ui/usage-split.js", "src/ui/video-player.js", "src/ui/view-panel.js", "src/ui/views.js",
-  "src/ui/wheel.js", "src/ui/write-tap.js", "styles/account.css", "styles/android-archive.css",
-  "styles/android-bottom-sheet.css", "styles/android-calendar-rings.css",
-  "styles/android-calendar-tabs.css", "styles/android-calendar.css", "styles/android-card.css",
-  "styles/android-composer.css", "styles/android-entry.css",
-  "styles/android-experiment-surface.css", "styles/android-fab.css",
+  "src/ui/sheet.js", "src/ui/slash-menu.js", "src/ui/sort-sheet.js", "src/ui/streak-legend.js",
+  "src/ui/swipe.js", "src/ui/tab-glyph.js", "src/ui/tab-menu.js", "src/ui/tabs-visibility.js",
+  "src/ui/task-status.js", "src/ui/toast.js", "src/ui/type-menu.js", "src/ui/type-wheel.js",
+  "src/ui/usage-pages.js", "src/ui/usage-split.js", "src/ui/video-player.js",
+  "src/ui/view-panel.js", "src/ui/views.js", "src/ui/wheel.js", "src/ui/write-tap.js",
+  "styles/account.css", "styles/android-archive.css", "styles/android-bottom-sheet.css",
+  "styles/android-calendar-rings.css", "styles/android-calendar-tabs.css",
+  "styles/android-calendar.css", "styles/android-card.css", "styles/android-composer.css",
+  "styles/android-entry.css", "styles/android-experiment-surface.css", "styles/android-fab.css",
   "styles/android-filter-sheet.css", "styles/android-list.css", "styles/android-overview-gaps.css",
   "styles/android-overview-sheet.css", "styles/android-pages-content.css",
   "styles/android-pages.css", "styles/android-quiet-tools.css", "styles/android-reorder.css",
@@ -158,11 +158,11 @@ export const appFiles = [
   "styles/projects-board.css", "styles/reminder-banner.css", "styles/rows.css",
   "styles/search-palette.css", "styles/search-refine.css", "styles/search.css",
   "styles/settings.css", "styles/sheet-tabs.css", "styles/sheet-tiles.css", "styles/shortcuts.css",
-  "styles/slash-menu.css", "styles/sort-wheels.css", "styles/support.css", "styles/swipe-rows.css",
-  "styles/task-status.css", "styles/tasks-board.css", "styles/tasks-desk.css",
-  "styles/tasks-select.css", "styles/tasks-settings.css", "styles/tasks.css", "styles/toast.css",
-  "styles/tokens-android.css", "styles/tokens-dark.css", "styles/tokens-desk.css",
-  "styles/tokens-ios.css", "styles/tokens-pages.css", "styles/tokens.css", "styles/top-bar.css",
-  "styles/update.css", "styles/usage-split.css", "styles/video-player.css", "styles/view-end.css",
-  "styles/viewer.css",
+  "styles/slash-menu.css", "styles/sort-wheels.css", "styles/streak-legend.css",
+  "styles/support.css", "styles/swipe-rows.css", "styles/task-status.css", "styles/tasks-board.css",
+  "styles/tasks-desk.css", "styles/tasks-select.css", "styles/tasks-settings.css",
+  "styles/tasks.css", "styles/toast.css", "styles/tokens-android.css", "styles/tokens-dark.css",
+  "styles/tokens-desk.css", "styles/tokens-ios.css", "styles/tokens-pages.css", "styles/tokens.css",
+  "styles/top-bar.css", "styles/update.css", "styles/usage-split.css", "styles/video-player.css",
+  "styles/view-end.css", "styles/viewer.css",
 ];

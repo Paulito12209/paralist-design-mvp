@@ -147,7 +147,7 @@
     margin-bottom: 12px;
   }
 
-  .device #progress .pcard-head .icon {
+  .device #progress .pcard-head > .icon {
     width: 18px;
     height: 18px;
   }
