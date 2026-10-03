@@ -15,6 +15,8 @@
  * --overview-pager-h        -> Dicke der Linie unter den Karten, die zeigt, welche Kartenseite steht
  * --overview-pager-w        -> Länge dieser Linie (steht rechtsbündig; die Hälfte davon ist der gefüllte Teil)
  * --soon-opacity            -> wie blass Icon und Name einer Karte „Demnächst verfügbar“ sind
+ * --soon-label-color        -> Schriftfarbe von „Demnächst verfügbar“ (ein Hauch der Textfarbe; höherer
+ *                              Prozentwert = kräftiger lesbar, niedriger = blasser)
  * --archive-link-gap        -> Luft zwischen „Zum Archiv“ (bzw. Listenende) und Karte „Ansicht“ oder Navigation
  * --archive-link-height     -> Höhe der Pille „Zum Archiv“
  *
@@ -194,6 +196,8 @@
   --overview-pager-h: 3px;
   --overview-pager-w: 48px;
   --soon-opacity: 0.45;
+  /* color-mix: ein Teil der Textfarbe — passt hell wie dunkel ohne eigene Farbe; 8 % wäre kaum noch lesbar */
+  --soon-label-color: color-mix(in srgb, var(--text) 35%, transparent);
   --archive-link-gap: 8px;
   --archive-link-height: 36px;
 

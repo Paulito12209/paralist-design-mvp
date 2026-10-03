@@ -10,6 +10,7 @@
  * --overview-pager-h   -> Dicke der Seitenlinie unter den Karten
  * --overview-pager-w   -> Länge der Seitenlinie (rechtsbündig, gefüllter Teil = die Hälfte)
  * --soon-opacity       -> wie blass Icon und Name einer abgeschalteten Karte sind
+ * --soon-label-color   -> Schriftfarbe des Schildchens „Demnächst verfügbar“ (ohne Pillenfläche)
  *
  * Direkt hier bei ihrer Regel:
  * .card-soon           -> Schildchen „Demnächst verfügbar“: Schrift 10px, Abstand 10px zur Ecke
@@ -100,10 +101,8 @@
   top: 10px;
   right: 10px;
   padding: 3px 8px;
-  border-radius: 999px;
-  /* color-mix: ein Hauch der Schriftfarbe — passt hell wie dunkel ohne eigene Farbe */
-  background: color-mix(in srgb, var(--text) 8%, transparent);
-  color: var(--muted);
+  /* Keine Pillenfläche: nur die Schrift steht auf der Kachel */
+  color: var(--soon-label-color);
   font-size: 10px;
   font-weight: 500;
   letter-spacing: 0;
