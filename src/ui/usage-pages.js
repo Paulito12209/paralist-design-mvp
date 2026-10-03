@@ -23,6 +23,7 @@ import { chartRanges } from "../data/config.js";
 import { ui } from "../data/state.js";
 import { usageDays, usageOfDay, usageSince, usageStreaks } from "../data/usage.js";
 import { chartBox, dateMarks, gridLines, niceStep, rangeSwitch, yAxis } from "./chart.js";
+import { streakLegend } from "./streak-legend.js";
 import { usageSplitCard } from "./usage-split.js";
 
 const stepSizes = [5, 10, 15, 30, 60, 90, 120, 180, 240, 360, 480];
@@ -97,6 +98,11 @@ const monthNames = [
   "Juli", "August", "September", "Oktober", "November", "Dezember",
 ];
 
+/* „1 Tag“, „2 Tage“ — ausgeschrieben, weil „T“ allein niemand versteht */
+function dayCount(count) {
+  return `${count} ${count === 1 ? "Tag" : "Tage"}`;
+}
+
 /*
  * Punkte-Raster: eine Spalte je Monat, eine Zeile je Wochentag.
  * Je dunkler der Punkt, desto mehr Zeit lief an diesem Wochentag im Monat.
@@ -133,15 +139,18 @@ export function streakCard() {
       <div class="streak-row">
         <div class="streak-box">
           <p class="streak-label">Aktuelle Serie</p>
-          <p class="streak-value">${streak.current} T</p>
+          <p class="streak-value">${dayCount(streak.current)}</p>
+          <p class="streak-hint">in Folge, bis heute</p>
         </div>
         <div class="streak-box">
-          <p class="streak-label">Längste</p>
-          <p class="streak-value">${streak.longest} T</p>
+          <p class="streak-label">Längste Serie</p>
+          <p class="streak-value">${dayCount(streak.longest)}</p>
+          <p class="streak-hint">in Folge, Bestwert</p>
         </div>
       </div>
       <div class="dotgrid">${grid}</div>
       <p class="chart-note">Wochentage von Montag oben bis Sonntag unten · ${year}</p>
+      ${streakLegend(usageSince(), year)}
     </section>
   `;
 }

@@ -1,0 +1,53 @@
+/*
+ * Serie: die Erklärung unter dem Punkte-Raster (src/ui/streak-legend.js)
+ * und die kleinen Hinweise unter „Aktuelle Serie“ und „Längste“.
+ * Pfad: styles/streak-legend.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css)
+ * -----------------------------------
+ * --line  -> Trennlinie über der Erklärung
+ * --muted -> Grau der Erklärtexte und Hinweise
+ * --dot-empty / --dot-1..4 -> Farben der Beispielpunkte in der Skala (styles/profile.css)
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel:
+ * Hinweis 13px, Überschrift und Text je Punkt 15px, Skala 13px.
+ */
+
+/* Zeile unter der großen Zahl: sagt, was die Zahl bedeutet */
+.streak-hint {
+  font-size: 13px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+.streak-legend {
+  border-top: 0.5px solid var(--line);
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+.streak-legend-item + .streak-legend-item {
+  margin-top: 14px;
+}
+
+.streak-legend-term {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.streak-legend-text {
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* Skala „keine … viel“: die fünf Beispielpunkte in einer Reihe */
+.streak-scale {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--muted);
+}

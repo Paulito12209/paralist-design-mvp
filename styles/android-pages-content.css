@@ -212,7 +212,7 @@
     letter-spacing: 0.15px;
   }
 
-  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .pcard-head .icon {
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .pcard-head > .icon {
     width: var(--m3-page-icon);
     height: var(--m3-page-icon);
     color: var(--m3-on-surface-variant);

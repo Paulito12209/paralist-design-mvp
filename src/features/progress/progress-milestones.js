@@ -73,7 +73,7 @@ export function milestonesTeaser() {
   const badge = fresh ? `<span class="ms-new">${fresh} neu</span>` : "";
   return `
     <button class="pcard ms-teaser" type="button" data-progress-detail="milestones" aria-label="${pageTitle} öffnen">
-      <span class="pcard-head">${icon("trophy")}<span>${pageTitle}</span>${badge}<span class="ms-go">${icon("chevron")}</span></span>
+      <span class="pcard-head">${icon("trophy")}<span>${pageTitle}</span>${badge}<span class="mini-go">${icon("chevron")}</span></span>
       <span class="ms-shelf">${list.map((item) => medal(item, true)).join("")}</span>
       <span class="ms-teaser-sum">${totals.reached} von ${totals.all} Stufen erreicht</span>
     </button>

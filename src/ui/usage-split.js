@@ -39,7 +39,7 @@ export function usageSplitCard(days) {
   if (!total) {
     return `
       <section class="pcard usage-split">
-        <div class="pcard-head">${icon("layers")}<span>Wo die Zeit hingeht</span></div>
+        <div class="pcard-head">${icon("hourglass")}<span>Wo die Zeit hingeht</span></div>
         <p class="chart-note">Noch keine Zeit aufgezeichnet. Sobald du Notizen, Dokumente oder andere Bereiche offen hast, erscheint hier die Aufteilung.</p>
       </section>
     `;
@@ -75,7 +75,7 @@ export function usageSplitCard(days) {
 
   return `
     <section class="pcard usage-split">
-      <div class="pcard-head">${icon("layers")}<span>Wo die Zeit hingeht</span></div>
+      <div class="pcard-head">${icon("hourglass")}<span>Wo die Zeit hingeht</span></div>
       <div class="usage-split-band" aria-hidden="true">${band}</div>
       <ul class="usage-split-list">${list}</ul>
     </section>
