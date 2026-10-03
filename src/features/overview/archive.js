@@ -84,8 +84,8 @@ function pillLabel(id) {
   return archivePills.find((pill) => pill.id === id)?.label || "";
 }
 
-/* Die gewählte Pille — eine unbekannte (alter Verlaufseintrag) fällt auf „Alle“ zurück. */
-function activePill() {
+/** Die gewählte Pille — eine unbekannte (alter Verlaufseintrag) fällt auf „Alle“ zurück. */
+export function activePill() {
   const pill = ui.currentPage?.pill;
   return archivePills.some((item) => item.id === pill) ? pill : "all";
 }
