@@ -41,6 +41,7 @@ import {
 import { ui } from "../../data/state.js";
 import { filterChipsMarkup } from "../../ui/filter-chips.js";
 import { openSortSheet, sortSummary } from "../../ui/sort-sheet.js";
+import { tabsRowMarkup } from "../../ui/tabs-visibility.js";
 import { createViewPanel } from "../../ui/view-panel.js";
 import { isViewActive } from "../../ui/views.js";
 import { collectionFilterChips, openCollectionFilter } from "./collection-filter.js";
@@ -67,6 +68,7 @@ function panelMarkup(kind) {
   const chips = collectionFilterChips(kind);
   return `
     <div class="details-list tasks-settings">
+      ${tabsRowMarkup()}
       <button class="details-row is-editable" type="button" data-settings="sort">
         <span class="details-row-label">${sortLabel}</span><span class="details-row-value">${escapeHtml(sortSummary(collectionSortOptions(kind), sort, asc))}</span>
       </button>
