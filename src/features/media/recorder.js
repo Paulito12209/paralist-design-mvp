@@ -18,8 +18,10 @@
  * levelBoost   -> wie stark leise Töne in der Welle angehoben werden
  * namePrefix   -> wie eine Aufnahme ohne eigenen Namen heißt („Sprachmemo 04.10.2026 14:03“)
  *
- * Die Mitschrift steht in src/features/media/recorder-speech.js, das Aussehen
- * in src/features/media/recorder-view.js und styles/recorder.css.
+ * Die Mitschrift steht in src/features/media/recorder-speech.js, was man mit
+ * ihr machen kann (kopieren, umwandeln) in recorder-text.js, das Blatt
+ * hinter ⚙ in recorder-setup.js, das Aussehen in recorder-view.js und
+ * styles/recorder.css.
  */
 
 import { pad2 } from "../../core/dates.js";
@@ -28,8 +30,10 @@ import { ui } from "../../data/state.js";
 import { registerOverlay } from "../../ui/router.js";
 import { showToast } from "../../ui/toast.js";
 import { addMediaFiles } from "./media-import.js";
+import { openRecorderSetup } from "./recorder-setup.js";
 import { createSpeech, speechAvailable } from "./recorder-speech.js";
-import { buildRecorder, createWave, showPlaying, showState, showText, showTime } from "./recorder-view.js";
+import { convertTranscript, copyTranscript } from "./recorder-text.js";
+import { buildRecorder, createWave, showPlaying, showSetupAlert, showState, showText, showTime } from "./recorder-view.js";
 
 const levelEveryMs = 70;
 const levelBoost = 3.2;
@@ -61,6 +65,12 @@ function canSave() {
 function setState(next) {
   state = next;
   showState(layer, state, canSave());
+  showProblems();
+}
+
+/* Punkt am Zahnrad, solange das Mikrofon nicht aufgeht oder die Mitschrift nicht läuft */
+function showProblems() {
+  showSetupAlert(layer, state === "error" || Boolean(speech && speech.problem()));
 }
 
 /* ---------- Pegel und Zeit ---------- */
@@ -228,11 +238,16 @@ function extensionOf(type) {
   return "webm";
 }
 
+/* Der getippte Name, sonst der vorgeschlagene („Sprachmemo 04.10.2026 14:03“) */
+function recordingName() {
+  const input = layer.querySelector(".recorder-name");
+  return input.value.trim() || input.placeholder;
+}
+
 async function save() {
   if (state === "recording" || state === "paused") await finish();
   if (!recorded || !recorded.blob.size) return;
-  const input = layer.querySelector(".recorder-name");
-  const name = input.value.trim() || input.placeholder;
+  const name = recordingName();
   const file = new File([recorded.blob], `${name}.${extensionOf(recorded.blob.type)}`, { type: recorded.blob.type });
   const extra = { body: speech.text(), duration: recorded.duration };
   /* Erst schließen (das verwirft den Zwischenstand), die Datei ist schon gepackt */
@@ -259,7 +274,30 @@ function close() {
   else hide();
 }
 
-const actions = { cancel: close, stop, pause, resume, restart: start, play: togglePreview, save };
+/* ⚙: „Erneut anfragen“ fragt die Mitschrift neu an und öffnet das Mikrofon neu, wenn es nicht aufging */
+function setup() {
+  openRecorderSetup({
+    speechProblem: speech.problem(),
+    micBlocked: state === "error",
+    retry: () => {
+      speech.retry();
+      if (state === "error") start();
+    },
+  });
+}
+
+const actions = {
+  cancel: close,
+  stop,
+  pause,
+  resume,
+  restart: start,
+  play: togglePreview,
+  save,
+  setup,
+  copy: () => copyTranscript(speech.text()),
+  convert: () => convertTranscript(speech.text(), recordingName()),
+};
 
 function mount() {
   if (layer) return;
@@ -282,7 +320,13 @@ function open(push = true) {
   input.value = "";
   input.placeholder = defaultName();
   /* Jede Aufnahme bekommt ihre eigene Mitschrift; sie hört nur zu, solange aufgenommen wird */
-  speech = createSpeech((final, pending) => showText(layer, final, pending), () => state === "recording");
+  speech = createSpeech(
+    (final, pending) => {
+      showText(layer, final, pending);
+      showProblems();
+    },
+    () => state === "recording"
+  );
   showText(layer, speechAvailable() ? "" : null);
   layer.hidden = false;
   if (push) history.pushState({ view: "recorder", from: ui.sourceView }, "", "#/aufnahme");

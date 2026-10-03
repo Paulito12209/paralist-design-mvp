@@ -2,8 +2,10 @@
  * Das Aussehen der Audio-Aufnahme: das Overlay selbst, die Wellen, die Zeit
  * und welche Knöpfe in welchem Zustand stehen. Die Aufnahme selbst (Mikrofon,
  * Mitschrift, Speichern) steht in src/features/media/recorder.js.
- * Aufbau wie die Suche: oben die Kopfzeile mit ← und dem Namen der Aufnahme,
- * darunter verschwommen die Seite, unten Gehäuse und „Abbrechen“. Die Knöpfe
+ * Aufbau wie die Suche: oben die Kopfzeile mit ←, dem Namen der Aufnahme
+ * und rechts ⚙ („Mitschrift einrichten“), darunter verschwommen die Seite,
+ * unten Gehäuse und „Abbrechen“. Über der Mitschrift steht die
+ * Zwischenüberschrift mit „Kopieren“ und „Umwandeln“. Die Knöpfe
  * unten tragen dieselben Klassen wie die Medien-Leiste (styles/media-bar.css)
  * und „Abbrechen“ der Suche (styles/search.css) — so sehen sie gleich aus.
  * Pfad: src/features/media/recorder-view.js
@@ -38,7 +40,10 @@ const labels = {
   cancel: "Abbrechen",
   textHead: "Mitschrift",
   textEmpty: "Was du sagst, erscheint hier.",
-  textMissing: "Mitschreiben geht hier gerade nicht — die Aufnahme läuft trotzdem.",
+  textMissing: "Mitschreiben geht hier gerade nicht — die Aufnahme läuft trotzdem. Oben rechts auf ⚙ tippen, um es einzurichten.",
+  setup: "Mitschrift einrichten",
+  copy: "Mitschrift kopieren",
+  convert: "In Notiz oder Dokument umwandeln",
   errorNote: "Erlaube den Zugriff aufs Mikrofon und tippe auf das Mikrofon unten links.",
 };
 
@@ -71,13 +76,20 @@ export function buildRecorder() {
     <div class="recorder-head">
       <button class="recorder-back" type="button" data-rec="cancel" aria-label="Zurück">${icon("arrow-back")}</button>
       <input class="recorder-name" type="text" enterkeyhint="done" placeholder="${escapeHtml(labels.title)}" aria-label="Name der Aufnahme" />
+      <button class="recorder-head-btn recorder-setup" type="button" data-rec="setup" aria-label="${escapeHtml(labels.setup)}">${icon("settings")}</button>
     </div>
     <div class="recorder-body">
       <div class="recorder-time">0:00</div>
       <div class="recorder-state"><span class="recorder-dot"></span><span class="recorder-state-text"></span></div>
       <div class="recorder-wave" aria-hidden="true">${bars}</div>
       <p class="recorder-note" hidden>${escapeHtml(labels.errorNote)}</p>
-      <div class="recorder-text-head">${escapeHtml(labels.textHead)}</div>
+      <div class="recorder-text-head">
+        <span>${escapeHtml(labels.textHead)}</span>
+        <span class="recorder-text-tools">
+          <button class="recorder-head-btn" type="button" data-rec="copy" aria-label="${escapeHtml(labels.copy)}" title="${escapeHtml(labels.copy)}" disabled>${icon("copy")}</button>
+          <button class="recorder-head-btn" type="button" data-rec="convert" aria-label="${escapeHtml(labels.convert)}" title="${escapeHtml(labels.convert)}" disabled>${icon("convert")}</button>
+        </span>
+      </div>
       <p class="recorder-text"></p>
     </div>
     <div class="recorder-actions">
@@ -138,6 +150,11 @@ export function showTime(layer, ms) {
  */
 export function showText(layer, final, pending = "") {
   const box = layer.querySelector(".recorder-text");
+  /* Kopieren und Umwandeln gehen erst, wenn es Text gibt */
+  const hasText = Boolean(final || pending);
+  layer.querySelectorAll(".recorder-text-tools button").forEach((button) => {
+    button.disabled = !hasText;
+  });
   if (final === null) {
     box.textContent = labels.textMissing;
     box.classList.add("is-empty");
@@ -150,6 +167,11 @@ export function showText(layer, final, pending = "") {
     : `${escapeHtml(final)}${pending ? ` <span class="recorder-pending">${escapeHtml(pending)}</span>` : ""}`;
   /* Neues Gesagtes steht unten; die Box rollt mit, damit man es sieht */
   box.scrollTop = box.scrollHeight;
+}
+
+/** Das Zahnrad oben bekommt einen Punkt, solange Mikrofon oder Mitschrift nicht gehen. */
+export function showSetupAlert(layer, alert) {
+  layer.querySelector(".recorder-setup").classList.toggle("is-alert", alert);
 }
 
 /**

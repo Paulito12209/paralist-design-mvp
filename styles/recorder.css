@@ -23,9 +23,13 @@
  * --search-pill-height    -> Höhe der Knöpfe unten
  * --nav-side / --nav-bottom / --content-side -> Ränder
  *
+ * --m3-outline-variant / --line -> Farbe der sanften Linie unter „Mitschrift“
+ *
  * Einzelwerte direkt bei ihrer Regel: Zeit 56px (.recorder-time), Welle 96px
  * hoch mit 3px Fuge und Strichen bis 4px (.recorder-wave, .recorder-bar),
- * Mitschrift 17px (.recorder-text).
+ * Mitschrift 17px (.recorder-text), Zwischenüberschrift 13px mit 8px Luft
+ * unter der Linie (.recorder-text-head), Knöpfe ⚙/Kopieren/Umwandeln 40px
+ * mit 20px-Icons (.recorder-head-btn), Punkt am ⚙ 8px (.recorder-setup.is-alert).
  */
 
 /* position/inset: liegt über der ganzen App, die stehen bleibt, wo sie war.
@@ -76,6 +80,43 @@
 .recorder-back .icon {
   width: 24px;
   height: 24px;
+}
+
+.recorder-head-btn {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--muted);
+}
+
+.recorder-head-btn .icon {
+  width: 20px;
+  height: 20px;
+}
+
+.recorder-head-btn:disabled {
+  opacity: 0.38;
+}
+
+/* position: Anker für den Punkt am Zahnrad */
+.recorder-setup {
+  position: relative;
+  margin-right: -8px; /* margin: das Zahnrad steht auf dem Rand wie der Pfeil links, seine Tippfläche ragt darüber */
+}
+
+/* Ein roter Punkt am Zahnrad: Mikrofon oder Mitschrift gehen gerade nicht */
+.recorder-setup.is-alert::after {
+  content: "";
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--danger);
 }
 
 .recorder-name {
@@ -176,9 +217,20 @@
 
 .recorder-text-head {
   align-self: stretch;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 40px;
+  border-bottom: 1px solid var(--m3-outline-variant, var(--line));
   font-size: 13px;
   font-weight: 600;
   color: var(--muted);
+}
+
+/* margin: die Knöpfe stehen rechts auf dem Rand, ihre Tippflächen ragen darüber */
+.recorder-text-tools {
+  display: flex;
+  margin-right: -10px;
 }
 
 /* overflow-y: eine lange Mitschrift rollt in ihrer Fläche, das Neueste steht unten */
@@ -186,7 +238,7 @@
   align-self: stretch;
   flex: 1;
   min-height: 0;
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   overflow-y: auto;
   scrollbar-width: none;
   font-size: 17px;

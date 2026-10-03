@@ -39,7 +39,8 @@ export function createSpeech(onChange, stillRecording) {
   let recognition = null;
   let final = "";
   let pending = "";
-  let failed = !Api;
+  /* Warum die Mitschrift nicht läuft: Fehlername des Browsers, "missing" ohne Spracherkennung, sonst "" */
+  let problem = Api ? "" : "missing";
 
   function listen() {
     const current = new Api();
@@ -58,13 +59,15 @@ export function createSpeech(onChange, stillRecording) {
     };
     current.onerror = (event) => {
       if (harmlessErrors.includes(event.error)) return;
-      failed = true;
+      problem = event.error || "failed";
+      /* Der Browser beendet die Erkennung selbst; frei machen, damit „Erneut anfragen“ neu zuhören kann */
+      if (recognition === current) recognition = null;
       if (!final) onChange(null);
     };
     /* Der Browser hört nach einer Sprechpause von selbst auf — solange
        aufgenommen wird, gleich weiterhören. */
     current.onend = () => {
-      if (recognition !== current || failed || !stillRecording()) return;
+      if (recognition !== current || problem || !stillRecording()) return;
       try {
         current.start();
       } catch (error) {
@@ -82,7 +85,18 @@ export function createSpeech(onChange, stillRecording) {
   return {
     /** Zuhören (wieder) beginnen. */
     start() {
-      if (!failed && !recognition) listen();
+      if (!problem && !recognition) listen();
+    },
+    /** Nach „Erneut anfragen“: den alten Fehler vergessen und, wenn aufgenommen wird, neu zuhören. */
+    retry() {
+      if (!Api) return;
+      problem = "";
+      onChange(final, pending);
+      if (stillRecording()) this.start();
+    },
+    /** Warum gerade nicht mitgeschrieben wird ("" = alles gut). */
+    problem() {
+      return problem;
     },
     /** Zuhören beenden; was noch unsicher war, zählt jetzt als gesagt. */
     stop() {
@@ -93,7 +107,7 @@ export function createSpeech(onChange, stillRecording) {
       current.stop();
       if (pending) final = [final, pending].join(" ").trim();
       pending = "";
-      if (!failed) onChange(final, "");
+      if (!problem) onChange(final, "");
     },
     /** Der ganze Text bis jetzt. */
     text() {
