@@ -47,8 +47,8 @@
     margin-inline: var(--m3-page-edge); /* margin-inline: Karten und Überschriften halten den Rand selbst */
   }
 
-  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .modal-body > .ms-teaser {
-    width: auto; /* width: die Karte ist ein Knopf mit 100 % Breite und ragte mit dem Außenabstand über den rechten Rand */
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .modal-body > :is(.ms-teaser, .account-button) {
+    width: auto; /* width: Karte und Knöpfe („Vorher Daten exportieren“, „Alle Daten löschen“, „Passwort ändern“) haben 100 % Breite und ragten mit dem Außenabstand über den rechten Rand */
   }
 
   :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .modal-body > :is(.plist, .settings-group) {
