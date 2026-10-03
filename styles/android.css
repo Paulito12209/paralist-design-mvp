@@ -262,10 +262,9 @@
     padding-bottom: var(--content-end);
   }
 
-  /* Die Medien-Knöpfe rücken nach links, rechts steht der Plus-Knopf */
+  /* Die Medien-Leiste steht im Abstand des Plus-Knopfs über der Navigation;
+     den Knopf selbst gibt es dort nicht (styles/media-bar.css) */
   [data-mobile-os="android"] .media-actions {
-    justify-content: flex-start;
-    padding-left: var(--m3-fab-gap);
     margin-bottom: var(--m3-fab-gap);
   }
 

@@ -55,7 +55,7 @@
  * styles/calendar-panel.css  -> Kalender: graue Fläche mit Stundenraster und Liste; styles/calendar-week.css: Desktop-Werkzeugzeile, Woche, Monat
  * styles/sort-wheels.css     -> Blatt „Sortieren“: Rollen „Wonach“ | „Reihenfolge“; styles/filter-sheet.css: „Filtern“ mit Übersicht und Unterseiten je Abschnitt (iOS, Desktop)
  * styles/info-dialog.css     -> kleiner Erklär-Dialog hinter einem ⓘ im Auswahl-Blatt
- * styles/media.css           -> Medien- und Ressourcen-Seite; styles/media-desk.css: Desktop-Werkzeuge, Liste, Markierung
+ * styles/media.css           -> Medien- und Ressourcen-Seite; styles/media-bar.css: Leiste unten; styles/recorder.css: Audio-Aufnahme; styles/media-desk.css: Desktop
  * styles/bookmarks.css       -> Lesezeichen-Seite: Zeilen mit großer Kachel, Website und Herkunft
  * styles/page-hero.css       -> Sammlungen: großer Kopf mit Icon und zweizeiligem Satz (im Menü einschaltbar)
  * styles/viewer.css          -> Dateiansicht: Foto, Video, Aufnahme und PDF

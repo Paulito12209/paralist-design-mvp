@@ -223,8 +223,8 @@
     border-radius: 999px; /* border-radius: Pillenform wie die Werkzeugleiste der Zeichnung */
   }
 
-  .media-btn {
-    background: transparent;
+  .media-combo {
+    background: transparent; /* background: das Glas ist schon die Fläche */
   }
 
   /* Glas für alles, was unten über der Seite schwebt. .device und :is() machen

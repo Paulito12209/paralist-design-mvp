@@ -1,6 +1,6 @@
 /*
  * Medien-Seite (Kachelraster nach Monaten) und Ressourcen-Seite (Listen nach
- * Monaten), dazu die runden Knöpfe über der Navigation.
+ * Monaten). Die Leiste unten steht in styles/media-bar.css.
  * Pfad: styles/media.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens.css)
@@ -10,9 +10,6 @@
  * --media-name-size         -> Schriftgröße des Dateinamens auf einer Kachel
  * --media-doc-color         -> Blau des Dokument- und Audio-Icons
  * --media-badge-bg          -> Hintergrund des Dauer-Schilds
- * --media-btn-size          -> Größe der runden Knöpfe
- * --media-actions-space     -> Extra-Platz am Seitenende
- * --media-actions-gap       -> Abstand zwischen den runden Knöpfen
  * --media-strip-width       -> Breite einer Kachel unter „Verknüpfte Einträge“
  * --media-strip-gap         -> Fuge zwischen diesen Kacheln
  * --media-strip-radius      -> Rundung dieser Kacheln
@@ -174,45 +171,6 @@
 
 .media-sample-9 {
   background: linear-gradient(135deg, #1e3c72, #2a5298);
-}
-
-/* Knöpfe über der Navigation: als Gruppe mittig, Foto ganz rechts */
-.media-actions {
-  display: none;
-  align-items: center;
-  justify-content: center; /* justify-content: die vier Knöpfe als Gruppe mittig */
-  gap: var(--media-actions-gap);
-  margin: 0 0 12px;
-}
-
-body.is-media .media-actions:not([hidden]) {
-  display: flex;
-}
-
-.media-btn {
-  width: var(--media-btn-size);
-  height: var(--media-btn-size);
-  border-radius: 50%; /* border-radius: macht die Knöpfe rund */
-  background: var(--card);
-  box-shadow: var(--shadow);
-  display: grid;
-  place-items: center;
-  color: var(--text);
-}
-
-.media-btn .icon {
-  width: 22px;
-  height: 22px;
-}
-
-.media-btn:active {
-  opacity: 0.55;
-}
-
-/* Auf der Medien-Seite braucht die Liste unten mehr Platz, damit die Knöpfe nichts verdecken */
-body.is-media .content {
-  --content-end: calc(var(--tab-space) + var(--media-actions-space)); /* --content-end: so weit reicht die Seite in Android nach unten (styles/android-archive.css) */
-  padding-bottom: var(--content-end);
 }
 
 /* ---------- Ressourcen ---------- */

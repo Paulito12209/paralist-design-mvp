@@ -1,0 +1,259 @@
+/*
+ * Die Audio-Aufnahme als Overlay, aufgebaut wie die Suche: oben die
+ * Kopfzeile mit ← und dem Namen der Aufnahme, darunter schimmert die Seite
+ * nur noch dunkel und verschwommen durch. In der Mitte die Zeit, ob
+ * aufgenommen wird, die laufende Welle und die Mitschrift. Unten dieselben
+ * Knöpfe wie in der Medien-Leiste (styles/media-bar.css) und „Abbrechen“ wie
+ * auf der Suche (styles/search.css), darunter die dunkle Leiste.
+ * Inhalt und Zustände: src/features/media/recorder-view.js.
+ * Pfad: styles/recorder.css
+ *
+ * ANPASSBARE WERTE (Android in styles/tokens-android.css, sonst styles/tokens.css
+ * und styles/tokens-pages.css)
+ * -----------------------------------
+ * --recorder-scrim-mix / --recorder-scrim-blur -> wie deckend und verschwommen das Overlay ist;
+ *                         dunkler als bei der Suche, damit die Mitschrift gut lesbar bleibt
+ *                         (stehen oben bei .recorder, gelten nur hier)
+ * --m3-search-head-bg     -> Farbe der Kopfzeile
+ * --m3-search-field-size  -> Schriftgröße des Namens oben
+ * --m3-top-bar-height     -> Höhe der Kopfzeile
+ * --m3-primary            -> Farbe der Welle, solange aufgenommen wird
+ * --danger                -> roter Punkt „Aufnahme läuft“
+ * --m3-search-band-rise / -mid / -end -> die dunkle Leiste unter den Knöpfen
+ * --search-pill-height    -> Höhe der Knöpfe unten
+ * --nav-side / --nav-bottom / --content-side -> Ränder
+ *
+ * Einzelwerte direkt bei ihrer Regel: Zeit 56px (.recorder-time), Welle 96px
+ * hoch mit 3px Fuge und Strichen bis 4px (.recorder-wave, .recorder-bar),
+ * Mitschrift 17px (.recorder-text).
+ */
+
+/* position/inset: liegt über der ganzen App, die stehen bleibt, wo sie war.
+   bottom: rückt mit der Tastatur hoch, wenn man den Namen tippt.
+   z-index 30: über Kopfzeile und Leiste (20), unter den Blättern (ab 36). */
+.recorder {
+  position: absolute;
+  inset: 0;
+  bottom: var(--keyboard-inset);
+  z-index: 30;
+  display: flex;
+  flex-direction: column;
+  --recorder-scrim-mix: 90%;
+  --recorder-scrim-blur: 16px;
+  background: color-mix(in srgb, var(--bg) var(--recorder-scrim-mix), transparent);
+  /* backdrop-filter: die Seite darunter ist nur noch als verschwommener Schimmer zu ahnen */
+  backdrop-filter: blur(var(--recorder-scrim-blur)) saturate(1.2);
+  -webkit-backdrop-filter: blur(var(--recorder-scrim-blur)) saturate(1.2);
+}
+
+.recorder[hidden] {
+  display: none;
+}
+
+/* ---------- Kopfzeile ---------- */
+
+.recorder-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  min-height: var(--m3-top-bar-height, 64px);
+  padding: var(--safe-top) var(--content-side) 0;
+  background: var(--m3-search-head-bg, var(--card));
+}
+
+.recorder-back {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  margin-left: -12px; /* margin: der Pfeil steht auf dem Rand wie bei der Suche, seine Tippfläche ragt darüber */
+  border-radius: 50%;
+  color: var(--m3-on-surface, var(--text));
+}
+
+.recorder-back .icon {
+  width: 24px;
+  height: 24px;
+}
+
+.recorder-name {
+  flex: 1;
+  min-width: 0;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: var(--m3-search-field-size, 17px);
+  outline: none;
+}
+
+/* ---------- Zeit, Welle, Mitschrift ---------- */
+
+/* padding unten: Platz für die Knöpfe, damit die Mitschrift nicht darunter verschwindet */
+.recorder-body {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 40px var(--content-side) calc(var(--search-pill-height) + 36px + var(--nav-bottom) + var(--safe-bottom));
+}
+
+.recorder-time {
+  font-size: 56px;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums; /* font-variant-numeric: gleich breite Ziffern, die Zeit zittert nicht beim Zählen */
+  color: var(--text);
+}
+
+.recorder-state {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.recorder-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--muted);
+}
+
+/* animation: der rote Punkt pulsiert, solange aufgenommen wird */
+.recorder[data-state="recording"] .recorder-dot {
+  background: var(--danger);
+  animation: recorder-pulse 1.2s ease-in-out infinite;
+}
+
+.recorder:is([data-state="stopped"], [data-state="error"]) .recorder-dot {
+  display: none;
+}
+
+@keyframes recorder-pulse {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+.recorder-wave {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  width: 100%;
+  height: 96px;
+  margin: 28px 0 24px;
+}
+
+/* Jeder Strich ist voll hoch und wird über transform gestaucht (recorder-view.js) */
+.recorder-bar {
+  flex: 1;
+  max-width: 4px;
+  height: 100%;
+  border-radius: 2px;
+  background: var(--muted);
+  transition: transform 90ms linear; /* transition: die Striche wachsen weich statt zu springen */
+}
+
+.recorder[data-state="recording"] .recorder-bar {
+  background: var(--m3-primary, var(--link-color));
+}
+
+.recorder-note {
+  margin: 0 0 16px;
+  max-width: 300px;
+  text-align: center;
+  font-size: 14px;
+  color: var(--muted);
+}
+
+.recorder-text-head {
+  align-self: stretch;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+/* overflow-y: eine lange Mitschrift rollt in ihrer Fläche, das Neueste steht unten */
+.recorder-text {
+  align-self: stretch;
+  flex: 1;
+  min-height: 0;
+  margin: 6px 0 0;
+  overflow-y: auto;
+  scrollbar-width: none;
+  font-size: 17px;
+  line-height: 1.45;
+  color: var(--text);
+}
+
+.recorder-text.is-empty,
+.recorder-pending {
+  color: var(--muted);
+}
+
+/* Ohne Mikrofon gibt es nichts mitzuschreiben; dort steht nur der Hinweis */
+.recorder[data-state="error"] :is(.recorder-text-head, .recorder-text) {
+  display: none;
+}
+
+/* ---------- Knöpfe unten ---------- */
+
+/* Drei Spalten wie auf der Suche: Stoppen links, Gehäuse mittig, Abbrechen rechts.
+   position: steht fest unten, die Mitschrift rollt darüber. */
+.recorder-actions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(max-content, 1fr);
+  align-items: center;
+  gap: var(--media-actions-gap);
+  padding: 0 var(--nav-side) calc(12px + var(--nav-bottom) + var(--safe-bottom));
+}
+
+.recorder-actions .icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* „Speichern“ steht als Wort auf der hellen Fläche, wie „Suchen“ */
+.recorder-save {
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.recorder :is(.media-side, .media-combo-btn):disabled {
+  opacity: 0.38;
+}
+
+/* Die dunkle Leiste der Suche, hinter den Knöpfen (z-index -1 in ihrer Reihe) */
+.recorder-actions::before {
+  content: "";
+  position: absolute;
+  inset: calc(-1 * var(--m3-search-band-rise, 24px)) 0 0;
+  z-index: -1;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--bg) var(--m3-search-band-mid, 100%), transparent) var(--m3-search-band-rise, 24px),
+    color-mix(in srgb, var(--bg) var(--m3-search-band-end, 100%), transparent)
+  );
+  pointer-events: none;
+}
+
+/* Am Desktop steht der Inhalt in einer lesbaren Spalte in der Mitte */
+@media (min-width: 1024px) {
+  .recorder-body {
+    width: min(560px, 100%);
+    margin: 0 auto;
+  }
+}

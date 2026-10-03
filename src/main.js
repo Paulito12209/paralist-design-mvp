@@ -75,6 +75,7 @@ const lazyModules = {
   tasks: () => import("./features/tasks/tasks.js"),
   media: () => import("./features/media/media.js"),
   viewer: () => import("./features/media/viewer.js"),
+  recorder: () => import("./features/media/recorder.js"),
   search: () => import("./features/search/search.js"),
   resources: () => import("./features/resources/resources.js"),
   bookmarks: () => import("./features/bookmarks/bookmarks.js"),
