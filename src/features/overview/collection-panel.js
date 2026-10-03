@@ -11,6 +11,8 @@
  *   (src/features/overview/collection-filter.js), ein Tipp auf einen Chip
  *   gleich dessen Unterseite
  *
+ * Im Archiv fehlt die Zeile „Tabs anzeigen“: seine Reiter sind der Weg zwischen
+ * den Kategorien und bleiben immer sichtbar.
  * Jede Sammlung merkt sich ihre eigene Wahl. Es gibt eine Karte für alle
  * Sammlungen: sie zeigt stets die Wahl der gerade offenen. Blenden die
  * Filter alles aus, zeigt die Liste den Platzhalter aus src/ui/filter-empty.js;
@@ -68,7 +70,7 @@ function panelMarkup(kind) {
   const chips = collectionFilterChips(kind);
   return `
     <div class="details-list tasks-settings">
-      ${tabsRowMarkup()}
+      ${kind === "archive" ? "" : tabsRowMarkup()}
       <button class="details-row is-editable" type="button" data-settings="sort">
         <span class="details-row-label">${sortLabel}</span><span class="details-row-value">${escapeHtml(sortSummary(collectionSortOptions(kind), sort, asc))}</span>
       </button>
