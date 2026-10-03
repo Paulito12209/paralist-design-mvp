@@ -55,7 +55,7 @@
     <link rel="stylesheet" href="styles/update.css" />
     <link rel="stylesheet" href="styles/overlays.css" /><link rel="stylesheet" href="styles/sheet-tabs.css" /><link rel="stylesheet" href="styles/sheet-tiles.css" /><link rel="stylesheet" href="styles/details.css" />
     <link rel="stylesheet" href="styles/modal-top.css" />
-    <link rel="stylesheet" href="styles/search.css" /><link rel="stylesheet" href="styles/search-refine.css" />
+    <link rel="stylesheet" href="styles/search.css" /><link rel="stylesheet" href="styles/search-refine.css" /><link rel="stylesheet" href="styles/search-overlay.css" />
     <link rel="stylesheet" href="styles/progress.css" /><link rel="stylesheet" href="styles/milestones.css" />
     <link rel="stylesheet" href="styles/profile.css" /><link rel="stylesheet" href="styles/account.css" /><link rel="stylesheet" href="styles/usage-split.css" /><link rel="stylesheet" href="styles/streak-legend.css" /><link rel="stylesheet" href="styles/avatar-crop.css" />
     <link rel="stylesheet" href="styles/settings.css" />
@@ -79,8 +79,8 @@
     <div class="stage">
       <div class="device">
         <header class="top-bar">
-          <!-- Level-Anzeige: Striche rundherum zeigen den Fortschritt bis zur nächsten Stufe -->
-          <button class="level-btn" id="level-btn" type="button" aria-label="Fortschritt öffnen">
+          <!-- Level-Anzeige: Striche rundherum zeigen den Fortschritt bis zur nächsten Stufe; davor der Zurück-Pfeil, den nur die offene Suche am Handy zeigt (styles/search-overlay.css) -->
+          <button class="search-back" id="search-back" type="button" aria-label="Suche schließen"><svg class="icon"><use href="#icon-arrow-back"></use></svg></button><button class="level-btn" id="level-btn" type="button" aria-label="Fortschritt öffnen">
             <svg class="level-gauge" id="level-gauge" viewBox="0 0 48 48" aria-hidden="true"></svg>
           </button>
           <label class="search" id="search-entry">

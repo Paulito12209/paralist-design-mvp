@@ -38,7 +38,7 @@
  * styles/sheet-tiles.css     -> Auswahl-Blatt: Raster aus Icon-Kacheln („Icon wählen“)
  * styles/details.css         -> Blatt „Details“ und kleiner Titel in der Kopfzeile einer Detailseite
  * styles/modal-top.css       -> runder Pfeil in einem Blatt, der nach oben rollt
- * styles/search.css          -> Suchseite; styles/search-refine.css: ihre Art-Pillen, Sortier-Pille und Filter-Chips
+ * styles/search.css          -> Suchseite; styles/search-refine.css: Art-Reiter, Sortieren/Filter, Chips; styles/search-overlay.css: Overlay am Handy
  * styles/progress.css        -> Fortschritt-Blatt: Ring, Verlauf, Historie
  * styles/milestones.css      -> Fortschritt-Blatt: Karte und Seite „Meilensteine“ mit Plaketten und Stufen-Leiter
  * styles/profile.css         -> Profil-Blatt: Bild, Nutzungszeit, Serie, Listen; styles/account.css: Konto- und Daten-Seiten

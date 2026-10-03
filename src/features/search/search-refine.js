@@ -69,18 +69,13 @@ export function hasLimits(refine) {
   return refine.place !== undefined || refine.period !== "any" || refine.titleOnly || !refine.showDone;
 }
 
-/** Weicht die Sortierung von der Vorgabe ab (Relevanz, beste zuerst)? */
-export function isSorted(refine) {
-  return refine.sort !== "relevanz" || refine.asc === false;
-}
-
 /* Zu welcher Pille ein Treffer gehört. */
 function kindOf(item) {
   return item.kind === "entry" ? item.type : item.kind;
 }
 
-/* Zuletzt bearbeitet; ohne Bearbeitung zählt das Anlegen. */
-function editedTs(item) {
+/** Zuletzt bearbeitet; ohne Bearbeitung zählt das Anlegen. Auch für die Reiter ohne Eingabe. */
+export function editedTs(item) {
   return item.entry ? item.entry.editedAt || item.entry.createdAt || 0 : 0;
 }
 
@@ -90,8 +85,8 @@ function inPlace(entry, place) {
   return Boolean(place) && isEntryRef(place) && (entry.links || []).some((id) => sameId(id, refId(place)));
 }
 
-/* Die Eingrenzungen aus dem Blatt, ohne die Art. */
-function passesLimits(item, refine) {
+/** Die Eingrenzungen aus dem Blatt, ohne die Art. Auch für die Reiter ohne Eingabe. */
+export function passesLimits(item, refine) {
   const period = refinePeriods.find((row) => row.id === refine.period);
   const needsEntry = refine.place !== undefined || (period && period.days !== null);
   if (needsEntry && !item.entry) return false;

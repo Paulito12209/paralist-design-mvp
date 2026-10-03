@@ -47,10 +47,13 @@ function onAnyScroll() {
 /*
  * Bei `mousedown` würde der Browser (Android) einer Pille den Fokus geben —
  * das Suchfeld verlöre ihn und die Tastatur ginge zu. Pillen sollen sie aber
- * offen lassen, darum dort den Fokuswechsel verhindern.
+ * offen lassen, darum dort den Fokuswechsel verhindern. Sortieren, Filtern
+ * und die Chips ebenso: sie klappen die Tastatur selbst zu und müssen dazu
+ * noch wissen, dass sie offen war — dann holen sie sie nach dem Blatt zurück
+ * (search.js).
  */
 function onMouseDown(event) {
-  if (ui.searchTyping && event.target.closest(".tab-pill")) event.preventDefault();
+  if (ui.searchTyping && event.target.closest(".tab-pill, [data-search-sort], [data-search-filter], [data-search-chip-open]")) event.preventDefault();
 }
 
 /*

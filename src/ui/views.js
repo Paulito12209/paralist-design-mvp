@@ -12,11 +12,14 @@ import { emit, events } from "../core/bus.js";
 import { el, qa } from "../core/dom.js";
 import { findEntry } from "../data/queries.js";
 import { ui } from "../data/state.js";
+import { isDesk } from "./desk-mode.js";
 
 /** Die Namen der Ansichten und ihre Abschnitte in index.html. */
 export const viewNames = ["home", "page", "entry", "search", "calendar", "tasks", "media"];
 
 let activeView = "home";
+/* Die Seite unter der Suche: von dort wurde sie geöffnet, sie bleibt darunter stehen. */
+let searchBase = null;
 
 function sectionOf(name) {
   return el(`view-${name}`);
@@ -50,17 +53,31 @@ export function showView(name) {
   if (!viewNames.includes(name)) return;
   emit(events.viewWillChange, name);
 
+  /* Die Suche legt sich über die Seite, von der aus sie geöffnet wurde
+     (styles/search-overlay.css): die bleibt sichtbar darunter, samt ihren
+     Klassen am body. Kommt die Suche aus dem Verlauf zurück, liegt sie über
+     der Seite, die gerade zu sehen war. Am Desktop steht die Suche als
+     eigene Seite in der Spalte, dort bleibt nichts darunter. */
+  const search = name === "search";
+  if (search && activeView !== "search") searchBase = isDesk() ? null : activeView;
+  if (!search) searchBase = null;
+
   viewNames.forEach((item) => {
     const section = sectionOf(item);
     if (!section) return;
-    section.hidden = item !== name;
+    section.hidden = item !== name && item !== searchBase;
     section.classList.toggle("is-active", item === name);
   });
   activeView = name;
+  document.body.classList.toggle("is-search", search);
+  if (searchBase) {
+    emit(events.viewOpened, name);
+    return;
+  }
 
   /* Medien- und Zeichenansicht brauchen eigene Knopfleisten unten:
      die beiden Klassen schalten sie in styles/media.css und styles/drawing.css frei.
-     is-search schaltet die Suchen-Pille frei (styles/search.css), is-tasks und
+     is-search (oben gesetzt) schaltet die Knöpfe der Suche frei (styles/search.css), is-tasks und
      is-calendar das Panel „Ansicht“ über der Navigation (styles/tasks-settings.css,
      styles/calendar.css).
      is-subpage blendet die allgemeine Kopfzeile aus (styles/top-bar.css): eine
@@ -69,7 +86,6 @@ export function showView(name) {
   const entry = name === "entry" ? findEntry(ui.currentEntryId) : null;
   document.body.classList.toggle("is-media", name === "media");
   document.body.classList.toggle("is-drawing", Boolean(entry && entry.type === "zeichnung"));
-  document.body.classList.toggle("is-search", name === "search");
   document.body.classList.toggle("is-tasks", name === "tasks");
   document.body.classList.toggle("is-calendar", name === "calendar");
   document.body.classList.toggle("is-subpage", name === "page" || name === "entry");

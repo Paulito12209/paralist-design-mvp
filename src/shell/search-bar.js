@@ -11,6 +11,11 @@
  * Solange die Tastatur offen ist (ui.searchTyping), sind sie weg; die Zeilen
  * darüber lassen sich trotzdem direkt antippen
  * (src/features/search/search-tap.js).
+ * Am Handy legt sich die Suche als Overlay über die Seite, von der aus sie
+ * geöffnet wurde (styles/search-overlay.css): ihr Abschnitt steht dazu neben
+ * dem Scrollbereich statt darin — so rollt sie für sich und die Seite darunter
+ * bleibt, wo sie war. Der Zurück-Pfeil links im Feld schließt sie wie
+ * „Abbrechen“.
  * Am Desktop öffnet das Feld stattdessen die Such-Palette
  * (src/shell/search-palette.js, angemeldet über setSearchTakeover).
  * Ob beim Öffnen gleich die Tastatur aufgeht, wählt man unter
@@ -36,7 +41,7 @@ import { load } from "../core/lazy.js";
 import { noteSearch } from "../data/opens.js";
 import { searchKeyboardOn } from "../data/search-keyboard.js";
 import { ui } from "../data/state.js";
-import { isDesk } from "../ui/desk-mode.js";
+import { isDesk, onDeskChange } from "../ui/desk-mode.js";
 import { closeSearch, showSearch } from "../ui/router.js";
 import { isViewActive } from "../ui/views.js";
 import { initSearchVoice } from "./search-voice.js";
@@ -114,6 +119,23 @@ function clearQuery() {
   if (isViewActive("search")) redrawSearch();
 }
 
+/* Am Handy steht der Abschnitt der Suche neben dem Scrollbereich, damit er als
+   Overlay für sich rollt; am Desktop wieder darin, als Seite in der Spalte. */
+function placeSearchView() {
+  const view = el("view-search");
+  if (isDesk()) dom.content.insertBefore(view, el("view-calendar"));
+  else dom.content.after(view);
+}
+
+/* Abbrechen und Zurück-Pfeil: Suche leeren und dorthin zurück, wo sie geöffnet
+   wurde (Kalender bleibt Kalender), nicht pauschal zur Übersicht. */
+function cancelSearch() {
+  dom.searchInput.value = "";
+  ui.searchQuery = "";
+  ui.searchList = null;
+  closeSearch();
+}
+
 /** Feld an jemand anderen abgeben (siehe `takeOver`). */
 export function setSearchTakeover(handler) {
   takeOver = handler;
@@ -178,14 +200,10 @@ export function initSearchBar() {
      eingesetzt wurde; dann stimmt das Wort auf der Pille wieder. */
   on(events.contextChanged, syncPill);
 
-  /* Abbrechen: leert die Suche und geht zurück auf die Seite, von der aus sie
-     geöffnet wurde (Kalender bleibt Kalender), nicht pauschal zur Übersicht. */
-  el("search-close").addEventListener("click", () => {
-    dom.searchInput.value = "";
-    ui.searchQuery = "";
-    ui.searchList = null;
-    closeSearch();
-  });
+  el("search-close").addEventListener("click", cancelSearch);
+  el("search-back").addEventListener("click", cancelSearch);
+  placeSearchView();
+  onDeskChange(placeSearchView);
 
   initSearchVoice(el("search-voice"));
 

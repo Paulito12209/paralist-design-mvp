@@ -1,10 +1,12 @@
 /*
  * Die Bedienung zum Filtern und Sortieren auf der Suchseite:
  * - Art-Pillen unter dem Titel (Alle 24 · Aufgaben 8 · …)
- * - Zeile mit der Trefferzahl und rechts zwei Pillen: „Sortieren“ zeigt die
- *   gewählte Sortierung mit einem Pfeil für die Richtung (↑ aufsteigend,
- *   ↓ absteigend, wie in Google Drive) — der volle Wortlaut „Neueste zuerst“
- *   passt bei 375px nicht daneben —, „Filter“ die Zahl der gefilterten Abschnitte
+ * - Zeile unter den Reitern mit der Anzahl und rechts zwei Knöpfen: „Sortieren“
+ *   zeigt die gewählte Sortierung mit einem Pfeil für die Richtung (↑ aufsteigend,
+ *   ↓ absteigend, wie in Google Drive), „Filter“ die Zahl der gefilterten
+ *   Abschnitte; am Handy stehen dort nur die beiden Symbole wie in jeder
+ *   Werkzeugzeile. Dieselbe Zeile steht auch über den Reitern ohne Eingabe
+ *   (search-browse.js), dort mit deren Sortierungen
  * - Chips für jede gesetzte Eingrenzung: ein Tipp auf den Namen öffnet deren
  *   Unterseite im Filter-Blatt, × nimmt sie weg
  * - Sortieren ist das gemeinsame Blatt mit zwei Rollen „Wonach“ und
@@ -16,7 +18,7 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * words    -> Beschriftungen: Pillen, Trefferzahl, Blatt-Titel, Chips
+ * words    -> Beschriftungen: Knöpfe, Anzahl (Treffer, Einträge, Suchbegriffe), Blatt-Titel, Chips
  * sections -> Name und Icon der vier Filter-Abschnitte
  * scopes   -> die beiden Werte von „Suchen in“
  * doneWays -> die beiden Werte von „Erledigte“
@@ -29,9 +31,9 @@ import { escapeHtml, icon } from "../../core/html.js";
 import { parentName, placeOptionsFor } from "../../data/queries.js";
 import { openFilterSheet } from "../../ui/filter-sheet.js";
 import { openSortSheet, sortSummary } from "../../ui/sort-sheet.js";
-import { defaultRefine, isSorted, naturalAsc, refinePeriods, refineSorts } from "./search-refine.js";
+import { defaultRefine, naturalAsc, refinePeriods, refineSorts } from "./search-refine.js";
 
-const words = {
+export const words = {
   sortPill: "Sortieren",
   filterPill: "Filter",
   filterTitle: "Filtern",
@@ -39,6 +41,10 @@ const words = {
   chipTitleOnly: "Nur Titel",
   chipHideDone: "Ohne Erledigte",
   hits: "Treffer",
+  entryOne: "Eintrag",
+  entryMany: "Einträge",
+  queryOne: "Suchbegriff",
+  queryMany: "Suchbegriffe",
   removeAria: "entfernen",
 };
 
@@ -90,27 +96,45 @@ function limits(refine) {
   return list;
 }
 
-/**
- * Trefferzahl links, rechts „Sortieren“ und „Filter“. Weicht etwas von der
- * Vorgabe ab, steht die Pille in Schriftfarbe mit blauem Rand; „Filter“
- * trägt dann die Zahl der gefilterten Abschnitte.
- */
-export function countRowMarkup(total, refine) {
-  const sorted = isSorted(refine);
+/* Weicht die Sortierung von der ersten Möglichkeit in ihrer natürlichen Richtung ab? */
+function sortedAway(refine, sorts) {
+  const option = sorts.find((item) => item.id === refine.sort) || sorts[0];
+  return option !== sorts[0] || ascOf(refine) !== option.asc;
+}
+
+/* Rechts in der Zeile: Sortieren und Filtern. Weicht etwas von der Vorgabe ab,
+   steht der Knopf hervorgehoben; „Filter“ trägt dann die Zahl der gefilterten
+   Abschnitte. Am Handy bleiben nur die Symbole (styles/search-overlay.css). */
+function toolsMarkup(refine, sorts) {
+  const sorted = sortedAway(refine, sorts);
   const count = limits(refine).length;
-  const option = refineSorts.find((item) => item.id === refine.sort) || refineSorts[0];
+  const option = sorts.find((item) => item.id === refine.sort) || sorts[0];
   const arrow = sorted ? icon(ascOf(refine) ? "arrow-up" : "arrow-down", "search-tool-dir") : "";
   return `
-    <div class="search-count-row">
-      <span class="search-count">${total} ${words.hits}</span>
       <div class="search-tools">
-        <button class="search-tool${sorted ? " is-on" : ""}" type="button" data-search-sort aria-label="${escapeHtml(`${words.sortPill}: ${sortSummary(refineSorts, refine.sort, ascOf(refine))}`)}">
-          ${icon("sort")}<span class="search-tool-text">${escapeHtml(sorted ? option.label : words.sortPill)}</span>${arrow}
+        <button class="search-tool${sorted ? " is-on" : ""}" type="button" data-search-sort aria-label="${escapeHtml(`${words.sortPill}: ${sortSummary(sorts, refine.sort, ascOf(refine))}`)}">
+          ${icon("swap-vert")}<span class="search-tool-text">${escapeHtml(sorted ? option.label : words.sortPill)}</span>${arrow}
         </button>
-        <button class="search-tool${count ? " is-on" : ""}" type="button" data-search-filter>
-          ${icon("sliders")}<span class="search-tool-text">${words.filterPill}</span>${count ? `<span class="search-tool-count">${count}</span>` : ""}
+        <button class="search-tool${count ? " is-on" : ""}" type="button" data-search-filter aria-label="${words.filterTitle}">
+          ${icon("filter")}<span class="search-tool-text">${words.filterPill}</span>${count ? `<span class="search-tool-count">${count}</span>` : ""}
         </button>
-      </div>
+      </div>`;
+}
+
+/** „1 Treffer“ / „3 Treffer“: Zahl mit dem passenden Wort aus `words`. */
+export function countText(total, one, many) {
+  return `${total} ${total === 1 ? one : many}`;
+}
+
+/**
+ * Die Zeile unter den Reitern: links die Anzahl (`text`), rechts Sortieren und
+ * Filtern — ohne `refine` (Reiter „Zuletzt gesucht“) nur die Anzahl.
+ * `sorts`: die Möglichkeiten des Sortier-Blatts, die erste ist die Vorgabe.
+ */
+export function countRowMarkup(text, refine = null, sorts = refineSorts) {
+  return `
+    <div class="search-count-row">
+      <span class="search-count">${escapeHtml(text)}</span>${refine ? toolsMarkup(refine, sorts) : ""}
     </div>`;
 }
 
@@ -144,9 +168,9 @@ export function clearLimits(refine) {
 }
 
 /** Blatt „Sortieren“: links wonach, rechts die Richtung — wie auf der Aufgaben-Seite. */
-export function openSearchSort(refine, redraw) {
+export function openSearchSort(refine, redraw, sorts = refineSorts) {
   openSortSheet({
-    options: refineSorts,
+    options: sorts,
     sort: refine.sort,
     asc: ascOf(refine),
     onChange: (sort, asc) => {
@@ -179,11 +203,12 @@ function singleSection(id, values, current, apply, redrawSheet) {
  * und Erledigte; je Abschnitt eine Unterseite. Die erste Zeile jeder
  * Unterseite ist die Vorgabe — alles andere zählt als Filter.
  * @param page id der Unterseite, die gleich offen sein soll (Chip) — sonst weggelassen
+ * @param scope gibt es „Suchen in“? Ohne Suchbegriff nicht — es gibt nichts zu suchen.
  */
-export function openSearchFilter(refine, redraw, page) {
+export function openSearchFilter(refine, redraw, page, scope = true) {
   const again = () => {
     redraw();
-    openSearchFilter(refine, redraw);
+    openSearchFilter(refine, redraw, undefined, scope);
   };
   /* Orte bekommen ihre Stelle als id — Verweise sind Objekte und taugen nicht zum Vergleichen im Blatt */
   const places = [{ ref: undefined, label: words.anywhere, icon: "layers" }, ...placeOptionsFor()];
@@ -203,9 +228,9 @@ export function openSearchFilter(refine, redraw, page) {
       (id) => (refine.period = id),
       again
     ),
-    singleSection("scope", scopes, refine.titleOnly ? "title" : "all", (id) => (refine.titleOnly = id === "title"), again),
+    scope && singleSection("scope", scopes, refine.titleOnly ? "title" : "all", (id) => (refine.titleOnly = id === "title"), again),
     singleSection("done", doneWays, refine.showDone ? "show" : "hide", (id) => (refine.showDone = id === "show"), again),
-  ];
+  ].filter(Boolean);
   openFilterSheet({
     title: words.filterTitle,
     sections: list,
