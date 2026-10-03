@@ -75,7 +75,8 @@
  * --m3-ov-gap-cards            -> ebenso Überschrift bis zu den Kacheln
  * --m3-ov-gap-section          -> ebenso untere Ränder der Kacheln bis „Projekte“
  * --m3-ov-gap-tabs             -> ebenso „Projekte“ bis zur Reiter-Kapsel
- * --m3-ov-peek                -> Übersicht (nur Experiment): so viel von der nächsten Kartenseite schaut rechts hervor
+ * --m3-ov-peek                -> Übersicht („Android“): so viel von der nächsten Kartenseite schaut rechts hervor
+ * --m3-ov-peek-experiment     -> dasselbe in „Android (Experiment)“
  * --m3-ov-sheet-gap           -> ebenso: Abstand der unteren Kacheln zur Oberkante des Projekte-Containers
  * --m3-ov-sheet-radius        -> ebenso: Rundung oben am Projekte-Container (volle Breite, Farbe der Navigationsleiste)
  * --m3-ov-sheet-head-h        -> ebenso: Höhe der Zeile mit „Projekte“ und dem runden Pfeil-Knopf (errechnet: der Knopf steht oben, unten
@@ -210,7 +211,8 @@
   --m3-ov-gap-cards: 24px;
   --m3-ov-gap-section: 40px;
   --m3-ov-gap-tabs: 20px;
-  --m3-ov-peek: 24px;
+  --m3-ov-peek: 20px;
+  --m3-ov-peek-experiment: 24px;
   --m3-ov-sheet-gap: 24px;
   --m3-ov-sheet-radius: 28px;
   --m3-ov-sheet-head-h: calc(var(--m3-ov-arrow-size) + 2 * var(--content-side));

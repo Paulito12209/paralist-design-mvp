@@ -10,9 +10,9 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * experimentMoreOrder -> Reihenfolge der zweiten Kartenseite in Android (Experiment),
- *                        wie im Raster: oben links, oben rechts, unten links, unten rechts
- *                        (die anderen Fassungen folgen moreCards in src/data/collections.js)
+ * androidMoreOrder -> Reihenfolge der zweiten Kartenseite in beiden Android-Fassungen,
+ *                     wie im Raster: oben links, oben rechts, unten links, unten rechts
+ *                     (die anderen Fassungen folgen moreCards in src/data/collections.js)
  *
  * Größe, Rundung und Icon-Farben stehen in
  * styles/overview.css (Klassen .overview-card, .card-title, .card-icon-*),
@@ -30,14 +30,15 @@ import { overviewPages } from "../../data/config.js";
 import { archivedEntries, archivedWorkspaces, pageCount } from "../../data/queries.js";
 import { isViewActive } from "../../ui/views.js";
 
-/* Android (Experiment): Lesezeichen und Archiv stehen übereinander links, die zwei
-   „Demnächst“-Karten rechts daneben. */
-const experimentMoreOrder = ["bookmarks", "people", "archive", "plans"];
+/* Android und Android (Experiment): Lesezeichen und Archiv stehen übereinander links,
+   die zwei „Demnächst“-Karten rechts daneben — so schauen sie neben Favoriten und
+   Ressourcen als Peek hervor. */
+const androidMoreOrder = ["bookmarks", "people", "archive", "plans"];
 
 /* Die Karten der zweiten Seite in der Reihenfolge der gezeigten Fassung. */
 function orderedMoreCards() {
-  if (document.documentElement.dataset.mobileVariant !== "experiment") return moreCards;
-  return experimentMoreOrder.map((id) => moreCards.find((card) => card.id === id)).filter(Boolean);
+  if (document.documentElement.dataset.mobileOs !== "android") return moreCards;
+  return androidMoreOrder.map((id) => moreCards.find((card) => card.id === id)).filter(Boolean);
 }
 
 /* Die Karten mit eigenem farbigem Icon; alle anderen bleiben grau. */
