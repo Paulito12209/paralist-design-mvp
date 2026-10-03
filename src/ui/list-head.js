@@ -10,6 +10,8 @@
  * passenden Pille (data-open-archive, src/ui/list-clicks.js). Was Sortieren und
  * Filtern tun, bestimmt die Seite (Projekte, Aufgaben, Sammlungen); hier
  * stehen nur Markup und Klick-Zuordnung.
+ * Im Archiv steht an derselben Stelle der Knopf „Aktive Projekte (2)“ — das
+ * Gegenstück, das zur Liste der aktiven Dinge zurückführt (data-open-active).
  * Die Zeile steht in jeder Fassung im Dokument und ist nur in der
  * Android-Fassung zu sehen (styles/android-card.css, Klassen project-card-*
  * — sie gelten für jede Werkzeugzeile, nicht nur für die Projekte).
@@ -45,17 +47,26 @@ function archiveButton({ pill, count }) {
     </button>`;
 }
 
+/* Im Archiv an derselben Stelle: „Aktive Projekte (2)“ führt zur Liste zurück (data-open-active). */
+function activeButton({ pill, label, icon: glyph, count }) {
+  return `
+    <button class="project-card-archive" type="button" data-open-active="${pill}">
+      ${icon(glyph)}<span>${count ? `${label} (${count})` : label}</span>
+    </button>`;
+}
+
 /**
  * Die Werkzeugzeile.
  * `archive`: { pill, count } — oder null, wo es keinen Archiv-Knopf gibt (im Archiv selbst).
+ * `active`: { pill, label, icon, count } — der Knopf „Aktive …“ im Archiv, sonst null.
  * `filter`: gibt es ein Filter-Symbol? `filtering`: siebt die Liste gerade aus?
  * `view`: gibt es das Symbol „Ansicht“ (Regler)?
  * `plain`: nichts steht über der Zeile (keine Reiter) — dann rückt sie nicht unter eine Reiterlinie.
  */
-export function listHeadMarkup({ archive = null, filter = true, filtering = false, view = true, plain = false }) {
+export function listHeadMarkup({ archive = null, active = null, filter = true, filtering = false, view = true, plain = false }) {
   return `
     <div class="project-card-head${plain ? " is-plain" : ""}">
-      ${archive ? archiveButton(archive) : ""}
+      ${archive ? archiveButton(archive) : ""}${active ? activeButton(active) : ""}
       <div class="project-card-tools">${tool("sort")}${filter ? tool("filter", filtering) : ""}${view ? tool("view") : ""}</div>
     </div>`;
 }

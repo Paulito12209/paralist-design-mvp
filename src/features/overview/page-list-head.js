@@ -1,7 +1,9 @@
 /*
  * Die Werkzeugzeile über den Sammlungen in der Android-Fassung — Eingang,
  * Favoriten, Ressourcen, Lesezeichen, Arbeitsbereiche und im Archiv selbst:
- * links „Archiv (n)“ (im Archiv entfällt es), rechts Sortieren, Filtern und Ansicht.
+ * links „Archiv (n)“ (im Archiv steht dort stattdessen „Aktive Projekte (n)“ o. ä.,
+ * der Weg zurück zur aktiven Liste, src/features/overview/archive-active.js),
+ * rechts Sortieren, Filtern und Ansicht.
  * Sortieren und Filtern öffnen gleich ihr Blatt, Ansicht holt die Karte „Ansicht“
  * herauf (src/features/overview/collection-panel.js). Gebaut wie die Zeile über
  * Projekten und Aufgaben (src/ui/list-head.js).
@@ -23,6 +25,7 @@
  */
 
 import { dom, el } from "../../core/dom.js";
+import { activeCount, activeWords } from "../../data/archive-active.js";
 import { archivedForView, archivePillForKind } from "../../data/archive-context.js";
 import { collectionFilterSections } from "../../data/collection-filters.js";
 import { sortableCollections } from "../../data/collection-sorts.js";
@@ -31,6 +34,8 @@ import { handleListHeadClick, listHeadMarkup } from "../../ui/list-head.js";
 import { openViewPanel } from "../../ui/view-panel.js";
 import { isViewActive } from "../../ui/views.js";
 import { collectionFilterChips, openCollectionFilter } from "./collection-filter.js";
+import { activePill } from "./archive.js";
+import { openActiveList } from "./archive-active.js";
 import { openCollectionSort } from "./collection-panel.js";
 
 /* Die offene Sammlung (Eingang: ohne Art) — oder null auf jeder anderen Seite. */
@@ -41,6 +46,12 @@ function openKind() {
   return sortableCollections.includes(kind) ? kind : null;
 }
 
+/* Im Archiv: was der Knopf „Aktive …“ der gewählten Pille zeigt (Name, Symbol, Zahl). */
+function activeButtonData() {
+  const pill = activePill();
+  return { pill, ...activeWords(pill), count: activeCount(pill) };
+}
+
 /*
  * Die Zeile als HTML. `plain`: keine Reiter darüber, die Zeile steht unter dem Titel.
  * Im Archiv selbst gibt es keinen „Archiv“-Knopf, nur Sortieren und Filtern.
@@ -49,6 +60,7 @@ function headMarkup(kind, plain) {
   const pill = kind === "archive" ? null : archivePillForKind(kind);
   return listHeadMarkup({
     archive: pill ? { pill, count: archivedForView("page", ui.currentPage).length } : null,
+    active: kind === "archive" ? activeButtonData() : null,
     filter: (collectionFilterSections[kind] || []).length > 0,
     filtering: collectionFilterChips(kind).length > 0,
     plain,
@@ -70,6 +82,11 @@ export function initPageListHead() {
   el("view-page").addEventListener("click", (event) => {
     const kind = openKind();
     if (!kind) return;
+    const active = event.target.closest("[data-open-active]");
+    if (active) {
+      openActiveList(active.dataset.openActive);
+      return;
+    }
     handleListHeadClick(event, {
       sort: () => openCollectionSort(kind),
       filter: () => openCollectionFilter(kind),

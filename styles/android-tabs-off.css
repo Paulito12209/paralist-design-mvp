@@ -8,6 +8,10 @@
  * oben ein. Das Symbol „Ansicht“ holt das Blatt mit dem Schalter herauf,
  * ein Tipp darauf bringt die Reiter zurück. Der Kalender und die Medien bleiben,
  * wie sie sind: sie haben keine Werkzeugzeile, die die Reiter ersetzen könnte.
+ * Eine Ausnahme ist das Archiv: seine Reiter (.archive-pills) bleiben immer
+ * stehen, denn sie sind dort der schnelle Weg zwischen den Kategorien und kein
+ * Ansichtswunsch. Der Schalter fehlt im Blatt „Ansicht“ des Archivs
+ * (src/features/overview/collection-panel.js).
  * Die Zeile mit dem Schalter selbst gibt es nur in Android und im Experiment;
  * in iOS und „Erster Test“ bleibt sie verborgen.
  * Welche Seite ohne eigene Wahl mit oder ohne Reiter startet („Android“: alle
@@ -45,7 +49,7 @@
   [data-mobile-os="android"][data-tabs-home="off"] #project-views,
   [data-mobile-os="android"][data-tabs-tasks="off"] .tasks-tools,
   [data-mobile-os="android"][data-tabs-projects="off"] .page-body > .project-views,
-  [data-mobile-os="android"][data-tabs-pages="off"] .page-body > :is(.tab-pills, .tab-pills-row) {
+  [data-mobile-os="android"][data-tabs-pages="off"] .page-body > :is(.tab-pills, .tab-pills-row):not(.archive-pills) {
     display: none;
   }
 
@@ -63,7 +67,7 @@
   /* Seiten (Projekte und Sammlungen): sie rastet unter der Kopfzeile ein. Die Seite
      Projekte erkennt man an ihrer Zeile .project-views, die Sammlungen an den Reitern. */
   [data-mobile-os="android"][data-tabs-projects="off"] .page-body:has(> .project-views) .project-card-head,
-  [data-mobile-os="android"][data-tabs-pages="off"] .page-body:not(:has(> .project-views)) .project-card-head {
+  [data-mobile-os="android"][data-tabs-pages="off"] .page-body:not(:has(> .project-views, > .archive-pills)) .project-card-head {
     margin-top: var(--m3-card-head-plain-gap);
     top: calc(var(--safe-top) + var(--page-head-top) + var(--search-bar-height));
   }
