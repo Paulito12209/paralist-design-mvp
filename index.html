@@ -65,7 +65,7 @@
     <link rel="stylesheet" href="styles/sort-wheels.css" /><link rel="stylesheet" href="styles/filter-sheet.css" /><link rel="stylesheet" href="styles/info-dialog.css" />
     <link rel="stylesheet" href="styles/tasks.css" />
     <link rel="stylesheet" href="styles/tasks-board.css" /><link rel="stylesheet" href="styles/projects-board.css" /><link rel="stylesheet" href="styles/tasks-select.css" /><link rel="stylesheet" href="styles/task-status.css" /><link rel="stylesheet" href="styles/tasks-settings.css" /><link rel="stylesheet" href="styles/view-end.css" /><link rel="stylesheet" href="styles/tasks-desk.css" />
-    <link rel="stylesheet" href="styles/media.css" /><link rel="stylesheet" href="styles/media-desk.css" /><link rel="stylesheet" href="styles/bookmarks.css" />
+    <link rel="stylesheet" href="styles/media.css" /><link rel="stylesheet" href="styles/media-bar.css" /><link rel="stylesheet" href="styles/recorder.css" /><link rel="stylesheet" href="styles/media-desk.css" /><link rel="stylesheet" href="styles/bookmarks.css" />
     <link rel="stylesheet" href="styles/viewer.css" />
     <link rel="stylesheet" href="styles/drawing.css" /><link rel="stylesheet" href="styles/video-player.css" />
     <!-- Android-Fassung (Einstellungen › Mehr › Versionen): nach den Seiten, damit sie deren Handy-Regeln überschreibt -->
@@ -219,25 +219,15 @@
         </main>
 
         <footer class="bottom-bar">
-          <!-- Medien-Knöpfe: als Gruppe mittig über der Navigation; von links Import, Audio, Video und ganz rechts Foto; nur auf der Medien-Seite zu sehen -->
+          <!-- Medien-Leiste: aufgebaut wie die Knöpfe der Suche — links Dateien, mittig Video und Foto in einem Gehäuse, rechts die Audio-Aufnahme; nur auf der Medien-Seite zu sehen -->
           <div class="media-actions" id="media-actions">
-            <button class="media-btn" type="button" data-media-pick="import" aria-label="Importieren">
-              <svg class="icon"><use href="#icon-import"></use></svg>
-            </button>
-            <button class="media-btn" type="button" data-media-pick="audio" aria-label="Audio hinzufügen">
-              <svg class="icon"><use href="#icon-mic"></use></svg>
-            </button>
-            <button class="media-btn" type="button" data-media-pick="video" aria-label="Video aufnehmen">
-              <svg class="icon"><use href="#icon-video"></use></svg>
-            </button>
-            <button class="media-btn" type="button" data-media-pick="photo" aria-label="Foto aufnehmen">
-              <svg class="icon"><use href="#icon-camera"></use></svg>
-            </button>
+            <button class="media-side" type="button" data-media-pick="import" aria-label="Dateien öffnen"><svg class="icon"><use href="#icon-folder"></use></svg></button>
+            <div class="media-combo"><button class="media-combo-btn" type="button" data-media-pick="video" aria-label="Video aufnehmen"><svg class="icon"><use href="#icon-video"></use></svg></button><button class="media-combo-btn is-active" type="button" data-media-pick="photo" aria-label="Foto aufnehmen"><svg class="icon"><use href="#icon-camera"></use></svg></button></div>
+            <button class="media-side" type="button" data-media-record aria-label="Audio aufnehmen"><svg class="icon"><use href="#icon-mic"></use></svg></button>
           </div>
           <!-- input type=file: unsichtbar; nur so kann der Browser Kamera oder Dateiauswahl öffnen -->
           <input id="media-file-photo" type="file" accept="image/*" capture="environment" hidden />
           <input id="media-file-video" type="file" accept="video/*" capture="environment" hidden />
-          <input id="media-file-audio" type="file" accept="audio/*" multiple hidden />
           <input id="media-file-import" type="file" multiple hidden />
           <!-- Suchen-Knoepfe: Mikrofon+Suchen teilen sich ein mittig stehendes Gehaeuse, Abbrechen steht separat rechts daneben -->
           <div class="search-actions" id="search-actions">

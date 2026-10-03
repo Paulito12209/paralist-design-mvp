@@ -91,6 +91,35 @@ function searchDepth() {
   return history.state?.view === "search" ? history.state.depth || 0 : 0;
 }
 
+/*
+ * Aus der Suche heraus etwas öffnen: erst verlässt die Suche den Verlauf (wie
+ * „Abbrechen“), dann öffnet `run` das Ziel. Zurück vom Ziel führt so auf die
+ * Seite, von der aus gesucht wurde, nicht noch einmal in die Suche. Der Begriff
+ * ist da schon gemerkt (src/features/search/search.js). `true`: `run` folgt.
+ */
+function leaveSearchFirst(run) {
+  if (!isViewActive("search")) return false;
+  dom.searchInput.blur();
+  const depth = searchDepth();
+  const go = () => {
+    dom.searchInput.value = "";
+    ui.searchQuery = "";
+    ui.searchList = null;
+    run();
+  };
+  /* Ohne Davor (Suche kam direkt über ihre Adresse): die Übersicht tritt an ihre Stelle */
+  if (depth === 0) {
+    showHome();
+    go();
+    return true;
+  }
+  /* Läuft nach src/ui/router-restore.js, das beim Start zuerst angemeldet wurde:
+     die Seite darunter steht dann schon wieder, und das Ziel kommt obendrauf. */
+  window.addEventListener("popstate", go, { once: true });
+  history.go(-depth);
+  return true;
+}
+
 /**
  * Suche verlassen: genau dorthin zurück, wo sie geöffnet wurde — Kalender,
  * Aufgaben, eine Seite oder die Übersicht —, auch über geöffnete Unterlisten
@@ -173,6 +202,7 @@ export function setPagePill(pill) {
  *   Zurück dann dorthin, woher man kam, nicht auf eine Seite, die es nicht mehr gibt.
  */
 export function openTarget(kind, id, replace = false) {
+  if (leaveSearchFirst(() => openTarget(kind, id, replace))) return;
   if (kind === "overview") {
     /* Die Seite Projekte hat keine Karte, lässt sich aber wie eine finden (Suche, Palette). */
     if (id === projectsPage.kind) {
@@ -209,6 +239,7 @@ export function openTarget(kind, id, replace = false) {
 export function openEntry(id, push = true, replace = false) {
   const entry = findEntry(id);
   if (!entry) return;
+  if (push && leaveSearchFirst(() => openEntry(id, push, replace))) return;
   /* Nur ein echtes Öffnen zählt, nicht das Wiederkommen über Zurück. */
   if (push) noteOpen("entry", entry.id);
   ui.currentEntryId = entry.id;
@@ -232,6 +263,7 @@ export function openEntryOrFile(id, list = null) {
     openEntry(entry.id);
     return;
   }
+  if (leaveSearchFirst(() => openEntryOrFile(id, list))) return;
   withOverlay("file", (handlers) => handlers.open(true, entry, list));
 }
 

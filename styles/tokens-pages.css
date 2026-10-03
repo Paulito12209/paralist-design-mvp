@@ -140,8 +140,8 @@
  * --viewer-nav-size        -> Tippfläche der Blätter-Pfeile links und rechts über der Datei
  * --viewer-nav-opacity     -> wie deutlich die Pfeile zu sehen sind (1 = voll, 0.35 = zurückhaltend)
  * --viewer-shield-gap      -> Höhe von YouTubes Leiste im Vollbild-Video, die zum Spulen frei bleibt
- * --media-btn-size / --media-actions-space -> Größe der runden Knöpfe über der Navigation und ihr Extra-Platz
- * --media-actions-gap      -> Abstand zwischen diesen Knöpfen
+ * --media-btn-size / --media-actions-space -> Tippfläche von Ordner und Mikrofon in der Medien-Leiste und Extra-Platz am Seitenende
+ * --media-actions-gap      -> Abstand von Ordner und Mikrofon zum Gehäuse mit Video und Foto
  *
  * SUCHE
  * --search-meta-size        -> Schriftgröße der kleinen Infos unter Such-Einträgen
@@ -334,8 +334,8 @@
   --viewer-nav-opacity: 0.4;
   --viewer-shield-gap: 48px;
   --media-btn-size: 48px;
-  --media-actions-space: 60px;
-  --media-actions-gap: 12px;
+  --media-actions-space: 72px;
+  --media-actions-gap: 4px;
 
   /* Suche: Zeilen und die drei Knöpfe unten */
   --search-meta-size: 13px;

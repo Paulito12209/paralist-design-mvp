@@ -1,0 +1,157 @@
+/*
+ * Die Leiste unten auf der Medien-Seite, aufgebaut wie die Knöpfe der Suche
+ * (styles/search.css): mittig ein Gehäuse mit Video und Foto — Foto ist die
+ * Hauptsache wie dort „Suchen“ —, links daneben der Ordner für die
+ * Dateiauswahl, rechts das Mikrofon für die Audio-Aufnahme. Ordner und
+ * Mikrofon stehen ohne Fläche, nur als Icon, so wie „Abbrechen“ neben der Suche.
+ * In der Android-Fassung liegt darunter dieselbe dunkle Leiste wie auf der
+ * Suche, und der Knopf „Neu“ entfällt auf dieser Seite. Öffnet man über der
+ * Medien-Seite die Suche, tritt die Leiste ganz zurück.
+ * Die Knöpfe stehen in index.html, was ein Tipp tut, in
+ * src/features/media/media-import.js.
+ * Pfad: styles/media-bar.css
+ *
+ * ANPASSBARE WERTE (styles/tokens-pages.css, Android in styles/tokens-android.css)
+ * -----------------------------------
+ * --search-pill-height   -> Höhe des Gehäuses, gleich hoch wie auf der Suche
+ * --search-combo-inset   -> Innenabstand des Gehäuses; die Foto-Fläche schwebt darin
+ * --search-pill-side     -> Platz links und rechts der Kamera auf der Foto-Fläche
+ * --media-btn-size       -> Tippfläche von Ordner und Mikrofon
+ * --media-actions-gap    -> Abstand dieser beiden zum Gehäuse
+ * --media-actions-space  -> Extra-Platz am Seitenende, damit die Leiste nichts verdeckt
+ * --tab-pill-active-bg   -> Fläche des Foto-Knopfs ohne Android
+ * --m3-fab-radius        -> Rundung von Gehäuse und Foto-Fläche in Android, wie „Neu“
+ * --m3-search-band-rise / --m3-search-band-mid / --m3-search-band-end
+ *                        -> die dunkle Leiste in Android: dieselben Werte wie auf der Suche
+ *
+ * Icongröße: 22px direkt bei .media-actions .icon.
+ */
+
+/* Drei Spalten wie bei der Suche: die beiden Seiten sind gleich breit, dadurch
+   steht das Gehäuse in der Mitte der Seite. */
+.media-actions {
+  display: none;
+  align-items: center;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  gap: var(--media-actions-gap);
+  margin: 0 0 12px;
+}
+
+/* Nur auf der Medien-Seite; liegt die Suche darüber, hat sie ihre eigenen Knöpfe */
+body.is-media:not(.is-search) .media-actions:not([hidden]) {
+  display: grid;
+}
+
+.media-actions .icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* Ordner und Mikrofon: nur das Icon, gedämpft wie ein Nebenknopf */
+.media-side {
+  display: grid;
+  place-items: center;
+  width: var(--media-btn-size);
+  height: var(--media-btn-size);
+  border-radius: 50%;
+  color: var(--muted);
+}
+
+/* justify-self: beide rücken ans Gehäuse heran, statt am Rand zu stehen */
+.media-side:first-child {
+  justify-self: end;
+}
+
+.media-side:last-child {
+  justify-self: start;
+}
+
+/* Gehäuse: Video und Foto teilen sich eine Fläche, ohne Schatten */
+.media-combo {
+  grid-column: 2; /* grid-column: die mittlere Spalte, damit das Gehäuse mittig steht */
+  display: flex;
+  align-items: stretch;
+  gap: 2px;
+  height: var(--search-pill-height);
+  padding: var(--search-combo-inset);
+  box-sizing: border-box;
+  border-radius: 999px;
+  background: var(--card);
+}
+
+/* Video: quadratisch wie das Mikrofon neben „Suchen“ */
+.media-combo-btn {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1 / 1; /* aspect-ratio: so breit, wie das Innere des Gehäuses hoch ist */
+  border-radius: 999px;
+  color: var(--muted);
+}
+
+/* Foto: die helle Fläche, breiter als Video — wie „Suchen“ */
+.media-combo-btn.is-active {
+  aspect-ratio: auto;
+  padding: 0 var(--search-pill-side);
+  background: var(--tab-pill-active-bg);
+  color: var(--text);
+}
+
+:is(.media-side, .media-combo-btn):active {
+  opacity: 0.55;
+}
+
+/* Auf der Medien-Seite braucht die Liste unten mehr Platz, damit die Leiste nichts verdeckt */
+body.is-media .content {
+  --content-end: calc(var(--tab-space) + var(--media-actions-space)); /* --content-end: so weit reicht die Seite in Android nach unten (styles/android-archive.css) */
+  padding-bottom: var(--content-end);
+}
+
+/* ---------- Android ---------- */
+
+@media (max-width: 1023px) {
+  [data-mobile-os="android"] .media-combo {
+    border-radius: var(--m3-fab-radius);
+    background: var(--m3-surface-container-high);
+  }
+
+  [data-mobile-os="android"] .media-combo-btn {
+    border-radius: calc(var(--m3-fab-radius) - var(--search-combo-inset));
+  }
+
+  [data-mobile-os="android"] .media-combo-btn.is-active {
+    background: var(--m3-primary-container);
+    color: var(--m3-on-primary-container);
+  }
+
+  [data-mobile-os="android"] :is(.media-side, .media-combo-btn:not(.is-active)) {
+    color: var(--m3-on-surface-variant);
+  }
+
+  /* Der Knopf „Neu“ hat hier nichts zu tun: angelegt wird über die Leiste */
+  [data-mobile-os="android"] body.is-media .m3-fab {
+    display: none;
+  }
+
+  /* Die dunkle Leiste der Suche: beginnt etwas über den Knöpfen und wird nach
+     unten dunkler, nie ganz deckend — die Kacheln bleiben darunter zu ahnen.
+     Sie hängt an der Leiste selbst, damit sie beim Scrollen mit ihr wegfährt.
+     position/top: ragt um --m3-search-band-rise über die Leiste hinaus.
+     z-index -1: hinter den Knöpfen, aber noch in der Leiste (die hat z-index 20).
+     pointer-events: Tippen geht durch die Fläche hindurch auf die Kacheln. */
+  [data-mobile-os="android"] body.is-media:not(.is-search) .bottom-bar:has(.media-actions:not([hidden]))::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    top: calc(-1 * var(--m3-search-band-rise));
+    z-index: -1;
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      color-mix(in srgb, var(--bg) var(--m3-search-band-mid), transparent) var(--m3-search-band-rise),
+      color-mix(in srgb, var(--bg) var(--m3-search-band-end), transparent)
+    );
+    pointer-events: none;
+  }
+}

@@ -1,6 +1,8 @@
 /*
  * Dateien auf der Medien-Seite hinzufügen: aus jeder Datei wird ein
  * Medien-Eintrag im Eingang, Bilder und Videos bekommen eine Vorschau.
+ * Die Leiste unten öffnet direkt die Dateiauswahl (Ordner), die Kamera für
+ * Video oder Foto und für Audio die eigene Aufnahme (src/features/media/recorder.js).
  * Pfad: src/features/media/media-import.js
  *
  * Keine anpassbaren visuellen Werte: die Größe der Vorschaubilder steht in
@@ -15,11 +17,15 @@ import { saveState, state } from "../../data/state.js";
 import { saveThumbs, setThumb } from "../../data/thumbs.js";
 import { logXp } from "../../data/xp.js";
 
-/** Die vier Quellen und ihre unsichtbaren Dateifelder in index.html. */
-export const mediaSources = ["photo", "video", "audio", "import"];
+/** Die drei Quellen mit unsichtbarem Dateifeld in index.html; Audio nimmt die App selbst auf. */
+export const mediaSources = ["photo", "video", "import"];
 
-/** Jede Datei wird ein Medien-Eintrag im Eingang. */
-export async function addMediaFiles(fileList, source) {
+/**
+ * Jede Datei wird ein Medien-Eintrag im Eingang.
+ * @param extra optional: `body` (z.B. die Mitschrift einer Aufnahme) und
+ *   `duration` in Sekunden, wenn die Datei ihre Länge selbst nicht verrät.
+ */
+export async function addMediaFiles(fileList, source, extra = {}) {
   const files = Array.from(fileList || []);
   if (!files.length) return;
   const { describeFile } = await load("files");
@@ -30,7 +36,7 @@ export async function addMediaFiles(fileList, source) {
       id: state.nextEntryId++,
       type: "medien",
       title: described.title,
-      body: "",
+      body: extra.body || "",
       places: [],
       links: [],
       archived: false,
@@ -41,7 +47,7 @@ export async function addMediaFiles(fileList, source) {
         name: described.name,
         size: described.size,
         mime: described.mime,
-        duration: described.duration,
+        duration: described.duration || extra.duration || 0,
       },
     };
     if (described.thumb) setThumb(entry.id, described.thumb);
@@ -60,7 +66,7 @@ export async function addMediaFiles(fileList, source) {
 
 /**
  * Klicks auf [data-media-pick] in einem Bereich an die Dateifelder weiterreichen.
- * Gebraucht für die runden Knöpfe über der Navigation und für die Pille im
+ * Gebraucht für die Leiste über der Navigation und für die Pille im
  * Platzhalter, solange die Medien-Seite noch leer ist.
  */
 export function bindMediaPicks(scope) {
@@ -72,9 +78,13 @@ export function bindMediaPicks(scope) {
   });
 }
 
-/** Die runden Knöpfe über der Navigation und die Dateifelder anmelden. */
+/** Die Leiste über der Navigation und die Dateifelder anmelden. */
 export function initMediaImport(mediaActions) {
   bindMediaPicks(mediaActions);
+  /* Audio: kein Dateifeld, sondern gleich die Aufnahme als Overlay */
+  mediaActions.addEventListener("click", (event) => {
+    if (event.target.closest("[data-media-record]")) load("recorder").then((module) => module.openRecorder());
+  });
 
   mediaSources.forEach((source) => {
     const input = el(`media-file-${source}`);

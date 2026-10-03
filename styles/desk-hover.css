@@ -114,7 +114,7 @@
   .content :is(.back-btn, .head-btn, .add-btn, .section-more, .tab-pill-add, .tab-pill,
     .cal-seg-btn, .title-switch, .cal-month, .swipe-action),
   .view-panel .cal-today,
-  .bottom-bar :is(.media-btn, .draw-tool, .draw-color, .composer-type, .search-combo-btn,
+  .bottom-bar :is(.media-side, .media-combo-btn, .draw-tool, .draw-color, .composer-type, .search-combo-btn,
     .composer-send, .composer-close, .toast-action),
   :is(.modal-backdrop, .sheet-backdrop, .ctx-backdrop, .update-backdrop, .viewer-backdrop)
     :is(.sheet-option, .ctx-item, .modal-back, .viewer-btn, .viewer-foot-btn, .date-item, .seg button, .date-done,
@@ -128,7 +128,7 @@
   .content :is(.back-btn, .head-btn, .add-btn, .section-more, .tab-pill-add,
     .task-check:not(.is-done), .tab-pill:not(.is-active), .cal-seg-btn:not(.is-active)):hover,
   .view-panel .cal-today:not(.is-on):hover,
-  .bottom-bar :is(.media-btn, .draw-tool:not(.is-active), .composer-type:not(:disabled),
+  .bottom-bar :is(.media-side, .media-combo-btn:not(.is-active), .draw-tool:not(.is-active), .composer-type:not(:disabled),
     .search-combo-btn:not(.is-active)):hover,
   .content .archive-link:not(:active):hover,
   :is(.modal-backdrop, .sheet-backdrop, .ctx-backdrop, .viewer-backdrop)
@@ -144,7 +144,7 @@
   .content :is(.overview-card, .page-search, .empty-add, button.tab-pill.is-active, .cal-event, .cal-allday-chip):hover,
   .content .cal-day:hover .cal-day-num,
   .bottom-bar :is(.composer-link, .composer-attach, .composer-mic, .composer-attachment-remove,
-    .draw-tool.is-active, .search-combo-btn.is-active, .search-cancel):hover,
+    .draw-tool.is-active, .search-combo-btn.is-active, .media-combo-btn.is-active, .search-cancel):hover,
   :is(.modal-backdrop, .sheet-backdrop, .update-backdrop, .viewer-backdrop)
     :is(.modal-close, .modal-top, .sheet-option.is-active, .sheet-option.is-pair, .update-later,
       .viewer-open, .mini-card, .fb-choice, .profile-avatar-edit, .profile-save-cancel):not(:disabled):hover {
