@@ -1,0 +1,329 @@
+/*
+ * Suche als Overlay am Handy (unter 1024px): sie legt sich über die Seite, von
+ * der aus sie geöffnet wurde, statt sie zu ersetzen. Oben steht deckend die
+ * Kopfzeile wie in der Suche von Google Kalender — Zurück-Pfeil, daneben das
+ * Feld ohne Pille —, darunter deckend die Reiter mit der Linie über die ganze
+ * Breite und die Zeile mit der Anzahl, rechts Sortieren und Filtern. Alles
+ * darunter ist Overlay: in der Android-Fassung schimmert die Seite verschwommen
+ * durch (wie bei Raycast), sonst ist die Fläche deckend. Unten schweben
+ * Mikrofon, „Suchen“ und „Abbrechen“ über der Liste; eine dunkle Leiste
+ * darunter hält „Abbrechen“ lesbar, die Liste bleibt darunter zu ahnen (wie
+ * unter der Navigationsleiste von Spotify).
+ * Abschnitt und Kopfzeile stellt src/shell/search-bar.js bereit, den Inhalt
+ * src/features/search/search.js.
+ * Pfad: styles/search-overlay.css
+ *
+ * ANPASSBARE WERTE (Android in styles/tokens-android.css, sonst styles/tokens.css
+ * und styles/tokens-pages.css)
+ * -----------------------------------
+ * --m3-search-scrim-mix / --m3-search-scrim-blur -> wie deckend und wie verschwommen das Overlay ist
+ * --m3-search-head-bg       -> Farbe der Kopfzeile, solange die Suche offen ist
+ * --m3-search-field-size    -> Schriftgröße im Suchfeld
+ * --m3-search-list-pull     -> wie weit die Liste unter die Zeile mit der Anzahl rückt (Abstand zum ersten Treffer)
+ * --m3-search-day-gap       -> Luft über „Heute“ (sichtbar 24px von „15 Einträge“ bis „Heute“)
+ * --m3-search-title-lines   -> höchstens so viele Zeilen Titel je Eintrag; darunter eine Zeile Art und Ablageort
+ * --m3-search-band-rise     -> wie weit über den Knöpfen die dunkle Leiste beginnt
+ * --m3-search-band-mid / --m3-search-band-end -> wie deckend die Leiste ist (Mitte, unterer Rand)
+ * --m3-fab-radius           -> Rundung der Knöpfe unten, wie beim Knopf „Neu“
+ * --m3-tab-height / --m3-tab-edge -> Höhe der Reiter und Abstand von „Treffer“ zum Rand
+ * --m3-card-tool-size / --m3-card-tool-icon -> Tippfläche und Größe der Symbole Sortieren und Filtern
+ * --m3-outline-variant      -> Linie unter den Reitern
+ * --search-pill-height / --search-actions-space -> Höhe der Knöpfe unten und Platz unter der letzten Zeile
+ * --content-side            -> Abstand der Liste zum Rand
+ * --search-bar-height / --page-head-top / --top-bar-fade -> wo das Overlay ohne Android beginnt
+ * --ios-bar-height          -> wo es in der iOS-Fassung beginnt (styles/tokens-ios.css)
+ *
+ * Schriftgröße der Anzahl: 14px direkt bei .search-count (Material 3 „Body medium“).
+ */
+
+/* Der Zurück-Pfeil gehört nur zur offenen Suche am Handy. */
+.search-back {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  /* ---------- Overlay ---------- */
+
+  /* position: liegt über der Seite darunter, die stehen bleibt, wo sie war.
+     top: beginnt unter der Kopfzeile. z-index 15: über Inhalt und Navigation,
+     unter der dunklen Leiste unten (16) und den Knöpfen (20, styles/search.css).
+     Oben stehen Reiter und Anzahl fest, darunter rollt nur die Liste
+     (.search-list) — so brauchen die beiden keine eigene Fläche, und die
+     Einträge laufen trotzdem nicht unter ihnen durch. */
+  #view-search {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: calc(var(--safe-top) + var(--page-head-top) + var(--search-bar-height) + var(--top-bar-fade));
+    bottom: var(--keyboard-inset);
+    z-index: 15;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    background: var(--bg);
+  }
+
+  #search-results {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  /* overflow-y: die Liste rollt für sich, die Seite darunter rollt nicht mit */
+  .search-list {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain; /* overscroll-behavior: am Listenende zieht nichts an der Seite darunter */
+    scrollbar-width: none;
+  }
+
+  .search-list::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* iOS-Fassung: dort liegt die Kopfzeile mit fester Höhe über dem Inhalt */
+  [data-mobile-os="ios"] #view-search {
+    top: calc(var(--safe-top) + var(--ios-bar-height));
+  }
+
+  /* Das Feld oben sagt schon „Suchen“ */
+  #view-search .screen-title {
+    display: none;
+  }
+
+  /* Die Kopfzeile bleibt auch über einer Unterseite stehen — die hat sonst ihre eigene */
+  body.is-search.is-subpage .top-bar {
+    display: flex;
+    position: absolute; /* position: liegt über der Kopfzeile der Unterseite, ohne deren Seite zu verschieben */
+    top: 0;
+    left: 0;
+    right: 0;
+  }
+
+  /* Deckend bis an ihren unteren Rand, ohne Ausblenden */
+  body.is-search .top-bar {
+    mask-image: none;
+  }
+
+  /* Reiter, Linie und Anzahl: ohne eigene Fläche, sie liegen schon auf dem Overlay */
+  .search-head {
+    flex: none;
+  }
+
+  .search-head .tab-pills {
+    margin: 0;
+  }
+
+  /* Pillen ohne Android: mit Luft zum Rand und zur Zeile darunter */
+  .search-tabs {
+    padding: 0 var(--content-side) 8px;
+  }
+
+  .search-list {
+    padding: 8px var(--content-side) calc(var(--search-pill-height) + var(--search-actions-space) + var(--safe-bottom));
+  }
+
+  /* ---------- Zeile mit der Anzahl ---------- */
+
+  .search-count-row {
+    min-height: var(--m3-tab-height, 48px);
+    margin: 0;
+    padding: 0 var(--content-side);
+  }
+
+  .search-count {
+    font-size: 14px;
+  }
+
+  /* Sortieren und Filtern als Symbole wie in jeder Werkzeugzeile */
+  .search-tools {
+    gap: 0;
+    margin-right: calc((var(--m3-card-tool-icon, 24px) - var(--m3-card-tool-size, 44px)) / 2);
+  }
+
+  .search-tool {
+    justify-content: center;
+    width: var(--m3-card-tool-size, 44px);
+    height: var(--m3-card-tool-size, 44px);
+    padding: 0;
+    border: 0;
+    border-radius: 50%;
+  }
+
+  .search-tool .icon {
+    width: var(--m3-card-tool-icon, 24px);
+    height: var(--m3-card-tool-icon, 24px);
+    color: inherit;
+  }
+
+  .search-tool :is(.search-tool-text, .search-tool-dir, .search-tool-count) {
+    display: none;
+  }
+
+  /* Weicht Sortieren oder Filtern von der Vorgabe ab, steht das Symbol in der Akzentfarbe */
+  .search-tool.is-on {
+    color: var(--m3-primary, var(--link-color));
+  }
+
+  /* ---------- Android: Kopfzeile wie Google Kalender ---------- */
+
+  [data-mobile-os="android"] #view-search {
+    top: calc(var(--safe-top) + var(--m3-top-bar-height));
+    background: color-mix(in srgb, var(--bg) var(--m3-search-scrim-mix), transparent);
+    /* backdrop-filter: lässt die Seite darunter nur verschwommen durchscheinen, wie bei Raycast */
+    backdrop-filter: blur(var(--m3-search-scrim-blur)) saturate(1.4);
+    -webkit-backdrop-filter: blur(var(--m3-search-scrim-blur)) saturate(1.4);
+  }
+
+  /* Weggerollte Kopfzeile kommt mit der Suche zurück */
+  [data-mobile-os="android"] body.is-search .device.is-bars-hidden .top-bar {
+    transform: none;
+  }
+
+  /* Die Kopfzeile hebt sich in eigener Farbe vom Overlay ab, wie in Google Kalender */
+  [data-mobile-os="android"] body.is-search .top-bar {
+    background: var(--m3-search-head-bg);
+  }
+
+  [data-mobile-os="android"] body.is-search :is(.level-btn, .avatar) {
+    display: none;
+  }
+
+  [data-mobile-os="android"] body.is-search .search-back {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: var(--m3-card-tool-size);
+    height: var(--m3-card-tool-size);
+    margin-left: -12px; /* margin: der Pfeil steht auf dem Rand wie in Google Kalender, seine Tippfläche ragt darüber */
+    border-radius: 50%;
+    color: var(--m3-on-surface);
+  }
+
+  [data-mobile-os="android"] .search-back .icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  [data-mobile-os="android"] .search-back:active {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), transparent);
+  }
+
+  /* Das Feld ohne Pille, Text links und größer */
+  [data-mobile-os="android"] body.is-search .top-bar .search {
+    flex: 1;
+    background: transparent;
+    padding: 0 4px;
+  }
+
+  [data-mobile-os="android"] body.is-search .top-bar .search input {
+    text-align: left;
+    font-size: var(--m3-search-field-size);
+  }
+
+  /* Die Linie unter den Reitern läuft über die ganze Breite; als Schatten nach
+     innen, damit sie nichts verschiebt */
+  [data-mobile-os="android"] .search-tabs {
+    padding: 0;
+    box-shadow: inset 0 -1px 0 var(--m3-outline-variant);
+  }
+
+  [data-mobile-os="android"] .search-count-row {
+    padding-left: var(--m3-tab-edge);
+  }
+
+  [data-mobile-os="android"] .search-count {
+    color: var(--m3-on-surface-variant);
+  }
+
+  [data-mobile-os="android"] .search-tool {
+    color: var(--m3-on-surface-variant);
+  }
+
+  [data-mobile-os="android"] .search-tool.is-on {
+    color: var(--m3-primary);
+  }
+
+  [data-mobile-os="android"] .search-tool:active {
+    opacity: 1;
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), transparent);
+  }
+
+  /* Die Zeile mit der Anzahl behält ihre 48px Tippfläche; die Liste rückt ohne
+     eigenen Abstand um --m3-search-list-pull unter sie. Bis zum ersten Treffer
+     sind es dann sichtbar knapp 25px, bis „Heute“ mit --m3-search-day-gap 24px. */
+  [data-mobile-os="android"] .search-list {
+    margin-top: calc(-1 * var(--m3-search-list-pull));
+    padding-top: 0;
+  }
+
+  [data-mobile-os="android"] #view-search .search-list > .date-label:first-child {
+    margin-top: var(--m3-search-day-gap);
+  }
+
+  [data-mobile-os="android"] #view-search .search-list > .workspace-list:first-child > .search-row:first-child {
+    padding-top: 0;
+  }
+
+  /* Die Einträge stehen frei auf dem Overlay: keine Linien dazwischen, kein Pfeil rechts */
+  [data-mobile-os="android"] #view-search .search-row {
+    border-bottom: 0;
+  }
+
+  [data-mobile-os="android"] #view-search .search-row .chevron {
+    display: none;
+  }
+
+  /* Ein Eintrag hat höchstens vier Zeilen: der Titel bis zu --m3-search-title-lines,
+     darunter eine Zeile mit Art und Ablageort. Was länger ist, endet mit „…“.
+     display: -webkit-box und line-clamp: nur so kürzt der Browser nach einer
+     Zahl von Zeilen statt nach einer Höhe. */
+  [data-mobile-os="android"] #view-search .search-title {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--m3-search-title-lines);
+    line-clamp: var(--m3-search-title-lines);
+    overflow: hidden;
+  }
+
+  /* text-overflow: die Zeile mit Art und Ablageort endet mit „…“, statt umzubrechen */
+  [data-mobile-os="android"] #view-search .search-meta {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+
+  /* ---------- Android: Knöpfe unten und dunkle Leiste ---------- */
+
+  /* Gehäuse und Knöpfe darin: abgerundete Rechtecke wie der Knopf „Neu“.
+     Ohne Schatten — die dunkle Leiste darunter hebt sie schon ab, im Hellen
+     stand der Schatten als heller Hof um das Gehäuse. */
+  [data-mobile-os="android"] .search-combo {
+    border-radius: var(--m3-fab-radius);
+    background: var(--m3-surface-container-high);
+    box-shadow: none;
+  }
+
+  [data-mobile-os="android"] .search-combo-btn {
+    border-radius: calc(var(--m3-fab-radius) - var(--search-combo-inset));
+  }
+
+  [data-mobile-os="android"] .search-combo-btn.is-active {
+    background: var(--m3-primary-container);
+    color: var(--m3-on-primary-container);
+  }
+
+  /* Die Leiste beginnt etwas über den Knöpfen und wird nach unten dunkler,
+     aber nie ganz deckend: die Liste läuft sichtbar darunter weiter. */
+  [data-mobile-os="android"] body.is-search .device::after {
+    height: calc(var(--search-pill-height) + 12px + var(--nav-bottom) + var(--safe-bottom) + var(--m3-search-band-rise));
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      color-mix(in srgb, var(--bg) var(--m3-search-band-mid), transparent) var(--m3-search-band-rise),
+      color-mix(in srgb, var(--bg) var(--m3-search-band-end), transparent)
+    );
+  }
+}

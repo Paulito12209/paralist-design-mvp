@@ -157,6 +157,16 @@
  * --m3-xl-divider-inset       -> Abstand der Linie zum linken und rechten Geräterand (16px, wie der Inhalt)
  * --m3-page-in-time            -> Dauer, mit der eine Seite hereingleitet (Material 3: 300ms)
  * --m3-page-in-shift           -> wie weit sie dabei von rechts kommt (Material 3 „Shared axis“: 30dp)
+ * --m3-search-scrim-mix        -> Suche als Overlay: wie deckend die Fläche unter dem Kopf ist (100% = Seite darunter unsichtbar)
+ * --m3-search-scrim-blur       -> wie stark die Seite darunter verschwimmt (wie Raycast: Umrisse und Farben bleiben zu ahnen)
+ * --m3-search-head-bg          -> Farbe der Kopfzeile über dem Overlay; hebt sich ab wie in Google Kalender
+ * --m3-search-field-size       -> Schriftgröße im Suchfeld, solange die Suche offen ist (Google Kalender)
+ * --m3-search-list-pull        -> wie weit die Liste unter die Zeile „15 Einträge“ rückt (größer = enger zum ersten Treffer)
+ * --m3-search-day-gap          -> Luft über „Heute“; 4px ergeben sichtbar 24px ab „15 Einträge“
+ * --m3-search-title-lines      -> höchstens so viele Zeilen Titel je Treffer, danach „…“ (dazu eine Zeile Art · Ort)
+ * --m3-search-band-rise        -> wie weit über den Knöpfen unten die dunkle Leiste beginnt (wie unter der Spotify-Leiste)
+ * --m3-search-band-mid / -end  -> wie deckend die Leiste auf Höhe der Knöpfe und am unteren Rand ist; unter 100%
+ *                                 bleibt die Liste darunter zu ahnen, „Abbrechen“ bleibt trotzdem lesbar
  */
 
 :root[data-mobile-os="android"] {
@@ -279,6 +289,16 @@
   --m3-settings-back-size: 48px;
   --m3-page-in-time: 300ms;
   --m3-page-in-shift: 30px;
+  --m3-search-scrim-mix: 74%;
+  --m3-search-scrim-blur: 10px;
+  --m3-search-head-bg: var(--m3-surface-container);
+  --m3-search-field-size: 18px;
+  --m3-search-list-pull: 2px;
+  --m3-search-day-gap: 4px;
+  --m3-search-title-lines: 3;
+  --m3-search-band-rise: 48px;
+  --m3-search-band-mid: 72%;
+  --m3-search-band-end: 92%;
   --m3-error: #b3261c;
   --m3-on-error: #ffffff;
 }

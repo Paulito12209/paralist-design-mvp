@@ -11,7 +11,6 @@
  * --muted                   -> Farbe der Abschnittsüberschriften
  * --search-pill-height      -> Höhe aller drei Knöpfe unten rechts
  * --search-pill-side        -> Platz links und rechts vom Wort „Suchen“
- * --search-actions-space    -> Zusätzlicher Platz am Seitenende, solange die Knöpfe zu sehen sind
  * --search-combo-inset      -> Innenabstand des Gehäuses, dadurch schwebt die Suchen-Pille sichtbar darin
  * --tab-pill-active-bg      -> Fläche des Suchen-Knopfs im Gehäuse
  * --search-cancel-color     -> Rot der Schrift des Abbrechen-Knopfs
@@ -98,13 +97,6 @@
   font-weight: 600;
 }
 
-/* Extra Platz am Ende der Suche, weil die Knöpfe unten stehen,
-   sonst verdecken sie die letzten Zeilen der Liste. */
-body.is-search .content {
-  --content-end: calc(var(--tab-space) + var(--search-actions-space)); /* --content-end: so weit reicht die Seite in Android nach unten (styles/android-archive.css) */
-  padding-bottom: var(--content-end);
-}
-
 /* Auf der Suche tritt die Navigationsleiste ganz zurück: unten stehen nur die
    drei Knöpfe der Suche, damit die Seite so ruhig bleibt wie das Suchfeld oben. */
 body.is-search .nav-shell {
@@ -115,9 +107,10 @@ body.is-search .nav-shell {
    „Abbrechen“ ohne eigene Fläche direkt auf dem Text der Zeilen und wäre kaum
    zu lesen. Die Fläche beginnt genau an der Oberkante der Knöpfe — darüber
    bleibt die Liste unberührt — und wird auf --search-fade Länge nach unten
-   deckend, noch bevor die Schrift von „Abbrechen“ anfängt. z-index 5: über dem
-   Inhalt (0), aber unter dem Verlauf des Dunkelmodus (10, styles/navigation.css)
-   und den Knöpfen (20), so bleibt der Schimmer unten erhalten. */
+   deckend, noch bevor die Schrift von „Abbrechen“ anfängt. In der
+   Android-Fassung bleibt die Liste darunter zu ahnen (styles/search-overlay.css).
+   z-index 16: über dem Overlay der Suche (15, styles/search-overlay.css), aber
+   unter den Knöpfen (20). */
 body.is-search .device::after {
   content: "";
   position: absolute;
@@ -129,7 +122,7 @@ body.is-search .device::after {
   height: calc(var(--search-pill-height) + 12px + var(--nav-bottom) + var(--safe-bottom));
   /* height: vom Geräterand bis zur Oberkante der Knöpfe; die 12px sind der
      Abstand unter den Knöpfen (margin von .search-actions) */
-  z-index: 5;
+  z-index: 16;
   background: linear-gradient(to bottom, transparent, var(--bg) var(--search-fade));
   pointer-events: none;
   /* pointer-events: Tippen soll durch die Fläche hindurch die Zeilen treffen */

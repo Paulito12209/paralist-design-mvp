@@ -9,7 +9,7 @@
  */
 
 import { emit, events } from "../core/bus.js";
-import { dom } from "../core/dom.js";
+import { dom, el } from "../core/dom.js";
 import { load } from "../core/lazy.js";
 import { sameId } from "../core/ids.js";
 import {
@@ -275,8 +275,13 @@ function linkedMediaIds(row) {
 export function initListClicks(handlers) {
   menus = { ...menus, ...handlers };
 
-  const { content } = dom;
+  /* Am Handy liegt die Suche als Overlay neben dem Scrollbereich
+     (src/shell/search-bar.js) — ihre Zeilen öffnen sich genauso. */
+  [dom.content, el("view-search")].forEach(listenOn);
+}
 
+/* Die Empfänger an einen Bereich mit Listen hängen. */
+function listenOn(content) {
   /* Nach einem gedrückt Halten kommt noch ein Klick: der darf nichts öffnen. */
   content.addEventListener(
     "click",

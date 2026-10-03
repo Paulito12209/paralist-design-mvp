@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "57dfe502f8c1";
+export const appVersion = "ebc0f03ad76b";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -87,9 +87,10 @@ export const appFiles = [
   "src/features/profile/versions.js", "src/features/progress/progress-charts.js",
   "src/features/progress/progress-desk.js", "src/features/progress/progress-lists.js",
   "src/features/progress/progress-milestones.js", "src/features/progress/progress.js",
-  "src/features/resources/resources.js", "src/features/search/search-data.js",
-  "src/features/search/search-palette-data.js", "src/features/search/search-rail.js",
-  "src/features/search/search-refine.js", "src/features/search/search-sheet.js",
+  "src/features/resources/resources.js", "src/features/search/search-browse.js",
+  "src/features/search/search-data.js", "src/features/search/search-palette-data.js",
+  "src/features/search/search-rail.js", "src/features/search/search-refine.js",
+  "src/features/search/search-rows.js", "src/features/search/search-sheet.js",
   "src/features/search/search-tap.js", "src/features/search/search.js",
   "src/features/tasks/tasks-board.js", "src/features/tasks/tasks-drag.js",
   "src/features/tasks/tasks-filter.js", "src/features/tasks/tasks-inline.js",
@@ -158,13 +159,14 @@ export const appFiles = [
   "styles/navigation.css", "styles/overlays.css", "styles/overview-more.css", "styles/overview.css",
   "styles/page-cover.css", "styles/page-hero.css", "styles/profile.css", "styles/progress.css",
   "styles/projects-board.css", "styles/reminder-banner.css", "styles/rows.css",
-  "styles/search-palette.css", "styles/search-refine.css", "styles/search.css",
-  "styles/settings.css", "styles/sheet-tabs.css", "styles/sheet-tiles.css", "styles/shortcuts.css",
-  "styles/slash-menu.css", "styles/sort-wheels.css", "styles/streak-legend.css",
-  "styles/support.css", "styles/swipe-rows.css", "styles/task-status.css", "styles/tasks-board.css",
-  "styles/tasks-desk.css", "styles/tasks-select.css", "styles/tasks-settings.css",
-  "styles/tasks.css", "styles/toast.css", "styles/tokens-android.css", "styles/tokens-dark.css",
-  "styles/tokens-desk.css", "styles/tokens-ios.css", "styles/tokens-pages.css", "styles/tokens.css",
-  "styles/top-bar.css", "styles/update.css", "styles/usage-split.css", "styles/video-player.css",
-  "styles/view-end.css", "styles/viewer.css",
+  "styles/search-overlay.css", "styles/search-palette.css", "styles/search-refine.css",
+  "styles/search.css", "styles/settings.css", "styles/sheet-tabs.css", "styles/sheet-tiles.css",
+  "styles/shortcuts.css", "styles/slash-menu.css", "styles/sort-wheels.css",
+  "styles/streak-legend.css", "styles/support.css", "styles/swipe-rows.css",
+  "styles/task-status.css", "styles/tasks-board.css", "styles/tasks-desk.css",
+  "styles/tasks-select.css", "styles/tasks-settings.css", "styles/tasks.css", "styles/toast.css",
+  "styles/tokens-android.css", "styles/tokens-dark.css", "styles/tokens-desk.css",
+  "styles/tokens-ios.css", "styles/tokens-pages.css", "styles/tokens.css", "styles/top-bar.css",
+  "styles/update.css", "styles/usage-split.css", "styles/video-player.css", "styles/view-end.css",
+  "styles/viewer.css",
 ];
