@@ -22,7 +22,7 @@ import { sortCollectionEntries, sortCollectionWorkspaces } from "../../data/coll
 import { archivePills } from "../../data/collections.js";
 import { archivedEntries, archivedWorkspaces } from "../../data/queries.js";
 import { ui } from "../../data/state.js";
-import { emptyState } from "../../ui/empty-state.js";
+import { collectionEmptyState } from "../../ui/empty-state.js";
 import { filterEmptyState } from "../../ui/filter-empty.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { setPagePill } from "../../ui/router.js";
@@ -102,7 +102,7 @@ export function renderArchive() {
       ? `<div class="workspace-list archive-list">${spaces.map(workspaceArchiveRow).join("")}${entries
           .map(entryArchiveRow)
           .join("")}</div>`
-      : emptyState(pill === "all" ? emptyArchive : { ...emptyArchive, title: `Keine ${pillLabel(pill)} im Archiv` });
+      : collectionEmptyState(pill === "all" ? emptyArchive : { ...emptyArchive, title: `Keine ${pillLabel(pill)} im Archiv` });
 
   /* Die Leiste wird mit ersetzt: ihre Rollstellung mitnehmen, sonst springt
      sie bei jedem Wechsel an den Anfang zurück. */

@@ -10,6 +10,8 @@
 /** Alle Schlüssel an einer Stelle, damit nichts doppelt vergeben wird. */
 export const storageKeys = {
   state: "paralist-mvp",
+  /* Name, Mail, Telefon, Links und der Tag des ersten Öffnens („Dabei seit“) */
+  profile: "paralist-profile",
   theme: "paralist-theme",
   usage: "paralist-usage",
   avatar: "paralist-avatar",
@@ -20,6 +22,8 @@ export const storageKeys = {
   searchKeyboard: "paralist-search-keyboard",
   navGlow: "paralist-nav-glow",
   pageHead: "paralist-page-head",
+  /* Erklärtext und Emblem in leeren Sammlungen: „0“ = aus, sonst an */
+  emptyExplain: "paralist-empty-explain",
   tabIcons: "paralist-tab-icons",
   /* Reiter über den Listen je Seite („…-home“, „…-projects“, „…-tasks“, „…-pages“): „on“ oder „off“ — nur Android (Experiment) */
   tabsVisible: "paralist-tabs-visible",

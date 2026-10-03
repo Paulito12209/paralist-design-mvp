@@ -23,7 +23,7 @@ import { resourceFilters, resourceFilterTypes } from "../../data/config.js";
 import { createEntryInline } from "../../data/mutations-inline.js";
 import { resourceEntries } from "../../data/queries.js";
 import { saveState, state, ui } from "../../data/state.js";
-import { emptyState } from "../../ui/empty-state.js";
+import { collectionEmptyState } from "../../ui/empty-state.js";
 import { filterEmptyState } from "../../ui/filter-empty.js";
 import { addablePlaceholder, addInlineList, openEntryRow, reopenIn } from "../../ui/inline-add.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
@@ -101,7 +101,7 @@ export function renderResources() {
      stünde derselbe Monat mehrmals zwischen den Zeilen. */
   const byMonth = collectionSort("resources").sort === "erstellt";
   const rows = (items) => `<div class="workspace-list" data-reorder="resources">${items.map((entry) => entryRow(entry)).join("")}</div>`;
-  let body = emptyState({
+  let body = collectionEmptyState({
     ...(emptyArt[active] || emptyArt.all),
     action: { label: emptyLabels[active] || emptyLabels.all },
   });

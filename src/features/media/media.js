@@ -21,7 +21,7 @@ import { groupByMonth } from "../../core/format.js";
 import { mediaFilters } from "../../data/config.js";
 import { findEntry, mediaEntries, mediaKindOf } from "../../data/queries.js";
 import { saveState, state } from "../../data/state.js";
-import { emptyState } from "../../ui/empty-state.js";
+import { collectionEmptyState } from "../../ui/empty-state.js";
 import { mediaCell } from "../../ui/media-cell.js";
 import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
 import { tabGlyph } from "../../ui/tab-glyph.js";
@@ -94,7 +94,7 @@ function renderGrid() {
   const items = filtered(active);
 
   if (!items.length) {
-    dom.mediaBody.innerHTML = emptyState({
+    dom.mediaBody.innerHTML = collectionEmptyState({
       ...(emptyArt[active] || emptyArt.recent),
       action: emptyAction,
       data: 'data-media-pick="import"',

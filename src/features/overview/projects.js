@@ -36,7 +36,7 @@ import { icon } from "../../core/html.js";
 import { activeProjectView, projectOrderScope, visibleProjects } from "../../data/project-views.js";
 import { archivedEntries, projectEntries } from "../../data/queries.js";
 import { isDesk, onDeskChange } from "../../ui/desk-mode.js";
-import { emptyState } from "../../ui/empty-state.js";
+import { collectionEmptyState } from "../../ui/empty-state.js";
 import { isMobileOs } from "../../ui/platform.js";
 import { entryRow } from "../../ui/rows.js";
 import { createViewPanel } from "../../ui/view-panel.js";
@@ -108,7 +108,7 @@ function listMarkup(onPage) {
   const android = isMobileOs("android");
   const scope = projectOrderScope(view.id);
   if (none && onPage) {
-    return `${projectCardHead(view)}<div class="workspace-list" data-reorder="${scope}"></div>${emptyState(emptyProjects)}${archiveMarkup()}`;
+    return `${projectCardHead(view)}<div class="workspace-list" data-reorder="${scope}"></div>${collectionEmptyState(emptyProjects)}${archiveMarkup()}`;
   }
   /* Der Satz „kein Projekt in dieser Ansicht“ nur, wenn es woanders welche gibt */
   const lead = projects.length || none || android ? "" : `<p class="project-empty-note">${emptyViewText}</p>`;
