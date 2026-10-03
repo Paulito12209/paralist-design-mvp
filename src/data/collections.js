@@ -56,7 +56,8 @@ export const projectsPage = { title: "Projekte", kind: "projects" };
 export const bookmarksPage = { title: "Lesezeichen", kind: "bookmarks" };
 
 /*
- * Der große Kopf einer Sammlung, wenn man ihn im Menü oben rechts einschaltet:
+ * Der große Kopf einer Sammlung (von Haus aus an, abschaltbar im Menü oben rechts
+ * und unter Einstellungen › App › Design):
  * Icon mittig, darunter Titel und ein Satz — wie auf einer iOS-Infoseite.
  * Schlüssel ist die Art der Sammlung, der Eingang heißt „inbox“. Der Satz
  * endet nach drei Zeilen mit „…“ — so kurz wie möglich halten, damit er

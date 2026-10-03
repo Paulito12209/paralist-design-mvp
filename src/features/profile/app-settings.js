@@ -3,8 +3,9 @@
  * Design, Tabs; am Desktop je ein Punkt im Untermenü des Profils.
  * - Navigation: „Namen unter den Reitern“ (src/features/profile/nav-labels.js)
  * - Suche: „Tastatur sofort öffnen“ (src/data/search-keyboard.js)
- * - Design: der Verlauf hinter Leiste und Eingabefeld und womit neue Seiten
- *   beginnen, Cover oder Icon (src/data/design-prefs.js)
+ * - Design: der Verlauf hinter Leiste und Eingabefeld, womit neue Seiten
+ *   beginnen, Cover oder Icon (src/data/design-prefs.js), und je Sammlung der
+ *   große Kopf mit Icon und Beschreibung (src/data/page-heads.js)
  * - Tabs: je Sammlung, ob ihre Pillen oben Icons zeigen (src/data/tab-icons.js),
  *   und ob neue Ansichten vor „Alle“ oder am Ende erscheinen (src/data/view-place.js)
  * Klicks kommen aus src/features/profile/profile.js über onAppSettingsClick.
@@ -30,6 +31,7 @@ import {
   setNavGlowOn,
   setPageHeadChoice,
 } from "../../data/design-prefs.js";
+import { headAreas, headOn, setHeadOn } from "../../data/page-heads.js";
 import { searchKeyboardOn, setSearchKeyboardOn } from "../../data/search-keyboard.js";
 import { setTabIconsOn, tabIconAreas, tabIconsOn } from "../../data/tab-icons.js";
 import { newViewAtStart, setNewViewAtStart } from "../../data/view-place.js";
@@ -42,6 +44,7 @@ const notes = {
   searchDesk: "Am Computer öffnet das Suchfeld stattdessen die Such-Palette.",
   glow: "Heller Verlauf am unteren Rand der Hauptreiter, der Leiste und Eingabefeld vom Inhalt abhebt. Nur am Handy und Tablet.",
   explain: "Mit Haken zeigt eine leere Sammlung — Projekte, Arbeitsbereiche, Medien, Ressourcen, Lesezeichen, Archiv — ein Emblem und sagt in einem Satz, was hier hingehört. Ohne Haken bleiben nur Überschrift und Knopf.",
+  collectionHead: "Mit Haken steht oben auf der Seite ein großes Icon mit einem Satz, was hier hingehört. Ohne Haken nur der Titel. Im Menü oben rechts der Sammlung lässt es sich auch dort umschalten. Die Aufgaben-Seite hat keinen solchen Kopf.",
   head: "Ohne Haken beginnen neue Einträge und Arbeitsbereiche nur mit dem Titel. Icon und Cover lassen sich je Seite im Menü oben rechts ein- und ausschalten.",
   tabs: "Mit Haken steht vor dem Namen jeder Pille oben ein kleines Icon, ohne Haken nur Text. Ein eigenes Icon gibst du einer Ansicht, indem du ihre Pille gedrückt hältst.",
   viewPlace: "Gilt für Projekte und Aufgaben. „Neue Ansicht“ bleibt in beiden Fällen hinter der letzten Pille. Einzelne Pillen verschiebst du, indem du sie gedrückt hältst.",
@@ -92,11 +95,16 @@ export function designCard(title = "") {
   const heads = headRows
     .map((row) => toggleRow(`data-page-head="${row.id}"`, row.icon, row.label, row.id === chosen))
     .join("");
+  const collectionHeads = headAreas
+    .map((area) => toggleRow(`data-collection-head="${area.id}"`, area.icon, area.label, headOn(area.id)))
+    .join("");
   return `
     ${title ? heading(title) : ""}
     ${group(glow)}${note(notes.glow)}
     ${heading("Neue Seiten beginnen mit")}
     ${group(heads)}${note(notes.head)}
+    ${heading("Icon und Beschreibung in Sammlungen")}
+    ${group(collectionHeads)}${note(notes.collectionHead)}
     ${heading("Leere Sammlungen")}
     ${group(explain)}${note(notes.explain)}
   `;
@@ -135,6 +143,14 @@ export function onAppSettingsClick(event) {
   if (event.target.closest("[data-empty-explain-toggle]")) {
     setEmptyExplainOn(!emptyExplainOn());
     /* Eine offene leere Sammlung dahinter soll sofort folgen */
+    emit(events.dataChanged);
+    return true;
+  }
+  const collection = event.target.closest("[data-collection-head]");
+  if (collection) {
+    const area = collection.dataset.collectionHead;
+    setHeadOn(area, !headOn(area));
+    /* Eine offene Sammlung dahinter soll ihren Kopf sofort zeigen oder verlieren */
     emit(events.dataChanged);
     return true;
   }

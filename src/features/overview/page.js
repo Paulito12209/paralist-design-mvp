@@ -29,6 +29,7 @@ import {
   setCover,
   toggleFavorite,
 } from "../../data/mutations.js";
+import { deleteCollection, deleteLabels } from "../../data/collection-delete.js";
 import { filterCollectionEntries, filterCollectionWorkspaces } from "../../data/collection-filters.js";
 import { sortCollectionEntries, sortCollectionWorkspaces } from "../../data/collection-sorts.js";
 import { workspaceDetails } from "../../data/details.js";
@@ -59,8 +60,8 @@ import { isWritingNotes, renderWorkspacePage } from "./workspace-page.js";
 import { beginRenameWorkspaceTitle, initWorkspaceTitle, setupWorkspaceTitle } from "./workspace-title.js";
 import { commitStaleWorkspaceName, focusWorkspaceName } from "./workspaces.js";
 
-/* Sammlungen, in denen es nichts zu löschen gibt: ihr Menü bietet nur die Wahl des Kopfes. */
-const collectionsWithoutDelete = ["resources", "projects", "archive", "workspaces", "bookmarks"];
+/* Sammlungen, die nicht über den Ort „Eingang“ löschen, sondern über ihre eigene Regel (src/data/collection-delete.js). */
+const ownDelete = ["resources", "projects", "archive", "workspaces", "bookmarks"];
 
 /*
  * Seiten, die neben ihrem Titel noch einen grauen Zweittitel zeigen: ein Tippen
@@ -256,7 +257,14 @@ function openPageMenu() {
     );
   }
 
-  if (!collectionsWithoutDelete.includes(page.kind)) {
+  if (ownDelete.includes(page.kind)) {
+    options.push({
+      label: deleteLabels[page.kind],
+      icon: "trash",
+      danger: true,
+      onSelect: () => deleteCollection(page.kind),
+    });
+  } else {
     options.push({
       label: "Alle Einträge löschen",
       icon: "trash",
@@ -326,6 +334,8 @@ export function initPage() {
   });
   on(events.dataChanged, () => {
     if (!isViewActive("page")) return;
+    /* Kopf folgt einer Wahl aus den Einstellungen; er ist billig zu zeichnen */
+    renderPageHero(ui.currentPage);
     /* Nicht mitten ins Tippen hinein neu zeichnen: der Text ist schon gemerkt. */
     if (!isWritingNotes()) renderPageBody();
     renderWorkspaceCover();
