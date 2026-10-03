@@ -10,7 +10,10 @@
  * Android: auch ein Tipp auf die blasse Zeile „Projekt hinzufügen“ öffnet diese
  * Zeile statt des Eingabefelds — in der leeren Liste unter dem letzten Platz und
  * im Board in der leeren Spalte, in der sie steht (src/features/overview/projects-board.js);
- * das Projekt bekommt dann Status bzw. Dringlichkeit dieser Spalte. Die Zeile hier
+ * das Projekt bekommt dann Status bzw. Dringlichkeit dieser Spalte. Ebenso ein Tipp
+ * in die freie Fläche des Boards: unter den Projekten einer Spalte oder unter dem
+ * ganzen Board bis hinunter zur Leiste — die Zeile kommt in die Spalte, über der
+ * der Finger steht. Die Zeile hier
  * kennt nur den Titel. In der iOS-Fassung bleibt „Projekt hinzufügen“ der Weg
  * über das Eingabefeld (Ort, Datum, Anhang).
  * Pfad: src/features/overview/project-inline.js
@@ -52,6 +55,21 @@ function visibleList() {
   if (isViewActive("home") && !isDesk()) return el("project-list")?.querySelector(".workspace-list") || null;
   if (isProjectsPageOpen()) return el("view-page")?.querySelector(".page-body > .workspace-list") || null;
   return null;
+}
+
+/* Das Board der sichtbaren Stelle (Ansicht als Board) — oder null. */
+function visibleBoard() {
+  if (isViewActive("home") && !isDesk()) return el("project-list")?.querySelector(".project-board") || null;
+  if (isProjectsPageOpen()) return el("view-page")?.querySelector(".page-body > .project-board") || null;
+  return null;
+}
+
+/* Die Spalte, über der der Finger steht — nur unterhalb ihrer Kopfzeile. */
+function columnAt(board, x, y) {
+  return [...board.querySelectorAll(".board-col")].find((col) => {
+    const rect = col.getBoundingClientRect();
+    return x >= rect.left && x < rect.right && y >= col.querySelector(".board-head").getBoundingClientRect().bottom;
+  }) || null;
 }
 
 /* Das Gehäuse, das „is-adding“ trägt: die Liste selbst, im Board die Spalte
@@ -135,10 +153,17 @@ function onClick(event) {
   if (!start || start.wasEditing || editing) return;
   if (document.body.classList.contains("is-selecting")) return;
   const list = visibleList();
-  if (!list) return;
+  const board = list ? null : visibleBoard();
+  if (!list && !board) return;
   const target = event.target;
-  if (target.closest("button, a, input, [data-grip], .swipe, .view-panel, .tab-pills-row")) return;
+  if (target.closest("button, a, input, [data-grip], .swipe, .view-panel, .tab-pills-row, .board-row, .project-card-head")) return;
   if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > TAP_SLOP_PX) return;
+  if (board) {
+    /* Board: in der Spalte unter dem Finger, mit ihrem Status bzw. ihrer Dringlichkeit */
+    const box = columnAt(board, event.clientX, event.clientY)?.querySelector(".board-rows");
+    if (box) openRow(box, { field: box.dataset.field, value: box.dataset.drop });
+    return;
+  }
   if (event.clientY < list.getBoundingClientRect().bottom) return;
   openRow(list);
 }

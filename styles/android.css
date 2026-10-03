@@ -90,8 +90,12 @@
     padding-top: calc(var(--safe-top) + var(--m3-top-bar-height) + var(--content-top));
   }
 
+  /* --content-end trägt denselben Wert zu den Seiten: sie reichen damit bis
+     an die Leiste, Wischen und Tippen greifen auch unter dem letzten Eintrag
+     (styles/android-archive.css) */
   [data-mobile-os="android"] .content {
-    padding-bottom: var(--m3-content-end);
+    --content-end: var(--m3-content-end);
+    padding-bottom: var(--content-end);
   }
 
   /* Suchleiste wie in Google Mail: hohe Pille, Platzhalter mittig, ohne Lupe */
@@ -254,7 +258,8 @@
      Seitenende kommt die Leiste dafür zurück (src/shell/android-bars.js). Die
      übrigen Seiten behalten --m3-content-end. */
   [data-mobile-os="android"] body:has(#view-entry.is-active) .content {
-    padding-bottom: calc(var(--m3-nav-shift) + var(--safe-bottom) + var(--m3-fab-size) + 2 * var(--m3-fab-gap));
+    --content-end: calc(var(--m3-nav-shift) + var(--safe-bottom) + var(--m3-fab-size) + 2 * var(--m3-fab-gap));
+    padding-bottom: var(--content-end);
   }
 
   /* Die Medien-Knöpfe rücken nach links, rechts steht der Plus-Knopf */

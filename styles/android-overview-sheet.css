@@ -149,7 +149,8 @@
      hinter dem Plus-Knopf. Container (unten) und Seitenende müssen gleich bleiben,
      sonst ließe der Container unter sich einen Streifen Seitengrund frei. */
   [data-mobile-variant="experiment"] body:has(#view-home.is-active) .content {
-    padding-bottom: var(--m3-ov-content-end);
+    --content-end: var(--m3-ov-content-end); /* --content-end: die Seite reicht genau bis zur Leiste (styles/android-archive.css) */
+    padding-bottom: var(--content-end);
   }
 
   /* Die Reiterzeile klebt oben weiter fest, trägt aber die Fläche des

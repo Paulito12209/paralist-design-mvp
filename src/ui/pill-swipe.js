@@ -8,6 +8,9 @@
  * Flächen mit `data-edge-swipe` rollen selbst seitlich (das Kanban-Board):
  * dort rollt Wischen erst die Fläche und wechselt die Pille nur, wenn sie in
  * Wischrichtung schon am Rand stand — wie ein Karussell in einer Seite.
+ * Unter einer solchen Fläche (das Projekt-Board endet mit seiner längsten
+ * Spalte) gilt dasselbe: Wischen dort rollt die Fläche um eine Spalte weiter,
+ * erst am Rand wechselt die Pille.
  * Am Griff einer Zeile (`data-grip`) wechselt nie etwas, dort wird gezogen.
  * Nach dem Wechsel — per Wischen oder Antippen (initPillTapReveal) — rollt
  * eine seitlich laufende Pillen-Leiste (.tab-pills) so,
@@ -43,6 +46,25 @@ function edgeAllows(edge, dx) {
   if (Math.abs(edge.el.scrollLeft - edge.left) > 1) return false;
   const max = edge.el.scrollWidth - edge.el.clientWidth;
   return dx < 0 ? edge.left >= max - 1 : edge.left <= 1;
+}
+
+/* Liegt der Finger unter einer seitlich rollenden Fläche der Seite? Dann
+   gehört das Wischen ihr, als hätte es auf ihr begonnen. */
+function edgeAbove(area, y) {
+  for (const el of area.querySelectorAll("[data-edge-swipe]")) {
+    const rect = el.getBoundingClientRect();
+    if (rect.height && y >= rect.bottom) return el;
+  }
+  return null;
+}
+
+/* Die Fläche um eine Spalte (ihr erstes Kind samt Fuge) weiterrollen; das
+   Einrasten (scroll-snap, styles/tasks-board.css) setzt sie genau an die Spalte. */
+function scrollStep(el, dx) {
+  const first = el.firstElementChild;
+  const gap = parseFloat(getComputedStyle(el).columnGap) || 0;
+  const step = (first ? first.getBoundingClientRect().width : el.clientWidth) + gap;
+  el.scrollBy({ left: dx < 0 ? step : -step, behavior: "smooth" });
 }
 
 /* Die gewählte Pille ins Bild rollen. „nearest“ rollt nur, wenn sie ganz oder
@@ -104,8 +126,10 @@ export function initPillSwipe(area, { order, current, select, enabled = () => tr
       const touch = event.touches[0];
       if (event.target.closest(OWN_GESTURES)) return;
       if (touch.clientX < EDGE_PX || touch.clientX > window.innerWidth - EDGE_PX) return;
-      const edgeEl = event.target.closest("[data-edge-swipe]");
-      start = { x: touch.clientX, y: touch.clientY, edge: edgeEl ? { el: edgeEl, left: edgeEl.scrollLeft } : null };
+      const onEdge = event.target.closest("[data-edge-swipe]");
+      const below = onEdge ? null : edgeAbove(area, touch.clientY);
+      const edgeEl = onEdge || below;
+      start = { x: touch.clientX, y: touch.clientY, edge: edgeEl ? { el: edgeEl, left: edgeEl.scrollLeft, below: Boolean(below) } : null };
     },
     { passive: true }
   );
@@ -120,8 +144,12 @@ export function initPillSwipe(area, { order, current, select, enabled = () => tr
       const edge = start.edge;
       start = null;
       if (Math.abs(dx) < SWIPE_MIN_PX || Math.abs(dx) < AXIS_RATIO * Math.abs(dy)) return;
-      if (!edgeAllows(edge, dx)) return;
       if (hasSelection() || isRowGesture()) return;
+      if (!edgeAllows(edge, dx)) {
+        /* Unter der Fläche rollt der Browser sie nicht selbst — das übernimmt der Wisch */
+        if (edge.below) scrollStep(edge.el, dx);
+        return;
+      }
       const ids = typeof order === "function" ? order() : order;
       const next = ids.indexOf(current()) + (dx < 0 ? 1 : -1);
       if (next < 0 || next >= ids.length) return;

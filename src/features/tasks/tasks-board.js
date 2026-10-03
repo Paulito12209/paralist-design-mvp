@@ -8,8 +8,10 @@
  * man sie in eine andere Spalte zieht. Eine neue Aufgabe entsteht, indem man
  * in die freie Fläche unter den Zeilen einer Spalte tippt
  * (src/features/tasks/tasks-inline.js). Nur in der Android-Fassung steht in
- * einer Spalte ohne Aufgabe statt „Nichts hier“ die blasse Zeile „Neue Aufgabe“
- * (Tipp öffnet dort die Eingabezeile); sobald eine Aufgabe darin liegt, ist sie weg.
+ * einer Spalte ohne Aufgabe statt „Nichts hier“ die blasse Zeile „Aufgabe
+ * hinzufügen“ mit ✓+ — gebaut wie „Projekt hinzufügen“ im Projekt-Board (Tipp
+ * öffnet dort die Eingabezeile, die Aufgabe bekommt Status bzw. Dringlichkeit
+ * der Spalte); sobald eine Aufgabe darin liegt, ist sie weg.
  * Im Auswahlmodus (src/features/tasks/tasks-select.js) steht vor jeder Zeile
  * ein Kreis und im Kopf jeder Spalte einer für die ganze Spalte; der Griff
  * einer gewählten Zeile zieht dann alle gewählten als Stapel.
@@ -33,18 +35,17 @@ import { taskMeta, taskTitle } from "./tasks-parts.js";
 import { groupPickMark, isPicked, isSelecting, pickMark } from "./tasks-pick.js";
 
 const emptyNote = "Nichts hier";
-const addLabel = "Neue Aufgabe";
+const addLabel = "Aufgabe hinzufügen";
 
 /* Der Inhalt einer Spalte ohne Aufgabe. Android: die blasse Zeile zum Anlegen,
-   mit leerem Ring in der Farbe der Spalte — nicht in „Archiviert“ (dort entsteht
+   mit ✓+ wie „Projekt hinzufügen“ mit der Rakete — nicht in „Archiviert“ (dort entsteht
    nichts Neues) und nicht im Auswahlmodus. Sie trägt „board-empty“, damit sie wie
    der Hinweis verschwindet, sobald gezogen oder geschrieben wird. */
 function emptyColumn(column) {
   if (!isMobileOs("android") || column.locked || isSelecting()) return `<p class="board-empty">${emptyNote}</p>`;
   return `
     <button class="board-add board-empty" type="button" data-board-add>
-      <span class="task-check task-ghost-ring" aria-hidden="true"></span>
-      <span class="board-add-label">${addLabel}</span>
+      ${icon("task-plus", "board-add-icon")}<span class="board-add-label">${addLabel}</span>
     </button>`;
 }
 

@@ -211,7 +211,8 @@ body.is-media .media-actions:not([hidden]) {
 
 /* Auf der Medien-Seite braucht die Liste unten mehr Platz, damit die Knöpfe nichts verdecken */
 body.is-media .content {
-  padding-bottom: calc(var(--tab-space) + var(--media-actions-space));
+  --content-end: calc(var(--tab-space) + var(--media-actions-space)); /* --content-end: so weit reicht die Seite in Android nach unten (styles/android-archive.css) */
+  padding-bottom: var(--content-end);
 }
 
 /* ---------- Ressourcen ---------- */
