@@ -59,6 +59,9 @@
  *                                 über der Datumszeile, wenn der Kopf oben eingerastet ist
  * --m3-hide-time               -> wie schnell Kopfzeile und Leiste beim Scrollen weg- und wiederkommen
  * --m3-content-end             -> Platz am Seitenende, damit nichts hinter Plus-Knopf und Leiste liegt
+ * --m3-ov-end-trim            -> Übersicht („Android (Experiment)“): um so viel weniger Platz unter dem letzten
+ *                                 Eintrag als --m3-content-end (24px: Abstand zur Leiste wird um 24px kleiner)
+ * --m3-ov-content-end          -> Platz am Seitenende der Übersicht (errechnet: --m3-content-end minus Kürzung)
  * --m3-sheet-radius            -> Rundung oben an allen Blättern von unten (Material 3 „Large“: 16dp;
  *                                 28dp wäre „Extra large“ und wirkt zu rund)
  * --m3-sheet-scrim-alpha       -> Deckkraft des schwarzen Schleiers hinter einem Blatt von unten
@@ -195,6 +198,8 @@
   --m3-cal-title-gap: 18px;
   --m3-hide-time: 220ms;
   --m3-content-end: calc(var(--m3-nav-height-labels) + var(--m3-fab-size) + 3 * var(--m3-fab-gap));
+  --m3-ov-end-trim: 24px;
+  --m3-ov-content-end: calc(var(--m3-content-end) - var(--m3-ov-end-trim));
   --m3-sheet-radius: 16px;
   --m3-sheet-scrim-alpha: 0.32;
   --m3-sheet-max: 80%;

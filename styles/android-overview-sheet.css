@@ -33,7 +33,8 @@
  * --bg                    -> Fläche der Einträge: dunkel wie der Seitengrund hinter dem Container (styles/tokens.css)
  * --m3-group-radius / --m3-group-inner-radius / --m3-group-gap -> Rundungen und Fuge der Kachelgruppe
  * --m3-page-edge          -> Innenabstand der Einträge
- * --m3-content-end        -> Platz am Seitenende (Container reicht über ihn bis zur Leiste)
+ * --m3-ov-content-end    -> Platz unter dem letzten Eintrag bis zur Leiste (Container reicht über ihn bis zur Leiste)
+ * --m3-ov-end-trim       -> um wie viel die Übersicht weniger Platz am Seitenende lässt als die übrigen Seiten
  * --content-side          -> Rand des Inhalts zum Gerät; die Kartenreihe reicht bis dorthin (styles/tokens.css)
  */
 
@@ -128,6 +129,14 @@
 
   /* ---------- Reiterzeile, Werkzeugzeile und Liste im Container ---------- */
 
+  /* Die Übersicht lässt unter dem letzten Eintrag weniger Platz als die übrigen
+     Seiten: der Platzhalter „Projekt hinzufügen“ ist weg, nichts liegt mehr
+     hinter dem Plus-Knopf. Container (unten) und Seitenende müssen gleich bleiben,
+     sonst ließe der Container unter sich einen Streifen Seitengrund frei. */
+  [data-mobile-variant="experiment"] body:has(#view-home.is-active) .content {
+    padding-bottom: var(--m3-ov-content-end);
+  }
+
   /* Die Reiterzeile klebt oben weiter fest, trägt aber die Fläche des
      Containers; ihr Abstand nach unten würde die Seitenfarbe durchscheinen lassen */
   [data-mobile-variant="experiment"] #view-home #project-views {
@@ -137,8 +146,8 @@
 
   [data-mobile-variant="experiment"] #view-home #project-list {
     margin-inline: calc(-1 * var(--content-side));
-    padding: 0 var(--content-side) var(--m3-content-end);
-    margin-bottom: calc(-1 * var(--m3-content-end)); /* margin-bottom: der Container reicht über das Seitenende bis zur Leiste, ohne die Seite länger zu machen */
+    padding: 0 var(--content-side) var(--m3-ov-content-end);
+    margin-bottom: calc(-1 * var(--m3-ov-content-end)); /* margin-bottom: der Container reicht über das Seitenende bis zur Leiste, ohne die Seite länger zu machen */
     background: var(--m3-surface-container);
   }
 
