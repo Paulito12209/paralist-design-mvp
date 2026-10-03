@@ -3,9 +3,10 @@
  * Kacheln, Projekte-Container und Navigationsleiste teilen sich eine Fläche, die
  * sich im Hellen deutlich vom Seitengrund abhebt (Seitengrund, Fläche, Einträge
  * im Container = die drei Farben). Die Suchleiste behält ihren Material-3-Ton.
- * Im Dunkeln bleiben die Töne wie bisher. Unter „Projekte“ steht, solange die Reiter
- * ausgeblendet sind, eine leise Trennlinie: durchscheinendes Schwarz, 16px vom Rand eingerückt. Die Fassung
- * „Android“ ohne Experiment bleibt unverändert.
+ * Die gemeinsame Fläche selbst gilt im Hellen in beiden Android-Fassungen
+ * (styles/tokens-android.css); hier steht nur, was es allein im Experiment gibt:
+ * Container, Pfeil-Knopf und Trennlinie. Unter „Projekte“ steht, solange die Reiter
+ * ausgeblendet sind, eine leise Trennlinie: durchscheinendes Schwarz, 16px vom Rand eingerückt.
  * Gilt nur mit data-mobile-variant="experiment" an <html> und unterhalb von 1024px.
  * Muss nach android-overview-sheet.css geladen werden, damit sie dessen Farben überstimmt.
  * Pfad: styles/android-experiment-surface.css
