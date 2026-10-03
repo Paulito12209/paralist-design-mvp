@@ -11,7 +11,8 @@
  * Platz für die Karte „Ansicht“ (styles/tasks-settings.css) entfallen — das
  * Seitenende kommt hier aus --m3-content-end (styles/android.css). Jede Seite
  * und das Aufgaben-Board reichen über dieses Seitenende bis an die Leiste
- * (--content-end), damit Wischen und Tippen auch unter dem letzten Eintrag greifen.
+ * (--content-end), damit Wischen und Tippen auch unter dem letzten Eintrag greifen;
+ * das Projekt-Board wird dafür verlängert und an der Leiste abgeschnitten.
  * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
  * Pfad: styles/android-archive.css
  *
@@ -107,6 +108,23 @@
   [data-mobile-os="android"] #view-tasks .board {
     margin-bottom: calc(-1 * var(--content-end, 0px));
     padding-bottom: calc(4px + var(--content-end, 0px));
+  }
+
+  /* Das Projekt-Board (Übersicht, Seite Projekte) endet sonst mit seiner
+     längsten Spalte. Es wird um eine Bildschirmhöhe nach unten verlängert
+     (der gleich große negative Rand hebt das im Fluss auf), und die Seite
+     schneidet es an ihrer Unterkante — an der Leiste — ab. overflow-y: clip
+     schneidet nur ab: es macht keinen eigenen Scrollbereich (Kopfzeilen
+     kleben weiter) und das Abgeschnittene verlängert die Seite nicht.
+     So rollt seitliches Wischen die Spalten bis hinunter zur Leiste, mit dem
+     Finger wie bei den Aufgaben, und ein Tipp dort legt in der Spalte darüber an. */
+  [data-mobile-os="android"] :is(#view-home, #view-page):has(.project-board) {
+    overflow-y: clip;
+  }
+
+  [data-mobile-os="android"] .project-board {
+    margin-bottom: calc(8px - 100dvh);
+    padding-bottom: calc(4px + 100dvh);
   }
 }
 
