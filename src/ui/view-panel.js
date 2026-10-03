@@ -33,7 +33,7 @@
  * dann eingeklappt). Offen bleibt sie, solange man in ihr oder in einem Blatt
  * darüber arbeitet: Sortieren, Filter, Menüs und Hinweise (OVERLAY_SELECTOR)
  * zählen nicht als „außerhalb“. Der Tipp selbst tut danach, was er immer tut.
- * Die Zeile „Reiter anzeigen“ (src/ui/tabs-visibility.js) steht oben in jeder Karte;
+ * Die Zeile „Tabs anzeigen“ (src/ui/tabs-visibility.js) steht oben in jeder Karte;
  * ihren Klick fängt der Rumpf ab, bevor die Seite ihn sieht.
  * Pfad: src/ui/view-panel.js
  *
@@ -265,7 +265,7 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
     }
     setExpanded(!expanded);
   });
-  /* Der Schalter „Reiter anzeigen“ steht in jeder Karte und wirkt für die offene Seite — sie sieht den Klick nicht */
+  /* Der Schalter „Tabs anzeigen“ steht in jeder Karte und wirkt für die offene Seite — sie sieht den Klick nicht */
   body.addEventListener("click", (event) => {
     if (!handleTabsClick(event)) onClick(event);
   });

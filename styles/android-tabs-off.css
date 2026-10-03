@@ -1,5 +1,5 @@
 /*
- * Fassung „Android (Experiment)“: der Schalter „Reiter anzeigen“ im Blatt
+ * Fassung „Android (Experiment)“: der Schalter „Tabs anzeigen“ im Blatt
  * „Ansicht“. Er gilt je Seite einzeln: Übersicht (Abschnitt „Projekte“), Seite
  * Projekte, Aufgaben und die übrigen Sammlungen haben je ein eigenes Merkmal an
  * <html> (data-tabs-home, -projects, -tasks, -pages; src/ui/tabs-visibility.js).

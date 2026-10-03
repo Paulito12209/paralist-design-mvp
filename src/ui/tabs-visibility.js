@@ -1,5 +1,5 @@
 /*
- * Der Schalter „Reiter anzeigen“ im Blatt „Ansicht“ (Android (Experiment)):
+ * Der Schalter „Tabs anzeigen“ im Blatt „Ansicht“ (Android (Experiment)):
  * ist er aus, bleibt über der Liste nur die Werkzeugzeile — Archiv,
  * Sortieren, Filtern, Ansicht. Das Blatt über das Symbol „Ansicht“ holt die
  * Reiter wieder zurück. Der Schalter gilt für die Seite, auf der das Blatt
@@ -25,7 +25,7 @@ import { ui } from "../data/state.js";
 import { panelToggle } from "./panel-rows.js";
 import { isViewActive } from "./views.js";
 
-const rowLabel = "Reiter anzeigen";
+const rowLabel = "Tabs anzeigen";
 
 /** Zu welcher Seite gehört der Schalter, der gerade zu sehen ist? */
 export function tabsScope() {
