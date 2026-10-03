@@ -73,13 +73,14 @@
   visibility: hidden;
 }
 
-/* Beim Scrollen nach unten bleibt nur das Plus */
-.device.is-bars-hidden .m3-fab {
+/* Beim Scrollen nach unten bleibt nur das Plus; kommt am Seitenende die
+   Leiste zurück (is-nav-back, src/shell/android-bars.js), wird er wieder breit */
+.device.is-bars-hidden:not(.is-nav-back) .m3-fab {
   padding: 0;
   gap: 0;
 }
 
-.device.is-bars-hidden .m3-fab-label {
+.device.is-bars-hidden:not(.is-nav-back) .m3-fab-label {
   max-width: 0;
   opacity: 0;
 }

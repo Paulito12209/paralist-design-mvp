@@ -4,7 +4,8 @@
  * Leiste, sondern rechts darüber (styles/android-fab.css). Beim Scrollen nach
  * unten gleitet die Suchleiste nach oben und die Leiste nach unten weg, beim
  * Scrollen nach oben kommen beide wieder — die Klasse „is-bars-hidden“ an
- * .device setzt src/shell/android-bars.js.
+ * .device setzt src/shell/android-bars.js. Am Seitenende kommt mit
+ * „is-nav-back“ nur die Leiste unten zurück, die Suchleiste erst beim Hochwischen.
  * Auch hier: Listeneinträge haben keine Trennlinie am unteren Rand. Titel und
  * Abschnittsüberschriften verlieren den iOS-Einzug (--title-side → 0) und
  * stehen stattdessen --m3-title-edge vom Rand; der erste Reiter, die Icons der Listen und „Archiv“ stehen auf --m3-tab-edge.
@@ -139,8 +140,10 @@
     transition: transform var(--m3-hide-time) ease; /* transition: gleitet weg statt zu springen */
   }
 
-  /* transform: nur die Leiste verschwindet, der Plus-Knopf darüber rückt an den unteren Rand */
-  [data-mobile-os="android"] .device.is-bars-hidden .bottom-bar {
+  /* transform: nur die Leiste verschwindet, der Plus-Knopf darüber rückt an den unteren Rand.
+     Am Seitenende (is-nav-back, src/shell/android-bars.js) steht die Leiste
+     wieder, während die Suchleiste oben weg bleibt. */
+  [data-mobile-os="android"] .device.is-bars-hidden:not(.is-nav-back) .bottom-bar {
     transform: translateY(calc(var(--m3-nav-shift) + var(--safe-bottom)));
   }
 
