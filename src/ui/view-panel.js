@@ -265,7 +265,7 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
     }
     setExpanded(!expanded);
   });
-  /* Der Schalter „Reiter anzeigen“ steht in jeder Karte und wirkt überall gleich — die Seite sieht den Klick nicht */
+  /* Der Schalter „Reiter anzeigen“ steht in jeder Karte und wirkt für die offene Seite — sie sieht den Klick nicht */
   body.addEventListener("click", (event) => {
     if (!handleTabsClick(event)) onClick(event);
   });

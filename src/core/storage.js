@@ -21,8 +21,8 @@ export const storageKeys = {
   navGlow: "paralist-nav-glow",
   pageHead: "paralist-page-head",
   tabIcons: "paralist-tab-icons",
-  /* Reiter über den Listen aus („1“) — nur Android (Experiment) */
-  tabsHidden: "paralist-tabs-hidden",
+  /* Reiter über den Listen je Seite („…-home“, „…-projects“, „…-tasks“, „…-pages“): „on“ oder „off“ — nur Android (Experiment) */
+  tabsVisible: "paralist-tabs-visible",
   newViewPlace: "paralist-new-view-place",
   /* Gewählte Fassung je Gerät, {mobile, desk} — index.html liest denselben Namen. */
   versions: "paralist-versions",

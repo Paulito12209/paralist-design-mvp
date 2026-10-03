@@ -16,6 +16,7 @@
  * Reiterzeile und Liste zusammengesetzt — so bleibt das Markup für alle Fassungen gleich.
  * Die Einträge stehen als Kachelgruppe wie die Einstellungen (styles/android-settings-groups.css):
  * außen stark, zwischen den Zeilen kaum gerundet, mit schmaler Fuge.
+ * Die Hinweiszeile „Projekt hinzufügen“ ist keine Kachel: sie steht ohne eigene Fläche auf dem Container.
  * Gilt nur mit data-mobile-variant="experiment" an <html>, auf der Übersicht
  * (#view-home) und unterhalb von 1024px.
  * Pfad: styles/android-overview-sheet.css
@@ -184,6 +185,17 @@
   /* Gedrückt: Tönung über der Kachelfläche, nicht über dem Seitengrund */
   [data-mobile-variant="experiment"] #view-home #project-list .swipe-body:active {
     background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), var(--bg));
+  }
+
+  /* „Projekt hinzufügen“ ist nur ein Hinweis, kein Eintrag: keine eigene Kachel, sondern
+     die Fläche des Containers dahinter, damit sie leiser wirkt als echte Projekte.
+     Gedrückt tönt sie sich wie sonst durchscheinend (styles/android-list.css). */
+  [data-mobile-variant="experiment"] #view-home #project-list .workspace-list > .workspace-add {
+    background: transparent;
+  }
+
+  [data-mobile-variant="experiment"] #view-home #project-list .workspace-list > .workspace-add:active {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), transparent);
   }
 
   /* „Projekt hinzufügen“ und die Eingabezeile neuer Projekte sind Kacheln ohne Wisch-Hülle:
