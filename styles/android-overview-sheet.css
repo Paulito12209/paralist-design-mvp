@@ -1,12 +1,13 @@
 /*
- * Fassung „Android (Experiment)“, Übersicht: oben die Kartenreihe mit
- * hervorschauender zweiter Seite, darunter „Projekte“ samt Reitern, Werkzeugzeile
- * und Einträgen in einem Container.
+ * Übersicht, beide Android-Fassungen: oben die Kartenreihe mit hervorschauender
+ * zweiter Seite. Nur in „Android (Experiment)“ liegt darunter „Projekte“ samt
+ * Reitern, Werkzeugzeile und Einträgen in einem Container.
  *
- * Kartenreihe: jede Seite ist um --m3-ov-peek schmaler als der Inhalt, so
- * schaut von der nächsten Seite rechts immer gleich viel hervor, egal wie breit
- * das Gerät ist. Die Seitenlinie darunter entfällt; auf der letzten Seite
- * schaut links ebenso viel von der ersten hervor.
+ * Kartenreihe (beide Fassungen): jede Seite ist um --m3-ov-peek schmaler als der
+ * Inhalt, so schaut von der nächsten Seite rechts immer gleich viel hervor, egal
+ * wie breit das Gerät ist — in „Android“ 20px, im Experiment 24px. Auf der letzten
+ * Seite schaut links ebenso viel von der ersten hervor. Die Seitenlinie darunter
+ * entfällt in beiden Fassungen.
  *
  * Container: von Rand zu Rand, oben abgerundet, in der Farbe der Navigations-
  * leiste, und er reicht bis nach unten an die Leiste. Er umschließt die
@@ -17,13 +18,14 @@
  * Die Einträge stehen als Kachelgruppe wie die Einstellungen (styles/android-settings-groups.css):
  * außen stark, zwischen den Zeilen kaum gerundet, mit schmaler Fuge.
  * Die Hinweiszeile „Projekt hinzufügen“ ist keine Kachel: sie steht ohne eigene Fläche auf dem Container.
- * Gilt nur mit data-mobile-variant="experiment" an <html>, auf der Übersicht
- * (#view-home) und unterhalb von 1024px.
+ * Gilt mit data-mobile-os="android" an <html> (der Container nur mit
+ * data-mobile-variant="experiment"), auf der Übersicht (#view-home) und unterhalb von 1024px.
  * Pfad: styles/android-overview-sheet.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens-android.css)
  * -----------------------------------
- * --m3-ov-peek            -> wie viel der zweiten Kartenseite rechts hervorschaut
+ * --m3-ov-peek            -> wie viel der zweiten Kartenseite rechts hervorschaut („Android“)
+ * --m3-ov-peek-experiment -> dasselbe im Experiment
  * --m3-ov-sheet-gap       -> Abstand der unteren Kacheln zum Container
  * --m3-ov-sheet-radius    -> Rundung oben am Container
  * --m3-ov-sheet-head-h    -> Höhe der Zeile „Projekte“
@@ -41,10 +43,15 @@
 @media (max-width: 1023px) {
   /* ---------- Kartenreihe mit Peek ---------- */
 
+  /* Das Experiment lässt etwas mehr hervorschauen als „Android“ */
+  [data-mobile-variant="experiment"] #view-home {
+    --m3-ov-peek: var(--m3-ov-peek-experiment);
+  }
+
   /* Die Reihe reicht bis an den Geräterand, damit der Peek dort endet und nicht
      4px davor (sonst bliebe ein Streifen). Der Innenabstand setzt die erste Seite
      auf die Fluchtlinie des Inhalts zurück. */
-  [data-mobile-variant="experiment"] #view-home .overview-grid {
+  [data-mobile-os="android"] #view-home .overview-grid {
     margin-inline: calc(-1 * var(--content-side));
     padding-inline: var(--content-side);
     scroll-padding-inline: var(--content-side);
@@ -52,19 +59,27 @@
 
   /* Eine Seite: Inhaltsbreite plus Rand, minus Fuge (12px, styles/overview.css) und
      Peek — so beginnt die nächste Seite genau --m3-ov-peek vor dem Geräterand. */
-  [data-mobile-variant="experiment"] #view-home .overview-page {
+  [data-mobile-os="android"] #view-home .overview-page {
     flex-basis: calc(100% + var(--content-side) - 12px - var(--m3-ov-peek));
   }
 
   /* Die letzte Seite rastet am rechten Rand ein, nicht links: sonst bliebe rechts
      eine leere Fläche in Breite des Peeks */
-  [data-mobile-variant="experiment"] #view-home .overview-page:last-child {
+  [data-mobile-os="android"] #view-home .overview-page:last-child {
     scroll-snap-align: end;
   }
 
   /* Die Seitenlinie entfällt: der Peek zeigt schon, dass es weitergeht */
-  [data-mobile-variant="experiment"] #view-home .overview-pager {
+  [data-mobile-os="android"] #view-home .overview-pager {
     display: none;
+  }
+
+  /* Ohne Linie trägt die Überschrift den ganzen Abstand zu den Kacheln allein
+     (styles/android-overview-gaps.css teilte ihn sonst je zur Hälfte über und unter
+     die Linie); 2.6px ist der Leerraum über der Schrift „Projekte“ im Kasten.
+     Im Experiment überschreibt die Container-Regel weiter unten diesen Wert. */
+  [data-mobile-os="android"] #view-home .overview-pager + .section-head {
+    margin-top: calc(var(--m3-ov-gap-section) - 2.6px);
   }
 
   /* ---------- Der Container: Seite als Spalte, damit er bis unten reicht ---------- */
