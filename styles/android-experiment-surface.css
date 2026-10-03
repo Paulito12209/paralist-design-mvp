@@ -1,0 +1,48 @@
+/*
+ * Fassung „Android (Experiment)“, Übersicht: Flächen und Trennlinie.
+ * Kacheln, Projekte-Container und Navigationsleiste teilen sich eine Fläche, die
+ * sich im Hellen deutlich vom Seitengrund abhebt (Seitengrund, Fläche, Einträge
+ * im Container = die drei Farben). Die Suchleiste behält ihren Material-3-Ton.
+ * Im Dunkeln bleiben die Töne wie bisher. Unter „Projekte“ steht, solange die Reiter
+ * ausgeblendet sind, eine leise Trennlinie: durchscheinendes Schwarz, 16px vom Rand eingerückt. Die Fassung
+ * „Android“ ohne Experiment bleibt unverändert.
+ * Gilt nur mit data-mobile-variant="experiment" an <html> und unterhalb von 1024px.
+ * Muss nach android-overview-sheet.css geladen werden, damit sie dessen Farben überstimmt.
+ * Pfad: styles/android-experiment-surface.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-xl-surface       -> Fläche des Containers und der Navigationsleiste
+ * --m3-xl-surface-high  -> Fläche des runden Pfeil-Knopfs neben „Projekte“
+ * --m3-xl-tile          -> Fläche der Kacheln (Eingang, Favoriten …)
+ * --m3-xl-divider-color -> Farbe der Trennlinie unter „Projekte“
+ * --m3-xl-divider-w     -> Dicke der Trennlinie
+ * --m3-xl-divider-inset -> Abstand der Linie zum Geräterand links und rechts
+ */
+
+@media (max-width: 1023px) {
+  [data-mobile-variant="experiment"] .nav-shell {
+    background: var(--m3-xl-surface);
+  }
+
+  [data-mobile-variant="experiment"] #view-home .overview-card {
+    background: var(--m3-xl-tile);
+  }
+
+  /* Die Regeln in android-overview-sheet.css lesen --m3-surface-container(-high):
+     hier gelten dafür die Werte des Experiments, nur innerhalb der Übersicht */
+  [data-mobile-variant="experiment"] #view-home {
+    --m3-surface-container: var(--m3-xl-surface);
+    --m3-surface-container-high: var(--m3-xl-surface-high);
+  }
+
+  /* Nur bei ausgeblendeten Reitern der Übersicht (data-tabs-home="off"): sonst trennt schon die Reiterzeile.
+     background-image: eine einfarbige Fläche als Linie — anders als ein Schatten
+     lässt sie sich links und rechts einrücken, ohne etwas zu verschieben */
+  [data-mobile-variant="experiment"][data-tabs-home="off"] #view-home .project-head {
+    background-image: linear-gradient(var(--m3-xl-divider-color), var(--m3-xl-divider-color));
+    background-repeat: no-repeat; /* no-repeat: nur eine Linie unten, kein Muster */
+    background-position: center bottom;
+    background-size: calc(100% - 2 * var(--m3-xl-divider-inset)) var(--m3-xl-divider-w);
+  }
+}
