@@ -97,13 +97,19 @@ function archiveMarkup() {
    dann ohne Satz darüber — danach legen „Neu“ und ein Tipp in die freie Fläche
    (project-inline.js) Projekte an. Im Board gehört sie in die leeren Spalten
    (projects-board.js), darunter steht nichts. Der leere Listen-Behälter bleibt
-   in der Liste stehen, damit der Tipp in die freie Fläche eine Liste findet. */
+   in der Liste stehen, damit der Tipp in die freie Fläche eine Liste findet.
+   Auch über dem großen Platzhalter stehen Werkzeugzeile und der leere Behälter:
+   ein Tipp auf den Platzhalter öffnet die erste Zeile, der Platzhalter weicht
+   ihr dann (styles/empty-state.css). */
 function listMarkup(onPage) {
   const view = activeProjectView();
   const projects = visibleProjects(view);
   const none = !projectEntries().length;
   const android = isMobileOs("android");
-  if (none && onPage) return emptyState(emptyProjects) + archiveMarkup();
+  const scope = projectOrderScope(view.id);
+  if (none && onPage) {
+    return `${projectCardHead(view)}<div class="workspace-list" data-reorder="${scope}"></div>${emptyState(emptyProjects)}${archiveMarkup()}`;
+  }
   /* Der Satz „kein Projekt in dieser Ansicht“ nur, wenn es woanders welche gibt */
   const lead = projects.length || none || android ? "" : `<p class="project-empty-note">${emptyViewText}</p>`;
   const rows = projects.map((project) => entryRow(project)).join("");
@@ -120,7 +126,7 @@ function listMarkup(onPage) {
     return `${projectCardHead(view)}${lead}${projectBoardMarkup(view)}${tail}${archiveMarkup()}`;
   }
   /* data-reorder: gedrückt Halten verschiebt eine Zeile (Android, src/ui/row-reorder.js) — je Ansicht eine eigene Reihenfolge */
-  return `${projectCardHead(view)}${lead}<div class="workspace-list" data-reorder="${projectOrderScope(view.id)}">${rows}${addRow}</div>${archiveMarkup()}`;
+  return `${projectCardHead(view)}${lead}<div class="workspace-list" data-reorder="${scope}">${rows}${addRow}</div>${archiveMarkup()}`;
 }
 
 /* Neu zeichnen, ohne dass die Pillenleiste oder das Board an den Anfang zurückspringen. */

@@ -25,7 +25,7 @@ import { resourceEntries } from "../../data/queries.js";
 import { saveState, state, ui } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { filterEmptyState } from "../../ui/filter-empty.js";
-import { addInlineList, openEntryRow, reopenIn } from "../../ui/inline-add.js";
+import { addablePlaceholder, addInlineList, openEntryRow, reopenIn } from "../../ui/inline-add.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { entryRow } from "../../ui/rows.js";
 import { tabGlyph } from "../../ui/tab-glyph.js";
@@ -137,13 +137,14 @@ initPillSwipe(el("view-page"), {
 });
 
 /* Tipp unter die letzte Zeile (Android): legt den Typ der aktiven Pille an.
-   Bei Monatsüberschriften stehen mehrere Listen untereinander — dann zählt die ganze Seite. */
+   Bei Monatsüberschriften stehen mehrere Listen untereinander — dann zählt die ganze Seite;
+   ist die Pille leer, ein Tipp auf ihren Platzhalter. */
 const inlineList = {
   area() {
     if (!isViewActive("page") || ui.currentPage?.kind !== "resources") return null;
     const lists = dom.pageBody.querySelectorAll(":scope > .workspace-list");
     if (lists.length > 1) return dom.pageBody;
-    return lists[0] || null;
+    return lists[0] || addablePlaceholder(dom.pageBody);
   },
   open(area) {
     const type = resourceFilterTypes[state.prefs.resources.filter] || resourceFilterTypes.all;
