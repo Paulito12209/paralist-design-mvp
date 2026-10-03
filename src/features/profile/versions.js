@@ -20,6 +20,7 @@
 
 import { escapeHtml, icon } from "../../core/html.js";
 import { chosenLabel, chosenLook, chosenVersion, platforms, setVersion, versionOption } from "../../data/platform-versions.js";
+import { applyTabs } from "../../ui/tabs-visibility.js";
 import { openSheet } from "../../ui/sheet.js";
 
 const diffHeading = "Anders als „Android“";
@@ -34,6 +35,8 @@ export function applyVersions() {
   if (mobile.variant) root.dataset.mobileVariant = mobile.variant;
   else delete root.dataset.mobileVariant;
   root.dataset.deskOs = chosenVersion("desk");
+  /* Die Reiter-Vorgaben hängen an der Fassung (src/data/tabs-visibility.js) */
+  applyTabs();
 }
 
 /** Kurzfassung für den rechten Rand der Zeile, z.B. „Android · macOS“; gleiche Wahl nur einmal. */

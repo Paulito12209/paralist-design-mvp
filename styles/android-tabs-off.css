@@ -1,5 +1,5 @@
 /*
- * Fassung „Android (Experiment)“: der Schalter „Tabs anzeigen“ im Blatt
+ * Beide Android-Fassungen: der Schalter „Tabs anzeigen“ im Blatt
  * „Ansicht“. Er gilt je Seite einzeln: Übersicht (Abschnitt „Projekte“), Seite
  * Projekte, Aufgaben und die übrigen Sammlungen haben je ein eigenes Merkmal an
  * <html> (data-tabs-home, -projects, -tasks, -pages; src/ui/tabs-visibility.js).
@@ -8,35 +8,44 @@
  * oben ein. Das Symbol „Ansicht“ holt das Blatt mit dem Schalter herauf,
  * ein Tipp darauf bringt die Reiter zurück. Der Kalender und die Medien bleiben,
  * wie sie sind: sie haben keine Werkzeugzeile, die die Reiter ersetzen könnte.
- * Die Zeile mit dem Schalter selbst gibt es nur im Experiment; in allen
- * anderen Fassungen bleibt sie verborgen.
- * Welche Seite ohne eigene Wahl mit oder ohne Reiter startet (Übersicht: ohne):
- * src/data/tabs-visibility.js.
- * Gilt nur mit data-mobile-variant="experiment" an <html> und unterhalb von 1024px.
+ * Die Zeile mit dem Schalter selbst gibt es nur in Android und im Experiment;
+ * in iOS und „Erster Test“ bleibt sie verborgen.
+ * Welche Seite ohne eigene Wahl mit oder ohne Reiter startet („Android“: alle
+ * mit, Experiment: Übersicht ohne): src/data/tabs-visibility.js.
+ * Die Trennlinie unter den Reitern läuft in „Android“ über die ganze Breite
+ * (styles/android-tabs.css). Sind die Reiter der Übersicht aus, bleibt eine
+ * ebenso durchgehende Linie über der Werkzeugzeile unter „Projekte“ stehen, damit
+ * dort weiter etwas trennt; auf den anderen Seiten verschwindet sie mit den Reitern.
+ * Das Experiment hat dafür eine eigene, eingerückte Linie
+ * (styles/android-experiment-surface.css).
+ * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px; nur
+ * der Anschluss an den Container der Übersicht gilt allein im Experiment.
  * Pfad: styles/android-tabs-off.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens-android.css)
  * -----------------------------------
  * --m3-card-head-plain-gap -> Luft zwischen Titel und Werkzeugzeile, wo keine Reiter darüber stehen
  * --m3-tab-height          -> um so viel rückt die einrastende Werkzeugzeile höher, wenn die Reiter fehlen
+ * --m3-outline-variant     -> Farbe der Linie über der Werkzeugzeile (wie die Reiterlinie, styles/android-tabs.css)
+ * --content-side           -> um so weit reicht die Linie über den Rand des Inhalts hinaus, bis zum Geräterand (styles/tokens.css)
  */
 
-/* Die Zeile mit dem Schalter erscheint nur im Experiment am Handy */
+/* Die Zeile mit dem Schalter erscheint nur in den Android-Fassungen am Handy */
 .tabs-switch-row {
   display: none;
 }
 
 @media (max-width: 1023px) {
-  [data-mobile-variant="experiment"] .tabs-switch-row {
+  [data-mobile-os="android"] .tabs-switch-row {
     display: flex;
   }
 
   /* ---------- Reiterzeilen weg, je Seite ---------- */
 
-  [data-mobile-variant="experiment"][data-tabs-home="off"] #project-views,
-  [data-mobile-variant="experiment"][data-tabs-tasks="off"] .tasks-tools,
-  [data-mobile-variant="experiment"][data-tabs-projects="off"] .page-body > .project-views,
-  [data-mobile-variant="experiment"][data-tabs-pages="off"] .page-body > :is(.tab-pills, .tab-pills-row) {
+  [data-mobile-os="android"][data-tabs-home="off"] #project-views,
+  [data-mobile-os="android"][data-tabs-tasks="off"] .tasks-tools,
+  [data-mobile-os="android"][data-tabs-projects="off"] .page-body > .project-views,
+  [data-mobile-os="android"][data-tabs-pages="off"] .page-body > :is(.tab-pills, .tab-pills-row) {
     display: none;
   }
 
@@ -45,16 +54,16 @@
   /* Ohne Reiterlinie darüber zieht sie sich nicht mehr unter sie, sondern steht
      wie auf Seiten ohne Reiter unter dem Titel. Übersicht und Aufgaben: sie rastet
      unter der Suchleiste ein. */
-  [data-mobile-variant="experiment"][data-tabs-home="off"] #view-home .project-card-head,
-  [data-mobile-variant="experiment"][data-tabs-tasks="off"] #view-tasks .project-card-head {
+  [data-mobile-os="android"][data-tabs-home="off"] #view-home .project-card-head,
+  [data-mobile-os="android"][data-tabs-tasks="off"] #view-tasks .project-card-head {
     margin-top: var(--m3-card-head-plain-gap);
     top: calc(-1 * var(--content-top) - var(--m3-bar-shift, 0px));
   }
 
   /* Seiten (Projekte und Sammlungen): sie rastet unter der Kopfzeile ein. Die Seite
      Projekte erkennt man an ihrer Zeile .project-views, die Sammlungen an den Reitern. */
-  [data-mobile-variant="experiment"][data-tabs-projects="off"] .page-body:has(> .project-views) .project-card-head,
-  [data-mobile-variant="experiment"][data-tabs-pages="off"] .page-body:not(:has(> .project-views)) .project-card-head {
+  [data-mobile-os="android"][data-tabs-projects="off"] .page-body:has(> .project-views) .project-card-head,
+  [data-mobile-os="android"][data-tabs-pages="off"] .page-body:not(:has(> .project-views)) .project-card-head {
     margin-top: var(--m3-card-head-plain-gap);
     top: calc(var(--safe-top) + var(--page-head-top) + var(--search-bar-height));
   }
@@ -62,5 +71,22 @@
   /* Im Container der Übersicht folgt sie gleich auf die Überschrift „Projekte“ */
   [data-mobile-variant="experiment"][data-tabs-home="off"] #view-home #project-list .project-card-head {
     margin-top: 0;
+  }
+
+  /* ---------- Trennlinie bei ausgeblendeten Reitern der Übersicht ---------- */
+
+  /* Dieselbe Linie wie unter den Reitern (1px, --m3-outline-variant), nur ohne
+     Reiter darüber: sie liegt an der Oberkante der Werkzeugzeile und rastet mit ihr ein.
+     ::before — ein eigenes Teil nur für die Linie: so reicht sie über den Rand der
+     Zeile bis an den Geräterand, ohne dass sich der Inhalt verschiebt.
+     position: absolute — hängt die Linie an die Zeile (die ist sticky und damit der Bezug). */
+  [data-mobile-os="android"]:not([data-mobile-variant="experiment"])[data-tabs-home="off"] #view-home .project-card-head::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: calc(-1 * var(--content-side));
+    right: calc(-1 * var(--content-side));
+    height: 1px;
+    background: var(--m3-outline-variant);
   }
 }
