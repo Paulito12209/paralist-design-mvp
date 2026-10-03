@@ -18,7 +18,7 @@ import { proposedType } from "../../data/config.js";
 import { addWorkspace } from "../../data/mutations.js";
 import { createEntryInline } from "../../data/mutations-inline.js";
 import { ui } from "../../data/state.js";
-import { addInlineList, initInlineAdd, openEntryRow, reopenIn } from "../../ui/inline-add.js";
+import { addablePlaceholder, addInlineList, initInlineAdd, openEntryRow, reopenIn } from "../../ui/inline-add.js";
 import { isViewActive } from "../../ui/views.js";
 
 /* Die offene Unterseite — nur, wenn die Ansicht sie gerade zeigt. */
@@ -31,7 +31,7 @@ const inbox = {
   area() {
     const page = openPage();
     if (!page || page.kind || page.isWorkspace) return null;
-    return dom.pageBody.querySelector(":scope > .workspace-list");
+    return dom.pageBody.querySelector(":scope > .workspace-list") || addablePlaceholder(dom.pageBody);
   },
   open(area) {
     openEntryRow(area, {
@@ -42,12 +42,13 @@ const inbox = {
   },
 };
 
-/* Die Seite Arbeitsbereiche: erst, wenn im Tab schon einer steht. */
+/* Die Seite Arbeitsbereiche: die Liste, sobald im Tab einer steht — im leeren
+   Tab der Platzhalter, ein Tipp darauf legt den ersten an. */
 const workspaces = {
   area() {
     if (openPage()?.kind !== "workspaces") return null;
     const list = dom.pageBody.querySelector(':scope > .workspace-list[data-reorder="workspaces"]');
-    return list?.querySelector("[data-open-workspace]") ? list : null;
+    return list?.querySelector("[data-open-workspace]") ? list : addablePlaceholder(dom.pageBody);
   },
   open() {
     addWorkspace();

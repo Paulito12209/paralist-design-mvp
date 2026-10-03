@@ -4,8 +4,10 @@
  * mehr — ein Tipp in die freie Fläche unter dem letzten Eintrag, bis hinunter
  * zur Leiste, legt an, was die Liste vorschlägt. Im Eingang eine Notiz, unter
  * „Zeichnungen“ eine Zeichnung, in den Arbeitsbereichen ein Arbeitsbereich.
- * Ist die Liste leer, steht dort der Platzhalter mit seiner Pille — dann gibt
- * es keine Liste, unter die man tippen könnte.
+ * Ist die Liste leer, steht dort der Platzhalter mit seiner Pille: dann darf
+ * `area()` ihn selbst zurückgeben (`addablePlaceholder`). Ein Tipp auf ihn
+ * oder darunter öffnet die erste Zeile in einem eigenen Kasten über ihm, und
+ * der Platzhalter weicht ihr (styles/empty-state.css).
  *
  * Jede Seite meldet ihre Liste mit `addInlineList` an: `area()` gibt die
  * sichtbare Liste zurück (oder null), `open(area)` legt an — meist über
@@ -91,7 +93,7 @@ function commitRow(chain) {
 /* Wohin die Zeile kommt: ans Ende der Liste selbst — oder, wenn die Fläche
    aus mehreren Listen besteht (Monate, Gruppen), in einen eigenen Kasten darunter. */
 function rowBox(area) {
-  if (area.classList.contains("workspace-list")) return { box: area, made: false };
+  if (area.classList.contains("workspace-list")) return { box: area, made: area.hasAttribute("data-inline-made") };
   const box = document.createElement("div");
   box.className = "workspace-list";
   area.append(box);
@@ -133,6 +135,21 @@ export function openEntryRow(area, { type, onCommit, reopen }) {
   input.focus();
 }
 
+/** Der Platzhalter einer leeren Liste in `container` — nur, wenn er zum Anlegen
+    einlädt (nicht der Platzhalter „Kein Eintrag passt zu den Filtern“). */
+export function addablePlaceholder(container) {
+  return container.querySelector(":scope > .empty-state.is-addable");
+}
+
+/* Ein leerer Kasten direkt über dem Platzhalter — dort entsteht die erste Zeile. */
+function boxBefore(placeholder) {
+  const box = document.createElement("div");
+  box.className = "workspace-list";
+  box.setAttribute("data-inline-made", "");
+  placeholder.before(box);
+  return box;
+}
+
 /** Nach dem Neuzeichnen die nächste Zeile in derselben Liste öffnen. */
 export function reopenIn(spec) {
   const area = spec.area();
@@ -159,8 +176,12 @@ function onClick(event) {
   if (event.target.closest("button, a, input, textarea, [data-grip], .swipe, .view-panel, .tab-pills-row")) return;
   if (Math.hypot(event.clientX - start.x, event.clientY - start.y) > TAP_SLOP_PX) return;
   const hit = visibleArea();
-  if (!hit || event.clientY < hit.area.getBoundingClientRect().bottom) return;
-  hit.spec.open(hit.area);
+  if (!hit) return;
+  /* Leere Liste: der Tipp zählt ab der Oberkante des Platzhalters, sonst erst unter der Liste */
+  const placeholder = hit.area.classList.contains("empty-state");
+  const rect = hit.area.getBoundingClientRect();
+  if (event.clientY < (placeholder ? rect.top : rect.bottom)) return;
+  hit.spec.open(placeholder ? boxBefore(hit.area) : hit.area);
 }
 
 /** Den Tipp unter die Listen einschalten — ein Empfänger am ganzen Scrollbereich:
