@@ -13,7 +13,7 @@
  * --xp-line                 -> Farbe der Balken
  * --danger                  -> Rot der Löschen-Zeilen und von „Abmelden“
  * --radius-xl               -> Rundung der Zeilenkarten
- 
+ * --modal-top-size          -> Höhe der Versionszeile (styles/modal-top.css), so hoch wie der Nach-oben-Knopf
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
 */
@@ -188,6 +188,7 @@
   font-size: 15px;
   color: var(--muted);
   margin-top: 8px;
+  cursor: pointer; /* cursor: ein Tipp auf „Dabei seit …“ öffnet den Kalender */
 }
 
 /* Große Kennzahl über dem Balkenverlauf */
@@ -360,10 +361,16 @@
 }
 
 .profile-version {
-  text-align: center;
+  display: flex; /* flex: zentriert die Schrift in der Höhe des Nach-oben-Knopfes, der rechts daneben sitzt */
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  height: var(--modal-top-size);
+  /* padding: links und rechts so viel wie der Knopf samt Abstand, damit die Schrift mittig im Blatt steht und nie unter ihm liegt */
+  padding: 0 calc(var(--modal-top-size) + var(--content-side));
   font-size: 13px;
   letter-spacing: 0.08em;
   text-transform: uppercase; /* text-transform: Versionszeile in Großbuchstaben */
   color: var(--muted);
-  padding: 18px 0 4px;
+  white-space: nowrap;
 }

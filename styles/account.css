@@ -18,6 +18,7 @@
  *
  * Schriftgrößen und Maße einzelner Elemente stehen direkt bei ihrer Regel:
  * .account-copy .icon 18px -> Größe des Kopier-Symbols
+ * .account-input-inline 16px -> Schrift im Eingabefeld einer Zeile unter „Persönliche Daten“
  * .account-field-label 13px, .account-delete-list 15px, .account-button 17px
  */
 
@@ -25,14 +26,54 @@
 
 /* Die Zeile ist ein div (kein Knopf): rechts sitzt der Kopier-Knopf. Der
    Abstand rechts schrumpft, damit der Knopf bündig mit den Pfeilen der
-   übrigen Zeilen abschließt. */
+   übrigen Zeilen abschließt. Ein Tipp auf die Zeile öffnet das Eingabefeld. */
 .account-row {
-  cursor: default;
+  cursor: pointer;
   padding-right: 6px;
 }
 
-.plist-row .plist-value.is-empty {
+/* Der Wert ohne Kopier-Knopf (leer oder „Dabei seit“) rückt ein, damit alle Werte bündig stehen */
+.plist-row .plist-value.is-empty,
+.plist-row .plist-value.account-since-value {
   margin-right: var(--account-copy-size);
+}
+
+.plist-row .plist-value.is-empty {
+  color: var(--chevron);
+}
+
+/* Die Beschriftung bricht nie um („E-Mail“ nicht in „E-“ und „Mail“): sie behält ihre Breite,
+   der Wert bekommt den Rest und endet bei Platzmangel mit „…“ */
+.plist-row .account-label {
+  flex: 0 0 auto;
+  margin-right: auto; /* margin: schiebt den Wert an den rechten Rand, solange er kürzer als der Rest ist */
+  padding-right: 12px;
+  white-space: nowrap;
+}
+
+.account-input-inline {
+  flex: 1 1 auto;
+  min-width: 0; /* min-width: sonst drückt eine lange Eingabe den Kopier-Knopf aus der Zeile */
+  padding: 0;
+  background: none;
+  border: 0;
+  font: inherit;
+  font-size: 16px; /* 16px: darunter zoomt iOS beim Antippen in das Feld hinein */
+  text-align: right;
+  text-overflow: ellipsis; /* text-overflow: eine lange Eingabe endet mit „…“ statt umzubrechen */
+  color: var(--text);
+}
+
+/* Ohne Kopier-Knopf rückt das Feld so weit ein, dass sein Text bündig mit den anderen Werten steht */
+.account-input-inline:last-child {
+  margin-right: var(--account-copy-size);
+}
+
+.account-input-inline:focus {
+  outline: none; /* outline: die Zeile selbst zeigt, dass hier getippt wird */
+}
+
+.account-input-inline::placeholder {
   color: var(--chevron);
 }
 

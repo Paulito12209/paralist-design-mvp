@@ -12,6 +12,10 @@
  * WAVE_TINT     -> wie hell die Welle auf der vorderen Karte liegt
  * MARK_OPACITY  -> Deckkraft der gezeichneten Striche links und rechts oben
  *
+ * collectionEmptyState -> der Platzhalter einer Sammlung (Projekte, Arbeitsbereiche, Medien,
+ *                 Ressourcen, Lesezeichen, Archiv); er folgt der Wahl „Erklärung in leeren
+ *                 Sammlungen“ unter Einstellungen › Design: aus = nur Titel und Pille
+ *
  * neutralTones -> Farben, die als „ohne Thema“ gelten: deren Pille trägt das
  *                 Silber von Paralist statt eines Graus
  *
@@ -20,6 +24,7 @@
  */
 
 import { escapeHtml, icon } from "../core/html.js";
+import { emptyExplainOn } from "../data/design-prefs.js";
 
 /* Zeichenfläche der Grafik. Breite und Höhe bestimmen nur das Seitenverhältnis —
    wie groß das Emblem wirklich wird, sagt --empty-art-width in der CSS-Datei. */
@@ -146,4 +151,13 @@ export function emptyState({
       ${pill}
     </div>
   `;
+}
+
+/**
+ * Der Platzhalter einer leeren Sammlung. Ist die Erklärung abgeschaltet
+ * (Einstellungen › Design), bleiben nur Überschrift und Pille — ohne Emblem
+ * und ohne Erklärsatz.
+ */
+export function collectionEmptyState(options) {
+  return emptyState(emptyExplainOn() ? options : { ...options, text: "", art: false, plain: false });
 }

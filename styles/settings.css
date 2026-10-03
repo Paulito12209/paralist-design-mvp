@@ -199,6 +199,11 @@
   flex: 0 0 auto;
 }
 
+/* Gespiegeltes Icon: der Pfeil nach links ist der Pfeil nach rechts, umgedreht */
+.settings-row .icon.is-flipped {
+  transform: scaleX(-1); /* transform: spiegelt das Icon waagerecht */
+}
+
 /* Haken rechts: nur bei der gewählten Option sichtbar */
 .settings-row .settings-check {
   width: 20px;

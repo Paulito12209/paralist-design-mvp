@@ -33,7 +33,7 @@ import { hostOf, youtubeId, youtubeThumb } from "../../data/link-kinds.js";
 import { createEntryInline } from "../../data/mutations-inline.js";
 import { placesLabel } from "../../data/queries.js";
 import { ui } from "../../data/state.js";
-import { emptyState } from "../../ui/empty-state.js";
+import { collectionEmptyState } from "../../ui/empty-state.js";
 import { filterEmptyState } from "../../ui/filter-empty.js";
 import { addablePlaceholder, addInlineList, openEntryRow, reopenIn } from "../../ui/inline-add.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
@@ -127,7 +127,7 @@ export function renderBookmarks() {
     ? `<div class="bookmark-list">${items.map(rowMarkup).join("")}</div>`
     : raw.length
     ? filterEmptyState()
-    : emptyState({ ...emptyArt[pill], accent: "var(--bookmark-color)", action: { label: EMPTY_ACTION } });
+    : collectionEmptyState({ ...emptyArt[pill], accent: "var(--bookmark-color)", action: { label: EMPTY_ACTION } });
 
   /* Ein offener Player würde mit ersetzt: vorher sauber schließen */
   const video = loadedModule("video");

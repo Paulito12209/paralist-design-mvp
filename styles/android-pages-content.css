@@ -175,7 +175,7 @@
     color: var(--m3-on-surface-variant);
   }
 
-  /* „Abmelden“ als „Outlined button“, die Versionszeile linksbündig darunter */
+  /* „Abmelden“ als „Outlined button“, die Versionszeile mittig darunter */
   :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .profile-signout {
     align-self: flex-start;
     min-height: 40px;
@@ -189,8 +189,6 @@
   }
 
   :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .profile-version {
-    text-align: left;
-    padding: 8px 0 0;
     color: var(--m3-on-surface-variant);
   }
 

@@ -4,26 +4,38 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * .modal-top width/height -> Größe des runden Knopfes (42px wie der Schließen-Knopf)
- * .modal-top bottom/right -> Abstand zur unteren und rechten Kante des Blatts
+ * --modal-top-size      -> Größe des runden Knopfes (42px wie der Schließen-Knopf); so hoch
+ *                          ist auch die Versionszeile am Ende der Einstellungen, damit beide
+ *                          in einer Reihe stehen
+ * --modal-top-bottom    -> Abstand des Knopfes zur unteren Kante des Blatts; gleich dem unteren
+ *                          Innenabstand der Blätter (.modal-body), damit der Knopf am Ende der
+ *                          Seite genau neben der letzten Zeile sitzt
+ * --modal-top-gap       -> Luft zwischen der letzten Zeile und dem Knopf am Ende der Einstellungen
+ *                          (nur dort nötig, wo die Gruppen selbst keinen Abstand haben)
+ * .modal-top right      -> Abstand zur rechten Kante des Blatts (--content-side)
  * .modal-top .icon transform -> Drehung des Zurück-Pfeils, damit er nach oben zeigt
  *
- * Farben und Schatten kommen aus styles/tokens.css:
- * --card, --text, --shadow, --content-side, --safe-bottom
+ * Der Knopf hat bewusst keinen Schatten (kein Glühen um ihn herum).
+ * Farben kommen aus styles/tokens.css: --card, --text, --content-side, --safe-bottom
  */
+
+:root {
+  --modal-top-size: 42px;
+  --modal-top-bottom: 24px;
+  --modal-top-gap: 16px;
+}
 
 .modal-top {
   position: absolute; /* position: der Knopf schwebt über dem rollenden Inhalt */
   right: var(--content-side);
-  bottom: calc(16px + var(--safe-bottom));
-  width: 42px;
-  height: 42px;
+  bottom: calc(var(--modal-top-bottom) + var(--safe-bottom));
+  width: var(--modal-top-size);
+  height: var(--modal-top-size);
   border-radius: 50%; /* border-radius: macht den Knopf rund */
   display: grid;
   place-items: center;
   background: var(--card);
   color: var(--text);
-  box-shadow: var(--shadow);
   z-index: 2; /* z-index: liegt über dem Inhalt des Blatts */
   opacity: 0;
   /* transform: kommt leicht von unten herein, statt einfach aufzublitzen */

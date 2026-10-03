@@ -15,13 +15,21 @@
  * notes      -> die grauen Sätze unter den Gruppen
  * headRows   -> die beiden Zeilen „Neue Seiten beginnen mit“: Name und Icon
  * viewPlaceRows -> die beiden Zeilen „Neue Ansichten erscheinen“: vor „Alle“ oder am Ende
+ *                   (flip: das Icon wird gespiegelt)
  *
  * Aussehen der Zeilen und Hinweise in styles/settings.css.
  */
 
 import { emit, events } from "../../core/bus.js";
 import { escapeHtml, icon } from "../../core/html.js";
-import { navGlowOn, pageHeadChoice, setNavGlowOn, setPageHeadChoice } from "../../data/design-prefs.js";
+import {
+  emptyExplainOn,
+  navGlowOn,
+  pageHeadChoice,
+  setEmptyExplainOn,
+  setNavGlowOn,
+  setPageHeadChoice,
+} from "../../data/design-prefs.js";
 import { searchKeyboardOn, setSearchKeyboardOn } from "../../data/search-keyboard.js";
 import { setTabIconsOn, tabIconAreas, tabIconsOn } from "../../data/tab-icons.js";
 import { newViewAtStart, setNewViewAtStart } from "../../data/view-place.js";
@@ -33,13 +41,15 @@ const notes = {
   search: "Aus: Die Suche zeigt erst, was du zuletzt geöffnet hast. Die Tastatur kommt mit der Pille „Suchen“ unten.",
   searchDesk: "Am Computer öffnet das Suchfeld stattdessen die Such-Palette.",
   glow: "Heller Verlauf am unteren Rand der Hauptreiter, der Leiste und Eingabefeld vom Inhalt abhebt. Nur am Handy und Tablet.",
+  explain: "Mit Haken zeigt eine leere Sammlung — Projekte, Arbeitsbereiche, Medien, Ressourcen, Lesezeichen, Archiv — ein Emblem und sagt in einem Satz, was hier hingehört. Ohne Haken bleiben nur Überschrift und Knopf.",
   head: "Ohne Haken beginnen neue Einträge und Arbeitsbereiche nur mit dem Titel. Icon und Cover lassen sich je Seite im Menü oben rechts ein- und ausschalten.",
   tabs: "Mit Haken steht vor dem Namen jeder Pille oben ein kleines Icon, ohne Haken nur Text. Ein eigenes Icon gibst du einer Ansicht, indem du ihre Pille gedrückt hältst.",
   viewPlace: "Gilt für Projekte und Aufgaben. „Neue Ansicht“ bleibt in beiden Fällen hinter der letzten Pille. Einzelne Pillen verschiebst du, indem du sie gedrückt hältst.",
 };
 
 const viewPlaceRows = [
-  { id: "start", label: "Vor „Alle“", icon: "back" },
+  /* Derselbe Pfeil wie rechts, nur gespiegelt: so lesen sich beide Zeilen als Paar */
+  { id: "start", label: "Vor „Alle“", icon: "arrow-right", flip: true },
   { id: "end", label: "Am Ende, rechts", icon: "arrow-right" },
 ];
 
@@ -49,10 +59,10 @@ const headRows = [
 ];
 
 /* Eine Haken-Zeile; `attr` ist das data-Attribut, an dem der Klick sie erkennt. */
-function toggleRow(attr, iconName, label, on) {
+function toggleRow(attr, iconName, label, on, flip = false) {
   return `
       <button class="settings-row${on ? " is-active" : ""}" type="button" ${attr} aria-pressed="${on}">
-        ${icon(iconName)}
+        ${icon(iconName, flip ? "is-flipped" : "")}
         <span>${escapeHtml(label)}</span>
         ${icon("check", "settings-check")}
       </button>`;
@@ -77,6 +87,7 @@ export function searchCard(title = "") {
 /** Unterseite Design: zuerst der Verlauf, darunter der Kopf neuer Seiten. */
 export function designCard(title = "") {
   const glow = toggleRow('data-nav-glow-toggle="1"', "sidebar", "Verlauf hinter der Leiste", navGlowOn());
+  const explain = toggleRow('data-empty-explain-toggle="1"', "note", "Erklärung zeigen", emptyExplainOn());
   const chosen = pageHeadChoice();
   const heads = headRows
     .map((row) => toggleRow(`data-page-head="${row.id}"`, row.icon, row.label, row.id === chosen))
@@ -86,6 +97,8 @@ export function designCard(title = "") {
     ${group(glow)}${note(notes.glow)}
     ${heading("Neue Seiten beginnen mit")}
     ${group(heads)}${note(notes.head)}
+    ${heading("Leere Sammlungen")}
+    ${group(explain)}${note(notes.explain)}
   `;
 }
 
@@ -96,7 +109,7 @@ export function tabsCard(title = "") {
     .join("");
   const atStart = newViewAtStart();
   const places = viewPlaceRows
-    .map((row) => toggleRow(`data-view-place="${row.id}"`, row.icon, row.label, (row.id === "start") === atStart))
+    .map((row) => toggleRow(`data-view-place="${row.id}"`, row.icon, row.label, (row.id === "start") === atStart, row.flip))
     .join("");
   /* Am Desktop steht „Tabs“ schon als Überschrift; ein zweiter Titel darunter wäre doppelt */
   return `${heading(title || "Icons in den Tabs")}${group(rows)}${note(notes.tabs)}
@@ -117,6 +130,12 @@ export function onAppSettingsClick(event) {
     const next = !navGlowOn();
     setNavGlowOn(next);
     emit(events.navGlowChanged, next);
+    return true;
+  }
+  if (event.target.closest("[data-empty-explain-toggle]")) {
+    setEmptyExplainOn(!emptyExplainOn());
+    /* Eine offene leere Sammlung dahinter soll sofort folgen */
+    emit(events.dataChanged);
     return true;
   }
   const tabs = event.target.closest("[data-tab-icons]");

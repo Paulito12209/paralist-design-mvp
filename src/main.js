@@ -19,6 +19,7 @@
 import { events, on } from "./core/bus.js";
 import { load, prefetchWhenIdle, registerLoader } from "./core/lazy.js";
 import { mountNoHistoryForm } from "./core/no-history.js";
+import { trackFirstOpen } from "./data/profile.js";
 import { loadState } from "./data/state.js";
 import { loadThumbs } from "./data/thumbs.js";
 import { loadUsage } from "./data/usage.js";
@@ -108,6 +109,8 @@ const prefetchOrder = ["search", "tasks", "calendar", "media", "viewer", "progre
 
 /* Gespeicherten Zustand einlesen, bevor irgendetwas gezeichnet wird. */
 function loadEverything() {
+  /* Vor dem Zustand: nur so sieht man, ob dieses Gerät die App schon vorher benutzt hat */
+  trackFirstOpen();
   loadThumbs();
   loadState();
   loadUsage();

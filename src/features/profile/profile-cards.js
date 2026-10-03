@@ -48,7 +48,7 @@ export function avatarMarkup() {
 }
 
 /** Die Zeile unter der Mailadresse: „Pro · Dabei seit …“, ohne Konto (Phase 1) nur „Dabei seit …“. */
-function metaLine() {
+export function metaLine() {
   return hasAccount() ? `${profile.plan} · ${profile.since}` : profile.since;
 }
 
@@ -62,7 +62,7 @@ export function identityCard() {
       </div>
       <p class="profile-name">${escapeHtml(profile.name)}</p>
       ${hasAccount() ? `<p class="profile-mail">${escapeHtml(profile.mail)}</p>` : ""}
-      <p class="profile-meta">${escapeHtml(metaLine())}</p>
+      <p class="profile-meta" data-account-since="head">${escapeHtml(metaLine())}</p>
     </section>
   `;
 }

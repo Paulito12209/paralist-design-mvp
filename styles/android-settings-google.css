@@ -188,4 +188,9 @@
   :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile .profile-meta {
     display: none;
   }
+
+  /* Die Gruppen haben hier keinen Abstand (gap: 0): die Versionszeile holt sich ihre 16px zur letzten Zeile selbst */
+  :root[data-mobile-os="android"][data-mobile-variant="experiment"] #profile .profile-version {
+    margin-top: var(--m3-page-section-gap);
+  }
 }

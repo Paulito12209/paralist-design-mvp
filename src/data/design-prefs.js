@@ -1,8 +1,9 @@
 /*
  * Die Wahlen unter Einstellungen › Design. Reiner Zustand ohne Zugriff auf
  * die Seite: die Hülle (src/shell/nav-bar.js) liest den Verlauf beim Start,
- * die Datenschicht fragt beim Anlegen nach dem Kopf neuer Seiten, geändert
- * wird beides auf der Unterseite (src/features/profile/app-settings.js).
+ * die Datenschicht fragt beim Anlegen nach dem Kopf neuer Seiten, die leeren
+ * Sammlungen (src/ui/empty-state.js) fragen nach der Erklärung; geändert wird
+ * alles auf der Unterseite (src/features/profile/app-settings.js).
  * Pfad: src/data/design-prefs.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -10,6 +11,8 @@
  * defaultPageHead -> womit neue Seiten beginnen, solange nichts gewählt ist:
  *                    "" (nur der Titel, Vorgabe), "icon" (großes Icon über dem
  *                    Titel) oder "cover" (Farbverlauf)
+ * emptyExplainOn  -> ob leere Sammlungen Emblem und Erklärsatz zeigen: an (Vorgabe) oder aus;
+ *                    aus lässt beides weg, Überschrift und Pille bleiben
  */
 
 import { readText, storageKeys, writeText } from "../core/storage.js";
@@ -25,6 +28,16 @@ export function navGlowOn() {
 /** Die Wahl merken. */
 export function setNavGlowOn(value) {
   writeText(storageKeys.navGlow, value ? "1" : "");
+}
+
+/** Ob leere Sammlungen Emblem und Erklärsatz zeigen (Voreinstellung: an). */
+export function emptyExplainOn() {
+  return readText(storageKeys.emptyExplain) !== "0";
+}
+
+/** Die Wahl merken; „an“ ist die Vorgabe und löscht den Eintrag. */
+export function setEmptyExplainOn(value) {
+  writeText(storageKeys.emptyExplain, value ? "" : "0");
 }
 
 /** Womit neue Seiten beginnen: "cover", "icon" oder "" (nur der Titel). */

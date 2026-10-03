@@ -31,7 +31,7 @@ import { icon } from "../../core/html.js";
 import { selectTab } from "../../data/mutations.js";
 import { tabWorkspaces } from "../../data/queries.js";
 import { state, ui } from "../../data/state.js";
-import { emptyState } from "../../ui/empty-state.js";
+import { collectionEmptyState } from "../../ui/empty-state.js";
 import { filterEmptyState } from "../../ui/filter-empty.js";
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { isMobileOs } from "../../ui/platform.js";
@@ -90,7 +90,7 @@ export function renderWorkspaceCollection() {
      dasselbe noch einmal und entfällt. Blenden nur die Filter alles aus,
      steht der Filter-Platzhalter da und die Zeile zum Anlegen bleibt. */
   const filteredAway = !rows && tabWorkspaces().length > 0;
-  const empty = filteredAway ? filterEmptyState() : rows ? "" : emptyState(emptyTab);
+  const empty = filteredAway ? filterEmptyState() : rows ? "" : collectionEmptyState(emptyTab);
   /* Android: keine Zeile „Arbeitsbereich hinzufügen“ — ein Tipp unter den
      letzten Arbeitsbereich legt an (src/features/overview/page-inline.js). */
   const withAdd = (Boolean(rows) || filteredAway) && !isMobileOs("android");
