@@ -8,7 +8,13 @@
  * die gefüllte Hälfte mit.
  * Pfad: src/features/overview/overview.js
  *
- * Keine anpassbaren visuellen Werte: Größe, Rundung und Icon-Farben stehen in
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * experimentMoreOrder -> Reihenfolge der zweiten Kartenseite in Android (Experiment),
+ *                        wie im Raster: oben links, oben rechts, unten links, unten rechts
+ *                        (die anderen Fassungen folgen moreCards in src/data/collections.js)
+ *
+ * Größe, Rundung und Icon-Farben stehen in
  * styles/overview.css (Klassen .overview-card, .card-title, .card-icon-*),
  * das Schieben und die abgeschalteten Karten in styles/overview-more.css.
  * Die Zahl neben dem Titel steht erst ab einem Eintrag da — eine „0“ wird
@@ -23,6 +29,16 @@ import { moreCards, SOON_LABEL } from "../../data/collections.js";
 import { overviewPages } from "../../data/config.js";
 import { archivedEntries, archivedWorkspaces, pageCount } from "../../data/queries.js";
 import { isViewActive } from "../../ui/views.js";
+
+/* Android (Experiment): Lesezeichen und Archiv stehen übereinander links, die zwei
+   „Demnächst“-Karten rechts daneben. */
+const experimentMoreOrder = ["bookmarks", "people", "archive", "plans"];
+
+/* Die Karten der zweiten Seite in der Reihenfolge der gezeigten Fassung. */
+function orderedMoreCards() {
+  if (document.documentElement.dataset.mobileVariant !== "experiment") return moreCards;
+  return experimentMoreOrder.map((id) => moreCards.find((card) => card.id === id)).filter(Boolean);
+}
 
 /* Die Karten mit eigenem farbigem Icon; alle anderen bleiben grau. */
 const coloredIcons = {
@@ -96,7 +112,7 @@ export function renderOverview() {
   const scrolled = dom.overviewGrid.scrollLeft;
   dom.overviewGrid.innerHTML = `
     <div class="overview-page">${first}</div>
-    <div class="overview-page">${moreCards.map(moreCardMarkup).join("")}</div>
+    <div class="overview-page">${orderedMoreCards().map(moreCardMarkup).join("")}</div>
   `;
   dom.overviewGrid.scrollLeft = scrolled;
 }

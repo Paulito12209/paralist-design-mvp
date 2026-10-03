@@ -33,6 +33,8 @@
  * dann eingeklappt). Offen bleibt sie, solange man in ihr oder in einem Blatt
  * darüber arbeitet: Sortieren, Filter, Menüs und Hinweise (OVERLAY_SELECTOR)
  * zählen nicht als „außerhalb“. Der Tipp selbst tut danach, was er immer tut.
+ * Die Zeile „Reiter anzeigen“ (src/ui/tabs-visibility.js) steht oben in jeder Karte;
+ * ihren Klick fängt der Rumpf ab, bevor die Seite ihn sieht.
  * Pfad: src/ui/view-panel.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -53,6 +55,7 @@
 import { events, on } from "../core/bus.js";
 import { cssNumber } from "../core/css-vars.js";
 import { icon } from "../core/html.js";
+import { handleTabsClick } from "./tabs-visibility.js";
 
 const DRAG_START_PX = 6;
 const SNAP_PX = 40;
@@ -262,7 +265,10 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
     }
     setExpanded(!expanded);
   });
-  body.addEventListener("click", onClick);
+  /* Der Schalter „Reiter anzeigen“ steht in jeder Karte und wirkt überall gleich — die Seite sieht den Klick nicht */
+  body.addEventListener("click", (event) => {
+    if (!handleTabsClick(event)) onClick(event);
+  });
 
   /* Vor der unteren Leiste einhängen: dieselbe Ebene wie die Seite, die
      Navigation (styles/navigation.css) bleibt darüber. Der Schleier steht

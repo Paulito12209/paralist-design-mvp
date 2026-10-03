@@ -1,0 +1,194 @@
+/*
+ * Fassung „Android (Experiment)“, Übersicht: oben die Kartenreihe mit
+ * hervorschauender zweiter Seite, darunter „Projekte“ samt Reitern, Werkzeugzeile
+ * und Einträgen in einem Container.
+ *
+ * Kartenreihe: jede Seite ist um --m3-ov-peek schmaler als der Inhalt, so
+ * schaut von der nächsten Seite rechts immer gleich viel hervor, egal wie breit
+ * das Gerät ist. Die Seitenlinie darunter entfällt; auf der letzten Seite
+ * schaut links ebenso viel von der ersten hervor.
+ *
+ * Container: von Rand zu Rand, oben abgerundet, in der Farbe der Navigations-
+ * leiste, und er reicht bis nach unten an die Leiste. Er umschließt die
+ * Überschrift „Projekte“ mit dem runden Pfeil-Knopf rechts (öffnet die Seite
+ * Projekte), die Reiter, die Werkzeugzeile und die Einträge. Der Container ist
+ * kein eigenes Element, sondern wird aus den drei Geschwistern Überschrift,
+ * Reiterzeile und Liste zusammengesetzt — so bleibt das Markup für alle Fassungen gleich.
+ * Die Einträge stehen als Kachelgruppe wie die Einstellungen (styles/android-settings-groups.css):
+ * außen stark, zwischen den Zeilen kaum gerundet, mit schmaler Fuge.
+ * Gilt nur mit data-mobile-variant="experiment" an <html>, auf der Übersicht
+ * (#view-home) und unterhalb von 1024px.
+ * Pfad: styles/android-overview-sheet.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-ov-peek            -> wie viel der zweiten Kartenseite rechts hervorschaut
+ * --m3-ov-sheet-gap       -> Abstand der unteren Kacheln zum Container
+ * --m3-ov-sheet-radius    -> Rundung oben am Container
+ * --m3-ov-sheet-head-h    -> Höhe der Zeile „Projekte“
+ * --m3-ov-arrow-size      -> Durchmesser des runden Pfeil-Knopfs
+ * --m3-surface-container  -> Fläche des Containers (wie die Navigationsleiste)
+ * --m3-surface-container-high -> Fläche des Pfeil-Knopfs
+ * --bg                    -> Fläche der Einträge: dunkel wie der Seitengrund hinter dem Container (styles/tokens.css)
+ * --m3-group-radius / --m3-group-inner-radius / --m3-group-gap -> Rundungen und Fuge der Kachelgruppe
+ * --m3-page-edge          -> Innenabstand der Einträge
+ * --m3-content-end        -> Platz am Seitenende (Container reicht über ihn bis zur Leiste)
+ * --content-side          -> Rand des Inhalts zum Gerät; die Kartenreihe reicht bis dorthin (styles/tokens.css)
+ */
+
+@media (max-width: 1023px) {
+  /* ---------- Kartenreihe mit Peek ---------- */
+
+  /* Die Reihe reicht bis an den Geräterand, damit der Peek dort endet und nicht
+     4px davor (sonst bliebe ein Streifen). Der Innenabstand setzt die erste Seite
+     auf die Fluchtlinie des Inhalts zurück. */
+  [data-mobile-variant="experiment"] #view-home .overview-grid {
+    margin-inline: calc(-1 * var(--content-side));
+    padding-inline: var(--content-side);
+    scroll-padding-inline: var(--content-side);
+  }
+
+  /* Eine Seite: Inhaltsbreite plus Rand, minus Fuge (12px, styles/overview.css) und
+     Peek — so beginnt die nächste Seite genau --m3-ov-peek vor dem Geräterand. */
+  [data-mobile-variant="experiment"] #view-home .overview-page {
+    flex-basis: calc(100% + var(--content-side) - 12px - var(--m3-ov-peek));
+  }
+
+  /* Die letzte Seite rastet am rechten Rand ein, nicht links: sonst bliebe rechts
+     eine leere Fläche in Breite des Peeks */
+  [data-mobile-variant="experiment"] #view-home .overview-page:last-child {
+    scroll-snap-align: end;
+  }
+
+  /* Die Seitenlinie entfällt: der Peek zeigt schon, dass es weitergeht */
+  [data-mobile-variant="experiment"] #view-home .overview-pager {
+    display: none;
+  }
+
+  /* ---------- Der Container: Seite als Spalte, damit er bis unten reicht ---------- */
+
+  /* display: flex — die Seite wird mindestens so hoch wie der Bildschirm (100cqh,
+     Maß des Scrollbereichs, styles/android-tabs.css); die Liste füllt den Rest
+     und bringt so den Container bis an die Leiste, auch bei wenigen Einträgen */
+  [data-mobile-variant="experiment"] #view-home.is-active {
+    display: flex;
+    flex-direction: column;
+    min-height: 100cqh;
+  }
+
+  [data-mobile-variant="experiment"] #view-home > * {
+    flex: 0 0 auto; /* flex: alles andere behält seine Höhe, nichts wird gequetscht */
+  }
+
+  [data-mobile-variant="experiment"] #view-home > #project-list {
+    flex: 1 0 auto;
+  }
+
+  /* ---------- Überschrift „Projekte“ mit rundem Pfeil-Knopf ---------- */
+
+  /* Von Rand zu Rand, oben abgerundet. Der Abstand nach oben ersetzt den
+     Abstand der Seitenlinie (styles/android-overview-gaps.css). */
+  [data-mobile-variant="experiment"] #view-home .overview-pager + .section-head {
+    margin-top: var(--m3-ov-sheet-gap);
+  }
+
+  [data-mobile-variant="experiment"] #view-home .project-head {
+    margin-inline: calc(-1 * var(--content-side));
+    margin-bottom: 0;
+    padding: 0 var(--content-side) 0 var(--m3-title-edge);
+    min-height: var(--m3-ov-sheet-head-h);
+    border-radius: var(--m3-ov-sheet-radius) var(--m3-ov-sheet-radius) 0 0;
+    background: var(--m3-surface-container);
+  }
+
+  [data-mobile-variant="experiment"] .project-head h2 {
+    flex: 1;
+    min-width: 0; /* min-width: Flex-Kind darf schmaler werden */
+  }
+
+  /* Der Name links, der Pfeil gegenüber rechts; die ganze Zeile ist antippbar */
+  [data-mobile-variant="experiment"] .project-head .section-link {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  /* Der Pfeil steht in einem kleinen runden Knopf (blendet die Regel in
+     styles/android-sheet.css für „Android“ wieder ein) */
+  [data-mobile-variant="experiment"] .project-head .section-link .icon {
+    display: block;
+    box-sizing: border-box; /* box-sizing: das Polster liegt innerhalb des Durchmessers */
+    width: var(--m3-ov-arrow-size);
+    height: var(--m3-ov-arrow-size);
+    padding: 8px;
+    border-radius: 50%;
+    background: var(--m3-surface-container-high);
+    color: var(--m3-on-surface-variant);
+  }
+
+  /* ---------- Reiterzeile, Werkzeugzeile und Liste im Container ---------- */
+
+  /* Die Reiterzeile klebt oben weiter fest, trägt aber die Fläche des
+     Containers; ihr Abstand nach unten würde die Seitenfarbe durchscheinen lassen */
+  [data-mobile-variant="experiment"] #view-home #project-views {
+    margin-bottom: 0;
+    background: var(--m3-surface-container);
+  }
+
+  [data-mobile-variant="experiment"] #view-home #project-list {
+    margin-inline: calc(-1 * var(--content-side));
+    padding: 0 var(--content-side) var(--m3-content-end);
+    margin-bottom: calc(-1 * var(--m3-content-end)); /* margin-bottom: der Container reicht über das Seitenende bis zur Leiste, ohne die Seite länger zu machen */
+    background: var(--m3-surface-container);
+  }
+
+  /* Die Werkzeugzeile liegt direkt unter den Reitern (kein Abstand mehr dazwischen)
+     und deckt beim Festkleben mit der Fläche des Containers ab */
+  [data-mobile-variant="experiment"] #view-home #project-list .project-card-head {
+    margin-top: 0;
+    margin-bottom: 0; /* margin-bottom: die erste Kachel zieht sich nicht mehr unter die Zeile, sonst ist ihre Oberkante verdeckt */
+    background: var(--m3-surface-container);
+  }
+
+  /* ---------- Einträge als Kachelgruppe ---------- */
+
+  [data-mobile-variant="experiment"] #view-home #project-list .workspace-list {
+    gap: var(--m3-group-gap);
+  }
+
+  [data-mobile-variant="experiment"] #view-home #project-list .workspace-list > * {
+    margin-inline: 0; /* margin-inline: die Zeile reicht nicht mehr bis zum Geräterand, die Kachel steht im Container */
+    background: var(--bg);
+    border-radius: var(--m3-group-inner-radius);
+  }
+
+  [data-mobile-variant="experiment"] #view-home #project-list .workspace-list > :first-child {
+    border-top-left-radius: var(--m3-group-radius);
+    border-top-right-radius: var(--m3-group-radius);
+  }
+
+  [data-mobile-variant="experiment"] #view-home #project-list .workspace-list > :last-child {
+    border-bottom-left-radius: var(--m3-group-radius);
+    border-bottom-right-radius: var(--m3-group-radius);
+  }
+
+  /* Zwischen Kacheln steht die Fuge, keine Trennlinie */
+  [data-mobile-variant="experiment"] #view-home #project-list .swipe::after {
+    display: none;
+  }
+
+  [data-mobile-variant="experiment"] #view-home #project-list .swipe-body {
+    padding-left: var(--m3-page-edge);
+    background: var(--bg);
+  }
+
+  /* Gedrückt: Tönung über der Kachelfläche, nicht über dem Seitengrund */
+  [data-mobile-variant="experiment"] #view-home #project-list .swipe-body:active {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), var(--bg));
+  }
+
+  /* „Projekt hinzufügen“ und die Eingabezeile neuer Projekte sind Kacheln ohne Wisch-Hülle:
+     der Innenabstand ersetzt den der Hülle */
+  [data-mobile-variant="experiment"] #view-home #project-list .workspace-list > :not(.swipe) {
+    padding-left: var(--m3-page-edge);
+  }
+}

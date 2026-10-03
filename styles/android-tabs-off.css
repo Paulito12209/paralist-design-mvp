@@ -1,0 +1,56 @@
+/*
+ * Fassung „Android (Experiment)“: der Schalter „Reiter anzeigen“ im Blatt
+ * „Ansicht“. Ist er aus (data-tabs="off" an <html>, src/ui/tabs-visibility.js),
+ * verschwinden die Reiterzeilen über den Listen — Projekte auf Übersicht und
+ * Seite Projekte, Aufgaben und die Sammlungen — und die Werkzeugzeile
+ * (Archiv, Sortieren, Filtern, Ansicht) rückt an ihren Platz und rastet
+ * oben ein. Das Symbol „Ansicht“ holt das Blatt mit dem Schalter herauf,
+ * ein Tipp darauf bringt die Reiter zurück. Der Kalender und die Medien bleiben,
+ * wie sie sind: sie haben keine Werkzeugzeile, die die Reiter ersetzen könnte.
+ * Die Zeile mit dem Schalter selbst gibt es nur im Experiment; in allen
+ * anderen Fassungen bleibt sie verborgen.
+ * Gilt nur mit data-mobile-variant="experiment" an <html> und unterhalb von 1024px.
+ * Pfad: styles/android-tabs-off.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-card-head-plain-gap -> Luft zwischen Titel und Werkzeugzeile, wo keine Reiter darüber stehen
+ * --m3-tab-height          -> um so viel rückt die einrastende Werkzeugzeile höher, wenn die Reiter fehlen
+ */
+
+/* Die Zeile mit dem Schalter erscheint nur im Experiment am Handy */
+.tabs-switch-row {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  [data-mobile-variant="experiment"] .tabs-switch-row {
+    display: flex;
+  }
+
+  /* ---------- Reiterzeilen weg ---------- */
+
+  [data-mobile-variant="experiment"][data-tabs="off"] #project-views,
+  [data-mobile-variant="experiment"][data-tabs="off"] .tasks-tools,
+  [data-mobile-variant="experiment"][data-tabs="off"] .page-body > :is(.tab-pills, .tab-pills-row, .project-views) {
+    display: none;
+  }
+
+  /* ---------- Werkzeugzeile an ihrer Stelle ---------- */
+
+  /* Ohne Reiterlinie darüber zieht sie sich nicht mehr unter sie, sondern steht
+     wie auf Seiten ohne Reiter unter dem Titel */
+  [data-mobile-variant="experiment"][data-tabs="off"] .project-card-head {
+    margin-top: var(--m3-card-head-plain-gap);
+    top: calc(-1 * var(--content-top) - var(--m3-bar-shift, 0px));
+  }
+
+  [data-mobile-variant="experiment"][data-tabs="off"] .page-body .project-card-head {
+    top: calc(var(--safe-top) + var(--page-head-top) + var(--search-bar-height));
+  }
+
+  /* Im Container der Übersicht folgt sie gleich auf die Überschrift „Projekte“ */
+  [data-mobile-variant="experiment"][data-tabs="off"] #view-home #project-list .project-card-head {
+    margin-top: 0;
+  }
+}

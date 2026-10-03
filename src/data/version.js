@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "e0601133bf18";
+export const appVersion = "3c727c57366e";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -36,8 +36,8 @@ export const appFiles = [
   "src/data/platform-versions.js", "src/data/project-board.js", "src/data/project-views.js",
   "src/data/queries.js", "src/data/refs.js", "src/data/reminders.js", "src/data/search-keyboard.js",
   "src/data/seed.js", "src/data/shortcut-hints.js", "src/data/state.js", "src/data/tab-icons.js",
-  "src/data/task-archive.js", "src/data/task-views.js", "src/data/thumbs.js",
-  "src/data/usage-areas.js", "src/data/usage.js", "src/data/view-place.js",
+  "src/data/tabs-visibility.js", "src/data/task-archive.js", "src/data/task-views.js",
+  "src/data/thumbs.js", "src/data/usage-areas.js", "src/data/usage.js", "src/data/view-place.js",
   "src/data/workspace-facts.js", "src/data/xp.js", "src/features/bookmarks/bookmarks.js",
   "src/features/calendar/calendar-date-picker.js", "src/features/calendar/calendar-gestures.js",
   "src/features/calendar/calendar-grid.js", "src/features/calendar/calendar-inline.js",
@@ -124,18 +124,20 @@ export const appFiles = [
   "src/ui/remind-sheet.js", "src/ui/router-restore.js", "src/ui/router.js", "src/ui/row-lift.js",
   "src/ui/row-reorder.js", "src/ui/rows.js", "src/ui/select-bar.js", "src/ui/selection.js",
   "src/ui/settings-link.js", "src/ui/sheet.js", "src/ui/slash-menu.js", "src/ui/sort-sheet.js",
-  "src/ui/swipe.js", "src/ui/tab-glyph.js", "src/ui/tab-menu.js", "src/ui/task-status.js",
-  "src/ui/toast.js", "src/ui/type-menu.js", "src/ui/type-wheel.js", "src/ui/usage-pages.js",
-  "src/ui/usage-split.js", "src/ui/video-player.js", "src/ui/view-panel.js", "src/ui/views.js",
-  "src/ui/wheel.js", "src/ui/write-tap.js", "styles/account.css", "styles/android-archive.css",
-  "styles/android-bottom-sheet.css", "styles/android-calendar-rings.css",
-  "styles/android-calendar-tabs.css", "styles/android-calendar.css", "styles/android-card.css",
-  "styles/android-composer.css", "styles/android-entry.css", "styles/android-fab.css",
-  "styles/android-filter-sheet.css", "styles/android-list.css", "styles/android-overview-gaps.css",
-  "styles/android-pages-content.css", "styles/android-pages.css", "styles/android-quiet-tools.css",
-  "styles/android-reorder.css", "styles/android-segmented.css",
-  "styles/android-settings-google.css", "styles/android-settings-groups.css",
-  "styles/android-settings-tiles.css", "styles/android-sheet.css", "styles/android-tab-snap.css",
+  "src/ui/swipe.js", "src/ui/tab-glyph.js", "src/ui/tab-menu.js", "src/ui/tabs-visibility.js",
+  "src/ui/task-status.js", "src/ui/toast.js", "src/ui/type-menu.js", "src/ui/type-wheel.js",
+  "src/ui/usage-pages.js", "src/ui/usage-split.js", "src/ui/video-player.js",
+  "src/ui/view-panel.js", "src/ui/views.js", "src/ui/wheel.js", "src/ui/write-tap.js",
+  "styles/account.css", "styles/android-archive.css", "styles/android-bottom-sheet.css",
+  "styles/android-calendar-rings.css", "styles/android-calendar-tabs.css",
+  "styles/android-calendar.css", "styles/android-card.css", "styles/android-composer.css",
+  "styles/android-entry.css", "styles/android-fab.css", "styles/android-filter-sheet.css",
+  "styles/android-list.css", "styles/android-overview-gaps.css",
+  "styles/android-overview-sheet.css", "styles/android-pages-content.css",
+  "styles/android-pages.css", "styles/android-quiet-tools.css", "styles/android-reorder.css",
+  "styles/android-segmented.css", "styles/android-settings-google.css",
+  "styles/android-settings-groups.css", "styles/android-settings-tiles.css",
+  "styles/android-sheet.css", "styles/android-tab-snap.css", "styles/android-tabs-off.css",
   "styles/android-tabs.css", "styles/android-view-btn.css", "styles/android.css",
   "styles/avatar-crop.css", "styles/base.css", "styles/block-bar.css", "styles/blocks.css",
   "styles/bookmarks.css", "styles/calendar-panel.css", "styles/calendar-rings.css",
