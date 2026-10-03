@@ -9,7 +9,10 @@
  * das Anheben in src/ui/row-lift.js.
  * Dazu: die Seitenenden der Pille „Zum Archiv“ (styles/view-end.css) und der
  * Platz für die Karte „Ansicht“ (styles/tasks-settings.css) entfallen — das
- * Seitenende kommt hier aus --m3-content-end (styles/android.css).
+ * Seitenende kommt hier aus --m3-content-end (styles/android.css). Jede Seite
+ * und das Aufgaben-Board reichen über dieses Seitenende bis an die Leiste
+ * (--content-end), damit Wischen und Tippen auch unter dem letzten Eintrag greifen;
+ * das Projekt-Board wird dafür verlängert und an der Leiste abgeschnitten.
  * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
  * Pfad: styles/android-archive.css
  *
@@ -83,16 +86,45 @@
   }
 
   /* Die Regeln aus styles/view-end.css rechnen mit der Pille und dem Kopf der
-     Karte „Ansicht“ — beides gibt es hier nicht */
+     Karte „Ansicht“ — beides gibt es hier nicht.
+     Jede Seite reicht stattdessen über das Seitenende des Scrollbereichs
+     (--content-end, styles/android.css) bis hinunter an die Leiste: auch unter
+     dem letzten Eintrag und neben dem Plus-Knopf gehört die Berührung so zur
+     Seite — Wischen wechselt den Reiter (src/ui/pill-swipe.js), ein Tipp legt
+     an. padding-bottom und der gleich große negative Rand heben sich auf: die
+     Seite wird nicht länger, nichts scrollt weiter als vorher. */
+  [data-mobile-os="android"] .view,
   [data-mobile-os="android"] .view:has(.archive-link-row),
-  [data-mobile-os="android"] :is(body.is-projects, body.is-collection) :is(#view-home, #view-page) {
-    min-height: 100%;
-    margin-bottom: 0;
-    padding-bottom: 0;
+  [data-mobile-os="android"] :is(body.is-projects, body.is-collection) :is(#view-home, #view-page),
+  [data-mobile-os="android"] #view-tasks {
+    min-height: calc(100% + var(--content-end, 0px));
+    margin-bottom: calc(-1 * var(--content-end, 0px));
+    padding-bottom: var(--content-end, 0px);
   }
 
-  [data-mobile-os="android"] #view-tasks {
-    padding-bottom: 0;
+  /* Das Kanban-Board der Aufgaben füllt die Seite (styles/tasks-board.css) und
+     reicht ebenso bis zur Leiste: seitlich wischen rollt die Spalten auch
+     unter der längsten Spalte, ein Tipp dort legt in der Spalte darüber an */
+  [data-mobile-os="android"] #view-tasks .board {
+    margin-bottom: calc(-1 * var(--content-end, 0px));
+    padding-bottom: calc(4px + var(--content-end, 0px));
+  }
+
+  /* Das Projekt-Board (Übersicht, Seite Projekte) endet sonst mit seiner
+     längsten Spalte. Es wird um eine Bildschirmhöhe nach unten verlängert
+     (der gleich große negative Rand hebt das im Fluss auf), und die Seite
+     schneidet es an ihrer Unterkante — an der Leiste — ab. overflow-y: clip
+     schneidet nur ab: es macht keinen eigenen Scrollbereich (Kopfzeilen
+     kleben weiter) und das Abgeschnittene verlängert die Seite nicht.
+     So rollt seitliches Wischen die Spalten bis hinunter zur Leiste, mit dem
+     Finger wie bei den Aufgaben, und ein Tipp dort legt in der Spalte darüber an. */
+  [data-mobile-os="android"] :is(#view-home, #view-page):has(.project-board) {
+    overflow-y: clip;
+  }
+
+  [data-mobile-os="android"] .project-board {
+    margin-bottom: calc(8px - 100dvh);
+    padding-bottom: calc(4px + 100dvh);
   }
 }
 

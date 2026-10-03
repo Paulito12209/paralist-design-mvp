@@ -101,7 +101,8 @@
 /* Extra Platz am Ende der Suche, weil die Knöpfe unten stehen,
    sonst verdecken sie die letzten Zeilen der Liste. */
 body.is-search .content {
-  padding-bottom: calc(var(--tab-space) + var(--search-actions-space));
+  --content-end: calc(var(--tab-space) + var(--search-actions-space)); /* --content-end: so weit reicht die Seite in Android nach unten (styles/android-archive.css) */
+  padding-bottom: var(--content-end);
 }
 
 /* Auf der Suche tritt die Navigationsleiste ganz zurück: unten stehen nur die
