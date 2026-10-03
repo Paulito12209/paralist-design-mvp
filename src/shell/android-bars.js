@@ -5,16 +5,21 @@
  * gesetzt; die Richtung erkennt src/shell/scroll-direction.js, wie es aussieht,
  * steht in styles/android.css, styles/android-tabs.css und styles/android-fab.css.
  *
- * Auf jeder Seite kommen die Leisten am Seitenende zurück, auch ohne
- * Hochwischen — so steht man unten nie ohne Navigation da. Das Seitenende ist
- * dafür so bemessen, dass der Inhalt über Plus-Knopf und Leiste endet
- * (styles/android.css, --m3-content-end; Eintragsseite eigens berechnet).
+ * Auf jeder Seite kommt am Seitenende nur die Navigationsleiste zurück, auch
+ * ohne Hochwischen — so steht man unten nie ohne Navigation da, und der
+ * Plus-Knopf rückt mit ihr hoch. Die Suchleiste bleibt dabei weg: sie kommt
+ * erst, wenn man danach wieder nach oben wischt — das ist die Bitte „ich will
+ * oben etwas sehen“. Dafür bleibt „is-bars-hidden“ stehen und „is-nav-back“
+ * kommt dazu; nur Leiste und Plus-Knopf reagieren darauf (styles/android.css,
+ * styles/android-fab.css). Das Seitenende ist so bemessen, dass der Inhalt
+ * über Plus-Knopf und Leiste endet (styles/android.css, --m3-content-end;
+ * Eintragsseite eigens berechnet).
  *
  * Kalender: das Stundenraster rollt in sich selbst, sobald die Seite oben
  * eingerastet ist. Dessen Rollen zählt hier mit: wer im Raster nach oben
  * wischt, holt Suche und Navigation zurück — der Kopf mit Titel und Datum
- * bleibt dabei stehen. Auch im Kalender (Raster wie Liste) kommen die Leisten
- * am Ende zurück (styles/android-calendar.css).
+ * bleibt dabei stehen. Auch im Kalender (Raster wie Liste) kommt die
+ * Navigationsleiste am Ende zurück (styles/android-calendar.css).
  * Pfad: src/shell/android-bars.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -43,7 +48,15 @@ export function isAndroidMobile() {
 
 /** Beide Leisten zurückholen — beim Seitenwechsel, Anlegen und Öffnen des Menüs. */
 export function showBars() {
-  dom.device.classList.remove("is-bars-hidden");
+  dom.device.classList.remove("is-bars-hidden", "is-nav-back");
+  direction.reset(scrolled());
+}
+
+/* Am Seitenende: nur die Navigationsleiste zurück, die Suchleiste bleibt weg.
+   Der Bezugspunkt wird neu gesetzt, damit schon ein kurzer Wisch nach oben
+   die Suchleiste holt. */
+function showNavOnly() {
+  dom.device.classList.add("is-nav-back");
   direction.reset(scrolled());
 }
 
@@ -89,12 +102,16 @@ function onScroll(event) {
   }
   const hidden = dom.device.classList.contains("is-bars-hidden");
   if (atPageEnd()) {
-    if (hidden) showBars();
+    if (hidden && !dom.device.classList.contains("is-nav-back")) showNavOnly();
     return;
   }
   const turn = direction.step(scrolled(), hidden);
-  if (turn === "away") dom.device.classList.add("is-bars-hidden");
-  else if (turn === "back") dom.device.classList.remove("is-bars-hidden");
+  if (turn === "away") {
+    dom.device.classList.add("is-bars-hidden");
+    dom.device.classList.remove("is-nav-back");
+  } else if (turn === "back") {
+    dom.device.classList.remove("is-bars-hidden", "is-nav-back");
+  }
 }
 
 /** Den Zuhörer am Inhalt anmelden. */
