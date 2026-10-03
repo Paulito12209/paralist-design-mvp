@@ -55,6 +55,7 @@ export const platforms = [
           { area: "Übersicht", text: "Sichtbare Abstände: Suchleiste → Überschrift 32, Überschrift → Kacheln 24, Kacheln → „Projekte“ 32, „Projekte“ → Reiter 16 Pixel." },
           { area: "Kacheln", text: "Von der zweiten Kartenseite schauen rechts immer 24 Pixel hervor, die Linie darunter entfällt." },
           { area: "Projekte", text: "„Projekte“ samt Reitern, Werkzeugzeile und Einträgen liegt in einem Container über die volle Breite, in der Farbe der Navigationsleiste; die Einträge stehen als Kachelgruppe wie die Einstellungen, rechts neben dem Namen ein runder Pfeil-Knopf." },
+          { area: "Farben (hell)", text: "Kacheln, Projekte-Container und Navigationsleiste haben im Hellen dieselbe, deutlich dunklere Fläche als der Seitengrund; unter „Projekte“ steht bei ausgeblendeten Reitern eine leise Trennlinie." },
           { area: "Reiter ausblenden", text: "Im Blatt „Ansicht“ lassen sich die Reiter mit „Reiter anzeigen“ ausschalten; dann bleibt über jeder Liste nur die Werkzeugzeile (nicht im Kalender und bei Medien)." },
         ],
       },
