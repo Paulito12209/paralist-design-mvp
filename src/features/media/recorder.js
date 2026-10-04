@@ -117,7 +117,10 @@ function newSpeech() {
       /* Ohne Aufnahme ist die Mitschrift alles — geht sie nicht, ist das der Fehler */
       if (mode === "text" && me.problem() && state !== "error") {
         fail(speechBlocked.includes(me.problem()) ? "blocked" : "speech");
+        return;
       }
+      /* Nur Mitschrift: „Speichern“ wird frei, sobald das erste Wort da ist, nicht erst nach dem Stoppen */
+      if (mode === "text" && (state === "recording" || state === "paused")) setState(state);
     },
     () => state === "recording"
   );
