@@ -2,7 +2,8 @@
  * Bildschirmtastatur. Handy-Browser schieben die Seite nicht hoch, sondern
  * verkleinern nur den sichtbaren Bereich. Ohne diese Zeilen läge die untere
  * Leiste beim Tippen hinter der Tastatur. Außerdem wird gemeldet, wann die
- * Tastatur auf- und zugeht (events.keyboardOpened / keyboardClosed, ui.keyboardOpen).
+ * Tastatur auf- und zugeht (events.keyboardOpened / keyboardClosed, ui.keyboardOpen);
+ * solange sie offen ist, trägt <body> die Klasse „is-keyboard-open“ für Stile.
  * Pfad: src/shell/keyboard-inset.js
  *
  * ANPASSBARE WERTE
@@ -41,6 +42,7 @@ export function initKeyboardInset() {
     if (open) document.documentElement.style.setProperty("--keyboard-height", `${Math.round(covered)}px`);
     if (open === ui.keyboardOpen) return;
     ui.keyboardOpen = open;
+    document.body.classList.toggle("is-keyboard-open", open);
     /* Wird die Tastatur weggewischt statt mit einem Tipp geschlossen, bleibt
        das Feld oft noch fokussiert: events.keyboardClosed meldet trotzdem,
        dass sie weg ist, damit src/shell/search-bar.js und src/shell/writing.js
