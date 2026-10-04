@@ -9,11 +9,13 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * speechLang -> Sprache, auf die die Mitschrift eingestellt ist
+ * heardMs    -> wie lange nach einem erkannten Wort die Welle noch ausschlägt (nur ohne Mikrofon-Pegel)
  *
  * Wie der Text aussieht, steht in styles/recorder.css (.recorder-text).
  */
 
 const speechLang = "de-DE";
+const heardMs = 700;
 
 /* Fehler, nach denen einfach weitergehört wird; alle anderen beenden die Mitschrift. */
 const harmlessErrors = ["no-speech", "aborted"];
@@ -39,15 +41,22 @@ export function createSpeech(onChange, stillRecording) {
   let recognition = null;
   let final = "";
   let pending = "";
-  /* Warum die Mitschrift nicht läuft: Fehlername des Browsers, "missing" ohne Spracherkennung, sonst "" */
+  /* Warum die Mitschrift nicht läuft: Fehlername des Browsers, "missing" ohne
+     Spracherkennung, "starved" wenn sie keinen Ton bekommt, sonst "" */
   let problem = Api ? "" : "missing";
+  /* Wann die Erkennung zuletzt etwas gehört hat (performance.now), 0 = noch nie */
+  let lastHeard = 0;
 
   function listen() {
     const current = new Api();
     current.lang = speechLang;
     current.continuous = true;
     current.interimResults = true;
+    current.onsoundstart = () => {
+      lastHeard = performance.now();
+    };
     current.onresult = (event) => {
+      lastHeard = performance.now();
       let open = "";
       for (let index = event.resultIndex; index < event.results.length; index += 1) {
         const text = event.results[index][0].transcript.trim();
@@ -97,6 +106,21 @@ export function createSpeech(onChange, stillRecording) {
     /** Warum gerade nicht mitgeschrieben wird ("" = alles gut). */
     problem() {
       return problem;
+    },
+    /** Hat die Erkennung bis jetzt irgendetwas gehört? */
+    heardAnything() {
+      return lastHeard > 0;
+    },
+    /** Hat sie gerade eben etwas gehört? Treibt die Welle, wenn kein Mikrofon-Pegel da ist. */
+    heard() {
+      return lastHeard > 0 && performance.now() - lastHeard < heardMs;
+    },
+    /** Die Aufnahme hat das Mikrofon für sich allein: die Mitschrift bekommt keinen Ton und hört auf. */
+    starve() {
+      if (problem) return;
+      problem = "starved";
+      this.stop();
+      onChange(null);
     },
     /** Zuhören beenden; was noch unsicher war, zählt jetzt als gesagt. */
     stop() {

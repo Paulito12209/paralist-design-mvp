@@ -28,6 +28,8 @@ export const storageKeys = {
   /* Reiter über den Listen je Seite („…-home“, „…-projects“, „…-tasks“, „…-pages“): „on“ oder „off“ — nur Android (Experiment) */
   tabsVisible: "paralist-tabs-visible",
   newViewPlace: "paralist-new-view-place",
+  /* Audio-Aufnahme: "audio" (Aufnahme + Mitschrift) oder "text" (nur Mitschrift) — src/features/media/recorder.js */
+  recorderMode: "paralist-recorder-mode",
   /* Gewählte Fassung je Gerät, {mobile, desk} — index.html liest denselben Namen. */
   versions: "paralist-versions",
   milestones: "paralist-milestones",
