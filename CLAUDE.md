@@ -235,11 +235,40 @@ Größere Aufgaben gehören in eine eigene Arbeits-Sitzung.
 Kein Build-Schritt, keine Abhängigkeiten: die App lädt als ES-Module direkt im
 Browser.
 
+### Aufgaben an Threads delegieren (Notiz für mich)
+
+Für jede Idee ein eigener Thread, am Ende sammelt der Git Commit Manager alles
+ein. Ablauf:
+
+```
+Idee     → neuer Cloud-Thread: Bereich, Problem, Ziel, Geltungsbereich (+ Screenshot)
+Fertig?  → Zusammenfassung ansehen → „passt“  (erst dann gibt es einen PR)
+Sammeln  → Git Commit Manager: „merge alle offenen“  (beliebig oft)
+Danach   → App-Adresse öffnen, „Neue Version verfügbar“ → aktualisieren, testen
+```
+
+- **Auftrag in einem Satz:** „In [Bereich] stört mich [Problem]. Gewünscht ist
+  [Ziel]. Gilt für [alle Fassungen / nur Experiment].“ Fehlt der
+  Geltungsbereich, fragt der Thread nach (Abschnitt 1, Punkt 7).
+- **„merge alle offenen“ nimmt nur Threads mit PR.** Threads, die noch
+  arbeiten, bleiben liegen und holen sich vor ihrem Review den neuen Stand
+  (Abschnitt 2). Sind sie fertig, einfach noch einmal „merge alle offenen“.
+- **Ein Thread, ein Thema;** lieber drei kleine als ein großer. Nicht zwei
+  Threads gleichzeitig an derselben Stelle der App — eine Nachbesserung kommt in
+  **denselben** Thread, sobald dessen PR gemergt ist (er beginnt dann selbst
+  einen neuen Branch).
+- **Ausliefern passiert von selbst:** Das Hosting übernimmt `main` automatisch.
+  „Neue Version verfügbar“ zeigt die App, sobald der Git Commit Manager den
+  Versionsstempel gesetzt hat (Abschnitt 6, Punkt 5). Lokal braucht es nur
+  `git pull origin main`, wenn ich den Stand auf dem Mac sehen will.
+
 ### Sitzungen anlegen und Worktrees aufräumen (Notiz für mich)
 
-Neue Arbeits-Sitzungen in der **Cloud** starten oder lokal mit Haken
-**„Worktree“**. Nur so hat jeder Thread seinen eigenen Ordner und Branch; zwei
-Threads im selben Ordner schreiben sonst in denselben PR.
+Neue Arbeits-Sitzungen am besten in der **Cloud** starten: Auf dem Mac entsteht
+dann kein Ordner, nichts wird gesperrt, nichts muss aufgeräumt werden. Lokal
+nur mit Haken **„Worktree“** — nie direkt im Hauptordner. Nur so hat jeder
+Thread seinen eigenen Ordner und Branch; zwei Threads im selben Ordner
+schreiben sonst in denselben PR, und der Hauptordner bleibt auf `main`.
 
 Lokale Worktrees liegen unter `.claude/worktrees/` und bleiben nach dem Mergen
 stehen. Solange die Sitzung in der Claude-App offen ist, ist ihr Worktree
