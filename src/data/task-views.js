@@ -4,8 +4,9 @@
  * Board), Sortierung, Gruppierung, Filter („Verknüpft mit“, Status, Dringlichkeit) und ob Erledigte zu sehen sind.
  * Die Ansicht „Alle“ ist fest (sie steht vorn, solange man neue Ansichten nicht
  * davor einreihen lässt — Einstellungen › Tabs, src/data/view-place.js): sie lässt sich nicht löschen, nicht
- * umbenennen und nicht nach Verknüpfungen filtern — Layout, Sortierung, Gruppierung
- * und der Filter nach Status und Dringlichkeit darf auch sie sich merken. Eine neue Ansicht beginnt als Kopie von „Alle“.
+ * umbenennen und nicht filtern (allFilterOff, src/data/config-tasks.js) — Layout, Sortierung,
+ * Gruppierung und „Erledigte zeigen“ darf auch sie sich merken. Wer filtern will,
+ * legt eine eigene Ansicht an; sie beginnt als Kopie von „Alle“.
  * Pfad: src/data/task-views.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -19,8 +20,7 @@
 
 import { emit, events } from "../core/bus.js";
 import { nextId, sameId } from "../core/ids.js";
-import { linkFilterDefaults } from "./config.js";
-import { taskDefaults } from "./config-tasks.js";
+import { allFilterOff, taskDefaults } from "./config-tasks.js";
 import { saveState, state, ui } from "./state.js";
 import { setTabIconsOn } from "./tab-icons.js";
 import { fixedViewOf, newViewIndex } from "./view-place.js";
@@ -57,11 +57,11 @@ export function selectTaskView(id) {
   commit();
 }
 
-/** Einstellungen der gewählten Ansicht ändern; „Alle“ filtert nie nach Verknüpfungen. */
+/** Einstellungen der gewählten Ansicht ändern; „Alle“ filtert nie. */
 export function updateTaskView(changes) {
   const view = activeTaskView();
   Object.assign(view, changes);
-  if (view.fixed) Object.assign(view, linkFilterDefaults);
+  if (view.fixed) Object.assign(view, allFilterOff);
   commit();
 }
 
