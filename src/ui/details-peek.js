@@ -1,9 +1,8 @@
 /*
  * Die Karte „Details“ schaut beim Öffnen einer Seite mit ihrem Kopf gerade
  * über der Navigation hervor; Kennzahlen und Abschnitte erscheinen erst, wenn
- * sie beim Hochscrollen darüber auftauchen. Die Messungen dafür teilen sich
- * die Seite eines Eintrags (src/features/entry/entry-fold.js) und die eines
- * Arbeitsbereichs (src/features/overview/workspace-details.js).
+ * sie beim Hochscrollen darüber auftauchen. Die Messungen dafür nutzt
+ * die Seite eines Eintrags (src/features/entry/entry-fold.js).
  *
  * Die Bildschirmtastatur verschiebt nichts davon: gemessen wird immer gegen
  * die Lage der Navigation bei geschlossener Tastatur — die Karte bleibt beim

@@ -18,9 +18,10 @@
  * regelt entry-fold.js. Ein Tipp auf „Details“ oder das Symbol rechts klappt
  * die Karte über den Text hoch, ohne die Seite zu bewegen (entry-lift.js);
  * ebenso ein Tipp irgendwo sonst in den Kopf, außer auf das Ketten-Symbol.
- * In der Android-Fassung ist die Karte ausgeblendet (styles/android-entry.css):
- * dieselben Angaben öffnet dort der Info-Knopf neben „Kopieren“
- * (entry-tools.js) als Blatt von unten (entry-details-sheet.js).
+ * Die Karte ist in allen Fassungen ausgeblendet (styles/details-sheet.css):
+ * dieselben Angaben öffnet der Info-Knopf neben „Kopieren“
+ * (entry-tools.js) als Blatt von unten (src/ui/details-sheet.js); am Desktop
+ * mit rechter Spalte stehen sie dort.
  * Pfad: src/features/entry/entry-details.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -38,9 +39,9 @@ import { entryFacts } from "../../data/entry-facts.js";
 import { findEntry } from "../../data/queries.js";
 import { ui } from "../../data/state.js";
 import { detailsMarkup, fillDetails, handleCardClick } from "../../ui/details-card.js";
+import { initDetailsSheet, openDetailsSheet, refreshDetailsSheet, registerDetailsSource } from "../../ui/details-sheet.js";
 import { openLinkSheet } from "../../ui/link-sheet.js";
-import { isMobileOs } from "../../ui/platform.js";
-import { initDetailsSheet, openDetailsSheet, refreshDetailsSheet } from "./entry-details-sheet.js";
+import { isRailShown } from "../../ui/desk-mode.js";
 import { initEntryLift, refreshLift, toggleLift } from "./entry-lift.js";
 
 const detailsLabel = "Details";
@@ -70,7 +71,7 @@ export function renderEntryDetails(entry) {
   if (!card || !entry) return;
   fillDetails(statsBox, listBox, entryFacts(entry));
   refreshLift();
-  refreshDetailsSheet(entry);
+  refreshDetailsSheet("entry");
 }
 
 /** Karte ans Ende des Reiters „Inhalt“ hängen und ihre Tipps anmelden. */
@@ -91,9 +92,10 @@ export function initEntryDetails() {
   dom.entryPanelNotes.append(card);
   initEntryLift(card);
   /* Das Symbol im Kopf und der Info-Knopf neben „Kopieren“ zeigen auch beim Blatt, ob es offen ist */
+  registerDetailsSource("entry", { subject: () => findEntry(ui.currentEntryId), facts: entryFacts });
   initDetailsSheet((open) => {
     card.querySelector(".details-toggle").setAttribute("aria-expanded", String(open));
-    dom.entryTools.querySelector("[data-entry-info]")?.setAttribute("aria-expanded", String(open));
+    document.querySelectorAll("[data-entry-info]").forEach((btn) => btn.setAttribute("aria-expanded", String(open)));
   });
 
   card.addEventListener("click", (event) => {
@@ -104,9 +106,9 @@ export function initEntryDetails() {
       return;
     }
     if (event.target.closest(".details-head")) {
-      /* Android zeigt die Karte nicht; falls doch ein Tipp ankommt, wie der Info-Knopf */
-      if (isMobileOs("android")) {
-        openDetailsSheet(entry);
+      /* Die Karte ist ausgeblendet (styles/details-sheet.css); falls doch ein Tipp ankommt, wie der Info-Knopf */
+      if (!isRailShown()) {
+        openDetailsSheet("entry");
         return;
       }
       /* Frisch rechnen: die Zeit auf der Seite ist seit dem Öffnen gewachsen */

@@ -6,21 +6,19 @@
  * welche Gruppen unter der zweiten Pille stehen und was das Plus tut —
  * im Projekt einen Eintrag darin anlegen, sonst neu anlegen oder verknüpfen.
  * Unter „Inhalt“ steht rechts neben „Kopieren“ der Info-Knopf: er öffnet die
- * Angaben als Blatt von unten (entry-details-sheet.js). Zu sehen ist er nur
- * in der Android-Fassung, die dafür keine Karte „Details“ zeigt — das
- * entscheidet styles/android-entry.css.
+ * Angaben als Blatt von unten (src/ui/details-sheet.js). Er steht in
+ * allen Fassungen, nur am Desktop mit rechter Spalte nicht (styles/details-sheet.css).
  * Pfad: src/features/entry/entry-tools.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * infoLabel -> Vorlesetext und Hinweis des Info-Knopfs
+ * Keine anpassbaren Werte: der Info-Knopf (Name, Symbol) steht in src/ui/details-sheet.js.
  *
  * Aussehen: siehe src/ui/page-tools.js und styles/entry.css (Klasse .page-tool).
  */
 
 import { emit, events } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
-import { icon } from "../../core/html.js";
 import { groupedLinks } from "../../data/links.js";
 import { findEntry, groupedEntriesOf, isContainer } from "../../data/queries.js";
 import { entryRef } from "../../data/refs.js";
@@ -28,9 +26,7 @@ import { ui } from "../../data/state.js";
 import { openCtxMenu } from "../../ui/ctx-menu.js";
 import { activeFilter, openFilterMenu, pageToolsMarkup, registerCopySource } from "../../ui/page-tools.js";
 import { openLinkSheet } from "../../ui/link-sheet.js";
-import { isDetailsSheetOpen, openDetailsSheet } from "./entry-details-sheet.js";
-
-const infoLabel = "Details";
+import { infoButtonMarkup, openDetailsSheet } from "../../ui/details-sheet.js";
 
 /* Zeichnet die Liste neu, wenn der Filter wechselt; kommt aus entry.js. */
 let rerender = () => {};
@@ -53,10 +49,7 @@ export function linkFilterFor(entry) {
 /** Die Knöpfe passend zur gewählten Pille zeichnen. */
 export function renderEntryTools(entry) {
   const copyLabel = entry.type === "zeichnung" ? "Bild" : "Seite";
-  const info =
-    ui.entryPill === "notes"
-      ? `<button class="page-tool entry-info-btn" type="button" data-entry-info aria-label="${infoLabel}" title="${infoLabel}" aria-expanded="${isDetailsSheetOpen()}">${icon("info")}</button>`
-      : "";
+  const info = ui.entryPill === "notes" ? infoButtonMarkup() : "";
   dom.entryTools.innerHTML = pageToolsMarkup(ui.entryPill, filterKey(entry), linkGroups(entry), copyLabel) + info;
 }
 
@@ -92,7 +85,7 @@ export function initEntryTools(options) {
       return;
     }
     if (event.target.closest("[data-entry-info]")) {
-      openDetailsSheet(entry);
+      openDetailsSheet("entry");
       return;
     }
     const add = event.target.closest("[data-link-add]");

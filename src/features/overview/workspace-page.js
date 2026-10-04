@@ -1,19 +1,21 @@
 /*
  * Die Seite eines Arbeitsbereichs: zwei Pillen oben — „Inhalt“ mit dem
  * Text zum Arbeitsbereich als Bausteine wie auf einer Eintragsseite („/“-Menü,
- * Listen, Checkboxen, Karten; src/ui/block-editor.js) und „Verknüpfte Einträge“ mit allem, was darin
+ * Listen, Checkboxen, Karten; src/ui/block-editor.js) und „Verknüpfungen“ mit allem, was darin
  * liegt, nach Typ gruppiert und auf-/zuklappbar. Waagerecht wischen wechselt
  * zwischen den Pillen (src/ui/pill-swipe.js). Dieselben zwei Pillen zeigt
  * auch die Seite eines einzelnen Eintrags (src/features/entry/entry.js) —
  * und wie dort startet ein Tipp unter den Text das Schreiben, bei offener
  * Tastatur schließt ein Tipp nur sie (src/ui/write-tap.js).
  *
- * Unter dem Text steht wie auf einer Eintragsseite die Karte „Details“
- * (workspace-details.js) mit Einträgen, Erinnerung und letzter Änderung.
+ * Die Angaben (Einträge, Erinnerung, letzte Änderung) stehen wie auf einer
+ * Eintragsseite nicht unter dem Text: der Info-Knopf rechts neben „Kopieren“
+ * öffnet sie als Blatt von unten (src/ui/details-sheet.js). Am Desktop mit
+ * rechter Spalte stehen sie dort (workspace-rail.js).
  *
  * Rechts neben den Pillen stehen dieselben Knöpfe wie auf einer Eintragsseite
  * (src/ui/page-tools.js): Kopieren unter „Inhalt“ — Name als Überschrift und
- * Text —, Filter und Plus unter „Verknüpfte Einträge“.
+ * Text —, Filter und Plus unter „Verknüpfungen“.
  * Pfad: src/features/overview/workspace-page.js
  *
  * Keine anpassbaren visuellen Werte: Pillen und Gruppen stehen in
@@ -26,8 +28,10 @@
 import { emit, events } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { entriesOf, findWorkspace, groupedEntriesOf, workspaceLabel } from "../../data/queries.js";
+import { workspaceFacts } from "../../data/workspace-facts.js";
 import { markEdited } from "../../data/mutations.js";
 import { scheduleSave, ui } from "../../data/state.js";
+import { closeDetailsSheet, infoButtonMarkup, initDetailsSheet, openDetailsSheet, refreshDetailsSheet, registerDetailsSource } from "../../ui/details-sheet.js";
 import { groupedListMarkup } from "../../ui/groups.js";
 import {
   activeFilter,
@@ -39,13 +43,12 @@ import {
 import { initPillSwipe } from "../../ui/pill-swipe.js";
 import { addWritePage } from "../../ui/write-tap.js";
 import { createBlockEditor } from "../../ui/block-editor.js";
-import { initWorkspaceDetails, showWorkspaceDetails } from "./workspace-details.js";
 
 /* Die beiden Pillen; die zweite trägt die Anzahl der Einträge. Kein Icon:
    es wird nie mehr als diese zwei geben, das Wort allein reicht. */
 const pills = [
   { id: "notes", label: "Inhalt" },
-  { id: "links", label: "Verknüpfte Einträge" },
+  { id: "links", label: "Verknüpfungen" },
 ];
 
 /* Das Wort steht in einem eigenen span: wird es eng, kürzt nur das Wort mit
@@ -105,7 +108,6 @@ function notesPanel(workspace) {
     panel.append(root);
     const editor = createBlockEditor(root, { onChange: saveNotes, emptyHint: "Schreib etwas zu diesem Arbeitsbereich …" });
     notes = { panel, root, editor, id: null, text: null };
-    initWorkspaceDetails({ onEntries: () => selectPill("links"), textRoot: root });
   }
   const text = workspace.body || "";
   if (notes.id !== workspace.id || notes.text !== text) {
@@ -124,13 +126,13 @@ export function renderWorkspacePage(page) {
   const groups = groupedEntriesOf(page.parent);
   const type = activeFilter(filterKey(page), groups);
   const links = ui.pagePill === "links";
-  const tools = pageToolsMarkup(ui.pagePill, filterKey(page), groups);
+  /* Der Info-Knopf neben „Kopieren“ (am Desktop mit rechter Spalte ausgeblendet, styles/details-sheet.css) */
+  const tools = pageToolsMarkup(ui.pagePill, filterKey(page), groups) + (links ? "" : infoButtonMarkup());
   dom.pageBody.innerHTML = pillsRowMarkup(pillsMarkup(ui.pagePill, count), tools) + (links ? groupedListMarkup(page.parent, type) : "");
   if (links) return;
-  /* Unter dem Text die Karte „Details“ (workspace-details.js) */
-  const panel = notesPanel(workspace);
-  dom.pageBody.append(panel);
-  showWorkspaceDetails(workspace, panel);
+  dom.pageBody.append(notesPanel(workspace));
+  /* Ein offenes Blatt „Details“ zeigt nach einer Änderung die frischen Angaben */
+  refreshDetailsSheet("page");
 }
 
 /** Tippt jemand gerade im Inhalt? Dann darf die Seite nicht neu gezeichnet werden. */
@@ -152,6 +154,20 @@ function selectPill(id) {
 
 /** Pillen und Inhalt anmelden. */
 export function initWorkspacePage() {
+  /* Das Blatt „Details“; „Einträge“ darin wechselt die Pille */
+  registerDetailsSource("page", {
+    subject: openWorkspace,
+    facts: workspaceFacts,
+    actions: () => ({
+      entries: () => {
+        closeDetailsSheet();
+        selectPill("links");
+      },
+    }),
+  });
+  initDetailsSheet((open) => {
+    document.querySelectorAll("[data-entry-info]").forEach((btn) => btn.setAttribute("aria-expanded", String(open)));
+  });
 
   /* Kopiert wird der Name als Überschrift und der Text darunter. */
   registerCopySource("page", () => {
@@ -167,6 +183,10 @@ export function initWorkspacePage() {
     }
     const page = ui.currentPage;
     if (!isWorkspaceOpen()) return;
+    if (event.target.closest("[data-entry-info]")) {
+      openDetailsSheet("page");
+      return;
+    }
     const filterBtn = event.target.closest("[data-link-filter]");
     if (filterBtn) {
       openFilterMenu(filterBtn, filterKey(page), groupedEntriesOf(page.parent), () => renderWorkspacePage(ui.currentPage));
