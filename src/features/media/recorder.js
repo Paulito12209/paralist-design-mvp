@@ -11,9 +11,13 @@
  *
  * Zwei Arten, das Mikrofon zu nutzen (gemerkt im Browser-Speicher):
  * „audio“ nimmt auf und schreibt mit, „text“ schreibt nur mit und speichert
- * den Text als Notiz. Android gibt das Mikrofon nur an eine App auf einmal:
- * läuft die Aufnahme, bekommt die Spracherkennung keinen Ton. Das merkt die
- * Aufnahme selbst (Ton da, aber nichts gehört) und bietet „Nur Mitschrift“ an.
+ * den Text als Notiz. Android gibt das Mikrofon nur an eine App auf einmal;
+ * das Mikrofon wird deshalb so geöffnet, dass die Spracherkennung mithören
+ * darf (recorder-mic.js). Geht das auf einem Gerät trotzdem nicht, merkt die
+ * Aufnahme das selbst (Ton da, aber nichts gehört) und wechselt von sich aus
+ * auf „Nur Mitschrift“ — mit einem Hinweis, warum. Hat man die Art im
+ * ⚙-Blatt einmal selbst festgelegt, bleibt es bei der Wahl und es erscheint
+ * nur der Knopf „Nur Mitschrift“.
  *
  * Fragt der Browser nach dem Mikrofon, steht das unter der Zeit; ist es
  * gesperrt, öffnet sich einmal das Blatt mit den Schritten zum Erlauben.
@@ -51,10 +55,10 @@ import { armDiscardGuard, cancelRecorder, initDiscardGuard } from "./recorder-di
 import { defaultName, recordingName, saveRecording } from "./recorder-save.js";
 import { beginSession, dropSession, pauseSession, resumeSession, sessionLengthMs, stopSession } from "./recorder-session.js";
 import { micPermission, openRecorderSetup } from "./recorder-setup.js";
-import { createSpeech, speechAvailable } from "./recorder-speech.js";
+import { conflictProblems, createSpeech, speechAvailable } from "./recorder-speech.js";
 import { rec, setState, showProblems } from "./recorder-state.js";
 import { convertTranscript, copyTranscript } from "./recorder-text.js";
-import { buildRecorder, createWave, showHint, showMicError, showPlaying, showText, showTime } from "./recorder-view.js";
+import { buildRecorder, clearNotice, createWave, showHint, showMicError, showNotice, showPlaying, showText, showTime } from "./recorder-view.js";
 
 /* Fehler der Spracherkennung, die heißen: nicht erlaubt (alles andere: klappt gerade nicht) */
 const speechBlocked = ["not-allowed", "service-not-allowed"];
@@ -72,11 +76,20 @@ function newSpeech() {
     (final, pending) => {
       /* Eine überholte Mitschrift meldet sich nicht mehr */
       if (rec.speech !== me) return;
+      /* Aufnahme und Mitschrift können sich das Mikrofon nicht teilen: ohne eigene Wahl
+         wechselt die App selbst auf „Nur Mitschrift“ und sagt, warum */
+      if (rec.mode === "audio" && !rec.modeChosen && conflictProblems.includes(me.problem()) && rec.state !== "error") {
+        setMode("text");
+        showNotice(rec.layer, "autoText");
+        return;
+      }
       showText(rec.layer, final, pending, me.problem());
       showProblems();
-      /* Ohne Aufnahme ist die Mitschrift alles — geht sie nicht, ist das der Fehler */
+      /* Ohne Aufnahme ist die Mitschrift alles — geht sie nicht mehr, ist das der Fehler.
+         Steht schon Text da, endet sie stattdessen wie nach „Stoppen“, damit er sich speichern lässt. */
       if (rec.mode === "text" && me.problem() && rec.state !== "error") {
-        fail(speechBlocked.includes(me.problem()) ? "blocked" : "speech");
+        if (me.text()) stopSession();
+        else fail(speechBlocked.includes(me.problem()) ? "blocked" : "speech");
         return;
       }
       /* Nur Mitschrift: „Speichern“ wird frei, sobald das erste Wort da ist, nicht erst nach dem Stoppen */
@@ -138,12 +151,14 @@ async function start() {
 
 /* ---------- Modus, Öffnen, Schließen ---------- */
 
-/* Wofür das Mikrofon arbeitet; die Wahl bleibt gemerkt, die Aufnahme beginnt neu. */
+/* Wofür das Mikrofon arbeitet; die Wahl bleibt gemerkt (ab jetzt gilt sie als festgelegt), die Aufnahme beginnt neu. */
 function setMode(next) {
   if (next === rec.mode || (next === "text" && !speechAvailable())) return;
   rec.mode = next;
+  rec.modeChosen = true;
   writeJson(storageKeys.recorderMode, rec.mode);
   if (rec.layer.hidden) return;
+  clearNotice(rec.layer);
   dropSession();
   rec.speech.stop();
   start();
@@ -154,6 +169,7 @@ function hide() {
   if (!rec.layer || rec.layer.hidden) return;
   startRun += 1;
   rec.layer.hidden = true;
+  clearNotice(rec.layer);
   dropSession();
   rec.speech.stop();
   rec.player.stop();

@@ -56,7 +56,7 @@ const problemTexts = {
   missing: "Dieser Browser kann nicht mitschreiben",
   "not-allowed": "Nicht erlaubt",
   "service-not-allowed": "Vom Gerät gesperrt",
-  "audio-capture": "Mikrofon ist belegt",
+  "audio-capture": "Kam nicht ans Mikrofon",
   network: "Keine Verbindung zur Spracherkennung",
   "language-not-supported": "Deutsch ist hier nicht verfügbar",
   starved: "Bekommt keinen Ton",
@@ -87,12 +87,16 @@ const steps = {
 /* Zusätzlicher Hinweis, wenn genau dieser Fehler auftritt */
 const problemHints = {
   starved: "Dein Gerät gibt das Mikrofon nur an eine App auf einmal — gerade an die Aufnahme. Mit „Nur Mitschrift“ bekommt die Spracherkennung das Mikrofon; dafür entsteht keine Audiodatei.",
-  "audio-capture": "Manche Android-Geräte geben das Mikrofon nur an Aufnahme oder Mitschrift. Dann bleibt der Text leer, die Aufnahme läuft trotzdem.",
+  "audio-capture": "Die Spracherkennung kam nicht ans Mikrofon — meist hält es gerade die Aufnahme. Mit „Nur Mitschrift“ bekommt die Erkennung das Mikrofon; dafür entsteht keine Audiodatei.",
   "service-not-allowed": "Das Gerät lässt die Spracherkennung nicht zu. Die Schritte unten zeigen, wo man sie einschaltet.",
 };
 
-/* Welches Gerät das ist — nicht die Fassung aus den Einstellungen, sondern das echte Telefon. */
-function deviceKind() {
+/**
+ * Welches Gerät das ist — nicht die Fassung aus den Einstellungen, sondern das
+ * echte Telefon: "ios", "android" oder "desktop". Danach richten sich die
+ * Schritte hier und die Art, wie recorder-speech.js zuhört.
+ */
+export function deviceKind() {
   const agent = navigator.userAgent;
   /* iPads melden sich als Mac, haben aber einen Touchscreen */
   if (/iPhone|iPad|iPod/.test(agent) || (/Macintosh/.test(agent) && navigator.maxTouchPoints > 1)) return "ios";

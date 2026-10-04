@@ -19,6 +19,8 @@
  * textStateTexts -> dasselbe im Modus „Nur Mitschrift“
  * hints          -> Hinweis unter der Zeit, solange der Browser nach dem Mikrofon fragt
  * micNotes       -> Satz in der Mitte, wenn das Mikrofon nicht aufging, je Grund
+ * notices        -> Satz an derselben Stelle, der stehen bleibt: warum die App selbst
+ *                   auf „Nur Mitschrift“ gewechselt hat
  * textProblems   -> Satz statt der Mitschrift, wenn sie gerade nicht geht, je Grund
  * labels         -> Beschriftung der Knöpfe und Platzhalter
  *
@@ -27,6 +29,7 @@
 
 import { escapeHtml, icon } from "../../core/html.js";
 import { pad2 } from "../../core/dates.js";
+import { conflictProblems } from "./recorder-speech.js";
 
 const barCount = 40;
 const minLevel = 0.06;
@@ -60,9 +63,16 @@ const micNotes = {
   speech: "Die Mitschrift geht gerade nicht. Oben rechts auf ⚙ tippen: dort steht der Grund.",
 };
 
-/* Warum die Mitschrift gerade nicht geht (Gründe aus recorder-speech.js); "starved" bekommt dazu den Knopf „Nur Mitschrift“ */
+/* Bleibt stehen, bis die Aufnahme geschlossen oder die Art gewechselt wird */
+const notices = {
+  autoText: "Dein Gerät gibt das Mikrofon nur an eine App. Deshalb läuft hier die Mitschrift ohne Audiodatei — ändern lässt sich das oben rechts unter ⚙.",
+};
+
+/* Warum die Mitschrift gerade nicht geht (Gründe aus recorder-speech.js); bei einem Mikrofon-Konflikt steht dazu der Knopf „Nur Mitschrift“ */
+const conflictText = "Dein Gerät gibt das Mikrofon nur an die Aufnahme, die Mitschrift bekommt keinen Ton. Text gibt es hier nur ohne Aufnahme:";
 const textProblems = {
-  starved: "Dein Gerät gibt das Mikrofon nur an die Aufnahme, die Mitschrift bekommt keinen Ton. Text gibt es hier nur ohne Aufnahme:",
+  starved: conflictText,
+  "audio-capture": conflictText,
   failed: "Mitschreiben geht hier gerade nicht — die Aufnahme läuft trotzdem. Oben rechts auf ⚙ tippen, um es einzurichten.",
 };
 
@@ -152,7 +162,8 @@ export function showState(layer, state, { mode, canSave, canPlay }) {
   layer.dataset.state = state;
   layer.dataset.mode = mode;
   layer.querySelector(".recorder-state-text").textContent = (mode === "text" ? textStateTexts : stateTexts)[state];
-  layer.querySelector(".recorder-note").hidden = state !== "error";
+  const note = layer.querySelector(".recorder-note");
+  note.hidden = state !== "error" && !note.dataset.notice;
   const side = layer.querySelector(".recorder-side");
   setButton(side, sideButton[state]);
   /* Solange das Mikrofon noch aufgeht, gibt es nichts zu stoppen */
@@ -168,9 +179,27 @@ export function showHint(layer, key) {
   layer.querySelector(".recorder-state-text").textContent = hints[key];
 }
 
-/** Der Satz in der Mitte, wenn das Mikrofon nicht aufging — mit dem Grund aus recorder-mic.js. */
+/** Der Satz in der Mitte, wenn das Mikrofon nicht aufging — mit dem Grund aus recorder-mic.js. Ein Hinweis davor ist damit vorbei. */
 export function showMicError(layer, reason) {
-  layer.querySelector(".recorder-note").textContent = micNotes[reason] || micNotes.failed;
+  const note = layer.querySelector(".recorder-note");
+  delete note.dataset.notice;
+  note.textContent = micNotes[reason] || micNotes.failed;
+}
+
+/** Ein Hinweis an derselben Stelle, der über die Zustände hinweg stehen bleibt (Schlüssel aus `notices`). */
+export function showNotice(layer, key) {
+  const note = layer.querySelector(".recorder-note");
+  note.dataset.notice = key;
+  note.textContent = notices[key];
+  note.hidden = false;
+}
+
+/** Den Hinweis wieder wegnehmen; ein Fehler-Satz bleibt sichtbar. */
+export function clearNotice(layer) {
+  const note = layer.querySelector(".recorder-note");
+  if (!note.dataset.notice) return;
+  delete note.dataset.notice;
+  note.hidden = layer.dataset.state !== "error";
 }
 
 /** Beim Anhören: das kleine Feld wird zu Pause und zurück. */
@@ -190,8 +219,8 @@ export function showTime(layer, ms) {
 
 /**
  * Die Mitschrift zeigen. `null` heißt: sie geht gerade nicht — `problem` sagt
- * warum (recorder-speech.js); bekommt sie keinen Ton („starved“), steht
- * dabei der Knopf „Nur Mitschrift“.
+ * warum (recorder-speech.js); können sich Aufnahme und Mitschrift das
+ * Mikrofon nicht teilen (`conflictProblems`), steht dabei der Knopf „Nur Mitschrift“.
  * Was noch nicht sicher erkannt ist (`pending`), steht blasser dahinter.
  */
 export function showText(layer, final, pending = "", problem = "") {
@@ -202,10 +231,9 @@ export function showText(layer, final, pending = "", problem = "") {
     button.disabled = !hasText;
   });
   if (final === null) {
-    const button =
-      problem === "starved"
-        ? ` <button class="recorder-text-btn" type="button" data-rec="textOnly">${icon("mic")}${escapeHtml(labels.textOnly)}</button>`
-        : "";
+    const button = conflictProblems.includes(problem)
+      ? ` <button class="recorder-text-btn" type="button" data-rec="textOnly">${icon("mic")}${escapeHtml(labels.textOnly)}</button>`
+      : "";
     box.innerHTML = `${escapeHtml(textProblems[problem] || textProblems.failed)}${button}`;
     box.classList.add("is-empty");
     return;
