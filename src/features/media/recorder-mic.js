@@ -3,7 +3,7 @@
  * Erlaubnis), den Ton als Datei mitschneiden, den Pegel für die Welle messen,
  * am Ende alles wieder freigeben — und den Mitschnitt anhören. Was mit der
  * Aufnahme passiert (Zustände, Knöpfe, Speichern), steht in
- * src/features/media/recorder.js.
+ * src/features/media/recorder.js und den Teil-Dateien, die ihr Kopf nennt.
  * In der späteren Android-App übernimmt das der MediaRecorder des Geräts.
  * Pfad: src/features/media/recorder-mic.js
  *
