@@ -14,13 +14,13 @@ import { pruneBlobs } from "../core/blobs.js";
 import { emit, events } from "../core/bus.js";
 import { nextId, sameId } from "../core/ids.js";
 import { workspaceDefaultName } from "./config.js";
-import { isTaskDone } from "./config-tasks.js";
+import { defaultTaskStatus, isTaskDone } from "./config-tasks.js";
 import { applyPageHead } from "./design-prefs.js";
 import { canLink, connectEntries, disconnectEntries, dropLinksTo, isLinked } from "./links.js";
 import { dropPlaceFromViews, dropProjectFromViews } from "./project-views.js";
 import { hasPlace, isContainer, tabWorkspaces } from "./queries.js";
 import { entryRef, isEntryRef, refId, workspaceRef } from "./refs.js";
-import { archiveFinishedTasks } from "./task-archive.js";
+import { archiveFinishedTasks, noteDoneTime } from "./task-archive.js";
 import { awardXp } from "./xp.js";
 import { saveState, state, ui } from "./state.js";
 import { pruneThumbs } from "./thumbs.js";
@@ -165,6 +165,14 @@ export function archiveWorkspace(id) {
 
 /** Aus dem Archiv zurückholen: Arbeitsbereich oder Eintrag steht wieder in seiner Liste. */
 export function restoreFromArchive(item) {
+  /* Nur ausgeblendet, nicht archiviert (Ansicht mit „Erledigte zeigen“ aus,
+     src/data/task-hide-done.js): Zurückholen heißt, die Aufgabe wieder zu öffnen. */
+  if (item.type === "aufgabe" && !item.archived && isTaskDone(item)) {
+    item.status = defaultTaskStatus;
+    noteDoneTime(item, true);
+    commit();
+    return;
+  }
   item.archived = false;
   /* Eine erledigte Aufgabe käme sonst beim nächsten Aufräumen sofort zurück
      ins Archiv: sie gilt als heute erledigt und bleibt bis Mitternacht. */

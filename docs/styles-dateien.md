@@ -55,7 +55,8 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/tasks.css` | Aufgaben-Seite: Pillen der Ansichten, Liste, Haken, Anlegen durch Tippen; styles/tasks-desk.css: Desktop-Werkzeuge und Spalten |
 | `styles/tasks-board.css` | Aufgaben-Seite: die Spalten des Kanban-Boards (auch für das Board der Projekte); styles/projects-board.css: was dort bei Projekten anders ist; styles/tasks-select.css: Auswahlmodus (Kreise, Zählzeile, Leiste, Stapel) |
 | `styles/task-status.css` | Haken vor Aufgaben in jeder Liste, Kategorie-Pille oben auf jeder Eintragsseite |
-| `styles/tasks-settings.css` | Karte „Ansicht“ über der Navigation der Aufgaben-Seite: Ebene, Segment, Schalter, Filter |
+| `styles/tasks-settings.css` | Karte „Ansicht“ über der Navigation der Aufgaben-Seite: Ebene, Segment, Filter |
+| `styles/tasks-switch.css` | Schalter an/aus der Karte „Ansicht“: Handy-Grundform, am Desktop Material 3 mit Haken und Kreuz (Android: `android-sheet.css`) |
 | `styles/view-end.css` | wo Übersicht, Projekte und Arbeitsbereiche unten enden; die Pille „Zum Archiv“ darüber |
 | `styles/calendar.css` | Kalender: Datum, Wochenstreifen, Rollen-Blatt, Knopf „Heute“ im Panel „Ansicht“ |
 | `styles/calendar-rings.css` | Kalender: Ringe mit Murmeln um die Tageszahlen |

@@ -1,0 +1,95 @@
+/*
+ * Der Schalter an/aus in den Karten „Ansicht“ und Einstellungen
+ * (src/ui/panel-rows.js, Klasse .tasks-switch). Handy ohne Android-Fassung:
+ * Bahn mit weißem Knopf. Desktop (ab 1024px): Material 3 „Switch with icons“ —
+ * aus = umrandete Bahn mit Kreuz im Knopf, an = gefüllte Bahn mit Haken.
+ * Die Android-Fassung hat ihre eigene Gestalt in styles/android-sheet.css.
+ * Pfad: styles/tasks-switch.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-pages.css)
+ * -----------------------------------
+ * --tasks-switch-w / --tasks-switch-h -> Größe des Schalters (Handy ohne Android-Fassung)
+ * --tasks-switch-m3-w / -h / -thumb   -> Bahn und Knopf am Desktop (Material 3: 52 × 32, Knopf 24)
+ * --add / --muted / --bg              -> Farben des Schalters am Desktop (styles/tokens.css)
+ */
+
+.tasks-switch {
+  position: relative; /* position: Bezugsrahmen für den Knopf darin */
+  width: var(--tasks-switch-w);
+  height: var(--tasks-switch-h);
+  flex: 0 0 auto;
+  border-radius: 999px; /* border-radius: die Bahn ist rund */
+  background: var(--tab-pill-active-bg);
+  transition: background 0.18s ease; /* transition: die Bahn färbt sich weich */
+}
+
+.tasks-switch-knob {
+  position: absolute; /* position: der Knopf gleitet in der Bahn */
+  top: 3px;
+  left: 3px;
+  width: calc(var(--tasks-switch-h) - 6px);
+  height: calc(var(--tasks-switch-h) - 6px);
+  border-radius: 50%; /* border-radius: ein runder Knopf */
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform 0.18s ease; /* transition: der Knopf gleitet statt zu springen */
+}
+
+.tasks-switch.is-on {
+  background: var(--add);
+}
+
+.tasks-switch.is-on .tasks-switch-knob {
+  transform: translateX(calc(var(--tasks-switch-w) - var(--tasks-switch-h))); /* transform: nach rechts, so weit die Bahn reicht */
+}
+
+/* Haken bzw. Kreuz im Knopf: nur Android und Desktop zeigen es */
+.tasks-switch-icon {
+  display: none;
+}
+
+/* Desktop: Schalter wie Material 3 „Switch with icons“ — aus = umrandete Bahn,
+   Knopf mit Kreuz; an = gefüllte Bahn, Knopf mit Haken. Innenfläche 48 × 28px. */
+@media (min-width: 1024px) {
+  .tasks-switch {
+    width: var(--tasks-switch-m3-w);
+    height: var(--tasks-switch-m3-h);
+    border: 2px solid var(--muted);
+    background: transparent;
+    transition: background 0.18s ease, border-color 0.18s ease; /* transition: Bahn und Rand färben sich weich */
+  }
+
+  .tasks-switch-knob {
+    top: 2px;
+    left: 2px;
+    width: var(--tasks-switch-m3-thumb);
+    height: var(--tasks-switch-m3-thumb);
+    display: grid;
+    place-items: center;
+    background: var(--muted);
+    box-shadow: none;
+    transition: transform 0.18s ease, background 0.18s ease; /* transition: der Knopf gleitet und färbt sich weich */
+  }
+
+  .tasks-switch-icon {
+    display: block;
+    width: 16px;
+    height: 16px;
+    color: var(--bg);
+  }
+
+  .tasks-switch.is-on {
+    border-color: var(--add);
+    background: var(--add);
+  }
+
+  /* transform: 20px weiter rechts als „aus“ (Innenbreite 48 − Knopf 24 − 2 + 2 Luft links) */
+  .tasks-switch.is-on .tasks-switch-knob {
+    background: #ffffff;
+    transform: translateX(20px);
+  }
+
+  .tasks-switch.is-on .tasks-switch-icon {
+    color: var(--add);
+  }
+}

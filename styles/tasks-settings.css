@@ -9,12 +9,11 @@
  * eingeklappt schaut nur der Kopf hervor, ausgeklappt (Klasse is-expanded)
  * steht die ganze Karte über der Navigation. Dazu kommen die Zutaten, die es
  * bei „Details“ nicht gibt: das Segment Liste | Board bzw. Dringlichkeit |
- * Status, der Schalter und die gesperrte Filter-Zeile mit dem ⓘ.
+ * Status, der Schalter (styles/tasks-switch.css) und die gesperrte Filter-Zeile mit dem ⓘ.
  * Pfad: styles/tasks-settings.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens-pages.css, außer wo genannt)
  * -----------------------------------
- * --tasks-switch-w / --tasks-switch-h -> Größe des Schalters
  * --tasks-seg-h              -> Höhe des Segments (und seiner Knöpfe)
  * --tasks-panel-gap          -> Luft zwischen ausgeklappter Karte und Navigation darunter;
  *                               eingeklappt steht der Kopf direkt auf der Navigation, wie „Details“
@@ -204,38 +203,6 @@ body:has(.nav-shell.is-composing) .view-panel {
   opacity: 0.55;
 }
 
-/* ---------- Schalter ---------- */
-
-.tasks-switch {
-  position: relative; /* position: Bezugsrahmen für den Knopf darin */
-  width: var(--tasks-switch-w);
-  height: var(--tasks-switch-h);
-  flex: 0 0 auto;
-  border-radius: 999px; /* border-radius: die Bahn ist rund */
-  background: var(--tab-pill-active-bg);
-  transition: background 0.18s ease; /* transition: die Bahn färbt sich weich */
-}
-
-.tasks-switch-knob {
-  position: absolute; /* position: der Knopf gleitet in der Bahn */
-  top: 3px;
-  left: 3px;
-  width: calc(var(--tasks-switch-h) - 6px);
-  height: calc(var(--tasks-switch-h) - 6px);
-  border-radius: 50%; /* border-radius: ein runder Knopf */
-  background: #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-  transition: transform 0.18s ease; /* transition: der Knopf gleitet statt zu springen */
-}
-
-.tasks-switch.is-on {
-  background: var(--add);
-}
-
-.tasks-switch.is-on .tasks-switch-knob {
-  transform: translateX(calc(var(--tasks-switch-w) - var(--tasks-switch-h))); /* transform: nach rechts, so weit die Bahn reicht */
-}
-
 /* ---------- Filter-Zeile ---------- */
 
 /* Die Zeile trägt links den Knopf mit Bezeichnung und Wert, rechts das ⓘ */
@@ -283,6 +250,11 @@ body:has(.nav-shell.is-composing) .view-panel {
 
 .tasks-info:active {
   opacity: 0.55;
+}
+
+/* ⓘ gleich hinter dem Zeilentext („Erledigte zeigen ⓘ“); der Schalter bleibt rechts */
+.tasks-info.is-inline {
+  margin: -8px auto -8px -15px; /* margin: links rückt es dicht an den Text (die Tippfläche ist breiter als das Icon), der Rest der Zeile fällt dem rechten Schalter zu */
 }
 
 /* ---------- Filter-Chips ---------- */

@@ -13,6 +13,7 @@
 
 import { archivePills } from "./collections.js";
 import { state } from "./state.js";
+import { doneHiddenInView } from "./task-hide-done.js";
 
 const allWords = { label: "Aktive Einträge", icon: "grid" };
 const activePrefix = "Aktive";
@@ -21,7 +22,10 @@ const activePrefix = "Aktive";
 export function activeCount(pill) {
   const spaces = state.workspaces.filter((workspace) => !workspace.archived).length;
   if (pill === "workspaces") return spaces;
-  const entries = state.entries.filter((entry) => !entry.archived && (pill === "all" || entry.type === pill));
+  /* Erledigtes, das die Ansicht ausblendet, liegt schon im Archiv (src/data/task-hide-done.js) */
+  const entries = state.entries.filter(
+    (entry) => !entry.archived && !doneHiddenInView(entry) && (pill === "all" || entry.type === pill)
+  );
   return entries.length + (pill === "all" ? spaces : 0);
 }
 

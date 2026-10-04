@@ -117,7 +117,8 @@ export const taskSorts = [
 /**
  * Womit eine Ansicht der Aufgaben-Seite startet: als Liste aller Aufgaben,
  * nicht gruppiert, älteste zuerst (Neues hängt sich unten an), Erledigtes
- * ausgeblendet. `group` ist "none" oder eine id aus taskGroupings; `place`
+ * sichtbar (durchgestrichen, ganz unten) — bis Mitternacht, dann liegt es im
+ * Archiv (src/data/task-archive.js). `group` ist "none" oder eine id aus taskGroupings; `place`
  * ist "alle", "inbox" oder ein Verweis wie „w:3“ / „e:12“.
  * `hiddenStatuses` und `hiddenPriorities` zählen auf, was der Filter
  * ausblendet — leer heißt: alles zu sehen. Ob Erledigtes zu sehen ist, sagt
@@ -137,7 +138,7 @@ export const taskDefaults = {
   sort: "erstellt",
   sortAsc: true,
   ...linkFilterDefaults,
-  hideDone: true,
+  hideDone: false,
   hiddenStatuses: [],
   hiddenPriorities: [],
   showArchived: false,
