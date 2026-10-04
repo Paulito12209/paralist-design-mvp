@@ -21,6 +21,7 @@
  * --m3-page-card-radius   -> Rundung der Karten und Kacheln
  * --m3-page-gap           -> Luft zwischen zwei Karten
  * --m3-page-section-gap   -> Luft über einer Abschnittsüberschrift
+ * --modal-top-gap         -> Abstand der letzten Karte der Statistiken zum Nach-oben-Knopf (styles/modal-top.css)
  * --m3-page-seg-h         -> Höhe des Zeitraum-Schalters
  * --m3-state-pressed      -> Tönung einer Zeile beim Drücken
  * --m3-primary            -> Überschriften der Abschnitte, Haken, „Abmelden“
@@ -190,6 +191,13 @@
 
   :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) :is(#profile, #progress) .profile-version {
     color: var(--m3-on-surface-variant);
+  }
+
+  /* Statistiken enden ohne Versionszeile: der Platz für den Nach-oben-Knopf bekommt zur letzten Karte
+     denselben Abstand wie die Versionszeile in den Einstellungen (--modal-top-gap), abzüglich der
+     Fuge, die das Blatt (gap) ohnehin schon lässt */
+  :root[data-mobile-os="android"]:not([data-mobile-variant="experiment"]) #progress .modal-top-room {
+    margin-top: calc(var(--modal-top-gap) - var(--m3-page-gap));
   }
 
   /* ---------- Karten und Kacheln ---------- */
