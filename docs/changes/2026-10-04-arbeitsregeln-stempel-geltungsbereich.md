@@ -45,6 +45,6 @@ CM: #A direkt ✓, #B direkt ✓
 ```
 
 ## Hinweise
-- Zwischen den Merges und dem Stempel-PR hat `main` kurz einen veralteten Stempel; erst nach dem Stempel-PR ausliefern (FTP), sonst zeigt die App kein „Neue Version verfügbar“.
+- Zwischen den Merges und dem Stempel-PR hat `main` kurz einen veralteten Stempel. Das Hosting übernimmt `main` von selbst; „Neue Version verfügbar“ erscheint in der App erst nach dem Stempel-PR.
 - Ältere offene PRs, die den Stempel noch selbst setzen, löst der Git Commit Manager wie bisher mit `version.py`.
 - Laufende Sitzungen kennen die neuen Regeln erst, wenn sie `origin/main` holen.
