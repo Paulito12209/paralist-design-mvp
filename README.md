@@ -393,7 +393,7 @@ Die Startseite ist die wichtigste Seite. Nach einer Änderung mindestens das:
 - Android (Einstellungen › Mehr › Versionen): `docs/android-flows.md`.
 
 **Immer**
-- `python3 tools/version.py` ausführen, dann meldet `python3 tools/check.py` „alles in Ordnung“.
+- `python3 tools/check.py` beginnt mit „alles in Ordnung“ (den Versionsstempel setzt der Git Commit Manager, siehe CLAUDE.md).
 - Konsole muss leer sein.
 - Einmal mit `localStorage.clear()` neu laden, einmal mit vorhandenen Daten.
 - Hell und Dunkel, 375 px Breite.

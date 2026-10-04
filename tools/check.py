@@ -4,10 +4,16 @@ Prueft die Regeln aus .claude/skills/paralist-clean-code/SKILL.md.
 
 Aufruf im Projektordner:
 
-    python3 tools/check.py
+    python3 tools/check.py             (Arbeits-Sitzungen)
+    python3 tools/check.py --stempel   (Git Commit Manager, nach version.py)
 
 Ohne Ausgabe ausser "alles in Ordnung" ist nichts zu tun. Jeder Fund nennt
 Datei und Zeile. Das Skript braucht nur Python 3 und aendert nichts.
+
+Den Versionsstempel (src/data/version.js) setzt nur der Git Commit Manager,
+einmal nach allen Merges (CLAUDE.md, Abschnitt 6). Ohne --stempel ist ein
+veralteter Stempel darum nur ein Hinweis hinter "alles in Ordnung"; mit
+--stempel zaehlt er als Fund.
 
 ANPASSBARE WERTE IN DIESER DATEI
 -----------------------------------
@@ -201,10 +207,14 @@ def check_html_ids():
         note("src/", f"benutzt das Icon #{name}, es fehlt im Sprite")
 
 
-def check_version():
+def check_version(strict):
+    """True, wenn der Stempel passt. Streng (--stempel) zählt ein veralteter als Fund."""
     # Ohne frischen Stempel merkt eine offene App nicht, dass es Neues gibt.
-    if not version.is_current():
+    if version.is_current():
+        return True
+    if strict:
         note("src/data/version.js", "Versionsstempel veraltet — python3 tools/version.py ausführen")
+    return False
 
 
 def main():
@@ -215,10 +225,10 @@ def main():
     check_data_layer()
     check_css_variables()
     check_html_ids()
-    check_version()
+    stamp_ok = check_version("--stempel" in sys.argv[1:])
 
     if not problems:
-        print("alles in Ordnung")
+        print("alles in Ordnung" if stamp_ok else "alles in Ordnung (Versionsstempel setzt der Git Commit Manager)")
         return 0
     print(f"{len(problems)} Fund(e):")
     for line in problems:

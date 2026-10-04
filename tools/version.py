@@ -2,18 +2,22 @@
 """
 Schreibt den Versionsstempel der App nach src/data/version.js.
 
-Aufruf im Projektordner, nach jeder Änderung und vor dem Commit:
+Aufruf im Projektordner — nur durch den Git Commit Manager, einmal nach allen
+Merges eines Durchgangs (CLAUDE.md, Abschnitt 6). Arbeits-Sitzungen lassen den
+Stempel unverändert; so kollidieren zwei offene PRs nicht in dieser Datei.
 
     python3 tools/version.py
+    python3 tools/check.py --stempel
 
 Der Stempel ist ein Prüfwert über alle Dateien, die der Browser lädt. Ändert
 sich irgendeine davon, ändert sich der Stempel — und eine offene App merkt beim
 nächsten Nachsehen, dass es eine neue Fassung gibt, und bietet das Aktualisieren
-an (src/shell/update-prompt.js). tools/check.py meldet, wenn der Stempel nicht
-mehr zu den Dateien passt.
+an (src/shell/update-prompt.js). tools/check.py --stempel meldet, wenn der
+Stempel nicht mehr zu den Dateien passt.
 
-Bei einem Merge-Konflikt in src/data/version.js einfach dieses Skript noch
-einmal laufen lassen: die Datei wird immer komplett neu geschrieben.
+Bei einem Merge-Konflikt in src/data/version.js (ältere PRs, die den Stempel noch
+selbst gesetzt haben) einfach dieses Skript noch einmal laufen lassen: die Datei
+wird immer komplett neu geschrieben.
 
 ANPASSBARE WERTE IN DIESER DATEI
 -----------------------------------

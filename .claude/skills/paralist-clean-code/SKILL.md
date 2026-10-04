@@ -169,19 +169,19 @@ Code als nackte Zahl.
 
 Eine Änderung ist erst fertig, wenn diese Kette durchlaufen ist:
 
-1. **Versionsstempel und Regeln prüfen** — erst den Stempel neu schreiben,
-   dann Zeilengrenze, Kopfkommentare, Importrichtung, auflösbare Importe,
-   CSS-Variablen, die IDs in index.html und den Stempel prüfen:
+1. **Regeln prüfen** — Zeilengrenze, Kopfkommentare, Importrichtung,
+   auflösbare Importe, CSS-Variablen und die IDs in index.html:
    ```bash
-   python3 tools/version.py
    python3 tools/check.py
    ```
-   Die Ausgabe muss genau „alles in Ordnung“ sein. Der Stempel in
-   `src/data/version.js` ist ein Prüfwert über alle ausgelieferten Dateien:
-   ändert er sich, zeigt jede offene App das Fenster „Neue Version verfügbar“
-   (`src/shell/update-prompt.js`). Die Datei wird immer komplett neu
-   geschrieben — bei einem Merge-Konflikt darin einfach das Skript erneut
-   laufen lassen und die ganze Datei stagen.
+   Die Ausgabe muss mit „alles in Ordnung“ beginnen. Der Zusatz
+   „(Versionsstempel setzt der Git Commit Manager)“ ist in Arbeits-Sitzungen
+   richtig: den Stempel in `src/data/version.js` (ein Prüfwert über alle
+   ausgelieferten Dateien; ändert er sich, zeigt jede offene App „Neue Version
+   verfügbar“, `src/shell/update-prompt.js`) setzt nur der Git Commit Manager,
+   einmal nach allen Merges, mit `python3 tools/version.py` und
+   `python3 tools/check.py --stempel`. So kollidieren zwei offene PRs nicht
+   mehr in dieser Datei.
 2. **Syntax prüfen** — jede Datei lässt sich als ES-Modul lesen:
    ```bash
    for f in $(find src -name '*.js'); do cp "$f" "/tmp/$(basename $f).mjs"; node --check "/tmp/$(basename $f).mjs" || echo "FEHLER $f"; done
@@ -235,6 +235,9 @@ Der Ablauf steht in `CLAUDE.md`, Abschnitte 2–4. Kurz:
   `set_session_title`, holt `origin/main` neu, listet die offenen Pull Requests
   und merged die nach **Nummer** genannten PRs (oder „alle offenen“) einzeln
   nacheinander, mit `python3 tools/check.py` nach jedem Merge; Konflikte löst
-  sie nach der Doku beider Änderungen. Arbeits-Sitzungen mergen nie selbst,
-  holen aber vor dem Review `origin/main` in ihren Branch.
+  sie nach der Doku beider Änderungen, auch solche ohne Git-Meldung
+  (umbenannte Klassen, Attribute, Exporte). Einen Sammel-PR merged sie im
+  selben Durchgang, am Ende setzt sie einmal den Versionsstempel. Arbeits-
+  Sitzungen mergen nie selbst und fassen den Stempel nicht an, holen aber vor
+  dem Review `origin/main` in ihren Branch.
 - Nie `git stash`, `git reset --hard` oder `--force`. Keine Secrets committen.
