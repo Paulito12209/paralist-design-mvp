@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "0c4c81f4e189";
+export const appVersion = "1abcf96d138a";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -118,24 +118,24 @@ export const appFiles = [
   "src/ui/block-markup.js", "src/ui/board-drag.js", "src/ui/bookmark-title.js", "src/ui/chart.js",
   "src/ui/confirm-sheet.js", "src/ui/copy-page.js", "src/ui/ctx-menu.js", "src/ui/dash-charts.js",
   "src/ui/dash-parts.js", "src/ui/date-field.js", "src/ui/desk-links.js", "src/ui/desk-mode.js",
-  "src/ui/details-card.js", "src/ui/details-peek.js", "src/ui/details-rows.js",
-  "src/ui/details-sheet.js", "src/ui/drawing-export.js", "src/ui/empty-state.js",
-  "src/ui/entry-menu.js", "src/ui/filter-chips.js", "src/ui/filter-empty.js",
-  "src/ui/filter-link-pick.js", "src/ui/filter-link-section.js", "src/ui/filter-multi.js",
-  "src/ui/filter-sheet-chips.js", "src/ui/filter-sheet-markup.js", "src/ui/filter-sheet.js",
-  "src/ui/groups.js", "src/ui/head-title.js", "src/ui/info-dialog.js", "src/ui/inline-add.js",
-  "src/ui/insight-tiles.js", "src/ui/key-caps.js", "src/ui/link-sheet.js", "src/ui/list-clicks.js",
-  "src/ui/list-head.js", "src/ui/long-press.js", "src/ui/media-cell.js", "src/ui/media-strip.js",
-  "src/ui/modal-pull.js", "src/ui/modal-top.js", "src/ui/move-menu.js", "src/ui/page-cover.js",
-  "src/ui/page-path.js", "src/ui/page-tools.js", "src/ui/panel-rows.js", "src/ui/pickers.js",
-  "src/ui/pill-add.js", "src/ui/pill-input.js", "src/ui/pill-snap.js", "src/ui/pill-swipe.js",
-  "src/ui/platform.js", "src/ui/pull-search.js", "src/ui/rail-parts.js", "src/ui/remind-sheet.js",
-  "src/ui/router-restore.js", "src/ui/router.js", "src/ui/row-lift.js", "src/ui/row-reorder.js",
-  "src/ui/rows.js", "src/ui/select-bar.js", "src/ui/selection.js", "src/ui/settings-link.js",
-  "src/ui/sheet.js", "src/ui/slash-menu.js", "src/ui/sort-sheet.js", "src/ui/streak-legend.js",
-  "src/ui/swipe.js", "src/ui/tab-glyph.js", "src/ui/tab-menu.js", "src/ui/tabs-visibility.js",
-  "src/ui/task-status.js", "src/ui/toast.js", "src/ui/type-menu.js", "src/ui/type-wheel.js",
-  "src/ui/undo-toast.js", "src/ui/usage-pages.js", "src/ui/usage-split.js",
+  "src/ui/details-card.js", "src/ui/details-expand.js", "src/ui/details-peek.js",
+  "src/ui/details-rows.js", "src/ui/details-sheet.js", "src/ui/drawing-export.js",
+  "src/ui/empty-state.js", "src/ui/entry-menu.js", "src/ui/filter-chips.js",
+  "src/ui/filter-empty.js", "src/ui/filter-link-pick.js", "src/ui/filter-link-section.js",
+  "src/ui/filter-multi.js", "src/ui/filter-sheet-chips.js", "src/ui/filter-sheet-markup.js",
+  "src/ui/filter-sheet.js", "src/ui/groups.js", "src/ui/head-title.js", "src/ui/info-dialog.js",
+  "src/ui/inline-add.js", "src/ui/insight-tiles.js", "src/ui/key-caps.js", "src/ui/link-sheet.js",
+  "src/ui/list-clicks.js", "src/ui/list-head.js", "src/ui/long-press.js", "src/ui/media-cell.js",
+  "src/ui/media-strip.js", "src/ui/modal-pull.js", "src/ui/modal-top.js", "src/ui/move-menu.js",
+  "src/ui/page-cover.js", "src/ui/page-path.js", "src/ui/page-tools.js", "src/ui/panel-rows.js",
+  "src/ui/pickers.js", "src/ui/pill-add.js", "src/ui/pill-input.js", "src/ui/pill-snap.js",
+  "src/ui/pill-swipe.js", "src/ui/platform.js", "src/ui/pull-search.js", "src/ui/rail-parts.js",
+  "src/ui/remind-sheet.js", "src/ui/router-restore.js", "src/ui/router.js", "src/ui/row-lift.js",
+  "src/ui/row-reorder.js", "src/ui/rows.js", "src/ui/select-bar.js", "src/ui/selection.js",
+  "src/ui/settings-link.js", "src/ui/sheet.js", "src/ui/slash-menu.js", "src/ui/sort-sheet.js",
+  "src/ui/streak-legend.js", "src/ui/swipe.js", "src/ui/tab-glyph.js", "src/ui/tab-menu.js",
+  "src/ui/tabs-visibility.js", "src/ui/task-status.js", "src/ui/toast.js", "src/ui/type-menu.js",
+  "src/ui/type-wheel.js", "src/ui/undo-toast.js", "src/ui/usage-pages.js", "src/ui/usage-split.js",
   "src/ui/video-player.js", "src/ui/view-panel.js", "src/ui/views.js", "src/ui/wheel.js",
   "src/ui/write-tap.js", "styles/account.css", "styles/android-archive.css",
   "styles/android-bottom-sheet.css", "styles/android-calendar-rings.css",
