@@ -60,14 +60,23 @@ function insightsBlock() {
   return `<section class="progress-insights">${insightsSection("data-progress-detail")}</section><p class="psection">${sectionTitle}</p>`;
 }
 
+/* Freier Platz unter der letzten Karte, so hoch wie der Nach-oben-Knopf (styles/modal-top.css) —
+   wie die Versionszeile am Ende der Einstellungen, damit der Knopf nicht auf der Karte liegt.
+   Am Desktop gibt es den Knopf hier nicht, dort bliebe nur eine leere Zeile im Raster. */
+function endRoom() {
+  return isDesk() ? "" : `<div class="modal-top-room" aria-hidden="true"></div>`;
+}
+
 /* Offene Unterseite des Blatts: null für die Karten, sonst ein Schlüssel aus `pages`. */
 let detail = null;
 
 /** Das Blatt zeichnen: die Karten oder eine Unterseite. */
 export function renderProgress() {
-  dom.progressBody.innerHTML = detail
-    ? pages[detail].markup()
-    : progressDeskHead() + insightsBlock() + donutCard() + milestonesTeaser() + historyCard() + levelsCard() + logCard();
+  dom.progressBody.innerHTML =
+    (detail
+      ? pages[detail].markup()
+      : progressDeskHead() + insightsBlock() + donutCard() + milestonesTeaser() + historyCard() + levelsCard() + logCard()) +
+    endRoom();
   /* is-cards: am Desktop stehen die Karten in zwei Spalten, die Unterseiten nicht */
   dom.progressBody.classList.toggle("is-cards", !detail);
   /* Als Seite (Android) steht links immer der Pfeil — auf den Karten schließt er
