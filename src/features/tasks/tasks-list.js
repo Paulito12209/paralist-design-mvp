@@ -10,6 +10,10 @@
  * ein Kreis zum Wählen und im Kopf jeder Gruppe einer für die ganze Gruppe;
  * die Geister-Zeile fehlt dann.
  *
+ * In der Android-Fassung stehen rechts in jeder Zeile drei Punkte
+ * (src/ui/rows.js, rowMore): nur ein Tipp darauf öffnet das Menü der Aufgabe,
+ * gedrückt Halten tut dort nichts mehr. Die Punkte fehlen im Auswahlmodus.
+ *
  * Solange es gar keine Aufgabe gibt, liegt eine blasse Geister-Zeile da, die
  * das Anlegen durch Tippen ein einziges Mal erklärt
  * (src/features/tasks/tasks-inline.js). In der Android-Fassung steht statt
@@ -33,7 +37,7 @@ import { isTaskDone } from "../../data/config-tasks.js";
 import { taskEntries, taskGroups } from "../../data/queries.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { isMobileOs } from "../../ui/platform.js";
-import { entryActions, swipeRow } from "../../ui/rows.js";
+import { entryActions, rowMore, swipeRow } from "../../ui/rows.js";
 import { taskCheck } from "../../ui/task-status.js";
 import { taskColumns, taskMeta, taskTitle } from "./tasks-parts.js";
 import { groupPickMark, isPicked, isSelecting, pickMark } from "./tasks-pick.js";
@@ -50,7 +54,7 @@ const emptyTasks = {
 };
 
 /**
- * Eine Zeile: Haken-Knopf, Titel mit Nebenzeile, Pfeil — dahinter dieselben
+ * Eine Zeile: Haken-Knopf, Titel mit Nebenzeile, Pfeil (Android: drei Punkte) — dahinter dieselben
  * Wisch-Knöpfe wie in jeder anderen Liste (src/ui/rows.js).
  */
 function taskRow(entry, field) {
@@ -71,6 +75,7 @@ function taskRow(entry, field) {
         </span>
         ${taskColumns(entry)}
         ${icon("chevron", "chevron")}
+        ${rowMore()}
       </button>
     `
   );

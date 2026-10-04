@@ -5,7 +5,7 @@
  * bzw. Spalte, die getönte gewählte Zeile, oben die Zählzeile an der Stelle
  * der Pillen, unten die Aktionsleiste an der Stelle der Navigation (am
  * Desktop eine schwebende Glaspille) und der Stapel, wenn man gewählte
- * Zeilen im Board am Griff zieht.
+ * Zeilen im Board am Griff zieht. In der Liste ersetzt der Kreis den Haken-Knopf der Aufgabe.
  * Pfad: styles/tasks-select.css
  *
  * ANPASSBARE WERTE (in styles/tokens-pages.css, außer wo genannt)
@@ -91,6 +91,13 @@
 /* Der Haken hakt im Modus nicht ab: ein Tipp darauf geht an die Zeile und wählt sie */
 [data-selecting] .task-check {
   pointer-events: none; /* pointer-events: der Tipp fällt zur Zeile durch */
+}
+
+/* In der Liste nimmt der Auswahlkreis den Platz des Haken-Knopfs ein: beide vor jeder Zeile
+   wären doppelt, und der Haken tut im Modus ohnehin nichts. Das Board hat keinen solchen
+   Knopf in der Zeile und bleibt, wie es ist. */
+[data-selecting] .task-rows .swipe-body > .task-check {
+  display: none;
 }
 
 [data-selecting] .swipe[data-picked] .swipe-body,
