@@ -128,9 +128,9 @@ Die harten Punkte:
    Hat eine Datei, die du änderst, schon mehr als 360 Zeilen, teile sie zuerst
    in einem eigenen Schritt und sag es im Review.
 2. **Struktur einhalten:** `src/core → src/data → src/ui → src/features|src/shell`,
-   Stile je Bereich unter `styles/`, alle Werte in `styles/tokens.css`.
+   Stile je Bereich unter `styles/`, alle Werte in `styles/tokens*.css`.
    **Jede neue CSS-Datei steht an drei Stellen:** `<link>` in `index.html`,
-   Dateiliste im Kopf von `styles/tokens.css`, Versionsstempel über
+   Dateiliste in `docs/styles-dateien.md`, Versionsstempel über
    `tools/version.py`. Soll eine Android-Datei eine andere Android-Datei
    überstimmen, wird sie in `index.html` **nach** ihr geladen.
 3. **Kommentar-Header in jeder Datei** mit Pfad und allen anpassbaren Werten,

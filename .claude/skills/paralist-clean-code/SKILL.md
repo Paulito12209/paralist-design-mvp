@@ -46,7 +46,8 @@ src/data/                  Zustand, Abfragen, Änderungen, Beispieldaten — kei
 src/ui/                    wiederverwendete Bausteine (Zeilen, Blätter, Menüs, Gesten, Router)
 src/features/<bereich>/    je Seite ein Ordner (overview, calendar, media, …)
 src/shell/                 Kopf- und Fußzeile, Tastatur, Icon-Sammlung
-styles/tokens.css          ALLE Farben, Größen, Abstände + Übersicht aller Stil-Dateien
+styles/tokens*.css         ALLE Farben, Größen, Abstände (tokens.css, -nav, -pages, -entry, -dark, je Fassung)
+docs/styles-dateien.md     Übersicht aller Stil-Dateien mit einem Satz dazu
 styles/<bereich>.css       je Bereich eine Datei
 tools/check.py             prüft alle Regeln dieser Datei; muss „alles in Ordnung“ melden
 ```
@@ -76,7 +77,7 @@ main.js  ->  shell/features  ->  ui  ->  data  ->  core
   Bereiche kennen darf.
 - Neue Seite? Neuer Ordner unter `src/features/`, eine Datei unter `styles/`,
   ein Eintrag in `lazyModules` in `src/main.js` und eine Zeile in der Übersicht
-  oben in `styles/tokens.css`.
+  `docs/styles-dateien.md`.
 
 ## 3. Kommentar-Header mit allen anpassbaren Werten
 
@@ -111,13 +112,15 @@ als Wiederholung des technischen Namens.
 Enthält eine Datei keine solchen Werte, steht dort ausdrücklich
 „Keine anpassbaren visuellen Werte“ und wohin man stattdessen schaut.
 
-`styles/tokens.css` führt zusätzlich die Liste **aller** Stil-Dateien mit einem
-Satz dazu. Neue Datei anlegen heißt: diese Liste ergänzen.
+`docs/styles-dateien.md` führt die Liste **aller** Stil-Dateien mit einem Satz
+dazu und die Ladereihenfolge der Werte-Dateien. Neue Datei anlegen heißt: diese
+Liste ergänzen.
 
 ## 4. Werte zentral halten
 
 Alles, was **mehr als eine Stelle** betrifft, wird eine CSS-Variable in
-`styles/tokens.css`: jede Farbe, die Maße der Bedienelemente, die
+`styles/tokens.css` oder der thematisch passenden `styles/tokens-*.css`
+(Navigation, Seiten, Eintrag, Dunkel, Fassungen): jede Farbe, die Maße der Bedienelemente, die
 wiederkehrenden Abstände und Rundungen. Die übrigen Stil-Dateien verweisen nur
 darauf. Eine Zahl, die schon zweimal im Stylesheet steht, gehört nach
 `tokens.css` — und wer eine bestehende Variable in einem Kopfkommentar nennt,
