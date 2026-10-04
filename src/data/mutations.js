@@ -25,15 +25,37 @@ import { awardXp } from "./xp.js";
 import { saveState, state, ui } from "./state.js";
 import { pruneThumbs } from "./thumbs.js";
 
+/* Wie viele „Rückgängig“-Meldungen gerade offen sind (src/data/undo.js). Solange
+   eine steht, bleiben Dateien und Vorschaubilder gelöschter Einträge liegen —
+   sonst käme beim Zurückholen ein Medium ohne Datei zurück. */
+let pruneHolds = 0;
+let prunePending = false;
+
+function pruneDropped() {
+  pruneThumbs(state.entries);
+  /* Die abgelegten Dateien gehören zu den Einträgen: fällt einer weg, ist
+     seine Datei sonst für immer Ballast in der Browser-Datenbank. */
+  pruneBlobs(state.entries.map((entry) => entry.id));
+}
+
+/** Aufräumen der Dateien aufschieben, bis releasePrune() kommt. */
+export function holdPrune() {
+  pruneHolds += 1;
+}
+
+/** Aufschub beenden; was in der Zwischenzeit wegfiel, wird jetzt aufgeräumt. */
+export function releasePrune() {
+  pruneHolds = Math.max(0, pruneHolds - 1);
+  if (pruneHolds || !prunePending) return;
+  prunePending = false;
+  pruneDropped();
+}
+
 /** Nach jeder Änderung: speichern, Vorschaubilder aufräumen, Listen auffrischen. */
 export function commit({ prunedEntries = false } = {}) {
   saveState();
-  if (prunedEntries) {
-    pruneThumbs(state.entries);
-    /* Die abgelegten Dateien gehören zu den Einträgen: fällt einer weg, ist
-       seine Datei sonst für immer Ballast in der Browser-Datenbank. */
-    pruneBlobs(state.entries.map((entry) => entry.id));
-  }
+  if (prunedEntries && pruneHolds) prunePending = true;
+  else if (prunedEntries) pruneDropped();
   emit(events.dataChanged);
 }
 

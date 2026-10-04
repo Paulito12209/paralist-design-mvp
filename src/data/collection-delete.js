@@ -7,7 +7,8 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * deleteLabels -> der Text der roten Zeile je Sammlung
+ * deleteLabels  -> der Text der roten Zeile je Sammlung
+ * deletedLabels -> die Meldung danach (mit „Rückgängig“, src/ui/undo-toast.js)
  *
  * Was verschwindet: Ressourcen = alle Notizen, Dokumente, Zeichnungen und
  * Medien; Projekte = alle Projekte (ihre Inhalte rücken an den Ort des
@@ -31,6 +32,14 @@ export const deleteLabels = {
   archive: "Alles im Archiv löschen",
   workspaces: "Alle Arbeitsbereiche löschen",
   bookmarks: "Alle Lesezeichen löschen",
+};
+
+export const deletedLabels = {
+  resources: "Alle Ressourcen gelöscht",
+  projects: "Alle Projekte gelöscht",
+  archive: "Archiv geleert",
+  workspaces: "Alle Arbeitsbereiche gelöscht",
+  bookmarks: "Alle Lesezeichen gelöscht",
 };
 
 /* Einträge entfernen; was in einem Projekt lag, übernimmt dessen Orte (wie deleteEntry). */

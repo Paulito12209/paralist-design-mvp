@@ -4,7 +4,8 @@
  * Dateiauswahl. Während der Aufnahme laufen Zeit und Welle mit, und wo der
  * Browser es kann, steht das Gesagte als Mitschrift darunter. Unten lässt
  * sich pausieren, stoppen (danach anhören oder neu aufnehmen) und speichern;
- * „Abbrechen“, der Pfeil oben und die Zurück-Geste verwerfen die Aufnahme.
+ * „Abbrechen“, der Pfeil oben und die Zurück-Geste verwerfen die Aufnahme —
+ * ab ein paar Sekunden erst nach einer Rückfrage (recorder-discard.js).
  * Gespeichert wird sie wie jede andere Datei als Medien-Eintrag im Eingang,
  * die Mitschrift wird sein Text (src/features/media/media-import.js).
  * In der späteren Android-App treten MediaRecorder und SpeechRecognizer des
@@ -30,6 +31,7 @@ import { ui } from "../../data/state.js";
 import { registerOverlay } from "../../ui/router.js";
 import { showToast } from "../../ui/toast.js";
 import { addMediaFiles } from "./media-import.js";
+import { armDiscardGuard, cancelRecorder, initDiscardGuard, leaveRecorder } from "./recorder-discard.js";
 import { openRecorderSetup } from "./recorder-setup.js";
 import { createSpeech, speechAvailable } from "./recorder-speech.js";
 import { convertTranscript, copyTranscript } from "./recorder-text.js";
@@ -110,6 +112,12 @@ function tick() {
   if (now - session.lastLevel < levelEveryMs) return;
   session.lastLevel = now;
   wave.push(level());
+}
+
+/* Wie lang die Aufnahme bisher ist; danach richtet sich die Rückfrage beim Verwerfen. */
+function lengthMs() {
+  if (session) return session.elapsed + (state === "recording" ? performance.now() - session.startedAt : 0);
+  return recorded ? recorded.duration * 1000 : 0;
 }
 
 /* ---------- Aufnehmen ---------- */
@@ -251,7 +259,7 @@ async function save() {
   const file = new File([recorded.blob], `${name}.${extensionOf(recorded.blob.type)}`, { type: recorded.blob.type });
   const extra = { body: speech.text(), duration: recorded.duration };
   /* Erst schließen (das verwirft den Zwischenstand), die Datei ist schon gepackt */
-  close();
+  leaveRecorder();
   await addMediaFiles([file], "audio", extra);
   showToast({ icon: "mic", title: "Aufnahme gespeichert", note: name });
 }
@@ -287,7 +295,7 @@ function setup() {
 }
 
 const actions = {
-  cancel: close,
+  cancel: cancelRecorder,
   stop,
   pause,
   resume,
@@ -304,6 +312,12 @@ function mount() {
   layer = buildRecorder();
   dom.device.append(layer);
   wave = createWave(layer);
+  initDiscardGuard({
+    isOpen: () => !layer.hidden,
+    lengthMs,
+    close,
+    pushState: () => history.pushState({ view: "recorder", from: ui.sourceView }, "", "#/aufnahme"),
+  });
   layer.addEventListener("click", (event) => {
     const button = event.target.closest("[data-rec]");
     if (button && !button.disabled) actions[button.dataset.rec]();
@@ -329,6 +343,7 @@ function open(push = true) {
   );
   showText(layer, speechAvailable() ? "" : null);
   layer.hidden = false;
+  armDiscardGuard();
   if (push) history.pushState({ view: "recorder", from: ui.sourceView }, "", "#/aufnahme");
   start();
 }
