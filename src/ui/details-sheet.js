@@ -21,8 +21,8 @@
  * Icon, Titel und Kategorie, statt der drei Kennzahlen „Verknüpfen“ und
  * Zeilen untereinander wie in Google Tasks, und unten fest eine Leiste mit
  * „Als erledigt markieren“ (src/ui/details-rows.js). Beim Öffnen endet das
- * Blatt mitten in der zweiten Zeile der Abschnitte darunter — so sieht man,
- * dass es weitergeht. Jede Änderung (auch aus Blättern darüber, etwa
+ * Blatt mitten in der zweiten Zeile der Abschnitte darunter und wächst beim
+ * Hochwischen (src/ui/details-expand.js). Jede Änderung (auch aus Blättern darüber, etwa
  * „Verknüpfen“) zeichnet das offene Blatt neu.
  *
  * Schließen: Tipp auf den Schleier, Escape, das Blatt nach unten ziehen
@@ -38,8 +38,7 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * sheetLabel -> Überschrift des Blatts und Name für Vorlesehilfen
- * peekRow    -> Android: in welcher Zeile der Abschnitte das Blatt beim Öffnen
- *               endet (1 = zweite Zeile), angeschnitten zur Hälfte
+ *               (wie hoch es in Android beim Öffnen steht: src/ui/details-expand.js)
  *
  * Hinter der Überschrift steht das Symbol, das auf der Karte der übrigen
  * Fassungen zum Hochklappen dient, hier umgedreht. Es ist nur ein Zeichen,
@@ -54,6 +53,7 @@ import { entryFacts } from "../data/entry-facts.js";
 import { findEntry, findWorkspace } from "../data/queries.js";
 import { workspaceFacts } from "../data/workspace-facts.js";
 import { fillDetails, handleCardClick } from "./details-card.js";
+import { bindDetailsExpand, fitDetailsPeek } from "./details-expand.js";
 import { detailsDoneMarkup, detailsHeadMarkup, detailsRowsMarkup, groupsWithoutTime, handleRowsClick } from "./details-rows.js";
 import { bindModalPull, clearModalPull } from "./modal-pull.js";
 import { isMobileOs } from "./platform.js";
@@ -62,7 +62,6 @@ import { closeSheet } from "./sheet.js";
 import { isViewActive } from "./views.js";
 
 const sheetLabel = "Details";
-const peekRow = 1;
 /* Kennzahlen, deren Tipp src/ui/details-card.js selbst erledigt — alle anderen brauchen eine Aktion der Seite */
 const ownFields = ["date", "remind", "status", "priority"];
 /* Die Ansicht, unter der ein aus einer Liste gewählter Eintrag läuft */
@@ -149,17 +148,6 @@ function kindOf(source) {
   return source.kind ? source.kind() : openView === "page" ? "workspace" : "entry";
 }
 
-/* Android: das Blatt endet beim Öffnen mitten in einer Zeile der Abschnitte,
-   damit man sieht, dass es weitergeht. Gemessen, wenn das Blatt sichtbar ist. */
-function fitPeek() {
-  body.style.maxHeight = "";
-  if (!isMobileOs("android")) return;
-  const row = listBox.querySelectorAll(".details-row")[peekRow];
-  if (!row) return;
-  const cut = row.getBoundingClientRect().top + row.offsetHeight / 2 - body.getBoundingClientRect().top;
-  body.style.maxHeight = `${Math.round(cut)}px`;
-}
-
 /* Escape schließt, was obenauf liegt: erst ein Blatt darüber (Verknüpfen,
    Status, Tab), dann dieses — sonst ginge das untere zu und das obere bliebe */
 function onKey(event) {
@@ -190,7 +178,7 @@ export function openDetailsSheet(view, { push = true } = {}) {
   /* Erst sichtbar, dann nach oben: solange das Blatt versteckt ist, bleibt
      die alte Scroll-Lage vom letzten Mal hängen */
   body.scrollTop = 0;
-  fitPeek();
+  fitDetailsPeek();
   document.addEventListener("keydown", onKey);
   toggleListeners.forEach((listener) => listener(true));
 }
@@ -287,6 +275,7 @@ export function initDetailsSheet(toggled = () => {}) {
   listBox = backdrop.querySelector(".details-list");
   dom.sheet.before(backdrop);
   bindModalPull(backdrop, closeDetailsSheet);
+  bindDetailsExpand(backdrop, body);
 
   backdrop.addEventListener("click", (event) => {
     if (event.target === backdrop) {
