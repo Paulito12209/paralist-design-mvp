@@ -10,7 +10,8 @@
  *   der Zahl ihrer Haken, bei „ist nicht“ mit „nicht | 1“. Ein Tipp auf die
  *   Zeile öffnet das Blatt „Filtern“ (src/features/tasks/tasks-filter.js),
  *   ein Tipp auf einen Chip gleich dessen Unterseite.
- *   Auch „Alle“ lässt sich filtern, nur nicht nach Ort
+ *   „Alle“ lässt sich nicht filtern: die Zeile sagt „Nicht möglich“, der ⓘ daneben
+ *   erklärt, dass man dafür eine eigene Ansicht anlegt, und führt in Einstellungen › Tabs
  * - Gruppieren: Schalter; an, dann darunter „Abschnitte nach“ Status | Dringlichkeit.
  *   Im Board gibt es keinen Schalter — ein Board hat immer Spalten —, dort
  *   steht nur „Spalten nach“
@@ -22,6 +23,9 @@
  * -----------------------------------
  * rowLabels    -> Beschriftungen der Zeilen („groupBy“ je Layout: Liste hat Abschnitte, Board Spalten)
  * noFilter     -> was rechts in der Zeile „Filtern“ steht, solange nichts gefiltert ist
+ * notPossible  -> was sie bei „Alle“ sagt, das sich nicht filtern lässt
+ * filterInfoTitle / filterInfoTexts -> das Blatt hinter dem ⓘ an „Filtern“: warum „Alle“ nicht filtert
+ * settingsLabel -> die Zeile im Blatt, die in Einstellungen › Tabs springt
  * deskFiltered -> Aufschrift des Filter-Knopfs am Desktop, wenn etwas gefiltert ist
  * archivePill  -> welche Pille das Archiv beim Tipp auf „Archiv (n)“ zeigt
  * doneInfoTitle / doneInfoTexts -> das Blatt hinter dem ⓘ an „Erledigte zeigen“
@@ -44,6 +48,7 @@ import { filterChipsMarkup as chipsMarkup } from "../../ui/filter-chips.js";
 import { handleListHeadClick, listHeadMarkup } from "../../ui/list-head.js";
 import { openSheet } from "../../ui/sheet.js";
 import { openSortSheet, sortSummary } from "../../ui/sort-sheet.js";
+import { openTabSettings } from "../../ui/settings-link.js";
 import { openViewPanel } from "../../ui/view-panel.js";
 import { filterChips, openTaskFilter } from "./tasks-filter.js";
 
@@ -55,6 +60,7 @@ const rowLabels = {
   groupBy: { list: "Abschnitte nach", board: "Spalten nach" },
   done: "Erledigte zeigen",
   doneInfo: "Was bedeutet „Erledigte zeigen“?",
+  filterInfo: "Warum lässt sich „Alle“ nicht filtern?",
 };
 const doneInfoTitle = "Erledigte zeigen";
 const doneInfoTexts = [
@@ -63,6 +69,14 @@ const doneInfoTexts = [
   "Jede Ansicht hat ihre eigene Einstellung: In der einen kannst du Erledigtes sehen, in der anderen nicht.",
 ];
 const noFilter = "Keine";
+const notPossible = "Nicht möglich";
+const filterInfoTitle = "Warum nicht filtern?";
+const filterInfoTexts = [
+  "„Alle“ ist dein Gesamtüberblick: Hier stehen immer alle Aufgaben. Deshalb gibt es hier keine Filter.",
+  "Möchtest du eine Auswahl, zum Beispiel nur offene oder dringende Aufgaben, lege eine eigene Ansicht an: Tippe auf „Neue Ansicht“. Sie beginnt als Kopie von „Alle“, und dort filterst und sortierst du, wie du es brauchst. „Alle“ bleibt unverändert.",
+  "Ob neue Ansichten vor „Alle“ oder ganz rechts erscheinen, stellst du in den Einstellungen ein.",
+];
+const settingsLabel = "Einstellungen › Tabs";
 const archivePill = "aufgabe";
 const deskFiltered = "Gefiltert";
 
@@ -84,15 +98,36 @@ export function deskToolsMarkup(view) {
   return `
     <span class="tasks-desk-tools">
       ${segment(layouts, view.layout, "layout")}
-      <button class="tasks-desk-filter" type="button" data-settings="filter" title="${escapeHtml(rowLabels.place)}">
+      ${
+        view.fixed
+          ? ""
+          : `<button class="tasks-desk-filter" type="button" data-settings="filter" title="${escapeHtml(rowLabels.place)}">
         ${icon("sliders")}<span>${escapeHtml(deskFilterLabel(view))}</span>
-      </button>
+      </button>`
+      }
     </span>`;
 }
 
 /* Am Desktop: „Filtern“ oder „Gefiltert“ */
 function deskFilterLabel(view) {
   return filterChips(view).length ? deskFiltered : rowLabels.place;
+}
+
+/* Die Zeile „Filtern“; bei „Alle“ gesperrt, mit ⓘ, das erklärt, warum (wie bei den Projekten) */
+function filterRowMarkup(view, chips) {
+  if (!view.fixed) {
+    return `
+        <button class="details-row is-editable" type="button" data-settings="filter">
+          <span class="details-row-label">${rowLabels.place}</span><span class="details-row-value">${chips.length || noFilter}</span>
+        </button>`;
+  }
+  return `
+        <div class="details-row tasks-filter-row is-locked">
+          <button class="tasks-filter-btn" type="button" data-settings="filter" disabled>
+            <span class="details-row-label">${rowLabels.place}</span><span class="details-row-value">${notPossible}</span>
+          </button>
+          <button class="tasks-info" type="button" data-settings="filter-info" aria-label="${escapeHtml(rowLabels.filterInfo)}">${icon("info")}</button>
+        </div>`;
 }
 
 /** Die Zeilen der Karte für die gewählte Ansicht. */
@@ -113,9 +148,7 @@ export function taskSettingsMarkup(view) {
         <button class="details-row is-editable" type="button" data-settings="sort">
           <span class="details-row-label">${rowLabels.sort}</span><span class="details-row-value">${escapeHtml(sortValue(view))}</span>
         </button>
-        <button class="details-row is-editable" type="button" data-settings="filter">
-          <span class="details-row-label">${rowLabels.place}</span><span class="details-row-value">${chips.length || noFilter}</span>
-        </button>
+        ${filterRowMarkup(view, chips)}
         ${chipsMarkup(chips)}
         ${
           board
@@ -145,6 +178,7 @@ function activeTaskCount(view) {
 export function taskHeadMarkup(view) {
   return listHeadMarkup({
     archive: { pill: archivePill, count: archivedForView("tasks").length, entries: activeTaskCount(view) },
+    filter: !view.fixed,
     filtering: filterChips(view).length > 0,
   });
 }
@@ -167,13 +201,19 @@ function openTaskSort(view) {
 /** Klicks in der Karte. `view` ist die gewählte Ansicht. */
 export function handleSettingsClick(event, view) {
   const button = event.target.closest("[data-settings]");
-  if (!button) return;
+  if (!button || button.disabled) return;
   const { settings, value } = button.dataset;
   if (settings === "layout") updateTaskView({ layout: value });
   else if (settings === "sort") openTaskSort(view);
   else if (settings === "filter") openTaskFilter(value);
   else if (settings === "group-toggle") updateTaskView({ group: view.group === "none" ? taskGroupings[0].id : "none" });
   else if (settings === "group") updateTaskView({ group: value });
+  else if (settings === "filter-info") {
+    openSheet(filterInfoTitle, [
+      ...filterInfoTexts.map((label) => ({ note: true, label })),
+      { label: settingsLabel, icon: "sliders", split: true, onSelect: openTabSettings },
+    ]);
+  }
   else if (settings === "done-info") openSheet(doneInfoTitle, doneInfoTexts.map((label) => ({ note: true, label })));
   else if (settings === "done") updateTaskView({ hideDone: !view.hideDone });
 }

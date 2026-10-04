@@ -14,12 +14,12 @@ import {
   calendarSegments,
   calendarSpans,
   mediaFilters,
-  linkFilterDefaults,
   projectViewDefaults,
   resourceFilters,
   stageModes,
 } from "./config.js";
 import {
+  allFilterOff,
   taskDefaults,
   taskGroupings,
   taskLayouts,
@@ -262,16 +262,18 @@ function adoptPrefs(saved) {
     group: pickValid(view.group, ["none", ...taskGroupings.map((item) => item.id)], taskDefaults.group),
     sort: pickValid(view.sort, taskSorts.map((item) => item.id), taskDefaults.sort),
     sortAsc: typeof view.sortAsc === "boolean" ? view.sortAsc : taskDefaults.sortAsc,
-    ...(index === fixedAt ? linkFilterDefaults : cleanLinkFields(view, validRefs)),
+    ...(index === fixedAt ? allFilterOff : cleanLinkFields(view, validRefs)),
     /* Ältere Stände (ohne Marke) hatten „Erledigte ausblenden“ als Vorgabe: einmalig auf „zeigen“ stellen */
     hideDone: saved.taskDoneShown === true && typeof view.hideDone === "boolean" ? view.hideDone : taskDefaults.hideDone,
     /* Filter nach Status und Dringlichkeit; ältere Stände kennen ihn nicht und zeigen alles */
-    hiddenStatuses: knownIds(view.hiddenStatuses, taskStatuses.filter((item) => !item.done)),
-    hiddenPriorities: knownIds(view.hiddenPriorities, taskPriorities),
-    showArchived: view.showArchived === true,
-    /* „ist nicht“ im Blatt „Filtern“; ältere Stände kennen es nicht und zeigen „ist“ */
-    statusNot: view.statusNot === true,
-    priorityNot: view.priorityNot === true,
+    ...(index === fixedAt ? {} : {
+      hiddenStatuses: knownIds(view.hiddenStatuses, taskStatuses.filter((item) => !item.done)),
+      hiddenPriorities: knownIds(view.hiddenPriorities, taskPriorities),
+      showArchived: view.showArchived === true,
+      /* „ist nicht“ im Blatt „Filtern“; ältere Stände kennen es nicht und zeigen „ist“ */
+      statusNot: view.statusNot === true,
+      priorityNot: view.priorityNot === true,
+    }),
   }));
   const active = Number(saved.activeTaskViewId);
   state.activeTaskViewId = state.taskViews.some((view) => view.id === active) ? active : state.taskViews[fixedAt].id;

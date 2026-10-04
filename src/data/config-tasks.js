@@ -16,6 +16,7 @@
  * taskSorts               -> wonach die Aufgaben-Seite sortieren kann, samt Wortlaut beider Richtungen
  *                            (Status, Dringlichkeit, Fällig, Titel …)
  * taskDefaults            -> womit eine neue Ansicht der Aufgaben-Seite startet
+ * allFilterOff            -> die Filter-Werte von „Alle“: immer ungefiltert (sperrt den Filter)
  * timeTypes               -> Kategorien mit Dringlichkeit, Fälligkeit und Status wie eine Aufgabe
  * docStatuses             -> Name, Icon und Farbe des Status eines Dokuments (Entwurf, Fertig, Geprüft)
  * defaultDocStatus        -> Status, mit dem ein neues Dokument startet („Entwurf“)
@@ -144,6 +145,20 @@ export const taskDefaults = {
   sortAsc: true,
   ...linkFilterDefaults,
   hideDone: false,
+  hiddenStatuses: [],
+  hiddenPriorities: [],
+  showArchived: false,
+  statusNot: false,
+  priorityNot: false,
+};
+
+/**
+ * „Alle“ ist nicht filterbar: diese Werte setzt jedes Speichern und Laden
+ * dort wieder ein, auch für Stände, in denen „Alle“ noch gefiltert war.
+ * `hideDone` gehört nicht dazu — „Erledigte zeigen“ bleibt auch bei „Alle“ wählbar.
+ */
+export const allFilterOff = {
+  ...linkFilterDefaults,
   hiddenStatuses: [],
   hiddenPriorities: [],
   showArchived: false,
