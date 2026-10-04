@@ -10,6 +10,9 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
+ * narrowLimit      -> bis zu wie vielen sichtbaren Karten die zweite Seite nur eine Spalte
+ *                     breit ist (2 = Lesezeichen und Archiv allein stehen bündig am rechten Rand;
+ *                     kommen die „Demnächst“-Karten zurück, wird sie wieder zwei Spalten breit)
  * androidMoreOrder -> Reihenfolge der zweiten Kartenseite in beiden Android-Fassungen,
  *                     wie im Raster: oben links, oben rechts, unten links, unten rechts
  *                     (die anderen Fassungen folgen moreCards in src/data/collections.js)
@@ -35,10 +38,15 @@ import { isViewActive } from "../../ui/views.js";
    Ressourcen als Peek hervor. */
 const androidMoreOrder = ["bookmarks", "people", "archive", "plans"];
 
-/* Die Karten der zweiten Seite in der Reihenfolge der gezeigten Fassung. */
+const narrowLimit = 2;
+
+/* Die Karten der zweiten Seite in der Reihenfolge der gezeigten Fassung; ausgeblendete fehlen. */
 function orderedMoreCards() {
-  if (document.documentElement.dataset.mobileOs !== "android") return moreCards;
-  return androidMoreOrder.map((id) => moreCards.find((card) => card.id === id)).filter(Boolean);
+  const cards =
+    document.documentElement.dataset.mobileOs !== "android"
+      ? moreCards
+      : androidMoreOrder.map((id) => moreCards.find((card) => card.id === id)).filter(Boolean);
+  return cards.filter((card) => !card.hidden);
 }
 
 /* Die Karten mit eigenem farbigem Icon; alle anderen bleiben grau. */
@@ -111,9 +119,11 @@ export function renderOverview() {
   /* Beim Auffrischen die Schiebestellung halten: wer gerade die zweite Seite
      sieht, soll nicht zur ersten zurückspringen. */
   const scrolled = dom.overviewGrid.scrollLeft;
+  const more = orderedMoreCards();
+  const narrow = more.length <= narrowLimit ? " overview-page-narrow" : "";
   dom.overviewGrid.innerHTML = `
     <div class="overview-page">${first}</div>
-    <div class="overview-page">${orderedMoreCards().map(moreCardMarkup).join("")}</div>
+    <div class="overview-page${narrow}">${more.map(moreCardMarkup).join("")}</div>
   `;
   dom.overviewGrid.scrollLeft = scrolled;
 }

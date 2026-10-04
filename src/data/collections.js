@@ -8,7 +8,10 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * moreCards      -> die vier Karten rechts neben den ersten vier: Name, Icon
- *                   und ob sie schon gehen (`soon: true` = „Demnächst verfügbar“)
+ *                   und ob sie schon gehen (`soon: true` = „Demnächst verfügbar“);
+ *                   `hidden: true` blendet die Karte auf dem Handy aus (die Desktop-
+ *                   Seitenleiste zeigt sie weiter unter „Mehr anzeigen“) — sobald das
+ *                   Feature gebaut ist, `soon` und `hidden` einfach streichen
  * SOON_LABEL     -> Beschriftung des Schildchens oben rechts auf einer solchen Karte
  * archivePills   -> die Pillen oben im Archiv, von links nach rechts
  * workspacesPage -> Titel der Seite Arbeitsbereiche (Karte 3 der Übersicht)
@@ -30,8 +33,8 @@ export const SOON_LABEL = "Demnächst verfügbar";
  * nebeneinander und öffnen je ihre Sammlung.
  */
 export const moreCards = [
-  { id: "people", title: "Personen", icon: "people", soon: true },
-  { id: "plans", title: "Pläne", icon: "table", soon: true },
+  { id: "people", title: "Personen", icon: "people", soon: true, hidden: true },
+  { id: "plans", title: "Pläne", icon: "table", soon: true, hidden: true },
   { id: "bookmarks", title: "Lesezeichen", icon: "bookmark" },
   { id: "archive", title: "Archiv", icon: "archive" },
 ];

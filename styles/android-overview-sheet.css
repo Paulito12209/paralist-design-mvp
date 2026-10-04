@@ -6,7 +6,8 @@
  * Kartenreihe (beide Fassungen): jede Seite ist um --m3-ov-peek schmaler als der
  * Inhalt, so schaut von der nächsten Seite rechts immer gleich viel hervor, egal
  * wie breit das Gerät ist — in „Android“ 20px, im Experiment 24px. Auf der letzten
- * Seite schaut links ebenso viel von der ersten hervor. Die Seitenlinie darunter
+ * Seite schaut links ebenso viel von der ersten hervor. Zeigt die zweite Seite nur
+ * Lesezeichen und Archiv, ist sie eine Kartenspalte breit und steht bündig am rechten Rand. Die Seitenlinie darunter
  * entfällt in beiden Fassungen.
  *
  * Container: von Rand zu Rand, oben abgerundet, in der Farbe der Navigations-
@@ -61,6 +62,12 @@
      Peek — so beginnt die nächste Seite genau --m3-ov-peek vor dem Geräterand. */
   [data-mobile-os="android"] #view-home .overview-page {
     flex-basis: calc(100% + var(--content-side) - 12px - var(--m3-ov-peek));
+  }
+
+  /* Ist die zweite Seite nur eine Kartenspalte breit (nur Lesezeichen und Archiv sichtbar):
+     die Hälfte einer ersten Seite ohne die Fuge dazwischen (12px) */
+  [data-mobile-os="android"] #view-home .overview-page-narrow {
+    flex-basis: calc((100% + var(--content-side) - 12px - var(--m3-ov-peek) - 12px) / 2);
   }
 
   /* Die letzte Seite rastet am rechten Rand ein, nicht links: sonst bliebe rechts
