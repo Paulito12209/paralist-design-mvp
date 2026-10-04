@@ -1,0 +1,111 @@
+/*
+ * Android: die Farben im Dunkeln, die Kacheln im Hellen und die Flächen der
+ * Übersicht in „Android (Experiment)“. Die hellen Grundwerte und alle Maße der
+ * Android-Fassung stehen in styles/tokens-android.css.
+ * Pfad: styles/tokens-android-dark.css
+ *
+ * Diese Datei ist von styles/tokens-android.css abgetrennt, weil dort die
+ * Grenze von 400 Zeilen nahe war. Sie wird direkt danach geladen, damit die
+ * Dunkel-Werte die hellen überstimmen.
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * FARBEN IM DUNKELN (zweimal: „folgt dem System“ und „in den Einstellungen gewählt“)
+ * --m3-surface-container … --m3-on-error -> dieselben Farben wie in styles/tokens-android.css,
+ *                                 Bedeutung siehe dort
+ * KACHELN IM HELLEN
+ * --card / --overview-card-bg  -> Android, nur im Hellen: Kacheln in der Fläche der Navigationsleiste
+ * EXPERIMENT
+ * --m3-xl-surface            -> Experiment: Fläche des Projekte-Containers (= --m3-surface-container, also wie Kacheln und Leiste)
+ *                                 (im Dunkeln bleibt es bei den bisherigen Tönen); je dunkler, desto deutlicher hebt sie sich vom Seitengrund ab
+ * --m3-xl-surface-high        -> ebenso, eine Stufe dunkler: der runde Pfeil-Knopf neben „Projekte“ auf dem Container
+ * --m3-xl-tile               -> Fläche der Übersicht-Kacheln (= --overview-card-bg); die Suchleiste behält ihren Material-3-Ton
+ * --m3-xl-divider-color       -> Farbe der Trennlinie unter „Projekte“: durchscheinendes Schwarz, also minimal dunkler als der
+ *                                 Container (höhere Deckkraft = deutlichere Linie); im Hellen schwächer als im Dunkeln
+ * --m3-xl-divider-w           -> Dicke dieser Linie
+ * --m3-xl-divider-inset       -> Abstand der Linie zum linken und rechten Geräterand (16px, wie der Inhalt)
+ */
+
+@media (prefers-color-scheme: dark) {
+  :root[data-mobile-os="android"]:not([data-theme="light"]) {
+    --m3-surface-container: #1e1f23;
+    --m3-surface-container-high: #2a2b30;
+    --m3-secondary-container: #4a4e5a;
+    --m3-on-secondary-container: #e3e3e8;
+    --m3-primary-container: #5c6070;
+    --m3-on-primary-container: #eceef8;
+    --m3-primary: #c3c8dc;
+    --m3-on-primary: #1d2030;
+    --m3-on-surface: #e3e3e3;
+    --m3-on-surface-variant: #c4c7c5;
+    --m3-on-surface-muted: #8a8f99;
+    --m3-outline-variant: #3c3f44;
+    --m3-scrim: rgba(10, 10, 12, 0.82);
+    --m3-seg-fill: rgba(118, 118, 128, 0.24);
+    --m3-seg-thumb: #636366;
+    --m3-seg-separator: rgba(84, 84, 88, 0.65);
+    --m3-error: #f2b8b5;
+    --m3-on-error: #601410;
+  }
+}
+
+/* Dunkelmodus fest in den Einstellungen gewählt: dieselben Werte wie oben */
+:root[data-mobile-os="android"][data-theme="dark"] {
+  --m3-surface-container: #1e1f23;
+  --m3-surface-container-high: #2a2b30;
+  --m3-secondary-container: #4a4e5a;
+  --m3-on-secondary-container: #e3e3e8;
+  --m3-primary-container: #5c6070;
+  --m3-on-primary-container: #eceef8;
+  --m3-primary: #c3c8dc;
+  --m3-on-primary: #1d2030;
+  --m3-on-surface: #e3e3e3;
+  --m3-on-surface-variant: #c4c7c5;
+  --m3-on-surface-muted: #8a8f99;
+  --m3-outline-variant: #3c3f44;
+  --m3-scrim: rgba(10, 10, 12, 0.82);
+  --m3-seg-fill: rgba(118, 118, 128, 0.24);
+  --m3-seg-thumb: #636366;
+  --m3-seg-separator: rgba(84, 84, 88, 0.65);
+  --m3-error: #f2b8b5;
+  --m3-on-error: #601410;
+}
+
+/* Android, nur im Hellen (beide Fassungen): Kacheln überall in der Fläche der
+   Navigationsleiste statt in Grau, damit sie sich vom hellen Seitengrund abheben.
+   Im Dunkeln bleiben --card und --overview-card-bg aus styles/tokens-dark.css. */
+:root[data-mobile-os="android"][data-theme="light"] {
+  --card: var(--m3-surface-container);
+  --overview-card-bg: var(--m3-surface-container);
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-mobile-os="android"]:not([data-theme="dark"]) {
+    --card: var(--m3-surface-container);
+    --overview-card-bg: var(--m3-surface-container);
+  }
+}
+
+/* Experiment: Flächen der Übersicht (Container, Pfeil-Knopf, Trennlinie).
+   Grundwerte = die Töne der Fassung; im Hellen überschreiben die zwei Blöcke darunter
+   nur, was es allein im Experiment gibt (Pfeil-Knopf, Linie). */
+:root[data-mobile-variant="experiment"] {
+  --m3-xl-surface: var(--m3-surface-container);
+  --m3-xl-surface-high: var(--m3-surface-container-high);
+  --m3-xl-tile: var(--overview-card-bg);
+  --m3-xl-divider-color: rgba(0, 0, 0, 0.3);
+  --m3-xl-divider-w: 2px;
+  --m3-xl-divider-inset: var(--content-side);
+}
+
+:root[data-mobile-variant="experiment"][data-theme="light"] {
+  --m3-xl-surface-high: #cdd5e3;
+  --m3-xl-divider-color: rgba(0, 0, 0, 0.1);
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-mobile-variant="experiment"]:not([data-theme="dark"]) {
+    --m3-xl-surface-high: #cdd5e3;
+    --m3-xl-divider-color: rgba(0, 0, 0, 0.1);
+  }
+}

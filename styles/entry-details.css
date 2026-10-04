@@ -14,12 +14,12 @@
  * unsichtbare Feld für Datum und Uhrzeit (src/ui/date-field.js).
  * Pfad: styles/entry-details.css
  *
- * ANPASSBARE WERTE (in styles/tokens-pages.css)
+ * ANPASSBARE WERTE (in styles/tokens-entry.css, außer wo genannt)
  * -----------------------------------
  * --details-gap             -> Luft zwischen Text und Karte
  * --details-head-h          -> Höhe des Kartenkopfs — so viel schaut beim Öffnen über der Navigation hervor
  * --entry-fold-fade         -> wie lang gekürzter Text nach unten ausläuft
- * --tasks-panel-slide       -> wie schnell die Karte hoch- und zurückklappt (wie auf der Aufgaben-Seite)
+ * --tasks-panel-slide       -> wie schnell die Karte hoch- und zurückklappt (wie auf der Aufgaben-Seite; tokens-pages.css)
  *
  * Aus styles/tokens.css:
  * --card                    -> Fläche der Karte

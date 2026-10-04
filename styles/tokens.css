@@ -5,79 +5,20 @@
  * Hier stehen die Werte, die auf jeder Seite wirken: die Grundfarben, die Maße
  * der Bedienelemente und die wiederkehrenden Abstände. Ändert man einen davon,
  * ändert sich die ganze App. Was nur eine einzelne Seite betrifft (Kalender,
- * Aufgaben, Medien, Suche, Zeichnung, Profil), steht in styles/tokens-pages.css.
+ * Aufgaben, Medien, Suche, Profil), steht in styles/tokens-pages.css, was den
+ * Inhalt eines Eintrags betrifft (Bausteine, Cover, Zeichnung, Video) in
+ * styles/tokens-entry.css.
+ *
+ * Wegen der Grenze von 400 Zeilen auf mehrere Dateien verteilt:
+ * styles/tokens-nav.css      -> Navigationsleiste unten und Tab-Pillen (alle Werte, die mit
+ *                               nav- oder tab- beginnen, außer --tab-pill-active-bg)
+ * styles/tokens-dark.css     -> dieselben Werte, soweit sie im Dunkeln anders sind
+ *
+ * WELCHE DATEI MACHT WAS: die Liste aller Stil-Dateien steht in
+ * docs/styles-dateien.md. Neue CSS-Datei anlegen heißt: dort eine Zeile ergänzen.
  *
  * Schriftgrößen einzelner Elemente stehen bei ihrer Regel in der Datei ihres
- * Bereichs (Liste unten); oben in jeder Datei steht, was sich darin einstellen lässt.
- *
- * WELCHE DATEI MACHT WAS
- * -----------------------------------
- * styles/tokens.css          -> die Werte, die auf jeder Seite wirken (diese Datei)
- * styles/tokens-pages.css    -> die Werte, die nur eine einzelne Seite betreffen (auch das Update-Fenster)
- * styles/tokens-dark.css     -> dieselben Werte, soweit sie im Dunkeln anders sind
- * styles/base.css            -> Grundgerüst: Seite, Gerätefenster, Inhaltsbereich, Icons
- * styles/top-bar.css         -> Kopfzeile: Level-Anzeige, Suchleiste, Profil-Knopf
- * styles/overview.css        -> Startseite: die vier Karten und die Tab-Pillen
- * styles/overview-more.css   -> Startseite: zweite Kartenseite zum Schieben, Karten „Demnächst verfügbar“, Pfeil neben „Projekte“
- * styles/rows.css            -> Listenzeilen, Kopfzeile einer Unterseite
- * styles/swipe-rows.css      -> Wisch-Zeile: Knöpfe dahinter, Einfärben nach dem Halten
- * styles/empty-state.css     -> Platzhalter für leere Listen (eigene Werte, siehe dort)
- * styles/entry.css           -> Seite eines Eintrags: Titel, Text, verknüpfte Einträge; styles/entry-desk.css: Desktop-Kopfzeile und Details rechts
- * styles/page-cover.css      -> Eintrag und Arbeitsbereich: Farbverlauf oben (Cover); Eintrag: eigenes Icon über dem Titel
- * styles/entry-details.css   -> Eintrag: gekürzter Text mit „Mehr anzeigen“ und die Karte „Details“ am Ende von „Inhalt“
- * styles/blocks.css          -> Inhalt eines Eintrags: Stichpunkte, Zahlen, runde Checkboxen, Trennlinie
- * styles/embeds.css          -> Inhalt eines Eintrags: Karten für Standort, Video und Web-Lesezeichen
- * styles/slash-menu.css      -> Inhalt eines Eintrags: das „/“-Menü mit Gruppen und Kacheln; styles/block-bar.css: Leiste über der Tastatur (Handy), Auswahl an Stelle der Tastatur
- * styles/navigation.css      -> untere Navigationsleiste
- * styles/composer.css        -> Eingabefeld zum Anlegen
- * styles/composer-attachments.css -> Kachelreihe der Anhänge im Eingabefeld
- * styles/toast.css           -> kurze Meldung über der Navigation nach dem Anlegen; styles/reminder-banner.css: Erinnerung als Banner von oben
- * styles/update.css          -> Fenster „Neue Version verfügbar“ mit Später und Aktualisieren
- * styles/overlays.css        -> Auswahl-Blatt, kleines Menü, Blätter von unten
- * styles/sheet-tabs.css      -> Auswahl-Blatt mit Tabs (Aufgabe): Kopf mit Icon, Trennlinie, Pillen, Haken, Hereingleiten
- * styles/sheet-tiles.css     -> Auswahl-Blatt: Raster aus Icon-Kacheln („Icon wählen“)
- * styles/details.css         -> Blatt „Details“ und kleiner Titel in der Kopfzeile einer Detailseite
- * styles/modal-top.css       -> runder Pfeil in einem Blatt, der nach oben rollt
- * styles/search.css          -> Suchseite; styles/search-refine.css: Art-Reiter, Sortieren/Filter, Chips; styles/search-overlay.css: Overlay am Handy
- * styles/progress.css        -> Fortschritt-Blatt: Ring, Verlauf, Historie
- * styles/milestones.css      -> Fortschritt-Blatt: Karte und Seite „Meilensteine“ mit Plaketten und Stufen-Leiter
- * styles/profile.css         -> Profil-Blatt: Bild, Nutzungszeit, Serie, Listen; styles/account.css: Konto- und Daten-Seiten
- * styles/usage-split.css     -> Nutzungszeit: Karte „Wo die Zeit hingeht“ mit Band und Bereichszeilen; styles/streak-legend.css: Serie, Erklärung unter dem Punkte-Raster
- * styles/avatar-crop.css     -> Ausschnitt fürs Profilbild: Fenster, Zoom-Regler, Auswählen
- * styles/settings.css        -> Einstellungs-Blatt: Darstellung und Haken-Zeilen, dazu die Analyse-Kacheln des Fortschritt-Blatts; styles/support.css: Feedback-Formular und Danksagungen
- * styles/tasks.css           -> Aufgaben-Seite: Pillen der Ansichten, Liste, Haken, Anlegen durch Tippen; styles/tasks-desk.css: Desktop-Werkzeuge und Spalten
- * styles/tasks-board.css     -> Aufgaben-Seite: die Spalten des Kanban-Boards (auch für das Board der Projekte); styles/projects-board.css: was dort bei Projekten anders ist; styles/tasks-select.css: Auswahlmodus (Kreise, Zählzeile, Leiste, Stapel)
- * styles/task-status.css     -> Haken vor Aufgaben in jeder Liste, Kategorie-Pille oben auf jeder Eintragsseite
- * styles/tasks-settings.css  -> Karte „Ansicht“ über der Navigation der Aufgaben-Seite: Ebene, Segment, Schalter, Filter
- * styles/view-end.css        -> wo Übersicht, Projekte und Arbeitsbereiche unten enden; die Pille „Zum Archiv“ darüber
- * styles/calendar.css        -> Kalender: Datum, Wochenstreifen, Rollen-Blatt, Knopf „Heute“ im Panel „Ansicht“
- * styles/calendar-rings.css  -> Kalender: Ringe mit Murmeln um die Tageszahlen
- * styles/calendar-panel.css  -> Kalender: graue Fläche mit Stundenraster und Liste; styles/calendar-week.css: Desktop-Werkzeugzeile, Woche, Monat
- * styles/sort-wheels.css     -> Blatt „Sortieren“: Rollen „Wonach“ | „Reihenfolge“; styles/filter-sheet.css: „Filtern“ mit Übersicht und Unterseiten je Abschnitt (iOS, Desktop)
- * styles/info-dialog.css     -> kleiner Erklär-Dialog hinter einem ⓘ im Auswahl-Blatt
- * styles/media.css           -> Medien- und Ressourcen-Seite; styles/media-bar.css: Leiste unten; styles/recorder.css: Audio-Aufnahme; styles/media-desk.css: Desktop
- * styles/bookmarks.css       -> Lesezeichen-Seite: Zeilen mit großer Kachel, Website und Herkunft
- * styles/page-hero.css       -> Sammlungen: großer Kopf mit Icon und zweizeiligem Satz (im Menü einschaltbar)
- * styles/viewer.css          -> Dateiansicht: Foto, Video, Aufnahme und PDF
- * styles/drawing.css         -> Zeichenfläche und Werkzeugleiste
- * styles/video-player.css    -> YouTube-Player als dunkler Block an der Stelle einer Video-Karte (Eintrag, Lesezeichen)
- * styles/android.css, ios.css -> Fassungen Android/iOS; dazu android-tabs/-fab/-sheet/-archive/-view-btn/-entry/-list/-reorder/-card/-bottom-sheet/-filter-sheet (Filtern als Chips)/-segmented/-tab-snap/-overview-gaps/-quiet-tools/-calendar/-calendar-tabs (Reiter der Kalenderliste mit Symbol „Ansicht“)/-calendar-rings (Tage im Wochenstreifen nach Material 3, ohne Experiment)/-pages (Einstellungen und Fortschritt als ganze Seite)/-pages-content (deren Inhalt nach Material 3, ohne Experiment)/-settings-tiles (Einstellungen: jede Zeile eine Kachel)/-settings-groups (Einstellungsliste als Kachelgruppen ohne Titel, Profilkarte)/-overview-sheet (Kartenreihe mit Peek in beiden Android-Fassungen, Projekte-Container nur im Experiment)/-experiment-surface (Experiment: gemeinsame Fläche von Kacheln, Container und Leiste im Hellen; Trennlinie unter „Projekte“ bei ausgeblendeten Reitern)/-tabs-off (Schalter „Tabs anzeigen“ in beiden Android-Fassungen), ios-segmented/-menu, tokens-android/-ios.css
- * styles/tokens-desk.css     -> die Werte der Desktop-Fassung (Spalten, Flächen, große Zahlen)
- * styles/desk.css            -> Desktop: Raster aus Seitenleiste, Reiterzeile, Seite und rechter Spalte; Zuklappen, Suchfeld, Eingabefeld unten
- * styles/desk-head.css       -> Desktop: Wortmarke mit Klapp-Knopf; Reiterzeile mit Zurück, Vorwärts und den vier Reitern
- * styles/desk-overlays.css   -> Desktop: große Blätter, Auswahl-Blatt, Menü und Update-Fenster als Dialoge in der Mitte, samt Auftauchen
- * styles/desk-views.css      -> Desktop: wie Übersicht, Kalender, Aufgaben, Medien und Eintrag die Breite nutzen
- * styles/desk-hover.css      -> Desktop: Überfahren, Drücken und Tastatur-Rahmen für Seite, Kopfzeile und Dialoge
- * styles/desk-nav.css        -> Desktop: Seitenleiste mit „Neu“, Sammlungen, Tab-Gruppen; ihr Fuß (Stufe, Konto) in styles/desk-nav-foot.css
- * styles/desk-kbd.css        -> Desktop: dezente Tasten-Schilder und das Auftauchen der Blöcke der Seitenleiste
- * styles/search-palette.css  -> Desktop: Such-Palette in der Fenstermitte (⌘K, „/“, Suchfeld, Such-Knopf)
- * styles/desk-settings.css   -> Desktop: Profil als Seite mit Untermenü; styles/shortcuts.css: Liste der Kurzbefehle
- * styles/desk-rail.css       -> Desktop: rechte Spalte mit nächstem Termin, Aufgaben und zuletzt Geöffnetem
- * styles/desk-rail-tiles.css -> Desktop: die zwei Kacheln oben rechts (Eingang-Stapel, Stufen-Ring) und die Tagesleiste
- * styles/desk-rail-views.css -> Desktop: Karten der rechten Spalte je Seite (Monat, Tag, Zahlen, Balken, Vorschau)
- * styles/dashboard.css       -> Desktop: Zahlen der Übersicht, Band und zwei Karten (Fortschritt); Bewegung in dashboard-motion.css
- * styles/dashboard-stage.css -> Desktop: Bühne der Übersicht wie Apple Arcade; ihre Reihe verknüpfter Einträge in
- *                               styles/dashboard-shelf.css; styles/desk-progress.css: Fortschritt als Seite
+ * Bereichs; oben in jeder Datei steht, was sich darin einstellen lässt.
  *
  * WERTE IN DIESER DATEI
  * -----------------------------------
@@ -105,12 +46,6 @@
  * --avatar-btn-bg           -> Akzent-Grauton: Profil-Icon, Kartenzähler, Abschnitts-Überschriften,
  *                              Such-Icon, „Suchen“, Ordner-Plus, Plus der Tab-Pille, inaktive
  *                              Reiter. Im Dunkeln #AAB2BD, im Hellen #111318 (Kreuz zu --card).
- * --nav-bg                  -> Fläche der Navigationsleiste: weiß im Hellmodus, schwarz im Dunkelmodus
- * --nav-glow-color          -> Farbe des Verlaufs hinter der Navigationsleiste (heller Akzent je Modus)
- * --nav-glow-height         -> wie hoch die Verlaufs-Zone über dem unteren Rand reicht
- * --nav-glow-strength / --nav-glow-opacity -> Kraft (0 = aus, 1 = voll) und Deckkraft des Verlaufs
- * --nav-glow-arc            -> wie stark die Oberkante durchhängt: kleiner = deutlicher gebogen
- * --nav-glow-fade           -> auf welcher Strecke die Oberkante ausgeblendet wird (kein harter Abbruch)
  * --stage-bg                -> Fläche rund um das Gerätefenster am Desktop
  * --avatar-view-bg          -> Hintergrund der großen Profilbild-Ansicht (immer dunkel)
  * --avatar-gradient-from/-to -> Farbverlauf hinter den Initialen im Profil
@@ -126,9 +61,6 @@
  * --title-size              -> Schriftgröße der großen Überschrift „Übersicht“
  * --title-weight            -> Strichstärke aller großen Seitentitel (Übersicht, Unterseiten, Eintrag;
  *                              700 = fett, 600 = halbfett)
- * --tab-label-size          -> Schriftgröße der Wörter unter den Navigations-Icons (sie stehen mit im
-                               Kreis, darum wird der Name ab etwa 11px breiter als der Kreis)
- * --tab-pill-size           -> Schriftgröße der Tab-Pillen über den Arbeitsbereichen
  * --composer-input-size     -> Schriftgröße im Eingabefeld
  * --composer-chip-size      -> Schriftgröße des Verknüpfen-Knopfes im Eingabefeld
  * --entry-title-size        -> Schriftgröße des Titels auf der Editor-Seite
@@ -167,35 +99,8 @@
  * --top-bar-profile-btn-width/-height   -> Größe des Profil-Knopfes oben rechts
  * --search-bar-height / --search-bar-radius -> Höhe und Rundung der Suchleiste
  * --icon-folder-plus-width/-height      -> Größe des Ordner-Plus-Icons
- * --tab-space               -> Platz am Seitenende, damit nichts hinter der Navigation liegt
- * --nav-height              -> Höhe der Navigationsleiste (Material 3: 80dp)
- * --nav-side / --nav-bottom / --nav-radius -> Lage und Rundung der Navigationsleiste
-                               (--nav-side rückt auf Handys unter 370px Breite näher an den Rand,
-                               siehe die Abfrage unten in dieser Datei)
- * --tab-add-size            -> Größe des runden Plus-Knopfes in der Navigation
- * --nav-inner-pad           -> Innenrand der Leiste links und rechts: hält den Kreis des äußeren
-                               Reiters genauso weit vom Rand weg wie --tab-active-gap ihn oben und
-                               unten hält, damit er rundum gleich viel Luft hat
- * --tab-add-margin          -> Extra-Luft links und rechts vom Plus-Kreis: die Icons haben in ihren
-                               Kästchen etwa so viel Rand, der Kreis nicht — so wirken alle Lücken gleich
- * --tab-icon-grow           -> um wie viel die Icons wachsen, solange ihre Namen aus sind
- * --tab-add-shift / --tab-add-shift-time -> Rutschen des Plus-Knopfes beim Drücken: Weite und Dauer
- * --tab-hit-grow            -> wie weit die Tippfläche eines Reiters über sein Icon hinausgeht
- * --tab-active-gap          -> Abstand zwischen dem Kreis des aktiven Reiters und dem Rand der Leiste
- * --tab-active-size         -> Durchmesser dieses Kreises (Leistenhöhe minus --tab-active-gap oben und
-                               unten) — Icon und Name stehen darin, er bleibt dadurch immer rund
- * --tab-label-gap           -> Luft zwischen Icon und Name im Kreis: größer schiebt den Namen weiter
-                               nach unten, wo der Kreis schmaler wird
- * --tab-label-lift          -> wie weit Icon und Name zusammen über der Kreismitte sitzen; hebt den
-                               breiten Namen aus dem schmalen unteren Teil des Kreises heraus
  * --tab-pill-active-bg      -> neutrale, durchsichtige Knopffläche (Schließen-Kreuz, Chips,
  *                              gedrückte Knöpfe): --text darauf muss immer lesbar bleiben
- * --tab-active-bg           -> Hintergrund NUR des aktiven Reiters unten in der Navigation
- * --tab-add-bg              -> Fläche hinter dem Plus-Knopf (jetzt transparent, Striche allein)
- * --tab-pills-btn-gap       -> Abstand zwischen Trennlinie und Plus-Knopf
- * --tab-pills-fade          -> Breite des Ausblendens links von der Trennlinie
- * --tab-pills-tools-width   -> Breite von Ausblenden, Linie und Plus-Knopf rechts über den
- *                              Tabs der Übersicht; so weit bleibt der letzte Tab davon weg
  * --page-tool-size          -> Größe der runden Knöpfe rechts neben den Pillen einer
  *                              Eintragsseite (Kopieren, Filter, Plus)
  * --page-tool-icon          -> Größe des Symbols darin
@@ -231,7 +136,7 @@
  * --sheet-slide-time        -> wie lange das Hereingleiten dauert
  * --sheet-tile-size / --sheet-tile-icon -> Kachel und Icon im Raster „Icon wählen“
  * --modal-dismiss-pull      -> Wie weit man ein Blatt ziehen muss, damit es schließt
- * Dunkelmodus: dieselben Werte werden weiter unten noch einmal gesetzt —
+ * Dunkelmodus: dieselben Werte werden in styles/tokens-dark.css noch einmal gesetzt —
  * einmal für „folgt dem System“ und einmal für „in den Einstellungen gewählt“.
  */
 
@@ -285,24 +190,6 @@
   --search-bar-radius: 24px;
   --icon-folder-plus-width: 22px;
   --icon-folder-plus-height: 22px;
-  --tab-space: 116px;
-  --nav-height: 76px;
-  /* Material 3: Navigationsleiste ist 80dp hoch */
-  --tab-label-size: 9px;
-  --tab-label-gap: 2px;
-  --tab-label-lift: 3px;
-  --tab-add-size: 50px;
-  --tab-add-margin: 4px;
-  --tab-add-shift: 10px;
-  --tab-add-shift-time: 0.14s;
-  --nav-inner-pad: var(--tab-active-gap);
-  --tab-icon-grow: 8px;
-  --tab-hit-grow: 8px;
-  --tab-active-gap: 8px;
-  --tab-active-size: calc(var(--nav-height) - (2 * var(--tab-active-gap)));
-  --nav-side: 28px;
-  --nav-bottom: 10px;
-  --nav-radius: 999px;
   --composer-radius: 26px;
   --composer-side: 16px;
   --composer-btn-size: 36px;
@@ -337,25 +224,12 @@
   --restore-color: #34c759;
   --link-color: #007aff;
   --move-color: #8a72bd;
-  --tab-pill-size: 15px;
   --tab-pill-active-bg: rgba(60, 60, 67, 0.09);
-  --tab-active-bg: var(--avatar-btn-bg); /* Zähler-Akzentfarbe, wechselt automatisch mit dem Modus */
-  --tab-add-bg: transparent; /* ohne Füllung: das Kreuz aus Strichen ist der ganze Knopf */
-  --tab-pills-btn-gap: 8px;
-  --tab-pills-fade: 16px;
-  --tab-pills-tools-width: calc(var(--content-side) + var(--tab-pills-fade) + 1px + var(--tab-pills-btn-gap) + 32px);
   --page-tool-size: 36px;
   --page-tool-icon: 20px;
   --page-tool-gap: 4px;
   --star-color: #c99a00; /* dunkleres Gold, damit der Stern auf der hellen Karte Kontrast hat */
   --avatar-btn-bg: #111318;
-  --nav-bg: #ffffff;
-  --nav-glow-color: 17, 19, 24; /* #111318 — wie im Dunkelmodus die Kartenfarbe der Gegenseite (--avatar-btn-bg) */
-  --nav-glow-height: 380px;
-  --nav-glow-strength: 0.45;
-  --nav-glow-opacity: 0.6; /* wie im Dunkelmodus, damit der Verlauf in beiden Modi gleich stark wirkt */
-  --nav-glow-arc: 115%;
-  --nav-glow-fade: 28%;
   --inbox-icon-color: #233d4c;
   --project-icon-color: #5B0E14;
   --workspace-icon-color: #ff9f0a;
@@ -379,21 +253,3 @@
   /* Hoehe der eingeblendeten Bildschirmtastatur; src/shell/keyboard-inset.js setzt den Wert am Handy */
   --keyboard-inset: 0px;
 }
-
-/*
- * Schmale Handys: unter 370px Gerätebreite reicht die Leiste nicht mehr für
- * vier Kreise, den Plus-Knopf und die 8px Rand — der äußere Kreis würde sonst
- * über den Rand hinausrutschen. Sie rückt dort näher an den Bildschirmrand.
- * 360px ist die übliche Android-Breite und der Fall, der zählt; noch schmalere
- * Geräte (320px) bleiben eng.
- * Gefragt wird nach „echtes Handy UND schmal“ wie in styles/base.css: nur dort
- * ist das Gerät genau so breit wie das Fenster. Im Rahmen auf dem Rechner ist
- * es immer 390px breit, da passt alles ohnehin.
- */
-@media (hover: none) and (pointer: coarse) and (max-width: 369px) {
-  :root {
-    --nav-side: 20px;
-  }
-}
-
-/* Dunkelmodus: folgt dem System, solange in den Einstellungen nichts anderes gewählt ist */
