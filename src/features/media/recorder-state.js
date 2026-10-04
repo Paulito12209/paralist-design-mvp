@@ -9,6 +9,9 @@
  * -----------------------------------
  * defaultMode -> wie eine Aufnahme ohne gemerkte Wahl läuft ("audio" oder "text")
  *
+ * Die gemerkte Wahl liegt im Browser-Speicher (storageKeys.recorderMode) und
+ * wird von recorder.js geschrieben — beim Wechsel im ⚙-Blatt und wenn die App
+ * nach einem Mikrofon-Konflikt selbst auf „Nur Mitschrift“ wechselt.
  * Wer die Zustände wechselt: recorder.js (Starten, Fehler, Modus, Schließen),
  * recorder-session.js (Pause, Weiter, Stoppen) und recorder-save.js (Speichern).
  */
@@ -18,6 +21,9 @@ import { showSetupAlert, showState } from "./recorder-view.js";
 
 const defaultMode = "audio";
 
+/* Die gemerkte Art: "audio", "text" oder null, wenn nie eine gewählt wurde */
+const storedMode = readJson(storageKeys.recorderMode, null);
+
 export const rec = {
   /* Das Overlay (recorder-view.js), entsteht beim ersten Öffnen */
   layer: null,
@@ -26,7 +32,11 @@ export const rec = {
   /* "starting", "recording", "paused", "stopped" oder "error" */
   state: "starting",
   /* "audio" nimmt auf und schreibt mit, "text" schreibt nur mit (gemerkt im Browser-Speicher) */
-  mode: readJson(storageKeys.recorderMode, defaultMode) === "text" ? "text" : "audio",
+  mode: (storedMode || defaultMode) === "text" ? "text" : "audio",
+  /* Wurde die Art schon einmal festgelegt (selbst gewählt oder von der App nach
+     einem Mikrofon-Konflikt)? Solange nicht, darf die App beim Konflikt selbst
+     auf „Nur Mitschrift“ wechseln; danach entscheidet die gemerkte Wahl. */
+  modeChosen: storedMode === "audio" || storedMode === "text",
   /* Die laufende Sitzung: Mikrofon (im Modus „text“ keins), Zeit, Welle und wie lange Ton ohne Mitschrift kam */
   session: null,
   /* Die fertige Aufnahme nach „Stoppen“: { blob, duration } */

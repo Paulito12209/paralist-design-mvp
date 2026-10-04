@@ -9,11 +9,18 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * levelBoost -> wie stark leise Töne in der Welle angehoben werden
- * fftSize    -> wie viele Proben in eine Pegelmessung eingehen (größer = ruhiger, träger)
- * micErrors  -> Name des Browser-Fehlers → kurzer Grund in Alltagssprache
+ * micConstraints -> was vom Mikrofon verlangt wird (siehe Kommentar dort)
+ * levelBoost     -> wie stark leise Töne in der Welle angehoben werden
+ * fftSize        -> wie viele Proben in eine Pegelmessung eingehen (größer = ruhiger, träger)
+ * micErrors      -> Name des Browser-Fehlers → kurzer Grund in Alltagssprache
  */
 
+/* Ohne Echo-Unterdrückung: Mit ihr nimmt Chrome auf Android die Tonquelle für
+   Telefonate, die Android als „privat“ einstuft — dann bekommt die
+   Spracherkennung (App „Google“) während der Aufnahme nur Stille und die
+   Mitschrift bleibt leer. Ohne sie darf die Erkennung mithören. Ein Sprachmemo
+   braucht keine Echo-Unterdrückung, es spielt dabei nichts ab. */
+const micConstraints = { audio: { echoCancellation: false } };
 const levelBoost = 3.2;
 const fftSize = 1024;
 
@@ -56,7 +63,7 @@ function meter(stream) {
 export async function openMic() {
   let stream = null;
   try {
-    stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    stream = await navigator.mediaDevices.getUserMedia(micConstraints);
   } catch (error) {
     const failure = new Error(error && error.message ? error.message : "Mikrofon geht nicht auf");
     failure.reason = micErrors[error && error.name] || "failed";

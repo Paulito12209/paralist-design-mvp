@@ -24,6 +24,15 @@ const levelEveryMs = 70;
 const soundLevel = 0.12;
 const starveAfterMs = 3000;
 
+/**
+ * Die Beobachtung „Ton da, aber nichts gehört“ von vorn beginnen — wenn die
+ * Mitschrift neu zuhört („Erneut anfragen“, nach einer Pause), sonst stünde
+ * der alte Zähler schon über der Schwelle und der neue Anlauf bekäme keine Zeit.
+ */
+export function resetStarving() {
+  if (rec.session) rec.session.soundMs = 0;
+}
+
 /* Die Aufnahme hört Ton, die Mitschrift aber nichts: Android gibt das Mikrofon nur an eine App. */
 function watchStarving(now, level) {
   const { session, speech } = rec;
@@ -99,6 +108,7 @@ export function resumeSession() {
   if (session.mic) resumeMic(session.mic);
   session.startedAt = performance.now();
   session.lastLevel = session.startedAt;
+  resetStarving();
   setState("recording");
   rec.speech.start();
   tick();
