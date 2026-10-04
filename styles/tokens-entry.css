@@ -1,0 +1,117 @@
+/*
+ * Die Werte für den Inhalt eines Eintrags: Notiz-Bausteine, Karten für Links,
+ * das „/“-Menü und die Leiste über der Tastatur, Lesezeichen, Cover und Icon
+ * über dem Titel, Karte „Details“, Zeichnung und YouTube-Player.
+ * Pfad: styles/tokens-entry.css
+ *
+ * Diese Datei ist von styles/tokens-pages.css abgetrennt, weil dort die Grenze
+ * von 400 Zeilen nahe war. Sie wird nach styles/tokens-pages.css geladen; im
+ * Dunkeln abweichende Werte (Lesezeichen-Lila, Cover, Icon-Helligkeit) stehen
+ * in styles/tokens-dark.css, das danach kommt.
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * NOTIZ-BAUSTEINE (Inhalt eines Eintrags, „/“-Menü)
+ * --block-gap               -> Luft zwischen zwei Zeilen/Bausteinen
+ * --block-mark-w            -> Breite der Spalte für Punkt, Zahl oder Checkbox vor einer Listenzeile
+ * --block-check-size        -> Durchmesser der runden Checkbox
+ * --block-check-color       -> Farbe, mit der sich eine abgehakte Checkbox füllt
+ * --block-rule-gap          -> Luft über und unter einer Trennlinie
+ * --embed-tile-w            -> Breite der Kachel links einer Karte (halbe Breite wie die Übersichtskarten)
+ * --embed-h                 -> Höhe dieser Kachel
+ * --embed-bar-h             -> Anteil der grauen Leiste unten in der Kachel (40% = zwei Fünftel)
+ * --embed-radius            -> Rundung der Kachel (wie die Übersichtskarten)
+ * --embed-tile-bg           -> Fläche der Kachel (wie die Übersichtskarten)
+ * --embed-bar-bg            -> Grau der Leiste mit Logo, Dienst und Menü
+ * --embed-bg                -> Fläche des Eingabefelds, solange eine Karte noch keinen Link hat
+ * --embed-tint              -> wie deckend die Logofarbe hinter dem Favicon einer Website liegt (25% = zart)
+ * --embed-gap               -> Luft über und unter einer Karte
+ *
+ * LESEZEICHEN (Sammlung hinter der Karte auf der Startseite)
+ * --bookmark-color          -> Lila der Lesezeichen: Karten-Icon, großes Icon oben, Platzhalter
+ * --bookmark-thumb          -> Kantenlänge der quadratischen Kachel links in einer Zeile
+ * --slash-bg                -> Hintergrund des „/“-Menüs
+ * --slash-tile-bg           -> Fläche einer Kachel im Menü
+ * --slash-radius            -> Rundung des Menüs
+ * --slash-max-h             -> ab dieser Höhe scrollt das Menü
+ * --block-bar-h             -> Höhe der Leiste über der Tastatur (Plus, Bausteine, Tastatur zu)
+ * --block-bar-icon          -> Größe der Icons in dieser Leiste
+ * --block-picker-h          -> Höhe der Auswahl an Stelle der Tastatur, solange die Tastatur
+ *                              noch nie offen war (sonst genau die Höhe der Tastatur)
+ *
+ * DETAILSEITEN (EINTRAG UND ARBEITSBEREICH)
+ * --page-cover-mix          -> wie kräftig die Kategoriefarbe ganz oben im Cover ist (im Dunkeln stärker, siehe styles/tokens-dark.css)
+ * --cover-ink-split         -> ab welcher Helligkeit der Cover-Farbe (0 = schwarz, 1 = weiß) Pfad und Knöpfe darüber
+ *                              schwarz statt weiß werden; höher = öfter weiß
+ * --cover-ink-muted         -> wie deckend die blassen Teile (Pfad, Trennzeichen) über dem Cover sind
+ * --accent-l-min / --accent-l-max -> Helligkeitsbereich, in den das eigene Icon ohne Cover gerückt wird, damit es
+ *                              sich vom Grund abhebt (im Hellen nach oben begrenzt, im Dunkeln nach unten, styles/tokens-dark.css)
+ * --entry-icon-glyph        -> Größe des eigenen Icons über dem Titel eines Eintrags
+ * --entry-icon-gap          -> Luft zwischen diesem Icon und dem Titel
+ * --details-gap             -> Luft zwischen dem Text eines Eintrags und der Karte „Details“ darunter
+ * --details-head-h          -> Höhe des Kopfs dieser Karte — so viel schaut beim Öffnen über der Navigation hervor
+ * --entry-fold-fade         -> wie lang gekürzter Text nach unten ausläuft, bevor „Mehr anzeigen“ kommt
+ *
+ * ZEICHNUNG
+ * --draw-tool-size / --draw-color-size -> Größe der Werkzeug-Knöpfe und Farbpunkte
+ * --draw-tools-gap          -> Abstand der Werkzeugleiste zur Zeichenfläche darüber und zur Karte „Details“ darunter
+ *
+ * VIDEOPLAYER IM EINTRAG
+ * --video-bg / --video-glass -> Grund des Blocks, Fläche der Tempo-Pille und der runden Knöpfe rechts
+ * --video-bar-h / --video-speed-size -> Leiste zwischen Bild und Titel, Höhe der Tempo-Stufen und der runden Knöpfe
+ * --video-inset / --video-title-size -> Abstand von Leiste und Titel zum Rand, Schriftgröße des Titels
+ */
+
+:root {
+  /* Notiz-Bausteine: Listen, Checkboxen, Karten und das „/“-Menü.
+     color-mix mit --text: passt sich ohne eigene Dunkel-Werte an Hell und Dunkel an */
+  --block-gap: 2px;
+  --block-mark-w: 26px;
+  --block-check-size: 20px;
+  --block-check-color: #007aff;
+  --block-rule-gap: 12px;
+  --embed-tile-w: calc(50% - 6px);
+  --embed-h: 124px;
+  --embed-bar-h: 40%;
+  --embed-radius: var(--radius-lg);
+  --embed-tile-bg: var(--overview-card-bg);
+  --embed-bar-bg: color-mix(in srgb, var(--text) 9%, var(--overview-card-bg));
+  --embed-bg: color-mix(in srgb, var(--text) 6%, transparent);
+  --embed-tint: 25%;
+  --embed-gap: 6px;
+  --bookmark-color: #af52de;
+  --bookmark-thumb: 88px;
+  --slash-bg: var(--update-bg);
+  --slash-tile-bg: color-mix(in srgb, var(--text) 6%, transparent);
+  --slash-radius: 20px;
+  --slash-max-h: 320px;
+  --block-bar-h: 48px;
+  --block-bar-icon: 22px;
+  --block-picker-h: 320px;
+
+  /* Zeichnung: Werkzeug-Knöpfe und Farbpunkte */
+  --draw-tool-size: 38px;
+  --draw-color-size: 22px;
+  --draw-tools-gap: 12px;
+
+  /* Videoplayer: immer dunkel, Tempo-Pille aus Milchglas */
+  --video-bg: #141414;
+  --video-glass: rgba(255, 255, 255, 0.18);
+  --video-bar-h: 44px;
+  --video-speed-size: 36px;
+  --video-inset: 14px;
+  --video-title-size: 26px;
+
+  /* Detailseiten: Cover; Eintrag: Icon über dem Titel */
+  --page-cover-mix: 60%;
+  --cover-ink-split: 0.6;
+  --cover-ink-muted: 84%;
+  --accent-l-min: 0;
+  --accent-l-max: 0.62;
+  --entry-icon-glyph: 40px;
+  --entry-icon-gap: 10px;
+  /* Eintrag: Karte „Details“ am Ende von „Inhalt“ und gekürzter Text darüber */
+  --details-gap: 28px;
+  --details-head-h: 48px;
+  --entry-fold-fade: 64px;
+}

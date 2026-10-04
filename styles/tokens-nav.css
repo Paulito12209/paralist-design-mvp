@@ -1,0 +1,109 @@
+/*
+ * Die Werte der Navigationsleiste unten und der Tab-Pillen über den
+ * Arbeitsbereichen. Sie wirken auf jeder Seite; alle übrigen Grundwerte
+ * (Farben, Kopfzeile, Eingabefeld, Blätter) stehen in styles/tokens.css.
+ * Pfad: styles/tokens-nav.css
+ *
+ * Diese Datei ist von styles/tokens.css abgetrennt, weil dort die Grenze von
+ * 400 Zeilen erreicht war. Sie wird direkt nach styles/tokens.css geladen; im
+ * Dunkeln abweichende Werte stehen in styles/tokens-dark.css, das danach kommt.
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * FARBEN
+ * --nav-bg                  -> Fläche der Navigationsleiste: weiß im Hellmodus, schwarz im Dunkelmodus
+ * --nav-glow-color          -> Farbe des Verlaufs hinter der Navigationsleiste (heller Akzent je Modus)
+ * --nav-glow-height         -> wie hoch die Verlaufs-Zone über dem unteren Rand reicht
+ * --nav-glow-strength / --nav-glow-opacity -> Kraft (0 = aus, 1 = voll) und Deckkraft des Verlaufs
+ * --nav-glow-arc            -> wie stark die Oberkante durchhängt: kleiner = deutlicher gebogen
+ * --nav-glow-fade           -> auf welcher Strecke die Oberkante ausgeblendet wird (kein harter Abbruch)
+ * --tab-active-bg           -> Hintergrund NUR des aktiven Reiters unten in der Navigation
+ * --tab-add-bg              -> Fläche hinter dem Plus-Knopf (jetzt transparent, Striche allein)
+ *
+ * SCHRIFTGRÖSSEN
+ * --tab-label-size          -> Schriftgröße der Wörter unter den Navigations-Icons (sie stehen mit im
+ *                              Kreis, darum wird der Name ab etwa 11px breiter als der Kreis)
+ * --tab-pill-size           -> Schriftgröße der Tab-Pillen über den Arbeitsbereichen
+ *
+ * ABSTÄNDE UND GRÖSSEN
+ * --tab-space               -> Platz am Seitenende, damit nichts hinter der Navigation liegt
+ * --nav-height              -> Höhe der Navigationsleiste (Material 3: 80dp)
+ * --nav-side / --nav-bottom / --nav-radius -> Lage und Rundung der Navigationsleiste
+ *                              (--nav-side rückt auf Handys unter 370px Breite näher an den Rand,
+ *                              siehe die Abfrage unten in dieser Datei)
+ * --tab-add-size            -> Größe des runden Plus-Knopfes in der Navigation
+ * --nav-inner-pad           -> Innenrand der Leiste links und rechts: hält den Kreis des äußeren
+ *                              Reiters genauso weit vom Rand weg wie --tab-active-gap ihn oben und
+ *                              unten hält, damit er rundum gleich viel Luft hat
+ * --tab-add-margin          -> Extra-Luft links und rechts vom Plus-Kreis: die Icons haben in ihren
+ *                              Kästchen etwa so viel Rand, der Kreis nicht — so wirken alle Lücken gleich
+ * --tab-icon-grow           -> um wie viel die Icons wachsen, solange ihre Namen aus sind
+ * --tab-add-shift / --tab-add-shift-time -> Rutschen des Plus-Knopfes beim Drücken: Weite und Dauer
+ * --tab-hit-grow            -> wie weit die Tippfläche eines Reiters über sein Icon hinausgeht
+ * --tab-active-gap          -> Abstand zwischen dem Kreis des aktiven Reiters und dem Rand der Leiste
+ * --tab-active-size         -> Durchmesser dieses Kreises (Leistenhöhe minus --tab-active-gap oben und
+ *                              unten) — Icon und Name stehen darin, er bleibt dadurch immer rund
+ * --tab-label-gap           -> Luft zwischen Icon und Name im Kreis: größer schiebt den Namen weiter
+ *                              nach unten, wo der Kreis schmaler wird
+ * --tab-label-lift          -> wie weit Icon und Name zusammen über der Kreismitte sitzen; hebt den
+ *                              breiten Namen aus dem schmalen unteren Teil des Kreises heraus
+ * --tab-pills-btn-gap       -> Abstand zwischen Trennlinie und Plus-Knopf
+ * --tab-pills-fade          -> Breite des Ausblendens links von der Trennlinie
+ * --tab-pills-tools-width   -> Breite von Ausblenden, Linie und Plus-Knopf rechts über den
+ *                              Tabs der Übersicht; so weit bleibt der letzte Tab davon weg
+ */
+
+:root {
+  /* Navigationsleiste unten: Fläche und Verlauf dahinter */
+  --nav-bg: #ffffff;
+  --nav-glow-color: 17, 19, 24; /* #111318 — wie im Dunkelmodus die Kartenfarbe der Gegenseite (--avatar-btn-bg) */
+  --nav-glow-height: 380px;
+  --nav-glow-strength: 0.45;
+  --nav-glow-opacity: 0.6; /* wie im Dunkelmodus, damit der Verlauf in beiden Modi gleich stark wirkt */
+  --nav-glow-arc: 115%;
+  --nav-glow-fade: 28%;
+
+  /* Navigationsleiste unten: Maße, Reiter und Plus-Knopf */
+  --tab-space: 116px;
+  --nav-height: 76px;
+  /* Material 3: Navigationsleiste ist 80dp hoch */
+  --tab-label-size: 9px;
+  --tab-label-gap: 2px;
+  --tab-label-lift: 3px;
+  --tab-add-size: 50px;
+  --tab-add-margin: 4px;
+  --tab-add-shift: 10px;
+  --tab-add-shift-time: 0.14s;
+  --nav-inner-pad: var(--tab-active-gap);
+  --tab-icon-grow: 8px;
+  --tab-hit-grow: 8px;
+  --tab-active-gap: 8px;
+  --tab-active-size: calc(var(--nav-height) - (2 * var(--tab-active-gap)));
+  --nav-side: 28px;
+  --nav-bottom: 10px;
+  --nav-radius: 999px;
+  --tab-active-bg: var(--avatar-btn-bg); /* Zähler-Akzentfarbe, wechselt automatisch mit dem Modus */
+  --tab-add-bg: transparent; /* ohne Füllung: das Kreuz aus Strichen ist der ganze Knopf */
+
+  /* Tab-Pillen über den Arbeitsbereichen */
+  --tab-pill-size: 15px;
+  --tab-pills-btn-gap: 8px;
+  --tab-pills-fade: 16px;
+  --tab-pills-tools-width: calc(var(--content-side) + var(--tab-pills-fade) + 1px + var(--tab-pills-btn-gap) + 32px);
+}
+
+/*
+ * Schmale Handys: unter 370px Gerätebreite reicht die Leiste nicht mehr für
+ * vier Kreise, den Plus-Knopf und die 8px Rand — der äußere Kreis würde sonst
+ * über den Rand hinausrutschen. Sie rückt dort näher an den Bildschirmrand.
+ * 360px ist die übliche Android-Breite und der Fall, der zählt; noch schmalere
+ * Geräte (320px) bleiben eng.
+ * Gefragt wird nach „echtes Handy UND schmal“ wie in styles/base.css: nur dort
+ * ist das Gerät genau so breit wie das Fenster. Im Rahmen auf dem Rechner ist
+ * es immer 390px breit, da passt alles ohnehin.
+ */
+@media (hover: none) and (pointer: coarse) and (max-width: 369px) {
+  :root {
+    --nav-side: 20px;
+  }
+}

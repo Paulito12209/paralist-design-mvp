@@ -135,12 +135,11 @@ Die harten Punkte:
    Hat eine Datei, die du änderst, schon mehr als 360 Zeilen, teile sie zuerst
    in einem eigenen Schritt und sag es im Review.
 2. **Struktur einhalten:** `src/core → src/data → src/ui → src/features|src/shell`,
-   Stile je Bereich unter `styles/`, alle Werte in `styles/tokens.css`.
+   Stile je Bereich unter `styles/`, alle Werte in `styles/tokens*.css`.
    **Jede neue CSS-Datei steht an zwei Stellen:** `<link>` in `index.html` und
-   Dateiliste im Kopf von `styles/tokens.css` (die Dateiliste im
-   Versionsstempel ergänzt der Git Commit Manager). Soll eine Android-Datei
-   eine andere Android-Datei überstimmen, wird sie in `index.html` **nach**
-   ihr geladen.
+   Dateiliste in `docs/styles-dateien.md` (die Dateiliste im Versionsstempel
+   ergänzt der Git Commit Manager). Soll eine Android-Datei eine andere
+   Android-Datei überstimmen, wird sie in `index.html` **nach** ihr geladen.
 3. **Kommentar-Header in jeder Datei** mit Pfad und allen anpassbaren Werten,
    auf Deutsch, in Alltagssprache.
 4. **Performance:** große Bereiche über `src/core/lazy.js` nachladen, nur die

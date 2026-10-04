@@ -29,7 +29,7 @@ import {
   setCover,
   toggleFavorite,
 } from "../../data/mutations.js";
-import { deleteCollection, deleteLabels } from "../../data/collection-delete.js";
+import { deleteCollection, deletedLabels, deleteLabels } from "../../data/collection-delete.js";
 import { filterCollectionEntries, filterCollectionWorkspaces } from "../../data/collection-filters.js";
 import { sortCollectionEntries, sortCollectionWorkspaces } from "../../data/collection-sorts.js";
 import { workspaceDetails } from "../../data/details.js";
@@ -47,6 +47,7 @@ import { filterEmptyState } from "../../ui/filter-empty.js";
 import { entryRow, workspaceRow } from "../../ui/rows.js";
 import { openSheet } from "../../ui/sheet.js";
 import { openTypeChangeSheet, typeChangeAction, typeCrumbMarkup } from "../../ui/type-menu.js";
+import { deleteWithUndo } from "../../ui/undo-toast.js";
 import { isViewActive } from "../../ui/views.js";
 import { initArchive, renderArchive } from "./archive.js";
 import { initCollectionPanel } from "./collection-panel.js";
@@ -204,7 +205,11 @@ function openPageMenu() {
   if (page.kind === "favorites") {
     openSheet(page.title, [
       ...heroOptions,
-      { label: "Alle Favoriten entfernen", icon: "star-outline", onSelect: clearFavorites },
+      {
+        label: "Alle Favoriten entfernen",
+        icon: "star-outline",
+        onSelect: () => deleteWithUndo(clearFavorites, { title: "Alle Favoriten entfernt", icon: "star-outline" }),
+      },
     ]);
     return;
   }
@@ -262,14 +267,14 @@ function openPageMenu() {
       label: deleteLabels[page.kind],
       icon: "trash",
       danger: true,
-      onSelect: () => deleteCollection(page.kind),
+      onSelect: () => deleteWithUndo(() => deleteCollection(page.kind), { title: deletedLabels[page.kind] }),
     });
   } else {
     options.push({
       label: "Alle Einträge löschen",
       icon: "trash",
       danger: true,
-      onSelect: () => deleteEntriesOf(page.parent),
+      onSelect: () => deleteWithUndo(() => deleteEntriesOf(page.parent), { title: "Alle Einträge gelöscht" }),
     });
   }
 
