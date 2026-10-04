@@ -53,8 +53,10 @@ function ensureHost() {
  *                       styles/tokens.css. Ohne Angabe das Grün des Hakens.
  * @param options.action { label, onSelect, icon } für den Knopf rechts; ohne Angabe keiner.
  *                       `icon` ist optional, ohne Angabe der Pfeil nach oben („öffnen“).
+ * @param options.ms     wie lange die Meldung steht; ohne Angabe VISIBLE_MS.
+ *                       „Rückgängig“ (src/ui/undo-toast.js) bleibt etwas länger.
  */
-export function showToast({ icon: iconName = "check-circle", title, note = "", accent = "", action = null }) {
+export function showToast({ icon: iconName = "check-circle", title, note = "", accent = "", action = null, ms = VISIBLE_MS }) {
   const element = ensureHost();
   onAction = action ? action.onSelect : null;
   /* role="status": Sprachausgaben lesen die Meldung vor, ohne dass der Finger
@@ -73,7 +75,7 @@ export function showToast({ icon: iconName = "check-circle", title, note = "", a
   `;
   element.hidden = false;
   clearTimeout(hideTimer);
-  hideTimer = setTimeout(hideToast, VISIBLE_MS);
+  hideTimer = setTimeout(hideToast, ms);
 }
 
 /** Die Meldung sofort wegnehmen. */
