@@ -164,6 +164,8 @@
  * --m3-search-list-pull        -> wie weit die Liste unter die Zeile „15 Einträge“ rückt (größer = enger zum ersten Treffer)
  * --m3-search-day-gap          -> Luft über „Heute“; 4px ergeben sichtbar 24px ab „15 Einträge“
  * --m3-search-title-lines      -> höchstens so viele Zeilen Titel je Treffer, danach „…“ (dazu eine Zeile Art · Ort)
+ * --m3-search-actions-bottom  -> Abstand der Knöpfe unten (Mikrofon, Suchen, Abbrechen) zum unteren Rand; 24px sind mit dem Daumen gut zu erreichen
+ * --m3-search-actions-bottom-keyboard -> derselbe Abstand zur Oberkante der Tastatur, solange sie offen ist
  * --m3-search-band-rise        -> wie weit über den Knöpfen unten die dunkle Leiste beginnt (wie unter der Spotify-Leiste)
  * --m3-search-band-mid / -end  -> wie deckend die Leiste auf Höhe der Knöpfe und am unteren Rand ist; unter 100%
  *                                 bleibt die Liste darunter zu ahnen, „Abbrechen“ bleibt trotzdem lesbar
@@ -299,6 +301,8 @@
   --m3-search-list-pull: 2px;
   --m3-search-day-gap: 4px;
   --m3-search-title-lines: 3;
+  --m3-search-actions-bottom: 24px;
+  --m3-search-actions-bottom-keyboard: 12px;
   --m3-search-band-rise: 48px;
   --m3-search-band-mid: 72%;
   --m3-search-band-end: 92%;

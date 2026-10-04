@@ -22,6 +22,8 @@
  * --m3-search-list-pull     -> wie weit die Liste unter die Zeile mit der Anzahl rückt (Abstand zum ersten Treffer)
  * --m3-search-day-gap       -> Luft über „Heute“ (sichtbar 24px von „15 Einträge“ bis „Heute“)
  * --m3-search-title-lines   -> höchstens so viele Zeilen Titel je Eintrag; darunter eine Zeile Art und Ablageort
+ * --m3-search-actions-bottom -> Abstand der Knöpfe unten zum unteren Rand (nur Android; sonst bestimmt ihn die Navigation)
+ * --m3-search-actions-bottom-keyboard -> Abstand zur Tastatur, solange sie offen ist (Klasse is-keyboard-open, src/shell/keyboard-inset.js)
  * --m3-search-band-rise     -> wie weit über den Knöpfen die dunkle Leiste beginnt
  * --m3-search-band-mid / --m3-search-band-end -> wie deckend die Leiste ist (Mitte, unterer Rand)
  * --m3-fab-radius           -> Rundung der Knöpfe unten, wie beim Knopf „Neu“
@@ -297,6 +299,23 @@
 
   /* ---------- Android: Knöpfe unten und dunkle Leiste ---------- */
 
+  /* Die Knöpfe stehen mit mehr Luft zum unteren Rand, damit sie der Daumen
+     gut erreicht. Die Liste endet entsprechend höher, sonst verdeckten die
+     Knöpfe den letzten Treffer. */
+  /* Ist die Tastatur offen, rücken die Knöpfe auf den kleineren Abstand: der
+     Wert steht dann überall dort, wo er gebraucht wird (Knöpfe, Leiste, Liste). */
+  [data-mobile-os="android"] body.is-keyboard-open {
+    --m3-search-actions-bottom: var(--m3-search-actions-bottom-keyboard);
+  }
+
+  [data-mobile-os="android"] body.is-search .search-actions {
+    margin-bottom: var(--m3-search-actions-bottom);
+  }
+
+  [data-mobile-os="android"] .search-list {
+    padding-bottom: calc(var(--search-pill-height) + var(--search-actions-space) + var(--m3-search-actions-bottom) + var(--safe-bottom));
+  }
+
   /* Gehäuse und Knöpfe darin: abgerundete Rechtecke wie der Knopf „Neu“.
      Ohne Schatten — die dunkle Leiste darunter hebt sie schon ab, im Hellen
      stand der Schatten als heller Hof um das Gehäuse. */
@@ -318,7 +337,7 @@
   /* Die Leiste beginnt etwas über den Knöpfen und wird nach unten dunkler,
      aber nie ganz deckend: die Liste läuft sichtbar darunter weiter. */
   [data-mobile-os="android"] body.is-search .device::after {
-    height: calc(var(--search-pill-height) + 12px + var(--nav-bottom) + var(--safe-bottom) + var(--m3-search-band-rise));
+    height: calc(var(--search-pill-height) + var(--m3-search-actions-bottom) + var(--safe-bottom) + var(--m3-search-band-rise));
     background: linear-gradient(
       to bottom,
       transparent,
