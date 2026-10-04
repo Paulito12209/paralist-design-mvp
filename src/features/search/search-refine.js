@@ -6,7 +6,9 @@
  *
  * - Art: die Pillen unter dem Titel (Alle, Aufgaben, Notizen …) mit Anzahl
  * - Sortieren: Relevanz (wie die Palette), zuletzt bearbeitet, zuletzt
- *   geöffnet, Titel — jede in beide Richtungen (Blatt src/ui/sort-sheet.js)
+ *   geöffnet, Status, Dringlichkeit, Titel — jede in beide Richtungen
+ *   (Blatt src/ui/sort-sheet.js). Treffer ohne Status bzw. Dringlichkeit
+ *   (Notizen, Arbeitsbereiche …) stehen dabei in beiden Richtungen unten.
  * - Eingrenzen: Ort, Zeitraum der letzten Bearbeitung, nur im Titel suchen,
  *   Erledigte zeigen. Ort und Zeitraum gibt es nur bei Einträgen — ist eins
  *   davon gesetzt, fallen Arbeitsbereiche und Übersichtskarten heraus.
@@ -15,7 +17,8 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * maxHits        -> wie viele Treffer die Ergebnisliste höchstens zeigt
- * refineSorts    -> Sortierungen: Name, Icon, Wortlaut beider Richtungen
+ * refineSorts    -> Sortierungen: Name, Icon, Wortlaut beider Richtungen (Status und
+ *                   Dringlichkeit: Wortlaut in src/data/config-sorts.js)
  *                   (up = aufsteigend, down = absteigend), natürliche Richtung
  * refinePeriods  -> Zeiträume: Name im Blatt, Wort auf dem Chip, Tage zurück
  *                   (0 = nur heute)
@@ -25,7 +28,8 @@
 import { startOfDay } from "../../core/dates.js";
 import { sameId } from "../../core/ids.js";
 import { typeOrder, typePlurals } from "../../data/config.js";
-import { isTaskDone } from "../../data/config-tasks.js";
+import { prioritySort, statusSort } from "../../data/config-sorts.js";
+import { isTaskDone, priorityRankOf, statusRankOf } from "../../data/config-tasks.js";
 import { hasPlace } from "../../data/queries.js";
 import { isEntryRef, refId } from "../../data/refs.js";
 import { state } from "../../data/state.js";
@@ -38,6 +42,8 @@ export const refineSorts = [
   { id: "relevanz", label: "Relevanz", icon: "search", up: "Beste zuerst", down: "Beste zuletzt", asc: true },
   { id: "bearbeitet", label: "Bearbeitet", icon: "pencil", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
   { id: "geoeffnet", label: "Geöffnet", icon: "history", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
+  statusSort,
+  prioritySort,
   { id: "titel", label: "Titel", icon: "text", up: "A bis Z", down: "Z bis A", asc: true },
 ];
 
@@ -111,9 +117,28 @@ function sortAscending(list, sort) {
   return list;
 }
 
+/* Status und Dringlichkeit: der Platz in der Reihenfolge der Stufen; Treffer ohne Eintrag oder ohne die Eigenschaft liefern null. */
+const rankKeys = {
+  [statusSort.id]: (item) => (item.entry ? statusRankOf(item.entry) : null),
+  [prioritySort.id]: (item) => (item.entry ? priorityRankOf(item.entry) : null),
+};
+
+/* Nach Stufe sortieren; wer keine hat, steht in beiden Richtungen hinten, Gleiche behalten ihre Reihenfolge. */
+function sortByRank(list, key, asc) {
+  const ranks = new Map(list.map((item) => [item, key(item)]));
+  const sign = asc ? 1 : -1;
+  return [...list].sort((a, b) => {
+    const x = ranks.get(a);
+    const y = ranks.get(b);
+    if (x === null || y === null) return (x === null) - (y === null);
+    return sign * (x - y);
+  });
+}
+
 /* Sortieren in der gewählten Richtung; ein alter Stand ohne `asc` gilt als natürliche Richtung. */
 function sortItems(list, refine) {
   const asc = refine.asc ?? naturalAsc(refine.sort);
+  if (rankKeys[refine.sort]) return sortByRank(list, rankKeys[refine.sort], asc);
   const sorted = sortAscending(list, refine.sort);
   return asc ? sorted : [...sorted].reverse();
 }

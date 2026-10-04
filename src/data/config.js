@@ -24,7 +24,7 @@
  * levelSteps / levelStep  -> ab wie vielen XP die nächste Stufe beginnt
  * calendarSegments       -> die drei Spalten der Kalenderliste; steht in src/data/config-calendar.js
  * manualSort              -> „Eigene Reihenfolge“: Wortlaut der Sortierung, die beim Verschieben einer Zeile entsteht
- * projectSorts            -> wonach sich die Projekte sortieren lassen, samt Wortlaut beider Richtungen
+ * (Sortierarten der Projekte, Status und Dringlichkeit: src/data/config-sorts.js)
  * linkFilterDefaults     -> womit der Filter „Verknüpft mit“ startet (nichts gewählt)
  * projectViewDefaults     -> womit „Alle“ und jede neue Ansicht der Projekte startet
  * stageModes              -> die drei Modi der Bühne auf der Übersicht (Desktop): Icon im Schalter und
@@ -314,27 +314,12 @@ export const resourceFilterTypes = {
 
 /* ---------- Ansichten der Projekte (Übersicht, Seite Projekte) ---------- */
 
-/**
- * Sortierarten der Projekte. `up` und `down` sind der Wortlaut der beiden
- * Richtungen im Blatt „Sortieren“ (src/ui/sort-sheet.js), `asc` die Richtung,
- * die beim Wechsel auf diese Option gilt. Die Regeln dahinter stehen in
- * `sortProjects` in src/data/project-views.js.
- */
 /*
  * „Eigene Reihenfolge“ entsteht, wenn man eine Zeile gedrückt hält und
  * verschiebt (src/ui/row-reorder.js). Sammlungen und Projekte bieten sie an;
  * die Reihenfolge selbst merkt src/data/manual-order.js.
  */
 export const manualSort = { id: "manuell", label: "Eigene Reihenfolge", icon: "list", up: "Von oben nach unten", down: "Von unten nach oben", asc: true };
-
-export const projectSorts = [
-  { id: "name", label: "Name", icon: "text", up: "A bis Z", down: "Z bis A", asc: true },
-  { id: "erstellt", label: "Erstellt", icon: "plus-circle", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
-  { id: "geaendert", label: "Zuletzt geändert", icon: "pencil", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
-  { id: "geoeffnet", label: "Zuletzt geöffnet", icon: "history", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
-  { id: "eintraege", label: "Einträge", icon: "list", up: "Wenigste zuerst", down: "Meiste zuerst", asc: false },
-  manualSort,
-];
 
 /**
  * Der Filter „Verknüpft mit“, mit dem jede Ansicht der Aufgaben-Seite und der

@@ -11,6 +11,7 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * entrySorts      -> wonach sich Einträge sortieren lassen, samt Wortlaut beider Richtungen
+ *                   (Status und Dringlichkeit: Wortlaut in src/data/config-sorts.js)
  * workspaceSorts  -> dasselbe für die Seite Arbeitsbereiche
  * manualKinds     -> die Sammlungen, die „Eigene Reihenfolge“ anbieten (Wortlaut: manualSort in
  *                   src/data/config.js; entsteht durch Verschieben einer Zeile, src/data/manual-order.js)
@@ -20,6 +21,8 @@
 
 import { emit, events } from "../core/bus.js";
 import { manualSort } from "./config.js";
+import { prioritySort, statusSort } from "./config-sorts.js";
+import { priorityRankOf, statusRankOf } from "./config-tasks.js";
 import { openStats } from "./opens.js";
 import { entriesOf, workspaceLabel } from "./queries.js";
 import { manualRank } from "./manual-order.js";
@@ -34,9 +37,19 @@ export const entrySorts = [
   { id: "erstellt", label: "Erstellt", icon: "plus-circle", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
   { id: "geaendert", label: "Zuletzt geändert", icon: "pencil", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
   { id: "geoeffnet", label: "Zuletzt geöffnet", icon: "history", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
+  statusSort,
+  prioritySort,
   { id: "name", label: "Name", icon: "text", up: "A bis Z", down: "Z bis A", asc: true },
   manualSort,
 ];
+
+/* Was eine Sammlung nicht anbietet, weil es dort leer wäre: Dringlichkeit haben nur Aufgabe,
+   Termin und Projekt, Status zusätzlich das Dokument. Ressourcen (Dokument, Notiz, Zeichnung)
+   kennen also keine Dringlichkeit, Lesezeichen weder Status noch Dringlichkeit. */
+const unavailableSorts = {
+  resources: [prioritySort.id],
+  bookmarks: [statusSort.id, prioritySort.id],
+};
 
 export const workspaceSorts = [
   { id: "erstellt", label: "Erstellt", icon: "plus-circle", up: "Älteste zuerst", down: "Neueste zuerst", asc: false },
@@ -63,7 +76,8 @@ export const sortableCollections = Object.keys(collectionSortDefaults);
 /** Die Sortier-Optionen einer Sammlung. */
 export function collectionSortOptions(kind) {
   const options = kind === "workspaces" ? workspaceSorts : entrySorts;
-  return manualKinds.includes(kind) ? options : options.filter((option) => option.id !== manualId);
+  const hidden = [...(manualKinds.includes(kind) ? [] : [manualId]), ...(unavailableSorts[kind] || [])];
+  return options.filter((option) => !hidden.includes(option.id));
 }
 
 /** Die gültige Wahl einer Sammlung: { sort, asc }. */
@@ -93,8 +107,12 @@ function entryOpenedAt(entry) {
   return openStats("entry", entry.id)?.ts || entry.editedAt || entry.createdAt || 0;
 }
 
-/* Je Sortierart der Zahlenwert eines Eintrags; „name“ vergleicht Text. */
+/* Je Sortierart der Zahlenwert eines Eintrags; „name“ vergleicht Text. Status und
+   Dringlichkeit liefern null, wo der Eintrag keins hat (Notiz, Zeichnung …) —
+   solche Einträge stehen in beiden Richtungen unten. */
 const entryKeys = {
+  [statusSort.id]: statusRankOf,
+  [prioritySort.id]: priorityRankOf,
   erstellt: (entry) => entry.createdAt || 0,
   geaendert: (entry) => entry.editedAt || entry.createdAt || 0,
   geoeffnet: entryOpenedAt,
@@ -112,7 +130,12 @@ function sortList(list, sortId, asc, keys, nameOf) {
   const key = keys[sortId];
   if (!key) return [...list].sort((a, b) => sign * byName(a, b));
   const values = new Map(list.map((item) => [item, key(item)]));
-  return [...list].sort((a, b) => sign * (values.get(a) - values.get(b)) || byName(a, b));
+  return [...list].sort((a, b) => {
+    const x = values.get(a);
+    const y = values.get(b);
+    if (x === null || y === null) return (x === null) - (y === null) || byName(a, b);
+    return sign * (x - y) || byName(a, b);
+  });
 }
 
 /**

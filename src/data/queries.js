@@ -23,7 +23,7 @@ import {
   typePlurals,
   xpItems,
 } from "./config.js";
-import { archiveColumn, isTaskDone, taskGroupings, taskPriorities, taskPriorityOf, taskStatusOf } from "./config-tasks.js";
+import { archiveColumn, isTaskDone, statusRankOf, taskGroupings, taskPriorities, taskPriorityOf, taskStatusOf } from "./config-tasks.js";
 import { filterByLinks } from "./link-filter.js";
 import { entryRef, isEntryRef, isWorkspaceRef, refId, workspaceRef } from "./refs.js";
 import { doneHiddenInView } from "./task-hide-done.js";
@@ -277,20 +277,23 @@ function doneRank(entry) {
 
 /**
  * Aufgaben sortieren. Erledigtes steht immer ganz unten, Archiviertes darunter. `sortId` kommt aus
- * taskSorts (config.js): „erstellt“ ist die Reihenfolge des Anlegens — bzw.
- * die im Board von Hand gezogene —, „faellig“ das Datum, „titel“ das Alphabet.
- * `asc` false dreht die Reihenfolge um. „prio“ braucht nur die Übersicht
- * (insights.js), die keine Gruppen kennt.
+ * taskSorts (config-tasks.js): „erstellt“ ist die Reihenfolge des Anlegens — bzw.
+ * die im Board von Hand gezogene —, „faellig“ das Datum, „titel“ das Alphabet,
+ * „status“ Offen vor In Arbeit, „prio“ das Dringendste zuerst; bei Gleichstand
+ * gilt die Reihenfolge des Anlegens. `asc` false dreht die Reihenfolge um.
+ * Die Übersicht (insights.js) nutzt „prio“ ohne Gruppen.
  */
 export function sortTasks(list, sortId = "erstellt", asc = true) {
   const rest = (a, b) => {
-    if (sortId === "prio") return priorityRank(a) - priorityRank(b) || taskOrder(a) - taskOrder(b);
+    if (sortId === "prio") return priorityRank(a) - priorityRank(b);
+    if (sortId === "status") return statusRankOf(a) - statusRankOf(b);
     if (sortId === "faellig") return String(a.date || "\uffff").localeCompare(String(b.date || "\uffff"));
     if (sortId === "titel") return String(a.title).localeCompare(String(b.title), "de");
     return taskOrder(a) - taskOrder(b);
   };
   const sign = asc ? 1 : -1;
-  return [...list].sort((a, b) => doneRank(a) - doneRank(b) || sign * rest(a, b));
+  /* Bei Gleichstand gilt die Reihenfolge des Anlegens — auch absteigend, sonst kippten die Gleichen mit */
+  return [...list].sort((a, b) => doneRank(a) - doneRank(b) || sign * rest(a, b) || taskOrder(a) - taskOrder(b));
 }
 
 /* Lässt der Filter der Ansicht Status und Dringlichkeit dieser Aufgabe durch?
