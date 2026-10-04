@@ -123,7 +123,7 @@ const stats = {
   links: (entry, facts) => ({ value: formatNumber(facts.links), label: "Verknüpft" }),
   opens: (entry, facts) => {
     const count = facts.opens ? facts.opens.count : 0;
-    return { value: `${formatNumber(count)}-mal`, label: "Geöffnet" };
+    return { value: `${formatNumber(count)}-mal`, label: "Aufrufe" };
   },
   site: (entry) => {
     const block = siteBlock(entry);

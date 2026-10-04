@@ -102,10 +102,11 @@ function textRows(facts, shown) {
 function usageRows(entry, facts, shown) {
   const rows = [];
   const count = facts.opens ? facts.opens.count : 0;
-  if (facts.seconds) rows.push({ label: "Zeit auf dieser Seite", value: spentText(facts.seconds) });
-  if (count && !shown.has("opens")) rows.push({ label: "Geöffnet", value: count === 1 ? "1-mal" : `${formatNumber(count)}-mal` });
-  if (count > 1 && facts.seconds >= 60) rows.push({ label: "Im Schnitt je Besuch", value: spentText(facts.seconds / count) });
-  if (facts.opens && facts.opens.prev) rows.push({ label: "Besuch davor", value: relativeTime(facts.opens.prev) });
+  /* Erst wie oft, dann wie lange — die Zahl der Aufrufe ist die greifbarere Angabe */
+  if (count && !shown.has("opens")) rows.push({ label: "Aufrufe", value: count === 1 ? "1-mal" : `${formatNumber(count)}-mal` });
+  if (facts.seconds) rows.push({ label: "Verweildauer", value: spentText(facts.seconds) });
+  if (count > 1 && facts.seconds >= 60) rows.push({ label: "Im Schnitt je Aufruf", value: spentText(facts.seconds / count) });
+  if (facts.opens && facts.opens.prev) rows.push({ label: "Aufruf davor", value: relativeTime(facts.opens.prev) });
   if (entry.editedAt && !shown.has("edited")) rows.push({ label: "Zuletzt bearbeitet", value: relativeTime(entry.editedAt) });
   return rows;
 }
