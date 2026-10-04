@@ -124,8 +124,9 @@
  * --m3-card-head-plain-gap     -> Luft zwischen Titel und Werkzeugzeile, wo keine Reiter darüber stehen (Sammlungen)
  * --m3-card-tool-size          -> Tippfläche eines Symbols in der Werkzeugzeile (Material 3: 48dp)
  * --m3-card-tool-icon          -> Größe des Symbols darin (Material 3: 24dp)
- * --m3-text-btn-h              -> Höhe des Text-Knopfs „Archiv (n)“ (Material 3 „Text button“: 40dp)
+ * --m3-text-btn-h              -> Höhe von Text-Knöpfen (Material 3 „Text button“: 40dp); nicht mehr beim Archiv-Knopf, der nimmt --m3-card-tool-size
  * --m3-text-btn-pad            -> Innenabstand links und rechts darin (Material 3: 12dp)
+ * --m3-card-archive-icon       -> Größe des Archiv-Icons links in der Werkzeugzeile (22px, damit es neben den 24px-Symbolen rechts nicht kleiner wirkt)
  * --m3-card-count-gap          -> Luft links und rechts der feinen Linie zwischen Archiv-Zahl und „n Einträge“
  * --m3-card-divider-h          -> Höhe dieser Linie
  * --m3-card-divider-color      -> Farbe dieser Linie (leises Grau, folgt hell/dunkel über --m3-outline-variant)
@@ -268,6 +269,7 @@
   --m3-card-tool-icon: 24px;
   --m3-text-btn-h: 40px;
   --m3-text-btn-pad: 12px;
+  --m3-card-archive-icon: 22px;
   --m3-card-count-gap: 10px;
   --m3-card-divider-h: 14px;
   --m3-card-divider-color: var(--m3-outline-variant);

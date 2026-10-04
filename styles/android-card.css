@@ -21,7 +21,9 @@
  * -----------------------------------
  * --m3-card-head-h            -> Höhe der Werkzeugzeile
  * --m3-card-tool-size / -icon -> Tippfläche und Symbol von Sortieren, Filtern und Ansicht
- * --m3-text-btn-h / -pad      -> Höhe und Innenabstand des Text-Knopfs „Archiv“
+ * --m3-text-btn-pad          -> Innenabstand links und rechts des Text-Knopfs „Archiv“
+ *                                (seine Höhe und Mindestbreite sind --m3-card-tool-size)
+ * --m3-card-archive-icon      -> Größe des Archiv-Icons (auch „Aktive …“ im Archiv)
  * --m3-card-count-gap         -> Luft links und rechts der feinen Linie vor „n Einträge“
  * --m3-card-divider-h         -> Höhe dieser Linie
  * --m3-card-divider-color     -> Farbe dieser Linie (sehr leises Grau)
@@ -37,7 +39,7 @@
  * --content-side              -> Rand der Reiter, sobald rechts kein Symbol mehr steht (styles/tokens.css)
  *
  * Direkt bei ihrer Regel: Schrift von „Archiv“ 14px halbfett (Material 3
- * „Label large“), sein Icon 18px; „n Einträge“ 14px mittelfett.
+ * „Label large“); „n Einträge“ 14px mittelfett.
  */
 
 /* Außerhalb der Android-Fassung gibt es die Werkzeugzeile nicht */
@@ -116,18 +118,20 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    height: var(--m3-text-btn-h);
+    /* Tippfläche so groß wie die Symbole rechts (48dp), auch wenn nur Icon und Zahl dastehen */
+    height: var(--m3-card-tool-size);
+    min-width: var(--m3-card-tool-size);
     margin-left: calc(var(--m3-tab-edge) - var(--content-side) - var(--m3-text-btn-pad));
     padding: 0 var(--m3-text-btn-pad);
-    border-radius: calc(var(--m3-text-btn-h) / 2);
+    border-radius: calc(var(--m3-card-tool-size) / 2);
     font-size: 14px;
     font-weight: 600;
     color: var(--m3-primary);
   }
 
   [data-mobile-os="android"] .project-card-archive .icon {
-    width: 18px;
-    height: 18px;
+    width: var(--m3-card-archive-icon);
+    height: var(--m3-card-archive-icon);
   }
 
   /* Kurzer Knopf (Icon und Archiv-Zahl), sobald die Ansicht Einträge hat. Rechts
