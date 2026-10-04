@@ -126,6 +126,9 @@
  * --m3-card-tool-icon          -> Größe des Symbols darin (Material 3: 24dp)
  * --m3-text-btn-h              -> Höhe des Text-Knopfs „Archiv (n)“ (Material 3 „Text button“: 40dp)
  * --m3-text-btn-pad            -> Innenabstand links und rechts darin (Material 3: 12dp)
+ * --m3-card-count-gap          -> Luft links und rechts der feinen Linie zwischen Archiv-Zahl und „n Einträge“
+ * --m3-card-divider-h          -> Höhe dieser Linie
+ * --m3-card-divider-color      -> Farbe dieser Linie (leises Grau, folgt hell/dunkel über --m3-outline-variant)
  * --m3-state-pressed           -> wie stark eine Zeile beim Drücken getönt wird (Material 3 „state layer“: 12%)
  * --m3-menu-sheet-pad          -> Luft über der ersten und unter der letzten Zeile in einem Auswahl-Blatt
  * --m3-menu-radius             -> Rundung des kleinen Menüs beim gedrückt Halten (Material 3 „Menu“: 4dp, wie in Google Drive)
@@ -265,6 +268,9 @@
   --m3-card-tool-icon: 24px;
   --m3-text-btn-h: 40px;
   --m3-text-btn-pad: 12px;
+  --m3-card-count-gap: 10px;
+  --m3-card-divider-h: 14px;
+  --m3-card-divider-color: var(--m3-outline-variant);
   --m3-state-pressed: 12%;
   --m3-menu-sheet-pad: 8px;
   --m3-chip-h: 32px;

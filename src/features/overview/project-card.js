@@ -2,7 +2,9 @@
  * Android-Fassung: die Werkzeugzeile über den Projekten, gebaut wie der Kopf
  * einer Liste in Google Tasks. Links der Text-Knopf „Archiv“ — steht immer,
  * damit die Zeile nie leer wirkt; liegen Projekte im Archiv, folgt ihre Zahl
- * in Klammern („Archiv (2)“). Ein Tipp öffnet das Archiv mit der Pille
+ * in Klammern („Archiv (2)“). Zeigt die Ansicht Projekte, wird der Knopf kurz
+ * (Icon und Zahl), dahinter steht „n Einträge“ (src/ui/list-head.js).
+ * Ein Tipp öffnet das Archiv mit der Pille
  * Projekte (data-open-archive, src/ui/list-clicks.js). Rechts Sortieren, Ansicht
  * und — außer bei „Alle“, wo sich nichts filtern lässt — Filtern.
  * Filtern öffnet gleich das Blatt „Filtern“ (src/features/overview/project-filter.js),
@@ -22,6 +24,7 @@
  * Beschriftung und Symbole der Zeile: src/ui/list-head.js.
  */
 
+import { visibleProjects } from "../../data/project-views.js";
 import { archivedEntries } from "../../data/queries.js";
 import { handleListHeadClick, listHeadMarkup } from "../../ui/list-head.js";
 import { openViewPanel } from "../../ui/view-panel.js";
@@ -39,7 +42,7 @@ function isFiltering(view) {
 export function projectCardHead(view) {
   const count = archivedEntries().filter((entry) => entry.type === "projekt").length;
   return listHeadMarkup({
-    archive: { pill: archivePill, count },
+    archive: { pill: archivePill, count, entries: visibleProjects(view).length },
     filter: !view.fixed,
     view: true,
     filtering: isFiltering(view),
