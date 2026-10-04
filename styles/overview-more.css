@@ -13,6 +13,8 @@
  * --soon-label-color   -> Schriftfarbe des Schildchens „Demnächst verfügbar“ (ohne Pillenfläche)
  *
  * Direkt hier bei ihrer Regel:
+ * .overview-page-narrow -> Breite der zweiten Kartenseite, wenn nur zwei Karten sichtbar sind:
+ *                          genau eine Kartenspalte der ersten Seite
  * .card-soon           -> Schildchen „Demnächst verfügbar“: Schrift 10px, Abstand 10px zur Ecke
  * .card-info           -> das „i“ im Kreis neben dem Namen: 16px groß
  * .section-link .icon  -> Pfeil nach oben rechts neben „Projekte“: 16px groß
@@ -47,6 +49,16 @@
   flex: 0 0 100%;
   /* scroll-snap-align: hier rastet die Seite ein */
   scroll-snap-align: start;
+}
+
+/* Nur zwei Karten sichtbar (Lesezeichen, Archiv): eine Spalte, so breit wie eine Karte der
+   ersten Seite (Seitenbreite minus Fuge, geteilt durch zwei). Ganz hineingewischt stehen sie
+   bündig am rechten Rand, links daneben die zweite Spalte der ersten Seite — kein leerer Streifen. */
+.overview-page-narrow {
+  grid-template-columns: minmax(0, 1fr);
+  flex-basis: calc((100% - 12px) / 2);
+  /* scroll-snap-align: end — die schmale Seite rastet am rechten Rand ein, nicht links */
+  scroll-snap-align: end;
 }
 
 /* ---------- Seitenlinie unter den Karten ---------- */
