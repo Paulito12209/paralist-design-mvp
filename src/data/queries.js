@@ -188,6 +188,15 @@ export function mediaKindOf(entry) {
   return (entry.media && entry.media.kind) || "doc";
 }
 
+/**
+ * Selbst angelegtes Dokument: ein Dokument oder ein Medien-Eintrag ohne Datei —
+ * den legt das Eingabefeld auf der Medien-Seite an. Hochgeladene Dateien
+ * tragen immer `media` (src/features/composer/attachments.js) und zählen nicht.
+ */
+export function isOwnDocument(entry) {
+  return entry.type === "dokument" || (entry.type === "medien" && !entry.media);
+}
+
 /** Alle Medien, neueste zuerst. */
 export function mediaEntries() {
   return state.entries
