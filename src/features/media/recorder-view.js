@@ -1,7 +1,8 @@
 /*
  * Das Aussehen der Audio-Aufnahme: das Overlay selbst, die Wellen, die Zeit
  * und welche Knöpfe in welchem Zustand stehen. Die Aufnahme selbst (Mikrofon,
- * Mitschrift, Speichern) steht in src/features/media/recorder.js.
+ * Mitschrift, Speichern) steht in src/features/media/recorder.js und den
+ * Teil-Dateien, die ihr Kopf nennt.
  * Aufbau wie die Suche: oben die Kopfzeile mit ←, dem Namen der Aufnahme
  * und rechts ⚙ („Mitschrift einrichten“), darunter verschwommen die Seite,
  * unten Gehäuse und „Abbrechen“. Über der Mitschrift steht die
