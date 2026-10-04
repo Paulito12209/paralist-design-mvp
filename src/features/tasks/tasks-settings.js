@@ -37,7 +37,8 @@ import { escapeHtml, icon } from "../../core/html.js";
 import { archivedForView } from "../../data/archive-context.js";
 import { panelSegment as segment, panelToggle as toggle } from "../../ui/panel-rows.js";
 import { tabsRowMarkup } from "../../ui/tabs-visibility.js";
-import { taskGroupings, taskSorts } from "../../data/config-tasks.js";
+import { isTaskDone, taskGroupings, taskSorts } from "../../data/config-tasks.js";
+import { visibleTasks } from "../../data/queries.js";
 import { updateTaskView } from "../../data/task-views.js";
 import { filterChipsMarkup as chipsMarkup } from "../../ui/filter-chips.js";
 import { handleListHeadClick, listHeadMarkup } from "../../ui/list-head.js";
@@ -135,10 +136,15 @@ export function taskSettingsMarkup(view) {
   `;
 }
 
+/* Die aktiven Aufgaben der Ansicht: was Liste oder Board zeigen, ohne die Spalte „Archiviert“. */
+function activeTaskCount(view) {
+  return visibleTasks(view).filter((entry) => !entry.archived && !(view.showArchived && view.hideDone && isTaskDone(entry))).length;
+}
+
 /** Die Werkzeugzeile über der Liste (nur in der Android-Fassung zu sehen). */
 export function taskHeadMarkup(view) {
   return listHeadMarkup({
-    archive: { pill: archivePill, count: archivedForView("tasks").length },
+    archive: { pill: archivePill, count: archivedForView("tasks").length, entries: activeTaskCount(view) },
     filtering: filterChips(view).length > 0,
   });
 }

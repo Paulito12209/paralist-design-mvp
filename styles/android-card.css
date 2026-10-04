@@ -3,7 +3,8 @@
  * und Seite Projekte, Aufgaben, Eingang, Favoriten, Ressourcen, Lesezeichen,
  * Arbeitsbereiche, Archiv), gebaut nach Google Tasks: links der Text-Knopf
  * „Archiv“ — mit der Zahl der archivierten Dinge in Klammern, sobald es welche
- * gibt —, rechts Sortieren und, wo sich etwas filtern lässt, Filtern und
+ * gibt; hat die Ansicht Einträge, nur Icon und Zahl, dahinter Linie und
+ * „n Einträge“ —, rechts Sortieren und, wo sich etwas filtern lässt, Filtern und
  * Ansicht (src/ui/list-head.js). Die Klassen heißen project-card-…, gelten aber für
  * jede dieser Zeilen. Wo Reiter darüber stehen (Projekte, Aufgaben, Arbeitsbereiche), rückt
  * die Zeile dicht unter ihre Linie; ohne Reiter (`is-plain`) steht sie unter dem Titel. Die Liste darunter
@@ -21,11 +22,14 @@
  * --m3-card-head-h            -> Höhe der Werkzeugzeile
  * --m3-card-tool-size / -icon -> Tippfläche und Symbol von Sortieren, Filtern und Ansicht
  * --m3-text-btn-h / -pad      -> Höhe und Innenabstand des Text-Knopfs „Archiv“
+ * --m3-card-count-gap         -> Luft links und rechts der feinen Linie vor „n Einträge“
+ * --m3-card-divider-h         -> Höhe dieser Linie
+ * --m3-card-divider-color     -> Farbe dieser Linie (sehr leises Grau)
  * --m3-state-pressed          -> Tönung von Knopf und Symbolen beim Drücken
  * --m3-primary                -> das Filter-Symbol, sobald die Ansicht aussiebt; als Grundfarbe von
  *                                „Archiv“ hier, die leise Farbe darüber setzt styles/android-quiet-tools.css
  * --m3-on-surface             -> Grundfarbe der Tönung beim Drücken
- * --m3-on-surface-variant     -> Sortieren und Filtern in Ruhe
+ * --m3-on-surface-variant     -> Sortieren und Filtern in Ruhe, Schrift von „n Einträge“
  * --m3-card-head-pull       -> wie dicht die erste Zeile an der Werkzeugzeile sitzt
  * --m3-card-head-plain-gap  -> Luft zwischen Titel und Werkzeugzeile, wo keine Reiter darüber stehen
  * --m3-outline-variant        -> Trennlinie über der Werkzeugzeile, wo keine Reiter darüber stehen
@@ -33,7 +37,7 @@
  * --content-side              -> Rand der Reiter, sobald rechts kein Symbol mehr steht (styles/tokens.css)
  *
  * Direkt bei ihrer Regel: Schrift von „Archiv“ 14px halbfett (Material 3
- * „Label large“), sein Icon 18px.
+ * „Label large“), sein Icon 18px; „n Einträge“ 14px mittelfett.
  */
 
 /* Außerhalb der Android-Fassung gibt es die Werkzeugzeile nicht */
@@ -124,6 +128,31 @@
   [data-mobile-os="android"] .project-card-archive .icon {
     width: 18px;
     height: 18px;
+  }
+
+  /* Kurzer Knopf (Icon und Archiv-Zahl), sobald die Ansicht Einträge hat. Rechts
+     weniger Innenabstand, damit die Linie dicht an der Zahl sitzt; die Tippfläche
+     bleibt so breit wie das Icon mit Rand. */
+  [data-mobile-os="android"] .project-card-archive.is-short {
+    padding-right: var(--m3-card-count-gap);
+  }
+
+  /* Feine senkrechte Linie zwischen Archiv-Zahl und „n Einträge“: leise, damit sie
+     nur trennt und nicht ins Auge springt. flex: none hält sie bei jeder Breite schmal. */
+  [data-mobile-os="android"] .project-card-divider {
+    flex: none;
+    width: 1px;
+    height: var(--m3-card-divider-h);
+    background: var(--m3-card-divider-color);
+  }
+
+  /* „n Einträge“: reiner Text, kein Knopf — sagt, wie viel in der Ansicht liegt */
+  [data-mobile-os="android"] .project-card-count {
+    padding-left: var(--m3-card-count-gap);
+    font-size: 14px;
+    font-weight: 500;
+    white-space: nowrap;
+    color: var(--m3-on-surface-variant);
   }
 
   /* Die Symbole rechts schieben sich ans Ende, auch ohne Knopf links. Ihre
