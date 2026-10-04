@@ -75,7 +75,8 @@
  * --crumb-chevron-size      -> Größe des kleinen Pfeils neben der Kategorie mitten in der Kopfzeile
  * --task-tools-gap          -> Abstand zwischen der Pille unter dem Titel und dem ersten Abschnitt
  * --task-section-gap        -> Luft zwischen zwei Gruppen der Aufgaben-Liste
- * --tasks-switch-w / --tasks-switch-h -> Größe des Schalters in der Karte „Ansicht“
+ * --tasks-switch-w / --tasks-switch-h -> Größe des Schalters in der Karte „Ansicht“ (Handy ohne Android-Fassung)
+ * --tasks-switch-m3-w / -h / -thumb -> Bahn und Knopf des Schalters am Desktop (Material 3: 52 × 32, Knopf 24)
  * --tasks-seg-h             -> Höhe des Segments Liste | Board in dieser Karte
  * --tasks-panel-gap         -> Luft zwischen der ausgeklappten Karte „Ansicht“ und der Navigation
  * --tasks-panel-slide       -> wie schnell diese Karte aus- und einklappt
@@ -222,6 +223,9 @@
   --task-section-gap: 28px;
   --tasks-switch-w: 46px;
   --tasks-switch-h: 28px;
+  --tasks-switch-m3-w: 52px;
+  --tasks-switch-m3-h: 32px;
+  --tasks-switch-m3-thumb: 24px;
   --tasks-seg-h: 32px;
   --tasks-panel-gap: 12px;
   --tasks-panel-slide: 0.32s;

@@ -11,8 +11,8 @@
  * sonst das Icon.
  *
  * Keine anpassbaren visuellen Werte: Aussehen in styles/tasks-settings.css
- * (Klassen .tasks-seg, .tasks-switch; --tasks-switch-w/-h, --tasks-seg-h),
- * Android in styles/android-sheet.css.
+ * (Klassen .tasks-seg, .tasks-switch; --tasks-switch-w/-h, --tasks-seg-h;
+ * Desktop in styles/tasks-switch.css), Android in styles/android-sheet.css.
  */
 
 import { escapeHtml, icon } from "../core/html.js";
@@ -29,8 +29,12 @@ export function panelSegment(items, current, setting) {
     .join("")}</span>`;
 }
 
-/** Ein Schalter, an oder aus; `locked` sperrt ihn (blass, nicht antippbar). */
+/**
+ * Ein Schalter, an oder aus; `locked` sperrt ihn (blass, nicht antippbar).
+ * Im Knopf sitzt ein Haken (an) oder Kreuz (aus) — sichtbar nur in der
+ * Android-Fassung und am Desktop (Material 3 „Switch with icons“).
+ */
 export function panelToggle(setting, on, label, locked = false) {
   return `<button class="tasks-switch${on ? " is-on" : ""}" type="button" role="switch" aria-checked="${on}"
-    data-settings="${setting}" aria-label="${escapeHtml(label)}"${locked ? " disabled" : ""}><span class="tasks-switch-knob"></span></button>`;
+    data-settings="${setting}" aria-label="${escapeHtml(label)}"${locked ? " disabled" : ""}><span class="tasks-switch-knob">${icon(on ? "check" : "close", "tasks-switch-icon")}</span></button>`;
 }

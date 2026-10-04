@@ -164,6 +164,8 @@ function snapshot() {
     collectionFilters: state.prefs.collectionFilters,
     manualOrders: state.prefs.manualOrders,
     mediaSeeded,
+    /* Marke: die Ansichten kennen die Regel „heute Erledigtes bleibt sichtbar“ (siehe adoptPrefs) */
+    taskDoneShown: true,
   };
 }
 
@@ -261,7 +263,8 @@ function adoptPrefs(saved) {
     sort: pickValid(view.sort, taskSorts.map((item) => item.id), taskDefaults.sort),
     sortAsc: typeof view.sortAsc === "boolean" ? view.sortAsc : taskDefaults.sortAsc,
     ...(index === fixedAt ? linkFilterDefaults : cleanLinkFields(view, validRefs)),
-    hideDone: typeof view.hideDone === "boolean" ? view.hideDone : taskDefaults.hideDone,
+    /* Ältere Stände (ohne Marke) hatten „Erledigte ausblenden“ als Vorgabe: einmalig auf „zeigen“ stellen */
+    hideDone: saved.taskDoneShown === true && typeof view.hideDone === "boolean" ? view.hideDone : taskDefaults.hideDone,
     /* Filter nach Status und Dringlichkeit; ältere Stände kennen ihn nicht und zeigen alles */
     hiddenStatuses: knownIds(view.hiddenStatuses, taskStatuses.filter((item) => !item.done)),
     hiddenPriorities: knownIds(view.hiddenPriorities, taskPriorities),
@@ -317,6 +320,9 @@ export function loadState() {
     mediaSeeded = true;
     needsSave = true;
   }
+
+  /* Die Marke zur Erledigt-Regel fehlt noch: den umgestellten Stand der Ansichten speichern */
+  if (saved.taskDoneShown !== true) needsSave = true;
 
   /* Was vor heute erledigt wurde, gehört ins Archiv (src/data/task-archive.js). */
   if (archiveFinishedTasks(state.entries)) needsSave = true;

@@ -14,7 +14,8 @@
  * - Gruppieren: Schalter; an, dann darunter „Abschnitte nach“ Status | Dringlichkeit.
  *   Im Board gibt es keinen Schalter — ein Board hat immer Spalten —, dort
  *   steht nur „Spalten nach“
- * - Erledigte zeigen: Schalter
+ * - Erledigte zeigen: Schalter mit ⓘ davor; das Blatt dahinter erklärt, dass
+ *   Erledigtes bei „aus“ sofort im Archiv liegt (src/data/task-hide-done.js)
  * Pfad: src/features/tasks/tasks-settings.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -23,6 +24,7 @@
  * noFilter     -> was rechts in der Zeile „Filtern“ steht, solange nichts gefiltert ist
  * deskFiltered -> Aufschrift des Filter-Knopfs am Desktop, wenn etwas gefiltert ist
  * archivePill  -> welche Pille das Archiv beim Tipp auf „Archiv (n)“ zeigt
+ * doneInfoTitle / doneInfoTexts -> das Blatt hinter dem ⓘ an „Erledigte zeigen“
  *
  * Was in der Filter-Zeile steht und was das Blatt „Filtern“ anbietet, steht
  * in src/features/tasks/tasks-filter.js.
@@ -39,6 +41,7 @@ import { taskGroupings, taskSorts } from "../../data/config-tasks.js";
 import { updateTaskView } from "../../data/task-views.js";
 import { filterChipsMarkup as chipsMarkup } from "../../ui/filter-chips.js";
 import { handleListHeadClick, listHeadMarkup } from "../../ui/list-head.js";
+import { openSheet } from "../../ui/sheet.js";
 import { openSortSheet, sortSummary } from "../../ui/sort-sheet.js";
 import { openViewPanel } from "../../ui/view-panel.js";
 import { filterChips, openTaskFilter } from "./tasks-filter.js";
@@ -50,7 +53,14 @@ const rowLabels = {
   group: "Gruppieren",
   groupBy: { list: "Abschnitte nach", board: "Spalten nach" },
   done: "Erledigte zeigen",
+  doneInfo: "Was bedeutet „Erledigte zeigen“?",
 };
+const doneInfoTitle = "Erledigte zeigen";
+const doneInfoTexts = [
+  "An (Standard): Abgehakte Aufgaben bleiben in dieser Ansicht stehen, mit grünem Haken und durchgestrichen. Ab Mitternacht liegen sie im Archiv.",
+  "Aus: Abgehakte Aufgaben verschwinden in dieser Ansicht sofort und liegen direkt hinter „Archiv (n)“ — dort siehst du sie weiterhin als erledigt.",
+  "Jede Ansicht hat ihre eigene Einstellung: In der einen kannst du Erledigtes sehen, in der anderen nicht.",
+];
 const noFilter = "Keine";
 const archivePill = "aufgabe";
 const deskFiltered = "Gefiltert";
@@ -117,7 +127,9 @@ export function taskSettingsMarkup(view) {
             : ""
         }
         <div class="details-row">
-          <span class="details-row-label">${rowLabels.done}</span>${toggle("done", !view.hideDone, rowLabels.done)}
+          <span class="details-row-label">${rowLabels.done}</span>
+          <button class="tasks-info is-inline" type="button" data-settings="done-info" aria-label="${escapeHtml(rowLabels.doneInfo)}">${icon("info")}</button>
+          ${toggle("done", !view.hideDone, rowLabels.done)}
         </div>
       </div>
   `;
@@ -156,5 +168,6 @@ export function handleSettingsClick(event, view) {
   else if (settings === "filter") openTaskFilter(value);
   else if (settings === "group-toggle") updateTaskView({ group: view.group === "none" ? taskGroupings[0].id : "none" });
   else if (settings === "group") updateTaskView({ group: value });
+  else if (settings === "done-info") openSheet(doneInfoTitle, doneInfoTexts.map((label) => ({ note: true, label })));
   else if (settings === "done") updateTaskView({ hideDone: !view.hideDone });
 }

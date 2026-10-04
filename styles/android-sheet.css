@@ -40,7 +40,7 @@
  * der Rand links und rechts (24px, wie im Blatt „Filtern“) und das Symbol in
  * der Reiterzeile (22px). Segment: 32px hoch, Schrift 13px, Haken und Icon 16px
  * (wie „ist | ist nicht“ in styles/android-filter-sheet.css). Schalter nach
- * Material 3 „Switch“: Bahn 52 × 32px mit 2px Rand, Knopf aus 16px, an 24px.
+ * Material 3 „Switch with icons“: Bahn 52 × 32px mit 2px Rand, Knopf 24px mit Kreuz bzw. Haken.
  * Filter-Chips: Schrift 14px, Icon 18px.
  */
 
@@ -233,8 +233,8 @@
     box-shadow: inset 0 0 0 100px color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), transparent);
   }
 
-  /* Schalter „Nur Favoriten“ nach Material 3 „Switch“: aus = umrandete Bahn mit
-     kleinem Knopf, an = Bahn in der Akzentfarbe mit großem Knopf. Die Maße
+  /* Schalter nach Material 3 „Switch with icons“: aus = umrandete Bahn mit
+     Knopf (Kreuz), an = Bahn in der Akzentfarbe mit Knopf (Haken). Die Maße
      gehen von der Innenkante des 2px-Rands aus (Innenfläche 48 × 28px). */
   [data-mobile-os="android"] .view-panel .tasks-switch {
     width: 52px;
@@ -244,15 +244,24 @@
     transition: background 0.18s ease, border-color 0.18s ease; /* transition: Bahn und Rand färben sich weich */
   }
 
+  /* Knopf immer 24px: 2px vom Rand, damit er in beiden Stellungen gleich groß bleibt */
   [data-mobile-os="android"] .view-panel .tasks-switch-knob {
-    top: 6px;
-    left: 6px;
-    width: 16px;
-    height: 16px;
+    top: 2px;
+    left: 2px;
+    width: 24px;
+    height: 24px;
+    display: grid;
+    place-items: center;
     background: var(--m3-on-surface-variant);
     box-shadow: none;
-    /* transition: der Knopf gleitet und wächst zugleich */
-    transition: transform 0.18s ease, width 0.18s ease, height 0.18s ease, top 0.18s ease, background 0.18s ease;
+    transition: transform 0.18s ease, background 0.18s ease; /* transition: der Knopf gleitet und färbt sich weich */
+  }
+
+  [data-mobile-os="android"] .view-panel .tasks-switch-icon {
+    display: block;
+    width: 16px;
+    height: 16px;
+    color: var(--m3-surface-container-high);
   }
 
   [data-mobile-os="android"] .view-panel .tasks-switch.is-on {
@@ -260,13 +269,14 @@
     background: var(--m3-primary);
   }
 
-  /* An: 24px groß, 2px vom Rand; transform: 16px weiter rechts als „aus“ (6 + 16 = 22 = 48 − 24 − 2) */
+  /* An: transform 20px weiter rechts als „aus“ (2 + 20 = 22 = 48 − 24 − 2) */
   [data-mobile-os="android"] .view-panel .tasks-switch.is-on .tasks-switch-knob {
-    top: 2px;
-    width: 24px;
-    height: 24px;
     background: var(--m3-on-primary);
-    transform: translateX(16px);
+    transform: translateX(20px);
+  }
+
+  [data-mobile-os="android"] .view-panel .tasks-switch.is-on .tasks-switch-icon {
+    color: var(--m3-primary);
   }
 
   /* Filter-Chips unter „Filtern“: wie die gewählten Chips im Blatt „Filtern“ */

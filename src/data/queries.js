@@ -26,6 +26,7 @@ import {
 import { archiveColumn, isTaskDone, taskGroupings, taskPriorities, taskPriorityOf, taskStatusOf } from "./config-tasks.js";
 import { filterByLinks } from "./link-filter.js";
 import { entryRef, isEntryRef, isWorkspaceRef, refId, workspaceRef } from "./refs.js";
+import { doneHiddenInView } from "./task-hide-done.js";
 import { state } from "./state.js";
 
 /** Einen Eintrag nach ID finden, egal ob die ID als Zahl oder Text kommt. */
@@ -165,9 +166,13 @@ export function archivedWorkspaces() {
   return state.workspaces.filter((workspace) => workspace.archived);
 }
 
-/** Archivierte Einträge in der Reihenfolge, in der sie angelegt wurden. */
+/**
+ * Archivierte Einträge in der Reihenfolge, in der sie angelegt wurden — dazu
+ * die erledigten Aufgaben, die die gewählte Ansicht der Aufgaben-Seite
+ * ausblendet (src/data/task-hide-done.js).
+ */
 export function archivedEntries() {
-  return state.entries.filter((entry) => entry.archived);
+  return state.entries.filter((entry) => entry.archived || doneHiddenInView(entry));
 }
 
 /** Zahl auf der Favoriten-Karte: markierte Arbeitsbereiche plus markierte Einträge. */
@@ -291,8 +296,10 @@ export function sortTasks(list, sortId = "erstellt", asc = true) {
 /* Lässt der Filter der Ansicht Status und Dringlichkeit dieser Aufgabe durch?
    Archiviertes hängt nur am Schalter „Archiviert“ und an der Dringlichkeit. */
 function matchesFilter(entry, prefs) {
-  if (entry.archived) return Boolean(prefs.showArchived) && !(prefs.hiddenPriorities || []).includes(taskPriorityOf(entry.priority).id);
-  if (isTaskDone(entry)) return !prefs.hideDone && !(prefs.hiddenPriorities || []).includes(taskPriorityOf(entry.priority).id);
+  const priorityShown = !(prefs.hiddenPriorities || []).includes(taskPriorityOf(entry.priority).id);
+  /* Bei „Erledigte zeigen“ aus liegt Erledigtes schon im Archiv (src/data/task-hide-done.js) */
+  if (entry.archived || (prefs.hideDone && isTaskDone(entry))) return Boolean(prefs.showArchived) && priorityShown;
+  if (isTaskDone(entry)) return priorityShown;
   if ((prefs.hiddenStatuses || []).includes(taskStatusOf(entry.status).id)) return false;
   return !(prefs.hiddenPriorities || []).includes(taskPriorityOf(entry.priority).id);
 }
@@ -319,7 +326,7 @@ export function taskGroups(prefs) {
   const archive = grouping.field === "status" && prefs.showArchived ? { ...archiveColumn, items: [], locked: true } : null;
   if (archive) columns.push(archive);
   list.forEach((entry) => {
-    if (archive && entry.archived) {
+    if (archive && (entry.archived || (prefs.hideDone && isTaskDone(entry)))) {
       archive.items.push(entry);
       return;
     }
