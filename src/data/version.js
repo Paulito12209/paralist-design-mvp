@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "e290cc3380aa";
+export const appVersion = "79775932a9c1";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -118,12 +118,12 @@ export const appFiles = [
   "src/ui/block-markup.js", "src/ui/board-drag.js", "src/ui/bookmark-title.js", "src/ui/chart.js",
   "src/ui/confirm-sheet.js", "src/ui/copy-page.js", "src/ui/ctx-menu.js", "src/ui/dash-charts.js",
   "src/ui/dash-parts.js", "src/ui/date-field.js", "src/ui/desk-links.js", "src/ui/desk-mode.js",
-  "src/ui/details-card.js", "src/ui/details-peek.js", "src/ui/details-sheet.js",
-  "src/ui/details.js", "src/ui/drawing-export.js", "src/ui/empty-state.js", "src/ui/entry-menu.js",
-  "src/ui/filter-chips.js", "src/ui/filter-empty.js", "src/ui/filter-link-pick.js",
-  "src/ui/filter-link-section.js", "src/ui/filter-multi.js", "src/ui/filter-sheet-chips.js",
-  "src/ui/filter-sheet-markup.js", "src/ui/filter-sheet.js", "src/ui/groups.js",
-  "src/ui/head-title.js", "src/ui/info-dialog.js", "src/ui/inline-add.js",
+  "src/ui/details-card.js", "src/ui/details-peek.js", "src/ui/details-rows.js",
+  "src/ui/details-sheet.js", "src/ui/drawing-export.js", "src/ui/empty-state.js",
+  "src/ui/entry-menu.js", "src/ui/filter-chips.js", "src/ui/filter-empty.js",
+  "src/ui/filter-link-pick.js", "src/ui/filter-link-section.js", "src/ui/filter-multi.js",
+  "src/ui/filter-sheet-chips.js", "src/ui/filter-sheet-markup.js", "src/ui/filter-sheet.js",
+  "src/ui/groups.js", "src/ui/head-title.js", "src/ui/info-dialog.js", "src/ui/inline-add.js",
   "src/ui/insight-tiles.js", "src/ui/key-caps.js", "src/ui/link-sheet.js", "src/ui/list-clicks.js",
   "src/ui/list-head.js", "src/ui/long-press.js", "src/ui/media-cell.js", "src/ui/media-strip.js",
   "src/ui/modal-pull.js", "src/ui/modal-top.js", "src/ui/move-menu.js", "src/ui/page-cover.js",
@@ -140,7 +140,7 @@ export const appFiles = [
   "src/ui/write-tap.js", "styles/account.css", "styles/android-archive.css",
   "styles/android-bottom-sheet.css", "styles/android-calendar-rings.css",
   "styles/android-calendar-tabs.css", "styles/android-calendar.css", "styles/android-card.css",
-  "styles/android-composer.css", "styles/android-entry.css",
+  "styles/android-composer.css", "styles/android-details.css", "styles/android-entry.css",
   "styles/android-experiment-surface.css", "styles/android-fab.css",
   "styles/android-filter-sheet.css", "styles/android-list.css", "styles/android-overview-gaps.css",
   "styles/android-overview-sheet.css", "styles/android-pages-content.css",
