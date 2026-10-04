@@ -32,11 +32,10 @@ import {
 import { deleteCollection, deletedLabels, deleteLabels } from "../../data/collection-delete.js";
 import { filterCollectionEntries, filterCollectionWorkspaces } from "../../data/collection-filters.js";
 import { sortCollectionEntries, sortCollectionWorkspaces } from "../../data/collection-sorts.js";
-import { workspaceDetails } from "../../data/details.js";
 import { searchKeyboardOn } from "../../data/search-keyboard.js";
 import { findWorkspace, inboxEntries, workspaceColor } from "../../data/queries.js";
 import { saveState, state, ui } from "../../data/state.js";
-import { openDetails } from "../../ui/details.js";
+import { openDetailsSheet } from "../../ui/details-sheet.js";
 import { bindHeadTitle, setHeadTitle } from "../../ui/head-title.js";
 import { registerCover, renderCover } from "../../ui/page-cover.js";
 import { iconPickerAction } from "../../ui/pickers.js";
@@ -222,7 +221,7 @@ function openPageMenu() {
     options.push({
       label: "Details",
       icon: "info",
-      onSelect: () => openDetails(workspace.name, workspaceDetails(workspace)),
+      onSelect: () => openDetailsSheet("page"),
     });
     options.push({
       label: workspace.favorite ? "Aus Favoriten entfernen" : "Zu Favoriten",

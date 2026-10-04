@@ -12,7 +12,6 @@
 
 import { emit, events } from "../core/bus.js";
 import { load } from "../core/lazy.js";
-import { entryDetails } from "../data/details.js";
 import { isTaskDone } from "../data/config-tasks.js";
 import { deleteEntry, restoreFromArchive, setCover, setEntryIcon, toggleFavorite } from "../data/mutations.js";
 import { findEntry } from "../data/queries.js";
@@ -20,7 +19,7 @@ import { archiveEntry } from "../data/xp.js";
 import { copyOptions } from "./copy-page.js";
 import { openDrawingExport } from "./drawing-export.js";
 import { openCtxMenu } from "./ctx-menu.js";
-import { openDetails } from "./details.js";
+import { openDetailsFor } from "./details-sheet.js";
 import { openLinkSheet } from "./link-sheet.js";
 import { iconPickerAction } from "./pickers.js";
 import { toggleTaskFromCheck } from "./task-status.js";
@@ -75,13 +74,13 @@ export function entryMenuOptions(entry, { onPage = false, afterRemove = () => {}
       iconPickerAction(entry.icon, (name) => setEntryIcon(entry, name))
     );
   }
-  /* Auf der Seite steht „Details“ als Karte am Ende des Reiters „Inhalt“
-     (src/features/entry/entry-details.js) — im Menü nur aus einer Liste heraus. */
+  /* Auf der Seite öffnet der Info-Knopf neben „Kopieren“ das Blatt „Details“
+     (src/ui/details-sheet.js) — im Menü nur aus einer Liste heraus, dasselbe Blatt. */
   if (!onPage) {
     options.push({
       label: "Details",
       icon: "info",
-      onSelect: () => openDetails(entry.title || "Ohne Titel", entryDetails(entry)),
+      onSelect: () => openDetailsFor("entry", entry),
     });
   }
   /* Auch hier, nicht nur hinter dem Kopier-Knopf der Seite: wer das

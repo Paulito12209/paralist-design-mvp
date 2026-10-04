@@ -12,6 +12,18 @@
  * Ein Blatt für beide Seiten: jede Seite meldet sich mit
  * registerDetailsSource an und sagt, was sie zeigt (Eintrag bzw.
  * Arbeitsbereich), welche Angaben dazugehören und was eigene Kennzahlen tun.
+ * Aus einer Liste heraus („Details“ im Drei-Punkte-Menü, src/ui/entry-menu.js
+ * und das Menü eines Arbeitsbereichs) öffnet openDetailsFor dasselbe Blatt
+ * für einen beliebigen Eintrag oder Arbeitsbereich. Kennzahlen, die nur auf
+ * der Seite etwas tun („Einträge“ wechselt die Pille), sind dort reiner Text.
+ *
+ * In der Android-Fassung steht statt der Überschrift „Details“ der Kopf mit
+ * Icon, Titel und Kategorie, statt der drei Kennzahlen „Verknüpfen“ und
+ * Zeilen untereinander wie in Google Tasks, und unten fest eine Leiste mit
+ * „Als erledigt markieren“ (src/ui/details-rows.js). Beim Öffnen endet das
+ * Blatt mitten in der zweiten Zeile der Abschnitte darunter — so sieht man,
+ * dass es weitergeht. Jede Änderung (auch aus Blättern darüber, etwa
+ * „Verknüpfen“) zeichnet das offene Blatt neu.
  *
  * Schließen: Tipp auf den Schleier, Escape, das Blatt nach unten ziehen
  * (src/ui/modal-pull.js), die Zurück-Geste bzw. Browser-Zurück oder die
@@ -26,6 +38,8 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * sheetLabel -> Überschrift des Blatts und Name für Vorlesehilfen
+ * peekRow    -> Android: in welcher Zeile der Abschnitte das Blatt beim Öffnen
+ *               endet (1 = zweite Zeile), angeschnitten zur Hälfte
  *
  * Hinter der Überschrift steht das Symbol, das auf der Karte der übrigen
  * Fassungen zum Hochklappen dient, hier umgedreht. Es ist nur ein Zeichen,
@@ -36,21 +50,43 @@
 import { events, on } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { icon } from "../core/html.js";
+import { entryFacts } from "../data/entry-facts.js";
+import { findEntry, findWorkspace } from "../data/queries.js";
+import { workspaceFacts } from "../data/workspace-facts.js";
 import { fillDetails, handleCardClick } from "./details-card.js";
+import { detailsDoneMarkup, detailsHeadMarkup, detailsRowsMarkup, groupsWithoutTime, handleRowsClick } from "./details-rows.js";
 import { bindModalPull, clearModalPull } from "./modal-pull.js";
+import { isMobileOs } from "./platform.js";
 import { addPopGuard } from "./router-restore.js";
 import { closeSheet } from "./sheet.js";
 import { isViewActive } from "./views.js";
 
 const sheetLabel = "Details";
+const peekRow = 1;
+/* Kennzahlen, deren Tipp src/ui/details-card.js selbst erledigt — alle anderen brauchen eine Aktion der Seite */
+const ownFields = ["date", "remind", "status", "priority"];
+/* Die Ansicht, unter der ein aus einer Liste gewählter Eintrag läuft */
+const pickView = "pick";
 
 let backdrop = null;
+let body = null;
 let statsBox = null;
+let rowsBox = null;
+let headBox = null;
+let footBox = null;
 let listBox = null;
+/* Aus einer Liste gewählt: { kind: "entry" | "workspace", id } */
+let pick = null;
 /* Ansicht, deren Angaben gerade im Blatt stehen ("entry" oder "page") */
 let openView = null;
 /* Pro Ansicht: { subject(), facts(subject), actions?() } — von der Seite angemeldet */
-const sources = {};
+const sources = {
+  [pickView]: {
+    subject: () => (pick ? (pick.kind === "workspace" ? findWorkspace(pick.id) : findEntry(pick.id)) : null),
+    facts: (subject) => (pick.kind === "workspace" ? workspaceFacts(subject) : entryFacts(subject)),
+    kind: () => pick.kind,
+  },
+};
 /* Läuft gerade das eigene history.back() nach einem Schließen per Schleier,
    Ziehen oder Escape? Dann ist der folgende Verlaufsschritt kein Seitenwechsel. */
 let ownPop = false;
@@ -80,11 +116,59 @@ export function registerDetailsSource(view, source) {
 function fill() {
   const source = sources[openView];
   const subject = source?.subject();
-  if (subject) fillDetails(statsBox, listBox, source.facts(subject));
+  if (!subject) return;
+  const facts = source.facts(subject);
+  const actions = source.actions?.() || {};
+  /* Ohne Aktion dahinter ist eine Kennzahl kein Knopf */
+  const stats = facts.stats.map((stat) =>
+    stat.field && !ownFields.includes(stat.field) && !actions[stat.field] ? { ...stat, field: null } : stat
+  );
+  /* Android: Kopf, Verknüpfen und Zeilen statt der drei Kennzahlen, „Zeit“ steckt in den Zeilen */
+  if (isMobileOs("android")) {
+    const kind = kindOf(source);
+    /* Ein aufgeklappter Titel bleibt beim Neuzeichnen aufgeklappt */
+    const expanded = headBox.querySelector("[data-details-title]")?.getAttribute("aria-expanded") === "true";
+    headBox.innerHTML = detailsHeadMarkup(subject, kind);
+    if (expanded) headBox.querySelector("[data-details-title]").setAttribute("aria-expanded", "true");
+    rowsBox.innerHTML = detailsRowsMarkup(subject, kind, { ...facts, stats });
+    footBox.innerHTML = detailsDoneMarkup(subject, kind);
+    footBox.hidden = !footBox.firstChild;
+    fillDetails(statsBox, listBox, groupsWithoutTime({ ...facts, stats }));
+    statsBox.innerHTML = "";
+    return;
+  }
+  headBox.innerHTML = "";
+  footBox.innerHTML = "";
+  footBox.hidden = true;
+  rowsBox.innerHTML = "";
+  fillDetails(statsBox, listBox, { ...facts, stats });
 }
 
+/* Eintrag oder Arbeitsbereich? Die Seite eines Arbeitsbereichs heißt "page". */
+function kindOf(source) {
+  return source.kind ? source.kind() : openView === "page" ? "workspace" : "entry";
+}
+
+/* Android: das Blatt endet beim Öffnen mitten in einer Zeile der Abschnitte,
+   damit man sieht, dass es weitergeht. Gemessen, wenn das Blatt sichtbar ist. */
+function fitPeek() {
+  body.style.maxHeight = "";
+  if (!isMobileOs("android")) return;
+  const row = listBox.querySelectorAll(".details-row")[peekRow];
+  if (!row) return;
+  const cut = row.getBoundingClientRect().top + row.offsetHeight / 2 - body.getBoundingClientRect().top;
+  body.style.maxHeight = `${Math.round(cut)}px`;
+}
+
+/* Escape schließt, was obenauf liegt: erst ein Blatt darüber (Verknüpfen,
+   Status, Tab), dann dieses — sonst ginge das untere zu und das obere bliebe */
 function onKey(event) {
-  if (event.key === "Escape") closeDetailsSheet();
+  if (event.key !== "Escape") return;
+  if (!dom.sheet.hidden) {
+    closeSheet();
+    return;
+  }
+  closeDetailsSheet();
 }
 
 /**
@@ -95,14 +179,31 @@ export function openDetailsSheet(view, { push = true } = {}) {
   const source = sources[view];
   if (!backdrop || !source?.subject() || isDetailsSheetOpen()) return;
   openView = view;
-  if (push) history.pushState({ ...(history.state || { view }), detailsSheet: view }, "");
+  if (push) {
+    const state = view === pickView ? { ...(history.state || {}), detailsPick: pick } : { ...(history.state || { view }) };
+    history.pushState({ ...state, detailsSheet: view }, "");
+  }
   fill();
   clearModalPull(backdrop);
   delete backdrop.dataset.dismissing;
-  backdrop.querySelector(".modal-body").scrollTop = 0;
   backdrop.hidden = false;
+  /* Erst sichtbar, dann nach oben: solange das Blatt versteckt ist, bleibt
+     die alte Scroll-Lage vom letzten Mal hängen */
+  body.scrollTop = 0;
+  fitPeek();
   document.addEventListener("keydown", onKey);
   toggleListeners.forEach((listener) => listener(true));
+}
+
+/**
+ * Das Blatt für einen Eintrag oder Arbeitsbereich aus einer Liste heraus öffnen.
+ * @param kind    "entry" oder "workspace"
+ * @param subject der Eintrag bzw. Arbeitsbereich
+ */
+export function openDetailsFor(kind, subject) {
+  if (!backdrop) initDetailsSheet();
+  pick = { kind, id: subject.id };
+  openDetailsSheet(pickView);
 }
 
 /**
@@ -135,8 +236,14 @@ function onPop(event) {
     closeDetailsSheet({ fromHistory: true });
     return true;
   }
-  /* Vorwärts auf den Schritt des Blatts: auf derselben Seite wieder öffnen */
+  /* Vorwärts auf den Schritt des Blatts: auf derselben Seite wieder öffnen;
+     ein aus einer Liste gewählter Eintrag kommt aus dem Verlaufsschritt */
   const view = event.state?.detailsSheet;
+  if (view === pickView && event.state.detailsPick) {
+    pick = event.state.detailsPick;
+    openDetailsSheet(pickView, { push: false });
+    return true;
+  }
   if (view && sources[view] && isViewActive(view)) {
     openDetailsSheet(view, { push: false });
     return true;
@@ -164,11 +271,18 @@ export function initDetailsSheet(toggled = () => {}) {
   backdrop.innerHTML = `
     <div class="sheet" role="dialog" aria-modal="true" aria-label="${sheetLabel}">
       <p class="details-sheet-title">${sheetLabel}${icon("panel-open")}</p>
+      <div class="details-sheet-head"></div>
       <div class="modal-body details-sheet-body">
+        <div class="details-rows"></div>
         <div class="details-stats"></div>
         <div class="details-list"></div>
       </div>
+      <div class="details-sheet-foot" hidden></div>
     </div>`;
+  headBox = backdrop.querySelector(".details-sheet-head");
+  footBox = backdrop.querySelector(".details-sheet-foot");
+  body = backdrop.querySelector(".modal-body");
+  rowsBox = backdrop.querySelector(".details-rows");
   statsBox = backdrop.querySelector(".details-stats");
   listBox = backdrop.querySelector(".details-list");
   dom.sheet.before(backdrop);
@@ -181,11 +295,17 @@ export function initDetailsSheet(toggled = () => {}) {
     }
     const source = sources[openView];
     const subject = source?.subject();
-    if (subject) handleCardClick(event, subject, { done: fill, actions: source.actions?.() });
+    if (!subject) return;
+    if (handleRowsClick(event, subject, kindOf(source), fill)) return;
+    handleCardClick(event, subject, { done: fill, actions: source.actions?.() });
   });
 
   addPopGuard(onPop);
   /* Eine andere Seite: das Blatt gehört zur verlassenen Seite. Der Verlauf
      bleibt unangetastet — er gehört jetzt der neuen Seite. */
   on(events.viewWillChange, () => closeDetailsSheet({ fromHistory: true }));
+  /* Verknüpfen, Typ ändern, Erledigt: das offene Blatt zeigt gleich den neuen Stand */
+  on(events.dataChanged, () => {
+    if (isDetailsSheetOpen()) fill();
+  });
 }

@@ -6,9 +6,12 @@
  *
  * Oben stehen Icon und Name des Eintrags, darunter die Pillen — wie im Blatt
  * einer Aufgabe (src/ui/sheet.js): „Zuletzt“ zeigt, was zuletzt geöffnet
- * wurde (src/data/opens.js), „Ablageort“ wo der Eintrag liegt, und dann je
- * eine Pille für jede Kategorie, in der es Einträge gibt (Aufgaben, Notizen,
- * …). Antippen oder waagerecht wischen wechselt. Ein Haken markiert, was
+ * wurde (src/data/opens.js), „Arbeitsbereiche“ (nach Tabs gruppiert, sobald
+ * es mehr als einen Tab gibt) und „Projekte“ die Orte, an denen der Eintrag
+ * liegen kann, und dann je eine Pille für jede Kategorie, in der es Einträge
+ * gibt (Aufgaben, Notizen, …). Ist kein Ort angehakt, liegt der Eintrag im
+ * Eingang — eine eigene Zeile dafür braucht es nicht. Ein Projekt hat keine
+ * Pille „Projekte“: es liegt nie in einem Projekt. Antippen oder waagerecht wischen wechselt. Ein Haken markiert, was
  * schon verbunden ist; das Blatt bleibt dabei offen, damit man mehreres
  * nacheinander an- und abwählen kann — die Liste bleibt dabei dort stehen,
  * wo sie gescrollt war.
@@ -23,7 +26,7 @@
  * -----------------------------------
  * RECENT_MAX  -> wie viele zuletzt geöffnete Einträge die erste Pille zeigt
  * recentTitle -> Beschriftung der ersten Pille
- * placeTitle  -> Beschriftung der Pille mit dem Ablageort
+ * workspacesTitle / projectsTitle -> Beschriftung der Pillen mit den Orten
  * emptyRecent -> Satz unter „Zuletzt“, solange noch kein passender Eintrag geöffnet wurde
  *
  * Aussehen: styles/overlays.css (Blatt) und styles/sheet-tabs.css (Kopf, Pillen, Haken).
@@ -32,35 +35,55 @@
 import { dom } from "../core/dom.js";
 import { typeIcon, typeLabel, typeSingular, xpItemStyle } from "../data/config.js";
 import { canLink, isLinked, linkOptionsFor } from "../data/links.js";
-import { clearPlaces, togglePlace, toggleLink } from "../data/mutations.js";
-import { findEntry, groupByType, hasPlace, placeOptionsFor } from "../data/queries.js";
-import { entryRef } from "../data/refs.js";
+import { togglePlace, toggleLink } from "../data/mutations.js";
+import { findEntry, groupByType, hasPlace, isContainer, projectEntries, tabLabel, workspaceIcon, workspaceLabel, workspacesOfTab } from "../data/queries.js";
+import { entryRef, workspaceRef } from "../data/refs.js";
 import { state } from "../data/state.js";
 import { openSheet } from "./sheet.js";
 
 const RECENT_MAX = 12;
 const recentTitle = "Zuletzt";
-const placeTitle = "Ablageort";
+const workspacesTitle = "Arbeitsbereiche";
+const projectsTitle = "Projekte";
 const emptyRecent = "Noch nichts Passendes geöffnet — hier stehen dann die Einträge, die du zuletzt aufgemacht hast.";
 
 /* Die erste Pille; mit ihr geht das Blatt auf. */
 const RECENT = "recent";
-const PLACE = "place";
+const WORKSPACES = "workspaces";
+const PROJECTS = "projects";
 
-/* Die Ablageorte: „Eingang“ nimmt alle Orte weg. */
-function placeOptions(entry, rerender) {
-  const places = entry.places || [];
-  return placeOptionsFor(entry).map((option) => ({
-    label: option.label,
-    icon: option.icon,
-    active: option.ref === null ? places.length === 0 : places.includes(option.ref),
+/* Ein Ort als Option: anhaken legt den Eintrag dort ab, abhaken nimmt ihn heraus */
+function placeOption(entry, ref, label, iconName, rerender) {
+  return {
+    label,
+    icon: iconName,
+    active: (entry.places || []).includes(ref),
     stay: true,
     onSelect: () => {
-      if (option.ref === null) clearPlaces(entry);
-      else togglePlace(entry, option.ref);
+      togglePlace(entry, ref);
       rerender();
     },
-  }));
+  };
+}
+
+/* Die Arbeitsbereiche, bei mehreren Tabs unter deren Namen */
+function workspaceOptions(entry, rerender) {
+  const grouped = state.tabs.length > 1;
+  return state.tabs.flatMap((tab) => {
+    const list = workspacesOfTab(tab.id);
+    if (!list.length) return [];
+    const options = list.map((workspace) =>
+      placeOption(entry, workspaceRef(workspace.id), workspaceLabel(workspace), workspaceIcon(workspace), rerender)
+    );
+    return grouped ? [{ heading: true, label: tabLabel(tab) }, ...options] : options;
+  });
+}
+
+/* Die Projekte; nichts liegt in sich selbst */
+function projectOptions(entry, rerender) {
+  return projectEntries()
+    .filter((project) => String(project.id) !== String(entry.id))
+    .map((project) => placeOption(entry, entryRef(project.id), project.title || "Projekt", typeIcon("projekt"), rerender));
 }
 
 /* Ein anderer Eintrag als Option: verknüpfen oder — auf der Seite eines
@@ -93,18 +116,21 @@ function recentEntries(entry) {
     .filter(Boolean);
 }
 
-/* Die Pillen: Zuletzt, Ablageort, dann jede Kategorie mit Einträgen. */
+/* Die Pillen: Zuletzt, Arbeitsbereiche, Projekte, dann jede Kategorie mit Einträgen. */
 function sheetTabs(entry) {
+  const projects = !isContainer(entry) && projectOptions(entry, () => {}).length;
   return [
     { id: RECENT, label: recentTitle },
-    { id: PLACE, label: placeTitle },
+    { id: WORKSPACES, label: workspacesTitle },
+    ...(projects ? [{ id: PROJECTS, label: projectsTitle }] : []),
     ...groupByType(linkOptionsFor(entry)).map((group) => ({ id: group.type, label: group.label })),
   ];
 }
 
 /* Die Liste unter der gewählten Pille. */
 function tabOptions(entry, tab, rerender) {
-  if (tab === PLACE) return placeOptions(entry, rerender);
+  if (tab === WORKSPACES) return workspaceOptions(entry, rerender);
+  if (tab === PROJECTS) return projectOptions(entry, rerender);
   if (tab === RECENT) {
     const recent = recentEntries(entry);
     if (!recent.length) return [{ note: true, label: emptyRecent }];
@@ -137,7 +163,7 @@ function show(entry, tab, keepScroll) {
 
 /**
  * „Verknüpfen“ für einen Eintrag öffnen — bei „Zuletzt“, oder bei der Pille
- * `tab` („place“ oder eine Kategorie wie „aufgabe“).
+ * `tab` („workspaces“, „projects“ oder eine Kategorie wie „aufgabe“).
  */
 export function openLinkSheet(entry, tab = RECENT) {
   show(entry, tab, false);

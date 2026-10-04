@@ -48,8 +48,8 @@ function contentRows(entries) {
 function usageRows(workspace) {
   const opens = openStats("workspace", workspace.id);
   if (!opens) return [];
-  const rows = [{ label: "Geöffnet", value: opens.count === 1 ? "1-mal" : `${formatNumber(opens.count)}-mal` }];
-  if (opens.prev) rows.push({ label: "Besuch davor", value: relativeTime(opens.prev) });
+  const rows = [{ label: "Aufrufe", value: opens.count === 1 ? "1-mal" : `${formatNumber(opens.count)}-mal` }];
+  if (opens.prev) rows.push({ label: "Aufruf davor", value: relativeTime(opens.prev) });
   return rows;
 }
 
