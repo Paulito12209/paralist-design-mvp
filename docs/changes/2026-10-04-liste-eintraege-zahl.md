@@ -24,6 +24,16 @@ keine.
   `--m3-card-count-gap` (10px), `--m3-card-divider-h` (14px),
   `--m3-card-divider-color` (`--m3-outline-variant`, leises Grau hell/dunkel).
 
+### Nachbesserung: Archiv-Icon größer, Tippfläche wie Sortieren
+- `styles/android-card.css`: Icon des Archiv-Knopfs 22px statt 18px (neuer Wert
+  `--m3-card-archive-icon` in `styles/tokens-android.css`), weil es neben den
+  24px-Symbolen rechts kleiner wirkte. Der Knopf ist jetzt 48px hoch
+  (`--m3-card-tool-size`, wie Sortieren) mit 48px Mindestbreite; mit Icon und
+  Archiv-Zahl ergibt sich daraus etwa 60px Breite (Inhalt, keine feste Breite).
+  Ohne aktive Einträge bleibt es bei Icon + „Archiv (n)“ in 48px Höhe.
+  Gilt überall, wo der Knopf links in der Werkzeugzeile steht (auch „Aktive …“ im Archiv).
+- `--m3-text-btn-h` bleibt unverändert (wird von anderen Stellen genutzt).
+
 ## Begründung
 Das Wort „Archiv“ bleibt, solange die Ansicht leer ist — so lernt man, wohin
 der Knopf führt. Sobald es Einträge gibt, ist die Zahl der aktiven Einträge
