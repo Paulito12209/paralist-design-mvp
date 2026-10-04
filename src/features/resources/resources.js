@@ -21,7 +21,7 @@ import { filterCollectionEntries } from "../../data/collection-filters.js";
 import { collectionSort, sortCollectionEntries } from "../../data/collection-sorts.js";
 import { resourceFilters, resourceFilterTypes } from "../../data/config.js";
 import { createEntryInline } from "../../data/mutations-inline.js";
-import { resourceEntries } from "../../data/queries.js";
+import { isOwnDocument, resourceEntries } from "../../data/queries.js";
 import { saveState, state, ui } from "../../data/state.js";
 import { collectionEmptyState } from "../../ui/empty-state.js";
 import { filterEmptyState } from "../../ui/filter-empty.js";
@@ -77,7 +77,7 @@ function filtered(filter, raw = false) {
   const all = raw ? resourceEntries() : filterCollectionEntries("resources", resourceEntries());
   if (filter === "notes") return all.filter((entry) => entry.type === "notiz");
   if (filter === "drawings") return all.filter((entry) => entry.type === "zeichnung");
-  if (filter === "own") return all.filter((entry) => entry.type === "dokument");
+  if (filter === "own") return all.filter(isOwnDocument);
   return all;
 }
 
