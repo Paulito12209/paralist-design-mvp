@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "4b1f0088c0b5";
+export const appVersion = "2ab791ca3a7d";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -63,8 +63,7 @@ export const appFiles = [
   "src/features/media/media.js", "src/features/media/recorder-discard.js",
   "src/features/media/recorder-mic.js", "src/features/media/recorder-save.js",
   "src/features/media/recorder-session.js", "src/features/media/recorder-setup.js",
-  "src/features/media/recorder-speech.js", "src/features/media/recorder-state.js",
-  "src/features/media/recorder-text.js", "src/features/media/recorder-view.js",
+  "src/features/media/recorder-state.js", "src/features/media/recorder-view.js",
   "src/features/media/recorder.js", "src/features/media/viewer-menu.js",
   "src/features/media/viewer-nav.js", "src/features/media/viewer-stage.js",
   "src/features/media/viewer-zoom.js", "src/features/media/viewer.js",
