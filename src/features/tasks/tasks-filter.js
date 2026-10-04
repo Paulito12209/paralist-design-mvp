@@ -113,6 +113,8 @@ const statusSection = {
  */
 export function filterChips(view) {
   const chips = [];
+  /* „Alle“ ist gesperrt: „Archiviert“ steht dort aus und zählte sonst als Status-Filter */
+  if (view.fixed) return chips;
   if (linkFilterOn(view)) chips.push(linkChip(view));
   for (const section of [statusSection, prioritySection]) {
     if (filtered(view, section)) chips.push(sectionChip(view, section));
