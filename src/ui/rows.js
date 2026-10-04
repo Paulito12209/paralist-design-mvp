@@ -53,7 +53,7 @@ export function swipeAction(action, label, iconName, tone = action) {
  * (styles/android-reorder.css).
  * Ein span mit role="button": ein Knopf im Zeilen-Knopf wäre ungültiges HTML.
  */
-function rowMore() {
+export function rowMore() {
   return `<span class="row-more" role="button" tabindex="0" data-row-more aria-label="Mehr">${icon("dots", "icon-dots")}${icon("drag-handle", "icon-drag")}</span>`;
 }
 

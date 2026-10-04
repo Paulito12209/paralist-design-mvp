@@ -10,7 +10,8 @@
  * (Material 3: der Hauptknopf steht ganz außen und ist gefüllt).
  * Je Seite öffnen sich höchstens drei Knöpfe; die App nutzt heute zwei links
  * und zwei rechts (src/ui/rows.js, entryActions).
- * Rechts steht ein Drei-Punkte-Symbol (Klasse .row-more, src/ui/rows.js): nur ein
+ * Rechts steht ein Drei-Punkte-Symbol (Klasse .row-more, src/ui/rows.js; auch in der
+ * Aufgabenliste, dort auf Höhe der ersten Titelzeile): nur ein
  * Tipp darauf öffnet das Menü der Zeile. Gedrückt Halten hebt die Zeile zum
  * Verschieben an (styles/android-reorder.css).
  * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px.
@@ -218,6 +219,23 @@
     content: "";
     position: absolute; /* position: die Tippfläche ragt über den sichtbaren Haken hinaus */
     inset: -10px -6px;
+  }
+
+  /* Die drei Punkte einer Aufgabe stehen auf Höhe der ersten Titelzeile, nicht mittig in der
+     Zeile: wächst der Titel auf mehrere Zeilen, bleiben sie oben neben dem Haken. Der obere
+     Rand holt die Tippfläche (48px) auf die Mitte der ersten Zeile, der untere nimmt ihre
+     Höhe wieder weg, damit die Zeile nicht höher wird. Seitlich stehen sie bündig mit den
+     Punkten der Projekte. */
+  [data-mobile-os="android"] .task-rows .task-row .row-more {
+    align-self: flex-start; /* align-self: oben bleiben, auch wenn der Titel mehrzeilig ist */
+    margin-top: calc((var(--m3-task-line-h) - var(--m3-row-more-size)) / 2);
+    margin-right: calc(-12px - (var(--m3-tab-edge) - var(--content-side))); /* die Aufgabenzeile hat rechts --m3-tab-edge Rand statt --content-side: der Unterschied wird ausgeglichen, damit die Punkte auf einer Linie mit denen der Projekte stehen */
+    margin-bottom: calc(-1 * (var(--m3-row-more-size) + (var(--m3-task-line-h) - var(--m3-row-more-size)) / 2));
+  }
+
+  /* Im Auswahlmodus wählt ein Tipp die Zeile an, ein Menü gibt es dort nicht */
+  [data-mobile-os="android"] [data-selecting] .workspace-row .row-more {
+    display: none;
   }
 
   /* Die drei Punkte rechts. Zwei Klassen, weil „.workspace-row span“ (styles/rows.css)
