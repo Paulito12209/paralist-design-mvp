@@ -39,11 +39,17 @@
  * recorder-discard.js -> die Rückfrage „Aufnahme verwerfen?“
  * recorder-view.js    -> das Aussehen (dazu styles/recorder.css)
  *
- * ANPASSBARE WERTE (stehen in den Teil-Dateien)
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * autoSwitchUntilMs -> bis zu dieser Aufnahmelänge wechselt die App beim Mikrofon-Konflikt
+ *                      selbst auf „Nur Mitschrift“; eine längere Aufnahme bekommt nur den Knopf
+ *
+ * ANPASSBARE WERTE IN DEN TEIL-DATEIEN
  * -----------------------------------
  * levelEveryMs, soundLevel, starveAfterMs -> recorder-session.js (Welle, Mikrofon-Konflikt)
  * defaultMode                             -> recorder-state.js (Modus ohne gemerkte Wahl)
  * namePrefix                              -> recorder-save.js (Name ohne eigene Eingabe)
+ * askFromMs                               -> recorder-discard.js (ab wann „Aufnahme verwerfen?“ fragt)
  */
 
 import { dom } from "../../core/dom.js";
@@ -51,14 +57,16 @@ import { storageKeys, writeJson } from "../../core/storage.js";
 import { ui } from "../../data/state.js";
 import { registerOverlay } from "../../ui/router.js";
 import { createPlayer, discardMic, micSupported, openMic } from "./recorder-mic.js";
-import { armDiscardGuard, cancelRecorder, initDiscardGuard } from "./recorder-discard.js";
+import { armDiscardGuard, cancelRecorder, discardThen, initDiscardGuard } from "./recorder-discard.js";
 import { defaultName, recordingName, saveRecording } from "./recorder-save.js";
-import { beginSession, dropSession, pauseSession, resumeSession, sessionLengthMs, stopSession } from "./recorder-session.js";
+import { beginSession, dropSession, pauseSession, resetStarving, resumeSession, sessionLengthMs, stopSession } from "./recorder-session.js";
 import { micPermission, openRecorderSetup } from "./recorder-setup.js";
 import { conflictProblems, createSpeech, speechAvailable } from "./recorder-speech.js";
 import { rec, setState, showProblems } from "./recorder-state.js";
 import { convertTranscript, copyTranscript } from "./recorder-text.js";
 import { buildRecorder, clearNotice, createWave, showHint, showMicError, showNotice, showPlaying, showText, showTime } from "./recorder-view.js";
+
+const autoSwitchUntilMs = 8000;
 
 /* Fehler der Spracherkennung, die heißen: nicht erlaubt (alles andere: klappt gerade nicht) */
 const speechBlocked = ["not-allowed", "service-not-allowed"];
@@ -77,8 +85,10 @@ function newSpeech() {
       /* Eine überholte Mitschrift meldet sich nicht mehr */
       if (rec.speech !== me) return;
       /* Aufnahme und Mitschrift können sich das Mikrofon nicht teilen: ohne eigene Wahl
-         wechselt die App selbst auf „Nur Mitschrift“ und sagt, warum */
-      if (rec.mode === "audio" && !rec.modeChosen && conflictProblems.includes(me.problem()) && rec.state !== "error") {
+         wechselt die App selbst auf „Nur Mitschrift“ und sagt, warum — aber nur, solange
+         noch nichts gehört wurde und die Aufnahme kurz ist; sonst ginge ohne Rückfrage etwas verloren */
+      const conflict = conflictProblems.includes(me.problem()) && !me.heardAnything() && sessionLengthMs() < autoSwitchUntilMs;
+      if (rec.mode === "audio" && !rec.modeChosen && conflict && rec.state !== "error") {
         setMode("text");
         showNotice(rec.layer, "autoText");
         return;
@@ -151,17 +161,25 @@ async function start() {
 
 /* ---------- Modus, Öffnen, Schließen ---------- */
 
-/* Wofür das Mikrofon arbeitet; die Wahl bleibt gemerkt (ab jetzt gilt sie als festgelegt), die Aufnahme beginnt neu. */
+/* Wofür das Mikrofon arbeitet; die Wahl bleibt gemerkt (ab jetzt gilt sie als festgelegt — auch
+   wenn man die schon aktive Art antippt). Ändert sie sich, beginnt die Aufnahme neu. */
 function setMode(next) {
-  if (next === rec.mode || (next === "text" && !speechAvailable())) return;
+  if (next === "text" && !speechAvailable()) return;
+  const changed = next !== rec.mode;
   rec.mode = next;
   rec.modeChosen = true;
   writeJson(storageKeys.recorderMode, rec.mode);
-  if (rec.layer.hidden) return;
+  if (!changed || rec.layer.hidden) return;
   clearNotice(rec.layer);
   dropSession();
   rec.speech.stop();
   start();
+}
+
+/* Vom ⚙-Blatt und vom Knopf „Nur Mitschrift“: eine längere Aufnahme ginge dabei verloren, also erst fragen */
+function chooseMode(next) {
+  if (next === rec.mode || rec.layer.hidden) setMode(next);
+  else discardThen(() => setMode(next));
 }
 
 /* Ohne Verlauf schließen (Zurück-Geste): alles verwerfen, Mikrofon frei. */
@@ -190,10 +208,15 @@ function setup() {
     micBlocked: rec.state === "error",
     mode: rec.mode,
     textPossible: speechAvailable(),
-    onMode: setMode,
+    onMode: chooseMode,
     retry: () => {
-      if (rec.state === "error") start();
-      else rec.speech.retry();
+      if (rec.state === "error") {
+        start();
+        return;
+      }
+      /* Der neue Anlauf bekommt wieder volle Zeit, bevor „bekommt keinen Ton“ gilt */
+      resetStarving();
+      rec.speech.retry();
     },
   });
 }
@@ -207,7 +230,7 @@ const actions = {
   play: () => rec.player.toggle(rec.recorded && rec.recorded.blob),
   save: saveRecording,
   setup,
-  textOnly: () => setMode("text"),
+  textOnly: () => chooseMode("text"),
   copy: () => copyTranscript(rec.speech.text()),
   convert: () => convertTranscript(rec.speech.text(), recordingName()),
 };

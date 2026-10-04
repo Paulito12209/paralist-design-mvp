@@ -126,3 +126,40 @@ Nachher, wenn das Gerät nicht teilt (einmalig, danach gemerkt):
   direkt am Satzende kann fehlen.
 - Erkennt die App den Konflikt, gehen die ersten rund drei Sekunden Audio und
   Text verloren — nur beim ersten Mal auf diesem Gerät.
+
+## Nachbesserung (zweiter Commit, nach dem Review im Git Commit Manager)
+Vier bestätigte Fehler aus dem Review und sechs weitere aus einem
+unabhängigen Mehrfach-Review (vier Blickwinkel, je Fund drei Skeptiker):
+
+- `recorder-speech.js`: `closeRun()` behält jetzt den unsicheren Rest hinter
+  dem sicheren Text (`joinWords(committed, runFinal, pending)`); beim
+  Stoppen oder Pausieren am Computer und iPhone fehlten sonst die letzten
+  Wörter. Ein stiller Anlauf ohne Fehler (Sprechpause) setzt `failedRuns`
+  zurück — sonst sammelten sich einzelne „beschäftigt“-Fehler über eine lange
+  Aufnahme und beendeten die Mitschrift auf Android.
+- `recorder.js`: Der Automatik-Wechsel greift nur, solange die Erkennung noch
+  nichts gehört hat **und** die Aufnahme kürzer als `autoSwitchUntilMs`
+  (8 s) ist; sonst bleibt es beim Knopf, damit keine laufende Aufnahme samt
+  Text ohne Rückfrage verloren geht. Der Knopf „Nur Mitschrift“ und der
+  Wechsel im ⚙-Blatt fragen bei einer längeren Aufnahme erst „Aufnahme
+  verwerfen?“ (`chooseMode` → `discardThen` in `recorder-discard.js`), auch
+  nach „Stoppen“. Tippt man im ⚙-Blatt die schon aktive Art an, gilt sie ab
+  jetzt als festgelegt (`modeChosen`, gemerkt), ohne Neustart. „Erneut
+  anfragen“ und „Weiter“ nach einer Pause setzen den Konflikt-Zähler zurück
+  (`resetStarving` in `recorder-session.js`); vorher stand er nach „starved“
+  schon über der Schwelle und der neue Anlauf wurde beim ersten Ton sofort
+  wieder beendet.
+- `recorder-view.js`: Im Modus „Nur Mitschrift“ zeigt ein Fehler keinen
+  Konflikt-Text und keinen Knopf „Nur Mitschrift“ mehr (`failedTextOnly`).
+- `recorder-setup.js`: Dasselbe im ⚙-Blatt (`textOnlyHints`). `deviceKind()`
+  erkennt Android auch mit „Desktop-Website anfordern“ (Browser nennt sich
+  „Linux“, hat aber Touch; `navigator.userAgentData.platform`), sonst liefe
+  dort der Diktiermodus mit Dubletten.
+
+Geprüft wie oben, zusätzlich: Stoppen mit unsicherem Rest (Rest bleibt),
+abwechselnd „beschäftigt“ und still (Mitschrift bleibt am Leben), Konflikt
+nach vorhandenem Text (kein Wechsel, Text bleibt, roter Punkt), „Erneut
+anfragen“ nach Konflikt (neuer Anlauf bekommt die vollen drei Sekunden),
+Stoppen → „Nur Mitschrift“ (Rückfrage, Aufnahme bleibt bis „Verwerfen“),
+aktive Art antippen (gemerkt, kein Neustart), Wechsel im ⚙ nach 4 s
+(Rückfrage), Android-Desktop-Ansicht (ein Satz je Anlauf). Konsole leer.

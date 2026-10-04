@@ -20,6 +20,7 @@
  * micTexts     -> was beim Mikrofon steht, je Antwort des Browsers
  * problemTexts -> was bei der Mitschrift steht, je Fehler der Spracherkennung
  * modeTexts    -> die zwei Arten, das Mikrofon zu nutzen
+ * problemHints, textOnlyHints -> ein Satz mehr zu bestimmten Fehlern, je nach Art
  * steps        -> die Schritte zum Erlauben, je Gerät (iPhone, Android, Computer)
  *
  * Aussehen des Blatts: styles/overlays.css (.sheet-detail, .sheet-note).
@@ -84,11 +85,17 @@ const steps = {
   ],
 };
 
-/* Zusätzlicher Hinweis, wenn genau dieser Fehler auftritt */
+/* Zusätzlicher Hinweis, wenn genau dieser Fehler auftritt (im Modus „Aufnahme + Mitschrift“) */
 const problemHints = {
   starved: "Dein Gerät gibt das Mikrofon nur an eine App auf einmal — gerade an die Aufnahme. Mit „Nur Mitschrift“ bekommt die Spracherkennung das Mikrofon; dafür entsteht keine Audiodatei.",
   "audio-capture": "Die Spracherkennung kam nicht ans Mikrofon — meist hält es gerade die Aufnahme. Mit „Nur Mitschrift“ bekommt die Erkennung das Mikrofon; dafür entsteht keine Audiodatei.",
   "service-not-allowed": "Das Gerät lässt die Spracherkennung nicht zu. Die Schritte unten zeigen, wo man sie einschaltet.",
+};
+
+/* Dieselben Hinweise im Modus „Nur Mitschrift“: dort hält keine Aufnahme das Mikrofon, und der Wechsel steht nicht zur Wahl */
+const textOnlyHints = {
+  "audio-capture": "Die Spracherkennung kam nicht ans Mikrofon — vielleicht hält es gerade eine andere App. „Erneut anfragen“, wenn sie fertig ist.",
+  "service-not-allowed": problemHints["service-not-allowed"],
 };
 
 /**
@@ -98,9 +105,13 @@ const problemHints = {
  */
 export function deviceKind() {
   const agent = navigator.userAgent;
+  const touch = navigator.maxTouchPoints > 1;
   /* iPads melden sich als Mac, haben aber einen Touchscreen */
-  if (/iPhone|iPad|iPod/.test(agent) || (/Macintosh/.test(agent) && navigator.maxTouchPoints > 1)) return "ios";
-  if (/Android/.test(agent)) return "android";
+  if (/iPhone|iPad|iPod/.test(agent) || (/Macintosh/.test(agent) && touch)) return "ios";
+  /* Mit „Desktop-Website anfordern“ nennt sich Chrome für Android nur „Linux“ — dann verrät es
+     der Touchscreen; die Plattform-Angabe der neueren Browser ist eindeutig */
+  const platform = navigator.userAgentData ? navigator.userAgentData.platform : "";
+  if (platform === "Android" || /Android/.test(agent) || (/Linux/.test(agent) && touch)) return "android";
   return "desktop";
 }
 
@@ -129,7 +140,7 @@ export async function openRecorderSetup({ speechProblem, micBlocked, mode, textP
   if (micBlocked && mic !== "granted") mic = "denied";
   /* Ohne Mikrofon läuft auch keine Mitschrift, selbst wenn sie keinen Fehler meldet */
   const speechValue = micBlocked && !speechProblem ? problemTexts.waiting : problemTexts[speechProblem] ?? problemTexts.failed;
-  const hint = problemHints[speechProblem];
+  const hint = (mode === "text" ? textOnlyHints : problemHints)[speechProblem];
   const modes = Object.keys(modeTexts).filter((key) => key === "audio" || textPossible);
   const options = [
     { detail: true, label: labels.mic, value: micTexts[mic] || micTexts.unknown },

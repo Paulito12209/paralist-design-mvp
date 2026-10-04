@@ -68,12 +68,13 @@ const notices = {
   autoText: "Dein Gerät gibt das Mikrofon nur an eine App. Deshalb läuft hier die Mitschrift ohne Audiodatei — ändern lässt sich das oben rechts unter ⚙.",
 };
 
-/* Warum die Mitschrift gerade nicht geht (Gründe aus recorder-speech.js); bei einem Mikrofon-Konflikt steht dazu der Knopf „Nur Mitschrift“ */
-const conflictText = "Dein Gerät gibt das Mikrofon nur an die Aufnahme, die Mitschrift bekommt keinen Ton. Text gibt es hier nur ohne Aufnahme:";
+/* Warum die Mitschrift gerade nicht geht (Gründe aus recorder-speech.js). Bei einem
+   Mikrofon-Konflikt (conflictProblems) steht dazu der Knopf „Nur Mitschrift“ — außer
+   im Modus „Nur Mitschrift“ selbst, dort gibt es keine Aufnahme, der das Mikrofon gehören könnte. */
 const textProblems = {
-  starved: conflictText,
-  "audio-capture": conflictText,
+  conflict: "Dein Gerät gibt das Mikrofon nur an die Aufnahme, die Mitschrift bekommt keinen Ton. Text gibt es hier nur ohne Aufnahme:",
   failed: "Mitschreiben geht hier gerade nicht — die Aufnahme läuft trotzdem. Oben rechts auf ⚙ tippen, um es einzurichten.",
+  failedTextOnly: "Mitschreiben geht hier gerade nicht. Oben rechts auf ⚙ tippen: dort steht der Grund.",
 };
 
 const labels = {
@@ -231,10 +232,13 @@ export function showText(layer, final, pending = "", problem = "") {
     button.disabled = !hasText;
   });
   if (final === null) {
-    const button = conflictProblems.includes(problem)
+    const textOnly = layer.dataset.mode === "text";
+    const conflict = !textOnly && conflictProblems.includes(problem);
+    const button = conflict
       ? ` <button class="recorder-text-btn" type="button" data-rec="textOnly">${icon("mic")}${escapeHtml(labels.textOnly)}</button>`
       : "";
-    box.innerHTML = `${escapeHtml(textProblems[problem] || textProblems.failed)}${button}`;
+    const text = conflict ? textProblems.conflict : textOnly ? textProblems.failedTextOnly : textProblems.failed;
+    box.innerHTML = `${escapeHtml(text)}${button}`;
     box.classList.add("is-empty");
     return;
   }

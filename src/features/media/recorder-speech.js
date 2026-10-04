@@ -114,9 +114,9 @@ export function createSpeech(onChange, stillRecording) {
     pending = open.join(" ");
   }
 
-  /* Ein Anlauf ist zu Ende: was er sicher hatte (sonst das Unsichere) steht jetzt fest */
+  /* Ein Anlauf ist zu Ende: was er sicher hatte und was noch unsicher war, steht jetzt fest */
   function closeRun() {
-    committed = joinWords(committed, runFinal || pending);
+    committed = joinWords(committed, runFinal, pending);
     runFinal = "";
     pending = "";
   }
@@ -164,7 +164,9 @@ export function createSpeech(onChange, stillRecording) {
       const hadOpenText = Boolean(pending);
       closeRun();
       if (hadOpenText) report();
-      if (failure && !heardInRun) {
+      /* Nur Fehler direkt hintereinander zählen; ein stiller Anlauf ohne Fehler (Sprechpause) setzt die Zählung zurück */
+      if (!failure) failedRuns = 0;
+      else if (!heardInRun) {
         failedRuns += 1;
         if (failedRuns >= maxFailedRuns) {
           giveUp(failure);

@@ -1,6 +1,7 @@
 /*
- * Rückfrage, bevor eine Aufnahme verloren geht: „Abbrechen“, der Pfeil oben
- * und die Zurück-Geste (auch Browser-Zurück) fragen erst „Aufnahme
+ * Rückfrage, bevor eine Aufnahme verloren geht: „Abbrechen“, der Pfeil oben,
+ * die Zurück-Geste (auch Browser-Zurück) und der Wechsel der Art (Aufnahme +
+ * Mitschrift / Nur Mitschrift, der neu beginnt) fragen erst „Aufnahme
  * verwerfen?“, sobald die Aufnahme länger als ein paar Sekunden ist. Ein
  * kurzer Fehlstart geht ohne Frage weg. Die Aufnahme läuft während der Frage
  * weiter.
@@ -51,13 +52,18 @@ export function leaveRecorder() {
   hooks.close();
 }
 
-/** „Abbrechen“ und Pfeil oben: bei einer längeren Aufnahme erst fragen. */
-export function cancelRecorder() {
+/** Etwas tun, das die Aufnahme verwirft (Art wechseln): bei einer längeren Aufnahme erst fragen. */
+export function discardThen(action) {
   if (!worthAsking()) {
-    leaveRecorder();
+    action();
     return;
   }
-  ask(leaveRecorder);
+  ask(action);
+}
+
+/** „Abbrechen“ und Pfeil oben: bei einer längeren Aufnahme erst fragen. */
+export function cancelRecorder() {
+  discardThen(leaveRecorder);
 }
 
 /** Beim Öffnen: ein liegengebliebener Freifahrschein gilt nicht für die neue Aufnahme. */
