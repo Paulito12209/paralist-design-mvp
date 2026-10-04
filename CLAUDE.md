@@ -148,7 +148,9 @@ Die harten Punkte:
 5. **Keine Bugs:** `python3 tools/check.py` muss mit „alles in Ordnung“ beginnen,
    dann im Browser auf `http://localhost:4173` öffnen, Konsole muss leer sein,
    betroffene Flows anklicken — leerer und voller Speicher, hell und dunkel,
-   375 px Breite, Zurück-Pfeil und Browser-Zurück.
+   375 px Breite, Zurück-Pfeil und Browser-Zurück. Den vollen Speicher lädt
+   die Adresse `?demo=1` (rund 40 Demo-Einträge nach Rückfrage, der alte Stand
+   wird gesichert und kommt mit `?demo=0` zurück).
 
 ## 6. Sammel-Sitzung „Git Commit Manager“ (Branches zusammenführen)
 

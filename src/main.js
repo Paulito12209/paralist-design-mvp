@@ -41,6 +41,7 @@ import { initNavBar } from "./shell/nav-bar.js";
 import { initAndroidArchive } from "./shell/android-archive.js";
 import { initAndroidBars } from "./shell/android-bars.js";
 import { initBoardHeads } from "./shell/board-heads.js";
+import { takeDemoRequest } from "./shell/demo-load.js";
 import { initAndroidFab } from "./shell/android-fab.js";
 import { initAndroidLinkBtn } from "./shell/android-link-btn.js";
 import { initIosAdd } from "./shell/ios-add.js";
@@ -86,6 +87,8 @@ const lazyModules = {
   files: () => import("./data/files.js"),
   desk: () => import("./shell/desk.js"),
   dashboard: () => import("./features/dashboard/dashboard.js"),
+  /* nur bei „?demo=1“ in der Adresse (src/shell/demo-load.js) */
+  demo: () => import("./data/demo-data.js"),
 };
 
 /*
@@ -213,6 +216,8 @@ function start() {
   /* Zuerst: ohne das Formular hätten die Felder wieder Chromes Eingabe-Verlauf. */
   mountNoHistoryForm();
   initLazyViews();
+  /* „?demo=1“ ersetzt nach Rückfrage den Speicher und lädt neu — dann nicht erst starten */
+  if (takeDemoRequest()) return;
   loadEverything();
   initShell();
   initFeatures();

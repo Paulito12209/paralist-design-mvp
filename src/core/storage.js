@@ -10,6 +10,8 @@
 /** Alle Schlüssel an einer Stelle, damit nichts doppelt vergeben wird. */
 export const storageKeys = {
   state: "paralist-mvp",
+  /* Stand von vor „?demo=1“ — src/shell/demo-load.js stellt ihn mit „?demo=0“ wieder her */
+  demoBackup: "paralist-mvp-vor-demo",
   /* Name, Mail, Telefon, Links und der Tag des ersten Öffnens („Dabei seit“) */
   profile: "paralist-profile",
   theme: "paralist-theme",
