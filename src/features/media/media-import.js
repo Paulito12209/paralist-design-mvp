@@ -22,7 +22,7 @@ export const mediaSources = ["photo", "video", "import"];
 
 /**
  * Jede Datei wird ein Medien-Eintrag im Eingang.
- * @param extra optional: `body` (z.B. die Mitschrift einer Aufnahme) und
+ * @param extra optional: `body` (Text zum Eintrag) und
  *   `duration` in Sekunden, wenn die Datei ihre Länge selbst nicht verrät.
  */
 export async function addMediaFiles(fileList, source, extra = {}) {

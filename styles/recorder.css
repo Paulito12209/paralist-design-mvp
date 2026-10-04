@@ -1,8 +1,8 @@
 /*
  * Die Audio-Aufnahme als Overlay, aufgebaut wie die Suche: oben die
  * Kopfzeile mit ← und dem Namen der Aufnahme, darunter schimmert die Seite
- * nur noch dunkel und verschwommen durch. In der Mitte die Zeit, ob
- * aufgenommen wird, die laufende Welle und die Mitschrift. Unten dieselben
+ * nur noch dunkel und verschwommen durch. Mittig im freien Platz die große
+ * Zeit, ob aufgenommen wird und die laufende Welle. Unten dieselben
  * Knöpfe wie in der Medien-Leiste (styles/media-bar.css) und „Abbrechen“ wie
  * auf der Suche (styles/search.css), darunter die dunkle Leiste.
  * Inhalt und Zustände: src/features/media/recorder-view.js.
@@ -12,7 +12,7 @@
  * und styles/tokens-pages.css)
  * -----------------------------------
  * --recorder-scrim-mix / --recorder-scrim-blur -> wie deckend und verschwommen das Overlay ist;
- *                         dunkler als bei der Suche, damit die Mitschrift gut lesbar bleibt
+ *                         dunkler als bei der Suche, damit Zeit und Welle ruhig stehen
  *                         (stehen oben bei .recorder, gelten nur hier)
  * --m3-search-head-bg     -> Farbe der Kopfzeile
  * --m3-search-field-size  -> Schriftgröße des Namens oben
@@ -23,14 +23,11 @@
  * --search-pill-height    -> Höhe der Knöpfe unten
  * --nav-side / --nav-bottom / --content-side -> Ränder
  *
- * --m3-outline-variant / --line -> Farbe der sanften Linie unter „Mitschrift“
- *
- * Einzelwerte direkt bei ihrer Regel: Zeit 56px (.recorder-time), Welle 96px
+ * Einzelwerte direkt bei ihrer Regel: Zeit bis 88px, auf schmalen Geräten 20 % der Breite (.recorder-time), Welle 96px
  * hoch mit 3px Fuge und Strichen bis 4px (.recorder-wave, .recorder-bar),
- * Mitschrift 17px (.recorder-text), Zwischenüberschrift 13px mit 8px Luft
- * unter der Linie (.recorder-text-head), Knöpfe ⚙/Kopieren/Umwandeln 40px
- * mit 20px-Icons (.recorder-head-btn), Punkt am ⚙ 8px (.recorder-setup.is-alert),
- * Knopf „Nur Mitschrift“ in der Mitschrift 15px, 40px hoch (.recorder-text-btn).
+ * Mikrofon-Knopf oben 40px mit 20px-Icon (.recorder-head-btn), Punkt daran
+ * 8px (.recorder-setup.is-alert), Abstand von „Abbrechen“ zum Gehäuse 12px
+ * (.recorder-actions .search-cancel).
  */
 
 /* position/inset: liegt über der ganzen App, die stehen bleibt, wo sie war.
@@ -102,13 +99,13 @@
   opacity: 0.38;
 }
 
-/* position: Anker für den Punkt am Zahnrad */
+/* position: Anker für den Punkt am Mikrofon-Knopf */
 .recorder-setup {
   position: relative;
-  margin-right: -8px; /* margin: das Zahnrad steht auf dem Rand wie der Pfeil links, seine Tippfläche ragt darüber */
+  margin-right: -8px; /* margin: das Mikrofon-Symbol steht auf dem Rand wie der Pfeil links, seine Tippfläche ragt darüber */
 }
 
-/* Ein roter Punkt am Zahnrad: Mikrofon oder Mitschrift gehen gerade nicht */
+/* Ein roter Punkt am Mikrofon-Symbol: das Mikrofon geht gerade nicht auf */
 .recorder-setup.is-alert::after {
   content: "";
   position: absolute;
@@ -132,22 +129,25 @@
   outline: none;
 }
 
-/* ---------- Zeit, Welle, Mitschrift ---------- */
+/* ---------- Zeit und Welle ---------- */
 
-/* padding unten: Platz für die Knöpfe, damit die Mitschrift nicht darunter verschwindet */
+/* justify-content: Zeit, Zustand und Welle stehen mittig im freien Platz.
+   padding unten: Platz für die Knöpfe, damit die Mitte nicht von ihnen verdeckt wird */
 .recorder-body {
   flex: 1;
   min-height: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 40px var(--content-side) calc(var(--search-pill-height) + 36px + var(--nav-bottom) + var(--safe-bottom));
+  justify-content: center;
+  padding: 0 var(--content-side) calc(var(--search-pill-height) + 36px + var(--nav-bottom) + var(--safe-bottom));
 }
 
 .recorder-time {
-  font-size: 56px;
+  font-size: min(88px, 20vw); /* min: auf schmalen Geräten schrumpft die Zeit mit, damit auch „1:04:09“ in die Breite passt */
   font-weight: 300;
   letter-spacing: -0.02em;
+  line-height: 1.1;
   font-variant-numeric: tabular-nums; /* font-variant-numeric: gleich breite Ziffern, die Zeit zittert nicht beim Zählen */
   color: var(--text);
 }
@@ -156,7 +156,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 4px;
+  margin-top: 8px;
   font-size: 14px;
   color: var(--muted);
 }
@@ -209,86 +209,26 @@
 }
 
 .recorder-note {
-  margin: 0 0 16px;
+  margin: 0;
   max-width: 300px;
   text-align: center;
   font-size: 14px;
   color: var(--muted);
 }
 
-.recorder-text-head {
-  align-self: stretch;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 40px;
-  border-bottom: 1px solid var(--m3-outline-variant, var(--line));
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--muted);
-}
-
-/* margin: die Knöpfe stehen rechts auf dem Rand, ihre Tippflächen ragen darüber */
-.recorder-text-tools {
-  display: flex;
-  margin-right: -10px;
-}
-
-/* overflow-y: eine lange Mitschrift rollt in ihrer Fläche, das Neueste steht unten */
-.recorder-text {
-  align-self: stretch;
-  flex: 1;
-  min-height: 0;
-  margin: 8px 0 0;
-  overflow-y: auto;
-  scrollbar-width: none;
-  font-size: 17px;
-  line-height: 1.45;
-  color: var(--text);
-}
-
-.recorder-text.is-empty,
-.recorder-pending {
-  color: var(--muted);
-}
-
-/* „Nur Mitschrift“: steht als Pille unter dem Hinweis, wenn die Mitschrift keinen Ton bekommt */
-.recorder-text-btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 40px;
-  margin: 12px auto 0;
-  padding: 0 18px;
-  border-radius: 20px;
-  background: var(--m3-primary, var(--link-color));
-  color: var(--m3-on-primary, #fff);
-  font: inherit;
-  font-size: 15px;
-  font-weight: 600;
-}
-
-.recorder-text-btn .icon {
-  width: 18px;
-  height: 18px;
-}
-
-/* Ohne Mikrofon gibt es nichts mitzuschreiben; dort steht nur der Hinweis */
-.recorder[data-state="error"] :is(.recorder-text-head, .recorder-text) {
-  display: none;
-}
-
 /* ---------- Knöpfe unten ---------- */
 
 /* Drei Spalten wie auf der Suche: Stoppen links, Gehäuse mittig, Abbrechen rechts.
-   position: steht fest unten, die Mitschrift rollt darüber. */
+   Die rechte Spalte ist so schmal wie die linke (minmax(0, 1fr)): ist der Platz knapp,
+   kürzt sich „Abbrechen“ mit Punkten, statt ans Gehäuse zu stoßen.
+   position: steht fest unten über dem Inhalt. */
 .recorder-actions {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(max-content, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
   gap: var(--media-actions-gap);
   padding: 0 var(--nav-side) calc(12px + var(--nav-bottom) + var(--safe-bottom));
@@ -297,6 +237,13 @@
 .recorder-actions .icon {
   width: 22px;
   height: 22px;
+}
+
+/* margin-left: Luft zwischen Gehäuse und „Abbrechen“; max-width zieht sie ab, damit das Wort nicht aus der Spalte ragt.
+   Das Kürzen mit Punkten kommt von .search-cancel (styles/search.css). */
+.recorder-actions .search-cancel {
+  margin-left: 12px;
+  max-width: calc(100% - 12px);
 }
 
 /* „Speichern“ steht als Wort auf der hellen Fläche, wie „Suchen“ */

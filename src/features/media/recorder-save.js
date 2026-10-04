@@ -1,7 +1,7 @@
 /*
- * Die Aufnahme speichern: als Audio-Datei mit der Mitschrift als Text im
- * Eingang (src/features/media/media-import.js) oder, im Modus „Nur
- * Mitschrift“, als Notiz. Läuft die Aufnahme noch, wird sie vorher beendet.
+ * Die Aufnahme speichern: als Audio-Datei, die wie jede andere Datei ein
+ * Medien-Eintrag im Eingang wird (src/features/media/media-import.js).
+ * Läuft die Aufnahme noch, wird sie vorher beendet.
  * Dazu der Name: der getippte oder ein vorgeschlagener mit Datum und Uhrzeit.
  * Pfad: src/features/media/recorder-save.js
  *
@@ -11,7 +11,6 @@
  */
 
 import { pad2 } from "../../core/dates.js";
-import { createEntryInline } from "../../data/mutations-inline.js";
 import { showToast } from "../../ui/toast.js";
 import { addMediaFiles } from "./media-import.js";
 import { leaveRecorder } from "./recorder-discard.js";
@@ -28,26 +27,17 @@ export function defaultName() {
 }
 
 /** Der getippte Name, sonst der vorgeschlagene („Sprachmemo 04.10.2026 14:03“). */
-export function recordingName() {
+function recordingName() {
   const input = rec.layer.querySelector(".recorder-name");
   return input.value.trim() || input.placeholder;
 }
 
 export async function saveRecording() {
   if (rec.state === "recording" || rec.state === "paused") await finishSession();
-  const name = recordingName();
-  const text = rec.speech.text();
-  /* Nur Mitschrift: der Text wird eine Notiz im Eingang */
-  if (rec.mode === "text") {
-    if (!text) return;
-    leaveRecorder();
-    createEntryInline({ title: name, type: "notiz", fields: { body: text } });
-    showToast({ icon: "mic", title: "Mitschrift gespeichert", note: name });
-    return;
-  }
   if (!rec.recorded) return;
+  const name = recordingName();
   const file = micFile(rec.recorded.blob, name);
-  const extra = { body: text, duration: rec.recorded.duration };
+  const extra = { duration: rec.recorded.duration };
   /* Erst schließen (das verwirft den Zwischenstand), die Datei ist schon gepackt */
   leaveRecorder();
   await addMediaFiles([file], "audio", extra);
