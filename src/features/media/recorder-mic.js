@@ -9,18 +9,13 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * micConstraints -> was vom Mikrofon verlangt wird (siehe Kommentar dort)
+ * micConstraints -> was vom Mikrofon verlangt wird
  * levelBoost     -> wie stark leise Töne in der Welle angehoben werden
  * fftSize        -> wie viele Proben in eine Pegelmessung eingehen (größer = ruhiger, träger)
  * micErrors      -> Name des Browser-Fehlers → kurzer Grund in Alltagssprache
  */
 
-/* Ohne Echo-Unterdrückung: Mit ihr nimmt Chrome auf Android die Tonquelle für
-   Telefonate, die Android als „privat“ einstuft — dann bekommt die
-   Spracherkennung (App „Google“) während der Aufnahme nur Stille und die
-   Mitschrift bleibt leer. Ohne sie darf die Erkennung mithören. Ein Sprachmemo
-   braucht keine Echo-Unterdrückung, es spielt dabei nichts ab. */
-const micConstraints = { audio: { echoCancellation: false } };
+const micConstraints = { audio: true };
 const levelBoost = 3.2;
 const fftSize = 1024;
 

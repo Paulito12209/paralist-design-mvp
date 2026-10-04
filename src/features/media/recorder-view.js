@@ -1,35 +1,31 @@
 /*
  * Das Aussehen der Audio-Aufnahme: das Overlay selbst, die Wellen, die Zeit
  * und welche Knöpfe in welchem Zustand stehen. Die Aufnahme selbst (Mikrofon,
- * Mitschrift, Speichern) steht in src/features/media/recorder.js und den
- * Teil-Dateien, die ihr Kopf nennt.
+ * Speichern) steht in src/features/media/recorder.js und den Teil-Dateien,
+ * die ihr Kopf nennt.
  * Aufbau wie die Suche: oben die Kopfzeile mit ←, dem Namen der Aufnahme
- * und rechts ⚙ („Mitschrift einrichten“), darunter verschwommen die Seite,
- * unten Gehäuse und „Abbrechen“. Über der Mitschrift steht die
- * Zwischenüberschrift mit „Kopieren“ und „Umwandeln“. Die Knöpfe
- * unten tragen dieselben Klassen wie die Medien-Leiste (styles/media-bar.css)
- * und „Abbrechen“ der Suche (styles/search.css) — so sehen sie gleich aus.
+ * und rechts dem Mikrofon-Symbol („Mikrofon erlauben“, erklärt nur die
+ * Schritte), darunter verschwommen die Seite, unten Gehäuse und „Abbrechen“.
+ * Zeit, Zustand und Welle stehen mittig im Overlay.
+ * Die Knöpfe unten tragen dieselben Klassen wie die Medien-Leiste
+ * (styles/media-bar.css) und „Abbrechen“ der Suche (styles/search.css) — so
+ * sehen sie gleich aus.
  * Pfad: src/features/media/recorder-view.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * barCount       -> wie viele Striche die Welle hat (mehr = feiner, aber mehr zu zeichnen)
- * minLevel       -> wie hoch ein Strich bei Stille noch ist (0 bis 1)
- * stateTexts     -> was unter der Zeit steht, je Zustand (Aufnahme)
- * textStateTexts -> dasselbe im Modus „Nur Mitschrift“
- * hints          -> Hinweis unter der Zeit, solange der Browser nach dem Mikrofon fragt
- * micNotes       -> Satz in der Mitte, wenn das Mikrofon nicht aufging, je Grund
- * notices        -> Satz an derselben Stelle, der stehen bleibt: warum die App selbst
- *                   auf „Nur Mitschrift“ gewechselt hat
- * textProblems   -> Satz statt der Mitschrift, wenn sie gerade nicht geht, je Grund
- * labels         -> Beschriftung der Knöpfe und Platzhalter
+ * barCount   -> wie viele Striche die Welle hat (mehr = feiner, aber mehr zu zeichnen)
+ * minLevel   -> wie hoch ein Strich bei Stille noch ist (0 bis 1)
+ * stateTexts -> was unter der Zeit steht, je Zustand
+ * hints      -> Hinweis unter der Zeit, solange der Browser nach dem Mikrofon fragt
+ * micNotes   -> Satz unter der Welle, wenn das Mikrofon nicht aufging, je Grund
+ * labels     -> Beschriftung der Knöpfe und Platzhalter
  *
  * Farben und Maße stehen in styles/recorder.css.
  */
 
 import { escapeHtml, icon } from "../../core/html.js";
 import { pad2 } from "../../core/dates.js";
-import { conflictProblems } from "./recorder-speech.js";
 
 const barCount = 40;
 const minLevel = 0.06;
@@ -42,51 +38,23 @@ const stateTexts = {
   error: "Kein Zugriff aufs Mikrofon",
 };
 
-/* Im Modus „Nur Mitschrift“ gibt es keine Aufnahme, nur Text */
-const textStateTexts = {
-  ...stateTexts,
-  starting: "Mitschrift wird gestartet …",
-  recording: "Mitschrift läuft",
-  stopped: "Mitschrift beendet",
-};
-
 const hints = {
   asking: "Bitte das Mikrofon erlauben …",
 };
 
 /* Warum das Mikrofon nicht aufging (Gründe aus recorder-mic.js) */
 const micNotes = {
-  blocked: "Das Mikrofon ist für diese Seite gesperrt. Oben rechts auf ⚙ tippen: dort stehen die Schritte zum Erlauben und „Erneut anfragen“.",
+  blocked: "Das Mikrofon ist für diese Seite gesperrt. Oben rechts auf das Mikrofon tippen: dort stehen die Schritte zum Erlauben.",
   missing: "Es wurde kein Mikrofon gefunden.",
   busy: "Das Mikrofon ist gerade belegt — eine andere App benutzt es. Nochmal versuchen, wenn sie fertig ist.",
-  failed: "Das Mikrofon geht gerade nicht auf. Erneut versuchen oder oben rechts auf ⚙ tippen.",
-  speech: "Die Mitschrift geht gerade nicht. Oben rechts auf ⚙ tippen: dort steht der Grund.",
-};
-
-/* Bleibt stehen, bis die Aufnahme geschlossen oder die Art gewechselt wird */
-const notices = {
-  autoText: "Dein Gerät gibt das Mikrofon nur an eine App. Deshalb läuft hier die Mitschrift ohne Audiodatei — ändern lässt sich das oben rechts unter ⚙.",
-};
-
-/* Warum die Mitschrift gerade nicht geht (Gründe aus recorder-speech.js). Bei einem
-   Mikrofon-Konflikt (conflictProblems) steht dazu der Knopf „Nur Mitschrift“ — außer
-   im Modus „Nur Mitschrift“ selbst, dort gibt es keine Aufnahme, der das Mikrofon gehören könnte. */
-const textProblems = {
-  conflict: "Dein Gerät gibt das Mikrofon nur an die Aufnahme, die Mitschrift bekommt keinen Ton. Text gibt es hier nur ohne Aufnahme:",
-  failed: "Mitschreiben geht hier gerade nicht — die Aufnahme läuft trotzdem. Oben rechts auf ⚙ tippen, um es einzurichten.",
-  failedTextOnly: "Mitschreiben geht hier gerade nicht. Oben rechts auf ⚙ tippen: dort steht der Grund.",
+  failed: "Das Mikrofon geht gerade nicht auf. Erneut versuchen oder oben rechts auf das Mikrofon tippen.",
 };
 
 const labels = {
   title: "Neue Aufnahme",
   save: "Speichern",
   cancel: "Abbrechen",
-  textHead: "Mitschrift",
-  textEmpty: "Was du sagst, erscheint hier.",
-  textOnly: "Nur Mitschrift",
-  setup: "Mitschrift einrichten",
-  copy: "Mitschrift kopieren",
-  convert: "In Notiz oder Dokument umwandeln",
+  setup: "Mikrofon erlauben",
 };
 
 /* Welche Knöpfe in welchem Zustand: links und das kleine Feld im Gehäuse. */
@@ -118,21 +86,13 @@ export function buildRecorder() {
     <div class="recorder-head">
       <button class="recorder-back" type="button" data-rec="cancel" aria-label="Zurück">${icon("arrow-back")}</button>
       <input class="recorder-name" type="text" enterkeyhint="done" placeholder="${escapeHtml(labels.title)}" aria-label="Name der Aufnahme" />
-      <button class="recorder-head-btn recorder-setup" type="button" data-rec="setup" aria-label="${escapeHtml(labels.setup)}">${icon("settings")}</button>
+      <button class="recorder-head-btn recorder-setup" type="button" data-rec="setup" aria-label="${escapeHtml(labels.setup)}">${icon("mic")}</button>
     </div>
     <div class="recorder-body">
       <div class="recorder-time">0:00</div>
       <div class="recorder-state"><span class="recorder-dot"></span><span class="recorder-state-text"></span></div>
       <div class="recorder-wave" aria-hidden="true">${bars}</div>
       <p class="recorder-note" hidden></p>
-      <div class="recorder-text-head">
-        <span>${escapeHtml(labels.textHead)}</span>
-        <span class="recorder-text-tools">
-          <button class="recorder-head-btn" type="button" data-rec="copy" aria-label="${escapeHtml(labels.copy)}" title="${escapeHtml(labels.copy)}" disabled>${icon("copy")}</button>
-          <button class="recorder-head-btn" type="button" data-rec="convert" aria-label="${escapeHtml(labels.convert)}" title="${escapeHtml(labels.convert)}" disabled>${icon("convert")}</button>
-        </span>
-      </div>
-      <p class="recorder-text"></p>
     </div>
     <div class="recorder-actions">
       <button class="media-side recorder-side" type="button"></button>
@@ -155,16 +115,14 @@ function setButton(button, spec) {
 /**
  * Den Zustand zeigen: Text unter der Zeit, roter Punkt, Knöpfe.
  * @param state   "starting", "recording", "paused", "stopped" oder "error"
- * @param mode    "audio" (Aufnahme + Mitschrift) oder "text" (nur Mitschrift)
  * @param canSave ob es schon etwas zu speichern gibt
  * @param canPlay ob es nach dem Stoppen etwas anzuhören gibt
  */
-export function showState(layer, state, { mode, canSave, canPlay }) {
+export function showState(layer, state, { canSave, canPlay }) {
   layer.dataset.state = state;
-  layer.dataset.mode = mode;
-  layer.querySelector(".recorder-state-text").textContent = (mode === "text" ? textStateTexts : stateTexts)[state];
+  layer.querySelector(".recorder-state-text").textContent = stateTexts[state];
   const note = layer.querySelector(".recorder-note");
-  note.hidden = state !== "error" && !note.dataset.notice;
+  note.hidden = state !== "error";
   const side = layer.querySelector(".recorder-side");
   setButton(side, sideButton[state]);
   /* Solange das Mikrofon noch aufgeht, gibt es nichts zu stoppen */
@@ -180,27 +138,9 @@ export function showHint(layer, key) {
   layer.querySelector(".recorder-state-text").textContent = hints[key];
 }
 
-/** Der Satz in der Mitte, wenn das Mikrofon nicht aufging — mit dem Grund aus recorder-mic.js. Ein Hinweis davor ist damit vorbei. */
+/** Der Satz unter der Welle, wenn das Mikrofon nicht aufging — mit dem Grund aus recorder-mic.js. */
 export function showMicError(layer, reason) {
-  const note = layer.querySelector(".recorder-note");
-  delete note.dataset.notice;
-  note.textContent = micNotes[reason] || micNotes.failed;
-}
-
-/** Ein Hinweis an derselben Stelle, der über die Zustände hinweg stehen bleibt (Schlüssel aus `notices`). */
-export function showNotice(layer, key) {
-  const note = layer.querySelector(".recorder-note");
-  note.dataset.notice = key;
-  note.textContent = notices[key];
-  note.hidden = false;
-}
-
-/** Den Hinweis wieder wegnehmen; ein Fehler-Satz bleibt sichtbar. */
-export function clearNotice(layer) {
-  const note = layer.querySelector(".recorder-note");
-  if (!note.dataset.notice) return;
-  delete note.dataset.notice;
-  note.hidden = layer.dataset.state !== "error";
+  layer.querySelector(".recorder-note").textContent = micNotes[reason] || micNotes.failed;
 }
 
 /** Beim Anhören: das kleine Feld wird zu Pause und zurück. */
@@ -218,40 +158,7 @@ export function showTime(layer, ms) {
   layer.querySelector(".recorder-time").textContent = text;
 }
 
-/**
- * Die Mitschrift zeigen. `null` heißt: sie geht gerade nicht — `problem` sagt
- * warum (recorder-speech.js); können sich Aufnahme und Mitschrift das
- * Mikrofon nicht teilen (`conflictProblems`), steht dabei der Knopf „Nur Mitschrift“.
- * Was noch nicht sicher erkannt ist (`pending`), steht blasser dahinter.
- */
-export function showText(layer, final, pending = "", problem = "") {
-  const box = layer.querySelector(".recorder-text");
-  /* Kopieren und Umwandeln gehen erst, wenn es Text gibt */
-  const hasText = Boolean(final || pending);
-  layer.querySelectorAll(".recorder-text-tools button").forEach((button) => {
-    button.disabled = !hasText;
-  });
-  if (final === null) {
-    const textOnly = layer.dataset.mode === "text";
-    const conflict = !textOnly && conflictProblems.includes(problem);
-    const button = conflict
-      ? ` <button class="recorder-text-btn" type="button" data-rec="textOnly">${icon("mic")}${escapeHtml(labels.textOnly)}</button>`
-      : "";
-    const text = conflict ? textProblems.conflict : textOnly ? textProblems.failedTextOnly : textProblems.failed;
-    box.innerHTML = `${escapeHtml(text)}${button}`;
-    box.classList.add("is-empty");
-    return;
-  }
-  const empty = !final && !pending;
-  box.classList.toggle("is-empty", empty);
-  box.innerHTML = empty
-    ? escapeHtml(labels.textEmpty)
-    : `${escapeHtml(final)}${pending ? ` <span class="recorder-pending">${escapeHtml(pending)}</span>` : ""}`;
-  /* Neues Gesagtes steht unten; die Box rollt mit, damit man es sieht */
-  box.scrollTop = box.scrollHeight;
-}
-
-/** Das Zahnrad oben bekommt einen Punkt, solange Mikrofon oder Mitschrift nicht gehen. */
+/** Das Mikrofon-Symbol oben bekommt einen Punkt, solange das Mikrofon nicht aufgeht. */
 export function showSetupAlert(layer, alert) {
   layer.querySelector(".recorder-setup").classList.toggle("is-alert", alert);
 }
