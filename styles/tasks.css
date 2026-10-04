@@ -165,7 +165,13 @@
 
 .task-row {
   align-items: center;
+  min-width: 0; /* min-width: neben dem Haken darf die Zeile schmaler werden als ihr Titel, sonst ragt er über den rechten Rand hinaus */
   border-bottom: 0;
+}
+
+/* Der Pfeil rechts bleibt gleich groß, auch wenn der Titel eng wird */
+.task-row .chevron {
+  flex-shrink: 0;
 }
 
 /* .workspace-row span macht jedes span breit — in einer Aufgabe soll das nur

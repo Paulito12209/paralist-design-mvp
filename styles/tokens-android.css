@@ -108,6 +108,9 @@
  *                                 Fläche, also auf dem Seitenrand von 16px (der Titel folgt nach Fläche + Abstand)
  * --m3-list-icon               -> Größe des Icons darin (so klein wie das Kästchen in Google Tasks: 20dp)
  * --m3-list-thumb-radius       -> Rundung der Vorschaubilder vor dem Titel
+ * --m3-task-check-size          -> Größe des runden Hakens vor einer Aufgabe in der Liste (nicht im Board; vorher 24px)
+ * --m3-task-line-h              -> Zeilenhöhe des Aufgabentitels; der Haken steht mittig vor dieser ersten Zeile
+ * --m3-task-title-lines         -> nach so vielen Zeilen endet ein langer Aufgabentitel mit „…“ (die Zeile wächst nach unten)
  * --m3-swipe-action-w / -h     -> Breite und Höhe der Wisch-Knöpfe (hochkant, voll gerundet; höchstens so hoch wie eine Zeile)
  * --m3-swipe-action-gap        -> Abstand der Wisch-Knöpfe zueinander und zum Rand
  * --m3-row-more-size           -> Tippfläche der drei Punkte rechts in der Zeile (Material 3: 48dp)
@@ -242,6 +245,9 @@
   --m3-list-leading: 28px;
   --m3-list-icon: 20px;
   --m3-list-thumb-radius: 8px;
+  --m3-task-check-size: 20px;
+  --m3-task-line-h: 24px;
+  --m3-task-title-lines: 3;
   --m3-swipe-action-w: 48px;
   --m3-swipe-action-h: 48px;
   --m3-swipe-action-gap: 8px;

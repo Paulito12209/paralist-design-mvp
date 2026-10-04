@@ -24,6 +24,9 @@
  * --m3-tab-edge            -> Abstand des Icons vom Geräterand (styles/tokens-android.css)
  * --m3-list-icon           -> Größe des Icons darin
  * --m3-list-thumb-radius   -> Rundung der Vorschaubilder
+ * --m3-task-check-size     -> Größe des Hakens vor einer Aufgabe (nur Liste, das Board behält 24px)
+ * --m3-task-line-h         -> Zeilenhöhe des Aufgabentitels; der Haken steht auf Höhe der ersten Zeile
+ * --m3-task-title-lines    -> nach so vielen Zeilen endet ein Aufgabentitel mit „…“
  * --m3-swipe-action-w / -h -> Breite und Höhe der Wisch-Knöpfe; die Breite nimmt auch
  *                             src/ui/swipe.js, um zu rechnen, wie weit eine Zeile aufgeht
  * --m3-swipe-action-gap    -> Abstand der Wisch-Knöpfe (ebenso von swipe.js gelesen)
@@ -162,6 +165,59 @@
     width: auto;
     height: auto;
     border-radius: calc(var(--m3-list-thumb-radius) / 2);
+  }
+
+  /* ---------- Aufgaben-Liste: Haken oben bei der ersten Titelzeile ---------- */
+
+  /* Wie in Google Tasks: Haken und erste Titelzeile stehen auf einer Höhe, ein langer
+     Titel (bis --m3-task-title-lines Zeilen) und die Nebenzeile wachsen nach unten.
+     Der Haken ist hier kleiner als im Board; er ändert --task-check-size nur für die
+     Liste, damit auch Geister- und Eingabezeile gleich groß sind. Rechts steht derselbe
+     Rand wie links (--m3-tab-edge); ohne ihn lief der Titel bis an den Geräterand. */
+  [data-mobile-os="android"] .task-rows {
+    --task-check-size: var(--m3-task-check-size);
+    --task-row-pad: calc((var(--m3-list-row-h) - var(--m3-task-line-h)) / 2); /* so viel Luft über der ersten Zeile, dass eine einzeilige Aufgabe genau --m3-list-row-h hoch ist */
+  }
+
+  [data-mobile-os="android"] .task-rows .swipe-body {
+    align-items: flex-start; /* align-items: Haken und Auswahlkreis bleiben oben, wenn die Zeile nach unten wächst */
+    padding-right: var(--m3-tab-edge);
+  }
+
+  [data-mobile-os="android"] .task-rows .swipe-body > .task-check {
+    margin-top: calc(var(--task-row-pad) + (var(--m3-task-line-h) - var(--task-check-size)) / 2);
+  }
+
+  [data-mobile-os="android"] .task-rows .swipe-body > .task-pick {
+    margin-top: calc(var(--task-row-pad) + (var(--m3-task-line-h) - var(--pick-size)) / 2);
+  }
+
+  [data-mobile-os="android"] .task-rows .task-row {
+    align-self: stretch; /* align-self: die ganze Zeilenhöhe bleibt tippbar, auch wenn der Haken oben sitzt */
+    align-items: flex-start;
+    padding: var(--task-row-pad) 0;
+  }
+
+  /* Mit Nebenzeile reicht unten weniger Luft, sonst wirkt die Zeile zu hoch */
+  [data-mobile-os="android"] .task-rows .task-row:has(.task-meta) {
+    padding-bottom: calc(var(--task-row-pad) - 6px);
+  }
+
+  [data-mobile-os="android"] .task-rows .task-title {
+    display: -webkit-box; /* -webkit-box mit line-clamp: der Titel endet nach --m3-task-title-lines Zeilen mit „…“ */
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: var(--m3-task-title-lines);
+    line-clamp: var(--m3-task-title-lines);
+    white-space: normal;
+    overflow-wrap: anywhere; /* overflow-wrap: ein sehr langes Wort bricht um, statt hinauszuragen */
+    line-height: var(--m3-task-line-h);
+  }
+
+  /* Der Haken ist kleiner als ein Finger: unsichtbare Tippfläche rundherum, ohne die Zeile höher zu machen */
+  [data-mobile-os="android"] .task-rows .task-check::before {
+    content: "";
+    position: absolute; /* position: die Tippfläche ragt über den sichtbaren Haken hinaus */
+    inset: -10px -6px;
   }
 
   /* Die drei Punkte rechts. Zwei Klassen, weil „.workspace-row span“ (styles/rows.css)
