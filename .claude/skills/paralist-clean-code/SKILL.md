@@ -196,6 +196,11 @@ Eine Änderung ist erst fertig, wenn diese Kette durchlaufen ist:
    die wichtigste.
 6. **Leerer Speicher und voller Speicher** — einmal mit `localStorage.clear()`
    neu laden (Beispieldaten) und einmal mit vorhandenen Daten (Migration).
+   Vollen Speicher lädt die Adresse `?demo=1` (src/shell/demo-load.js: fragt
+   nach, sichert den alten Stand, `?demo=0` holt ihn zurück). Im Browser-Pane
+   sind Rückfragen abgeschaltet; dort per `<script type="module">` erst
+   `window.confirm = () => true` setzen und dann `takeDemoRequest()` aus
+   `/src/shell/demo-load.js` rufen, nachdem die Adresse `?demo=1` trägt.
 7. **Hell und Dunkel** ansehen und **375 px Breite** prüfen.
 8. **Zurück-Pfeil und Browser-Zurück** auf jeder berührten Seite.
 
