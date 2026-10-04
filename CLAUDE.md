@@ -25,6 +25,11 @@ Mehrere Sitzungen laufen parallel, jede an genau **einer** Idee oder einem Probl
    (Nummer, Titel): Baut einer schon an derselben Stelle der App, sag es mir,
    bevor du anfängst — zwei Lösungen für dasselbe Problem lassen sich später
    nicht zusammenführen.
+7. **Geltungsbereich klären:** Willst du die Änderung bewusst einschränken
+   (nur eine Fassung, z. B. „Android (Experiment)“, nur eine Seite, nur hell
+   oder dunkel), frag mich vorher kurz — außer die Aufgabe nennt den Bereich
+   ausdrücklich. Im Zweifel gilt eine Verbesserung überall, wo dasselbe
+   Element vorkommt.
 
 ## 2. Während der Arbeit
 
@@ -38,12 +43,14 @@ Mehrere Sitzungen laufen parallel, jede an genau **einer** Idee oder einem Probl
 - **Ein Thread, ein Branch, ein Ordner.** Arbeite nur in deinem eigenen Branch,
   nie in dem einer anderen Sitzung. Zeigt `git status` Dateien, die nicht zu
   deiner Aufgabe gehören, fass sie nicht an und stage sie nicht.
-  `python3 tools/version.py` erst laufen lassen, wenn `git status` nur deine
-  Dateien zeigt — sonst zählt der Versionsstempel fremde Dateien mit.
+- **Den Versionsstempel nicht anfassen.** `python3 tools/version.py` und
+  `src/data/version.js` gehören dem Git Commit Manager (Abschnitt 6). So
+  kollidieren zwei offene PRs nicht mehr in dieser Datei. `tools/check.py`
+  meldet dann „alles in Ordnung (Versionsstempel setzt der Git Commit
+  Manager)“ — das ist richtig so.
 - **Vor dem Review `origin/main` in deinen Branch holen**
-  (`git fetch origin main && git merge origin/main`). Einen Konflikt in
-  `src/data/version.js` löst `python3 tools/version.py`; andere Konflikte löst
-  du nach der Doku in `docs/changes/` der betroffenen Änderung und nennst sie im
+  (`git fetch origin main && git merge origin/main`). Konflikte löst du nach
+  der Doku in `docs/changes/` der betroffenen Änderung und nennst sie im
   Review. So kommt dein PR ohne Konflikt beim Git Commit Manager an.
 - **Noch nicht committen und nicht pushen.** Erst nach meiner Freigabe (Abschnitt 4).
 - **Noch keine Doku-Datei anlegen.** Doku entsteht erst nach der Freigabe.
@@ -54,7 +61,7 @@ Mehrere Sitzungen laufen parallel, jede an genau **einer** Idee oder einem Probl
   auf meine Freigabe wartet, und die Antwort beenden. Der Hook meldet sich je
   Antwort nur einmal.
 - Vor dem Review die Prüfkette aus Abschnitt 5 durchlaufen; `python3 tools/check.py`
-  muss „alles in Ordnung“ melden.
+  muss mit „alles in Ordnung“ beginnen.
 
 ## 3. Review-Zusammenfassung (am Ende jeder Arbeitsrunde)
 
@@ -78,8 +85,8 @@ Die Freigabe erfolgt mit Formulierungen wie „passt“, „freigegeben“ oder
 
 1. Lege die Doku-Datei an: `docs/changes/JJJJ-MM-TT-kurztitel.md`
    (Vorlage siehe unten).
-2. `python3 tools/version.py` ausführen (neuer Versionsstempel), danach
-   `python3 tools/check.py` — muss „alles in Ordnung“ melden.
+2. `python3 tools/check.py` — muss mit „alles in Ordnung“ beginnen. Den
+   Versionsstempel nicht setzen (Abschnitt 2).
 3. Committe Code-Änderungen **und** Doku-Datei gemeinsam in **einem** Commit.
    Dabei **nur die eigenen Blöcke stagen** — vorher `git diff -U0` lesen,
    fremde Blöcke anderer Sitzungen nicht mitnehmen.
@@ -129,15 +136,16 @@ Die harten Punkte:
    in einem eigenen Schritt und sag es im Review.
 2. **Struktur einhalten:** `src/core → src/data → src/ui → src/features|src/shell`,
    Stile je Bereich unter `styles/`, alle Werte in `styles/tokens.css`.
-   **Jede neue CSS-Datei steht an drei Stellen:** `<link>` in `index.html`,
-   Dateiliste im Kopf von `styles/tokens.css`, Versionsstempel über
-   `tools/version.py`. Soll eine Android-Datei eine andere Android-Datei
-   überstimmen, wird sie in `index.html` **nach** ihr geladen.
+   **Jede neue CSS-Datei steht an zwei Stellen:** `<link>` in `index.html` und
+   Dateiliste im Kopf von `styles/tokens.css` (die Dateiliste im
+   Versionsstempel ergänzt der Git Commit Manager). Soll eine Android-Datei
+   eine andere Android-Datei überstimmen, wird sie in `index.html` **nach**
+   ihr geladen.
 3. **Kommentar-Header in jeder Datei** mit Pfad und allen anpassbaren Werten,
    auf Deutsch, in Alltagssprache.
 4. **Performance:** große Bereiche über `src/core/lazy.js` nachladen, nur die
    sichtbare Ansicht neu zeichnen, Tippen über `scheduleSave()` speichern.
-5. **Keine Bugs:** `python3 tools/check.py` muss „alles in Ordnung“ melden,
+5. **Keine Bugs:** `python3 tools/check.py` muss mit „alles in Ordnung“ beginnen,
    dann im Browser auf `http://localhost:4173` öffnen, Konsole muss leer sein,
    betroffene Flows anklicken — leerer und voller Speicher, hell und dunkel,
    375 px Breite, Zurück-Pfeil und Browser-Zurück.
@@ -176,24 +184,46 @@ Ablauf je Durchgang:
    GitHub. Sonst führe die Branches **einzeln und nacheinander** lokal in den
    Sammel-Branch zusammen, nicht alle auf einmal, und lege danach **einen**
    Sammel-PR nach `main` an, dessen Beschreibung PR-Nummern, Konflikte und
-   Prüfung nennt. Nach jedem Merge `python3 tools/check.py` — muss „alles in
-   Ordnung“ melden, sonst stoppen.
+   Prüfung nennt. Nach jedem Merge `python3 tools/check.py` — muss mit „alles
+   in Ordnung“ beginnen, sonst stoppen. **Der Sammel-PR wird im selben
+   Durchgang gemergt**, sobald die Prüfung stimmt — „merge alle offenen“
+   heißt: am Ende ist alles auf `main`.
 3. Bei Konflikten: Lies die Doku beider Änderungen und übernimm **beide
    Absichten**. Haben zwei PRs dasselbe gebaut, behalte die Lösung, die schon
    in `main` ist, und schreib einen kurzen Abschnitt „Nachtrag beim
    Zusammenführen“ in die Doku-Datei des anderen PRs. Konflikt in
-   `src/data/version.js`: `python3 tools/version.py` laufen lassen und die
-   ganze Datei stagen. Frag nur nach, wenn sich zwei Änderungen wirklich
-   widersprechen und jede Lösung Verhalten verliert.
-4. Nach den Merges die App im Browser bei 375 px öffnen (hell und dunkel,
+   `src/data/version.js` (ältere PRs, die den Stempel noch selbst setzen):
+   `python3 tools/version.py` laufen lassen und die ganze Datei stagen. Frag
+   nur nach, wenn sich zwei Änderungen wirklich widersprechen und jede Lösung
+   Verhalten verliert.
+4. **Konflikte ohne Git-Meldung suchen:** Entfernt oder benennt ein PR
+   CSS-Klassen, `data-`-Attribute, Speicherschlüssel oder Exporte um, prüfe
+   mit `git grep` auf den alten Namen, ob ein anderer PR desselben Durchgangs
+   ihn noch benutzt. Dann anpassen wie in Punkt 3 und mit „Nachtrag beim
+   Zusammenführen“ dokumentieren.
+5. **Versionsstempel setzen** — einmal am Ende des Durchgangs, nicht je PR:
+   - Mit Sammel-Branch: dort vor dem Sammel-PR `python3 tools/version.py`,
+     dann `python3 tools/check.py --stempel` (muss genau „alles in Ordnung“
+     melden), Stempel mit in den Sammel-Commit.
+   - Ohne Sammel-Branch (alles direkt gemergt): vom frischen `origin/main`
+     den Branch `claude/git-commit-manager-JJJJ-MM-TT-stempel` anlegen,
+     `version.py` und `check.py --stempel`, Commit und PR „Git Commit Manager
+     JJJJ-MM-TT: Versionsstempel“ und gleich mergen.
+   Erst danach merkt eine offene App, dass es eine neue Fassung gibt.
+6. Nach den Merges die App im Browser bei 375 px öffnen (hell und dunkel,
    Konsole leer) und die geänderten Stellen einmal ansehen.
-5. Liste am Ende auf, welche PRs (Nummer + Titel) übernommen und welche
-   ausgelassen wurden, und warum. Nenne je Konflikt: welche Dateien, was aus
-   welchem PR übernommen wurde, was ich am Gerät testen sollte.
+7. Liste am Ende auf, welche PRs (Nummer + Titel) übernommen und welche
+   ausgelassen wurden, und warum. Nenne je PR in einem Satz den
+   **Geltungsbereich** aus „Begründung“ oder „Verworfen“ seiner Doku
+   (z. B. „gilt nur im Experiment“, „löscht ohne Rückfrage“). Nenne je
+   Konflikt: welche Dateien, was aus welchem PR übernommen wurde, was ich am
+   Gerät testen sollte.
 
 Diese Sitzung schreibt selbst keinen Code und braucht keine eigene Doku-Datei;
-die Doku steckt in den gemergten PRs. Ausnahme: Änderungen an `CLAUDE.md` oder
-am Skill bekommen wie jede Änderung eine Doku-Datei.
+die Doku steckt in den gemergten PRs. Ausnahmen: Änderungen an `CLAUDE.md` oder
+am Skill, und kleine Fixes, um die ich sie ausdrücklich bitte — beide
+bekommen wie jede Änderung Review, Freigabe und Doku-Datei (Abschnitte 3–4).
+Größere Aufgaben gehören in eine eigene Arbeits-Sitzung.
 
 ## 7. Entwicklungsserver
 
@@ -211,7 +241,9 @@ Neue Arbeits-Sitzungen in der **Cloud** starten oder lokal mit Haken
 Threads im selben Ordner schreiben sonst in denselben PR.
 
 Lokale Worktrees liegen unter `.claude/worktrees/` und bleiben nach dem Mergen
-stehen. Aufräumen im Projektordner, wenn die Threads fertig sind:
+stehen. Solange die Sitzung in der Claude-App offen ist, ist ihr Worktree
+gesperrt („locked“) — deshalb nach dem Merge die Sitzung in der App schließen.
+Aufräumen im Projektordner, wenn die Threads fertig sind:
 
 ```
 git worktree list
@@ -221,8 +253,15 @@ git checkout main
 git pull
 ```
 
+Meldet `remove` „locked … claude session (pid …)“, läuft die Sitzung noch:
+erst in der App schließen, dann `git worktree unlock .claude/worktrees/<name>`
+und noch einmal `remove`. Nie `remove -f -f`.
+
 ## 8. Allgemein
 
 - Antworte auf Deutsch.
 - Halte Erklärungen knapp und konkret.
 - Wenn eine Aufgabe unklar ist, frag einmal kurz nach, statt zu raten.
+- Terminal-Befehle für mich ohne `#`-Kommentarzeilen in den Codeblock
+  schreiben (meine zsh führt eingefügte `#`-Zeilen als Befehl aus);
+  Erklärungen gehören in den Text darüber.
