@@ -29,7 +29,8 @@
  * hoch mit 3px Fuge und Strichen bis 4px (.recorder-wave, .recorder-bar),
  * Mitschrift 17px (.recorder-text), Zwischenüberschrift 13px mit 8px Luft
  * unter der Linie (.recorder-text-head), Knöpfe ⚙/Kopieren/Umwandeln 40px
- * mit 20px-Icons (.recorder-head-btn), Punkt am ⚙ 8px (.recorder-setup.is-alert).
+ * mit 20px-Icons (.recorder-head-btn), Punkt am ⚙ 8px (.recorder-setup.is-alert),
+ * Knopf „Nur Mitschrift“ in der Mitschrift 15px, 40px hoch (.recorder-text-btn).
  */
 
 /* position/inset: liegt über der ganzen App, die stehen bleibt, wo sie war.
@@ -249,6 +250,27 @@
 .recorder-text.is-empty,
 .recorder-pending {
   color: var(--muted);
+}
+
+/* „Nur Mitschrift“: steht als Pille unter dem Hinweis, wenn die Mitschrift keinen Ton bekommt */
+.recorder-text-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  margin: 12px auto 0;
+  padding: 0 18px;
+  border-radius: 20px;
+  background: var(--m3-primary, var(--link-color));
+  color: var(--m3-on-primary, #fff);
+  font: inherit;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.recorder-text-btn .icon {
+  width: 18px;
+  height: 18px;
 }
 
 /* Ohne Mikrofon gibt es nichts mitzuschreiben; dort steht nur der Hinweis */

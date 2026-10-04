@@ -12,10 +12,14 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
- * barCount   -> wie viele Striche die Welle hat (mehr = feiner, aber mehr zu zeichnen)
- * minLevel   -> wie hoch ein Strich bei Stille noch ist (0 bis 1)
- * stateTexts -> was unter der Zeit steht, je Zustand
- * labels     -> Beschriftung der Knöpfe und Platzhalter
+ * barCount       -> wie viele Striche die Welle hat (mehr = feiner, aber mehr zu zeichnen)
+ * minLevel       -> wie hoch ein Strich bei Stille noch ist (0 bis 1)
+ * stateTexts     -> was unter der Zeit steht, je Zustand (Aufnahme)
+ * textStateTexts -> dasselbe im Modus „Nur Mitschrift“
+ * hints          -> Hinweis unter der Zeit, solange der Browser nach dem Mikrofon fragt
+ * micNotes       -> Satz in der Mitte, wenn das Mikrofon nicht aufging, je Grund
+ * textProblems   -> Satz statt der Mitschrift, wenn sie gerade nicht geht, je Grund
+ * labels         -> Beschriftung der Knöpfe und Platzhalter
  *
  * Farben und Maße stehen in styles/recorder.css.
  */
@@ -34,17 +38,43 @@ const stateTexts = {
   error: "Kein Zugriff aufs Mikrofon",
 };
 
+/* Im Modus „Nur Mitschrift“ gibt es keine Aufnahme, nur Text */
+const textStateTexts = {
+  ...stateTexts,
+  starting: "Mitschrift wird gestartet …",
+  recording: "Mitschrift läuft",
+  stopped: "Mitschrift beendet",
+};
+
+const hints = {
+  asking: "Bitte das Mikrofon erlauben …",
+};
+
+/* Warum das Mikrofon nicht aufging (Gründe aus recorder-mic.js) */
+const micNotes = {
+  blocked: "Das Mikrofon ist für diese Seite gesperrt. Oben rechts auf ⚙ tippen: dort stehen die Schritte zum Erlauben und „Erneut anfragen“.",
+  missing: "Es wurde kein Mikrofon gefunden.",
+  busy: "Das Mikrofon ist gerade belegt — eine andere App benutzt es. Nochmal versuchen, wenn sie fertig ist.",
+  failed: "Das Mikrofon geht gerade nicht auf. Erneut versuchen oder oben rechts auf ⚙ tippen.",
+  speech: "Die Mitschrift geht gerade nicht. Oben rechts auf ⚙ tippen: dort steht der Grund.",
+};
+
+/* Warum die Mitschrift gerade nicht geht (Gründe aus recorder-speech.js); "starved" bekommt dazu den Knopf „Nur Mitschrift“ */
+const textProblems = {
+  starved: "Dein Gerät gibt das Mikrofon nur an die Aufnahme, die Mitschrift bekommt keinen Ton. Text gibt es hier nur ohne Aufnahme:",
+  failed: "Mitschreiben geht hier gerade nicht — die Aufnahme läuft trotzdem. Oben rechts auf ⚙ tippen, um es einzurichten.",
+};
+
 const labels = {
   title: "Neue Aufnahme",
   save: "Speichern",
   cancel: "Abbrechen",
   textHead: "Mitschrift",
   textEmpty: "Was du sagst, erscheint hier.",
-  textMissing: "Mitschreiben geht hier gerade nicht — die Aufnahme läuft trotzdem. Oben rechts auf ⚙ tippen, um es einzurichten.",
+  textOnly: "Nur Mitschrift",
   setup: "Mitschrift einrichten",
   copy: "Mitschrift kopieren",
   convert: "In Notiz oder Dokument umwandeln",
-  errorNote: "Erlaube den Zugriff aufs Mikrofon und tippe auf das Mikrofon unten links.",
 };
 
 /* Welche Knöpfe in welchem Zustand: links und das kleine Feld im Gehäuse. */
@@ -82,7 +112,7 @@ export function buildRecorder() {
       <div class="recorder-time">0:00</div>
       <div class="recorder-state"><span class="recorder-dot"></span><span class="recorder-state-text"></span></div>
       <div class="recorder-wave" aria-hidden="true">${bars}</div>
-      <p class="recorder-note" hidden>${escapeHtml(labels.errorNote)}</p>
+      <p class="recorder-note" hidden></p>
       <div class="recorder-text-head">
         <span>${escapeHtml(labels.textHead)}</span>
         <span class="recorder-text-tools">
@@ -112,12 +142,15 @@ function setButton(button, spec) {
 
 /**
  * Den Zustand zeigen: Text unter der Zeit, roter Punkt, Knöpfe.
- * @param state "starting", "recording", "paused", "stopped" oder "error"
+ * @param state   "starting", "recording", "paused", "stopped" oder "error"
+ * @param mode    "audio" (Aufnahme + Mitschrift) oder "text" (nur Mitschrift)
  * @param canSave ob es schon etwas zu speichern gibt
+ * @param canPlay ob es nach dem Stoppen etwas anzuhören gibt
  */
-export function showState(layer, state, canSave) {
+export function showState(layer, state, { mode, canSave, canPlay }) {
   layer.dataset.state = state;
-  layer.querySelector(".recorder-state-text").textContent = stateTexts[state];
+  layer.dataset.mode = mode;
+  layer.querySelector(".recorder-state-text").textContent = (mode === "text" ? textStateTexts : stateTexts)[state];
   layer.querySelector(".recorder-note").hidden = state !== "error";
   const side = layer.querySelector(".recorder-side");
   setButton(side, sideButton[state]);
@@ -125,8 +158,18 @@ export function showState(layer, state, canSave) {
   side.disabled = state === "starting";
   const small = layer.querySelector(".recorder-small");
   setButton(small, comboButton[state]);
-  small.disabled = state === "error" || state === "starting";
+  small.disabled = state === "error" || state === "starting" || (state === "stopped" && !canPlay);
   layer.querySelector(".recorder-save").disabled = !canSave;
+}
+
+/** Unter der Zeit steht, dass der Browser gerade nach dem Mikrofon fragt. */
+export function showHint(layer, key) {
+  layer.querySelector(".recorder-state-text").textContent = hints[key];
+}
+
+/** Der Satz in der Mitte, wenn das Mikrofon nicht aufging — mit dem Grund aus recorder-mic.js. */
+export function showMicError(layer, reason) {
+  layer.querySelector(".recorder-note").textContent = micNotes[reason] || micNotes.failed;
 }
 
 /** Beim Anhören: das kleine Feld wird zu Pause und zurück. */
@@ -145,10 +188,12 @@ export function showTime(layer, ms) {
 }
 
 /**
- * Die Mitschrift zeigen. `null` heißt: der Browser kann keine erstellen.
+ * Die Mitschrift zeigen. `null` heißt: sie geht gerade nicht — `problem` sagt
+ * warum (recorder-speech.js); bekommt sie keinen Ton („starved“), steht
+ * dabei der Knopf „Nur Mitschrift“.
  * Was noch nicht sicher erkannt ist (`pending`), steht blasser dahinter.
  */
-export function showText(layer, final, pending = "") {
+export function showText(layer, final, pending = "", problem = "") {
   const box = layer.querySelector(".recorder-text");
   /* Kopieren und Umwandeln gehen erst, wenn es Text gibt */
   const hasText = Boolean(final || pending);
@@ -156,7 +201,11 @@ export function showText(layer, final, pending = "") {
     button.disabled = !hasText;
   });
   if (final === null) {
-    box.textContent = labels.textMissing;
+    const button =
+      problem === "starved"
+        ? ` <button class="recorder-text-btn" type="button" data-rec="textOnly">${icon("mic")}${escapeHtml(labels.textOnly)}</button>`
+        : "";
+    box.innerHTML = `${escapeHtml(textProblems[problem] || textProblems.failed)}${button}`;
     box.classList.add("is-empty");
     return;
   }

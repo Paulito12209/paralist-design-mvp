@@ -4,6 +4,9 @@
  * Mitschrift gerade nicht läuft und wo man es am eigenen Gerät erlaubt.
  * „Erneut anfragen“ fragt Mikrofon und Spracherkennung noch einmal — hat man
  * sie nur noch nicht erlaubt, zeigt der Browser dann seine Frage.
+ * Dazu die Wahl, wofür das Mikrofon arbeitet: Aufnahme + Mitschrift oder nur
+ * Mitschrift. Android gibt das Mikrofon nur an eine App auf einmal — läuft
+ * die Aufnahme, bekommt die Spracherkennung (die App „Google“) keinen Ton.
  * Eine Webseite darf die Einstellungen von Telefon oder Browser nicht selbst
  * öffnen; deshalb stehen hier die Schritte. In der Android-App tritt an ihre
  * Stelle ein Knopf „Einstellungen öffnen“
@@ -16,6 +19,7 @@
  * -----------------------------------
  * micTexts     -> was beim Mikrofon steht, je Antwort des Browsers
  * problemTexts -> was bei der Mitschrift steht, je Fehler der Spracherkennung
+ * modeTexts    -> die zwei Arten, das Mikrofon zu nutzen
  * steps        -> die Schritte zum Erlauben, je Gerät (iPhone, Android, Computer)
  *
  * Aussehen des Blatts: styles/overlays.css (.sheet-detail, .sheet-note).
@@ -28,7 +32,14 @@ const labels = {
   mic: "Mikrofon",
   speech: "Mitschrift",
   stepsHead: "So erlaubst du es",
+  modeHead: "Mikrofon nutzen für",
   retry: "Erneut anfragen",
+};
+
+/* Wofür das Mikrofon arbeitet (gemerkt in recorder.js) */
+const modeTexts = {
+  audio: "Aufnahme + Mitschrift",
+  text: "Nur Mitschrift (Text, keine Audiodatei)",
 };
 
 /* Antwort von navigator.permissions; "unknown", wenn der Browser es nicht verrät */
@@ -48,6 +59,8 @@ const problemTexts = {
   "audio-capture": "Mikrofon ist belegt",
   network: "Keine Verbindung zur Spracherkennung",
   "language-not-supported": "Deutsch ist hier nicht verfügbar",
+  starved: "Bekommt keinen Ton",
+  waiting: "Wartet aufs Mikrofon",
   failed: "Klappt gerade nicht",
 };
 
@@ -61,7 +74,8 @@ const steps = {
   ],
   android: [
     "Chrome: links in der Adressleiste auf das Regler-Symbol › Berechtigungen › Mikrofon › Erlauben.",
-    "Android: Einstellungen › Apps › Chrome › Berechtigungen › Mikrofon › „Nur während der Nutzung“.",
+    "Als App vom Startbildschirm gilt die Berechtigung von Chrome: Android-Einstellungen › Apps › Chrome › Berechtigungen › Mikrofon › „Jedes Mal fragen“ oder „Nur während der Nutzung“. Danach hier auf „Erneut anfragen“ tippen — Chrome stellt dann seine Frage.",
+    "Hat Chrome die Seite blockiert: Chrome › ⋮ › Einstellungen › Website-Einstellungen › Mikrofon › die Seite aus „Blockiert“ entfernen.",
     "Die Mitschrift läuft über die Google-Spracherkennung: die App „Google“ muss das Mikrofon dürfen, und es braucht Internet.",
   ],
   desktop: [
@@ -72,6 +86,7 @@ const steps = {
 
 /* Zusätzlicher Hinweis, wenn genau dieser Fehler auftritt */
 const problemHints = {
+  starved: "Dein Gerät gibt das Mikrofon nur an eine App auf einmal — gerade an die Aufnahme. Mit „Nur Mitschrift“ bekommt die Spracherkennung das Mikrofon; dafür entsteht keine Audiodatei.",
   "audio-capture": "Manche Android-Geräte geben das Mikrofon nur an Aufnahme oder Mitschrift. Dann bleibt der Text leer, die Aufnahme läuft trotzdem.",
   "service-not-allowed": "Das Gerät lässt die Spracherkennung nicht zu. Die Schritte unten zeigen, wo man sie einschaltet.",
 };
@@ -85,8 +100,8 @@ function deviceKind() {
   return "desktop";
 }
 
-/* Darf die Seite das Mikrofon benutzen? Nicht jeder Browser beantwortet die Frage. */
-async function micPermission() {
+/** Darf die Seite das Mikrofon benutzen? "granted", "denied", "prompt" — oder "unknown", wenn der Browser es nicht verrät. */
+export async function micPermission() {
   try {
     const status = await navigator.permissions.query({ name: "microphone" });
     return status.state;
@@ -99,17 +114,25 @@ async function micPermission() {
  * Das Blatt öffnen.
  * @param speechProblem Fehler der Mitschrift ("" = läuft, siehe problemTexts)
  * @param micBlocked    ob das Mikrofon für die Aufnahme nicht aufging
+ * @param mode          "audio" oder "text" — wofür das Mikrofon gerade arbeitet
+ * @param textPossible  ob dieser Browser überhaupt mitschreiben kann (sonst fehlt „Nur Mitschrift“)
+ * @param onMode        wechselt den Modus; die Aufnahme beginnt dann neu
  * @param retry         fragt Mikrofon und Mitschrift noch einmal an
  */
-export async function openRecorderSetup({ speechProblem, micBlocked, retry }) {
+export async function openRecorderSetup({ speechProblem, micBlocked, mode, textPossible, onMode, retry }) {
   let mic = await micPermission();
   /* Ging das Mikrofon nicht auf, ist es gesperrt — auch wenn der Browser die Frage nicht beantwortet */
   if (micBlocked && mic !== "granted") mic = "denied";
+  /* Ohne Mikrofon läuft auch keine Mitschrift, selbst wenn sie keinen Fehler meldet */
+  const speechValue = micBlocked && !speechProblem ? problemTexts.waiting : problemTexts[speechProblem] ?? problemTexts.failed;
   const hint = problemHints[speechProblem];
+  const modes = Object.keys(modeTexts).filter((key) => key === "audio" || textPossible);
   const options = [
     { detail: true, label: labels.mic, value: micTexts[mic] || micTexts.unknown },
-    { detail: true, label: labels.speech, value: problemTexts[speechProblem] ?? problemTexts.failed },
+    { detail: true, label: labels.speech, value: speechValue },
     ...(hint ? [{ note: true, label: hint }] : []),
+    { heading: true, label: labels.modeHead },
+    ...modes.map((key) => ({ label: modeTexts[key], leadCheck: true, active: key === mode, onSelect: () => onMode(key) })),
     { heading: true, label: labels.stepsHead },
     ...steps[deviceKind()].map((step) => ({ note: true, label: step })),
     { label: labels.retry, icon: "mic", split: true, onSelect: retry },
