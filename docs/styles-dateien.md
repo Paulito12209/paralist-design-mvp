@@ -48,7 +48,7 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/search.css` | Suchseite; styles/search-refine.css: Art-Reiter, Sortieren/Filter, Chips; styles/search-overlay.css: Overlay am Handy |
 | `styles/progress.css` | Fortschritt-Blatt: Ring, Verlauf, Historie |
 | `styles/milestones.css` | Fortschritt-Blatt: Karte und Seite „Meilensteine“ mit Plaketten und Stufen-Leiter |
-| `styles/profile.css` | Profil-Blatt: Bild, Nutzungszeit, Serie, Listen; styles/account.css: Konto- und Daten-Seiten |
+| `styles/profile.css` | Profil-Blatt: Bild, Nutzungszeit, Serie, Listen; styles/account.css: Konto- und Daten-Seiten; styles/profile-name-edit.css: Name im Profilkopf antippen und bearbeiten |
 | `styles/usage-split.css` | Nutzungszeit: Karte „Wo die Zeit hingeht“ mit Band und Bereichszeilen; styles/streak-legend.css: Serie, Erklärung unter dem Punkte-Raster |
 | `styles/avatar-crop.css` | Ausschnitt fürs Profilbild: Fenster, Zoom-Regler, Auswählen |
 | `styles/settings.css` | Einstellungs-Blatt: Darstellung und Haken-Zeilen, dazu die Analyse-Kacheln des Fortschritt-Blatts; styles/support.css: Feedback-Formular und Danksagungen |

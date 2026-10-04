@@ -3,6 +3,7 @@
  * Einstellungen › Konto: „Passwort ändern“ und „Synchronisierung“, dazu der
  * Kopier-Knopf. „Persönliche Daten“ steht in account-personal.js, die
  * Löschen-Seiten in account-delete.js, welche Stufe gilt, in account-phase.js.
+ * Das Bearbeiten des Namens im Profilkopf steht in profile-name-edit.js.
  * Pfad: src/features/profile/account.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -19,6 +20,7 @@ import { copyText } from "../../core/clipboard.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { account } from "../../data/account.js";
 import { onPersonalClick } from "./account-personal.js";
+import { onNameClick } from "./profile-name-edit.js";
 import { sectionMarkup } from "./profile-cards.js";
 
 export { personalCard } from "./account-personal.js";
@@ -62,9 +64,9 @@ export function syncCard() {
   return `${status}${devices}<p class="settings-note">${escapeHtml(syncNote)}</p>`;
 }
 
-/** Klick auf einen Kopier-Knopf. Gibt true zurück, wenn er hierher gehörte. */
+/** Klick auf den Namen im Profilkopf, eine Zeile unter „Persönliche Daten“ oder einen Kopier-Knopf. Gibt true zurück, wenn er hierher gehörte. */
 export function onAccountClick(event) {
-  if (onPersonalClick(event)) return true;
+  if (onNameClick(event) || onPersonalClick(event)) return true;
   const button = event.target.closest("[data-account-copy]");
   if (!button) return false;
   /* Rückmeldung direkt am Knopf: eine Meldung unten läge hinter dem Blatt.

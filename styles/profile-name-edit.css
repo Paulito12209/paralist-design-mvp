@@ -1,0 +1,78 @@
+/*
+ * Name im Profilkopf bearbeiten: Eingabefeld mit Linie darunter und zwei
+ * runden Knöpfen (Verwerfen, Speichern) — Material-Textfeld.
+ * Pfad: styles/profile-name-edit.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-pages.css)
+ * -----------------------------------
+ * --profile-name-edit-btn    -> Tippfläche der beiden runden Knöpfe
+ * --profile-name-edit-line   -> Dicke der Linie unter dem Feld
+ * --add (styles/tokens.css) bzw. --m3-primary (Android) -> Farbe von Linie, Cursor und Haken
+ * .profile-name-btn .icon 20px -> Größe von Kreuz und Haken
+ *
+ * Schrift und Größe des Namens kommen vom Namen selbst (styles/profile.css und
+ * die Android-Dateien); das Feld erbt sie, damit nichts springt.
+ */
+
+/* Ein Tipp auf den Namen bearbeitet ihn */
+.profile-name[data-name-edit] {
+  cursor: text; /* cursor: zeigt am Desktop, dass hier getippt werden kann */
+}
+
+.profile-name.is-editing {
+  --profile-name-edit-accent: var(--add);
+  display: flex;
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box; /* box-sizing: der Innenabstand links zählt zur Breite, sonst läuft die Zeile über den Rand */
+  /* Gleich viel Platz links wie die Knöpfe rechts: der zentrierte Name bleibt in der Mitte stehen */
+  padding-left: calc(2 * var(--profile-name-edit-btn));
+}
+
+:root[data-mobile-os="android"] .profile-name.is-editing {
+  --profile-name-edit-accent: var(--m3-primary);
+  padding-left: 0; /* links ausgerichtet wie der Name in der Android-Fassung */
+}
+
+.profile-name-input {
+  flex: 1 1 0; /* flex: füllt den Platz neben den Knöpfen, ohne selbst Breite zu verlangen */
+  width: 0; /* width: 0: ein Feld hat sonst eine Grundbreite von rund 20 Zeichen und dehnt den zentrierten Kopf über den Rand */
+  min-width: 0; /* min-width: sonst drückt ein langer Name die Knöpfe aus dem Kopf */
+  padding: 2px 0;
+  background: none;
+  border: 0;
+  border-bottom: var(--profile-name-edit-line) solid var(--profile-name-edit-accent);
+  border-radius: 0; /* border-radius: iOS rundet Felder sonst ab und die Linie wird schief */
+  font: inherit; /* font: gleiche Schrift wie der Name, damit nichts springt */
+  letter-spacing: inherit;
+  text-align: inherit;
+  color: inherit;
+  caret-color: var(--profile-name-edit-accent); /* caret-color: der Cursor hat die Farbe der Linie */
+}
+
+.profile-name-input:focus {
+  outline: none; /* outline: die Linie unter dem Feld zeigt schon, dass hier getippt wird */
+}
+
+.profile-name-input::placeholder {
+  color: var(--chevron);
+}
+
+.profile-name-btn {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto; /* flex: die Knöpfe behalten ihre Größe, auch bei langem Namen */
+  width: var(--profile-name-edit-btn);
+  height: var(--profile-name-edit-btn);
+  border-radius: 50%; /* border-radius: runde Tippfläche wie die Symbolknöpfe in Material */
+  color: var(--muted);
+}
+
+.profile-name-btn.is-save {
+  color: var(--profile-name-edit-accent);
+}
+
+.profile-name-btn .icon {
+  width: 20px;
+  height: 20px;
+}

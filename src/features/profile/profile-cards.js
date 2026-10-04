@@ -13,6 +13,7 @@
  * supportLinks   -> wohin „Feedback“ und „Roadmap“ unter „Support“ führen
  *
  * Farben und Größen stehen in styles/profile.css (--profile-avatar-size).
+ * Ein Tipp auf den Namen bearbeitet ihn direkt (profile-name-edit.js).
  */
 
 import { escapeHtml, icon } from "../../core/html.js";
@@ -60,7 +61,7 @@ export function identityCard() {
         <button class="profile-avatar" type="button" data-avatar-view="1" aria-label="Profilbild anzeigen">${avatarMarkup()}</button>
         <button class="profile-avatar-edit" type="button" data-avatar-edit="1" aria-label="Profilbild ändern">${icon("pencil")}</button>
       </div>
-      <p class="profile-name">${escapeHtml(profile.name)}</p>
+      <p class="profile-name" data-name-edit="1">${escapeHtml(profile.name)}</p>
       ${hasAccount() ? `<p class="profile-mail">${escapeHtml(profile.mail)}</p>` : ""}
       <p class="profile-meta" data-account-since="head">${escapeHtml(metaLine())}</p>
     </section>

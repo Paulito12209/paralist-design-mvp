@@ -143,6 +143,8 @@
  * --support-choice-active-bg -> Fläche der gewählten Art im Feedback
  * --credits-chip-bg          -> Fläche hinter einem Namen bei den Danksagungen
  * --account-copy-size        -> Tippfläche des Kopier-Knopfs unter „Persönliche Daten“
+ * --profile-name-edit-btn    -> Tippfläche von Kreuz und Haken beim Bearbeiten des Namens im Profilkopf
+ * --profile-name-edit-line   -> Dicke der Linie unter dem Namensfeld
  */
 
 :root {
@@ -299,4 +301,6 @@
   --support-choice-active-bg: rgba(0, 122, 255, 0.1);
   --credits-chip-bg: rgba(60, 60, 67, 0.07);
   --account-copy-size: 36px;
+  --profile-name-edit-btn: 36px;
+  --profile-name-edit-line: 2px;
 }
