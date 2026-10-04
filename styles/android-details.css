@@ -7,7 +7,9 @@
  * - „Verknüpfen“ mit Chips für Ablageorte und verknüpfte Einträge;
  * - Zeilen untereinander: Icon links, Wert, darunter klein die Bezeichnung;
  * - unten fest eine Leiste mit „Als erledigt markieren“, rechts, oben und
- *   unten gleich viel Luft.
+ *   unten gleich viel Luft;
+ * - der Inhalt rollt nur senkrecht, und erst wenn das Blatt ganz offen ist
+ *   (halb offen: Klasse is-peek, src/ui/details-expand.js).
  * Form und Hereingleiten des Blatts stehen in styles/android-entry.css.
  * Gilt nur mit data-mobile-os="android" an <html> und unterhalb von 1024px;
  * lädt nach styles/android-bottom-sheet.css.
@@ -17,7 +19,8 @@
  * -----------------------------------
  * --m3-sheet-row-h            -> Mindesthöhe einer Zeile (Material 3 Liste: 56dp)
  * --m3-surface-container-high -> Fläche der Chips und der Leiste unten
- * --m3-secondary-container / --m3-on-secondary-container -> Knopf „Als erledigt markieren“ (Tonal button)
+ * --m3-primary / --m3-on-primary -> Knopf „Als erledigt markieren“ (Filled button wie in Google Tasks:
+ *                                   im Dunkeln hell mit dunkler Schrift, im Hellen Blau mit weißer)
  * --m3-on-surface / --m3-on-surface-variant -> Titel und Werte bzw. Kategorie, Bezeichnungen, Icons
  * --m3-outline-variant        -> Linie unter dem Kopf und über der Leiste unten
  * --m3-state-pressed          -> Tönung einer Zeile beim Drücken
@@ -38,6 +41,27 @@
   /* Unten schließt die Leiste bzw. der Inhalt selbst ab */
   [data-mobile-os="android"] .details-sheet .sheet {
     padding-bottom: 0;
+  }
+
+  /* Der Inhalt reicht bis an den Rand des Blatts und bringt die 16px selbst
+     mit: die Zeilen ragen mit ihrer Tönung bis dorthin (margin: 0 -16px) und
+     blieben sonst über den rollenden Bereich hinaus — er ließ sich dann
+     waagerecht verschieben. overflow-x: zur Sicherheit nie seitlich rollen. */
+  [data-mobile-os="android"] .details-sheet .details-sheet-body {
+    margin: 0 -16px;
+    padding-inline: 16px;
+    overflow-x: hidden;
+  }
+
+  /* Halb offen rollt nichts in sich: ein Wisch nach oben zieht das Blatt
+     größer (src/ui/details-expand.js). touch-action: der Browser soll dabei
+     nicht selbst rollen wollen und die Geste abbrechen. */
+  [data-mobile-os="android"] .details-sheet.is-peek .details-sheet-body {
+    overflow-y: hidden;
+  }
+
+  [data-mobile-os="android"] .details-sheet.is-peek .sheet {
+    touch-action: none;
   }
 
   /* ---------- Kopf ---------- */
@@ -246,8 +270,8 @@
     height: 40px;
     padding: 0 24px;
     border-radius: 999px; /* border-radius: Material-3-Knopf ist eine Pille */
-    background: var(--m3-secondary-container);
-    color: var(--m3-on-secondary-container);
+    background: var(--m3-primary);
+    color: var(--m3-on-primary);
     font-size: 14px;
     font-weight: 500;
   }
