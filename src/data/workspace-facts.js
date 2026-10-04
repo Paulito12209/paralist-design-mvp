@@ -1,6 +1,6 @@
 /*
  * Was die Karte „Details“ auf der Seite eines Arbeitsbereichs zeigt
- * (src/features/overview/workspace-details.js) und dieselbe Karte in der
+ * (Blatt in src/ui/details-sheet.js) und dieselbe Karte in der
  * rechten Spalte am Desktop (src/features/overview/workspace-rail.js). Gleich
  * aufgebaut wie die Karte eines Eintrags (src/data/entry-facts.js): oben drei
  * Kennzahlen, darunter Abschnitte; fehlt ein Wert, fällt die Zeile weg.

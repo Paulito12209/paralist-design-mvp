@@ -32,6 +32,7 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/entry.css` | Seite eines Eintrags: Titel, Text, verknüpfte Einträge; styles/entry-desk.css: Desktop-Kopfzeile und Details rechts |
 | `styles/page-cover.css` | Eintrag und Arbeitsbereich: Farbverlauf oben (Cover); Eintrag: eigenes Icon über dem Titel |
 | `styles/entry-details.css` | Eintrag: gekürzter Text mit „Mehr anzeigen“ und die Karte „Details“ am Ende von „Inhalt“ |
+| `styles/details-sheet.css` | Blatt „Details“ von unten (iOS-Optik, Android überstimmt es) und Info-Knopf; die Karte am Textende ist ausgeblendet |
 | `styles/blocks.css` | Inhalt eines Eintrags: Stichpunkte, Zahlen, runde Checkboxen, Trennlinie |
 | `styles/embeds.css` | Inhalt eines Eintrags: Karten für Standort, Video und Web-Lesezeichen |
 | `styles/slash-menu.css` | Inhalt eines Eintrags: das „/“-Menü mit Gruppen und Kacheln; styles/block-bar.css: Leiste über der Tastatur (Handy), Auswahl an Stelle der Tastatur |

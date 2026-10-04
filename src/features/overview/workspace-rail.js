@@ -1,7 +1,7 @@
 /*
  * Die Karten eines Arbeitsbereichs in der rechten Spalte am Desktop (ab
  * 1280px): „Details“ — dieselben Kennzahlen und Abschnitte wie die Karte
- * unter dem Text (workspace-details.js), die dort solange entfällt —,
+ * im Blatt „Details“ (src/ui/details-sheet.js), das dort solange entfällt —,
  * „Zuletzt geändert“ und „Gestaltung“ (Cover, Favorit). Nur auf der Seite eines Arbeitsbereichs —
  * Sammlungen wie Eingang oder Favoriten teilen sich die Ansicht „page“ mit
  * ihm und behalten die Karten der Übersicht (railApplies). Geladen über

@@ -94,7 +94,7 @@ function closeVideoIfOpen() {
    Kein Icon: es wird nie mehr als diese zwei geben, das Wort allein reicht. */
 const entryPills = [
   { id: "notes", label: "Inhalt" },
-  { id: "links", label: "Verknüpfte Einträge" },
+  { id: "links", label: "Verknüpfungen" },
 ];
 
 /** Die Zahl auf der zweiten Pille: bei einem Projekt sein Inhalt, sonst die Verknüpfungen. */

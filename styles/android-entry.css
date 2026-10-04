@@ -1,12 +1,14 @@
 /*
- * Android-Fassung, Seite eines Eintrags. Reiter wie sonst (links die
+ * Android-Fassung, Seite eines Eintrags und eines Arbeitsbereichs. Reiter wie sonst (links die
  * Reiter, rechts Kopieren bzw. Filter und Plus). Anders als in den übrigen
  * Fassungen:
  *
- * - Die Karte „Details“ am Ende von „Inhalt“ gibt es nicht. Ihre Angaben
- *   öffnet der Info-Knopf rechts neben „Kopieren“ (src/features/entry/entry-tools.js)
+ * - Die Karte „Details“ am Ende von „Inhalt“ gibt es in keiner Fassung
+ *   (styles/details-sheet.css). Ihre Angaben
+ *   öffnet der Info-Knopf rechts neben „Kopieren“ (src/features/entry/entry-tools.js
+ *   bzw. src/features/overview/workspace-page.js)
  *   als Blatt von unten (Klasse .details-sheet,
- *   src/features/entry/entry-details-sheet.js): am unteren Rand verankert,
+ *   src/ui/details-sheet.js): am unteren Rand verankert,
  *   oben gerundet, ohne Griff, über Leiste und Plus-Knopf.
  * - Text und „Mehr anzeigen“ reichen dafür bis zum Seitenende, einen Abstand
  *   über dem Plus-Knopf (styles/android.css).
@@ -39,26 +41,13 @@
  * Luft über der Überschrift (24px) und die Überschrift im Blatt (16px).
  */
 
-/* Außerhalb der Android-Fassung gibt es das Ketten-Symbol in der Kopfzeile
-   und den Info-Knopf neben „Kopieren“ nicht */
-.entry-link-btn,
-.entry-info-btn {
+/* Außerhalb der Android-Fassung gibt es das Ketten-Symbol in der Kopfzeile nicht */
+.entry-link-btn {
   display: none;
 }
 
 @media (max-width: 1023px) {
   /* ---------- Details nur noch als Blatt ---------- */
-
-  /* Die Karte am Ende von „Inhalt“ entfällt; der Text reicht bis zum
-     Seitenende (src/features/entry/entry-fold.js) */
-  [data-mobile-os="android"] #entry-panel-notes > .details-card {
-    display: none;
-  }
-
-  /* Der Info-Knopf rechts neben „Kopieren“ öffnet das Blatt */
-  [data-mobile-os="android"] .entry-info-btn {
-    display: grid;
-  }
 
   /* ---------- „Mehr anzeigen“ ---------- */
 

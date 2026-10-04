@@ -1,9 +1,9 @@
 /*
  * Der Inhalt einer Karte „Details“: oben drei Kennzahlen nebeneinander,
  * darunter Abschnitte mit Zeilen — und was ein Tipp darauf tut. Gemeinsam
- * für die Seite eines Eintrags (src/features/entry/entry-details.js), die
- * Seite eines Arbeitsbereichs (src/features/overview/workspace-details.js)
- * und beide Karten in der rechten Spalte am Desktop. Was in der Karte steht,
+ * für die Seite eines Eintrags (src/features/entry/entry-details.js), das
+ * Blatt „Details“ (src/ui/details-sheet.js) und beide Karten in der rechten
+ * Spalte am Desktop. Was in der Karte steht,
  * stellen src/data/entry-facts.js und src/data/workspace-facts.js zusammen:
  * { stats: [{ value, label, color?, field? }], groups: [{ heading, rows }] }.
  *

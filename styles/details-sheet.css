@@ -1,0 +1,77 @@
+/*
+ * Details einer Seite: kein Block unter dem Text, sondern ein Info-Knopf
+ * rechts neben „Kopieren“, der die Angaben als Blatt von unten öffnet
+ * (src/ui/details-sheet.js). Gilt für Eintrag und Arbeitsbereich in allen
+ * Fassungen; die Android-Fassung überstimmt das Blatt mit eigenen Regeln
+ * (styles/android-entry.css, Material 3). Hier steht die Optik der übrigen
+ * Fassungen: das schwebende Blatt der Auswahl-Blätter (styles/overlays.css).
+ * Am Desktop mit rechter Spalte (ab 1280px) stehen die Details dort; der
+ * Knopf entfällt.
+ * Pfad: styles/details-sheet.css
+ *
+ * ANPASSBARE WERTE (Farben und Maße kommen aus styles/tokens*.css)
+ * -----------------------------------
+ * --details-head-h    -> Höhe der Überschrift „Details“ im Blatt (styles/tokens-pages.css)
+ * --page-tool-icon    -> Größe des Symbols hinter „Details“
+ * --icon-soft         -> Farbe der Überschrift
+ * --content-side      -> seitlicher Rand der Angaben
+ * --safe-bottom       -> Platz unter dem Inhalt für die Gestenleiste
+ *
+ * Direkt bei ihrer Regel: wie hoch das Blatt höchstens wird (80 %) und die
+ * Schrift der Überschrift (16px).
+ */
+
+/* Die Karte am Ende von „Inhalt“ gibt es nicht mehr; sie bleibt nur im
+   Dokument, weil src/features/entry/entry-fold.js an ihr misst */
+#entry-panel-notes > .details-card {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  /* Die Details stehen rechts (src/features/entry/entry-rail.js) */
+  .entry-info-btn {
+    display: none;
+  }
+}
+
+/* ---------- Das Blatt in den übrigen Fassungen ---------- */
+
+/* display: flex + max-height: die Angaben scrollen im Blatt, es wird nie
+   höher als der Bildschirm */
+:root:not([data-mobile-os="android"]) .details-sheet .sheet {
+  display: flex;
+  flex-direction: column;
+  max-height: 80%;
+}
+
+:root:not([data-mobile-os="android"]) .details-sheet-title {
+  display: flex;
+  align-items: center;
+  flex: 0 0 auto;
+  height: var(--details-head-h);
+  padding: 0 12px;
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--icon-soft);
+}
+
+/* Dasselbe Symbol wie hinter „Details“ im Android-Blatt, nur ein Zeichen;
+   transform: dreht es auf den Kopf, statt ein zweites Symbol zu zeichnen */
+:root:not([data-mobile-os="android"]) .details-sheet-title .icon {
+  width: var(--page-tool-icon);
+  height: var(--page-tool-icon);
+  margin-left: 4px;
+  transform: rotate(180deg);
+}
+
+/* Der Inhalt scrollt in sich (.modal-body, styles/overlays.css); die Angaben
+   bringen ihre eigenen Abstände mit */
+:root:not([data-mobile-os="android"]) .details-sheet-body {
+  gap: 0;
+  padding: 0 12px calc(16px + var(--safe-bottom));
+}
+
+/* Im Blatt ist alles sofort zu sehen */
+.details-sheet :is(.details-stats, .details-list) {
+  opacity: 1;
+}
