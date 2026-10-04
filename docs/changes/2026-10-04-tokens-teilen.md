@@ -57,8 +57,12 @@ Prüfung: alle 659 berechneten CSS-Variablen vorher/nachher verglichen
   Wert dann in die thematisch passende neue Datei setzen.
 - Versionsstempel `src/data/version.js` absichtlich nicht neu geschrieben; das
   übernimmt der Git Commit Manager.
-- `styles/embeds.css` und `styles/entry-details.css` nennen im Kopf noch
-  `tokens-pages.css`; deren Werte stehen jetzt in `tokens-entry.css`
-  (Kopf von `tokens-pages.css` leitet weiter).
 - Die Abfrage für Handys unter 370 px greift nur auf Touch-Geräten und ließ
   sich im Browser-Pane nicht prüfen; sie ist unverändert umgezogen.
+
+## Nachtrag
+Zweiter Commit im selben PR (auf Wunsch): die Köpfe von `styles/embeds.css`
+und `styles/entry-details.css` verweisen jetzt auf `styles/tokens-entry.css`;
+`--tasks-panel-slide` (entry-details) und `--xp-done` (embeds) bleiben als
+Ausnahme in `tokens-pages.css` markiert. Nur Kommentare, keine sichtbare
+Änderung.

@@ -7,7 +7,7 @@
  * Eingabefeld, bevor ein Link da ist. Markup in src/ui/block-markup.js.
  * Pfad: styles/embeds.css
  *
- * ANPASSBARE WERTE (in styles/tokens-pages.css)
+ * ANPASSBARE WERTE (in styles/tokens-entry.css, außer wo genannt)
  * -----------------------------------
  * --embed-tile-w    -> Breite der Kachel links (halbe Breite wie die Übersichtskarten)
  * --embed-h         -> Höhe der Kachel
