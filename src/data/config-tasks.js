@@ -14,6 +14,7 @@
  * archiveColumn           -> Name, Icon und Farbe der Spalte „Archiviert“ rechts neben „Erledigt“
  * taskGroupings           -> wonach sich Liste und Board gruppieren lassen (Dringlichkeit oder Status)
  * taskSorts               -> wonach die Aufgaben-Seite sortieren kann, samt Wortlaut beider Richtungen
+ *                            (Status, Dringlichkeit, Fällig, Titel …)
  * taskDefaults            -> womit eine neue Ansicht der Aufgaben-Seite startet
  * timeTypes               -> Kategorien mit Dringlichkeit, Fälligkeit und Status wie eine Aufgabe
  * docStatuses             -> Name, Icon und Farbe des Status eines Dokuments (Entwurf, Fertig, Geprüft)
@@ -102,7 +103,8 @@ export const taskGroupings = [
 ];
 
 /**
- * Sortierarten der Aufgaben-Seite. Welche Regel dahintersteckt, steht in
+ * Sortierarten der Aufgaben-Seite (Status und Dringlichkeit wie in
+ * src/data/config-sorts.js, nur mit eigenem Wortlaut beim Status). Welche Regel dahintersteckt, steht in
  * `sortTasks` in src/data/queries.js; „erstellt“ ist zugleich die von Hand
  * im Board gezogene Reihenfolge. `up` und `down` sind der Wortlaut der beiden
  * Richtungen im Blatt „Sortieren“ (src/ui/sort-sheet.js), `asc` die
@@ -111,6 +113,9 @@ export const taskGroupings = [
 export const taskSorts = [
   { id: "erstellt", label: "Erstellt", icon: "history", up: "Älteste zuerst", down: "Neueste zuerst", asc: true },
   { id: "faellig", label: "Fällig", icon: "calendar", up: "Früheste zuerst", down: "Späteste zuerst", asc: true },
+  /* Erledigtes steht in jeder Sortierung unten, deshalb endet „Status“ bei „In Arbeit“ */
+  { id: "status", label: "Status", icon: "check-circle", up: "Offen zuerst", down: "In Arbeit zuerst", asc: true },
+  { id: "prio", label: "Dringlichkeit", icon: "flame", up: "Dringendste zuerst", down: "Am wenigsten dringend zuerst", asc: true },
   { id: "titel", label: "Titel", icon: "text", up: "A bis Z", down: "Z bis A", asc: true },
 ];
 
@@ -167,6 +172,19 @@ export function isTaskDone(entry) {
 /** Hat diese Kategorie Dringlichkeit und Fälligkeit (Aufgabe, Projekt, Termin)? */
 export function isTimeType(type) {
   return timeTypes.includes(type);
+}
+
+/**
+ * Platz des Status in der Reihenfolge seiner Liste (Offen vor Erledigt, Entwurf
+ * vor Geprüft); null, wenn die Kategorie keinen Status hat. Zum Sortieren.
+ */
+export function statusRankOf(entry) {
+  return hasStatus(entry.type) ? statusListFor(entry.type).indexOf(statusOf(entry)) : null;
+}
+
+/** Platz der Dringlichkeit, „Jetzt“ ist 0; null, wenn die Kategorie keine hat. Zum Sortieren. */
+export function priorityRankOf(entry) {
+  return isTimeType(entry.type) ? taskPriorities.indexOf(taskPriorityOf(entry.priority)) : null;
 }
 
 /** Hat diese Kategorie einen Status? Die drei Zeit-Kategorien und das Dokument. */

@@ -22,13 +22,14 @@
  * copyPlaceholder    -> Vorgabename einer Kopie („Alle Kopie“)
  *
  * Womit eine Ansicht startet und wonach sie sortieren kann, steht in
- * src/data/config.js (projectViewDefaults, projectSorts).
+ * src/data/config.js (projectViewDefaults) und src/data/config-sorts.js (projectSorts).
  */
 
 import { emit, events } from "../core/bus.js";
 import { nextId, sameId } from "../core/ids.js";
 import { manualId, sortEntries } from "./collection-sorts.js";
-import { projectSorts, projectViewDefaults } from "./config.js";
+import { projectViewDefaults } from "./config.js";
+import { projectSorts } from "./config-sorts.js";
 import { taskGroupings, taskLayouts, taskPriorities, taskPriorityOf, taskStatuses, taskStatusOf } from "./config-tasks.js";
 import { filterByLinks } from "./link-filter.js";
 import { cleanLinkFields } from "./link-filter-fields.js";

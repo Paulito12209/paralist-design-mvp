@@ -40,7 +40,7 @@
  */
 
 import { escapeHtml, icon } from "../../core/html.js";
-import { projectSorts } from "../../data/config.js";
+import { projectSorts } from "../../data/config-sorts.js";
 import { taskGroupings } from "../../data/config-tasks.js";
 import {
   activeProjectView,
