@@ -13,8 +13,9 @@
  * „Ansicht“ mit Sortieren und Filtern (src/features/overview/project-settings.js).
  * In der Android-Fassung steht über der Liste eine Werkzeugzeile („Archiv (n)“,
  * Sortieren, Filtern — src/features/overview/project-card.js); die Pille
- * „Zum Archiv“ ersetzt dort der Archiv-Knopf links unten
- * (src/shell/android-archive.js), die Karte „Ansicht“ kommt als Blatt von unten.
+ * „Zum Archiv“ ist dort ausgeblendet (styles/android-archive.css), ins Archiv
+ * führen „Archiv (n)“ und die Karte „Archiv“ der Übersicht. Die Karte
+ * „Ansicht“ kommt dort als Blatt von unten.
  * Am Desktop zeigt die Übersicht keine Projekte — dort stehen sie in der Seitenleiste.
  * Pfad: src/features/overview/projects.js
  *

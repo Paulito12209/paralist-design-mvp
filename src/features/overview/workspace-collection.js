@@ -5,7 +5,8 @@
  * hinter der Trennlinie der Ordner-Plus-Knopf (in der Android-Fassung das
  * Symbol „Ansicht“, styles/android-sheet.css). Darunter die Arbeitsbereiche
  * des gewählten Tabs, die Zeile „Arbeitsbereich hinzufügen“ und „Zum Archiv“
- * (in der Android-Fassung der Archiv-Knopf links unten, src/shell/android-archive.js).
+ * (in der Android-Fassung ausgeblendet, styles/android-archive.css — dort
+ * führt die Karte „Archiv“ der Übersicht ins Archiv).
  * Ist der Tab leer, steht statt der Zeile der Platzhalter mit einer Pille
  * zum Anlegen in der Mitte — wie auf den übrigen Seiten. In der
  * Android-Fassung fehlt die Zeile auch neben Arbeitsbereichen: dort legt ein
