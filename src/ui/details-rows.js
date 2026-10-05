@@ -15,7 +15,8 @@
  *   „Mehr anzeigen“ den Rest auf. Ein Tipp auf die Zeile öffnet das Blatt
  *   „Verknüpfen“ mit Tabs (src/ui/link-sheet.js); wer dort einen Ort
  *   anhakt, holt ihn aus dem Eingang. Beim Arbeitsbereich steht hier sein Tab.
- * - Darunter die Angaben als Zeilen untereinander — Icon links, Wert, darunter
+ * - Darunter die Angaben als Zeilen untereinander: erst Dringlichkeit und
+ *   Status, dann zusammen das Zeitliche (Frist, Erinnerung) — Icon links, Wert, darunter
  *   klein die Bezeichnung. Fehlt ein Wert, steht dort „Frist hinzufügen“ bzw.
  *   „Erinnerung hinzufügen“. Ein Tipp tut, was die Kennzahl auf der Karte tut
  *   (src/ui/details-card.js, handleCardClick).
@@ -31,6 +32,7 @@
  * rowIcons    -> Icon je Zeile (Name des Felds bzw. der Beschriftung)
  * emptyLabels -> Text einer leeren Zeile, die sich antippen lässt
  * linkLabel   -> Beschriftung der Zeile mit den Verknüpfungen
+ * timeFields  -> Zeilen für Zeitliches, die zusammen unten stehen (Frist, Erinnerung)
  * visibleChips -> wie viele Chips ohne „Mehr anzeigen“ zu sehen sind
  * moreLabels  -> Beschriftung des Knopfs unter den Chips (zu | auf)
  * doneLabels  -> Beschriftung des Knopfs unten (offen | erledigt)
@@ -71,6 +73,8 @@ const rowIcons = {
 };
 const emptyLabels = { date: "Frist hinzufügen", remind: "Erinnerung hinzufügen" };
 const linkLabel = "Verknüpfen mit";
+/* Zeilen für Zeitliches, in dieser Reihenfolge ganz unten */
+const timeFields = ["date", "remind"];
 const visibleChips = 2;
 const moreLabels = { closed: "Mehr anzeigen", open: "Weniger anzeigen" };
 /* Rang in der Reihe der Chips: Arbeitsbereich, Projekt, alles andere */
@@ -130,7 +134,7 @@ function linkRowMarkup(entry) {
   const body = chips.length ? `<span class="details-m3-chips">${shown.map(chipMarkup).join("")}</span>${more}` : "";
   /* Eine Fläche mit Knopf für die Beschriftung statt eines Knopfs um alles:
      „Mehr anzeigen“ darf kein Knopf im Knopf sein */
-  return `<div class="details-m3-row is-links" data-details-links>${icon("chain")}<span class="details-m3-text"><button class="details-m3-primary details-m3-link-label${chips.length ? "" : " is-empty"}" type="button">${linkLabel}</button>${body}</span></div>`;
+  return `<div class="details-m3-row is-links" data-details-links>${icon("link")}<span class="details-m3-text"><button class="details-m3-primary details-m3-link-label${chips.length ? "" : " is-empty"}" type="button">${linkLabel}</button>${body}</span></div>`;
 }
 
 /* Beim Arbeitsbereich: sein Tab, ein Tipp wechselt ihn */
@@ -167,7 +171,9 @@ function rowsOf(facts) {
     const remind = timeRows.find((row) => row.edit === "remind");
     if (remind) rows.push({ value: remind.value, label: remind.label, field: "remind" });
   }
-  return rows;
+  /* Zeitliches (Frist, Erinnerung) steht zusammen ganz unten, nach Dringlichkeit und Status;
+     sort ist stabil, der Rest behält seine Reihenfolge */
+  return rows.sort((a, b) => timeFields.indexOf(a.field) + 1 - (timeFields.indexOf(b.field) + 1));
 }
 
 /** Beim Öffnen des Blatts: die Chips wieder auf die ersten zwei einklappen. */

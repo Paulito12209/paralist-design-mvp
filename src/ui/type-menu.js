@@ -6,9 +6,9 @@
  * „Umwandeln“ tut es (src/data/convert.js, src/data/convert-notes.js).
  * Geöffnet wird das Blatt aus dem Menü eines Eintrags oder Arbeitsbereichs,
  * und über die graue Kategorie mitten in der Kopfzeile — als Rolle wie beim
- * Sortieren (src/ui/type-wheel.js), die erst mit „Umwandeln“ gilt. Bei einer
- * Aufgabe stehen dieselben Typen als Liste im Tab „Typ“ neben Status und
- * Dringlichkeit.
+ * Sortieren (src/ui/type-wheel.js), die erst mit „Umwandeln“ gilt. In der
+ * Android-Fassung stehen dieselben Typen stattdessen als Liste in einem
+ * Material-Blatt, ein Tipp wandelt sofort um (bzw. fragt vorher nach).
  * Pfad: src/ui/type-menu.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -39,6 +39,7 @@ import {
 import { typeChangeHeadline, typeChangeNotes } from "../data/convert-notes.js";
 import { findEntry, workspaceLabel } from "../data/queries.js";
 import { ui } from "../data/state.js";
+import { isMobileOs } from "./platform.js";
 import { openEntry, openTarget } from "./router.js";
 import { openSheet } from "./sheet.js";
 import { showToast } from "./toast.js";
@@ -170,34 +171,34 @@ function pick(subject, target) {
 }
 
 /**
- * Alle Typen als Optionen, gegliedert wie „Typ wählen“ im Eingabefeld
- * (src/features/composer/composer-types.js): der aktuelle ist markiert, der
- * Arbeitsbereich steht abgesetzt darunter — er ist die Ebene über den Einträgen.
- * Auch der Tab „Typ“ im Blatt einer Aufgabe (src/ui/task-status.js) nutzt sie.
+ * Alle Typen als Optionen, nach Hierarchie von oben nach unten ohne
+ * Trennlinien: Arbeitsbereich, Projekt, dann die übrigen Einträge in der
+ * Reihenfolge von „Typ wählen“ im Eingabefeld (src/features/composer/composer-types.js).
+ * Der aktuelle ist markiert. Das Material-Blatt der Android-Fassung
+ * (openTypeChangeSheet) nutzt sie.
  * @param subject { entry } oder { workspace }
  */
 export function typeChangeOptions(subject) {
   const current = currentKind(subject);
-  const options = convertibleTypes.map((type) => ({
-    label: typeSingular(type),
-    icon: typeIcon(type),
+  const order = [workspaceKind, "projekt", ...convertibleTypes.filter((type) => type !== "projekt")];
+  return order.map((type) => ({
+    label: kindName(type),
+    icon: kindIcon(type),
     active: type === current,
-    gap: type === "termin" || type === "projekt",
-    split: type === "dokument",
     onSelect: () => pick(subject, type),
   }));
-  options.push({
-    label: workspaceName,
-    icon: kindIcon(workspaceKind),
-    active: current === workspaceKind,
-    split: true,
-    onSelect: () => pick(subject, workspaceKind),
-  });
-  return options;
 }
 
-/** Das Blatt „Typ ändern“ als Rolle öffnen, in derselben Reihenfolge wie die Liste. */
+/**
+ * Das Blatt „Typ ändern“: in der Android-Fassung als Material-Blatt mit allen
+ * Typen untereinander (wie Status und Dringlichkeit), sonst als Rolle in
+ * derselben Reihenfolge wie die Liste.
+ */
 export function openTypeChangeSheet(subject) {
+  if (isMobileOs("android")) {
+    openSheet(sheetTitle, typeChangeOptions(subject));
+    return;
+  }
   const kind = (id) => ({ id, label: kindName(id), icon: kindIcon(id), color: xpItemStyle(id).color });
   openTypeWheel({
     title: sheetTitle,

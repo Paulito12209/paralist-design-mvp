@@ -18,37 +18,32 @@
  * -----------------------------------
  * doneTitle   -> Text der Meldung nach dem Abhaken
  * undoLabel   -> Beschriftung des Knopfes in der Meldung
- * statusTitle -> Beschriftung des Tabs „Status“ im Blatt
- * prioTitle   -> Beschriftung des Tabs „Dringlichkeit“ im Blatt
- * typeTitle   -> Beschriftung des Tabs „Typ“ im Blatt
+ * statusTitle -> Überschrift des Blatts „Status“
+ * prioTitle   -> Überschrift des Blatts „Dringlichkeit“
  *
  * Aussehen steht in styles/tasks.css (Haken) und styles/task-status.css
  * (erledigter Titel in allgemeinen Listen, Kategorie-Pille der Kopfzeile).
  */
 
 import { icon } from "../core/html.js";
-import { typeIcon, typeSingular, xpItemStyle, xpKinds } from "../data/config.js";
+import { xpKinds } from "../data/config.js";
 import {
   isTaskDone,
-  isTimeType,
   statusListFor,
   statusOf,
   taskPriorities,
   taskPriorityOf,
   taskStatusOf,
 } from "../data/config-tasks.js";
-import { canChangeType } from "../data/convert.js";
 import { setTaskPriority, setTaskStatus, toggleTaskDone } from "../data/mutations-tasks.js";
 import { findEntry } from "../data/queries.js";
 import { openSheet } from "./sheet.js";
 import { showToast } from "./toast.js";
-import { typeChangeOptions } from "./type-menu.js";
 
 const doneTitle = "Erledigt";
 const undoLabel = "Rückgängig";
 const statusTitle = "Status";
 const prioTitle = "Dringlichkeit";
-const typeTitle = "Typ";
 
 /*
  * Die beiden Felder, die sich im Blatt wählen lassen: der Status aus der
@@ -80,8 +75,7 @@ export function taskCheck(entry) {
 }
 
 /* Die Optionen eines Feldes im Blatt; die gewählte Stufe ist markiert. Das
-   Blatt bleibt offen (`stay`), damit man Status und Dringlichkeit in einem
-   Zug setzen kann, und zeichnet sich nach jeder Wahl im selben Tab neu. */
+   Blatt bleibt offen (`stay`) und zeichnet sich nach jeder Wahl neu. */
 function fieldOptions(entry, field) {
   const spec = fieldSpec(entry, field);
   return spec.list.map((item) => ({
@@ -100,38 +94,16 @@ function fieldOptions(entry, field) {
   }));
 }
 
-/*
- * Die Tabs des Blatts: Status, Dringlichkeit (nur Aufgabe, Projekt, Termin)
- * und die Typen zum Umwandeln (src/ui/type-menu.js). Ein Tipp auf einen Typ
- * schließt das Blatt — der Eintrag ist danach etwas anderes, oder es folgt
- * die Rückfrage.
- */
-function sheetTabs(entry) {
-  const tabs = [{ id: "status", label: statusTitle, options: (item) => fieldOptions(item, "status") }];
-  if (isTimeType(entry.type)) tabs.push({ id: "priority", label: prioTitle, options: (item) => fieldOptions(item, "priority") });
-  if (canChangeType(entry)) tabs.push({ id: "type", label: typeTitle, options: (item) => typeChangeOptions({ entry: item }) });
-  return tabs;
-}
-
 /**
- * Blatt von unten für Aufgabe, Termin, Projekt oder Dokument: oben der Name
- * mit dem Icon der Kategorie, darunter die Tabs Status | Dringlichkeit | Typ
- * (beim Dokument Status | Typ) — antippen oder waagerecht wischen wechselt.
+ * Blatt von unten für Status oder Dringlichkeit: oben nur die Überschrift
+ * („Status“ bzw. „Dringlichkeit“), darunter genau die Stufen zur Wahl — ohne
+ * Namen des Eintrags und ohne Tabs. Jede Auswahl hat ihr eigenes Blatt; die
+ * Typen zum Umwandeln liegen hinter der Kategorie im Kopf (src/ui/type-menu.js).
  * Die Karte „Details“ öffnet es beim angetippten Feld.
+ * @param field "status" oder "priority"
  */
-export function openTaskSheet(entry, tab = "status") {
-  const tabs = sheetTabs(entry);
-  const current = tabs.find((item) => item.id === tab) || tabs[0];
-  openSheet(entry.title || typeSingular(entry.type), current.options(entry), {
-    icon: typeIcon(entry.type),
-    iconColor: xpItemStyle(entry.type).color,
-    tabs,
-    tab: current.id,
-    onTab: (id) => {
-      const fresh = findEntry(entry.id);
-      if (fresh) openTaskSheet(fresh, id);
-    },
-  });
+export function openTaskSheet(entry, field = "status") {
+  openSheet(field === "status" ? statusTitle : prioTitle, fieldOptions(entry, field));
 }
 
 /* Meldung nach dem Abhaken; „Rückgängig“ stellt den Status von vorher wieder
