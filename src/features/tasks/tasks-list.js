@@ -4,15 +4,19 @@
  * Pfeil; dahinter dieselben Wisch-Knöpfe wie in jeder anderen Liste der App.
  * Wer im Menü gruppiert, bekommt dieselben Gruppen untereinander, die das
  * Board als Spalten zeigt, jede mit dünner Überschrift (Icon in ihrer Farbe,
- * Name, Anzahl); leere Gruppen fehlen dann.
+ * Name, Anzahl, Pfeil); leere Gruppen fehlen dann. Ein Tipp auf die
+ * Überschrift klappt die Gruppe zu und wieder auf — gemerkt je Ansicht, bis
+ * die App neu lädt.
  *
  * Im Auswahlmodus (src/features/tasks/tasks-select.js) steht vor jeder Zeile
  * ein Kreis zum Wählen und im Kopf jeder Gruppe einer für die ganze Gruppe;
  * die Geister-Zeile fehlt dann.
  *
  * In der Android-Fassung stehen rechts in jeder Zeile drei Punkte
- * (src/ui/rows.js, rowMore): nur ein Tipp darauf öffnet das Menü der Aufgabe,
- * gedrückt Halten tut dort nichts mehr. Die Punkte fehlen im Auswahlmodus.
+ * (src/ui/rows.js, rowMore): nur ein Tipp darauf öffnet das Menü der Aufgabe.
+ * Gedrückt Halten hebt die Zeile an und verschiebt sie innerhalb ihrer Gruppe
+ * wie bei den Projekten (data-reorder, src/features/tasks/tasks-drag.js).
+ * Die Punkte und das Verschieben fehlen im Auswahlmodus.
  *
  * Solange es gar keine Aufgabe gibt, liegt eine blasse Geister-Zeile da, die
  * das Anlegen durch Tippen ein einziges Mal erklärt
@@ -39,10 +43,14 @@ import { emptyState } from "../../ui/empty-state.js";
 import { isMobileOs } from "../../ui/platform.js";
 import { entryActions, rowMore, swipeRow } from "../../ui/rows.js";
 import { taskCheck } from "../../ui/task-status.js";
+import { listScope } from "./tasks-drag.js";
 import { taskColumns, taskMeta, taskTitle } from "./tasks-parts.js";
 import { groupPickMark, isPicked, isSelecting, pickMark } from "./tasks-pick.js";
 
 const ghostLabel = "Neue Aufgabe";
+/* Zugeklappte Gruppen als „<Ansicht>|<Gruppe>“ — nur für diese Sitzung, wie unter „Verknüpfte Einträge“ */
+const collapsed = new Set();
+const sectionKey = (prefs, column) => `${prefs.id}|${column.id}`;
 const emptyFilter = "Hier liegt keine offene Aufgabe.";
 /* Wortlaut wie in der Spalte „Aufgaben“ der Kalenderliste (calendarSegments in src/data/config.js) */
 const emptyTasks = {
@@ -93,26 +101,42 @@ function ghostRow() {
 }
 
 /* Die Überschrift einer Gruppe — nur, wenn gruppiert wird. */
-function headMarkup(column, field) {
+function headMarkup(column, field, key, open) {
   if (!field) return "";
+  /* Der Auswahlkreis steht neben dem Knopf, nicht in ihm: zwei Knöpfe ineinander gehen nicht */
   return `
     <h2 class="task-section-head">
       ${groupPickMark(column.items.map((entry) => entry.id))}
-      ${icon(column.icon, "task-section-icon")}
-      <span class="task-section-name">${column.label}</span>
-      <span class="task-section-count">${column.items.length || ""}</span>
+      <button class="task-section-toggle" type="button" data-toggle-section="${key}" aria-expanded="${open}">
+        ${icon(column.icon, "task-section-icon")}
+        <span class="task-section-name">${column.label}</span>
+        <span class="task-section-count">${column.items.length || ""}</span>
+        ${icon("chevron", "task-section-chevron")}
+      </button>
     </h2>
   `;
 }
 
+/** Eine Gruppe auf- oder zuklappen, ohne die Seite neu zu zeichnen. */
+export function toggleTaskSection(button) {
+  const section = button.closest(".task-section");
+  if (!section) return;
+  const open = section.classList.toggle("is-collapsed") === false;
+  button.setAttribute("aria-expanded", String(open));
+  if (open) collapsed.delete(button.dataset.toggleSection);
+  else collapsed.add(button.dataset.toggleSection);
+}
+
 /* Eine Gruppe (oder die ganze Liste): data-section und data-field sagen dem
    Inline-Anlegen, wohin eine neue Aufgabe gehört, wenn hierunter getippt wird. */
-function sectionMarkup(column, field, tail) {
+function sectionMarkup(prefs, column, field, tail) {
   const rows = column.items.map((entry) => taskRow(entry, field)).join("");
+  const key = sectionKey(prefs, column);
+  const open = !field || !collapsed.has(key);
   return `
-    <section class="task-section" data-pick-scope data-section="${column.id}" data-field="${field || ""}"${column.locked ? " data-no-add" : ""} style="--col-color:${column.color}">
-      ${headMarkup(column, field)}
-      <div class="workspace-list task-rows">${rows}${tail}</div>
+    <section class="task-section${open ? "" : " is-collapsed"}" data-pick-scope data-section="${column.id}" data-field="${field || ""}"${column.locked ? " data-no-add" : ""} style="--col-color:${column.color}">
+      ${headMarkup(column, field, key, open)}
+      <div class="workspace-list task-rows"${isSelecting() ? "" : ` data-reorder="${listScope}"`}>${rows}${tail}</div>
     </section>
   `;
 }
@@ -133,6 +157,6 @@ export function taskListMarkup(prefs) {
   const tail = !empty || placeholder ? "" : filtered ? `<p class="task-empty-note">${emptyFilter}</p>` : ghost;
   return `<div class="task-sections">${columns
     .filter((column, index) => index === 0 || column.items.length)
-    .map((column, index) => sectionMarkup(column, field, index === 0 ? tail : ""))
+    .map((column, index) => sectionMarkup(prefs, column, field, index === 0 ? tail : ""))
     .join("")}</div>${placeholder}`;
 }

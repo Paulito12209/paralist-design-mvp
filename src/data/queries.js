@@ -348,12 +348,6 @@ export function taskGroups(prefs) {
   return { field: grouping.field, columns };
 }
 
-/** Die Spalten des Boards: wie taskGroups — nur dass ein Board immer Spalten braucht, ungruppiert nach Dringlichkeit. */
-export function taskColumns(prefs) {
-  const grouping = taskGroupings.find((item) => item.id === prefs.group) ? prefs.group : taskGroupings[0].id;
-  return taskGroups({ ...prefs, group: grouping });
-}
-
 /** Der erste Ablageort einer Aufgabe — dafür steht das kleine Label in der Zeile. */
 export function mainPlace(entry) {
   const places = entry.places || [];

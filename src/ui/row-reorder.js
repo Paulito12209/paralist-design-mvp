@@ -7,6 +7,8 @@
  * In einer Sammlung (Eingang, Favoriten, Ressourcen, Arbeitsbereiche) und in
  * einer Ansicht der Projekte schaltet das die Sortierung auf „Eigene
  * Reihenfolge“; eine Gruppe im Arbeitsbereich oder Projekt folgt ihr einfach.
+ * Die Aufgaben speichern selbst (setReorderSaver): dort gilt dieselbe
+ * Sortiernummer wie beim Ziehen im Board.
  *
  * Eine Liste steht als Element mit data-reorder="<Schlüssel>"; ihre Zeilen
  * sind die .swipe-Kinder. Arbeitsbereiche und Einträge lassen sich nur unter
@@ -39,6 +41,17 @@ const groupPrefix = "g:";
 
 /* Der laufende Zug: { source, list, kind, startNext } — sonst null. */
 let session = null;
+/* Listen, die ihre Reihenfolge selbst speichern (z.B. die Aufgaben): Schlüssel -> Funktion. */
+const savers = new Map();
+
+/**
+ * Eine Liste speichert ihre Reihenfolge selbst, statt sie hier zu merken —
+ * angemeldet von oben, z.B. die Aufgaben (src/features/tasks/tasks-drag.js).
+ * `save(row)` bekommt die verschobene Zeile (.swipe) an ihrem neuen Platz.
+ */
+export function setReorderSaver(scope, save) {
+  savers.set(scope, save);
+}
 
 const wrapOf = (row) => row.closest(".swipe");
 const kindOf = (wrap) => (wrap.dataset.workspace ? "w" : "e");
@@ -155,5 +168,7 @@ export function finishReorder(commit) {
     current.list.insertBefore(current.source, current.startNext);
     return;
   }
-  persist(current.list.dataset.reorder);
+  const save = savers.get(current.list.dataset.reorder);
+  if (save) save(current.source);
+  else persist(current.list.dataset.reorder);
 }

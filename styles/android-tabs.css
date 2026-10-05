@@ -13,7 +13,6 @@
  * -----------------------------------
  * --m3-tab-height        -> Höhe eines Reiters (Innenabstand 16px zwischen den Reitern)
  * --m3-tab-edge          -> wie weit der Inhalt des ersten Reiters vom Geräterand steht (ebenso Listen-Icons und „Archiv“; Titel stehen auf --m3-title-edge, styles/android.css)
- * --m3-tab-info-w        -> Platz des ⓘ hinter „Alle“ (Aufgaben): die Linie unter dem Reiter lässt ihn frei
  * --m3-tab-indicator     -> Dicke der Linie unter dem aktiven Reiter
  * --m3-primary           -> Farbe von Schrift und Linie des aktiven Reiters
  * --m3-on-surface-variant -> Schrift der übrigen Reiter
@@ -169,11 +168,6 @@
   /* Im Reiter, in dem man steht, entfällt der Zähler — dann zeigt die Liste ihn ohnehin */
   [data-mobile-os="android"] .tab-pill.is-active .media-count {
     display: none;
-  }
-
-  /* „Alle“ mit ⓘ: die Linie liegt nur unter dem Namen, das ⓘ bleibt frei */
-  [data-mobile-os="android"] .tab-pill.is-active:has(.tab-pill-info)::after {
-    right: calc(16px + var(--m3-tab-info-w));
   }
 
   /* Das Plus am Ende wird ein Reiter mit Text: „+ Neue Ansicht“, so hoch und

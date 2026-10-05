@@ -1,0 +1,112 @@
+/*
+ * Das Blatt „Spalten“ eines Boards (src/ui/columns-sheet.js): alle Spalten
+ * untereinander, links der Griff „=“ zum Umsortieren, Icon in der
+ * Spaltenfarbe, Name, rechts das Auge zum Aus- und Einblenden. Eine
+ * ausgeblendete Spalte steht blass da, mit durchgestrichenem Auge. Blatt,
+ * Kopf und Griff oben kommen aus styles/overlays.css (.modal, in Android
+ * .date-modal aus styles/android-bottom-sheet.css).
+ * Pfad: styles/columns-sheet.css
+ *
+ * ANPASSBARE WERTE
+ * -----------------------------------
+ * --m3-sheet-row-h (styles/tokens-android.css) -> Höhe einer Zeile; ohne Android-Werte 52px
+ * --m3-reorder-shadow / --m3-secondary-container (styles/tokens-android.css)
+ *                         -> Schatten und Fläche der Zeile, solange sie gezogen wird
+ * --content-side (styles/tokens.css) -> Rand links und rechts
+ * --muted / --text / --icon-soft     -> Hinweis, Name, Griff und Auge
+ *
+ * Direkt bei ihrer Regel: Hinweis 13px, Name 16px, Icons 22px (Griff und
+ * Auge) bzw. 20px (Spalten-Icon), blasse Zeile 0.45 Deckkraft.
+ */
+
+.columns-modal {
+  height: auto; /* height: so hoch wie die Liste, nicht bildschirmhoch wie andere Blätter */
+}
+
+.columns-body {
+  padding: 0 0 calc(12px + var(--safe-bottom, 0px));
+}
+
+.columns-hint {
+  margin: 0 var(--content-side) 8px;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.columns-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.columns-row {
+  position: relative; /* position: die gezogene Zeile liegt über ihren Nachbarinnen */
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: var(--m3-sheet-row-h, 52px);
+  padding: 0 calc(var(--content-side) - 8px) 0 calc(var(--content-side) - 12px);
+  font-size: 16px;
+  color: var(--text);
+}
+
+/* Gezogen: hebt sich als Karte ab und folgt dem Finger (transform setzt columns-sheet.js) */
+.columns-row.is-dragging {
+  z-index: 1;
+  border-radius: 12px;
+  background: var(--m3-secondary-container, var(--card));
+  box-shadow: var(--m3-reorder-shadow, 0 6px 16px rgba(0, 0, 0, 0.22));
+}
+
+/* Der Griff: große Tippfläche; touch-action: none — der Finger zieht die Zeile, statt zu scrollen */
+.columns-grip {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  color: var(--icon-soft);
+  cursor: grab;
+  touch-action: none;
+}
+
+.columns-grip .icon,
+.columns-eye .icon {
+  width: 22px;
+  height: 22px;
+}
+
+.columns-icon {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  color: var(--col-color);
+}
+
+.columns-name {
+  flex: 1;
+  min-width: 0;
+}
+
+/* Das Auge: rund, Tippfläche 44px, ragt nach rechts über den Rand der Zeile */
+.columns-eye {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--text);
+}
+
+.columns-eye:active {
+  background: var(--line);
+}
+
+/* Ausgeblendet: Icon und Name blass, das durchgestrichene Auge leise */
+.columns-row.is-hidden :is(.columns-icon, .columns-name) {
+  opacity: 0.45;
+}
+
+.columns-row.is-hidden .columns-eye {
+  color: var(--icon-soft);
+}

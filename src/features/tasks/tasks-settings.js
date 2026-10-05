@@ -133,7 +133,7 @@ function filterRowMarkup(view, chips) {
 /** Die Zeilen der Karte für die gewählte Ansicht. */
 export function taskSettingsMarkup(view) {
   const board = view.layout === "board";
-  /* Das Board ist immer gruppiert (src/data/queries.js, taskColumns) — der Schalter gilt nur der Liste */
+  /* Das Board ist immer gruppiert (src/data/board-columns.js, boardTaskColumns) — der Schalter gilt nur der Liste */
   const grouped = board || view.group !== "none";
   const groupItems = taskGroupings.map((item) => ({ id: item.id, label: item.label }));
   const groupBy = view.group !== "none" ? view.group : taskGroupings[0].id;

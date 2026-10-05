@@ -1,7 +1,9 @@
 /*
  * Zeilen im Board verschieben — mit der Maus und mit dem Finger (Pointer
- * Events). Angefasst wird am Griffstreifen rechts (die sechs Punkte). Mit dem
- * Finger löst sich die Zeile erst, wenn man den Griff kurz gedrückt hält —
+ * Events). Angefasst wird am Griffstreifen rechts (die sechs Punkte). In der
+ * Android-Fassung steht dort stattdessen das Menü (drei Punkte), und
+ * angefasst wird die ganze Zeile — außer Haken, Auswahlkreis und Punkten.
+ * Mit dem Finger löst sich die Zeile erst, wenn man sie kurz gedrückt hält —
  * wie beim Verschieben in den Listen der Android-Fassung (src/ui/row-lift.js):
  * das Handy tickt kurz, alle Griffe zeigen den Doppelstrich „=“, und die
  * Zeile hängt ab jetzt am Finger, nach oben, unten, links und rechts. Ein
@@ -44,6 +46,7 @@
 
 import { cssNumber } from "../core/css-vars.js";
 import { dom } from "../core/dom.js";
+import { isMobileOs } from "./platform.js";
 
 const scrollSpeed = 12;
 const startSlack = 4;
@@ -236,10 +239,20 @@ function cancelPending() {
   pending = null;
 }
 
+/* Was in einer Zeile nicht zum Anfassen gehört: es hat einen eigenen Tipp. */
+const ownTap = "[data-task-done], [data-row-more], .task-pick, input, textarea";
+
+/* Android, Finger: die ganze Zeile ist der Griff (dort ist er unsichtbar, bis gezogen wird). */
+function rowHandle(event) {
+  if (event.pointerType === "mouse" || !isMobileOs("android") || event.target.closest(ownTap)) return null;
+  const row = event.target.closest(".board-row");
+  return row && !row.matches(".task-inline, .project-inline") ? row : null;
+}
+
 /* Anfassen am Griff: die Maus löst die Zeile sofort, der Finger erst nach dem Halten. */
 function onPointerDown(event, config) {
   blockClick = false;
-  const grip = event.target.closest("[data-grip]");
+  const grip = event.target.closest("[data-grip]") || rowHandle(event);
   if (!grip || drag || pending) return;
   const card = grip.closest(".board-row");
   const board = grip.closest(".board");
@@ -305,9 +318,10 @@ export function initBoardDrag({ hosts, redraw, drop, pick = noSelection }) {
   const config = { redraw, drop, pick };
   hosts.forEach((host) => {
     host.addEventListener("pointerdown", (event) => onPointerDown(event, config));
-    /* Langes Drücken am Griff löst am Handy dieses Ereignis aus — es soll die Zeile lösen, kein Menü */
+    /* Langes Drücken am Griff (Android: an der Zeile) löst am Handy dieses Ereignis aus —
+       es soll die Zeile lösen, kein Menü */
     host.addEventListener("contextmenu", (event) => {
-      if (event.target.closest("[data-grip]")) event.preventDefault();
+      if (event.target.closest("[data-grip]") || rowHandle(event)) event.preventDefault();
     });
   });
   if (windowBound) return;
@@ -319,7 +333,8 @@ export function initBoardDrag({ hosts, redraw, drop, pick = noSelection }) {
   window.addEventListener("pointerup", (event) => {
     if (pending && event.pointerId === pending.point.pointerId) cancelPending();
     if (!drag || event.pointerId !== drag.pointerId) return;
-    blockClick = drag.moved;
+    /* Hing die Zeile am Finger, gehört auch ein Loslassen ohne Bewegung zum Zug, nicht zum Öffnen */
+    blockClick = drag.moved || drag.grip === drag.card;
     endDrag(true);
   });
   /* Mitten in der Bewegung abgebrochen (Anruf, Escape, Zeiger verloren):

@@ -43,7 +43,7 @@ function dueMarkup(entry) {
    (nicht das der Stufe): so erkennt man das Feld, auch ohne das Wort zu lesen. */
 function priorityMarkup(entry) {
   const priority = taskPriorityOf(entry.priority);
-  return `<span class="task-prio" style="--chip-color:${priority.color}">${icon("flame", "task-prio-icon")}${escapeHtml(priority.label)}</span>`;
+  return `<span class="task-prio" style="--chip-color:${priority.color}">${icon("urgency", "task-prio-icon")}${escapeHtml(priority.label)}</span>`;
 }
 
 /* Der eine übergeordnete Ort: das Projekt, sonst der Arbeitsbereich. Liegt die

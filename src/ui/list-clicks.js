@@ -228,7 +228,7 @@ function onClick(event) {
   const more = event.target.closest("[data-row-more]");
   if (more) {
     if (isSwipedOpen(more)) closeSwipes();
-    else openRowMenu(more.closest("[data-open-entry], [data-open-workspace]"), more);
+    else openRowMenu(more.closest("[data-open-entry], [data-open-workspace], [data-board-row]"), more);
     return;
   }
 
@@ -255,7 +255,7 @@ function onClick(event) {
 /* Das Menü einer Eintrags- oder Arbeitsbereichs-Zeile, am Anker geöffnet. */
 function openRowMenu(row, anchor) {
   if (!row) return;
-  if (row.dataset.openEntry) openEntryCtxMenu(row, anchor);
+  if (row.dataset.openEntry || row.dataset.boardRow) openEntryCtxMenu(row, anchor);
   else menus.openWorkspaceMenu(row, anchor);
 }
 

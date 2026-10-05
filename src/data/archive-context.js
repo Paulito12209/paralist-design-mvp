@@ -1,10 +1,8 @@
 /*
- * Was im Archiv zur offenen Seite gehört. Der Archiv-Knopf der
- * Android-Fassung (src/shell/android-archive.js) erscheint nur, wenn hier
- * etwas liegt: auf der Übersicht nur bei archivierten Projekten, auf den
- * Lesezeichen nur bei archivierten Lesezeichen usw. Wer alles Archivierte
- * sehen will, nimmt die Karte „Archiv“ auf der Übersicht.
- * Dieselbe Zahl steht in „Archiv (n)“ über den Listen (src/ui/list-head.js).
+ * Was im Archiv zur offenen Seite gehört: auf der Übersicht nur archivierte
+ * Projekte, auf den Lesezeichen nur archivierte Lesezeichen usw. Diese Zahl
+ * steht in „Archiv (n)“ über den Listen (src/ui/list-head.js). Wer alles
+ * Archivierte sehen will, nimmt die Karte „Archiv“ auf der Übersicht.
  * Pfad: src/data/archive-context.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI

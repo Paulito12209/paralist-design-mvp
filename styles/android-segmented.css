@@ -134,8 +134,7 @@
     box-shadow: var(--m3-seg-thumb-shadow);
   }
 
-  [data-mobile-variant="experiment"] .tab-pill.is-active::after,
-  [data-mobile-variant="experiment"] .tab-pill.is-active:has(.tab-pill-info)::after {
+  [data-mobile-variant="experiment"] .tab-pill.is-active::after {
     content: none;
   }
 

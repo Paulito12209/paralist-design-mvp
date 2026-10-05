@@ -38,7 +38,6 @@ import { initKeyboardInset } from "./shell/keyboard-inset.js";
 import { initLevelGauge } from "./shell/level-gauge.js";
 import { initLifecycle } from "./shell/lifecycle.js";
 import { initNavBar } from "./shell/nav-bar.js";
-import { initAndroidArchive } from "./shell/android-archive.js";
 import { initAndroidBars } from "./shell/android-bars.js";
 import { initBoardHeads } from "./shell/board-heads.js";
 import { takeDemoRequest } from "./shell/demo-load.js";
@@ -156,7 +155,6 @@ function initShell() {
   initAndroidBars();
   initBoardHeads();
   initAndroidFab();
-  initAndroidArchive();
   initAndroidLinkBtn();
   initIosBars();
   initIosAdd();

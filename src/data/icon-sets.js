@@ -47,6 +47,7 @@ export const iconGroups = [
       { id: "briefcase", label: "Arbeit" },
       { id: "academic", label: "Schule / Uni" },
       { id: "flame", label: "Flamme" },
+      { id: "urgency", label: "Dringlichkeit" },
       { id: "alarm", label: "Alarm" },
       { id: "status", label: "Status" },
       { id: "priority", label: "Priorität" },

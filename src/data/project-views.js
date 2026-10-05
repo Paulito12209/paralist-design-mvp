@@ -27,6 +27,7 @@
 
 import { emit, events } from "../core/bus.js";
 import { nextId, sameId } from "../core/ids.js";
+import { cleanBoardColumns } from "./board-columns.js";
 import { manualId, sortEntries } from "./collection-sorts.js";
 import { projectViewDefaults } from "./config.js";
 import { projectSorts } from "./config-sorts.js";
@@ -318,6 +319,8 @@ export function adoptProjectViews(saved) {
       priorityNot: view.priorityNot === true,
       favoritesOnly: view.favoritesOnly === true,
       ids,
+      /* Reihenfolge und Sichtbarkeit der Board-Spalten (src/data/board-columns.js) — auch bei „Alle“ */
+      boardColumns: cleanBoardColumns(view.boardColumns, false),
     };
     keepAllOpen(clean);
     return clean;

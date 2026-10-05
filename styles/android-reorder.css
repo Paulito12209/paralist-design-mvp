@@ -25,36 +25,56 @@
  * --content-side (styles/tokens.css) -> Abstand der Lücke zum Seitenrand
  */
 
-@media (max-width: 1023px) {
-  /* Die gezogene Zeile: gleiche Höhe wie die Zeile, aber als Karte. Fläche
-     deckend (statt des blassen Archiv-Looks aus styles/android-archive.css). */
-  [data-mobile-os="android"] .row-lift.is-reordering {
-    box-sizing: border-box; /* box-sizing: Breite und Innenabstände setzt row-lift.js passend zur Zeile */
-    padding: 8px var(--content-side); /* links und rechts überschreibt row-lift.js, damit der Inhalt über der Liste bleibt */
-    border-radius: var(--m3-reorder-radius);
-    background: var(--m3-secondary-container);
-    color: var(--m3-on-secondary-container);
-    box-shadow: var(--m3-reorder-shadow);
-    opacity: 1;
-  }
+/* Die gezogene Zeile: gleiche Höhe wie die Zeile, aber als Karte, deckend.
+   position: hängt am Gerät über allem außer Menüs und Blättern und folgt dem
+   Finger über translate (src/ui/row-lift.js).
+   z-index 28: über Leiste und Plus-Knopf (20), unter dem Plus-Menü (30).
+   pointer-events: der Finger darunter gehört weiter zur Liste, nicht zur Kopie. */
+.row-lift {
+  position: absolute;
+  z-index: 28;
+  box-sizing: border-box; /* box-sizing: die Breite setzt row-lift.js, sie gilt samt Rand */
+  margin: 0;
+  padding: 0;
+  pointer-events: none;
+  border-radius: var(--m3-reorder-radius);
+  background: var(--m3-secondary-container);
+  color: var(--m3-on-secondary-container);
+  box-shadow: var(--m3-reorder-shadow);
+}
 
+/* Die kopierte Zeile darin: ohne eigene Fläche und Trennlinie, die Karte trägt beides.
+   Ihren seitlichen Rand setzt row-lift.js, damit der Inhalt über der Liste bleibt. */
+.row-lift > .swipe-body {
+  height: 100%;
+  background: transparent;
+}
+
+.row-lift .workspace-row {
+  border-bottom: 0;
+}
+
+/* Während des Ziehens markiert der Finger keinen Text */
+body.is-row-lifting {
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+@media (max-width: 1023px) {
   /* Die Kopie steht außerhalb der Liste, daher greift die Regel aus styles/android-list.css nicht: Pfeil auch hier weg */
-  [data-mobile-os="android"] .row-lift.is-reordering .chevron {
+  [data-mobile-os="android"] .row-lift .chevron {
     display: none;
   }
 
-  /* Titel und Icon der Karte in der Schrift darauf */
-  [data-mobile-os="android"] .row-lift.is-reordering .icon:not(.chevron) {
+  /* Titel und Icon der Karte in der Schrift darauf — der Haken im Ring einer
+     Aufgabe nicht: er bleibt unsichtbar, solange sie offen ist (styles/tasks.css) */
+  [data-mobile-os="android"] .row-lift .icon:not(.chevron, .task-check-icon) {
     color: var(--m3-on-secondary-container);
   }
 
-  /* An der alten Stelle: statt der blassen Zeile eine getönte Lücke. Die
-     Zeile selbst wird unsichtbar, ihr Platz bleibt erhalten. */
-  [data-mobile-os="android"] .swipe.is-reorder-slot {
-    opacity: 1;
-  }
-
-  [data-mobile-os="android"] .swipe.is-reorder-slot .workspace-row {
+  /* An der alten Stelle: eine getönte Lücke. Die Zeile selbst wird
+     unsichtbar, ihr Platz bleibt erhalten. */
+  [data-mobile-os="android"] .swipe.is-reorder-slot .swipe-body > * {
     visibility: hidden; /* visibility: behält die Höhe, zeigt aber nichts */
   }
 
@@ -83,6 +103,43 @@
 
   /* ---------- Board ---------- */
 
+  /* Rechts die drei Punkte wie in jeder Liste; der Griff „=“ (styles/tasks-board.css)
+     erscheint erst, solange eine Zeile gelöst ist — dann in jeder Zeile statt der Punkte.
+     Gehalten wird die ganze Zeile (src/ui/board-drag.js). */
+  [data-mobile-os="android"] .board-row .board-grip,
+  [data-mobile-os="android"] body.is-dragging-task .board-row .row-more,
+  [data-mobile-os="android"] [data-selecting] .board-row .row-more {
+    display: none;
+  }
+
+  [data-mobile-os="android"] body.is-dragging-task .board-row .board-grip {
+    display: grid;
+  }
+
+  /* Die Punkte: Tippfläche wie in den Listen, sie ragt über den rechten Rand der Zeile */
+  [data-mobile-os="android"] .board-row .row-more {
+    display: grid;
+    flex: 0 0 auto;
+    align-self: center;
+    place-items: center;
+    width: var(--m3-row-more-size);
+    height: var(--m3-row-more-size);
+    margin: calc(var(--m3-row-more-size) / -2) -8px calc(var(--m3-row-more-size) / -2) 0;
+    border-radius: 50%;
+    color: var(--m3-on-surface-variant);
+  }
+
+  [data-mobile-os="android"] .board-row .row-more:active {
+    background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), transparent);
+  }
+
+  /* Halten der Zeile: kein Markieren von Text und kein Vorschau-Menü des Systems */
+  [data-mobile-os="android"] .board-row {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none; /* -webkit-touch-callout: kein Systemmenü beim langen Drücken */
+  }
+
   /* Die gelöste Zeile im Board: Karte wie die gezogene Zeile in der Liste */
   [data-mobile-os="android"] .board-row.is-dragging {
     padding-left: 12px;
@@ -94,7 +151,8 @@
     opacity: 1;
   }
 
-  [data-mobile-os="android"] .board-row.is-dragging .icon,
+  /* Der Haken im Ring einer offenen Aufgabe bleibt unsichtbar (styles/tasks.css) */
+  [data-mobile-os="android"] .board-row.is-dragging .icon:not(.task-check-icon),
   [data-mobile-os="android"] .board-row.is-dragging .task-meta {
     color: var(--m3-on-secondary-container);
   }
