@@ -17,9 +17,18 @@
  * --content-side      -> seitlicher Rand der Angaben
  * --safe-bottom       -> Platz unter dem Inhalt für die Gestenleiste
  *
- * Direkt bei ihrer Regel: wie hoch das Blatt höchstens wird (80 %) und die
- * Schrift der Überschrift (16px).
+ * Direkt bei ihrer Regel: wie hoch das Blatt höchstens wird (80 %), die
+ * Schrift der Überschrift (16px) und die Ebene (z-index 40).
  */
+
+/* z-index 40: über Navigation (20), Plus-Menü (30) und Menü-Schleier (36),
+   aber unter den Blättern, die man aus „Details“ heraus öffnet — Typ-Rolle,
+   Datum, Erinnerung (44, .modal-backdrop) und das Auswahl-Blatt (50).
+   Mit dem Wert 50 aus .sheet-backdrop lag Details auf einer Ebene mit dem
+   Auswahl-Blatt und über allen Rollen: sie waren dahinter unsichtbar. */
+.sheet-backdrop.details-sheet {
+  z-index: 40;
+}
 
 /* Die Karte am Ende von „Inhalt“ gibt es nicht mehr; sie bleibt nur im
    Dokument, weil src/features/entry/entry-fold.js an ihr misst */

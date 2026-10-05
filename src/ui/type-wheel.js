@@ -54,6 +54,11 @@ function choose(index) {
   renderButton();
 }
 
+/** Steht das Blatt gerade offen? (Escape und Zurück schließen erst dieses, dann das darunter.) */
+export function isTypeWheelOpen() {
+  return Boolean(root) && !root.hidden;
+}
+
 /** Das Blatt schließen, ohne etwas zu ändern. */
 export function closeTypeWheel() {
   if (!root || root.hidden) return;

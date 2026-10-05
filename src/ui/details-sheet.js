@@ -54,11 +54,12 @@ import { findEntry, findWorkspace } from "../data/queries.js";
 import { workspaceFacts } from "../data/workspace-facts.js";
 import { fillDetails, handleCardClick } from "./details-card.js";
 import { bindDetailsExpand, fitDetailsPeek } from "./details-expand.js";
-import { detailsDoneMarkup, detailsHeadMarkup, detailsRowsMarkup, groupsWithoutTime, handleRowsClick } from "./details-rows.js";
+import { collapseDetailsLinks, detailsDoneMarkup, detailsHeadMarkup, detailsRowsMarkup, groupsWithoutTime, handleRowsClick } from "./details-rows.js";
 import { bindModalPull, clearModalPull } from "./modal-pull.js";
 import { isMobileOs } from "./platform.js";
 import { addPopGuard } from "./router-restore.js";
 import { closeSheet } from "./sheet.js";
+import { closeTypeWheel, isTypeWheelOpen } from "./type-wheel.js";
 import { isViewActive } from "./views.js";
 
 const sheetLabel = "Details";
@@ -148,10 +149,14 @@ function kindOf(source) {
   return source.kind ? source.kind() : openView === "page" ? "workspace" : "entry";
 }
 
-/* Escape schließt, was obenauf liegt: erst ein Blatt darüber (Verknüpfen,
-   Status, Tab), dann dieses — sonst ginge das untere zu und das obere bliebe */
+/* Escape schließt, was obenauf liegt: erst ein Blatt darüber (Typ-Rolle,
+   Verknüpfen, Status, Tab), dann dieses — sonst ginge das untere zu und das obere bliebe */
 function onKey(event) {
   if (event.key !== "Escape") return;
+  if (isTypeWheelOpen()) {
+    closeTypeWheel();
+    return;
+  }
   if (!dom.sheet.hidden) {
     closeSheet();
     return;
@@ -167,6 +172,7 @@ export function openDetailsSheet(view, { push = true } = {}) {
   const source = sources[view];
   if (!backdrop || !source?.subject() || isDetailsSheetOpen()) return;
   openView = view;
+  collapseDetailsLinks();
   if (push) {
     const state = view === pickView ? { ...(history.state || {}), detailsPick: pick } : { ...(history.state || { view }) };
     history.pushState({ ...state, detailsSheet: view }, "");
@@ -221,6 +227,7 @@ function onPop(event) {
      Blatt darüber (Status, Dringlichkeit) — es hat keinen eigenen Schritt */
   if (isDetailsSheetOpen()) {
     closeSheet();
+    closeTypeWheel();
     closeDetailsSheet({ fromHistory: true });
     return true;
   }
