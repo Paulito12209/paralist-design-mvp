@@ -178,7 +178,6 @@
      und deckt beim Festkleben mit der Fläche des Containers ab */
   [data-mobile-variant="experiment"] #view-home #project-list .project-card-head {
     margin-top: 0;
-    margin-bottom: 0; /* margin-bottom: die erste Kachel zieht sich nicht mehr unter die Zeile, sonst ist ihre Oberkante verdeckt */
     background: var(--m3-surface-container);
   }
 

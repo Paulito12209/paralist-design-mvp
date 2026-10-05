@@ -53,8 +53,6 @@
  *                                 dem grauen Satz darunter und dem Titel einer Eintragsseite
  * --m3-tab-edge                -> Abstand vom Geräterand bis zum Inhalt des ersten Reiters; ebenso weit stehen die
  *                                 Icons der Listenzeilen, von „Projekt hinzufügen“ und von „Archiv“
- * --m3-tab-info-w              -> Platz, den das ⓘ hinter „Alle“ (Aufgaben) neben dem Namen einnimmt; die Linie
- *                                 unter dem Reiter endet um so viel früher und liegt nur unter dem Namen
  * --m3-tab-indicator           -> Dicke der Linie unter dem aktiven Reiter (Material 3: 3dp)
  * --m3-tabs-gap                -> Luft zwischen einer Reiterzeile und der Liste darunter
  * --m3-cal-weekday-tighten     -> um so viel stehen im Kalender die Kreise näher an den Wochentagen
@@ -120,8 +118,8 @@
  * --m3-reorder-edge            -> Abstand der gezogenen Zeile zum linken und rechten Geräterand (src/ui/row-lift.js)
  * --m3-error / --m3-on-error   -> Wisch-Knopf „Löschen“ (Material 3: gefüllt in der Fehlerfarbe)
  * --m3-card-head-h             -> Höhe der Werkzeugzeile über den Projekten (Archiv, Sortieren, Filtern)
- * --m3-card-head-pull          -> um so viel rückt die erste Zeile näher an die Werkzeugzeile heran
  * --m3-card-head-plain-gap     -> Luft zwischen Titel und Werkzeugzeile, wo keine Reiter darüber stehen (Sammlungen)
+ * --m3-card-head-group-gap     -> Luft zwischen Werkzeugzeile und der ersten Gruppen-Überschrift („Offen“) bzw. den Spaltenköpfen im Board
  * --m3-card-tool-size          -> Tippfläche eines Symbols in der Werkzeugzeile (Material 3: 48dp)
  * --m3-card-tool-icon          -> Größe des Symbols darin (Material 3: 24dp)
  * --m3-text-btn-h              -> Höhe von Text-Knöpfen (Material 3 „Text button“: 40dp); nicht mehr beim Archiv-Knopf, der nimmt --m3-card-tool-size
@@ -209,7 +207,6 @@
   --m3-tab-indicator: 3px;
   --m3-title-edge: 24px;
   --m3-tab-edge: 20px;
-  --m3-tab-info-w: 18px;
   --m3-tabs-gap: 12px;
   --m3-cal-weekday-tighten: 3px;
   --m3-cal-day-inset: 2px;
@@ -263,8 +260,8 @@
   --m3-reorder-slot-inset: 4px;
   --m3-reorder-edge: 8px;
   --m3-card-head-h: 48px;
-  --m3-card-head-pull: 4px;
   --m3-card-head-plain-gap: 8px;
+  --m3-card-head-group-gap: 4px;
   --m3-card-tool-size: 48px;
   --m3-card-tool-icon: 24px;
   --m3-text-btn-h: 40px;

@@ -205,12 +205,27 @@ function placeTask(entry, field, value) {
  */
 export function moveTask(entry, field, value, before, after) {
   placeTask(entry, field, value);
+  orderBetween(entry, before, after);
+  saveState();
+}
+
+/* Die Sortiernummer zwischen die der Nachbarn legen (einer darf fehlen). */
+function orderBetween(entry, before, after) {
   const top = before ? taskOrder(before) : null;
   const bottom = after ? taskOrder(after) : null;
   if (top !== null && bottom !== null) entry.order = (top + bottom) / 2;
   else if (top !== null) entry.order = top + orderGap;
   else if (bottom !== null) entry.order = bottom - orderGap;
   else entry.order = entry.createdAt || Date.now();
+}
+
+/**
+ * Eine Aufgabe in der Liste verschoben: nur ihr Platz ändert sich, nicht
+ * Status oder Dringlichkeit — sie bleibt in ihrer Gruppe. `before` und
+ * `after` wie bei moveTask.
+ */
+export function reorderTask(entry, before, after) {
+  orderBetween(entry, before, after);
   saveState();
 }
 

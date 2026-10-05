@@ -55,7 +55,7 @@ import { toggleTaskFromCheck } from "./task-status.js";
 import { openTypeChangeSheet } from "./type-menu.js";
 
 const rowIcons = {
-  priority: "flame",
+  priority: "urgency",
   date: "calendar",
   remind: "clock",
   status: "status",

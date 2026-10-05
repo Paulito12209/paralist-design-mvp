@@ -13,6 +13,7 @@
  * src/data/config-tasks.js (taskStatuses, taskPriorities, taskGroupings).
  */
 
+import { arrangeColumns, columnLayout } from "./board-columns.js";
 import { manualId } from "./collection-sorts.js";
 import { rowKey, saveManualOrder } from "./manual-order.js";
 import { taskGroupings, taskPriorityOf, taskStatusOf } from "./config-tasks.js";
@@ -31,7 +32,8 @@ function valueOf(project, field) {
 
 /**
  * Die Spalten des Boards: { field, columns: [{ id, label, icon, color, items }] }.
- * `field` sagt, welches Feld ein Projekt beim Ablegen bekommt.
+ * `field` sagt, welches Feld ein Projekt beim Ablegen bekommt. Reihenfolge und
+ * ausgeblendete Spalten merkt sich die Ansicht (src/data/board-columns.js).
  */
 export function projectColumns(view = activeProjectView()) {
   const grouping = groupingOf(view);
@@ -40,7 +42,7 @@ export function projectColumns(view = activeProjectView()) {
     const target = columns.find((column) => column.id === valueOf(project, grouping.field));
     (target || columns[0]).items.push(project);
   });
-  return { field: grouping.field, columns };
+  return { field: grouping.field, columns: arrangeColumns(columns, columnLayout(view, grouping.field, false)) };
 }
 
 /**

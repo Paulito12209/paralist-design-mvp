@@ -16,6 +16,8 @@
  * die blasse Zeile „Projekt hinzufügen“; ein Tipp öffnet dort die Eingabezeile
  * (src/features/overview/project-inline.js), das Projekt bekommt den Status bzw.
  * die Dringlichkeit der Spalte. Liegt ein Projekt darin, ist die Zeile weg.
+ * Halten auf einen Spaltenkopf öffnet das Blatt „Spalten“: Reihenfolge ändern,
+ * Spalten aus- und einblenden, je Ansicht gemerkt (src/ui/columns-sheet.js).
  * Pfad: src/features/overview/projects-board.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -34,12 +36,17 @@ import { dom } from "../../core/dom.js";
 import { dayKey } from "../../core/dates.js";
 import { shortDay } from "../../core/format.js";
 import { escapeHtml, icon } from "../../core/html.js";
-import { isTaskDone, taskPriorityOf, taskStatusOf } from "../../data/config-tasks.js";
+import { allBoardColumns, columnLayout, layoutChange } from "../../data/board-columns.js";
+import { isTaskDone, taskGroupings, taskPriorityOf, taskStatusOf } from "../../data/config-tasks.js";
 import { dropProjectCard, projectColumns } from "../../data/project-board.js";
+import { activeProjectView, updateProjectView } from "../../data/project-views.js";
 import { findEntry } from "../../data/queries.js";
 import { consumeDragClick, initBoardDrag } from "../../ui/board-drag.js";
+import { openColumnsSheet } from "../../ui/columns-sheet.js";
+import { addLongPressMenu } from "../../ui/long-press.js";
 import { isMobileOs } from "../../ui/platform.js";
 import { openEntry } from "../../ui/router.js";
+import { rowMore } from "../../ui/rows.js";
 
 const emptyNote = "Nichts hier";
 const addLabel = "Projekt hinzufügen";
@@ -62,7 +69,8 @@ function metaMarkup(project, field) {
   return `<span class="task-meta">${parts.join('<span class="task-meta-dot" aria-hidden="true">·</span>')}</span>`;
 }
 
-/* Eine Zeile: Icon, Titel mit Nebenzeile, ganz rechts der Griffstreifen. */
+/* Eine Zeile: Icon, Titel mit Nebenzeile, ganz rechts der Griffstreifen
+   (Android: die drei Punkte; der Griff „=“ erscheint dort nur, solange gezogen wird). */
 function boardRow(project, field) {
   const done = isTaskDone(project);
   return `
@@ -73,6 +81,7 @@ function boardRow(project, field) {
         ${metaMarkup(project, field)}
       </div>
       <span class="board-grip" data-grip="${project.id}" role="button" tabindex="0" aria-label="Projekt verschieben"></span>
+      ${rowMore()}
     </div>`;
 }
 
@@ -91,7 +100,7 @@ function boardColumn(column, field) {
   const rows = column.items.map((project) => boardRow(project, field)).join("");
   return `
     <div class="board-col" data-column="${column.id}" style="--col-color:${column.color}">
-      <div class="board-head">
+      <div class="board-head" data-columns-hold="projectColumns">
         ${icon(column.icon, "board-head-icon")}
         <span class="board-head-name">${column.label}</span>
         <span class="board-count">${column.items.length}</span>
@@ -118,7 +127,8 @@ export function handleProjectBoardClick(event) {
     event.stopPropagation();
     return true;
   }
-  if (event.target.closest("[data-grip]")) return false;
+  /* Griff zieht, die drei Punkte öffnen das Menü (src/ui/list-clicks.js) — beide öffnen nicht */
+  if (event.target.closest("[data-grip], [data-row-more]")) return false;
   const row = event.target.closest("[data-board-row]");
   if (!row) return false;
   openEntry(row.dataset.boardRow);
@@ -134,8 +144,22 @@ function dropProject({ card, box }) {
   dropProjectCard(project, box.dataset.field, box.dataset.drop, shown);
 }
 
+/* Das Blatt „Spalten“ für das Board der gewählten Ansicht (Halten auf einen Spaltenkopf). */
+function openProjectColumnsSheet() {
+  const view = activeProjectView();
+  const grouping = taskGroupings.find((item) => item.id === view.group) || taskGroupings[0];
+  openColumnsSheet({
+    subtitle: grouping.label,
+    columns: allBoardColumns(grouping.field, false),
+    layout: columnLayout(view, grouping.field, false),
+    onChange: (layout) => updateProjectView(layoutChange(view, grouping.field, layout), view.id),
+  });
+}
+
 /** Das Ziehen anmelden — auf der Übersicht und der Seite Projekte. */
 export function initProjectBoard() {
+  /* Halten auf einen Spaltenkopf (src/ui/swipe.js) */
+  addLongPressMenu("projectColumns", openProjectColumnsSheet);
   initBoardDrag({
     hosts: [dom.projectList, dom.pageBody],
     redraw: () => emit(events.dataChanged),

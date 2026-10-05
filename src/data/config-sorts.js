@@ -22,7 +22,7 @@ import { manualSort } from "./config.js";
 export const statusSort = { id: "status", label: "Status", icon: "status", up: "Offen zuerst", down: "Erledigt zuerst", asc: true };
 
 /* Die Reihenfolge der Stufen steht in src/data/config-tasks.js (taskPriorities): „Jetzt“ ist die dringendste. */
-export const prioritySort = { id: "prio", label: "Dringlichkeit", icon: "flame", up: "Dringendste zuerst", down: "Am wenigsten dringend zuerst", asc: true };
+export const prioritySort = { id: "prio", label: "Dringlichkeit", icon: "urgency", up: "Dringendste zuerst", down: "Am wenigsten dringend zuerst", asc: true };
 
 /* Die Regeln dahinter stehen in `sortProjects` in src/data/project-views.js. */
 export const projectSorts = [

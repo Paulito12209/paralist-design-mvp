@@ -62,6 +62,7 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/calendar.css` | Kalender: Datum, Wochenstreifen, Rollen-Blatt, Knopf „Heute“ im Panel „Ansicht“ |
 | `styles/calendar-rings.css` | Kalender: Ringe mit Murmeln um die Tageszahlen |
 | `styles/calendar-panel.css` | Kalender: graue Fläche mit Stundenraster und Liste; styles/calendar-week.css: Desktop-Werkzeugzeile, Woche, Monat |
+| `styles/columns-sheet.css` | Blatt „Spalten“ eines Boards: Reihenfolge per Griff „=“, Auge zum Aus- und Einblenden |
 | `styles/sort-wheels.css` | Blatt „Sortieren“: Rollen „Wonach“ \| „Reihenfolge“; styles/filter-sheet.css: „Filtern“ mit Übersicht und Unterseiten je Abschnitt (iOS, Desktop) |
 | `styles/info-dialog.css` | kleiner Erklär-Dialog hinter einem ⓘ im Auswahl-Blatt |
 | `styles/media.css` | Medien- und Ressourcen-Seite; styles/media-bar.css: Leiste unten; styles/recorder.css: Audio-Aufnahme; styles/media-desk.css: Desktop |

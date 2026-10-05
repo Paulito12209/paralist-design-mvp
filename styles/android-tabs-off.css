@@ -81,15 +81,15 @@
 
   /* Dieselbe Linie wie unter den Reitern (1px, --m3-outline-variant), nur ohne
      Reiter darüber: sie liegt an der Oberkante der Werkzeugzeile und rastet mit ihr ein.
-     ::before — ein eigenes Teil nur für die Linie: so reicht sie über den Rand der
-     Zeile bis an den Geräterand, ohne dass sich der Inhalt verschiebt.
+     ::before — ein eigenes Teil nur für die Linie: sie liegt über der Zeile, die
+     ohnehin bis an den Geräterand reicht (styles/android-card.css), ohne dass sich der Inhalt verschiebt.
      position: absolute — hängt die Linie an die Zeile (die ist sticky und damit der Bezug). */
   [data-mobile-os="android"]:not([data-mobile-variant="experiment"])[data-tabs-home="off"] #view-home .project-card-head::before {
     content: "";
     position: absolute;
     top: 0;
-    left: calc(-1 * var(--content-side));
-    right: calc(-1 * var(--content-side));
+    left: 0;
+    right: 0;
     height: 1px;
     background: var(--m3-outline-variant);
   }

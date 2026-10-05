@@ -34,7 +34,7 @@ import { taskPriorities, taskStatuses } from "../data/config-tasks.js";
 
 export const sectionLabels = {
   status: { label: "Status", icon: "status" },
-  priority: { label: "Dringlichkeit", icon: "flame" },
+  priority: { label: "Dringlichkeit", icon: "urgency" },
 };
 export const allLabel = "Alle";
 export const noneLabel = "Keine";

@@ -14,9 +14,11 @@
  * - holdDelay (src/ui/long-press.js) still halten
  *                           -> Android, verschiebbare Zeile: sie hebt sich sofort
  *                              an (src/ui/row-lift.js) und wandert dann mit dem
- *                              Finger senkrecht durch die Liste (src/ui/row-reorder.js)
- *                              oder auf den Archiv-Knopf; ihr Menü gibt es nur über
- *                              die drei Punkte rechts (src/ui/list-clicks.js)
+ *                              Finger senkrecht durch die Liste (src/ui/row-reorder.js);
+ *                              ihr Menü gibt es nur über die drei Punkte rechts
+ *                              (src/ui/list-clicks.js). Eine Zeile im Board löst sich
+ *                              dort selbst (src/ui/board-drag.js), ein Spaltenkopf
+ *                              öffnet beim Loslassen das Blatt „Spalten“
  *                           -> sonst (iOS, Zeilen ohne drei Punkte): beim Loslassen
  *                              öffnet sich das Kontextmenü
  * Eine schon offene Zeile ist sofort angefasst: kurz wischen schiebt sie zu.
@@ -41,6 +43,7 @@ import { cssNumber } from "../core/css-vars.js";
 import { dom } from "../core/dom.js";
 import { cancelHold, finishHold, isHolding, setHoldFired, startHold, trackHold } from "./long-press.js";
 import { COPY_HOLD } from "./page-tools.js";
+import { isMobileOs } from "./platform.js";
 import { canLift, startLift } from "./row-lift.js";
 
 const axisSlack = 6;
@@ -163,8 +166,12 @@ function onPointerDown(event) {
   /* Nur Eintrags-Zeilen, keine Kacheln oder Kalender-Termine: die haben eigene Gesten. */
   /* Ein eigenes Lesezeichen hat dasselbe Menü wie jede Eintrags-Zeile; eine Karte in einer Notiz nicht */
   const entryBtn = event.target.closest(".entry-row[data-open-entry], .bookmark-row[data-bookmark-own]");
-  /* Eine Zeile im Board der Aufgaben — aber nicht ihr Haken oder Griff, die haben eigene Aufgaben. */
-  const boardRow = !event.target.closest("[data-grip], [data-task-done]") && event.target.closest("[data-board-row]");
+  /* Eine Zeile im Board der Aufgaben — aber nicht ihr Haken oder Griff, die haben eigene Aufgaben.
+     In Android löst Halten die Zeile zum Ziehen (src/ui/board-drag.js), ihr Menü kommt über die drei Punkte. */
+  const boardRow =
+    !isMobileOs("android") && !event.target.closest("[data-grip], [data-task-done], [data-row-more]") && event.target.closest("[data-board-row]");
+  /* Kopf einer Board-Spalte: halten öffnet das Blatt „Spalten“ (src/ui/columns-sheet.js) — nicht über dem Auswahlkreis */
+  const columnHead = !event.target.closest("[data-pick-group]") && event.target.closest(".board-head[data-columns-hold]");
   /* Kopier-Knopf und kleiner Kopfzeilen-Titel: halten fragt „Seite“ oder „Titel“. */
   const copyBtn = event.target.closest(COPY_HOLD);
   if (copyBtn) startHold(event, copyBtn, "copy");
@@ -172,6 +179,7 @@ function onPointerDown(event) {
   else if (viewPill) startHold(event, viewPill, "taskView");
   else if (projectPill) startHold(event, projectPill, "projectView");
   else if (workspaceBtn) startHold(event, workspaceBtn, "workspace");
+  else if (columnHead) startHold(event, columnHead, columnHead.dataset.columnsHold);
   else if (entryBtn || boardRow) startHold(event, entryBtn || boardRow, "entry");
 
   rowGesture = false;

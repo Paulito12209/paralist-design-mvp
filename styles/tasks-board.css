@@ -11,9 +11,7 @@
  * Doppelstrich „=“ statt der Punkte, die Zeile hebt sich als Karte ab, und
  * die Spalte, in der sie landen würde, bekommt einen Rahmen um die Kopfzeile.
  * Die Kopfzeilen der Spalten bleiben beim Scrollen unter der Werkzeugzeile
- * stehen (src/shell/board-heads.js); in der Android-Fassung rückt das Board
- * dazu um --m3-card-head-pull nach unten, damit die Werkzeugzeile den Kopf
- * nicht oben anschneidet (styles/android-card.css).
+ * stehen (src/shell/board-heads.js).
  * Pfad: styles/tasks-board.css
  *
  * ANPASSBARE WERTE (in styles/tokens.css, die Board-Werte in styles/tokens-pages.css)
@@ -28,6 +26,8 @@
  * --board-head-tint    -> wie bunt der Streifen der Kopfzeile ist (styles/tokens-pages.css)
  * --board-head-base    -> worin die Farbe gemischt wird: hell Weiß, dunkel Kartenfarbe
  * --board-ink-l-max    -> wie hell Schrift und Icon im Streifen höchstens werden
+ * --m3-surface-container / --m3-on-surface (styles/tokens-android.css)
+ *                      -> Fläche und Schrift des Kopfs „Offen“ in Android, wie die Navigationsleiste
  * --content-side       -> Abstand des Boards zum Rand
  * --card / --line      -> Fläche der angehobenen Zeile und die Trennlinien
  * --muted / --chevron  -> Nebentexte, Griffpunkte und die Lücke beim Ziehen
@@ -309,6 +309,14 @@ body.is-dragging-task .board-row.is-dragging .board-grip::before {
 
 /* Die Spalte, in der die Lücke steht: ein Rahmen in ihrer Farbe um die
    Kopfzeile sagt schon von weitem, wo die Zeile landen würde */
+/* Android: „Offen“ trägt die Fläche der Navigationsleiste unten statt des
+   heruntergemischten Graus — so bleibt die Spalte lebendig und unterscheidet
+   sich von „Archiviert“, das dasselbe Grau hat (Aufgaben und Projekte) */
+[data-mobile-os="android"] .board-col[data-column="offen"] .board-head {
+  background: var(--m3-surface-container);
+  color: var(--m3-on-surface);
+}
+
 .board-col.is-drop-over .board-head {
   box-shadow: inset 0 0 0 1.5px var(--col-color);
 }

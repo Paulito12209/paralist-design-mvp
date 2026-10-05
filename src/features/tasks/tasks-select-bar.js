@@ -25,7 +25,7 @@ import { allArchived, runSelectAction } from "./tasks-select-actions.js";
 
 const barActions = [
   { id: "status", icon: "status", label: "Status" },
-  { id: "priority", icon: "flame", label: "Dringlichkeit" },
+  { id: "priority", icon: "urgency", label: "Dringlichkeit" },
   { id: "date", icon: "calendar", label: "Datum" },
   { id: "archive", icon: "archive", label: "Archivieren" },
   { id: "more", icon: "dots", label: "Mehr" },

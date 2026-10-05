@@ -146,7 +146,7 @@
     <path d="M26.50 41.00L21.50 41.00M26.99 37.25L22.16 35.95M28.44 33.75L24.11 31.25M30.75 30.75L27.21 27.21M33.75 28.44L31.25 24.11M37.25 26.99L35.95 22.16M7.00 26.50L7.00 21.50M10.75 26.99L12.05 22.16M14.25 28.44L16.75 24.11M17.25 30.75L20.79 27.21M19.56 33.75L23.89 31.25M21.01 37.25L25.84 35.95M21.50 7.00L26.50 7.00M21.01 10.75L25.84 12.05M19.56 14.25L23.89 16.75M17.25 17.25L20.79 20.79M14.25 19.56L16.75 23.89M10.75 21.01L12.05 25.84M41.00 21.50L41.00 26.50M37.25 21.01L35.95 25.84M33.75 19.56L31.25 23.89M30.75 17.25L27.21 20.79M28.44 14.25L24.11 16.75M26.99 10.75L22.16 12.05" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" />
   </symbol>
   <symbol id="icon-circle" viewBox="0 0 24 24" fill="none">
-    <circle cx="12" cy="12" r="7.25" stroke="currentColor" stroke-width="1.6" />
+    <circle cx="12" cy="12" r="8.5" stroke="currentColor" stroke-width="1.6" />
   </symbol>
   <symbol id="icon-close" viewBox="0 0 24 24" fill="none">
     <path d="M7 7l10 10M17 7 7 17" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" />

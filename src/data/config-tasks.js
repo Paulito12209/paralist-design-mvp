@@ -100,7 +100,7 @@ export const taskLayouts = ["list", "board"];
  */
 export const taskGroupings = [
   { id: "status", label: "Status", icon: "status", field: "status", columns: taskStatuses },
-  { id: "priority", label: "Dringlichkeit", icon: "flame", field: "priority", columns: taskPriorities },
+  { id: "priority", label: "Dringlichkeit", icon: "urgency", field: "priority", columns: taskPriorities },
 ];
 
 /**
@@ -116,7 +116,7 @@ export const taskSorts = [
   { id: "faellig", label: "Fällig", icon: "calendar", up: "Früheste zuerst", down: "Späteste zuerst", asc: true },
   /* Erledigtes steht in jeder Sortierung unten, deshalb endet „Status“ bei „In Arbeit“ */
   { id: "status", label: "Status", icon: "status", up: "Offen zuerst", down: "In Arbeit zuerst", asc: true },
-  { id: "prio", label: "Dringlichkeit", icon: "flame", up: "Dringendste zuerst", down: "Am wenigsten dringend zuerst", asc: true },
+  { id: "prio", label: "Dringlichkeit", icon: "urgency", up: "Dringendste zuerst", down: "Am wenigsten dringend zuerst", asc: true },
   { id: "titel", label: "Titel", icon: "text", up: "A bis Z", down: "Z bis A", asc: true },
 ];
 

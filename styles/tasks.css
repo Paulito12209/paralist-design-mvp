@@ -22,10 +22,11 @@
  * --prio-jetzt          -> Rot eines überfälligen Datums
  * --xp-done             -> Fläche des gesetzten Hakens
  * --line                -> Trennlinie unter der Zeile zum Anlegen
- * --icon-soft           -> Farbe des ⓘ an der Pille „Alle“ (styles/tokens.css)
+ * --icon-soft           -> Farbe des Pfeils im Gruppenkopf (styles/tokens.css)
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel in dieser Datei.
- * .tab-pill-info .icon width -> Größe des ⓘ an der Pille „Alle“ (16px)
+ * .task-section-chevron width/height -> Größe des Pfeils im Gruppenkopf (16px)
+ * .task-section-toggle min-height    -> Tippfläche des Gruppenkopfs (28px)
 */
 
 /* ---------- Zeile unter dem Titel: Pillen der Ansichten ---------- */
@@ -41,25 +42,6 @@
    styles/overview.css); nur die Luft zur Liste darunter kommt von hier. */
 .tasks-tools .tab-pills-row {
   margin: 0 0 var(--task-tools-gap);
-}
-
-/* ⓘ in der Pille „Alle“: erklärt, dass sie jeden Ort zeigt; wählt nichts aus */
-.tab-pill-info {
-  display: inline-grid;
-  place-items: center;
-  width: 28px;
-  height: 28px;
-  margin: -6px -12px -6px -4px; /* margin: große Tippfläche, ohne dass die Pille höher oder breiter wird */
-  color: var(--icon-soft);
-}
-
-.tab-pill-info .icon {
-  width: 16px;
-  height: 16px;
-}
-
-.tab-pill-info:active {
-  opacity: 0.55;
 }
 
 /* Der runde Knopf ✓+ hinter der Trennlinie: neue Aufgabe */
@@ -81,7 +63,9 @@
   margin-top: var(--task-section-gap);
 }
 
-/* Dünne Überschrift: Icon in der Farbe des Abschnitts, Name, rechts blass die Anzahl */
+/* Dünne Überschrift: Icon in der Farbe des Abschnitts, Name, gleich dahinter blass
+   die Anzahl und der Pfeil. Der Knopf darin ist zeilenbreit, damit ein Tipp überall
+   auf der Zeile die Gruppe zu- und aufklappt. */
 .task-section-head {
   display: flex;
   align-items: center;
@@ -93,14 +77,49 @@
   color: var(--text);
 }
 
+.task-section-toggle {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  min-height: 28px; /* Tippfläche höher als die 13px-Schrift, ohne mehr Abstand nach außen */
+  margin: -6px 0;
+  padding: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+/* Der Pfeil zeigt nach unten, solange die Gruppe offen ist, und nach rechts, wenn sie zu ist */
+.task-section-chevron {
+  flex: none;
+  width: 16px;
+  height: 16px;
+  color: var(--icon-soft);
+  transform: rotate(90deg); /* transform: dreht den Rechts-Pfeil nach unten */
+  transition: transform 0.15s ease; /* transition: der Pfeil dreht sich sichtbar statt zu springen */
+}
+
+.task-section.is-collapsed .task-section-chevron {
+  transform: rotate(0deg);
+}
+
+/* Zugeklappt: nur die Überschrift bleibt stehen */
+.task-section.is-collapsed .task-rows {
+  display: none;
+}
+
 .task-section-icon {
   width: 15px;
   height: 15px;
   color: var(--col-color);
 }
 
+/* flex: 0 1 auto — der Name ist nur so breit wie sein Text, die Anzahl steht direkt dahinter */
 .task-section-name {
-  flex: 1;
+  flex: 0 1 auto;
   min-width: 0;
 }
 

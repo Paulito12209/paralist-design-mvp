@@ -9,6 +9,7 @@
 
 import { dayKey } from "../core/dates.js";
 import { readJson, storageKeys, writeJson } from "../core/storage.js";
+import { cleanBoardColumns } from "./board-columns.js";
 import {
   calendarModes,
   calendarSegments,
@@ -262,6 +263,8 @@ function adoptPrefs(saved) {
     group: pickValid(view.group, ["none", ...taskGroupings.map((item) => item.id)], taskDefaults.group),
     sort: pickValid(view.sort, taskSorts.map((item) => item.id), taskDefaults.sort),
     sortAsc: typeof view.sortAsc === "boolean" ? view.sortAsc : taskDefaults.sortAsc,
+    /* Reihenfolge und Sichtbarkeit der Board-Spalten (src/data/board-columns.js) — auch bei „Alle“ */
+    boardColumns: cleanBoardColumns(view.boardColumns, true),
     ...(index === fixedAt ? allFilterOff : cleanLinkFields(view, validRefs)),
     /* Ältere Stände (ohne Marke) hatten „Erledigte ausblenden“ als Vorgabe: einmalig auf „zeigen“ stellen */
     hideDone: saved.taskDoneShown === true && typeof view.hideDone === "boolean" ? view.hideDone : taskDefaults.hideDone,

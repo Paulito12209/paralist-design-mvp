@@ -19,13 +19,14 @@
 import { events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
 import { activeTaskView } from "../../data/task-views.js";
+import { addLongPressMenu } from "../../ui/long-press.js";
 import { openEntry } from "../../ui/router.js";
 import { createViewPanel } from "../../ui/view-panel.js";
 import { isViewActive } from "../../ui/views.js";
-import { taskBoardMarkup } from "./tasks-board.js";
+import { openTaskColumnsSheet, taskBoardMarkup } from "./tasks-board.js";
 import { consumeDragClick, initTaskDrag } from "./tasks-drag.js";
 import { initTaskInline } from "./tasks-inline.js";
-import { taskListMarkup } from "./tasks-list.js";
+import { taskListMarkup, toggleTaskSection } from "./tasks-list.js";
 import { isSelecting } from "./tasks-pick.js";
 import { afterSelectRender, handleSelectClick, initTaskSelect } from "./tasks-select.js";
 import { selectRowMarkup } from "../../ui/select-bar.js";
@@ -65,12 +66,19 @@ function onBodyClick(event) {
     event.stopPropagation();
     return;
   }
+  /* Überschrift einer Gruppe: auf- und zuklappen, auch im Auswahlmodus */
+  const toggle = event.target.closest("[data-toggle-section]");
+  if (toggle) {
+    toggleTaskSection(toggle);
+    return;
+  }
   /* Im Auswahlmodus (und beim Cmd-Klick) wählt ein Tipp — sonst nichts */
   if (handleSelectClick(event)) return;
   /* In der Liste öffnet src/ui/list-clicks.js den Eintrag; im Board hier.
-     Der Haken vor dem Titel hakt nur ab (list-clicks.js) und der Griff
-     zieht — beide liegen in der Zeile, öffnen sie aber nicht. */
-  if (event.target.closest("[data-task-done], [data-grip]")) return;
+     Der Haken vor dem Titel hakt nur ab (list-clicks.js), der Griff
+     zieht und die drei Punkte öffnen das Menü (list-clicks.js) — alle liegen
+     in der Zeile, öffnen sie aber nicht. */
+  if (event.target.closest("[data-task-done], [data-grip], [data-row-more]")) return;
   const row = event.target.closest("[data-board-row]");
   if (row) openEntry(row.dataset.boardRow);
 }
@@ -91,6 +99,8 @@ function init() {
   });
   dom.tasksBody.addEventListener("click", onBodyClick);
   initTaskDrag(renderTasks);
+  /* Halten auf einen Spaltenkopf im Board (src/ui/swipe.js) */
+  addLongPressMenu("taskColumns", openTaskColumnsSheet);
   initTaskInline();
   initTaskViews();
   initTaskSelect(renderTasks);
