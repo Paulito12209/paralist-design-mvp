@@ -1,11 +1,12 @@
 /*
  * Die kleinen Bausteine einer Aufgabe, die Liste und Board gemeinsam nutzen:
  * der Titel und die stille Nebenzeile darunter. Keine Chips mit Rahmen — nur
- * grauer Text, durch Punkte getrennt: Fälligkeit, dann der Ablageort. Farbe
- * bekommt einzig, was Aufmerksamkeit verdient: ein überfälliges Datum wird
- * rot. Der Status steht nicht in der Zeile, den zeigt der Ring des Hakens
- * (src/ui/task-status.js); die Dringlichkeit steht nur dann als Wort da, wenn
- * der Abschnitt sie nicht schon sagt (Gliederung nach Status).
+ * Text, durch Punkte getrennt, die bunten Dinge zuerst: Dringlichkeit (in
+ * ihrer Farbe), dann Fälligkeit, dann der eine übergeordnete Ort. Bunt ist
+ * so alles nah am farbigen Ring des Hakens, der Rest ist ruhiger grauer Text;
+ * ein überfälliges Datum wird rot. Der Status steht nicht in der Zeile, den
+ * zeigt der Ring (src/ui/task-status.js). Was die Gliederung schon sagt
+ * (Spaltenkopf nach Dringlichkeit), wiederholt die Zeile nicht.
  * Pfad: src/features/tasks/tasks-parts.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -17,10 +18,11 @@
  */
 
 import { dayKey } from "../../core/dates.js";
-import { escapeHtml } from "../../core/html.js";
+import { escapeHtml, icon } from "../../core/html.js";
 import { shortDay } from "../../core/format.js";
 import { isTaskDone, taskPriorityOf } from "../../data/config-tasks.js";
-import { placesLabel } from "../../data/queries.js";
+import { parentName } from "../../data/queries.js";
+import { isEntryRef } from "../../data/refs.js";
 
 const untitledTask = "Ohne Titel";
 
@@ -37,16 +39,20 @@ function dueMarkup(entry) {
   return `<span class="task-due${overdue ? " is-overdue" : ""}">${escapeHtml(shortDay(entry.date))}</span>`;
 }
 
-/* Die Dringlichkeit als Wort in ihrer Farbe — nur in Status-Abschnitten. */
+/* Die Dringlichkeit als Wort in ihrer Farbe, davor das eine Dringlichkeits-Icon
+   (nicht das der Stufe): so erkennt man das Feld, auch ohne das Wort zu lesen. */
 function priorityMarkup(entry) {
   const priority = taskPriorityOf(entry.priority);
-  return `<span class="task-prio" style="--chip-color:${priority.color}">${escapeHtml(priority.label)}</span>`;
+  return `<span class="task-prio" style="--chip-color:${priority.color}">${icon("flame", "task-prio-icon")}${escapeHtml(priority.label)}</span>`;
 }
 
-/* Der Ablageort — nur, wenn die Aufgabe irgendwo liegt. Im Eingang steht nichts. */
+/* Der eine übergeordnete Ort: das Projekt, sonst der Arbeitsbereich. Liegt die
+   Aufgabe in beiden, gewinnt das Projekt — es ist enger. Im Eingang steht nichts. */
 function placeMarkup(entry) {
-  if (!(entry.places || []).length) return "";
-  return `<span class="task-place">${escapeHtml(placesLabel(entry))}</span>`;
+  const places = entry.places || [];
+  if (!places.length) return "";
+  const main = places.find(isEntryRef) || places[0];
+  return `<span class="task-place">${escapeHtml(parentName(main))}</span>`;
 }
 
 /**
@@ -55,7 +61,7 @@ function placeMarkup(entry) {
  * die Zeile ganz weg, und die Aufgabe ist eine einzeilige Zeile.
  */
 export function taskMeta(entry, field) {
-  const parts = [dueMarkup(entry), field === "status" ? priorityMarkup(entry) : "", placeMarkup(entry)].filter(
+  const parts = [field === "priority" ? "" : priorityMarkup(entry), dueMarkup(entry), placeMarkup(entry)].filter(
     Boolean
   );
   if (!parts.length) return "";

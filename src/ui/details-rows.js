@@ -56,7 +56,7 @@ const rowIcons = {
   priority: "flame",
   date: "calendar",
   remind: "clock",
-  status: "check-circle",
+  status: "status",
   entries: "list",
   Wörter: "text",
   Wort: "text",

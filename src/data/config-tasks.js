@@ -76,7 +76,7 @@ export const doneTaskStatus = "erledigt";
  * die dringendste links. Ein weiterer Eintrag hier ist eine weitere Spalte.
  */
 export const taskPriorities = [
-  { id: "jetzt", label: "Jetzt", icon: "flame", color: "var(--prio-jetzt)" },
+  { id: "jetzt", label: "Jetzt", icon: "alarm", color: "var(--prio-jetzt)" },
   { id: "next", label: "Als Nächstes", icon: "arrow-right", color: "var(--prio-next)" },
   { id: "spaeter", label: "Später", icon: "clock", color: "var(--prio-spaeter)" },
   { id: "irgendwann", label: "Irgendwann", icon: "moon", color: "var(--prio-irgendwann)" },
@@ -99,7 +99,7 @@ export const taskLayouts = ["list", "board"];
  * worauf die Seite zurückfällt, wenn eine gespeicherte Wahl nicht mehr gilt.
  */
 export const taskGroupings = [
-  { id: "status", label: "Status", icon: "check-circle", field: "status", columns: taskStatuses },
+  { id: "status", label: "Status", icon: "status", field: "status", columns: taskStatuses },
   { id: "priority", label: "Dringlichkeit", icon: "flame", field: "priority", columns: taskPriorities },
 ];
 
@@ -115,7 +115,7 @@ export const taskSorts = [
   { id: "erstellt", label: "Erstellt", icon: "history", up: "Älteste zuerst", down: "Neueste zuerst", asc: true },
   { id: "faellig", label: "Fällig", icon: "calendar", up: "Früheste zuerst", down: "Späteste zuerst", asc: true },
   /* Erledigtes steht in jeder Sortierung unten, deshalb endet „Status“ bei „In Arbeit“ */
-  { id: "status", label: "Status", icon: "check-circle", up: "Offen zuerst", down: "In Arbeit zuerst", asc: true },
+  { id: "status", label: "Status", icon: "status", up: "Offen zuerst", down: "In Arbeit zuerst", asc: true },
   { id: "prio", label: "Dringlichkeit", icon: "flame", up: "Dringendste zuerst", down: "Am wenigsten dringend zuerst", asc: true },
   { id: "titel", label: "Titel", icon: "text", up: "A bis Z", down: "Z bis A", asc: true },
 ];
