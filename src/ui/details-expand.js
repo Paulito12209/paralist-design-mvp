@@ -80,6 +80,11 @@ export function fitDetailsPeek() {
   backdrop.classList.add("is-peek");
 }
 
+/** Das Blatt ganz aufziehen, falls es halb offen steht (z. B. nach „Mehr anzeigen“). */
+export function expandDetailsFully() {
+  if (isPeek()) snap(true);
+}
+
 function onDown(event) {
   if (backdrop.hidden || event.button || !isPeek()) return;
   if (event.target === backdrop || !body.parentElement.contains(event.target)) return;

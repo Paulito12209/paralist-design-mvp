@@ -6,9 +6,13 @@
  *   Zeile mit „…“ und darunter klein die Kategorie. Ein Tipp auf den Titel
  *   klappt ihn ganz auf (das Icon bleibt oben links, die Kategorie rutscht
  *   nach unten); ein Tipp auf die Kategorie öffnet „Typ ändern“.
- * - „Verknüpfen“: alle Ablageorte (Arbeitsbereich, Projekt) und verknüpften
+ * - „Verknüpfen mit“: alle Ablageorte (Arbeitsbereich, Projekt) und verknüpften
  *   Einträge als Chips; ohne Ablageort steht vorne „Eingang“ (bei Medien
- *   „Ressourcen“) — dort liegt der Eintrag dann. Ein Tipp öffnet das Blatt
+ *   „Ressourcen“) — dort liegt der Eintrag dann. Die Reihenfolge ist fest:
+ *   Arbeitsbereich, dann Projekt, dann alles andere (Notizen, Aufgaben,
+ *   Bilder …) in der Reihenfolge des Verknüpfens — egal, was zuerst
+ *   verknüpft wurde. Zu sehen sind die ersten zwei; darunter klappt
+ *   „Mehr anzeigen“ den Rest auf. Ein Tipp auf die Zeile öffnet das Blatt
  *   „Verknüpfen“ mit Tabs (src/ui/link-sheet.js); wer dort einen Ort
  *   anhakt, holt ihn aus dem Eingang. Beim Arbeitsbereich steht hier sein Tab.
  * - Darunter die Angaben als Zeilen untereinander — Icon links, Wert, darunter
@@ -27,6 +31,8 @@
  * rowIcons    -> Icon je Zeile (Name des Felds bzw. der Beschriftung)
  * emptyLabels -> Text einer leeren Zeile, die sich antippen lässt
  * linkLabel   -> Beschriftung der Zeile mit den Verknüpfungen
+ * visibleChips -> wie viele Chips ohne „Mehr anzeigen“ zu sehen sind
+ * moreLabels  -> Beschriftung des Knopfs unter den Chips (zu | auf)
  * doneLabels  -> Beschriftung des Knopfs unten (offen | erledigt)
  *
  * Aussehen: styles/android-details.css.
@@ -37,8 +43,10 @@ import { overviewPages, typeIcon, typeSingular, xpItemStyle } from "../data/conf
 import { hasStatus, isTaskDone } from "../data/config-tasks.js";
 import { linkedEntries } from "../data/links.js";
 import { moveWorkspaceToTab } from "../data/mutations.js";
+import { isWorkspaceRef } from "../data/refs.js";
 import { parentIcon, parentName, placesLabel, tabLabel, workspaceColor, workspaceIcon, workspaceLabel } from "../data/queries.js";
 import { state } from "../data/state.js";
+import { expandDetailsFully } from "./details-expand.js";
 import { openLinkSheet } from "./link-sheet.js";
 import { openSheet } from "./sheet.js";
 import { toggleTaskFromCheck } from "./task-status.js";
@@ -62,7 +70,15 @@ const rowIcons = {
   Geändert: "pencil",
 };
 const emptyLabels = { date: "Frist hinzufügen", remind: "Erinnerung hinzufügen" };
-const linkLabel = "Verknüpfen";
+const linkLabel = "Verknüpfen mit";
+const visibleChips = 2;
+const moreLabels = { closed: "Mehr anzeigen", open: "Weniger anzeigen" };
+/* Rang in der Reihe der Chips: Arbeitsbereich, Projekt, alles andere */
+const rankWorkspace = 0;
+const rankProject = 1;
+const rankOther = 2;
+/* Der Eintrag, dessen Chips aufgeklappt sind — ein anderer Eintrag fängt zugeklappt an */
+let moreOpenId = null;
 const doneLabels = { open: "Als erledigt markieren", done: "Wieder öffnen" };
 
 /* Leer heißt: kein Wert („—“), bei der Erinnerung auch „Keine“ */
@@ -91,16 +107,30 @@ function chipMarkup(chip) {
   return `<span class="details-m3-chip">${icon(chip.icon)}<span>${escapeHtml(chip.label)}</span></span>`;
 }
 
-/* Zeile „Verknüpfen“: erst die Ablageorte, dann die verknüpften Einträge */
+/* Zeile „Verknüpfen mit“: Arbeitsbereich, Projekt, dann der Rest. sort ist
+   stabil — gleicher Rang bleibt in der Reihenfolge des Verknüpfens. */
 function linkRowMarkup(entry) {
   const refs = entry.places || [];
   /* Ohne Ort: der Eingang bzw. bei Medien die Ressourcen (wie placesLabel) */
-  const home = { label: placesLabel(entry), icon: entry.type === "medien" ? overviewPages[4].icon : overviewPages[1].icon };
-  const places = refs.length ? refs.map((ref) => ({ label: parentName(ref), icon: parentIcon(ref) })) : [home];
-  const links = linkedEntries(entry).map((other) => ({ label: other.title || "Ohne Titel", icon: other.icon || typeIcon(other.type) }));
-  const chips = [...places, ...links];
-  const body = chips.length ? `<span class="details-m3-chips">${chips.map(chipMarkup).join("")}</span>` : "";
-  return `<button class="details-m3-row is-links" type="button" data-details-links>${icon("chain")}<span class="details-m3-text"><span class="details-m3-primary${chips.length ? "" : " is-empty"}">${linkLabel}</span>${body}</span></button>`;
+  const home = { label: placesLabel(entry), icon: entry.type === "medien" ? overviewPages[4].icon : overviewPages[1].icon, rank: rankWorkspace };
+  const places = refs.length
+    ? refs.map((ref) => ({ label: parentName(ref), icon: parentIcon(ref), rank: isWorkspaceRef(ref) ? rankWorkspace : rankProject }))
+    : [home];
+  const links = linkedEntries(entry).map((other) => ({
+    label: other.title || "Ohne Titel",
+    icon: other.icon || typeIcon(other.type),
+    rank: other.type === "projekt" ? rankProject : rankOther,
+  }));
+  const chips = [...places, ...links].sort((a, b) => a.rank - b.rank);
+  const open = String(moreOpenId) === String(entry.id);
+  const shown = open ? chips : chips.slice(0, visibleChips);
+  const more = chips.length > visibleChips
+    ? `<button class="details-m3-more" type="button" data-details-more aria-expanded="${open}">${open ? moreLabels.open : `${moreLabels.closed} (${chips.length - visibleChips})`}</button>`
+    : "";
+  const body = chips.length ? `<span class="details-m3-chips">${shown.map(chipMarkup).join("")}</span>${more}` : "";
+  /* Eine Fläche mit Knopf für die Beschriftung statt eines Knopfs um alles:
+     „Mehr anzeigen“ darf kein Knopf im Knopf sein */
+  return `<div class="details-m3-row is-links" data-details-links>${icon("chain")}<span class="details-m3-text"><button class="details-m3-primary details-m3-link-label${chips.length ? "" : " is-empty"}" type="button">${linkLabel}</button>${body}</span></div>`;
 }
 
 /* Beim Arbeitsbereich: sein Tab, ein Tipp wechselt ihn */
@@ -138,6 +168,11 @@ function rowsOf(facts) {
     if (remind) rows.push({ value: remind.value, label: remind.label, field: "remind" });
   }
   return rows;
+}
+
+/** Beim Öffnen des Blatts: die Chips wieder auf die ersten zwei einklappen. */
+export function collapseDetailsLinks() {
+  moreOpenId = null;
 }
 
 /** Kopf über der scrollenden Fläche. @param kind "entry" oder "workspace" */
@@ -193,6 +228,14 @@ export function handleRowsClick(event, subject, kind, refresh) {
   }
   if (event.target.closest("[data-details-kind]")) {
     openTypeChangeSheet(kind === "entry" ? { entry: subject } : { workspace: subject });
+    return true;
+  }
+  if (event.target.closest("[data-details-more]")) {
+    const open = String(moreOpenId) !== String(subject.id);
+    moreOpenId = open ? subject.id : null;
+    refresh();
+    /* Halb offen rollt nichts: mit dem Rest der Chips ginge das Blatt sonst abgeschnitten auf */
+    if (open) expandDetailsFully();
     return true;
   }
   if (event.target.closest("[data-details-links]")) {

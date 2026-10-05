@@ -30,6 +30,7 @@
  * Icon im Kopf 40px, Luft unter dem Kopf 16px, über der ersten Zeile 8px, Titel 22px („Title large“), Kategorie 14px, Zeilen-Icons
  * 24px, Abstand Icon–Text 16px, Wert 16px, Bezeichnung 13px, Chips 32px hoch
  * mit 13px Schrift, Knopf 40px hoch mit 14px Schrift, Luft um den Knopf 16px.
+ * „Mehr anzeigen“ unter den Chips: 14px, Akzentfarbe (--m3-primary), 32px hoch.
  */
 
 @media (max-width: 1023px) {
@@ -182,9 +183,44 @@
     color: var(--m3-on-surface-variant);
   }
 
-  /* Mit Chips wird die Zeile höher; das Icon bleibt neben „Verknüpfen“ */
+  /* Mit Chips wird die Zeile höher; das Icon bleibt neben „Verknüpfen mit“.
+     Die Zeile ist eine Fläche (kein Knopf), damit „Mehr anzeigen“ darin ein
+     eigener Knopf sein kann; ein Tipp irgendwo darauf öffnet das Blatt. */
   [data-mobile-os="android"] .details-m3-row.is-links {
     align-items: flex-start;
+    cursor: pointer;
+  }
+
+  [data-mobile-os="android"] .details-m3-row.is-links:active {
+    background: var(--m3-state-pressed);
+  }
+
+  /* Die Beschriftung ist ein Knopf (für Tastatur und Vorlesehilfe), sieht aber aus wie Text */
+  [data-mobile-os="android"] .details-m3-link-label {
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 16px;
+    color: var(--m3-on-surface);
+    text-align: left;
+  }
+
+  [data-mobile-os="android"] .details-m3-link-label.is-empty {
+    color: var(--m3-on-surface-variant);
+  }
+
+  /* „Mehr anzeigen“: Textknopf unter den Chips, links bündig, 14px in der Akzentfarbe */
+  [data-mobile-os="android"] .details-m3-more {
+    align-self: flex-start;
+    min-height: 32px;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--m3-primary);
   }
 
   [data-mobile-os="android"] .details-m3-text {
