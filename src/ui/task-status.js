@@ -29,7 +29,6 @@
 import { icon } from "../core/html.js";
 import { typeIcon, typeSingular, xpItemStyle, xpKinds } from "../data/config.js";
 import {
-  defaultTaskStatus,
   isTaskDone,
   isTimeType,
   statusListFor,
@@ -64,18 +63,16 @@ function fieldSpec(entry, field) {
 
 /**
  * Der runde Haken-Knopf. Er sitzt als eigener Knopf neben der Zeile, damit ein
- * Tipp darauf die Aufgabe abhakt und nicht die Seite öffnet. Der Ring trägt
- * die Farbe der Dringlichkeit — dasselbe Motiv wie die Ringe im Kalender —,
- * „In Arbeit“ setzt einen Punkt hinein, erledigt füllt ihn grün.
+ * Tipp darauf die Aufgabe abhakt und nicht die Seite öffnet. Der Ring zeigt
+ * den Status (offen grau, in Arbeit blau, erledigt grün gefüllt — wie bei
+ * Google Tasks). Die Dringlichkeit steht nie im Ring, sondern als Wort in der
+ * Nebenzeile (src/features/tasks/tasks-parts.js).
  */
 export function taskCheck(entry) {
   const done = isTaskDone(entry);
-  /* Jede Stufe zwischen „Offen“ und „Erledigt“ gilt als angefangen */
-  const busy = !done && taskStatusOf(entry.status).id !== defaultTaskStatus;
-  const state = done ? " is-done" : busy ? " is-busy" : "";
   return `
-    <button class="task-check${state}" type="button" data-task-done="${entry.id}"
-      style="--task-ring:${taskPriorityOf(entry.priority).color}"
+    <button class="task-check${done ? " is-done" : ""}" type="button" data-task-done="${entry.id}"
+      style="--task-ring:${taskStatusOf(entry.status).color}"
       aria-pressed="${done}" aria-label="${done ? "Wieder öffnen" : "Erledigt"}">
       ${icon("check", "task-check-icon")}
     </button>

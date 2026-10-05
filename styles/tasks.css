@@ -3,7 +3,7 @@
  * Liste, die Zeile zum Anlegen durch Tippen in die Fläche und alles, was
  * eine Aufgabe
  * gegenüber den übrigen Zeilen (styles/rows.css) zusätzlich hat: den runden
- * Haken-Knopf mit Ring in der Farbe der Dringlichkeit und die stille
+ * Haken-Knopf (der Ring zeigt den Status) und die stille
  * Nebenzeile unter dem Titel. Das Board hat eine eigene Datei,
  * styles/tasks-board.css.
  * Pfad: styles/tasks.css
@@ -14,10 +14,11 @@
  * --task-tools-gap      -> Abstand zwischen Pillenzeile und Liste
  * --task-section-gap    -> Luft zwischen zwei Gruppen
  * --task-check-size     -> Größe des runden Haken-Knopfes
+ * --status-open         -> Grau des Rings einer offenen Aufgabe (In Arbeit: --cal-accent, Blau)
  * --task-meta-size      -> Schriftgröße der Nebenzeile unter dem Titel
+ * .task-prio-icon width/height -> Größe des Dringlichkeits-Icons in der Nebenzeile (13px)
  * --card                -> Fläche des gesetzten Hakens
  * --muted               -> Nebenzeile, Anzahl im Gruppenkopf, Geister-Zeile, Hinweis bei leerem Filter
- * --chevron             -> Ring eines Hakens ohne Dringlichkeitsfarbe
  * --prio-jetzt          -> Rot eines überfälligen Datums
  * --xp-done             -> Fläche des gesetzten Hakens
  * --line                -> Trennlinie unter der Zeile zum Anlegen
@@ -110,31 +111,19 @@
 
 /* ---------- Runder Haken-Knopf ---------- */
 
-/* Der Ring trägt die Farbe der Dringlichkeit (--task-ring, gesetzt in
-   src/ui/task-status.js) — wie die Ringe um die Tage im Kalender. */
+/* Der Ring zeigt den Status (--task-ring, gesetzt in src/ui/task-status.js):
+   offen grau, in Arbeit blau, erledigt grün gefüllt. */
 .task-check {
   width: var(--task-check-size);
   height: var(--task-check-size);
   flex: 0 0 auto;
-  position: relative; /* position: Bezugsrahmen für den Punkt „In Arbeit“ */
+  position: relative; /* position: Bezugsrahmen für die unsichtbare Tippfläche (styles/android-list.css) */
   display: grid;
   place-items: center;
   border-radius: 50%; /* border-radius: macht aus dem Knopf einen Kreis */
-  box-shadow: inset 0 0 0 1.5px var(--task-ring, var(--chevron)); /* box-shadow statt border: der Ring bleibt innen, die Größe stimmt */
+  box-shadow: inset 0 0 0 1.5px var(--task-ring, var(--status-open)); /* box-shadow statt border: der Ring bleibt innen, die Größe stimmt */
   color: transparent; /* der Haken ist erst zu sehen, wenn die Aufgabe erledigt ist */
   transition: color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
-}
-
-/* In Arbeit: ein Punkt im Ring — angefangen, noch nicht fertig */
-.task-check.is-busy::after {
-  content: "";
-  position: absolute; /* position: der Punkt liegt mitten im Ring */
-  inset: 50%;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%; /* border-radius: ein runder Punkt */
-  background: var(--task-ring, var(--chevron));
-  transform: translate(-50%, -50%); /* transform: von der Mitte aus zentriert */
 }
 
 .task-check.is-done {
@@ -227,7 +216,20 @@
 }
 
 .task-prio {
+  display: inline-flex; /* display: Icon und Wort stehen nebeneinander auf einer Linie */
+  align-items: center;
+  gap: 3px;
   color: var(--chip-color, var(--muted));
+  white-space: nowrap; /* white-space: „Als Nächstes“ bricht sonst um, wenn der Ort daneben Platz braucht */
+}
+
+/* Die lange Auswahl ist nötig, weil die Zeilen-Icons der Android-Liste (.workspace-row .icon, styles/android-list.css) sonst Größe und Farbe überstimmen */
+.workspace-row .task-meta .task-prio .task-prio-icon:not(.chevron),
+.task-prio-icon {
+  width: 13px; /* Größe des Dringlichkeits-Icons vor dem Wort */
+  height: 13px;
+  margin-block: -2px; /* margin: das Icon macht die Nebenzeile nicht höher als ihr Text */
+  color: inherit; /* color: das Icon trägt die Farbe der Dringlichkeit wie das Wort */
 }
 
 .task-place {
@@ -239,7 +241,7 @@
 /* ---------- Anlegen durch Tippen: Geister-Zeile und Eingabezeile ---------- */
 
 /* Beide sehen aus wie eine Zeile der Liste, nur der Ring ist leer und
-   trägt die Farbe des Abschnitts. */
+   trägt bei Gliederung nach Status die Farbe des Abschnitts, sonst Grau. */
 .task-ghost,
 .task-inline {
   display: flex;
@@ -255,7 +257,11 @@
 
 .task-ghost-ring,
 .task-inline-ring {
-  --task-ring: var(--col-color);
+  --task-ring: var(--col-color, var(--status-open));
+}
+
+[data-field="priority"] :is(.task-ghost-ring, .task-inline-ring) {
+  --task-ring: var(--status-open);
 }
 
 .task-ghost-label {

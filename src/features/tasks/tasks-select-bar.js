@@ -24,7 +24,7 @@ import { pickedCount, taskSelection } from "./tasks-pick.js";
 import { allArchived, runSelectAction } from "./tasks-select-actions.js";
 
 const barActions = [
-  { id: "status", icon: "check-circle", label: "Status" },
+  { id: "status", icon: "status", label: "Status" },
   { id: "priority", icon: "flame", label: "Dringlichkeit" },
   { id: "date", icon: "calendar", label: "Datum" },
   { id: "archive", icon: "archive", label: "Archivieren" },

@@ -19,7 +19,7 @@
 import { manualSort } from "./config.js";
 
 /* Die Reihenfolge der Stufen steht in src/data/config-tasks.js (taskStatuses, docStatuses). */
-export const statusSort = { id: "status", label: "Status", icon: "check-circle", up: "Offen zuerst", down: "Erledigt zuerst", asc: true };
+export const statusSort = { id: "status", label: "Status", icon: "status", up: "Offen zuerst", down: "Erledigt zuerst", asc: true };
 
 /* Die Reihenfolge der Stufen steht in src/data/config-tasks.js (taskPriorities): „Jetzt“ ist die dringendste. */
 export const prioritySort = { id: "prio", label: "Dringlichkeit", icon: "flame", up: "Dringendste zuerst", down: "Am wenigsten dringend zuerst", asc: true };
