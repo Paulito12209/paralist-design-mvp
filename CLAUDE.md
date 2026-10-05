@@ -264,16 +264,21 @@ Danach   → App-Adresse öffnen, „Neue Version verfügbar“ → aktualisiere
 
 ### Sitzungen anlegen und Worktrees aufräumen (Notiz für mich)
 
-Neue Arbeits-Sitzungen am besten in der **Cloud** starten: Auf dem Mac entsteht
-dann kein Ordner, nichts wird gesperrt, nichts muss aufgeräumt werden. Lokal
-nur mit Haken **„Worktree“** — nie direkt im Hauptordner. Nur so hat jeder
-Thread seinen eigenen Ordner und Branch; zwei Threads im selben Ordner
-schreiben sonst in denselben PR, und der Hauptordner bleibt auf `main`.
+**Arbeits-Sitzungen laufen in der Cloud** — vom Handy wie vom Laptop. Jeder
+Thread hat dort seinen eigenen Container und Branch, auf dem Mac entsteht kein
+Ordner, nichts wird gesperrt, nichts muss aufgeräumt werden. Kollisionen
+zwischen den PRs löst der Git Commit Manager (Abschnitt 6). Der Mac-Ordner
+bleibt auf `main` und holt den Stand nur mit `git pull origin main`.
 
-Lokale Worktrees liegen unter `.claude/worktrees/` und bleiben nach dem Mergen
-stehen. Solange die Sitzung in der Claude-App offen ist, ist ihr Worktree
-gesperrt („locked“) — deshalb nach dem Merge die Sitzung in der App schließen.
-Aufräumen im Projektordner, wenn die Threads fertig sind:
+Eine lokale Sitzung bleibt die Ausnahme. Für jede Sitzung gilt: **keinen
+Worktree selbst anlegen**, und Aufgaben-Vorschläge (Karten) mit dem Hinweis
+„in der Cloud starten“ versehen — beides hat schon ungewollte Worktrees erzeugt.
+
+Ist doch ein Worktree entstanden: Er liegt unter `.claude/worktrees/` und bleibt
+nach dem Mergen stehen. Solange die Sitzung in der Claude-App offen ist, ist er
+gesperrt („locked“) — deshalb zuerst die Sitzung in der App schließen.
+Aufräumen im Projektordner (mit dem Ordnernamen aus `git worktree list`, denn
+der Projektpfad enthält Leerzeichen; `<branch>` steht dort in eckigen Klammern):
 
 ```
 git worktree list
@@ -281,6 +286,7 @@ git worktree remove .claude/worktrees/<name>
 git worktree prune
 git checkout main
 git pull
+git branch -d <branch>
 ```
 
 Meldet `remove` „locked … claude session (pid …)“, läuft die Sitzung noch:
