@@ -11,7 +11,7 @@
  * --draw-pop-radius    -> Rundung der Fenster
  * --draw-pop-width     -> Breite von Farbwähler und Formen
  * --draw-swatch-size   -> Größe der Farbfelder
- * --draw-select-color  -> Ring um die gewählte Farbe
+ * --draw-active-ring    -> Ring um die gewählte Farbe
  * --draw-color / --draw-dot -> je Farbfeld bzw. Breitenpunkt aus dem Skript gesetzt
  *
  * Schriftgrößen: Überschriften 12px, Namen unter den Formen 11px, Hex-Feld 13px.
@@ -198,7 +198,7 @@
 }
 
 .draw-swatch.is-active {
-  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12), 0 0 0 2px var(--update-bg), 0 0 0 4px var(--draw-select-color);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12), 0 0 0 2px var(--update-bg), 0 0 0 4px var(--draw-active-ring);
 }
 
 .draw-custom {

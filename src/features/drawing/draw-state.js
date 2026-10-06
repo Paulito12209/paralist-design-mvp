@@ -40,6 +40,10 @@ export const draw = {
   },
   dock: docks.includes(saved.dock) ? saved.dock : docks[0],
   recent: Array.isArray(saved.recent) ? saved.recent.slice(0, recentLimit) : [],
+  /* Zeichenmodus am Desktop: erst der Stift-Knopf blendet Stifte und Farben ein
+     (draw-desk-bar.js); lastInk ist das Malwerkzeug, mit dem er wieder startet */
+  inkMode: false,
+  lastInk: "pen",
   /* Die offene Zeichnung und das ausgewählte Ding darin (Nummer oder null) */
   entryId: null,
   selected: null,
@@ -62,10 +66,18 @@ export function isInkTool(name = draw.tool) {
   return inkTools.includes(name);
 }
 
-/** Werkzeug wechseln; ein Malwerkzeug hebt die Auswahl auf. */
+/* Werkzeuge, die etwas Neues auf die Fläche setzen: sie beenden den Zeichenmodus */
+const placeTools = ["text", "note", "shape"];
+
+/** Werkzeug wechseln; ein Malwerkzeug hebt die Auswahl auf und öffnet den Zeichenmodus. */
 export function setTool(name) {
   draw.tool = name;
-  if (isInkTool(name)) draw.selected = null;
+  if (isInkTool(name)) {
+    draw.selected = null;
+    draw.inkMode = true;
+    draw.lastInk = name;
+  }
+  if (placeTools.includes(name)) draw.inkMode = false;
   drawChanged();
 }
 

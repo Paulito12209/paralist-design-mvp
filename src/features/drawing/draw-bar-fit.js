@@ -1,14 +1,16 @@
 /*
  * Die Werkzeugleiste der Zeichnung am Desktop passt sich dem Platz an:
  *
- * - Unten reicht sie über die ganze Breite der Fläche, links über ihre ganze
- *   Höhe; die Gruppen verteilen sich darüber (styles/drawing-desk.css).
+ * - Die Leiste bleibt kompakt (Knöpfe eng beieinander) und steht mittig zur
+ *   Breite bzw. Höhe der Fläche (styles/drawing-desk.css) — sie wird nicht
+ *   auseinandergezogen.
  * - Links steht sie einspaltig, solange die Höhe reicht, sonst zweispaltig.
  * - Reicht auch das nicht, wandern Knöpfe der Reihe nach (hideOrder) in ein
  *   Fenster hinter „⋯“ — dort funktionieren sie genauso wie in der Leiste.
  *
  * Gemessen wird nur, wenn sich die Größe der Fläche ändert (Fenster ziehen,
- * Andocken), nie in einer Bewegung.
+ * Andocken), nie in einer Bewegung — und nicht, solange die Bildschirm-
+ * tastatur offen ist (Tablet): sonst verlöre die Leiste beim Tippen ihre Form.
  * Pfad: src/features/drawing/draw-bar-fit.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -19,7 +21,9 @@
  * Aussehen des Fensters hinter „⋯“: styles/drawing-pop.css (.draw-more-grid).
  */
 
+import { events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
+import { ui } from "../../data/state.js";
 import { closeDrawPop, drawPopKind, toggleDrawPop } from "./draw-pop.js";
 import { onDrawChange } from "./draw-state.js";
 
@@ -51,7 +55,7 @@ function naturalLength() {
   return length;
 }
 
-/* Wie lang sie sein darf: so breit bzw. so hoch wie die Fläche */
+/* Wie lang sie höchstens sein darf: so breit bzw. so hoch wie die Fläche */
 function room() {
   return side() === "left" ? dom.drawPad.clientHeight : dom.drawPad.clientWidth;
 }
@@ -79,6 +83,8 @@ export function fitBar() {
   const bar = dom.drawTools;
   const more = bar.querySelector("[data-draw-more]");
   if (!deskShown() || !more || dom.drawPad.hidden || !dom.drawPad.clientWidth) return;
+  /* Bildschirmtastatur offen: die Leiste behält ihre Form, bis sie wieder zu ist */
+  if (ui.keyboardOpen) return;
   const items = hideOrder.map((selector) => bar.querySelector(selector)).filter(Boolean);
   const limit = room();
   items.forEach((item) => {
@@ -131,6 +137,7 @@ export function toggleMorePop(button, run) {
 export function initBarFit(isDeskShown) {
   deskShown = isDeskShown;
   onDrawChange(markMore);
+  on(events.keyboardClosed, fitBar);
   /* ResizeObserver: Fläche breiter, schmaler, höher — einmal je Bild neu entscheiden */
   if (window.ResizeObserver) {
     new ResizeObserver(() => {

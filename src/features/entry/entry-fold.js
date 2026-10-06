@@ -12,7 +12,8 @@
  *   Öffnen eingeklappt; wer in den Text tippt, klappt ihn von selbst aus,
  *   damit beim Schreiben nichts verdeckt ist.
  * - Zeichnung: die Zeichenfläche ist genau so hoch, dass unter ihr die
- *   Werkzeugleiste und darunter der Kopf der Karte Platz haben.
+ *   Werkzeugleiste und darunter der Kopf der Karte Platz haben. Solange die
+ *   Bildschirmtastatur offen ist, bleibt diese Höhe stehen.
  * - Ein Videoplayer im Text (src/ui/video-player.js) klappt den Text aus,
  *   damit er nicht unter dem Auslaufen liegt.
  *
@@ -54,6 +55,7 @@ import { events, on } from "../../core/bus.js";
 import { dom } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
 import { cssNumber } from "../../core/css-vars.js";
+import { ui } from "../../data/state.js";
 import { isRailShown } from "../../ui/desk-mode.js";
 import { coveredFrom, revealWatcher } from "../../ui/details-peek.js";
 import { isViewActive } from "../../ui/views.js";
@@ -127,6 +129,10 @@ export function layoutEntryFold() {
   if (!fold || !card || !isViewActive("entry") || dom.entryPanelNotes.hidden) return;
   const drawing = !dom.drawPad.hidden;
   const head = card.firstElementChild;
+  /* Bildschirmtastatur offen (Tablet ohne Tastatur am Kabel, z.B. beim
+     Beschriften eines Zettels): die Zeichenfläche behält ihre Höhe und wird
+     nicht gestaucht; nach dem Schließen wird wieder gemessen. */
+  if (drawing && ui.keyboardOpen && fold.style.height) return;
 
   /* Erst alles zurücksetzen, dann messen */
   fold.classList.remove("is-folded");

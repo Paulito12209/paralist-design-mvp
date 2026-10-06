@@ -8,6 +8,7 @@
  * --draw-tool-size          -> Größe der Werkzeug-Knöpfe
  * --draw-color-size         -> Größe der Farbpunkte
  * --draw-tools-gap          -> Abstand der Werkzeugleiste zur Zeichenfläche darüber und zur Karte „Details“ darunter
+ * --draw-active-ring       -> Ring um die gewählte Farbe (Textfarbe: weiß im Dunkeln, dunkel im Hellen — sonst fehlte er bei Schwarz)
  * --draw-color              -> wird je Punkt aus src/features/drawing/drawing-tools.js gesetzt
  */
 
@@ -104,7 +105,7 @@ body.is-drawing .draw-tools:not([hidden]) {
 
 /* Ring um die gewählte Farbe */
 .draw-color.is-active {
-  box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--draw-color);
+  box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--draw-active-ring);
 }
 
 /* Unter der Werkzeugleiste folgt die Karte „Details“ mit demselben Abstand
