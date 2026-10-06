@@ -70,6 +70,10 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/page-hero.css` | Sammlungen: großer Kopf mit Icon und zweizeiligem Satz (im Menü einschaltbar) |
 | `styles/viewer.css` | Dateiansicht: Foto, Video, Aufnahme und PDF |
 | `styles/drawing.css` | Zeichenfläche und Werkzeugleiste |
+| `styles/drawing-items.css` | Zeichnung: Text, Formen, Bilder und Notizzettel auf der Fläche, Rahmen und kleine Leiste des gewählten Dings |
+| `styles/drawing-desk.css` | Zeichnung am Desktop: Werkzeugleiste über die ganze Breite unten oder ganze Höhe links, Griff und Ziele zum Andocken |
+| `styles/drawing-pop.css` | Zeichnung: Fenster an der Leiste — Strichbreite, Formen, Farbwähler, weitere Werkzeuge hinter „⋯“ |
+| `styles/drawing-attach.css` | Zeichnung: Fenster „Anhang einfügen“ mit den Reitern Medien und Eigene Dateien |
 | `styles/video-player.css` | YouTube-Player als dunkler Block an der Stelle einer Video-Karte (Eintrag, Lesezeichen) |
 | `styles/android.css, ios.css` | Fassungen Android/iOS; dazu android-tabs/-fab/-sheet/-archive/-view-btn/-entry/-list/-reorder/-card/-bottom-sheet/-details (Blatt „Details“: Kopf mit Titel, Verknüpfen, Zeilen, Leiste „Als erledigt markieren“)/-filter-sheet (Filtern als Chips)/-segmented/-tab-snap/-overview-gaps/-quiet-tools/-calendar/-calendar-tabs (Reiter der Kalenderliste mit Symbol „Ansicht“)/-calendar-rings (Tage im Wochenstreifen nach Material 3, ohne Experiment)/-pages (Einstellungen und Fortschritt als ganze Seite)/-pages-content (deren Inhalt nach Material 3, ohne Experiment)/-settings-tiles (Einstellungen: jede Zeile eine Kachel)/-settings-groups (Einstellungsliste als Kachelgruppen ohne Titel, Profilkarte)/-overview-sheet (Kartenreihe mit Peek in beiden Android-Fassungen, Projekte-Container nur im Experiment)/-experiment-surface (Experiment: gemeinsame Fläche von Kacheln, Container und Leiste im Hellen; Trennlinie unter „Projekte“ bei ausgeblendeten Reitern)/-tabs-off (Schalter „Tabs anzeigen“ in beiden Android-Fassungen), ios-segmented/-menu, tokens-android/-ios.css |
 | `styles/tokens-android.css` | die Werte der Android-Fassung (Material 3), hell |

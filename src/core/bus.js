@@ -58,6 +58,10 @@ export const events = {
   /* Unter Profil › Kurzbefehle wurden die Tasten-Schilder ein- oder
      ausgeblendet: Seitenleiste und Reiterzeile passen sich an. */
   shortcutHintsChanged: "shortcut-hints:changed",
+  /* Etwas auf der Seite hat seinen Platz gewechselt, ohne dass sich eine
+     beobachtete Größe ändert (die Werkzeugleiste einer Zeichnung wurde
+     angedockt): die Eintragsseite misst die Höhe der Fläche neu. */
+  layoutChanged: "layout:changed",
 };
 
 const listeners = new Map();

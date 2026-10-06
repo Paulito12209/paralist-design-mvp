@@ -1,0 +1,271 @@
+/*
+ * Die Dinge auf der Zeichenfläche — Text, Formen, Bilder, Notizzettel — und
+ * was zu einem ausgewählten gehört: Rahmen, Griff zum Größerziehen, kleine
+ * Leiste darüber, der gestrichelte Rahmen beim Aufziehen einer Form.
+ * Die Ebene der Dinge liegt unter der Leinwand (Striche darüber), Rahmen und
+ * Leiste darüber (src/features/drawing/draw-layer.js).
+ * Pfad: styles/drawing-items.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-entry.css)
+ * -----------------------------------
+ * --draw-select-color  -> Farbe von Rahmen, Griff und Rahmen beim Aufziehen
+ * --draw-handle-size   -> Größe des Griffs unten rechts
+ * --draw-note-shadow   -> Schatten unter den Zetteln
+ * --draw-note-bg       -> Farbe eines Zettels, kommt je Zettel aus src/data/draw-items.js
+ *
+ * Zeilenhöhe von Text (1.25) und Zetteln (1.3), Innenabstand (0.75em) und
+ * Rundung (0.35em) der Zettel stehen hier und gleich in src/ui/drawing-compose.js,
+ * damit ein exportiertes Bild genauso aussieht wie die Fläche.
+ */
+
+/* position: Bezug für die Ebenen der Dinge, des Rahmens und der Andock-Ziele */
+.draw-pad {
+  position: relative;
+}
+
+/* Die Leinwand liegt über den Dingen (z-index): man malt auf Bilder und Formen */
+.draw-pad canvas {
+  position: relative;
+  z-index: 1;
+}
+
+/* Ohne Malwerkzeug lässt die Leinwand Klicks zu den Dingen darunter durch */
+.draw-pad:not(.is-ink) canvas {
+  pointer-events: none; /* pointer-events: Klicks gehen durch die Leinwand hindurch */
+}
+
+.draw-pad.is-ink {
+  cursor: crosshair; /* cursor: Fadenkreuz zeigt, dass hier gemalt wird */
+}
+
+.draw-pad[data-tool="text"] {
+  cursor: text;
+}
+
+.draw-pad:is([data-tool="shape"], [data-tool="note"]) {
+  cursor: crosshair;
+}
+
+.draw-layer,
+.draw-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.draw-layer {
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* Rahmen und kleine Leiste liegen über den Strichen, nehmen aber nur selbst Klicks an */
+.draw-overlay {
+  z-index: 2;
+  pointer-events: none; /* pointer-events: nur Griff und Leiste sind anklickbar, siehe unten */
+}
+
+.draw-item {
+  position: absolute;
+  box-sizing: border-box;
+  user-select: none; /* user-select: Ziehen verschiebt das Ding, statt Text zu markieren */
+  outline: none;
+}
+
+.draw-pad[data-tool="select"] .draw-item {
+  cursor: move;
+}
+
+/* Beim Schreiben: Text markieren und Cursor wie in jedem Feld */
+.draw-item[contenteditable="plaintext-only"],
+.draw-item[contenteditable="true"] {
+  user-select: text;
+  cursor: text;
+}
+
+.draw-item.is-text {
+  white-space: pre-wrap; /* white-space: Zeilenumbrüche aus dem Text bleiben stehen */
+  overflow-wrap: anywhere;
+  line-height: 1.25;
+  min-width: 1ch;
+  font-weight: 500;
+}
+
+/* Leerer Text beim Schreiben: ein blasser Hinweis, wo er steht */
+.draw-item.is-text:empty::before {
+  content: "Text";
+  opacity: 0.35;
+}
+
+.draw-shape-svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible; /* overflow: die Linie darf über den Rahmen hinausstehen, statt abgeschnitten zu werden */
+}
+
+.draw-item.is-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.draw-image-missing {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.06);
+  color: rgba(0, 0, 0, 0.35);
+}
+
+/* Notizzettel: immer heller Grund und dunkle Schrift, auch im Dunkelmodus — die Fläche bleibt Papier */
+.draw-item.is-note {
+  padding: 0.75em;
+  border-radius: 0.35em;
+  background: var(--draw-note-bg);
+  color: #1c1c1e;
+  box-shadow: var(--draw-note-shadow);
+  line-height: 1.3;
+  white-space: pre-wrap; /* white-space: Zeilen der Notiz bleiben Zeilen */
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.draw-item.is-note:empty::before {
+  content: attr(data-placeholder);
+  opacity: 0.45;
+}
+
+/* ---------- Auswahl ---------- */
+
+.draw-frame {
+  position: absolute;
+  left: 0;
+  top: 0;
+  box-sizing: border-box;
+  outline: 1.5px solid var(--draw-select-color);
+  outline-offset: 3px; /* outline-offset: der Rahmen steht knapp neben dem Ding, nicht darauf */
+  border-radius: 2px;
+}
+
+.draw-frame[hidden],
+.draw-item-bar[hidden] {
+  display: none;
+}
+
+.draw-frame.is-editing {
+  outline-style: dashed;
+}
+
+.draw-handle {
+  position: absolute;
+  right: calc(-3px - var(--draw-handle-size) / 2);
+  bottom: calc(-3px - var(--draw-handle-size) / 2);
+  width: var(--draw-handle-size);
+  height: var(--draw-handle-size);
+  box-sizing: border-box;
+  border-radius: 50%;
+  background: #ffffff;
+  border: 1.5px solid var(--draw-select-color);
+  pointer-events: auto; /* pointer-events: der Griff nimmt den Zeiger, obwohl die Ebene ihn durchlässt */
+  cursor: nwse-resize;
+}
+
+.draw-frame.is-editing .draw-handle {
+  display: none;
+}
+
+/* Kleine Leiste über dem gewählten Ding */
+.draw-item-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  border-radius: 999px;
+  background: var(--update-bg);
+  color: var(--text);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.18), 0 0 0 0.5px var(--desk-edge);
+  white-space: nowrap;
+  pointer-events: auto; /* pointer-events: s. o. */
+  transition: opacity var(--desk-fast) var(--desk-ease);
+}
+
+/* Beim Verschieben stört die Leiste nur */
+.draw-pad.is-arranging .draw-item-bar {
+  opacity: 0;
+}
+
+.draw-item-btn {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: var(--text);
+}
+
+.draw-item-btn .icon {
+  width: 18px;
+  height: 18px;
+}
+
+.draw-item-btn.is-danger {
+  color: var(--danger);
+}
+
+.draw-item-btn:active {
+  opacity: 0.55;
+}
+
+.draw-size-a {
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.draw-size-a.is-small {
+  font-size: 12px;
+}
+
+.draw-item-split {
+  width: 1px;
+  height: 18px;
+  margin: 0 3px;
+  background: var(--line);
+}
+
+.draw-note-dot {
+  width: 18px;
+  height: 18px;
+  margin: 0 2px;
+  border-radius: 50%;
+  background: var(--draw-note-bg);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.14);
+}
+
+.draw-note-dot.is-active {
+  box-shadow: 0 0 0 2px var(--update-bg), 0 0 0 3.5px var(--draw-select-color);
+}
+
+/* Gestrichelter Rahmen, solange eine Form aufgezogen wird */
+.draw-shape-ghost {
+  position: absolute;
+  left: 0;
+  top: 0;
+  border: 1.5px dashed var(--draw-select-color);
+  border-radius: 2px;
+  background: color-mix(in srgb, var(--draw-select-color) 8%, transparent);
+}
+
+@media (hover: hover) {
+  .draw-item-btn:hover {
+    background-color: var(--desk-hover);
+  }
+
+  .draw-note-dot:not(.is-active):hover {
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.3);
+  }
+}

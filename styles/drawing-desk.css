@@ -1,0 +1,274 @@
+/*
+ * Die volle Werkzeugleiste einer Zeichnung am Desktop (ab 1024px): unter der
+ * Fläche über ihre ganze Breite, links daneben über ihre ganze Höhe (ein-
+ * oder zweispaltig wie Apples Stiftpalette); was nicht passt, steht hinter
+ * „⋯“. Dazu der Griff, die gezogene Leiste und die zwei Ziele beim Andocken
+ * (src/features/drawing/draw-desk-bar.js, draw-dock.js, draw-bar-fit.js).
+ * Am Handy gilt weiter nur styles/drawing.css.
+ * Pfad: styles/drawing-desk.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-entry.css)
+ * -----------------------------------
+ * --draw-desk-tool     -> Größe der Knöpfe
+ * --draw-desk-pad      -> Innenrand der Leiste
+ * --draw-desk-gap      -> Abstand zwischen den Knöpfen
+ * --draw-desk-radius   -> Rundung der links angedockten Leiste
+ * --draw-color-size    -> Größe der Farbpunkte und des Farbwähler-Knopfs
+ * --draw-tools-gap     -> Abstand der Leiste zur Fläche (unten wie links)
+ * --draw-select-color  -> Farbe der Ziele beim Andocken
+ * --draw-width-mark    -> Punkt unter dem gewählten Malwerkzeug, setzt draw-desk-bar.js je Strichbreite
+ * --draw-color         -> gewählte eigene Farbe im Farbwähler-Knopf, setzt draw-desk-bar.js
+ * --draw-cols          -> Spalten der links angedockten Leiste (1 oder 2), wählt draw-bar-fit.js über is-one-col
+ */
+
+@media (min-width: 1024px) {
+  /* ---------- Unten: über die ganze Breite der Fläche, die Gruppen verteilt ---------- */
+  body.is-drawing .draw-tools.is-desk:not([hidden]) {
+    justify-content: space-between; /* justify-content: die Gruppen verteilen sich über die ganze Breite */
+    flex-wrap: nowrap;
+    gap: var(--draw-desk-gap);
+    padding: var(--draw-desk-pad);
+  }
+
+  /* Zum Messen (src/features/drawing/draw-bar-fit.js): nur so lang wie die Knöpfe selbst */
+  body.is-drawing .draw-tools.is-desk.is-measuring:not([hidden]) {
+    width: max-content; /* width: max-content misst, wie viel Platz alle Knöpfe nebeneinander brauchen */
+    justify-content: flex-start;
+  }
+
+  /* Was nicht passt, steht im Fenster hinter „⋯“ statt in der Leiste */
+  .draw-tools.is-desk :is(.draw-group, .draw-split, .draw-tool, .draw-picker)[hidden] {
+    display: none;
+  }
+
+  .draw-tools.is-desk .draw-group {
+    display: flex;
+    align-items: center;
+    gap: var(--draw-desk-gap);
+  }
+
+  .draw-tools.is-desk .draw-colors {
+    gap: 6px;
+    padding: 0 4px;
+  }
+
+  .draw-tools.is-desk .draw-tool {
+    position: relative; /* position: Bezug für den Punkt der Strichbreite */
+    width: var(--draw-desk-tool);
+    height: var(--draw-desk-tool);
+  }
+
+  .draw-tools.is-desk .draw-tool .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .draw-tools.is-desk .draw-tool:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  /* Wiederholen ist Rückgängig, gespiegelt */
+  :is(.draw-tools.is-desk, .draw-pop) .icon.is-mirrored {
+    transform: scaleX(-1); /* transform: spiegelt den Pfeil nach rechts */
+  }
+
+  /* Punkt unter dem gewählten Malwerkzeug: so dick wie der Strich */
+  .draw-tools.is-desk :is([data-draw-tool="pen"], [data-draw-tool="marker"], [data-draw-tool="eraser"]).is-active::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: 3px;
+    width: var(--draw-width-mark, 3px);
+    height: var(--draw-width-mark, 3px);
+    border-radius: 50%;
+    background: currentColor;
+    transform: translateX(-50%); /* transform: mittig unter das Icon */
+  }
+
+  .draw-tools.is-desk .draw-split {
+    margin: 0 2px;
+  }
+
+  .draw-grip {
+    width: 22px;
+    height: var(--draw-desk-tool);
+    display: grid;
+    place-items: center;
+    color: var(--muted);
+    cursor: grab;
+    touch-action: none; /* touch-action: am Tablet zieht der Finger die Leiste, statt die Seite zu scrollen */
+  }
+
+  .draw-grip .icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Farbwähler: Farbkreis; eine eigene Farbe steht als Punkt in der Mitte */
+  .draw-picker {
+    width: var(--draw-color-size);
+    height: var(--draw-color-size);
+    margin-left: 2px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: conic-gradient(#ff3b30, #ffcc00, #34c759, #30b0c7, #007aff, #af52de, #ff2d55, #ff3b30);
+  }
+
+  .draw-picker-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--card);
+  }
+
+  .draw-picker.is-custom .draw-picker-dot {
+    width: 12px;
+    height: 12px;
+    background: var(--draw-color);
+    box-shadow: 0 0 0 2px var(--card);
+  }
+
+  .draw-picker.is-custom {
+    box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--draw-color);
+  }
+
+  .draw-picker[aria-expanded="true"],
+  .draw-shape-btn[aria-expanded="true"] {
+    background-color: var(--bg);
+  }
+
+  /* ---------- Links: Leiste und Fläche nebeneinander ---------- */
+  /* Nur auf einer Zeichnung: Notizen teilen sich denselben Reiter und blieben sonst eingerückt.
+     :not([hidden]): sonst bliebe „Inhalt“ beim Wechsel auf „Verknüpfungen“ stehen */
+  body.is-drawing #entry-panel-notes.is-draw-left:not([hidden]) {
+    display: grid; /* display: grid stellt die Leiste in eine eigene Spalte links neben die Fläche */
+    grid-template-columns: auto minmax(0, 1fr);
+    column-gap: var(--draw-tools-gap);
+    align-items: start;
+  }
+
+  body.is-drawing #entry-panel-notes.is-draw-left > * {
+    grid-column: 1 / -1;
+  }
+
+  body.is-drawing #entry-panel-notes.is-draw-left > .entry-fold {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  /* Links: so hoch wie die Fläche, die Gruppen verteilt; ein- oder zweispaltig je nach Höhe */
+  body.is-drawing #entry-panel-notes.is-draw-left > .draw-tools.is-left:not([hidden]) {
+    grid-column: 1;
+    grid-row: 1;
+    align-self: stretch; /* align-self: die Leiste wird so hoch wie die Fläche neben ihr */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between; /* justify-content: die Gruppen verteilen sich über die ganze Höhe */
+    gap: var(--draw-desk-gap);
+    width: auto;
+    margin: 0;
+    border-radius: var(--draw-desk-radius);
+  }
+
+  body.is-drawing #entry-panel-notes.is-draw-left > .draw-tools.is-left.is-measuring:not([hidden]) {
+    align-self: start;
+    justify-content: flex-start;
+  }
+
+  /* Je Gruppe ein Raster mit einer oder zwei Spalten */
+  .draw-tools.is-left .draw-group {
+    display: grid;
+    grid-template-columns: repeat(var(--draw-cols, 2), var(--draw-desk-tool));
+    justify-items: center;
+    align-items: center;
+    gap: var(--draw-desk-gap);
+  }
+
+  .draw-tools.is-left.is-one-col {
+    --draw-cols: 1;
+  }
+
+  /* Die Farbpunkte fallen direkt ins Raster ihrer Gruppe */
+  .draw-tools.is-left .draw-colors {
+    display: contents; /* display: contents lässt die Punkte ins Raster der Gruppe fallen */
+  }
+
+  .draw-tools.is-left .draw-color,
+  .draw-tools.is-left .draw-picker {
+    margin: 7px 0;
+  }
+
+  .draw-tools.is-left .draw-split {
+    width: 60%;
+    height: 1px;
+    margin: 4px 0;
+  }
+
+  .draw-tools.is-left .draw-grip {
+    width: 100%;
+    height: 20px;
+  }
+
+  .draw-tools.is-left .draw-grip .icon {
+    transform: rotate(90deg); /* transform: die Punkte liegen quer, wie die Leiste oben */
+  }
+
+  /* ---------- Ziehen und Andocken ---------- */
+  .draw-tools.is-dragging {
+    position: relative;
+    z-index: 30;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.28), 0 0 0 0.5px var(--desk-edge);
+    cursor: grabbing;
+  }
+
+  .draw-tools.is-dragging .draw-grip {
+    cursor: grabbing;
+  }
+
+  .draw-dock-zone {
+    position: absolute;
+    z-index: 3;
+    border-radius: 12px;
+    border: 1.5px dashed color-mix(in srgb, var(--draw-select-color) 55%, transparent);
+    background: color-mix(in srgb, var(--draw-select-color) 8%, transparent);
+    pointer-events: none; /* pointer-events: die Ziele sind nur Hinweise */
+    transition: background-color var(--desk-fast) var(--desk-ease);
+  }
+
+  .draw-dock-zone.is-left {
+    left: 10px;
+    top: 10px;
+    bottom: 10px;
+    width: 64px;
+  }
+
+  .draw-dock-zone.is-bottom {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    height: 64px;
+  }
+
+  .draw-dock-zone.is-target {
+    border-style: solid;
+    background: color-mix(in srgb, var(--draw-select-color) 24%, transparent);
+  }
+}
+
+@media (min-width: 1024px) and (hover: hover) {
+  .draw-tools.is-desk :is(.draw-tool:not(.is-active):not(:disabled), .draw-grip):hover {
+    background-color: var(--desk-hover);
+  }
+
+  .draw-tools.is-desk .draw-grip:hover {
+    border-radius: 10px;
+    color: var(--text);
+  }
+
+  .draw-tools.is-desk :is(.draw-color, .draw-picker):not(:active):hover {
+    opacity: var(--hover-solid);
+  }
+}
