@@ -1,31 +1,23 @@
 /*
  * Desktop: der Kopf — links über der Seitenleiste die Wortmarke „Paralist“
- * mit dem Klapp-Knopf, über der Mitte die Reiterzeile mit Zurück und
- * Vorwärts, in der Mitte den vier Reitern und der Lupe als Segment-Leiste
- * (wie Apple Arcade) und rechts oben der Level-Anzeige. Gilt erst ab 1024px
- * Fensterbreite; das Markup entsteht in src/shell/desk-head.js, der Platz im
- * Raster in styles/desk.css.
+ * mit dem Klapp-Knopf, über der Mitte die Kopfzeile mit Zurück und Vorwärts,
+ * dem Pfad der offenen Seite samt ihren Knöpfen (Kategorie, Favorit, Cover,
+ * Menü — die Kopfzeile der Unterseite, hierher geholt) und ganz rechts dem
+ * Knopf fürs Seitenfenster. Gilt erst ab 1024px Fensterbreite; das Markup
+ * entsteht in src/shell/desk-head.js, der Platz im Raster in styles/desk.css.
  * Pfad: styles/desk-head.css
  *
  * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-brand und .desk-tabs)
  * -----------------------------------
- * --head-btn / --head-icon -> Größe der runden Knöpfe (Klapp-Knopf, Pfeile) und ihrer Icons
- * --head-tab-height        -> Höhe eines Reiters
- * --head-tab-gap           -> Luft zwischen den Reitern
- * --head-tab-pad           -> Innenrand eines Reiters links und rechts (unter 1280px enger)
- * --head-track-pad         -> Rand der grauen Spur um die Reiter
- * --head-level             -> Größe der Level-Anzeige oben rechts
- * Einzelwerte stehen bei ihrer Regel: Wortmarke 19px, Reiter-Schrift 14px,
- * Lupe 18px; Hinweis unter Reiter und Level-Anzeige: Schrift 12px, Abstand
- * 8px, Verzögerung 400ms bis er erscheint.
+ * --head-btn / --head-icon -> Größe der runden Knöpfe (Klapp-Knopf, Pfeile, Seitenfenster) und ihrer Icons
+ * Einzelwerte stehen bei ihrer Regel: Wortmarke 19px.
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
  * --desk-top-height -> Höhe von Wortmarke und Reiterzeile
  * --desk-nav-pad / --desk-gutter -> Rand links (Wortmarke) und seitlich der Reiterzeile
  * --desk-hover / --desk-fast / --desk-ease -> Tönung beim Überfahren, Dauer und Kurve
- * --desk-chip-bg / --card / --desk-edge -> Spur der Reiter, gewähltes Segment und seine Haarlinie
- * --desk-panel-strong -> Fläche der Level-Anzeige, solange Fortschritt offen ist
- * --text / --bg / --muted / --avatar-btn-bg -> Schrift, Grund, leise Reiter und Icons der Knöpfe
+ * --desk-panel-strong -> Fläche des Knopfs fürs Seitenfenster, solange es offen ist
+ * --text / --avatar-btn-bg -> Schrift und Icons der Knöpfe
  */
 
 @media (min-width: 1024px) {
@@ -33,11 +25,6 @@
   .desk-tabs {
     --head-btn: 32px;
     --head-icon: 20px;
-    --head-tab-height: 34px;
-    --head-tab-gap: 2px;
-    --head-tab-pad: 16px;
-    --head-track-pad: 3px;
-    --head-level: 40px;
   }
 
   /* ---------- Wortmarke links ---------- */
@@ -57,13 +44,13 @@
     user-select: none; /* user-select: ein Doppelklick markiert den Namen nicht */
   }
 
-  /* ---------- Reiterzeile über der Mitte ---------- */
+  /* ---------- Kopfzeile über der Mitte ---------- */
 
-  /* Drei Spalten: die äußeren teilen sich den Rest gleich, darum steht die
-     mittlere mit den Reitern immer genau in der Mitte der Spalte. */
+  /* Drei Teile: Pfeile links, der Pfad mit den Knöpfen der Seite in der
+     Mitte (nimmt den Rest), ganz rechts der Knopf fürs Seitenfenster. */
   .desk-tabs {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
     gap: 12px;
     padding: var(--safe-top) var(--desk-gutter) 0 calc(var(--desk-gutter) - 6px);
@@ -76,8 +63,10 @@
     gap: 2px;
   }
 
-  .desk-tabs-end {
-    justify-content: flex-end;
+  .desk-tabs-page {
+    display: flex;
+    align-items: center;
+    min-width: 0; /* min-width: ein langer Pfad kürzt sich, statt die Knöpfe hinauszuschieben */
   }
 
   /* Den Klapp-Knopf gibt es hier nur bei zugeklappter Seitenleiste: dann
@@ -94,7 +83,7 @@
     margin-right: 6px;
   }
 
-  /* Runde Knöpfe: Klapp-Knopf, Zurück, Vorwärts, Suche */
+  /* Runde Knöpfe: Klapp-Knopf, Zurück, Vorwärts, Seitenfenster */
   .desk-head-btn {
     display: grid;
     place-items: center;
@@ -115,150 +104,72 @@
     cursor: default;
   }
 
-  /* Die Reiter als Segment-Leiste wie in Apple Arcade: eine ruhige graue
-     Spur, darin der gewählte Reiter als helles Segment. Nur Namen, keine Icons. */
-  .desk-tabs-list {
-    display: flex;
-    gap: var(--head-tab-gap);
-    padding: var(--head-track-pad);
-    border-radius: 999px;
-    background: var(--desk-chip-bg);
-  }
-
-  .desk-tab {
-    position: relative; /* position: Bezug für den Tasten-Hinweis darunter */
-    display: inline-flex;
-    align-items: center;
-    height: var(--head-tab-height);
-    padding: 0 var(--head-tab-pad);
-    border-radius: 999px;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--avatar-btn-bg);
-    white-space: nowrap; /* white-space: ein Reitername bricht nie um */
-    transition: background-color var(--desk-fast) var(--desk-ease), color var(--desk-fast) var(--desk-ease); /* transition: Tönung gleitet statt zu springen */
-  }
-
-  /* Das gewählte Segment: Kartenfläche mit Haarlinie statt Schatten */
-  .desk-tab.is-active {
-    background: var(--card);
-    box-shadow: inset 0 0 0 0.5px var(--desk-edge); /* box-shadow: nur die Haarlinie, ohne die Pille größer zu machen */
+  /* Seitenfenster offen: der Knopf trägt die Fläche der gewählten Zeile */
+  .desk-head-btn.is-active {
+    background: var(--desk-panel-strong);
     color: var(--text);
   }
 
-  /* Die Suche: letztes Segment, nur die Lupe */
-  .desk-tab-search {
-    padding: 0 12px;
+  /* ---------- Die Kopfzeile einer Unterseite, hierher geholt (src/shell/desk-page-head.js) ---------- */
+
+  /* Am Handy klebt sie oben an ihrer Seite (styles/rows.css); hier ist sie
+     nur eine Zeile: kein eigener Rand, kein Grund, kein Kleben. */
+  .desk-tabs .page-head {
+    position: static; /* position: die Zeile oben rollt ohnehin nicht */
+    flex: 1 1 auto;
+    min-width: 0;
+    height: auto;
+    margin: 0;
+    padding: 0;
+    gap: 2px;
+    background: none;
   }
 
-  .desk-tab-icon {
-    width: 18px;
-    height: 18px;
+  /* Suchen steht oben in der Seitenleiste; das Menü einer Seite immer zu sehen */
+  .desk-tabs .page-head-reveal {
+    display: none;
   }
 
-  /* Tasten-Hinweis: erst beim Überfahren (kurz verzögert, damit er beim
-     Darüberstreifen nicht aufblitzt) oder bei Tastatur-Fokus sichtbar. Der
-     Hinweis unter der Level-Anzeige rechts sieht genauso aus. */
-  :is(.desk-tab-hint, .desk-level-hint) {
-    position: absolute; /* position: schwebt unter dem Reiter, ohne die Zeile zu verschieben */
-    top: calc(100% + 8px);
-    left: 50%;
-    z-index: 16; /* z-index: über der Mitte und der Einstellungs-Seite (15), unter Eingabefeld und Dialogen (20) */
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 5px 10px;
-    border-radius: 999px;
-    background: var(--text);
-    color: var(--bg);
-    font-size: 12px;
-    font-weight: 500;
-    white-space: nowrap; /* white-space: der Hinweis bleibt eine Zeile */
-    opacity: 0;
-    transform: translate(-50%, -2px); /* transform: mittig unter dem Reiter, beim Erscheinen gleitet er ein Stück herab */
-    pointer-events: none; /* pointer-events: der Hinweis fängt keine Klicks ab */
-    transition: opacity var(--desk-fast) var(--desk-ease), transform var(--desk-fast) var(--desk-ease); /* transition: sanft ein- und ausblenden */
-  }
-
-  .desk-tab:focus-visible .desk-tab-hint {
+  .desk-tabs .page-head .page-menu {
     opacity: 1;
-    transform: translate(-50%, 0); /* transform: an seinen Platz */
+    pointer-events: auto; /* pointer-events: am Handy erst nach dem Rollen antippbar, hier immer */
+  }
+
+  /* Die Knöpfe der Seite (Favorit, Cover, Menü) im Maß der Pfeile links */
+  .desk-tabs .page-head .head-btn {
+    width: var(--head-btn);
+    height: var(--head-btn);
+    margin: 0;
+  }
+
+  .desk-tabs .page-head .head-btn .icon {
+    width: var(--head-icon);
+    height: var(--head-icon);
+  }
+
+  /* Die Kategorie einer Sammlung sagt der Pfad schon */
+  .desk-tabs .page-head .page-crumb {
+    display: none;
+  }
+
+  /* Der schlichte Pfad der vier Seiten und der Suche */
+  .desk-simple-path[hidden] {
+    display: none;
   }
 
   @media (hover: hover) {
-    .desk-tab:hover .desk-tab-hint {
-      opacity: 1;
-      transform: translate(-50%, 0); /* transform: an seinen Platz */
-      transition-delay: 400ms; /* transition-delay: erst nach kurzem Verweilen */
-    }
-  }
-
-  /* ---------- Level-Anzeige oben rechts ---------- */
-  /* Derselbe Knopf wie am Handy (styles/top-bar.css), hier etwas kleiner; der
-     Hinweis darunter steht rechtsbündig, damit er nicht aus dem Fenster ragt. */
-  .desk-tabs .level-btn {
-    position: relative; /* position: Bezug für den Hinweis darunter */
-    width: var(--head-level);
-    height: var(--head-level);
-    transition: background-color var(--desk-fast) var(--desk-ease); /* transition: Tönung gleitet */
-  }
-
-  .desk-tabs .level-gauge {
-    width: var(--head-level);
-    height: var(--head-level);
-  }
-
-  .desk-level-hint {
-    left: auto;
-    right: 0;
-    transform: translateY(-2px); /* transform: beim Erscheinen gleitet er ein Stück herab */
-  }
-
-  .desk-tabs .level-btn:focus-visible .desk-level-hint {
-    opacity: 1;
-    transform: none;
-  }
-
-  /* Solange Fortschritt als Seite offen ist, ist die Level-Anzeige „gewählt“ */
-  .device:has(#progress:not([hidden])) .desk-tabs .level-btn {
-    background: var(--desk-panel-strong);
-  }
-
-  @media (hover: hover) {
-    .desk-tabs .level-btn:hover {
-      background: var(--desk-hover);
-    }
-
-    .desk-tabs .level-btn:hover .desk-level-hint {
-      opacity: 1;
-      transform: none;
-      transition-delay: 400ms; /* transition-delay: s. o. */
-    }
-  }
-
-  @media (hover: hover) {
-    .desk-head-btn:not(:disabled):hover,
-    .desk-tab:not(.is-active):hover {
+    .desk-head-btn:not(:disabled):not(.is-active):hover {
       background: var(--desk-hover);
       color: var(--text);
     }
   }
 
-  .desk-head-btn:not(:disabled):active,
-  .desk-tab:active {
+  .desk-head-btn:not(:disabled):active {
     opacity: 0.6;
   }
 
-  .desk-head-btn:focus-visible,
-  .desk-tab:focus-visible {
+  .desk-head-btn:focus-visible {
     outline: 2px solid var(--avatar-btn-bg); /* outline: sichtbarer Ring nur bei Bedienung mit der Tastatur */
     outline-offset: 2px;
-  }
-}
-
-/* Unter 1280px ist die Mitte schmaler: die Segmente rücken enger zusammen. */
-@media (min-width: 1024px) and (max-width: 1279px) {
-  .desk-tabs {
-    --head-tab-pad: 12px;
   }
 }

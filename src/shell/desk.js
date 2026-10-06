@@ -1,8 +1,10 @@
 /*
- * Die Desktop-Fassung: hängt Wortmarke und Reiterzeile, die Seitenleiste
- * links und die Spalte rechts ins Gerätefenster, hält alles aktuell und kennt
- * die Tastenkürzel. Das Modul wird erst geladen, wenn das Fenster breit genug
- * ist (src/main.js) — am Handy kommt es gar nicht erst an.
+ * Die Desktop-Fassung: hängt Wortmarke und Kopfzeile, die Seitenleiste
+ * links (mit Icon-Zeile der Seiten oben und Fuß unten) und die Spalte rechts
+ * ins Gerätefenster und hält alles aktuell. Das Seitenfenster rechts
+ * (src/shell/desk-side.js) lädt erst beim ersten Öffnen. Das Modul wird erst
+ * geladen, wenn das Fenster breit genug ist (src/main.js) — am Handy kommt
+ * es gar nicht erst an.
  * Pfad: src/shell/desk.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -10,64 +12,44 @@
  * clockTick   -> wie oft die rechte Spalte „jetzt“ nachstellt und der Tageswechsel
  *                geprüft wird (Millisekunden)
  *
- * Welche Taste welchen Reiter und welche Sammlung öffnet, steht in
- * src/ui/desk-links.js (pageLinks, collectionLinks, chordWindow) — so können
- * Taste und Schild daneben nie auseinanderlaufen.
  *
- * Tastenkürzel (nur, solange nicht in ein Feld getippt wird und kein Blatt offen ist):
- *   N              -> Eingabefeld zum Anlegen öffnen
- *   /  oder ⌘K     -> Such-Palette öffnen (src/shell/search-palette.js); bei offener
- *                     Palette markiert ⌘K das Suchwort, alle anderen Kürzel ruhen
- *   1 bis 4        -> Übersicht, Kalender, Aufgaben, Medien
- *   G, dann I F B R L A P -> Eingang, Favoriten, Arbeitsbereiche, Ressourcen, Lesezeichen,
- *                     Archiv, Projekte
- *   ⌘[  und  ⌘]    -> zurück und vor
- *   ⌘\             -> Seitenleiste ein- und ausklappen
- *   ⌘,             -> Profil und Einstellungen (Punkt „Konto“)
- *   ?              -> Profil › Kurzbefehle
- *   Escape         -> schließt, was obenauf liegt: Palette, Menü, Auswahl-Blatt, Dialog,
- *                     Dateiansicht, zuletzt das Eingabefeld — auch beim Tippen darin
- * Statt ⌘ gilt außerhalb des Macs Strg.
+ * Die Tastenkürzel selbst stehen in src/shell/desk-keys.js.
  */
 
 import { emit, events, on } from "../core/bus.js";
 import { dayKey } from "../core/dates.js";
-import { dom, el } from "../core/dom.js";
+import { dom } from "../core/dom.js";
 import { load } from "../core/lazy.js";
+import { readJson, storageKeys } from "../core/storage.js";
 import { hintPlaces, hintsShown } from "../data/shortcut-hints.js";
-import { closeCtxMenu } from "../ui/ctx-menu.js";
 import { isDesk, isRailShown, onDeskChange } from "../ui/desk-mode.js";
-import { goBack, goForward } from "../ui/router.js";
-import { closeSheet } from "../ui/sheet.js";
-import { isNavClosed, mountDeskHead, openPageTab, placeLevelButton, renderDeskHead, setNavClosed } from "./desk-head.js";
-import { chordKey, chordWindow, collectionLinks, pageLinks } from "../ui/desk-links.js";
-import { mountDeskNav, openCollection, renderDeskNav } from "./desk-nav.js";
+import { mountDeskHead, renderDeskHead } from "./desk-head.js";
+import { mountDeskFoot, placeLevelButton, renderDeskFoot } from "./desk-foot.js";
+import { initDeskKeys } from "./desk-keys.js";
+import { mountDeskNav, renderDeskNav } from "./desk-nav.js";
+import { returnPageHeads } from "./desk-page-head.js";
+import { mountDeskPages, renderDeskPages } from "./desk-pages.js";
 import { mountDeskRail, registerRailCards, renderDeskRail } from "./desk-rail.js";
 import { setSearchTakeover } from "./search-bar.js";
-import { closePalette, isPaletteOpen, openPalette, takeOverSearchField } from "./search-palette.js";
+import { closePalette, takeOverSearchField } from "./search-palette.js";
 
 const clockTick = 60000;
-const navKeys = Object.fromEntries(pageLinks.map((link) => [link.key, link.tab]));
-const chordTargets = Object.fromEntries(collectionLinks.map((link) => [link.key.toLowerCase(), link.id]));
-
-/* Offene Ebenen, über denen kein Kürzel etwas auslösen darf. Profil und
-   Fortschritt zählen nicht: am Desktop sind sie Seiten
-   (src/features/profile/profile-page.js, src/features/progress/progress.js). */
-const openLayers =
-  ".palette-backdrop:not([hidden]), .modal-backdrop:not([hidden]):not(#profile):not(#progress), .sheet-backdrop:not([hidden]), .ctx-backdrop:not([hidden]), .viewer-backdrop:not([hidden]), .update-backdrop:not([hidden])";
 
 let mounted = false;
 let clock = null;
 /* Tag der letzten Zeichnung: wechselt er über Nacht, stimmen „heute“-Zahlen nicht mehr. */
 let shownDay = dayKey(new Date());
 
-/* „G“ wurde gedrückt: bis zu diesem Zeitpunkt zählt der nächste Buchstabe als Sammlung. */
-let chordUntil = 0;
-
-/* Seitenleiste und Reiterzeile neu zeichnen — nur, wenn sie gerade zu sehen sind. */
+/* Seitenleiste und Kopfzeile neu zeichnen — nur, wenn sie gerade zu sehen sind.
+   Unter 1024px kehren die Kopfzeilen der Unterseiten an ihre Seite zurück. */
 function refreshNav() {
-  if (!isDesk()) return;
+  if (!isDesk()) {
+    returnPageHeads();
+    return;
+  }
   renderDeskNav();
+  renderDeskPages();
+  renderDeskFoot();
   renderDeskHead();
 }
 
@@ -85,7 +67,7 @@ function refreshAll() {
 }
 
 /*
- * Am Desktop tippt man nur in der Palette (Segment „Suchen“ der Reiterzeile,
+ * Am Desktop tippt man nur in der Palette (Lupe oben in der Seitenleiste,
  * ⌘K, „/“); das Suchfeld des Handys ist dort ausgeblendet und nimmt keine
  * Zeichen an. Unter 1024px ist es wieder das gewohnte Suchfeld, und eine
  * offene Palette verschwindet.
@@ -125,88 +107,6 @@ function syncClock() {
   }
 }
 
-/* Tippt man gerade in ein Feld? Dann gehört jede Taste dem Feld. */
-function isTyping(target) {
-  if (!target) return false;
-  const tag = target.tagName;
-  return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable;
-}
-
-/*
- * Escape schließt die oberste Ebene über ihren eigenen Knopf — so läuft alles
- * über denselben Weg wie ein Klick, samt Verlauf und Zurück-Pfeil.
- * Gibt `true` zurück, wenn es etwas zu schließen gab.
- */
-function closeTopLayer() {
-  if (document.querySelector(".update-backdrop:not([hidden])")) return false;
-  /* Die Palette öffnet nur, wenn sonst nichts offen ist — oder über dem
-     Eingabefeld. Sie liegt darum immer obenauf. */
-  if (isPaletteOpen()) {
-    closePalette();
-    return true;
-  }
-  if (!dom.ctxMenu.hidden) {
-    closeCtxMenu();
-    return true;
-  }
-  if (!dom.sheet.hidden) {
-    closeSheet();
-    return true;
-  }
-  const viewerClose = document.querySelector(".viewer-backdrop:not([hidden]) [data-viewer='close']");
-  /* Mehrere Blätter können offen sein (Profilbild über dem Profil): das
-     zuletzt eingehängte liegt oben. */
-  const modals = document.querySelectorAll(".modal-backdrop:not([hidden]) .modal-close");
-  const closeButton = viewerClose || modals[modals.length - 1];
-  if (closeButton) {
-    closeButton.click();
-    return true;
-  }
-  if (!dom.composer.hidden) {
-    el("composer-close").click();
-    return true;
-  }
-  return false;
-}
-
-/* Nach einem Seitenwechsel per Taste steht der Fokus sonst weiter auf einem
-   Knopf der alten Seite — und zeigt dort seinen Tastatur-Rahmen. */
-function dropStaleFocus() {
-  const active = document.activeElement;
-  if (active && active !== document.body && !isTyping(active)) active.blur();
-}
-
-/* Die Such-Palette öffnen — auch bei zugeklappter Seitenleiste, die bleibt zu. */
-function focusSearch() {
-  openPalette();
-}
-
-/*
- * Kürzel mit der Befehlstaste (⌘ am Mac, Strg sonst). Sie gelten auch beim
- * Tippen in einem Feld nur für die Suche — die übrigen gehören dann dem Feld.
- * Gibt `true` zurück, wenn die Taste hier etwas getan hat.
- */
-function onCommandKey(event) {
-  const key = event.key.toLowerCase();
-  if (key === "k") {
-    focusSearch();
-    return true;
-  }
-  if (isTyping(event.target)) return false;
-  if (key === "\\") setNavClosed(!isNavClosed());
-  else if (key === "[") goBack();
-  else if (key === "]") goForward();
-  else if (key === ",") openProfile("konto");
-  else return false;
-  return true;
-}
-
-/* Die Profilseite auf einem Punkt ihres Untermenüs öffnen. */
-function openProfile(pane) {
-  dropStaleFocus();
-  load("profile").then((module) => module.openPane(pane));
-}
-
 /*
  * Die Tasten-Schilder ausblenden, wo Profil › Kurzbefehle sie abgeschaltet
  * hat: .hide-nav-kbd (Seitenleiste samt Suchfeld) und .hide-tabs-kbd
@@ -214,67 +114,6 @@ function openProfile(pane) {
  */
 function applyHints() {
   hintPlaces.forEach((place) => dom.device.classList.toggle(`hide-${place}-kbd`, !hintsShown(place)));
-}
-
-/* „G“ öffnet das Fenster für den Buchstaben einer Sammlung; der Buchstabe schließt es wieder. */
-function onChordKey(event) {
-  const key = event.key.toLowerCase();
-  if (Date.now() < chordUntil) {
-    chordUntil = 0;
-    if (!chordTargets[key]) return false;
-    dropStaleFocus();
-    openCollection(chordTargets[key]);
-    return true;
-  }
-  if (key !== chordKey.toLowerCase()) return false;
-  chordUntil = Date.now() + chordWindow;
-  return true;
-}
-
-function onKeyDown(event) {
-  if (!isDesk() || event.defaultPrevented) return;
-  if (event.key === "Escape") {
-    /* Das Update-Fenster schließt sich bei Escape selbst, noch bevor die Taste
-       hier ankommt — sie darf dann nicht auch noch die Ebene darunter zumachen
-       (ein offener Entwurf im Eingabefeld ginge verloren). */
-    if (event.target instanceof Element && event.target.closest(".update-backdrop")) return;
-    if (closeTopLayer()) event.preventDefault();
-    return;
-  }
-  /* Alt und Umschalt sind erlaubt: auf deutschen Tastaturen braucht „\“, „[“
-     und „]“ eine davon. Es zählt das Zeichen, nicht die Taste. */
-  const command = event.metaKey || event.ctrlKey;
-  if (command && !document.querySelector(openLayers)) {
-    if (onCommandKey(event)) event.preventDefault();
-    return;
-  }
-  if (event.metaKey || event.ctrlKey || event.altKey || isTyping(event.target)) return;
-  if (document.querySelector(openLayers)) return;
-
-  if (onChordKey(event)) {
-    event.preventDefault();
-    return;
-  }
-  if (event.key === "/") {
-    event.preventDefault();
-    focusSearch();
-    return;
-  }
-  if (event.key === "?") {
-    event.preventDefault();
-    openProfile("kurzbefehle");
-    return;
-  }
-  if (event.key === "n" || event.key === "N") {
-    event.preventDefault();
-    emit(events.createRequested);
-    return;
-  }
-  if (navKeys[event.key]) {
-    event.preventDefault();
-    dropStaleFocus();
-    openPageTab(navKeys[event.key]);
-  }
 }
 
 /* aside: eine Spalte neben dem Hauptinhalt, für Vorlesehilfen als Nebenbereich erkennbar. */
@@ -289,9 +128,10 @@ function createColumn(className, label) {
  * Seitenleiste und rechte Spalte einhängen. Darf mehrmals aufgerufen werden —
  * etwa bei jedem Wechsel über die Breitengrenze; eingehängt wird nur einmal,
  * danach hält onDeskChange unten alles aktuell.
- * @param handlers { openProjectViewMenu, profilePhoto, railCards } aus
- *   den Seiten, von src/main.js hereingegeben; `railCards` ordnet einer Ansicht
- *   die Funktion zu, die ihre Karten für die rechte Spalte lädt.
+ * @param handlers { openProjectViewMenu, railCards, theme } aus den Seiten,
+ *   von src/main.js hereingegeben; `railCards` ordnet einer Ansicht die
+ *   Funktion zu, die ihre Karten für die rechte Spalte lädt, `theme` ist
+ *   { current, set } für den Schalter Hell/Dunkel im Fuß.
  */
 export function initDesk(handlers = {}) {
   if (mounted) return;
@@ -299,14 +139,16 @@ export function initDesk(handlers = {}) {
 
   const nav = createColumn("desk-nav", "Seitenleiste");
   const rail = createColumn("desk-rail", "Heute und zuletzt");
-  /* Reihenfolge im Gerätefenster: Wortmarke, Suche, Seitenleiste, Reiterzeile,
+  /* Reihenfolge im Gerätefenster: Wortmarke, Suche, Seitenleiste, Kopfzeile,
      Inhalt, rechte Spalte — so springt die Tab-Taste in derselben Folge, in
-     der man liest. Die Reiterzeile hängt sich selbst vor den Inhalt. */
+     der man liest. Die Kopfzeile hängt sich selbst vor den Inhalt. */
   document.querySelector(".top-bar").after(nav);
   dom.content.after(rail);
 
   mountDeskHead();
   mountDeskNav(nav, handlers);
+  mountDeskPages(nav.querySelector('[data-nav-slot="pages"]'));
+  mountDeskFoot(nav.querySelector('[data-nav-slot="foot"]'), handlers.theme || null);
   mountDeskRail(rail);
   Object.entries(handlers.railCards || {}).forEach(([view, importFn]) => registerRailCards(view, importFn));
   /* Anderer Tag im Kalender, anderer markierter Treffer: nur die Spalte rechts. */
@@ -314,6 +156,8 @@ export function initDesk(handlers = {}) {
   on(events.shortcutHintsChanged, applyHints);
   applyHints();
   on(events.profileChanged, refreshNav);
+  /* Profil und Fortschritt liegen am Desktop über der Mitte: der Pfad oben nennt sie */
+  on(events.overlayOpened, refreshNav);
 
   on(events.dataChanged, refreshAll);
   on(events.xpChanged, refreshAll);
@@ -330,11 +174,13 @@ export function initDesk(handlers = {}) {
     if (!document.hidden) tick();
     syncClock();
   });
-  document.addEventListener("keydown", onKeyDown);
+  initDeskKeys();
   setSearchTakeover((event) => takeOverSearchField(event, isDesk()));
   /* Die Palette hat keinen Verlaufsschritt. Geht es im Verlauf zurück oder
      vor, wechselt die Seite darunter — die Palette gehört nicht mehr dazu. */
   window.addEventListener("popstate", closePalette);
 
   refreshAll();
+  /* War das Seitenfenster beim letzten Mal offen, geht es wieder auf. */
+  if (readJson(storageKeys.deskSide, {})?.open) load("deskSide").then((module) => module.initSide());
 }

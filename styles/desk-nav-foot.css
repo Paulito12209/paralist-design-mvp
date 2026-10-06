@@ -1,87 +1,151 @@
 /*
- * Desktop: der Fuß der Seitenleiste — fest unten, rollt nicht mit: das Konto
- * mit rundem Bild, Name, darunter „Einstellungen“ und dem Schild „⌘,“. Profil und
- * Einstellungen sind dasselbe: beide Wege öffnen dasselbe Blatt. Die Stufe
- * steht oben rechts in der Reiterzeile (styles/desk-head.css). Gilt erst
- * ab 1024px Fensterbreite; das Markup entsteht in src/shell/desk-nav-parts.js.
+ * Desktop: der Fuß der Seitenleiste — fest unten, rollt nicht mit: eine
+ * schlanke Icon-Zeile wie in T3 Code. Links Einstellungen, die Stufen-Anzeige
+ * (öffnet Fortschritt und Statistiken) und Hell/Dunkel, gegenüber ganz rechts
+ * „Nach Updates suchen“. Über jedem Icon erscheint beim Überfahren sein Name.
+ * Gilt erst ab 1024px Fensterbreite; das Markup entsteht in src/shell/desk-foot.js.
  * Pfad: styles/desk-nav-foot.css
  *
  * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-nav-foot)
  * -----------------------------------
- * --foot-disc      -> Größe des Profilbilds
- * --foot-row-height -> Höhe einer Zeile im Fuß
- * Einzelne Größen stehen bei ihrer Regel: Initialen 11px,
- * Zeile unter dem Namen 12px.
+ * --foot-btn   -> Größe eines Icon-Knopfs (auch der Stufen-Anzeige)
+ * --foot-icon  -> Größe der Icons darin
+ * --foot-gap   -> Luft zwischen den Knöpfen links
+ * Einzelwerte stehen bei ihrer Regel: Hinweis-Schrift 12px, Abstand 8px,
+ * Verzögerung 400ms bis er erscheint, eine Umdrehung beim Suchen 0.9s.
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
  * --desk-nav-pad   -> Rand links, rechts und unten
  * --desk-edge      -> Haarlinie über dem Fuß
- * --avatar-gradient-from / --avatar-gradient-to -> Verlauf hinter den Initialen, wie im Profil
- * --text / --muted -> Name und die leise Zeile darunter
+ * --desk-hover / --desk-panel-strong -> Tönung beim Überfahren, Fläche der Stufe, solange Fortschritt offen ist
+ * --desk-fast / --desk-ease -> Dauer und Kurve
+ * --avatar-btn-bg / --text / --bg -> Icons in Ruhe, unter der Maus, Hinweis (vertauscht)
  */
 
 @media (min-width: 1024px) {
   .desk-nav-foot {
-    --foot-disc: 28px;
-    --foot-row-height: 46px;
+    --foot-btn: 34px;
+    --foot-icon: 19px;
+    --foot-gap: 4px;
 
     flex: 0 0 auto; /* flex: der Fuß behält seine Höhe, die Liste darüber rollt */
     display: flex;
-    flex-direction: column;
-    gap: 2px;
+    align-items: center;
+    justify-content: space-between; /* justify-content: Update ganz rechts, gegenüber den übrigen */
     margin: 0 var(--desk-nav-pad);
     padding: 8px 0 calc(var(--desk-nav-pad) + var(--safe-bottom));
     border-top: 0.5px solid var(--desk-edge);
   }
 
-  /* Bild | zwei Zeilen Text | Schild */
-  .desk-foot-row {
-    grid-template-columns: var(--foot-disc) minmax(0, 1fr) auto;
-    height: var(--foot-row-height);
-    padding-left: 6px;
-  }
-
-  .desk-foot-copy {
+  .desk-foot-group {
     display: flex;
-    flex-direction: column;
-    min-width: 0;
-    line-height: 1.25;
+    align-items: center;
+    gap: var(--foot-gap);
   }
 
-  .desk-foot-title {
-    overflow: hidden; /* overflow/text-overflow/white-space: ein langer Name endet mit „…“ */
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-weight: 600;
-    color: var(--text);
+  .desk-foot-level {
+    display: contents; /* display: der Platz der Stufe ist nur ein Halter, der Knopf selbst steht in der Zeile */
   }
 
-  .desk-foot-hint {
-    overflow: hidden; /* overflow/text-overflow/white-space: bleibt einzeilig */
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    font-size: 12px;
-    font-weight: 500;
-    color: var(--muted);
-  }
-
-  /* Profilbild: Foto oder Initialen auf dem Verlauf des Profils */
-  .desk-foot-avatar {
+  .desk-foot-btn,
+  .desk-nav-foot .level-btn {
+    position: relative; /* position: Bezug für den Hinweis darüber */
     display: grid;
     place-items: center;
-    width: var(--foot-disc);
-    height: var(--foot-disc);
-    border-radius: 50%;
-    overflow: hidden; /* overflow: das Foto bleibt im Kreis */
-    background: linear-gradient(135deg, var(--avatar-gradient-from), var(--avatar-gradient-to));
-    font-size: 11px;
-    font-weight: 700;
-    color: #fff; /* Initialen immer weiß: der Verlauf dahinter ist in beiden Darstellungen kräftig */
+    width: var(--foot-btn);
+    height: var(--foot-btn);
+    border-radius: 999px;
+    color: var(--avatar-btn-bg);
+    transition: background-color var(--desk-fast) var(--desk-ease), color var(--desk-fast) var(--desk-ease); /* transition: Tönung gleitet statt zu springen */
   }
 
-  .desk-foot-photo {
-    width: 100%;
-    height: 100%;
-    object-fit: cover; /* object-fit: füllt den Kreis, ohne das Foto zu verzerren */
+  .desk-foot-btn > .icon {
+    width: var(--foot-icon);
+    height: var(--foot-icon);
+  }
+
+  .desk-nav-foot .level-gauge {
+    width: var(--foot-btn);
+    height: var(--foot-btn);
+  }
+
+  /* Solange Fortschritt als Seite offen ist, ist die Stufe „gewählt“ */
+  .device:has(#progress:not([hidden])) .desk-nav-foot .level-btn {
+    background: var(--desk-panel-strong);
+  }
+
+  /* Beim Nachsehen dreht sich der Pfeil */
+  @media (prefers-reduced-motion: no-preference) {
+    .desk-foot-btn.is-busy > .icon {
+      animation: desk-foot-spin 0.9s linear infinite; /* animation: dreht, bis die Antwort da ist */
+    }
+
+    @keyframes desk-foot-spin {
+      to {
+        transform: rotate(360deg); /* transform: eine volle Umdrehung */
+      }
+    }
+  }
+
+  /* Hinweis über dem Icon („Einstellungen ⌘,“, „Stufe 3 · noch 120 XP“) */
+  .desk-foot-hint {
+    position: absolute; /* position: schwebt über dem Knopf, ohne die Zeile zu verschieben */
+    bottom: calc(100% + 8px);
+    left: 0;
+    z-index: 16; /* z-index: über der Liste darüber, unter Eingabefeld und Dialogen (20) */
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: var(--text);
+    color: var(--bg);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap; /* white-space: der Hinweis bleibt eine Zeile */
+    opacity: 0;
+    transform: translateY(2px); /* transform: beim Erscheinen gleitet er ein Stück hinauf */
+    pointer-events: none; /* pointer-events: der Hinweis fängt keine Klicks ab */
+    transition: opacity var(--desk-fast) var(--desk-ease), transform var(--desk-fast) var(--desk-ease); /* transition: sanft ein- und ausblenden */
+  }
+
+  /* Der Update-Knopf steht rechts: sein Hinweis endet am Rand */
+  .desk-nav-foot > .desk-foot-btn .desk-foot-hint {
+    left: auto;
+    right: 0;
+  }
+
+  .desk-foot-btn:focus-visible .desk-foot-hint,
+  .desk-nav-foot .level-btn:focus-visible .desk-foot-hint,
+  .desk-foot-btn.is-telling .desk-foot-hint,
+  .desk-foot-btn.is-busy .desk-foot-hint {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (hover: hover) {
+    .desk-foot-btn:hover,
+    .desk-nav-foot .level-btn:hover {
+      background: var(--desk-hover);
+      color: var(--text);
+    }
+
+    .desk-foot-btn:hover .desk-foot-hint,
+    .desk-nav-foot .level-btn:hover .desk-foot-hint {
+      opacity: 1;
+      transform: none;
+      transition-delay: 400ms; /* transition-delay: erst nach kurzem Verweilen */
+    }
+  }
+
+  .desk-foot-btn:active,
+  .desk-nav-foot .level-btn:active {
+    opacity: 0.6;
+  }
+
+  .desk-foot-btn:focus-visible,
+  .desk-nav-foot .level-btn:focus-visible {
+    outline: 2px solid var(--avatar-btn-bg); /* outline: sichtbarer Ring nur bei Bedienung mit der Tastatur */
+    outline-offset: 2px;
   }
 }

@@ -1,0 +1,98 @@
+/*
+ * Desktop: der Text der Lese-Vorschau im Seitenfenster rechts — Absätze,
+ * Stichpunkte, Checkboxen, Trennlinie und Karten mit Link (ein Klick öffnet
+ * sie im Browser des Fensters) — und der Abschnitt „Darin“ eines Projekts
+ * oder Arbeitsbereichs. Das Markup entsteht in src/shell/desk-side-pages.js.
+ * Pfad: styles/desk-side-doc.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * Einzelwerte stehen bei ihrer Regel: Schrift 14px, Zeilenhöhe 1.55, Fuge
+ * zwischen den Bausteinen 6px, Icons 16px, Lücke über „Darin“ 16px.
+ *
+ * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * --desk-panel-strong / --desk-item-radius -> Fläche und Rundung der Karten mit Link
+ * --desk-edge -> Trennlinie
+ * --text / --muted / --avatar-btn-bg -> Schrift, abgehakte Punkte und Zeichen, Icons der Karten
+ */
+
+@media (min-width: 1024px) {
+  /* ---------- Lese-Vorschau eines Eintrags ---------- */
+
+  .side-doc {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--text);
+  }
+
+  .side-doc-text,
+  .side-doc-item {
+    overflow-wrap: anywhere; /* overflow-wrap: lange Wörter und Links brechen um, statt hinauszuragen */
+  }
+
+  .side-doc-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .side-doc-item .icon {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    margin-top: 3px;
+    color: var(--muted);
+  }
+
+  .side-doc-item.is-done > span {
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+
+  .side-doc-dot {
+    flex: 0 0 auto;
+    width: 16px;
+    text-align: center;
+    color: var(--muted);
+  }
+
+  .side-doc-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border-radius: var(--desk-item-radius);
+    background: var(--desk-panel-strong);
+    text-align: left;
+    color: var(--text);
+  }
+
+  .side-doc-link .icon {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    color: var(--avatar-btn-bg);
+  }
+
+  .side-doc-link > span {
+    overflow: hidden; /* overflow/text-overflow/white-space: ein langer Name endet mit „…“ */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .side-doc-rule {
+    width: 100%;
+    border: 0;
+    border-top: 0.5px solid var(--desk-edge);
+  }
+
+  .side-section {
+    margin: 16px 4px 6px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+}

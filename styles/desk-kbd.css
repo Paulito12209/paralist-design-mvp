@@ -79,8 +79,9 @@
   }
 
   /* Ausgeblendet unter Profil › Kurzbefehle; die Tasten selbst gehen weiter. */
-  .device.hide-nav-kbd .desk-nav .desk-kbd,
-  .device.hide-tabs-kbd .desk-tabs .desk-tab-hint {
+  /* Die Hinweise an den Icons oben und unten schaltet „Hinweise an den Seiten-Icons“
+     (styles/desk-nav-pages.css), nicht dieser Schalter. */
+  .device.hide-nav-kbd .desk-nav :not(.desk-page-hint, .desk-foot-hint) > .desk-kbd {
     display: none;
   }
 

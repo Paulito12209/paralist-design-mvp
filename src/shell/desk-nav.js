@@ -1,11 +1,11 @@
 /*
- * Die Seitenleiste am Desktop: oben „Neu“, darunter die Sammlungen (auch die
+ * Die Seitenleiste am Desktop: oben die Icon-Zeile der Seiten
+ * (src/shell/desk-pages.js) und „Neu“, darunter die Sammlungen (auch die
  * Arbeitsbereiche, die ihre Seite öffnen) und die Projekte — jede Ansicht
- * eine eigene Gruppe zum Auf- und Zuklappen, „Alle“ zuerst —, unten fest das
- * Konto. Die vier Reiter, die Suche und die Stufe stehen nicht hier, sondern
- * in der Reiterzeile (src/shell/desk-head.js). Eingehängt und aufgefrischt
- * wird die Leiste von src/shell/desk.js; das Markup steht in
- * src/shell/desk-nav-parts.js.
+ * eine eigene Gruppe zum Auf- und Zuklappen, „Alle“ zuerst —, unten fest die
+ * Icon-Zeile mit Einstellungen, Stufe, Hell/Dunkel und Update
+ * (src/shell/desk-foot.js). Eingehängt und aufgefrischt wird die Leiste von
+ * src/shell/desk.js; das Markup steht in src/shell/desk-nav-parts.js.
  * Pfad: src/shell/desk-nav.js
  *
  * Keine anpassbaren visuellen Werte: Aussehen, Abstände und Größen stehen in
@@ -18,7 +18,6 @@ import { emit, events, on } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { formatNumber } from "../core/format.js";
 import { sameId } from "../core/ids.js";
-import { load } from "../core/lazy.js";
 import { readJson, readText, storageKeys, writeJson, writeText } from "../core/storage.js";
 import { overviewPages } from "../data/config.js";
 import { addProjectView } from "../data/project-views.js";
@@ -36,13 +35,13 @@ import {
 } from "../ui/router.js";
 import { isViewActive } from "../ui/views.js";
 import { collectionLinks } from "../ui/desk-links.js";
-import { activeTargets, footMarkup, skeletonMarkup, viewGroupsMarkup } from "./desk-nav-parts.js";
+import { activeTargets, skeletonMarkup, viewGroupsMarkup } from "./desk-nav-parts.js";
 
 /* Die Seitenleiste selbst und ihre Teile — einmal beim Einhängen gesucht. */
 let root = null;
 let parts = null;
 /* Von src/main.js über src/shell/desk.js hereingegeben. */
-let handlers = { openProjectViewMenu: null, profilePhoto: () => "" };
+let handlers = { openProjectViewMenu: null };
 /* Zuletzt geschriebenes Markup je Behälter: Gleiches wird nicht neu gesetzt. */
 const lastMarkup = new Map();
 /* Projekt oder Ansicht, dessen Menü gerade aus der Seitenleiste geöffnet wurde. */
@@ -61,7 +60,6 @@ function collectParts() {
     more: root.querySelector("#desk-nav-more"),
     moreToggle: root.querySelector("[data-nav-more]"),
     views: root.querySelector('[data-nav-slot="views"]'),
-    foot: root.querySelector('[data-nav-slot="foot"]'),
   };
 }
 
@@ -73,9 +71,9 @@ function setActive(row, chosen) {
 
 /* Selektor, der nach dem Neuzeichnen denselben Knopf wiederfindet. */
 function focusSelector(node) {
-  const button = node.closest("[data-open-entry], [data-nav-view-toggle], [data-nav-add-project], [data-nav-profile]");
+  const button = node.closest("[data-open-entry], [data-nav-view-toggle], [data-nav-add-project]");
   if (!button) return "";
-  const attribute = ["openEntry", "navViewToggle", "navAddProject", "navProfile"].find((key) => button.dataset[key]);
+  const attribute = ["openEntry", "navViewToggle", "navAddProject"].find((key) => button.dataset[key]);
   const name = attribute.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`);
   return `[data-${name}="${CSS.escape(button.dataset[attribute])}"]`;
 }
@@ -165,7 +163,7 @@ function reselect() {
   else dom.content.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-/** Eine Sammlung öffnen — auch über das Kürzel „G“ und Buchstabe. */
+/** Eine Sammlung öffnen — auch über ⌃ und Ziffer oder „G“ und Buchstabe. */
 export function openCollection(id) {
   const link = collectionLinks.find((item) => item.id === id);
   if (!link) return;
@@ -195,7 +193,6 @@ const clickActions = [
   ["[data-nav-add-project]", (node) => addProjectIn(node.dataset.navAddProject)],
   ["[data-nav-view-toggle]", (node) => toggleGroup(node.dataset.navViewToggle)],
   ["[data-open-entry]", openProject],
-  ["[data-nav-profile]", () => load("profile").then((module) => module.openPane("konto"))],
 ];
 
 function onClick(event) {
@@ -253,7 +250,7 @@ function followNavMenu() {
  * Das feste Gerüst einmal in die Seitenleiste schreiben und die Klicks
  * anmelden (ein Empfänger für die ganze Leiste). Weitere Aufrufe tun nichts.
  * @param target   das <aside class="desk-nav"> aus src/shell/desk.js
- * @param given    { openProjectViewMenu, profilePhoto } von src/main.js
+ * @param given    { openProjectViewMenu } von src/main.js
  */
 export function mountDeskNav(target, given = {}) {
   if (root) return;
@@ -272,7 +269,7 @@ export function mountDeskNav(target, given = {}) {
 }
 
 /**
- * Zahlen, gewählte Zeile, Gruppen der Ansichten und Fuß auffrischen. Billig genug für
+ * Zahlen, gewählte Zeile und Gruppen der Ansichten auffrischen. Billig genug für
  * jeden Seitenwechsel: die festen Zeilen werden nur umgeschaltet, alles
  * andere nur neu gesetzt, wenn sich sein Inhalt geändert hat.
  */
@@ -292,5 +289,4 @@ export function renderDeskNav() {
   syncMore();
 
   swapMarkup(parts.views, viewGroupsMarkup(closedGroups, active.project));
-  swapMarkup(parts.foot, footMarkup(handlers.profilePhoto()));
 }

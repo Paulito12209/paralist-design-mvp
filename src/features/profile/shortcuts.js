@@ -1,7 +1,7 @@
 /*
  * Profil › Kurzbefehle (nur am Desktop): alle Tastenkürzel nach Gruppen —
  * Seiten, Sammlungen, Überall — und zwei Schalter, mit denen man die blauen
- * Schilder in der Seitenleiste und in der Reiterzeile ausblendet. Die Tasten
+ * Schilder in der Seitenleiste und die Hinweise an den Seiten-Icons ausblendet. Die Tasten
  * der Reiter und Sammlungen kommen aus src/ui/desk-links.js, dieselbe Quelle
  * wie die Kürzel selbst (src/shell/desk.js). Geklickt wird in
  * src/features/profile/profile.js; hier entsteht Markup und die Änderung.
@@ -18,7 +18,7 @@
 import { emit, events } from "../../core/bus.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { hintsShown, setHintsShown } from "../../data/shortcut-hints.js";
-import { chordKey, collectionLinks, pageLinks, withCommand } from "../../ui/desk-links.js";
+import { chordKey, collectionLinks, pageLinks, sideLink, withCommand, withControl, withShiftCommand } from "../../ui/desk-links.js";
 import { keyCap } from "../../ui/key-caps.js";
 
 /* Kürzel, die auf jeder Seite gelten. Die Befehlstaste heißt je nach Rechner ⌘ oder Strg. */
@@ -28,6 +28,7 @@ const everywhere = [
   { label: "Zurück", keys: [withCommand("[")] },
   { label: "Vorwärts", keys: [withCommand("]")] },
   { label: "Seitenleiste ein- und ausklappen", keys: [withCommand("\\")] },
+  { label: "Seitenfenster rechts auf- und zuklappen", keys: [withShiftCommand(sideLink.letter)] },
   { label: "Profil und Einstellungen", keys: [withCommand(",")] },
   { label: "Diese Seite", keys: ["?"] },
   { label: "Schließen, was obenauf liegt", keys: ["Esc"] },
@@ -35,7 +36,7 @@ const everywhere = [
 
 const hintToggles = [
   { place: "nav", label: "Schilder in der Seitenleiste", icon: "sidebar" },
-  { place: "tabs", label: "Schilder in der Reiterzeile", icon: "panel-open" },
+  { place: "tabs", label: "Hinweise an den Seiten-Icons", icon: "panel-open" },
 ];
 
 /* Eine Zeile: links wofür, rechts die Schilder. Mehrere Tasten sind Alternativen. */
@@ -61,8 +62,8 @@ function toggleRow(toggle) {
 
 /** Die ganze Unterseite: Schalter oben, darunter die drei Gruppen. */
 export function shortcutsMarkup() {
-  const pages = pageLinks.map((link) => shortcutRow(link.label, [link.key]));
-  const places = collectionLinks.map((link) => shortcutRow(link.title, [`${chordKey} ${link.key}`]));
+  const pages = pageLinks.map((link) => shortcutRow(link.label, [withShiftCommand(link.letter), link.key]));
+  const places = collectionLinks.map((link) => shortcutRow(link.title, [withControl(link.num), `${chordKey} ${link.key}`]));
   const always = everywhere.map((row) => shortcutRow(row.label, row.keys));
   return `
     <p class="psection">Schilder</p>

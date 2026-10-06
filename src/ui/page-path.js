@@ -8,6 +8,9 @@
  * ein verknüpfter Eintrag erbt den Anfang des vorigen. Dazwischen steht der
  * Ablageort des Eintrags — bei mehreren der erste, die übrigen nennt
  * „Details“ rechts. Am Handy ist der Pfad ausgeblendet (styles/entry-desk.css).
+ * Auf einem Eintrag ist das letzte Glied sein Titel und lässt sich direkt
+ * umbenennen (Enter fertig, Escape zurück) — am Desktop steht der große
+ * Titel darunter nicht mehr, der Pfad oben nennt die Seite schon.
  * Pfad: src/ui/page-path.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -56,9 +59,9 @@ function placeStep(ref) {
   return { label: overviewPages[1].title, target: "overview:1" };
 }
 
-/** Die Glieder für einen Eintrag. */
+/** Die Glieder für einen Eintrag; das letzte ist sein Titel zum Umbenennen. */
 export function entrySteps(entry) {
-  return [rootStep(entryRoot), placeStep(mainPlace(entry)), { label: entry.title || "Ohne Titel" }].filter(Boolean);
+  return [rootStep(entryRoot), placeStep(mainPlace(entry)), { label: entry.title || "", edit: true }].filter(Boolean);
 }
 
 /** Die Glieder für eine Sammlung oder einen Arbeitsbereich. */
@@ -66,14 +69,22 @@ export function pageSteps(page) {
   return [rootStep(), { label: page.title }];
 }
 
-/** Den Pfad in `nav` neu setzen. */
+/* Das Titel-Glied: ein Textfeld (contenteditable), damit es so aussieht wie die übrigen Glieder. */
+function titleStep(label) {
+  return `<span class="page-path-step is-current is-editable" contenteditable="plaintext-only" role="textbox" aria-label="Titel" data-placeholder="Ohne Titel" spellcheck="false" enterkeyhint="done" data-path-title>${label}</span>`;
+}
+
+/** Den Pfad in `nav` neu setzen — nicht, während man darin den Titel tippt. */
 export function renderPath(nav, steps) {
+  if (nav.contains(document.activeElement) && document.activeElement.matches("[data-path-title]")) return;
   nav.innerHTML = steps
     .map((step, index) => {
       const sep = index ? `<span class="page-path-sep" aria-hidden="true">${separator}</span>` : "";
       const label = escapeHtml(step.label);
       const item = step.target
         ? `<button class="page-path-step" type="button" data-path="${escapeHtml(step.target)}">${label}</button>`
+        : step.edit
+        ? titleStep(label)
         : `<span class="page-path-step is-current" aria-current="page">${label}</span>`;
       return sep + item;
     })
@@ -91,16 +102,50 @@ function onClick(event) {
   else openTarget(kind, kind === "workspace" ? Number(id) : id);
 }
 
+/*
+ * Umbenennen im Titel-Glied: jedes Zeichen geht an `onTitle`, Enter beendet,
+ * Escape stellt den Titel von vorher wieder her.
+ */
+function bindTitle(nav, onTitle) {
+  let before = "";
+  const typed = (node) => node.textContent.replace(/\s+/g, " ");
+  nav.addEventListener("focusin", (event) => {
+    if (event.target.matches("[data-path-title]")) before = typed(event.target).trim();
+  });
+  nav.addEventListener("input", (event) => {
+    if (event.target.matches("[data-path-title]")) onTitle(typed(event.target).trim());
+  });
+  nav.addEventListener("keydown", (event) => {
+    const field = event.target.closest("[data-path-title]");
+    if (!field) return;
+    if (event.key === "Escape") {
+      field.textContent = before;
+      onTitle(before);
+    }
+    if (event.key !== "Enter" && event.key !== "Escape") return;
+    event.preventDefault();
+    /* Escape schließt sonst auch noch, was darunter offen ist */
+    event.stopPropagation();
+    field.blur();
+  });
+  /* Leer zeigt das Feld den grauen Platzhalter (:empty in styles/entry-desk.css) */
+  nav.addEventListener("focusout", (event) => {
+    if (event.target.matches("[data-path-title]") && !typed(event.target).trim()) event.target.textContent = "";
+  });
+}
+
 /**
  * Einen leeren Pfad in eine Kopfzeile hängen — gleich hinter den Zurück-Pfeil.
- * @param head die Kopfzeile (.page-head) der Unterseite.
+ * @param head    die Kopfzeile (.page-head) der Unterseite.
+ * @param onTitle optional: bekommt den getippten Titel, wenn das letzte Glied umbenannt wird.
  */
-export function mountPath(head) {
+export function mountPath(head, onTitle = null) {
   /* nav: der Pfad ist eine eigene kleine Navigation („Brotkrumen“) */
   const nav = document.createElement("nav");
   nav.className = "page-path";
   nav.setAttribute("aria-label", "Pfad");
   head.querySelector(".back-btn").after(nav);
   nav.addEventListener("click", onClick);
+  if (onTitle) bindTitle(nav, onTitle);
   return nav;
 }
