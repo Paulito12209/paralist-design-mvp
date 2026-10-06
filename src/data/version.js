@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "bc39eab70931";
+export const appVersion = "fab442b13481";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -188,9 +188,10 @@ export const appFiles = [
   "styles/progress.css", "styles/projects-board.css", "styles/recorder.css",
   "styles/reminder-banner.css", "styles/rows.css", "styles/search-overlay.css",
   "styles/search-palette.css", "styles/search-refine.css", "styles/search.css",
-  "styles/settings.css", "styles/sheet-tabs.css", "styles/sheet-tiles.css", "styles/shortcuts.css",
-  "styles/slash-menu.css", "styles/sort-wheels.css", "styles/streak-legend.css",
-  "styles/support.css", "styles/swipe-rows.css", "styles/task-status.css", "styles/tasks-board.css",
+  "styles/settings.css", "styles/sheet-progress.css", "styles/sheet-tabs.css",
+  "styles/sheet-tiles.css", "styles/shortcuts.css", "styles/slash-menu.css",
+  "styles/sort-wheels.css", "styles/streak-legend.css", "styles/support.css",
+  "styles/swipe-rows.css", "styles/task-status.css", "styles/tasks-board.css",
   "styles/tasks-desk.css", "styles/tasks-select.css", "styles/tasks-settings.css",
   "styles/tasks-switch.css", "styles/tasks.css", "styles/toast.css",
   "styles/tokens-android-dark.css", "styles/tokens-android.css", "styles/tokens-dark.css",
