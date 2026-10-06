@@ -1,9 +1,11 @@
 /*
  * Desktop: Eintragsseite und Unterseiten in der Breite. Ab 1024px entfällt
  * der eigene Zurück-Pfeil der Unterseiten — zurück geht es über die Pfeile
- * der Reiterzeile, ⌘[ und Browser-Zurück —, und die Werkzeuge des Eintrags
- * stehen rechts in der Kopfzeile: Kategorie, Favorit, Cover, Menü
- * (src/features/entry/entry-head.js). Ab 1280px stehen Details, verknüpfte
+ * der Kopfzeile oben, ⌘[ und Browser-Zurück —, und die Kopfzeile der Seite
+ * steht oben neben den Pfeilen (src/shell/desk-page-head.js): links der Pfad,
+ * rechts Kategorie, Favorit, Cover, Menü (src/features/entry/entry-head.js).
+ * Der große Titel eines Eintrags entfällt: das letzte Glied des Pfads ist der
+ * Titel und lässt sich dort umbenennen. Ab 1280px stehen Details, verknüpfte
  * Einträge und Gestaltung in der rechten Spalte (entry-rail.js); die Karte am
  * Textende und „Mehr anzeigen“ entfallen, der Text steht allein. Am Handy
  * gilt hier nichts.
@@ -13,7 +15,8 @@
  * -----------------------------------
  * Einzelne Größen stehen bei ihrer Regel: Abstand zwischen Kategorie und
  * Knöpfen 6px, Knöpfe der Gestaltung 8px Fuge, runder Knopf „Verknüpfen“ 28px,
- * Schrift des Pfads 14px, Fuge zwischen seinen Gliedern 6px.
+ * Schrift des Pfads 14px, Fuge zwischen seinen Gliedern 6px, Mindestbreite
+ * des Titel-Glieds beim Umbenennen 48px.
  *
  * Den Pfad oben links (src/ui/page-path.js) zeichnet diese Datei auch: auf
  * Einträgen, Sammlungen und Arbeitsbereichen.
@@ -37,8 +40,8 @@
 }
 
 @media (min-width: 1024px) {
-  .content .page-head .back-btn,
-  .content .page-head .head-title {
+  :is(.content, .desk-tabs) .page-head .back-btn,
+  :is(.content, .desk-tabs) .page-head .head-title {
     display: none; /* der kleine Titel beim Rollen: der Pfad nennt die Seite schon */
   }
 
@@ -64,6 +67,11 @@
     color: var(--muted);
   }
 
+  /* Wird es eng, kürzen sich zuerst die Glieder davor — der Name der Seite bleibt am längsten */
+  .page-path-step:not(.is-current) {
+    flex-shrink: 4;
+  }
+
   .page-path-step.is-current {
     color: var(--text);
     font-weight: 600;
@@ -74,13 +82,40 @@
     color: var(--text);
   }
 
+  /* Das Titel-Glied: sieht aus wie die anderen, beim Klick wird es ein Textfeld */
+  .page-path-step.is-editable {
+    cursor: text;
+    outline: none; /* outline: die Fläche beim Tippen zeigt den Fokus schon */
+  }
+
+  .page-path-step.is-editable:hover {
+    background: var(--desk-hover);
+  }
+
+  .page-path-step.is-editable:focus {
+    min-width: 48px;
+    background: var(--desk-hover);
+    text-overflow: clip; /* text-overflow: beim Tippen steht der ganze Titel da, ohne „…“ */
+  }
+
+  /* Ohne Titel: der graue Platzhalter wie im Feld darunter am Handy */
+  .page-path-step.is-editable:empty::before {
+    content: attr(data-placeholder);
+    color: var(--muted);
+  }
+
+  /* Der große Titel: am Desktop nennt der Pfad oben die Seite und benennt sie um */
+  #view-entry .entry-title {
+    display: none;
+  }
+
   .page-path-sep {
     flex: 0 0 auto;
     color: var(--muted);
   }
 
   /* Kategorie und Werkzeuge rücken zusammen an den rechten Rand. */
-  #view-entry .entry-crumb {
+  #entry-head .entry-crumb {
     flex: 0 1 auto;
     text-align: right;
     margin-right: 6px;

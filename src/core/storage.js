@@ -41,6 +41,8 @@ export const storageKeys = {
   deskMore: "paralist-desk-more",
   /* Werkzeugleiste der Zeichnung am Desktop: wo sie steht, Strichbreiten, eigene Farben */
   drawPrefs: "paralist-draw-prefs",
+  /* Seitenfenster rechts am Desktop: offen, breit, was darin steht, letzte Adresse */
+  deskSide: "paralist-desk-side",
 };
 
 /** Liest gespeichertes JSON. Fehlt es oder ist es kaputt, kommt `fallback` zurück. */

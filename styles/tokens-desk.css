@@ -20,6 +20,9 @@
  * --desk-top-height         -> Höhe der Reiterzeile und der Wortmarke links daneben
  * --desk-nav-pad            -> Rand der Seitenleiste links und rechts
  * --desk-rail-width         -> Breite der Spalte rechts
+ * --desk-side-width         -> Breite des Seitenfensters rechts (src/shell/desk-side.js)
+ * --desk-side-wide          -> seine Breite nach „Breiter“
+ * --desk-side-inset         -> Abstand des Seitenfensters zum Fensterrand oben, rechts und unten
  * --desk-gutter             -> Luft zwischen den Spalten und zum Fensterrand
  * --desk-read-width         -> größte Breite von Lese-Seiten (Eintrag, Sammlung, Suche)
  * --desk-wide-width         -> größte Breite der breiten Seiten (Übersicht, Kalender, Aufgaben, Medien)
@@ -81,6 +84,9 @@
   --desk-top-height: 60px;
   --desk-nav-pad: 14px;
   --desk-rail-width: 360px;
+  --desk-side-width: clamp(340px, 34vw, 560px);
+  --desk-side-wide: clamp(460px, 52vw, 1000px);
+  --desk-side-inset: 12px;
   --desk-gutter: 24px;
   --desk-read-width: 820px;
   --desk-wide-width: 1240px;

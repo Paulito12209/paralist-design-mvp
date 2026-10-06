@@ -9,7 +9,8 @@
  * -----------------------------------
  * lazyModules   -> welche Bereiche erst beim Öffnen geladen werden;
  *                  „desk“ und „dashboard“ braucht nur die Desktop-Fassung, sie
- *                  laden erst, wenn das Fenster breit genug ist (src/ui/desk-mode.js)
+ *                  laden erst, wenn das Fenster breit genug ist (src/ui/desk-mode.js);
+ *                  „deskSide“ (Seitenfenster rechts) erst beim ersten Öffnen
  * lazyViews     -> welche Ansichten dabei eine eigene Seite sind
  * prefetchOrder -> in welcher Reihenfolge sie in Ruhephasen vorgeladen werden
  *                  (das erste Öffnen geht dann ohne Warten)
@@ -26,7 +27,8 @@ import { loadUsage } from "./data/usage.js";
 import { initComposer, onComposerText } from "./features/composer/composer.js";
 import { initDictation } from "./features/composer/dictation.js";
 import { initEntry } from "./features/entry/entry.js";
-import { loadPhoto, renderProfileButton, savedPhoto } from "./features/profile/avatar.js";
+import { loadPhoto, renderProfileButton } from "./features/profile/avatar.js";
+import { currentTheme, setTheme } from "./features/profile/theme.js";
 import { initOverview, renderOverview } from "./features/overview/overview.js";
 import { initPage } from "./features/overview/page.js";
 import { openProjectViewMenu } from "./features/overview/project-views.js";
@@ -85,6 +87,7 @@ const lazyModules = {
   video: () => import("./ui/video-player.js"),
   files: () => import("./data/files.js"),
   desk: () => import("./shell/desk.js"),
+  deskSide: () => import("./shell/desk-side.js"),
   dashboard: () => import("./features/dashboard/dashboard.js"),
   /* nur bei „?demo=1“ in der Adresse (src/shell/demo-load.js) */
   demo: () => import("./data/demo-data.js"),
@@ -195,7 +198,7 @@ function initLazyViews() {
 function initDeskWhenWide() {
   const mount = () => {
     if (!isDesk()) return;
-    load("desk").then((module) => module.initDesk({ openProjectViewMenu, profilePhoto: savedPhoto, railCards }));
+    load("desk").then((module) => module.initDesk({ openProjectViewMenu, railCards, theme: { current: currentTheme, set: setTheme } }));
     load("dashboard").then((module) => module.initDashboard());
   };
   mount();

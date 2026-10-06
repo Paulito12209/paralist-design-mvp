@@ -81,16 +81,20 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/tokens-ios.css` | die Werte der iOS-Fassung |
 | `styles/tokens-desk.css` | die Werte der Desktop-Fassung (Spalten, Flächen, große Zahlen) |
 | `styles/desk.css` | Desktop: Raster aus Seitenleiste, Reiterzeile, Seite und rechter Spalte; Zuklappen, Suchfeld, Eingabefeld unten |
-| `styles/desk-head.css` | Desktop: Wortmarke mit Klapp-Knopf; Reiterzeile mit Zurück, Vorwärts und den vier Reitern |
+| `styles/desk-head.css` | Desktop: Wortmarke mit Klapp-Knopf; Kopfzeile mit Zurück, Vorwärts, Pfad samt Knöpfen der Seite und Knopf fürs Seitenfenster |
 | `styles/desk-overlays.css` | Desktop: große Blätter, Auswahl-Blatt, Menü und Update-Fenster als Dialoge in der Mitte, samt Auftauchen |
 | `styles/desk-views.css` | Desktop: wie Übersicht, Kalender, Aufgaben, Medien und Eintrag die Breite nutzen |
 | `styles/desk-hover.css` | Desktop: Überfahren, Drücken und Tastatur-Rahmen für Seite, Kopfzeile und Dialoge |
-| `styles/desk-nav.css` | Desktop: Seitenleiste mit „Neu“, Sammlungen, Tab-Gruppen; ihr Fuß (Stufe, Konto) in styles/desk-nav-foot.css |
+| `styles/desk-nav.css` | Desktop: Seitenleiste mit „Neu“, Sammlungen, Tab-Gruppen; ihr Fuß (Einstellungen, Stufe, Hell/Dunkel, Update) in styles/desk-nav-foot.css |
+| `styles/desk-nav-pages.css` | Desktop: Icon-Zeile oben in der Seitenleiste (Übersicht, Kalender, Aufgaben, Medien, Suche) mit Hinweis beim Überfahren |
 | `styles/desk-kbd.css` | Desktop: dezente Tasten-Schilder und das Auftauchen der Blöcke der Seitenleiste |
 | `styles/search-palette.css` | Desktop: Such-Palette in der Fenstermitte (⌘K, „/“, Suchfeld, Such-Knopf) |
 | `styles/desk-settings.css` | Desktop: Profil als Seite mit Untermenü; styles/shortcuts.css: Liste der Kurzbefehle |
 | `styles/desk-rail.css` | Desktop: rechte Spalte mit nächstem Termin, Aufgaben und zuletzt Geöffnetem |
 | `styles/desk-rail-tiles.css` | Desktop: die zwei Kacheln oben rechts (Eingang-Stapel, Stufen-Ring) und die Tagesleiste |
 | `styles/desk-rail-views.css` | Desktop: Karten der rechten Spalte je Seite (Monat, Tag, Zahlen, Balken, Vorschau) |
+| `styles/desk-side.css` | Desktop: Seitenfenster rechts — Platz im Raster, Rahmen und Kopf (Zurück, Breiter, Minimieren, Schließen) |
+| `styles/desk-side-views.css` | Desktop: Inhalt des Seitenfensters — Auswahl „Öffnen“, Browser, Medien, Datei vom Gerät und Listen |
+| `styles/desk-side-doc.css` | Desktop: Text der Lese-Vorschau im Seitenfenster (Absätze, Checkboxen, Karten mit Link, „Darin“) |
 | `styles/dashboard.css` | Desktop: Zahlen der Übersicht, Band und zwei Karten (Fortschritt); Bewegung in dashboard-motion.css |
 | `styles/dashboard-stage.css` | Desktop: Bühne der Übersicht wie Apple Arcade; ihre Reihe verknüpfter Einträge in styles/dashboard-shelf.css; styles/desk-progress.css: Fortschritt als Seite |

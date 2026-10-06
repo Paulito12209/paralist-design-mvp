@@ -1,0 +1,136 @@
+/*
+ * Desktop: die Icon-Zeile oben in der Seitenleiste, direkt unter „Paralist“
+ * und über „Neu“ — Übersicht, Kalender, Aufgaben, Medien und die Lupe, nur
+ * Icons wie die Leiste in T3 Code. Die gewählte Seite trägt eine Fläche.
+ * Beim Überfahren (oder mit der Tastatur) erscheint darunter ein Hinweis mit
+ * Name und Kürzel. Gilt erst ab 1024px; das Markup entsteht in
+ * src/shell/desk-pages.js.
+ * Pfad: styles/desk-nav-pages.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-nav-pages)
+ * -----------------------------------
+ * --page-btn      -> Größe eines Icon-Knopfs
+ * --page-icon     -> Größe der Icons darin
+ * --page-row-gap  -> Luft zwischen der Zeile und „Neu“ darunter
+ * Einzelwerte stehen bei ihrer Regel: Hinweis-Schrift 12px, Abstand 6px,
+ * Verzögerung 400ms bis er erscheint.
+ *
+ * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * --desk-panel-strong -> Fläche der gewählten Seite (wie die gewählte Zeile darunter)
+ * --desk-hover / --desk-fast / --desk-ease -> Tönung beim Überfahren, Dauer und Kurve
+ * --avatar-btn-bg / --text / --bg -> Icons in Ruhe, gewählt, Hinweis (Schrift und Grund vertauscht)
+ */
+
+@media (min-width: 1024px) {
+  /* position/z-index: der Hinweis unter den Icons liegt über der rollenden Liste darunter */
+  .desk-nav-top {
+    position: relative;
+    z-index: 2;
+  }
+
+  .desk-nav-pages {
+    --page-btn: 36px;
+    --page-icon: 20px;
+    --page-row-gap: 10px;
+
+    display: flex;
+    justify-content: space-between; /* justify-content: die fünf Icons verteilen sich über die Breite von „Neu“ */
+    margin-bottom: var(--page-row-gap);
+  }
+
+  .desk-page-btn {
+    position: relative; /* position: Bezug für den Hinweis darunter */
+    display: grid;
+    place-items: center;
+    width: var(--page-btn);
+    height: var(--page-btn);
+    border-radius: 999px;
+    color: var(--avatar-btn-bg);
+    transition: background-color var(--desk-fast) var(--desk-ease), color var(--desk-fast) var(--desk-ease); /* transition: Tönung gleitet statt zu springen */
+  }
+
+  .desk-page-btn > .icon {
+    width: var(--page-icon);
+    height: var(--page-icon);
+  }
+
+  .desk-page-btn.is-active {
+    background: var(--desk-panel-strong);
+    color: var(--text);
+  }
+
+  .desk-page-btn:active {
+    opacity: 0.6;
+  }
+
+  .desk-page-btn:focus-visible {
+    outline: 2px solid var(--avatar-btn-bg); /* outline: sichtbarer Ring nur bei Bedienung mit der Tastatur */
+    outline-offset: 2px;
+  }
+
+  /* Hinweis „Kalender ⇧⌘K“: schwebt unter dem Icon, ohne die Zeile zu verschieben */
+  .desk-page-hint {
+    position: absolute; /* position: schwebt unter dem Icon */
+    top: calc(100% + 6px);
+    left: 50%;
+    z-index: 16; /* z-index: über der Liste und der Mitte, unter Eingabefeld und Dialogen (20) */
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: var(--text);
+    color: var(--bg);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap; /* white-space: der Hinweis bleibt eine Zeile */
+    opacity: 0;
+    transform: translate(-50%, -2px); /* transform: mittig unter dem Icon, beim Erscheinen gleitet er herab */
+    pointer-events: none; /* pointer-events: der Hinweis fängt keine Klicks ab */
+    transition: opacity var(--desk-fast) var(--desk-ease), transform var(--desk-fast) var(--desk-ease); /* transition: sanft ein- und ausblenden */
+  }
+
+  /* Das erste und das letzte Icon stehen am Rand: ihr Hinweis beginnt bzw. endet dort,
+     statt aus der Leiste zu ragen (sie schneidet ab, was übersteht) */
+  .desk-page-btn:first-child .desk-page-hint {
+    left: 0;
+    transform: translateY(-2px); /* transform: nur das Herabgleiten */
+  }
+
+  .desk-page-btn:last-child .desk-page-hint {
+    left: auto;
+    right: 0;
+    transform: translateY(-2px); /* transform: nur das Herabgleiten */
+  }
+
+  .desk-page-btn:focus-visible .desk-page-hint {
+    opacity: 1;
+    transform: translate(-50%, 0); /* transform: an seinen Platz */
+  }
+
+  .desk-page-btn:is(:first-child, :last-child):focus-visible .desk-page-hint {
+    transform: none;
+  }
+
+  @media (hover: hover) {
+    .desk-page-btn:not(.is-active):hover {
+      background: var(--desk-hover);
+      color: var(--text);
+    }
+
+    .desk-page-btn:hover .desk-page-hint {
+      opacity: 1;
+      transform: translate(-50%, 0); /* transform: an seinen Platz */
+      transition-delay: 400ms; /* transition-delay: erst nach kurzem Verweilen */
+    }
+
+    .desk-page-btn:is(:first-child, :last-child):hover .desk-page-hint {
+      transform: none;
+    }
+  }
+
+  /* Ausgeblendet unter Profil › Kurzbefehle („Hinweise an den Seiten-Icons“); die Tasten gehen weiter. */
+  .device.hide-tabs-kbd .desk-page-hint {
+    display: none;
+  }
+}

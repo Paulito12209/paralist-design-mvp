@@ -1,28 +1,28 @@
 /*
- * Bausteine der Seitenleiste am Desktop: das feste Gerüst (Knopf „Neu“,
- * Sammlungen, Projekte, Fuß) und die Teile, die sich mit den Daten ändern
- * (je Projekt-Ansicht eine Gruppe mit ihren Projekten und der Fuß mit dem
- * Konto). Hier steht nur Markup und was gerade gewählt ist — was ein Klick
- * auslöst, entscheidet src/shell/desk-nav.js.
+ * Bausteine der Seitenleiste am Desktop: das feste Gerüst (Icon-Zeile der
+ * Seiten, Knopf „Neu“, Sammlungen, Projekte, Fuß) und die Teile, die sich mit
+ * den Daten ändern (je Projekt-Ansicht eine Gruppe mit ihren Projekten). Hier
+ * steht nur Markup und was gerade gewählt ist — was ein Klick auslöst,
+ * entscheidet src/shell/desk-nav.js. Icon-Zeile und Fuß füllen
+ * src/shell/desk-pages.js und src/shell/desk-foot.js.
  * Pfad: src/shell/desk-nav-parts.js
  *
  * Keine anpassbaren visuellen Werte: welche Sammlung welche Taste und Farbe
  * hat, steht in src/ui/desk-links.js; Aussehen, Abstände und Größen stehen
- * in styles/desk-nav.css, der Fuß in styles/desk-nav-foot.css und die
- * Tasten-Schilder in styles/desk-kbd.css.
+ * in styles/desk-nav.css, die Icon-Zeile in styles/desk-nav-pages.css, der
+ * Fuß in styles/desk-nav-foot.css und die Tasten-Schilder in styles/desk-kbd.css.
  */
 
 import { formatNumber } from "../core/format.js";
 import { escapeHtml, icon } from "../core/html.js";
 import { sameId } from "../core/ids.js";
-import { account } from "../data/account.js";
 import { overviewPages } from "../data/config.js";
 import { projectViewLabel, visibleProjects } from "../data/project-views.js";
 import { entriesOf, findEntry } from "../data/queries.js";
 import { entryRef } from "../data/refs.js";
 import { state, ui } from "../data/state.js";
 import { currentView } from "../ui/views.js";
-import { chordKey, collectionLinks, pageLinks, soonLinks, withCommand } from "../ui/desk-links.js";
+import { collectionLinks, pageLinks, soonLinks, spokenKeys, withControl } from "../ui/desk-links.js";
 import { keyCap } from "../ui/key-caps.js";
 
 function newButtonMarkup() {
@@ -49,17 +49,18 @@ function projectsHeadMarkup(tool) {
 
 /*
  * Eine Sammlung: Icon in ihrer Farbe, Name, beim Eingang die Zahl direkt am
- * Namen, rechts das Kürzel. Name und Zahl teilen sich eine Spalte — so stehen
- * alle Kürzel untereinander, egal ob eine Zeile eine Zahl hat.
+ * Namen, rechts das Kürzel (⌃ und Ziffer). Name und Zahl teilen sich eine
+ * Spalte — so stehen alle Kürzel untereinander, egal ob eine Zeile eine Zahl hat.
  */
 function collectionRowMarkup(link) {
   const quiet = link.quiet ? " is-quiet" : "";
   const counted = link.id === "1" ? '<span class="desk-nav-count" hidden></span>' : "";
+  const keys = withControl(link.num);
   return `
-    <button class="desk-nav-row${quiet}" type="button" data-nav-collection="${link.id}" aria-keyshortcuts="${chordKey} ${link.key}">
+    <button class="desk-nav-row${quiet}" type="button" data-nav-collection="${link.id}" aria-keyshortcuts="${spokenKeys(keys)}">
       ${icon(link.icon, `desk-nav-icon desk-nav-tone desk-nav-icon-${link.tone}`)}
       <span class="desk-nav-label"><span class="desk-nav-text">${escapeHtml(link.title)}</span>${counted}</span>
-      ${keyCap(`${chordKey} ${link.key}`)}
+      ${keyCap(keys)}
     </button>`;
 }
 
@@ -105,13 +106,13 @@ function projectsMarkup() {
 }
 
 /**
- * Das feste Gerüst: oben „Neu“, in der Mitte die rollende Liste, unten der
- * Fuß. Jeder Block bekommt seine Nummer (--i), damit er beim ersten Zeigen ein
- * wenig nach dem vorigen auftaucht.
+ * Das feste Gerüst: oben die Icon-Zeile der Seiten und „Neu“, in der Mitte die
+ * rollende Liste, unten der Fuß. Jeder Block bekommt seine Nummer (--i), damit
+ * er beim ersten Zeigen ein wenig nach dem vorigen auftaucht.
  */
 export function skeletonMarkup() {
   return `
-    <div class="desk-nav-block desk-nav-top" style="--i: 0">${newButtonMarkup()}</div>
+    <div class="desk-nav-block desk-nav-top" style="--i: 0"><nav class="desk-nav-pages" data-nav-slot="pages" aria-label="Seiten"></nav>${newButtonMarkup()}</div>
     <div class="desk-nav-scroll">
       <div class="desk-nav-block" style="--i: 1">${collectionsMarkup()}</div>
       <div class="desk-nav-block" style="--i: 2">${projectsMarkup()}</div>
@@ -166,25 +167,6 @@ function viewGroupMarkup(view, closedIds, activeId) {
 /** Alle Ansichten als Gruppen, „Alle“ zuerst; `closedIds` sind die zugeklappten, `activeId` das offene Projekt. */
 export function viewGroupsMarkup(closedIds, activeId) {
   return state.projectViews.map((view) => viewGroupMarkup(view, closedIds, activeId)).join("");
-}
-
-/* Das runde Bild: Foto, sonst die Initialen auf dem Verlauf des Profils. */
-function avatarMarkup(photo) {
-  return photo ? `<img class="desk-foot-photo" src="${photo}" alt="">` : escapeHtml(account.initials);
-}
-
-/*
- * Der Fuß: das Konto, darunter „Einstellungen“ — öffnet Profil und
- * Einstellungen; ein Zahnrad braucht es daneben nicht. Die Stufe
- * steht oben rechts in der Reiterzeile (src/shell/desk-head.js).
- */
-export function footMarkup(photo) {
-  return `
-    <button class="desk-nav-row desk-foot-row" type="button" data-nav-profile="1" aria-label="Profil und Einstellungen" aria-keyshortcuts="Meta+Comma">
-      <span class="desk-foot-avatar" aria-hidden="true">${avatarMarkup(photo)}</span>
-      <span class="desk-foot-copy"><span class="desk-foot-title">${escapeHtml(account.name)}</span><span class="desk-foot-hint">Einstellungen</span></span>
-      ${keyCap(withCommand(","))}
-    </button>`;
 }
 
 /* Welche Sammlung zeigt die offene Unterseite? Der Eingang hat keine Art und

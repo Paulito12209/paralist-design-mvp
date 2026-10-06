@@ -209,7 +209,11 @@ export function initEntry() {
   initEntryDetails();
   initEntryHead();
   initEntryInline();
-  path = mountPath(el("entry-head"));
+  /* Umbenennen im Pfad oben (Desktop) läuft über dasselbe Titelfeld wie am Handy */
+  path = mountPath(el("entry-head"), (text) => {
+    dom.entryTitle.textContent = text;
+    dom.entryTitle.dispatchEvent(new Event("input"));
+  });
   initEntryTitle();
   bodyEditor = createBlockEditor(dom.entryBody, {
     onChange: saveBody,

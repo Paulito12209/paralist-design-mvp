@@ -1,0 +1,160 @@
+/*
+ * Desktop: das Seitenfenster rechts — Rahmen und Platz im Raster. Offen
+ * (.is-side-open am Gerätefenster) bekommt es eine eigene Spalte über die
+ * ganze Höhe, die Spalte mit den Details rechts weicht; „Breiter“ setzt
+ * .is-side-wide. Darin oben der Kopf (Zurück, Titel, Breiter, Minimieren,
+ * Schließen) und darunter der Inhalt der gewählten Ansicht
+ * (styles/desk-side-views.css). Gilt erst ab 1024px; das Markup entsteht in
+ * src/shell/desk-side.js.
+ * Pfad: styles/desk-side.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-side)
+ * -----------------------------------
+ * --side-btn      -> Größe der runden Knöpfe im Kopf
+ * --side-icon     -> Größe ihrer Icons
+ * --side-pad      -> Innenrand links und rechts
+ * Einzelwerte stehen bei ihrer Regel: Titel 15px.
+ *
+ * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * --desk-side-width / --desk-side-wide / --desk-side-inset -> Breite, Breite nach „Breiter“, Abstand zum Rand
+ * --desk-top-height -> Höhe des Kopfs, gleich hoch wie die Kopfzeile links daneben
+ * --desk-panel / --desk-edge / --desk-radius -> Fläche, Haarlinie und Rundung des Fensters
+ * --desk-hover / --desk-fast / --desk-ease -> Tönung beim Überfahren, Dauer und Kurve
+ * --desk-gutter -> Abstand der Karte „Ansicht“ zum Fenster
+ * --text / --avatar-btn-bg -> Titel und Icons der Knöpfe
+ */
+
+.desk-side {
+  display: none;
+}
+
+@media (min-width: 1024px) {
+  /* Eine Spalte mehr: das Fenster reicht über Kopfzeile und Seite, die Spalte „rail“ entfällt */
+  .device.is-side-open {
+    grid-template-columns: var(--desk-nav-width) minmax(0, 1fr) var(--desk-side-width); /* grid-template: dritte Spalte für das Fenster */
+    grid-template-areas:
+      "brand top side"
+      "bar main side"
+      "nav main side";
+  }
+
+  .device.is-side-open.is-side-wide {
+    --desk-side-width: var(--desk-side-wide);
+  }
+
+  .device.is-side-open .desk-rail {
+    display: none;
+  }
+
+  /* Eingabefeld, Knöpfe und die Karte „Ansicht“ unten bleiben über der Mitte,
+     nicht unter dem Fenster (sonst rechnen sie mit der Spalte rechts, styles/tasks-settings.css) */
+  .device.is-side-open .bottom-bar {
+    right: var(--desk-side-width);
+  }
+
+  .device.is-side-open .view-panel {
+    right: calc(var(--desk-side-width) + var(--desk-gutter));
+  }
+
+  .desk-side {
+    --side-btn: 32px;
+    --side-icon: 18px;
+    --side-pad: 16px;
+
+    grid-area: side;
+    display: flex;
+    flex-direction: column;
+    min-height: 0; /* min-height: im Raster darf das Fenster schrumpfen, der Inhalt rollt */
+    margin: var(--desk-side-inset) var(--desk-side-inset) var(--desk-side-inset) 0;
+    border: 0.5px solid var(--desk-edge);
+    border-radius: var(--desk-radius);
+    background: var(--desk-panel);
+    overflow: hidden; /* overflow: Inhalt und eingebettete Website bleiben in den runden Ecken */
+  }
+
+  .desk-side[hidden],
+  .device:not(.is-side-open) .desk-side {
+    display: none;
+  }
+
+  .side-head {
+    flex: 0 0 auto; /* flex: der Kopf behält seine Höhe */
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    height: calc(var(--desk-top-height) - var(--desk-side-inset));
+    padding: 0 8px 0 var(--side-pad);
+  }
+
+  /* Mit Zurück-Pfeil rückt der Titel an ihn heran */
+  .side-head:has(.side-back:not([hidden])) {
+    padding-left: 8px;
+  }
+
+  .side-title {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden; /* overflow/text-overflow/white-space: ein langer Titel endet mit „…“ */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .side-tools {
+    display: flex;
+    gap: 2px;
+  }
+
+  .side-btn {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: var(--side-btn);
+    height: var(--side-btn);
+    border-radius: 999px;
+    color: var(--avatar-btn-bg);
+    transition: background-color var(--desk-fast) var(--desk-ease), color var(--desk-fast) var(--desk-ease); /* transition: Tönung gleitet statt zu springen */
+  }
+
+  .side-btn[hidden] {
+    display: none;
+  }
+
+  .side-btn > .icon {
+    width: var(--side-icon);
+    height: var(--side-icon);
+  }
+
+  .side-btn:disabled {
+    opacity: 0.3;
+    cursor: default;
+  }
+
+  @media (hover: hover) {
+    .side-btn:not(:disabled):hover {
+      background: var(--desk-hover);
+      color: var(--text);
+    }
+  }
+
+  .side-btn:not(:disabled):active {
+    opacity: 0.6;
+  }
+
+  .side-btn:focus-visible {
+    outline: 2px solid var(--avatar-btn-bg); /* outline: sichtbarer Ring nur bei Bedienung mit der Tastatur */
+    outline-offset: 2px;
+  }
+
+  .side-body {
+    flex: 1 1 auto; /* flex: der Inhalt nimmt die ganze Höhe unter dem Kopf */
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto; /* overflow-y: lange Listen und Seiten rollen im Fenster */
+    overscroll-behavior: contain; /* overscroll-behavior: am Ende rollt nichts dahinter mit */
+    padding: 4px var(--side-pad) var(--side-pad);
+  }
+}

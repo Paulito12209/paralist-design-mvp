@@ -1,0 +1,327 @@
+/*
+ * Desktop: der Inhalt des Seitenfensters rechts — die Auswahl „Öffnen“, der
+ * Browser mit Adresszeile, Medien und Datei vom Gerät und die Listen von
+ * Seite, Projekt und Arbeitsbereich. Der Rahmen steht in styles/desk-side.css,
+ * der Text der Lese-Vorschau in styles/desk-side-doc.css; das Markup entsteht
+ * in src/shell/desk-side*.js.
+ * Pfad: styles/desk-side-views.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (oben bei .side-body)
+ * -----------------------------------
+ * --side-row-height -> Höhe einer Zeile in Auswahl und Listen
+ * --side-glyph      -> Größe der Icons vor den Zeilen
+ * --side-field      -> Höhe von Adresszeile und Suchfeld
+ * --side-tile       -> kleinste Breite einer Medien-Kachel
+ * Einzelwerte stehen bei ihrer Regel: Schrift 14px (Zeilen), 12px (Sätze
+ * darunter, Hinweise, Textdateien).
+ *
+ * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * --desk-hover / --desk-panel-strong -> Tönung beim Überfahren, Fläche der Felder und Knöpfe
+ * --desk-item-radius / --desk-radius-sm -> Rundung der Zeilen und der Vorschau
+ * --desk-edge / --card -> Haarlinie und Grund der eingebetteten Website
+ * --bookmark-color -> Lesezeichen-Knopf, sobald die Seite gespeichert ist
+ * --text / --muted / --avatar-btn-bg -> Schrift, leise Schrift, Icons
+ */
+
+@media (min-width: 1024px) {
+  .side-body {
+    --side-row-height: 52px;
+    --side-glyph: 20px;
+    --side-field: 38px;
+    --side-tile: 96px;
+  }
+
+  .side-lead,
+  .side-note {
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .side-lead {
+    margin: 0 4px 10px;
+  }
+
+  .side-note {
+    margin: 10px 4px 0;
+  }
+
+  .side-link {
+    color: var(--text);
+    text-decoration: underline;
+  }
+
+  /* ---------- Auswahl „Öffnen“ und Zeilen der Listen ---------- */
+
+  .side-choices,
+  .side-rows {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .side-choice,
+  .side-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: var(--side-row-height);
+    padding: 6px 10px;
+    border-radius: var(--desk-item-radius);
+    text-align: left;
+    color: var(--text);
+    transition: background-color var(--desk-fast) var(--desk-ease); /* transition: Tönung gleitet statt zu springen */
+  }
+
+  .side-choice-icon,
+  .side-row-glyph .icon {
+    flex: 0 0 auto;
+    width: var(--side-glyph);
+    height: var(--side-glyph);
+    color: var(--avatar-btn-bg);
+  }
+
+  .side-row-glyph {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 28px;
+    height: 28px;
+    overflow: hidden; /* overflow: Vorschaubilder bleiben in ihrem Feld */
+    border-radius: 8px;
+  }
+
+  .side-row-glyph img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* object-fit: das Bild füllt das Feld, ohne zu verzerren */
+  }
+
+  .side-choice-text,
+  .side-row-text {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-width: 0;
+    line-height: 1.3;
+  }
+
+  .side-choice-label,
+  .side-row-title,
+  .side-preview-title {
+    overflow: hidden; /* overflow/text-overflow/white-space: lange Namen enden mit „…“ */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .side-choice-note,
+  .side-row-note {
+    overflow: hidden; /* overflow/text-overflow/white-space: bleibt einzeilig */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  @media (hover: hover) {
+    .side-choice:hover,
+    .side-row:hover,
+    .side-pill:hover,
+    .side-doc-link:hover {
+      background: var(--desk-hover);
+    }
+  }
+
+  .side-choice:focus-visible,
+  .side-row:focus-visible,
+  .side-pill:focus-visible {
+    outline: 2px solid var(--avatar-btn-bg); /* outline: sichtbarer Ring nur bei Bedienung mit der Tastatur */
+    outline-offset: -2px;
+  }
+
+  /* ---------- Adresszeile und Suchfeld ---------- */
+
+  .side-address,
+  .side-search {
+    flex: 0 0 auto; /* flex: die Zeile behält ihre Höhe über der Website */
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    height: var(--side-field);
+    margin-bottom: 10px;
+    padding: 0 3px 0 12px;
+    border-radius: 999px;
+    background: var(--desk-panel-strong);
+  }
+
+  .side-address-icon {
+    flex: 0 0 auto;
+    width: 16px;
+    height: 16px;
+    margin-right: 6px;
+    color: var(--muted);
+  }
+
+  .side-address-input {
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
+    border: 0;
+    background: none;
+    font-size: 14px;
+    color: var(--text);
+    outline: none; /* outline: die ganze Zeile ist schon das Feld */
+  }
+
+  .side-address .side-btn {
+    --side-btn: 30px;
+    --side-icon: 16px;
+  }
+
+  .side-bookmark.is-on {
+    color: var(--bookmark-color);
+  }
+
+  /* ---------- Eingebettete Website, PDF ---------- */
+
+  .side-frame-box {
+    flex: 1 1 auto; /* flex: die Website nimmt die ganze Höhe unter der Adresszeile */
+    display: flex;
+    min-height: 0;
+  }
+
+  .side-frame {
+    flex: 1 1 auto;
+    width: 100%;
+    min-height: 0;
+    border: 0.5px solid var(--desk-edge);
+    border-radius: var(--desk-radius-sm);
+    background: #fff; /* fester weißer Grund: Websites ohne eigene Farbe sind auf Weiß gebaut, auch im Dunkelmodus */
+  }
+
+  /* ---------- Leer, Ablegen, Vorschau ---------- */
+
+  .side-empty,
+  .side-drop,
+  .side-file-card {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 24px;
+    text-align: center;
+  }
+
+  .side-drop {
+    border: 1.5px dashed var(--desk-edge);
+    border-radius: var(--desk-radius-sm);
+  }
+
+  .side-empty-icon {
+    width: 32px;
+    height: 32px;
+    margin-bottom: 4px;
+    color: var(--muted);
+  }
+
+  .side-empty-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .side-empty-text {
+    max-width: 280px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  .side-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex: 0 0 auto;
+    height: 30px;
+    margin-top: 6px;
+    padding: 0 12px;
+    border-radius: 999px;
+    background: var(--desk-panel-strong);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    transition: background-color var(--desk-fast) var(--desk-ease); /* transition: Tönung gleitet statt zu springen */
+  }
+
+  .side-pill .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .side-preview-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    margin-bottom: 12px;
+  }
+
+  .side-preview-head > .side-pill {
+    margin-top: 0;
+  }
+
+  /* Name nimmt den Rest der Zeile, statt Icon und „Öffnen“ in eigene Zeilen zu schieben */
+  .side-preview-head > :is(.side-preview-title, .side-row-text) {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .side-preview {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+  }
+
+  .side-media {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    margin: 0 auto;
+    border-radius: var(--desk-radius-sm);
+    object-fit: contain; /* object-fit: das ganze Bild bleibt zu sehen */
+  }
+
+  .side-drawing {
+    background: #fff; /* fester weißer Grund wie die Zeichenfläche selbst */
+  }
+
+  .side-audio {
+    width: 100%;
+  }
+
+  .side-text {
+    flex: 1 1 auto;
+    overflow: auto; /* overflow: lange Textdateien rollen in sich */
+    margin: 0;
+    padding: 12px;
+    border-radius: var(--desk-radius-sm);
+    background: var(--desk-panel-strong);
+    font-size: 12px;
+    white-space: pre-wrap; /* white-space: Zeilenumbrüche der Datei bleiben, lange Zeilen brechen um */
+    color: var(--text);
+  }
+
+  .side-sample {
+    width: 160px;
+    margin: 0 auto;
+  }
+
+  .side-media-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(var(--side-tile), 1fr)); /* grid-template: so viele Kacheln nebeneinander, wie Platz ist */
+    gap: 4px;
+  }
+}

@@ -23,6 +23,7 @@
 
 import { dom, el } from "../../core/dom.js";
 import { load, loadedModule } from "../../core/lazy.js";
+import { dayClock } from "../../core/format.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { colorFromText, faviconUrl } from "../../core/link-preview.js";
 import { filterBookmarkItems } from "../../data/collection-filters.js";
@@ -86,10 +87,11 @@ function thumbMarkup(block) {
   return `<span class="bookmark-thumb">${icon(block.kind === "place" ? "pin" : block.kind === "video" ? "video" : "bookmark")}</span>`;
 }
 
-/* Wo das Lesezeichen steht: ein eigener Eintrag nennt seinen Ablageort,
-   eine Karte im Inhalt den Eintrag drumherum. */
+/* Wo das Lesezeichen steht: ein eigener Eintrag nennt, wann er gespeichert
+   wurde, und seinen Ablageort, eine Karte im Inhalt den Eintrag drumherum. */
 function sourceLabel(entry) {
-  if (entry.type === BOOKMARK_TYPE) return `Eigener Eintrag · ${placesLabel(entry)}`;
+  /* „Gespeichert: Heute, 14:05 · Eingang“ */
+  if (entry.type === BOOKMARK_TYPE) return entry.createdAt ? `Gespeichert: ${dayClock(entry.createdAt)} · ${placesLabel(entry)}` : `Eigener Eintrag · ${placesLabel(entry)}`;
   return `In ${typeSingular(entry.type)} „${entry.title || typeSingular(entry.type)}“`;
 }
 

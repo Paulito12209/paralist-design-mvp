@@ -78,6 +78,16 @@ export function holdsBookmark(entry) {
   return parseBlocks(entry.body).some((block) => block.url && embedKinds.includes(block.kind));
 }
 
+/**
+ * Der eigene, nicht archivierte Lesezeichen-Eintrag mit genau dieser Adresse —
+ * sonst null. Der Browser im Seitenfenster (src/shell/desk-side-browser.js)
+ * zeigt damit, ob die offene Seite schon gespeichert ist.
+ */
+export function ownBookmarkFor(url) {
+  const fits = (entry) => !entry.archived && entry.type === BOOKMARK_TYPE && parseBlocks(entry.body).some((block) => block.url === url);
+  return state.entries.find(fits) || null;
+}
+
 /** Alle Lesezeichen zusammen — die Zahl auf der Karte der Startseite. */
 export function bookmarkTotal() {
   return bookmarkItems(null).length;
