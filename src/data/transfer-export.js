@@ -7,7 +7,10 @@
  *                  export.md, den Zeichnungen und Vorschaubildern als Bilder
  *                  und allen Mediendateien aus der Browser-Datenbank
  * Vor jedem Export wird gespeichert, was noch wartet (flushSave) — sonst
- * fehlte der zuletzt getippte Buchstabe.
+ * fehlte der zuletzt getippte Buchstabe. Das ZIP meldet seinen Fortschritt
+ * (onProgress) und lässt sich abbrechen (signal); die Mediendateien gehen als
+ * Blob unverändert hinein, damit ein Handy sie nicht in den Arbeitsspeicher
+ * kopieren muss (src/core/zip.js).
  * Pfad: src/data/transfer-export.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -56,14 +59,24 @@ export function jsonExport() {
   return new Blob([JSON.stringify(snapshot)], { type: "application/json" });
 }
 
+/* Der Seite einen Moment zum Zeichnen lassen, bevor die Rechenarbeit beginnt */
+function nextTick() {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
 /**
  * Stufe Vollständig: das ZIP als Blob. Mediendateien, die der Browser nicht
  * mehr hat, fehlen darin — der Eintrag bleibt trotzdem in paralist.json.
+ * @param onProgress optional, ({ done, total, name }) je Datei im ZIP
+ * @param signal optional, AbortSignal zum Abbrechen (wirft AbortError)
  */
-export async function zipExport() {
+export async function zipExport({ onProgress, signal } = {}) {
   flushSave();
-  const snapshot = buildSnapshot({ withThumbs: false });
-  const thumbs = buildSnapshot({ withThumbs: true }).thumbs || {};
+  await nextTick();
+  /* Einmal lesen: die Vorschaubilder kommen als Dateien daneben, nicht in die JSON */
+  const full = buildSnapshot({ withThumbs: true });
+  const thumbs = full.thumbs || {};
+  const snapshot = { ...full, thumbs: undefined };
   const entries = snapshot.state.entries || [];
   const files = [
     { name: "paralist.json", data: JSON.stringify(snapshot) },
@@ -78,8 +91,9 @@ export async function zipExport() {
   });
 
   for (const media of snapshot.media) {
+    if (signal?.aborted) throw new DOMException("Export abgebrochen", "AbortError");
     const blob = await getBlob(media.id);
-    if (blob) files.push({ name: media.file, data: blob });
+    if (blob) files.push({ name: media.file, data: blob, store: true });
   }
-  return writeZip(files);
+  return writeZip(files, { onProgress, signal });
 }

@@ -12,7 +12,11 @@
  * Für „Details“ gibt es zwei reine Anzeige-Zeilen: `lead` (der volle Titel,
  * groß und ungekürzt) und `detail` (Bezeichnung oben, Wert darunter); „Typ
  * ändern“ nutzt dazu `note` (ein Satz in normaler Schrift, z.B. was beim
- * Umwandeln mit den verknüpften Einträgen passiert).
+ * Umwandeln mit den verknüpften Einträgen passiert). `progress` ist eine
+ * Zeile mit Satz und Fortschrittsbalken (Material 3, linear): `value` als
+ * Anteil 0–1, ohne Anteil läuft der Balken unbestimmt; setSheetProgress()
+ * schreibt beides fort, solange das Blatt offen ist — so zeigt der Export,
+ * wie weit das ZIP ist.
  * Eine Option kann außerdem `info: { title, text }` tragen (ein ⓘ gleich
  * rechts neben dem Namen; ein Tipp darauf öffnet src/ui/info-dialog.js und
  * lässt das Blatt offen).
@@ -36,8 +40,9 @@
  *
  * Keine anpassbaren visuellen Werte: Aussehen und Abstände stehen in
  * styles/overlays.css (Klassen .sheet, .sheet-option),
- * styles/sheet-tabs.css (Kopf, Tabs, Haken, Hereingleiten) und
- * styles/sheet-tiles.css (das Raster der Kacheln).
+ * styles/sheet-tabs.css (Kopf, Tabs, Haken, Hereingleiten),
+ * styles/sheet-tiles.css (das Raster der Kacheln) und
+ * styles/sheet-progress.css (die Fortschrittszeile).
  */
 
 import { events, on } from "../core/bus.js";
@@ -57,12 +62,25 @@ let stays = [];
 /* Je Option die Erklärung hinter ihrem ⓘ — oder undefined */
 let infos = [];
 
+/* Fortschrittszeile: Satz oben, Balken darunter; ohne Anteil läuft er unbestimmt */
+function progressMarkup(option) {
+  const known = typeof option.value === "number";
+  const style = known ? ` style="--sheet-progress:${Math.min(1, Math.max(0, option.value))}"` : "";
+  const now = known ? ` aria-valuenow="${Math.round(option.value * 100)}"` : "";
+  return `
+    <div class="sheet-progress${known ? "" : " is-indeterminate"}" role="progressbar" aria-valuemin="0" aria-valuemax="100"${now}${style}>
+      <span class="sheet-progress-text">${escapeHtml(option.label)}</span>
+      <span class="sheet-progress-track"><span class="sheet-progress-bar"></span></span>
+    </div>`;
+}
+
 function optionMarkup(option, index) {
   /* Eine Überschrift ist kein Knopf: ohne data-sheet lässt sie sich nicht
      antippen und rutscht im Klick-Empfänger unten auch nie dazwischen. */
   if (option.heading) return `<p class="sheet-heading">${escapeHtml(option.label)}</p>`;
   if (option.lead) return `<p class="sheet-lead">${escapeHtml(option.label)}</p>`;
   if (option.note) return `<p class="sheet-note">${escapeHtml(option.label)}</p>`;
+  if (option.progress) return progressMarkup(option);
   if (option.detail) {
     return `<div class="sheet-detail"><span class="sheet-detail-label">${escapeHtml(option.label)}</span><span class="sheet-detail-value">${escapeHtml(option.value)}</span></div>`;
   }
@@ -185,6 +203,26 @@ export function openSheet(title, options, { icon: titleIcon, iconColor, tabs, ta
   stays = options.map((option) => Boolean(option.stay));
   infos = options.map((option) => option.info);
   dom.sheet.hidden = false;
+}
+
+/**
+ * Die Fortschrittszeile des offenen Blatts fortschreiben.
+ * @param label der Satz über dem Balken
+ * @param fraction Anteil 0–1; ohne Zahl läuft der Balken unbestimmt
+ */
+export function setSheetProgress(label, fraction) {
+  const row = dom.sheetOptions.querySelector(".sheet-progress");
+  if (!row) return;
+  row.querySelector(".sheet-progress-text").textContent = label;
+  const known = typeof fraction === "number";
+  row.classList.toggle("is-indeterminate", !known);
+  if (!known) {
+    row.removeAttribute("aria-valuenow");
+    return;
+  }
+  const clamped = Math.min(1, Math.max(0, fraction));
+  row.style.setProperty("--sheet-progress", String(clamped));
+  row.setAttribute("aria-valuenow", String(Math.round(clamped * 100)));
 }
 
 /** Blatt schließen. */

@@ -44,6 +44,7 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/overlays.css` | Auswahl-Blatt, kleines Menü, Blätter von unten |
 | `styles/sheet-tabs.css` | Auswahl-Blatt mit Tabs (Aufgabe): Kopf mit Icon, Trennlinie, Pillen, Haken, Hereingleiten |
 | `styles/sheet-tiles.css` | Auswahl-Blatt: Raster aus Icon-Kacheln („Icon wählen“) |
+| `styles/sheet-progress.css` | Auswahl-Blatt: Fortschrittszeile mit Satz und linearem Balken (Export, solange die Datei entsteht) |
 | `styles/details.css` | Blatt „Details“ und kleiner Titel in der Kopfzeile einer Detailseite |
 | `styles/modal-top.css` | runder Pfeil in einem Blatt, der nach oben rollt |
 | `styles/search.css` | Suchseite; styles/search-refine.css: Art-Reiter, Sortieren/Filter, Chips; styles/search-overlay.css: Overlay am Handy |

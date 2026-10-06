@@ -5,9 +5,18 @@
  * CompressionStream, wenn der Browser das kann, sonst unkomprimiert; gelesen
  * wird beides. Dateinamen sind UTF-8. Kein Zip64: Dateien über 4 GB gibt es
  * in der App nicht.
+ * Große Dateien (Fotos, Videos) bleiben beim Schreiben als Blob liegen: die
+ * Prüfsumme wird stückweise gelesen, komprimiert wird nicht (sie sind es
+ * schon), und das fertige ZIP setzt sich aus den Blobs zusammen, ohne sie in
+ * den Arbeitsspeicher zu kopieren. Zwischen den Stücken bekommt die Seite
+ * Zeit zum Zeichnen — so bleibt ein Handy bedienbar und zeigt den Fortschritt.
  * Pfad: src/core/zip.js
  *
- * Keine anpassbaren visuellen Werte.
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * CHUNK_SIZE   -> in wie großen Stücken eine große Datei gelesen wird (kleiner: flüssigere Anzeige, mehr Pausen)
+ * DEFLATE_MAX  -> bis zu welcher Größe komprimiert wird; größere Dateien werden unverändert abgelegt
+ * PACKED_TYPES -> Dateitypen, die schon komprimiert sind und deshalb nie durch Deflate laufen
  */
 
 const LOCAL_SIGNATURE = 0x04034b50;
@@ -17,6 +26,9 @@ const METHOD_STORE = 0;
 const METHOD_DEFLATE = 8;
 /* Bit 11 im Flag-Feld: Dateinamen sind UTF-8 */
 const FLAG_UTF8 = 0x0800;
+const CHUNK_SIZE = 4 * 1024 * 1024;
+const DEFLATE_MAX = 8 * 1024 * 1024;
+const PACKED_TYPES = /^(image\/(?!svg|bmp)|video\/|audio\/|application\/(zip|gzip|pdf))/;
 
 const encoder = new TextEncoder();
 const decoder = new TextDecoder();
@@ -32,10 +44,49 @@ const crcTable = (() => {
   return table;
 })();
 
+/* Die laufende Prüfsumme um ein Stück Bytes fortschreiben (Start: 0xffffffff) */
+function crcUpdate(crc, bytes) {
+  let value = crc;
+  for (let i = 0; i < bytes.length; i += 1) value = crcTable[(value ^ bytes[i]) & 0xff] ^ (value >>> 8);
+  return value;
+}
+
 function crc32(bytes) {
+  return (crcUpdate(0xffffffff, bytes) ^ 0xffffffff) >>> 0;
+}
+
+/* Der Seite einen Moment zum Zeichnen lassen — zwischen zwei Dateien oder Stücken */
+function yieldToPage() {
+  return new Promise((resolve) => setTimeout(resolve, 0));
+}
+
+/* Prüfsumme einer großen Datei, stückweise gelesen, ohne sie ganz in den Speicher zu holen */
+async function blobCrc(blob) {
   let crc = 0xffffffff;
-  for (let i = 0; i < bytes.length; i += 1) crc = crcTable[(crc ^ bytes[i]) & 0xff] ^ (crc >>> 8);
+  for (let at = 0; at < blob.size; at += CHUNK_SIZE) {
+    const bytes = new Uint8Array(await blob.slice(at, at + CHUNK_SIZE).arrayBuffer());
+    crc = crcUpdate(crc, bytes);
+    await yieldToPage();
+  }
   return (crc ^ 0xffffffff) >>> 0;
+}
+
+/* Soll diese Datei unverändert hinein? Blobs, die groß oder schon komprimiert sind, und alles mit `store` */
+function storesAsIs(file) {
+  if (!(file.data instanceof Blob)) return false;
+  return Boolean(file.store) || file.data.size > DEFLATE_MAX || PACKED_TYPES.test(file.data.type || "");
+}
+
+/* Eine Datei zum Hineinschreiben vorbereiten: Prüfsumme, Daten (Bytes oder Blob), Methode */
+async function prepare(file) {
+  if (storesAsIs(file)) {
+    return { crc: await blobCrc(file.data), packed: file.data, packedSize: file.data.size, rawSize: file.data.size, method: METHOD_STORE };
+  }
+  const raw = await toBytes(file.data);
+  const deflated = raw.length && raw.length <= DEFLATE_MAX ? await pipe(raw, globalThis.CompressionStream) : null;
+  /* Nur nehmen, wenn es wirklich kleiner wurde — sonst unkomprimiert */
+  const packed = deflated && deflated.length < raw.length ? deflated : raw;
+  return { crc: crc32(raw), packed, packedSize: packed.length, rawSize: raw.length, method: packed === raw ? METHOD_STORE : METHOD_DEFLATE };
 }
 
 /* Zeit und Datum im alten DOS-Format, wie ZIP es verlangt. */
@@ -66,23 +117,24 @@ async function toBytes(data) {
 
 /**
  * Eine ZIP-Datei bauen.
- * @param files Liste von { name, data } — `data` ist Text, Blob, ArrayBuffer oder Uint8Array
+ * @param files Liste von { name, data, store? } — `data` ist Text, Blob, ArrayBuffer
+ *   oder Uint8Array; `store: true` legt die Datei unverändert ab
+ * @param onProgress optional, ({ done, total, name }) vor jeder Datei
+ * @param signal optional, ein AbortSignal — abgebrochen wirft die Funktion einen AbortError
  * @returns Blob vom Typ application/zip
  */
-export async function writeZip(files) {
+export async function writeZip(files, { onProgress, signal } = {}) {
   const stamp = dosStamp(new Date());
   const parts = [];
   const central = [];
   let offset = 0;
 
-  for (const file of files) {
-    const raw = await toBytes(file.data);
-    const deflated = raw.length ? await pipe(raw, globalThis.CompressionStream) : null;
-    /* Nur nehmen, wenn es wirklich kleiner wurde — sonst unkomprimiert */
-    const packed = deflated && deflated.length < raw.length ? deflated : raw;
-    const method = packed === raw ? METHOD_STORE : METHOD_DEFLATE;
+  for (const [index, file] of files.entries()) {
+    if (signal?.aborted) throw new DOMException("Export abgebrochen", "AbortError");
+    onProgress?.({ done: index, total: files.length, name: file.name });
+    await yieldToPage();
+    const { crc, packed, packedSize, rawSize, method } = await prepare(file);
     const name = encoder.encode(file.name);
-    const crc = crc32(raw);
 
     const local = new DataView(new ArrayBuffer(30));
     local.setUint32(0, LOCAL_SIGNATURE, true);
@@ -92,8 +144,8 @@ export async function writeZip(files) {
     local.setUint16(10, stamp.time, true);
     local.setUint16(12, stamp.day, true);
     local.setUint32(14, crc, true);
-    local.setUint32(18, packed.length, true);
-    local.setUint32(22, raw.length, true);
+    local.setUint32(18, packedSize, true);
+    local.setUint32(22, rawSize, true);
     local.setUint16(26, name.length, true);
     local.setUint16(28, 0, true);
     parts.push(local.buffer, name, packed);
@@ -107,14 +159,15 @@ export async function writeZip(files) {
     entry.setUint16(12, stamp.time, true);
     entry.setUint16(14, stamp.day, true);
     entry.setUint32(16, crc, true);
-    entry.setUint32(20, packed.length, true);
-    entry.setUint32(24, raw.length, true);
+    entry.setUint32(20, packedSize, true);
+    entry.setUint32(24, rawSize, true);
     entry.setUint16(28, name.length, true);
     entry.setUint32(42, offset, true);
     central.push(entry.buffer, name);
 
-    offset += 30 + name.length + packed.length;
+    offset += 30 + name.length + packedSize;
   }
+  onProgress?.({ done: files.length, total: files.length, name: "" });
 
   const centralSize = central.reduce((sum, part) => sum + part.byteLength, 0);
   const end = new DataView(new ArrayBuffer(22));

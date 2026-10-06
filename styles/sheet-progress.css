@@ -1,0 +1,92 @@
+/*
+ * Fortschrittszeile im Auswahl-Blatt (Option `progress` in src/ui/sheet.js):
+ * ein Satz („Wird gepackt … 3 von 12 Dateien“) und darunter ein linearer
+ * Fortschrittsbalken nach Material 3 — bestimmt, wenn der Anteil bekannt ist,
+ * sonst läuft ein kurzes Stück hin und her. Benutzt der Export unter
+ * Einstellungen › Daten, solange die Datei entsteht.
+ * Pfad: styles/sheet-progress.css
+ *
+ * ANPASSBARE WERTE (in styles/tokens.css bzw. styles/tokens-android.css)
+ * -----------------------------------
+ * --add / --m3-primary                     -> Farbe des Balkens (Standard / Android-Fassung)
+ * --card / --m3-secondary-container         -> Spur hinter dem Balken
+ * --muted / --m3-on-surface-variant         -> der Satz über dem Balken
+ *
+ * Maße einzelner Elemente stehen direkt bei ihrer Regel:
+ * .sheet-progress-track 4px        -> Höhe der Spur (Material 3)
+ * .sheet-progress-text 14px        -> Schrift des Satzes
+ * .sheet-progress-bar 40 %, 1.6s   -> Länge und Tempo des unbestimmten Laufs
+ */
+
+.sheet-progress {
+  --sheet-progress: 0; /* --sheet-progress: Anteil 0–1, setzt src/ui/sheet.js */
+  display: grid;
+  gap: 10px;
+  padding: 12px 12px 8px;
+}
+
+.sheet-progress-text {
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.sheet-progress-track {
+  position: relative; /* position: Anker für den Balken darin */
+  display: block;
+  height: 4px;
+  border-radius: 2px;
+  overflow: hidden; /* overflow: der laufende Balken bleibt in der Spur */
+  background: var(--card);
+}
+
+.sheet-progress-bar {
+  position: absolute; /* position: liegt in der Spur, wächst von links */
+  inset: 0;
+  border-radius: 2px;
+  background: var(--add);
+  transform-origin: left; /* transform: der Anteil skaliert den Balken, statt die Breite neu zu messen */
+  transform: scaleX(var(--sheet-progress));
+  transition: transform 200ms ease;
+}
+
+/* Unbestimmt: ein kurzes Stück läuft von links nach rechts */
+.sheet-progress.is-indeterminate .sheet-progress-bar {
+  width: 40%;
+  transform: none;
+  animation: sheet-progress-run 1.6s ease-in-out infinite;
+}
+
+@keyframes sheet-progress-run {
+  from {
+    left: -40%;
+  }
+  to {
+    left: 100%;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sheet-progress.is-indeterminate .sheet-progress-bar {
+    animation-duration: 3s;
+  }
+}
+
+/* Android-Fassung: Rand und Farben wie die übrigen Zeilen des Material-Blatts */
+@media (max-width: 1023px) {
+  [data-mobile-os="android"] .sheet-backdrop.is-m3 .sheet-progress {
+    padding-inline: 24px;
+  }
+
+  [data-mobile-os="android"] .sheet-backdrop.is-m3 .sheet-progress-text {
+    color: var(--m3-on-surface-variant);
+  }
+
+  [data-mobile-os="android"] .sheet-backdrop.is-m3 .sheet-progress-track {
+    background: var(--m3-secondary-container);
+  }
+
+  [data-mobile-os="android"] .sheet-backdrop.is-m3 .sheet-progress-bar {
+    background: var(--m3-primary);
+  }
+}
