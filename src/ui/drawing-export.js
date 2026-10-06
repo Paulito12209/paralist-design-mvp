@@ -5,7 +5,8 @@
  *
  * Die Striche liegen gespeichert als Bild unter der Eintrags-ID
  * (src/data/thumbs.js). Ist die Zeichnung gerade offen, wird sie vorher
- * gesichert, damit auch der letzte Strich dabei ist.
+ * gesichert, damit auch der letzte Strich dabei ist. Text, Formen, Bilder
+ * und Zettel kommen darunter dazu (src/ui/drawing-compose.js).
  * Pfad: src/ui/drawing-export.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -17,7 +18,9 @@
 import { copyImage } from "../core/clipboard.js";
 import { downloadBlob, flattenImage } from "../core/image-export.js";
 import { loadedModule } from "../core/lazy.js";
+import { drawItemsOf } from "../data/draw-items.js";
 import { thumbOf } from "../data/thumbs.js";
+import { composeDrawing } from "./drawing-compose.js";
 import { openSheet } from "./sheet.js";
 import { showToast } from "./toast.js";
 
@@ -27,12 +30,22 @@ const exportFormats = [
 ];
 const fallbackName = "Zeichnung";
 
-/* Das gespeicherte Bild der Zeichnung — eine offene Zeichnung vorher sichern.
+/* Das gespeicherte Bild der Striche — eine offene Zeichnung vorher sichern.
    Ohne Warten: beim Kopieren muss alles noch im selben Tipp passieren. */
 function drawingData(entry) {
   const drawing = loadedModule("drawing");
   if (drawing) drawing.saveDrawing();
   return thumbOf(entry.id) || null;
+}
+
+/* Gibt es überhaupt etwas zu zeigen — Striche oder Dinge auf der Fläche? */
+function hasContent(entry, data) {
+  return Boolean(data) || drawItemsOf(entry).length > 0;
+}
+
+/* Die fertige Datei: Dinge und Striche zusammen, auf weißem Grund */
+async function drawingBlob(entry, data, type) {
+  return flattenImage(await composeDrawing(entry, data), type);
 }
 
 /* Dateiname aus dem Titel; Zeichen, die Dateisysteme nicht mögen, fallen weg */
@@ -44,11 +57,11 @@ function fileName(entry, ext) {
 /** Die Zeichnung als Bild in die Zwischenablage legen und melden. Liefert true bei Erfolg. */
 export async function copyDrawing(entry) {
   const data = drawingData(entry);
-  if (!data) {
+  if (!hasContent(entry, data)) {
     showToast({ icon: "info", title: "Noch nichts gezeichnet", accent: "var(--muted)" });
     return false;
   }
-  if (!(await copyImage(flattenImage(data, "image/png")))) {
+  if (!(await copyImage(drawingBlob(entry, data, "image/png")))) {
     /* Manche Umgebungen verbieten Bilder in der Zwischenablage ganz (etwa
        eingebettete Vorschau-Browser). Dann bleibt die Datei als Weg. */
     showToast({
@@ -66,12 +79,12 @@ export async function copyDrawing(entry) {
 /* In einem Format herunterladen */
 async function exportAs(entry, format) {
   const data = drawingData(entry);
-  if (!data) {
+  if (!hasContent(entry, data)) {
     showToast({ icon: "info", title: "Noch nichts gezeichnet", accent: "var(--muted)" });
     return;
   }
   try {
-    downloadBlob(await flattenImage(data, format.type), fileName(entry, format.ext));
+    downloadBlob(await drawingBlob(entry, data, format.type), fileName(entry, format.ext));
     showToast({ icon: "check-circle", title: `${format.label} exportiert` });
   } catch {
     showToast({ icon: "info", title: "Exportieren nicht möglich", accent: "var(--danger)" });

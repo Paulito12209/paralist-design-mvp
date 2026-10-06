@@ -80,7 +80,9 @@ let watchReveal = null;
 function railDrawRoom() {
   const foldRect = fold.getBoundingClientRect();
   const top = foldRect.top + dom.content.scrollTop;
-  const tools = dom.drawTools.getBoundingClientRect().bottom - foldRect.bottom;
+  /* Steht die Leiste links neben der Fläche (Desktop, src/features/drawing/draw-dock.js),
+     braucht sie darunter keinen Platz */
+  const tools = Math.max(0, dom.drawTools.getBoundingClientRect().bottom - foldRect.bottom);
   const bottom = dom.content.getBoundingClientRect().bottom - cssNumber("--tab-space", 64);
   return Math.max(MIN_ROOM_PX, Math.round(bottom - tools - top));
 }
@@ -225,4 +227,6 @@ export function initEntryFold() {
      schweigt. Neu messen, falls die Seite mit offener Tastatur geöffnet
      wurde und die Lage ohne Tastatur noch nicht kannte. */
   on(events.keyboardClosed, () => layoutEntryFold());
+  /* Die Leiste einer Zeichnung wurde angedockt: unter der Fläche wird Platz frei oder gebraucht */
+  on(events.layoutChanged, () => layoutEntryFold());
 }

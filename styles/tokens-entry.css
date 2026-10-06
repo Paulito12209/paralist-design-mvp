@@ -56,6 +56,18 @@
  * --draw-tool-size / --draw-color-size -> Größe der Werkzeug-Knöpfe und Farbpunkte
  * --draw-tools-gap          -> Abstand der Werkzeugleiste zur Zeichenfläche darüber und zur Karte „Details“ darunter
  *
+ * ZEICHNUNG AM DESKTOP (volle Werkzeugleiste, Fenster, Dinge auf der Fläche)
+ * --draw-desk-tool          -> Größe der Knöpfe in der Desktop-Leiste
+ * --draw-desk-pad           -> Innenrand der Leiste
+ * --draw-desk-gap           -> Abstand zwischen den Knöpfen
+ * --draw-desk-radius        -> Rundung der links angedockten Leiste (unten bleibt sie eine Pille)
+ * --draw-select-color       -> Rahmen, Griff und Ziel-Streifen beim Andocken
+ * --draw-handle-size        -> Größe des Griffs zum Größerziehen
+ * --draw-pop-radius / --draw-pop-width -> Rundung und Breite der Fenster (Farben, Formen, Strichbreite)
+ * --draw-swatch-size        -> Größe der Farbfelder im Farbwähler
+ * --draw-note-shadow        -> Schatten unter den Notizzetteln
+ * --draw-attach-width / --draw-attach-tile -> Breite des Fensters „Anhang“ und Größe seiner Bildkacheln
+ *
  * VIDEOPLAYER IM EINTRAG
  * --video-bg / --video-glass -> Grund des Blocks, Fläche der Tempo-Pille und der runden Knöpfe rechts
  * --video-bar-h / --video-speed-size -> Leiste zwischen Bild und Titel, Höhe der Tempo-Stufen und der runden Knöpfe
@@ -93,6 +105,18 @@
   --draw-tool-size: 38px;
   --draw-color-size: 22px;
   --draw-tools-gap: 12px;
+  --draw-desk-tool: 36px;
+  --draw-desk-pad: 6px;
+  --draw-desk-gap: 2px;
+  --draw-desk-radius: 22px;
+  --draw-select-color: #0a84ff;
+  --draw-handle-size: 12px;
+  --draw-pop-radius: 18px;
+  --draw-pop-width: 312px;
+  --draw-swatch-size: 28px;
+  --draw-note-shadow: 0 1px 2px rgba(0, 0, 0, 0.12), 0 6px 16px rgba(0, 0, 0, 0.12);
+  --draw-attach-width: 640px;
+  --draw-attach-tile: 112px;
 
   /* Videoplayer: immer dunkel, Tempo-Pille aus Milchglas */
   --video-bg: #141414;

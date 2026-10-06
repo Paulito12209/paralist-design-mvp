@@ -1,0 +1,287 @@
+/*
+ * Das Fenster „Anhang einfügen“ einer Zeichnung: Reiter „Medien“ (Raster
+ * der Bilder in der App, mehrere wählbar) und „Eigene Dateien“ (Ablagefeld
+ * mit „Dateien auswählen“), unten Abbrechen und Einfügen
+ * (src/features/drawing/draw-attach.js).
+ * Pfad: styles/drawing-attach.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-entry.css)
+ * -----------------------------------
+ * --draw-attach-width  -> Breite des Fensters
+ * --draw-attach-tile   -> kleinste Breite einer Bildkachel (es passen so viele nebeneinander, wie Platz ist)
+ * --draw-select-color  -> Haken, Rand gewählter Bilder und Knopf „Einfügen“
+ * --desk-backdrop      -> Abdunklung dahinter (styles/tokens-desk.css)
+ *
+ * Schriftgrößen: Überschrift 18px, Reiter 14px, Hinweis 12px.
+ */
+
+.draw-attach-backdrop {
+  position: fixed; /* position: fixed — das Fenster deckt die ganze Seite ab */
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background: var(--desk-backdrop);
+}
+
+.draw-attach-backdrop[hidden] {
+  display: none;
+}
+
+.draw-attach {
+  width: min(var(--draw-attach-width), 100%);
+  /* height: fest, damit das Fenster beim Wechsel der Reiter nicht springt */
+  height: min(520px, 86vh);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 22px;
+  background: var(--update-bg);
+  color: var(--text);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.3), 0 0 0 0.5px var(--desk-edge);
+  animation: draw-attach-in 0.18s ease-out; /* animation: kurzes Auftauchen */
+}
+
+@keyframes draw-attach-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+}
+
+.draw-attach-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px 6px;
+}
+
+.draw-attach-head h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 650;
+}
+
+.draw-attach-close {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+}
+
+.draw-attach-close .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.draw-attach-tabs {
+  display: flex;
+  align-self: flex-start;
+  gap: 2px;
+  margin: 8px 20px 14px;
+  padding: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+}
+
+.draw-attach-tab {
+  padding: 7px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.draw-attach-tab.is-active {
+  background: var(--update-bg);
+  color: var(--text);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
+}
+
+.draw-attach-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  padding: 0 20px 16px;
+}
+
+.draw-attach-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(var(--draw-attach-tile), 1fr));
+  gap: 8px;
+}
+
+.draw-attach-tile {
+  position: relative; /* position: Bezug für den Haken oben rechts */
+  aspect-ratio: 1;
+  overflow: hidden;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--text) 6%, transparent);
+  color: var(--muted);
+}
+
+.draw-attach-tile img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* object-fit: quadratische Kachel, das Bild füllt sie ohne Verzerren */
+}
+
+.draw-attach-tile.is-picked {
+  outline: 3px solid var(--draw-select-color);
+  outline-offset: -3px; /* outline-offset: der Rand liegt innen auf dem Bild statt außen daneben */
+}
+
+.draw-attach-check {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 22px;
+  height: 22px;
+  box-sizing: border-box;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid #ffffff;
+  background: rgba(0, 0, 0, 0.25);
+  color: transparent;
+}
+
+.draw-attach-check .icon {
+  width: 14px;
+  height: 14px;
+}
+
+.draw-attach-tile.is-picked .draw-attach-check {
+  border-color: var(--draw-select-color);
+  background: var(--draw-select-color);
+  color: #ffffff;
+}
+
+.draw-attach-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  padding: 48px 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+.draw-attach-empty .icon {
+  width: 36px;
+  height: 36px;
+}
+
+.draw-attach-empty p {
+  margin: 0;
+}
+
+.draw-attach-link {
+  color: var(--link-color);
+  font-weight: 500;
+}
+
+.draw-attach-drop {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 300px;
+  border: 1.5px dashed color-mix(in srgb, var(--text) 22%, transparent);
+  border-radius: 16px;
+  color: var(--muted);
+  text-align: center;
+  cursor: pointer;
+  transition: background-color var(--desk-fast) var(--desk-ease), border-color var(--desk-fast) var(--desk-ease);
+}
+
+.draw-attach-drop .icon {
+  width: 32px;
+  height: 32px;
+}
+
+.draw-attach-drop strong {
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.draw-attach-drop.is-over {
+  border-color: var(--draw-select-color);
+  background: color-mix(in srgb, var(--draw-select-color) 8%, transparent);
+}
+
+.draw-attach-choose {
+  margin-top: 4px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--text);
+  color: var(--update-bg);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.draw-attach-note {
+  margin: 10px 2px 0;
+  font-size: 12px;
+  color: var(--muted);
+  text-align: center;
+}
+
+.draw-attach-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 12px 20px 18px;
+  border-top: 1px solid var(--line);
+}
+
+.draw-attach-foot[hidden] {
+  display: none;
+}
+
+.draw-attach-cancel,
+.draw-attach-insert {
+  padding: 9px 18px;
+  border-radius: 999px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.draw-attach-cancel {
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+}
+
+.draw-attach-insert {
+  background: var(--draw-select-color);
+  color: #ffffff;
+}
+
+.draw-attach-insert:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+@media (hover: hover) {
+  .draw-attach-tab:not(.is-active):hover,
+  .draw-attach-close:hover,
+  .draw-attach-cancel:hover,
+  .draw-attach-drop:hover {
+    background-color: var(--desk-hover);
+  }
+
+  .draw-attach-tile:hover img {
+    opacity: 0.88;
+  }
+
+  .draw-attach-insert:not(:disabled):hover,
+  .draw-attach-choose:hover {
+    opacity: var(--hover-solid);
+  }
+}

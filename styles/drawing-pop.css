@@ -1,0 +1,282 @@
+/*
+ * Die kleinen Fenster an der Werkzeugleiste der Zeichnung: Strichbreite,
+ * Formen (Raster aus zehn Formen mit „Kontur | Gefüllt“), Farbwähler
+ * (40 Farben, zuletzt gemischte, eigene Farbe mit Hex-Feld) und die Knöpfe
+ * hinter „⋯“, wenn die Leiste zu kurz ist.
+ * Sie stehen frei über der Seite (src/features/drawing/draw-pop.js).
+ * Pfad: styles/drawing-pop.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-entry.css)
+ * -----------------------------------
+ * --draw-pop-radius    -> Rundung der Fenster
+ * --draw-pop-width     -> Breite von Farbwähler und Formen
+ * --draw-swatch-size   -> Größe der Farbfelder
+ * --draw-select-color  -> Ring um die gewählte Farbe
+ * --draw-color / --draw-dot -> je Farbfeld bzw. Breitenpunkt aus dem Skript gesetzt
+ *
+ * Schriftgrößen: Überschriften 12px, Namen unter den Formen 11px, Hex-Feld 13px.
+ */
+
+.draw-pop {
+  position: fixed; /* position: fixed — das Fenster steht über allem, unabhängig vom Scrollen der Seite */
+  z-index: 60;
+  width: var(--draw-pop-width);
+  box-sizing: border-box;
+  padding: 12px;
+  border-radius: var(--draw-pop-radius);
+  background: var(--update-bg);
+  color: var(--text);
+  box-shadow: 0 14px 44px rgba(0, 0, 0, 0.22), 0 0 0 0.5px var(--desk-edge);
+  animation: draw-pop-in 0.14s ease-out; /* animation: kurzes Auftauchen statt hartem Erscheinen */
+}
+
+.draw-pop[hidden] {
+  display: none;
+}
+
+.draw-pop:is([data-kind="width"], [data-kind="more"]) {
+  width: auto;
+}
+
+/* „Weitere Werkzeuge“: die Knöpfe, die in der Leiste keinen Platz hatten */
+.draw-more-grid {
+  display: grid;
+  grid-template-columns: repeat(4, auto);
+  gap: 4px;
+  justify-items: center;
+  align-items: center;
+}
+
+@keyframes draw-pop-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px) scale(0.98);
+  }
+}
+
+.draw-pop-title {
+  display: block;
+  margin: 2px 2px 8px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.draw-pop-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+
+.draw-pop-head .draw-pop-title {
+  margin: 0 2px;
+}
+
+.draw-pop-hint {
+  margin: 8px 2px 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* ---------- Strichbreite ---------- */
+
+.draw-pop-row {
+  display: flex;
+  gap: 4px;
+}
+
+.draw-pop-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 64px;
+  padding: 10px 8px 8px;
+  border-radius: 12px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.draw-pop-option.is-active {
+  background: var(--tab-pill-active-bg);
+  color: var(--text);
+}
+
+.draw-width-dot {
+  width: var(--draw-dot);
+  height: var(--draw-dot);
+  min-width: 2px;
+  min-height: 2px;
+  border-radius: 50%;
+  background: currentColor;
+  /* margin-block: alle Punkte stehen auf derselben Mitte, egal wie groß */
+  margin-block: calc((26px - var(--draw-dot)) / 2);
+}
+
+/* ---------- Formen ---------- */
+
+.draw-seg {
+  display: flex;
+  padding: 2px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 7%, transparent);
+}
+
+.draw-seg button {
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.draw-seg button.is-active {
+  background: var(--update-bg);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14);
+}
+
+.draw-shape-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 4px;
+}
+
+.draw-shape-tile {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 8px 2px 6px;
+  border-radius: 12px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.draw-shape-tile .icon {
+  width: 30px;
+  height: 30px;
+  color: var(--text);
+}
+
+.draw-shape-tile.is-active {
+  background: var(--tab-pill-active-bg);
+  color: var(--text);
+}
+
+/* ---------- Farben ---------- */
+
+.draw-swatch-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 6px;
+  justify-items: center;
+}
+
+.draw-swatch-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.draw-pop-title + .draw-swatch-row {
+  margin-top: 0;
+}
+
+.draw-swatch-grid + .draw-pop-title {
+  margin-top: 12px;
+}
+
+.draw-swatch {
+  width: var(--draw-swatch-size);
+  height: var(--draw-swatch-size);
+  border-radius: 50%;
+  background: var(--draw-color);
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12);
+}
+
+.draw-swatch.is-active {
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.12), 0 0 0 2px var(--update-bg), 0 0 0 4px var(--draw-select-color);
+}
+
+.draw-custom {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.draw-custom-pick {
+  position: relative; /* position: Bezug für das unsichtbare Farbfeld darüber */
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 6px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+/* Das Farbfeld des Systems liegt unsichtbar über der Zeile: Klick öffnet den Farbdialog genau hier */
+.draw-custom-pick input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0; /* opacity: unsichtbar, aber klickbar — das eigene Aussehen kommt vom Ring daneben */
+  cursor: pointer;
+}
+
+.draw-custom-ring {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: conic-gradient(#ff3b30, #ffcc00, #34c759, #30b0c7, #007aff, #af52de, #ff2d55, #ff3b30);
+}
+
+.draw-custom-ring::after {
+  content: "";
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: var(--draw-color);
+  box-shadow: 0 0 0 2px var(--update-bg);
+}
+
+.draw-custom-hex {
+  width: 92px;
+  height: 32px;
+  box-sizing: border-box;
+  padding: 0 8px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+  font-size: 13px;
+}
+
+.draw-custom-hex:focus {
+  outline: 2px solid var(--draw-select-color);
+  outline-offset: -1px;
+}
+
+@media (hover: hover) {
+  .draw-pop-option:not(.is-active):hover,
+  .draw-shape-tile:not(.is-active):hover,
+  .draw-custom-pick:hover {
+    background-color: var(--desk-hover);
+  }
+
+  .draw-swatch:not(.is-active):hover {
+    transform: scale(1.12); /* transform: das Feld unter der Maus wächst kurz */
+  }
+}

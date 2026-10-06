@@ -5,64 +5,19 @@
  * Video oder Foto und für Audio die eigene Aufnahme (src/features/media/recorder.js).
  * Pfad: src/features/media/media-import.js
  *
- * Keine anpassbaren visuellen Werte: die Größe der Vorschaubilder steht in
- * src/data/files.js (thumbSize), die Ablage der Dateien in src/core/blobs.js.
+ * Keine anpassbaren visuellen Werte: aus den Dateien Einträge machen steht in
+ * src/data/media-add.js, die Größe der Vorschaubilder in src/data/files.js.
  */
 
-import { putBlob } from "../../core/blobs.js";
-import { emit, events } from "../../core/bus.js";
 import { el } from "../../core/dom.js";
 import { load } from "../../core/lazy.js";
-import { saveState, state } from "../../data/state.js";
-import { saveThumbs, setThumb } from "../../data/thumbs.js";
-import { logXp } from "../../data/xp.js";
+import { addMediaFiles } from "../../data/media-add.js";
+
+/* Das Anlegen selbst steht in der Datenschicht, weil auch die Zeichnung es braucht */
+export { addMediaFiles };
 
 /** Die drei Quellen mit unsichtbarem Dateifeld in index.html; Audio nimmt die App selbst auf. */
 export const mediaSources = ["photo", "video", "import"];
-
-/**
- * Jede Datei wird ein Medien-Eintrag im Eingang.
- * @param extra optional: `body` (Text zum Eintrag) und
- *   `duration` in Sekunden, wenn die Datei ihre Länge selbst nicht verrät.
- */
-export async function addMediaFiles(fileList, source, extra = {}) {
-  const files = Array.from(fileList || []);
-  if (!files.length) return;
-  const { describeFile } = await load("files");
-
-  for (const file of files) {
-    const described = await describeFile(file, source);
-    const entry = {
-      id: state.nextEntryId++,
-      type: "medien",
-      title: described.title,
-      body: extra.body || "",
-      places: [],
-      links: [],
-      archived: false,
-      favorite: false,
-      createdAt: Date.now(),
-      media: {
-        kind: described.kind,
-        name: described.name,
-        size: described.size,
-        mime: described.mime,
-        duration: described.duration || extra.duration || 0,
-      },
-    };
-    if (described.thumb) setThumb(entry.id, described.thumb);
-    /* Die Datei selbst kommt in die Browser-Datenbank — nur so lässt sie sich
-       später in der Dateiansicht wirklich zeigen und abspielen. */
-    await putBlob(entry.id, file);
-    state.entries.push(entry);
-    logXp("created", "medien", entry.title);
-  }
-
-  saveThumbs();
-  saveState();
-  emit(events.xpChanged);
-  emit(events.dataChanged);
-}
 
 /**
  * Klicks auf [data-media-pick] in einem Bereich an die Dateifelder weiterreichen.
