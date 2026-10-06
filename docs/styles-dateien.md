@@ -83,12 +83,14 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/tokens-ios.css` | die Werte der iOS-Fassung |
 | `styles/tokens-desk.css` | die Werte der Desktop-Fassung (Spalten, Flächen, große Zahlen) |
 | `styles/desk.css` | Desktop: Raster aus Seitenleiste, Reiterzeile, Seite und rechter Spalte; Zuklappen, Suchfeld, Eingabefeld unten |
-| `styles/desk-head.css` | Desktop: Wortmarke mit Klapp-Knopf; Kopfzeile mit Zurück, Vorwärts, Pfad samt Knöpfen der Seite und Knopf fürs Seitenfenster |
+| `styles/desk-head.css` | Desktop: Wortmarke mit Stufen-Anzeige und Klapp-Knopf; Kopfzeile mit Zurück, Vorwärts, Pfad samt Knöpfen der Seite und Knopf fürs Seitenfenster |
 | `styles/desk-overlays.css` | Desktop: große Blätter, Auswahl-Blatt, Menü und Update-Fenster als Dialoge in der Mitte, samt Auftauchen |
 | `styles/desk-views.css` | Desktop: wie Übersicht, Kalender, Aufgaben, Medien und Eintrag die Breite nutzen |
 | `styles/desk-hover.css` | Desktop: Überfahren, Drücken und Tastatur-Rahmen für Seite, Kopfzeile und Dialoge |
-| `styles/desk-nav.css` | Desktop: Seitenleiste mit „Neu“, Sammlungen, Tab-Gruppen; ihr Fuß (Einstellungen, Stufe, Hell/Dunkel, Update) in styles/desk-nav-foot.css |
+| `styles/desk-nav.css` | Desktop: Seitenleiste mit „Neu“ und den Zeilen der gewählten Liste; ihr Fuß (Einstellungen, Hilfe, Hell/Dunkel, Update) in styles/desk-nav-foot.css |
 | `styles/desk-nav-pages.css` | Desktop: Icon-Zeile oben in der Seitenleiste (Übersicht, Kalender, Aufgaben, Medien, Suche) mit Hinweis beim Überfahren |
+| `styles/desk-nav-list.css` | Desktop: Kopf „Liste ▾ Eingang ⌘L“ mit dem Menü der acht Listen, blasse Zeile zum Anlegen und „Archiviert (n)“ unten in der Seitenleiste |
+| `styles/desk-help.css` | Desktop: Hilfe-Dialog hinter dem Fragezeichen im Fuß der Seitenleiste (was Paralist ist, die wichtigsten Kürzel) |
 | `styles/desk-kbd.css` | Desktop: dezente Tasten-Schilder und das Auftauchen der Blöcke der Seitenleiste |
 | `styles/search-palette.css` | Desktop: Such-Palette in der Fenstermitte (⌘K, „/“, Suchfeld, Such-Knopf) |
 | `styles/desk-settings.css` | Desktop: Profil als Seite mit Untermenü; styles/shortcuts.css: Liste der Kurzbefehle |

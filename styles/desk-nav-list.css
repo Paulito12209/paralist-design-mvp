@@ -1,0 +1,247 @@
+/*
+ * Desktop: „Liste“ in der Seitenleiste — der Kopf „Liste ▾ Eingang ⌘L“ unter
+ * „Neu“, das Menü mit den acht Listen (Ziffer, Icon, Name, Haken), die
+ * blasse Zeile zum Anlegen unter den Zeilen und der Block „Archiviert (n)“
+ * ganz unten, der bis zur halben Höhe der Leiste aufklappt. Gilt erst ab
+ * 1024px; das Markup entsteht in src/shell/desk-list.js und
+ * src/shell/desk-list-rows.js, die Zeilen selbst stehen in styles/desk-nav.css.
+ * Pfad: styles/desk-nav-list.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-nav-listhead)
+ * -----------------------------------
+ * --list-menu-gap     -> Abstand des Menüs unter dem Kopf „Liste“
+ * --list-menu-pad     -> Innenrand des Menüs
+ * --list-option-height -> Höhe einer Zeile im Menü
+ * --list-archive-max  -> wie hoch „Archiviert“ aufgeklappt höchstens wird (Anteil der Leiste)
+ * Einzelwerte stehen bei ihrer Regel: Pfeil hinter „Liste“ und vor „Archiviert“ 14px, Haken 14px.
+ *
+ * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * --desk-nav-pad / --desk-nav-top-gap -> Rand und Luft über dem Kopf
+ * --desk-nav-item-size / --desk-label-size / --desk-nav-item-height -> Schrift und Höhe der Zeilen
+ * --desk-item-radius / --desk-radius-sm -> Rundung der Zeilen / des Menüs
+ * --desk-panel / --desk-edge -> Fläche und Haarlinie des Menüs (deckend: die Zeilen darunter sollen nicht durchscheinen)
+ * --desk-panel-strong / --desk-hover -> gewählte Zeile, Tönung beim Überfahren
+ * --desk-fast / --desk-ease -> Dauer und Kurve
+ * --text / --muted / --avatar-btn-bg -> Schrift, leise Schrift, Zeilen
+ */
+
+@media (min-width: 1024px) {
+  .desk-nav-listhead {
+    --list-menu-gap: 4px;
+    --list-menu-pad: 6px;
+    --list-option-height: 34px;
+    --list-archive-max: 50%;
+
+    position: relative; /* position: Bezug für das Menü darunter */
+    margin-top: var(--desk-nav-top-gap);
+  }
+
+  /* ---------- Kopf „Liste ▾ Eingang ⌘L“ ---------- */
+
+  .desk-list-head {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    min-height: var(--sidebar-head-height);
+    padding-right: 4px;
+  }
+
+  /* „Liste“ mit Pfeil: öffnet das Menü */
+  .desk-list-menu-btn {
+    flex: 0 0 auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    height: var(--sidebar-head-height);
+    padding: 0 4px 0 var(--sidebar-head-inset);
+    border-radius: var(--desk-item-radius);
+    color: var(--muted);
+    transition: background-color var(--desk-fast) var(--desk-ease), color var(--desk-fast) var(--desk-ease); /* transition: Tönung gleitet statt zu springen */
+  }
+
+  .desk-list-chevron {
+    width: 14px;
+    height: 14px;
+    transform: rotate(90deg); /* transform: der Pfeil des Sprites zeigt nach rechts — gedreht nach unten */
+    transition: transform var(--desk-fast) var(--desk-ease); /* transition: der Pfeil dreht sich weich */
+  }
+
+  .desk-list-menu-btn[aria-expanded="true"] .desk-list-chevron {
+    transform: rotate(-90deg); /* transform: offen, Pfeil nach oben */
+  }
+
+  /* Die gewählte Liste: Icon in ihrer Farbe, Name, Zahl — öffnet ihre Seite */
+  .desk-list-current {
+    flex: 1 1 auto; /* flex: nimmt die Breite bis zum Schild */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    height: var(--sidebar-head-height);
+    padding: 0 var(--sidebar-row-pad);
+    border-radius: var(--desk-item-radius);
+    font-size: var(--desk-nav-item-size);
+    font-weight: 600;
+    color: var(--text);
+    text-align: left;
+    transition: background-color var(--desk-fast) var(--desk-ease); /* transition: s. o. */
+  }
+
+  .desk-list-current.is-active {
+    background: var(--desk-panel-strong);
+  }
+
+  .desk-list-current .desk-nav-icon {
+    flex: 0 0 auto;
+  }
+
+  /* ---------- Menü ---------- */
+
+  /* Schwebt deckend unter dem Kopf, über der Liste darunter */
+  .desk-list-menu {
+    position: absolute; /* position: hängt unter dem Kopf, ohne die Liste zu verschieben */
+    top: calc(100% + var(--list-menu-gap));
+    left: 0;
+    right: 0;
+    z-index: 18; /* z-index: über der Liste, unter Eingabefeld und Dialogen (20) */
+    padding: var(--list-menu-pad);
+    border-radius: var(--desk-radius-sm);
+    border: 0.5px solid var(--desk-edge);
+    background: var(--desk-panel);
+  }
+
+  .desk-list-menu[hidden] {
+    display: none;
+  }
+
+  /* Ziffer | Icon | Name | Haken */
+  .desk-list-option {
+    display: grid;
+    grid-template-columns: auto var(--sidebar-icon) minmax(0, 1fr) auto;
+    align-items: center;
+    column-gap: 10px;
+    width: 100%;
+    height: var(--list-option-height);
+    padding: 0 var(--sidebar-row-pad);
+    border-radius: var(--desk-item-radius);
+    font-size: var(--desk-nav-item-size);
+    font-weight: 500;
+    color: var(--avatar-btn-bg);
+    text-align: left;
+    transition: background-color var(--desk-fast) var(--desk-ease), color var(--desk-fast) var(--desk-ease); /* transition: s. o. */
+  }
+
+  .desk-list-option.is-active {
+    color: var(--text);
+  }
+
+  .desk-list-check {
+    width: 14px;
+    height: 14px;
+    opacity: 0;
+  }
+
+  .desk-list-option.is-active .desk-list-check {
+    opacity: 1;
+  }
+
+  /* Der Strich zwischen den Ablagen und dem Laufenden */
+  .desk-list-cut {
+    height: 0;
+    margin: var(--list-menu-pad) var(--sidebar-row-pad);
+    border: 0;
+    border-top: 0.5px solid var(--desk-edge);
+  }
+
+  /* ---------- Blasse Zeile zum Anlegen ---------- */
+
+  .desk-list-add {
+    color: var(--muted);
+  }
+
+  /* ---------- „Archiviert (n)“ ---------- */
+
+  .desk-nav-archive {
+    flex: 0 1 auto; /* flex: wächst mit seinen Zeilen, aber höchstens bis zur Grenze */
+    display: flex;
+    flex-direction: column;
+    max-height: var(--list-archive-max);
+    min-height: 0; /* min-height: die Liste darin rollt, statt die Leiste zu sprengen */
+    margin: 0 var(--desk-nav-pad);
+    padding-top: 4px;
+    border-top: 0.5px solid var(--desk-edge);
+  }
+
+  .desk-nav-archive[hidden] {
+    display: none;
+  }
+
+  /* Pfeil | „Archiviert“ | (n) */
+  .desk-nav-archive-toggle {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+    height: var(--sidebar-head-height);
+    padding: 0 var(--sidebar-row-pad) 0 var(--sidebar-head-inset);
+    border-radius: var(--desk-item-radius);
+    font-size: var(--desk-label-size);
+    font-weight: 600;
+    color: var(--muted);
+    text-align: left;
+    transition: background-color var(--desk-fast) var(--desk-ease), color var(--desk-fast) var(--desk-ease); /* transition: s. o. */
+  }
+
+  .desk-nav-archive-chevron {
+    flex: 0 0 auto;
+    width: 14px;
+    height: 14px;
+    transform: rotate(90deg); /* transform: zu — der Pfeil des Sprites zeigt nach rechts, gedreht nach unten wie in T3 Code */
+    transition: transform var(--desk-fast) var(--desk-ease); /* transition: s. o. */
+  }
+
+  .desk-nav-archive.is-open .desk-nav-archive-chevron {
+    transform: rotate(-90deg); /* transform: offen, Pfeil nach oben */
+  }
+
+  .desk-nav-archive-list {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow-y: auto; /* overflow-y: viele archivierte Zeilen rollen hier */
+    overflow-x: hidden; /* overflow-x: nichts ragt seitlich heraus */
+    overscroll-behavior: contain; /* overscroll-behavior: am Ende zieht das Rad nicht die Seite daneben mit */
+    padding-bottom: 4px;
+  }
+
+  .desk-nav-archive-list[hidden] {
+    display: none;
+  }
+
+  /* ---------- Überfahren, Drücken, Tastatur ---------- */
+
+  @media (hover: hover) {
+    .desk-list-menu-btn:hover,
+    .desk-list-current:not(.is-active):hover,
+    .desk-list-option:hover,
+    .desk-nav-archive-toggle:hover {
+      background: var(--desk-hover);
+      color: var(--text);
+    }
+  }
+
+  .desk-list-menu-btn:active,
+  .desk-list-current:active,
+  .desk-list-option:active,
+  .desk-nav-archive-toggle:active {
+    opacity: 0.6;
+  }
+
+  .desk-list-menu-btn:focus-visible,
+  .desk-list-current:focus-visible,
+  .desk-list-option:focus-visible,
+  .desk-nav-archive-toggle:focus-visible {
+    outline: 2px solid var(--avatar-btn-bg); /* outline: sichtbarer Ring nur bei Bedienung mit der Tastatur */
+    outline-offset: -2px;
+  }
+}

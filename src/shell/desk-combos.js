@@ -1,17 +1,17 @@
 /*
  * Die Tastenkürzel mit zwei Tasten am Desktop: Umschalt und Befehlstaste
  * öffnen die vier Seiten (⇧⌘Ü, ⇧⌘K, ⇧⌘A, ⇧⌘M) und klappen das
- * Seitenfenster auf (⇧⌘O); Ctrl und Ziffer öffnen die Sammlungen (⌃1 bis ⌃7).
+ * Seitenfenster auf (⇧⌘O); Ctrl und Ziffer wählen die Liste (⌃1 bis ⌃8).
  * Außerhalb des Macs gilt Strg statt ⌘ und Alt statt Ctrl — Strg und Ziffer
  * wechselt dort schon den Browser-Tab. src/shell/desk.js fragt hier zuerst,
  * bevor die übrigen Kürzel greifen.
  * Pfad: src/shell/desk-combos.js
  *
  * Keine anpassbaren visuellen Werte: welche Taste was öffnet, steht in
- * src/ui/desk-links.js (pageLinks, collectionLinks, sideLink).
+ * src/ui/desk-links.js (pageLinks, listLinks, sideLink).
  */
 
-import { collectionLinks, isMac, pageLinks, sideLink } from "../ui/desk-links.js";
+import { isMac, listLinks, pageLinks, sideLink } from "../ui/desk-links.js";
 
 /*
  * Passt die gedrückte Taste zum Buchstaben? Zuerst das Zeichen — so stimmt es
@@ -31,7 +31,7 @@ function isPlaceChord(event) {
 
 /**
  * Eine Taste mit Zusatztasten prüfen und ausführen.
- * @param actions { openPage(tab), openCollection(id), toggleSide() } aus src/shell/desk.js
+ * @param actions { openPage(tab), chooseList(id), toggleSide() } aus src/shell/desk-keys.js
  * @returns true, wenn die Taste hier etwas getan hat.
  */
 export function onComboKey(event, actions) {
@@ -46,8 +46,8 @@ export function onComboKey(event, actions) {
   if (!isPlaceChord(event)) return false;
   /* Die Lage der Ziffer: mit Alt liefert ein Mac sonst Sonderzeichen statt „1“ */
   const digit = /^Digit(\d)$/.exec(event.code)?.[1];
-  const link = digit ? collectionLinks.find((item) => item.num === digit) : null;
+  const link = digit ? listLinks.find((item) => item.num === digit) : null;
   if (!link) return false;
-  actions.openCollection(link.id);
+  actions.chooseList(link.id);
   return true;
 }

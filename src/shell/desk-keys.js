@@ -4,7 +4,7 @@
  * Pfad: src/shell/desk-keys.js
  *
  * Keine anpassbaren visuellen Werte. Welche Taste welche Seite und welche
- * Sammlung öffnet, steht in src/ui/desk-links.js (pageLinks, collectionLinks,
+ * Liste öffnet, steht in src/ui/desk-links.js (pageLinks, listLinks, listKey,
  * chordWindow) — so können Taste und Schild daneben nie auseinanderlaufen.
  * Die Kürzel mit zwei Zusatztasten prüft src/shell/desk-combos.js.
  *
@@ -14,8 +14,10 @@
  *                     Palette markiert ⌘K das Suchwort, alle anderen Kürzel ruhen
  *   ⇧⌘Ü ⇧⌘K ⇧⌘A ⇧⌘M (oder 1 bis 4) -> Übersicht, Kalender, Aufgaben, Medien
  *   ⇧⌘O           -> Seitenfenster rechts auf- und zuklappen
- *   ⌃1 bis ⌃7 (oder G, dann I F B R L A P) -> Eingang, Favoriten, Arbeitsbereiche,
- *                     Ressourcen, Lesezeichen, Archiv, Projekte
+ *   ⌘L             -> Menü „Liste“ in der Seitenleiste öffnen; darin wählt die Ziffer
+ *   ⌃1 bis ⌃8      -> die Liste gleich wählen (Projekte, Arbeitsbereiche, Ressourcen, Archiv,
+ *                     Eingang, Aufgaben, Termine, Lesezeichen)
+ *   G, dann P B R A I U T L -> die Seite dieser Liste öffnen
  *   ⌘[  und  ⌘]    -> zurück und vor
  *   ⌘\             -> Seitenleiste ein- und ausklappen
  *   ⌘,             -> Profil und Einstellungen (Punkt „Konto“)
@@ -30,16 +32,17 @@ import { dom, el } from "../core/dom.js";
 import { load } from "../core/lazy.js";
 import { closeCtxMenu } from "../ui/ctx-menu.js";
 import { isDesk } from "../ui/desk-mode.js";
-import { chordKey, chordWindow, collectionLinks, pageLinks } from "../ui/desk-links.js";
+import { chordKey, chordWindow, listKey, listLinks, pageLinks } from "../ui/desk-links.js";
 import { goBack, goForward } from "../ui/router.js";
 import { closeSheet } from "../ui/sheet.js";
 import { onComboKey } from "./desk-combos.js";
 import { isNavClosed, openPageTab, setNavClosed, toggleSidePanel } from "./desk-head.js";
-import { openCollection } from "./desk-nav.js";
+import { chooseList, toggleListMenu } from "./desk-list.js";
+import { openList } from "./desk-nav.js";
 import { closePalette, isPaletteOpen, openPalette } from "./search-palette.js";
 
 const navKeys = Object.fromEntries(pageLinks.map((link) => [link.key, link.tab]));
-const chordTargets = Object.fromEntries(collectionLinks.map((link) => [link.key.toLowerCase(), link.id]));
+const chordTargets = Object.fromEntries(listLinks.map((link) => [link.key.toLowerCase(), link.id]));
 
 /* Offene Ebenen, über denen kein Kürzel etwas auslösen darf. Profil und
    Fortschritt zählen nicht: am Desktop sind sie Seiten
@@ -117,6 +120,10 @@ function onCommandKey(event) {
     focusSearch();
     return true;
   }
+  if (key === listKey.toLowerCase()) {
+    toggleListMenu();
+    return true;
+  }
   if (isTyping(event.target)) return false;
   if (key === "\\") setNavClosed(!isNavClosed());
   else if (key === "[") goBack();
@@ -132,9 +139,9 @@ const comboActions = {
     dropStaleFocus();
     openPageTab(tab);
   },
-  openCollection: (id) => {
+  chooseList: (id) => {
     dropStaleFocus();
-    openCollection(id);
+    chooseList(id);
   },
   toggleSide: toggleSidePanel,
 };
@@ -145,14 +152,14 @@ function openProfile(pane) {
   load("profile").then((module) => module.openPane(pane));
 }
 
-/* „G“ öffnet das Fenster für den Buchstaben einer Sammlung; der Buchstabe schließt es wieder. */
+/* „G“ öffnet das Fenster für den Buchstaben einer Liste; der Buchstabe schließt es wieder. */
 function onChordKey(event) {
   const key = event.key.toLowerCase();
   if (Date.now() < chordUntil) {
     chordUntil = 0;
     if (!chordTargets[key]) return false;
     dropStaleFocus();
-    openCollection(chordTargets[key]);
+    openList(chordTargets[key]);
     return true;
   }
   if (key !== chordKey.toLowerCase()) return false;

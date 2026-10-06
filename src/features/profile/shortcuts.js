@@ -1,8 +1,8 @@
 /*
  * Profil › Kurzbefehle (nur am Desktop): alle Tastenkürzel nach Gruppen —
- * Seiten, Sammlungen, Überall — und zwei Schalter, mit denen man die blauen
+ * Seiten, Liste, Überall — und zwei Schalter, mit denen man die blauen
  * Schilder in der Seitenleiste und die Hinweise an den Seiten-Icons ausblendet. Die Tasten
- * der Reiter und Sammlungen kommen aus src/ui/desk-links.js, dieselbe Quelle
+ * der Seiten und Listen kommen aus src/ui/desk-links.js, dieselbe Quelle
  * wie die Kürzel selbst (src/shell/desk.js). Geklickt wird in
  * src/features/profile/profile.js; hier entsteht Markup und die Änderung.
  * Pfad: src/features/profile/shortcuts.js
@@ -18,7 +18,7 @@
 import { emit, events } from "../../core/bus.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { hintsShown, setHintsShown } from "../../data/shortcut-hints.js";
-import { chordKey, collectionLinks, pageLinks, sideLink, withCommand, withControl, withShiftCommand } from "../../ui/desk-links.js";
+import { chordKey, listKey, listLinks, pageLinks, sideLink, withCommand, withControl, withShiftCommand } from "../../ui/desk-links.js";
 import { keyCap } from "../../ui/key-caps.js";
 
 /* Kürzel, die auf jeder Seite gelten. Die Befehlstaste heißt je nach Rechner ⌘ oder Strg. */
@@ -63,13 +63,17 @@ function toggleRow(toggle) {
 /** Die ganze Unterseite: Schalter oben, darunter die drei Gruppen. */
 export function shortcutsMarkup() {
   const pages = pageLinks.map((link) => shortcutRow(link.label, [withShiftCommand(link.letter), link.key]));
-  const places = collectionLinks.map((link) => shortcutRow(link.title, [withControl(link.num), `${chordKey} ${link.key}`]));
+  /* Die Liste: ⌘L öffnet das Menü, die Ziffer darin oder ⌃ und Ziffer wählt; „G“ und Buchstabe öffnet die Seite */
+  const lists = [
+    shortcutRow("Menü „Liste“ öffnen", [withCommand(listKey)]),
+    ...listLinks.map((link) => shortcutRow(link.title, [`${withCommand(listKey)} ${link.num}`, withControl(link.num), `${chordKey} ${link.key}`])),
+  ];
   const always = everywhere.map((row) => shortcutRow(row.label, row.keys));
   return `
     <p class="psection">Schilder</p>
     <div class="settings-group">${hintToggles.map(toggleRow).join("")}</div>
     ${group("Seiten", pages)}
-    ${group("Sammlungen", places)}
+    ${group("Liste", lists)}
     ${group("Überall", always)}
   `;
 }

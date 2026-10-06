@@ -64,7 +64,9 @@
  * --desk-label-size         -> kleine Beschriftungen (Kartentitel, Chips)
  * --desk-nav-item-size      -> Schrift der Zeilen in der Seitenleiste
  * --desk-nav-item-height    -> Höhe einer Zeile in der Seitenleiste
- * --desk-nav-group-gap      -> Luft über „Sammlungen“ und „Arbeitsbereiche“
+ * --desk-nav-top-gap        -> Luft oben in der Seitenleiste: unter der Wortmarke, zwischen Icon-Zeile,
+ *                              „Neu“ und „Liste“
+ * --desk-brand-gap          -> Abstand der Stufen-Anzeige rechts neben „Paralist“
  *
  * BEWEGUNG
  * --desk-ease               -> Kurve aller Übergänge (weich auslaufend)
@@ -127,7 +129,8 @@
   --desk-label-size: 13px;
   --desk-nav-item-size: 14px;
   --desk-nav-item-height: 34px;
-  --desk-nav-group-gap: 20px;
+  --desk-nav-top-gap: 16px;
+  --desk-brand-gap: 16px;
 
   --desk-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
   --desk-fast: 0.16s;

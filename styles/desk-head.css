@@ -1,6 +1,7 @@
 /*
- * Desktop: der Kopf — links über der Seitenleiste die Wortmarke „Paralist“
- * mit dem Klapp-Knopf, über der Mitte die Kopfzeile mit Zurück und Vorwärts,
+ * Desktop: der Kopf — links über der Seitenleiste die Wortmarke „Paralist“,
+ * daneben die Stufen-Anzeige (öffnet Fortschritt; ihr Hinweis erscheint
+ * darunter) und der Klapp-Knopf, über der Mitte die Kopfzeile mit Zurück und Vorwärts,
  * dem Pfad der offenen Seite samt ihren Knöpfen (Kategorie, Favorit, Cover,
  * Menü — die Kopfzeile der Unterseite, hierher geholt) und ganz rechts dem
  * Knopf fürs Seitenfenster. Gilt erst ab 1024px Fensterbreite; das Markup
@@ -10,13 +11,15 @@
  * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-brand und .desk-tabs)
  * -----------------------------------
  * --head-btn / --head-icon -> Größe der runden Knöpfe (Klapp-Knopf, Pfeile, Seitenfenster) und ihrer Icons
- * Einzelwerte stehen bei ihrer Regel: Wortmarke 19px.
+ * --head-level -> Größe der Stufen-Anzeige neben der Wortmarke
+ * Einzelwerte stehen bei ihrer Regel: Wortmarke 19px, Abstand des Stufen-Hinweises 6px.
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
  * --desk-top-height -> Höhe von Wortmarke und Reiterzeile
  * --desk-nav-pad / --desk-gutter -> Rand links (Wortmarke) und seitlich der Reiterzeile
+ * --desk-brand-gap -> Abstand der Stufe rechts neben der Wortmarke
  * --desk-hover / --desk-fast / --desk-ease -> Tönung beim Überfahren, Dauer und Kurve
- * --desk-panel-strong -> Fläche des Knopfs fürs Seitenfenster, solange es offen ist
+ * --desk-panel-strong -> Fläche des Knopfs fürs Seitenfenster, solange es offen ist, und der Stufe, solange Fortschritt offen ist
  * --text / --avatar-btn-bg -> Schrift und Icons der Knöpfe
  */
 
@@ -25,6 +28,7 @@
   .desk-tabs {
     --head-btn: 32px;
     --head-icon: 20px;
+    --head-level: 30px;
   }
 
   /* ---------- Wortmarke links ---------- */
@@ -36,12 +40,57 @@
     padding: var(--safe-top) calc(var(--desk-nav-pad) - 4px) 0 calc(var(--desk-nav-pad) + 6px);
   }
 
+  /* Wortmarke und Stufe nebeneinander */
+  .desk-brand-lead {
+    display: flex;
+    align-items: center;
+    gap: var(--desk-brand-gap);
+    min-width: 0;
+  }
+
   .desk-wordmark {
     font-size: 19px;
     font-weight: 700;
     letter-spacing: -0.02em;
     color: var(--text);
     user-select: none; /* user-select: ein Doppelklick markiert den Namen nicht */
+  }
+
+  .desk-brand-level {
+    display: contents; /* display: der Platz der Stufe ist nur ein Halter, der Knopf selbst steht in der Zeile */
+  }
+
+  /* Die Stufe (#level-btn aus der Kopfzeile des Handys, src/shell/desk-head.js holt sie hierher) */
+  .desk-brand .level-btn {
+    position: relative; /* position: Bezug für den Hinweis darunter */
+    display: grid;
+    place-items: center;
+    width: var(--head-level);
+    height: var(--head-level);
+    border-radius: 999px;
+    transition: background-color var(--desk-fast) var(--desk-ease); /* transition: Tönung gleitet statt zu springen */
+  }
+
+  .desk-brand .level-gauge {
+    width: var(--head-level);
+    height: var(--head-level);
+  }
+
+  /* Solange Fortschritt als Seite offen ist, ist die Stufe „gewählt“ */
+  .device:has(#progress:not([hidden])) .desk-brand .level-btn {
+    background: var(--desk-panel-strong);
+  }
+
+  /* Der Hinweis „Stufe 3 · noch 120 XP“ (styles/desk-nav-foot.css) steht hier unter dem Knopf statt darüber */
+  .desk-brand .desk-foot-hint {
+    top: calc(100% + 6px);
+    bottom: auto;
+    transform: translateY(-2px); /* transform: beim Erscheinen gleitet er ein Stück herab */
+  }
+
+  .desk-brand .level-btn:focus-visible .desk-foot-hint {
+    opacity: 1;
+    transform: none;
   }
 
   /* ---------- Kopfzeile über der Mitte ---------- */
@@ -158,10 +207,22 @@
   }
 
   @media (hover: hover) {
-    .desk-head-btn:not(:disabled):not(.is-active):hover {
+    .desk-head-btn:not(:disabled):not(.is-active):hover,
+    .desk-brand .level-btn:hover {
       background: var(--desk-hover);
       color: var(--text);
     }
+
+    .desk-brand .level-btn:hover .desk-foot-hint {
+      opacity: 1;
+      transform: none;
+      transition-delay: 400ms; /* transition-delay: erst nach kurzem Verweilen */
+    }
+  }
+
+  .desk-brand .level-btn:focus-visible {
+    outline: 2px solid var(--avatar-btn-bg); /* outline: sichtbarer Ring nur bei Bedienung mit der Tastatur */
+    outline-offset: 2px;
   }
 
   .desk-head-btn:not(:disabled):active {

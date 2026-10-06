@@ -1,8 +1,9 @@
 /*
  * Der Fuß der Seitenleiste am Desktop: eine schlanke Icon-Zeile wie in T3
- * Code — links Einstellungen (⌘,), die Stufen-Anzeige (öffnet Fortschritt
- * und Statistiken; derselbe Knopf wie am Handy, hierher umgesetzt) und der
- * Schalter Hell/Dunkel, gegenüber ganz rechts „Nach Updates suchen“.
+ * Code — links Einstellungen (⌘,), die Hilfe (öffnet den Dialog aus
+ * src/shell/desk-help.js) und der Schalter Hell/Dunkel, gegenüber ganz
+ * rechts „Nach Updates suchen“. Die Stufe steht oben neben „Paralist“
+ * (src/shell/desk-head.js).
  * Pfad: src/shell/desk-foot.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -14,12 +15,10 @@
  */
 
 import { emit, events } from "../core/bus.js";
-import { dom } from "../core/dom.js";
-import { formatNumber } from "../core/format.js";
 import { escapeHtml, icon } from "../core/html.js";
 import { load } from "../core/lazy.js";
-import { levelInfo, totalXp } from "../data/xp.js";
 import { spokenKeys, withCommand } from "../ui/desk-links.js";
+import { openDeskHelp } from "./desk-help.js";
 import { keyCap } from "../ui/key-caps.js";
 
 const STATUS_MS = 2500;
@@ -53,7 +52,7 @@ function footMarkup() {
   return `
     <div class="desk-foot-group">
       ${footButton("settings", "settings", "Einstellungen", withCommand(","))}
-      <span class="desk-foot-level" data-foot-slot="level"></span>
+      ${footButton("help", "help", "Hilfe")}
       ${footButton("theme", "moon", "Dunkel einschalten")}
     </div>
     ${footButton("update", "refresh", updateLabels.idle)}`;
@@ -102,40 +101,14 @@ function checkUpdate() {
 function onClick(event) {
   const action = event.target.closest("[data-foot]")?.dataset.foot;
   if (action === "settings") load("profile").then((module) => module.openPane("konto"));
+  else if (action === "help") openDeskHelp();
   else if (action === "theme") toggleTheme();
   else if (action === "update") checkUpdate();
 }
 
-/* Der Hinweis an der Stufe: welche Stufe und wie weit noch. */
-function renderLevelHint() {
-  const xp = totalXp();
-  const info = levelInfo(xp);
-  const text = `Stufe ${info.level} · noch ${formatNumber(Math.max(0, info.to - xp))} XP`;
-  if (parts.levelHint.textContent !== text) parts.levelHint.textContent = text;
-}
-
-/**
- * Die Stufen-Anzeige (#level-btn, gezeichnet von src/shell/level-gauge.js)
- * steht am Desktop im Fuß, unter 1024px kehrt sie an den Anfang der
- * Kopfzeile des Handys zurück. Ein Knopf an zwei Orten statt zwei Knöpfen:
- * Skala, Stufen-Meldung und Klick bleiben eins.
- */
-export function placeLevelButton(desk) {
-  if (!foot) return;
-  const button = dom.levelBtn;
-  if (desk && button.parentElement !== parts.level) {
-    parts.level.append(button);
-    button.append(parts.levelHint);
-  } else if (!desk && button.parentElement === parts.level) {
-    parts.levelHint.remove();
-    document.querySelector(".top-bar").prepend(button);
-  }
-}
-
-/** Stufen-Hinweis und Hell/Dunkel auffrischen — nach Punkten und nach einer Wahl im Profil. */
+/** Hell/Dunkel auffrischen — nach einer Wahl im Profil. */
 export function renderDeskFoot() {
   if (!foot) return;
-  renderLevelHint();
   renderTheme();
 }
 
@@ -153,11 +126,7 @@ export function mountDeskFoot(slot, given = null) {
     theme: foot.querySelector('[data-foot="theme"]'),
     update: foot.querySelector('[data-foot="update"]'),
     updateText: foot.querySelector('[data-foot="update"] .desk-foot-hint-text'),
-    level: foot.querySelector('[data-foot-slot="level"]'),
-    levelHint: document.createElement("span"),
   };
-  parts.levelHint.className = "desk-foot-hint desk-level-hint";
-  parts.levelHint.setAttribute("aria-hidden", "true");
   foot.addEventListener("click", onClick);
   /* Wechselt das System zwischen Hell und Dunkel, zeigt der Schalter das Gegenteil —
      ebenso nach einer Wahl in Einstellungen › Darstellung (sie setzt data-theme) */

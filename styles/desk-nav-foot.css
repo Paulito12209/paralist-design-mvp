@@ -1,14 +1,15 @@
 /*
  * Desktop: der Fuß der Seitenleiste — fest unten, rollt nicht mit: eine
- * schlanke Icon-Zeile wie in T3 Code. Links Einstellungen, die Stufen-Anzeige
- * (öffnet Fortschritt und Statistiken) und Hell/Dunkel, gegenüber ganz rechts
- * „Nach Updates suchen“. Über jedem Icon erscheint beim Überfahren sein Name.
+ * schlanke Icon-Zeile wie in T3 Code. Links Einstellungen, die Hilfe und
+ * Hell/Dunkel, gegenüber ganz rechts „Nach Updates suchen“. Über jedem Icon
+ * erscheint beim Überfahren sein Name. Den Hinweis (.desk-foot-hint) leiht
+ * sich auch die Stufe oben neben „Paralist“ (styles/desk-head.css).
  * Gilt erst ab 1024px Fensterbreite; das Markup entsteht in src/shell/desk-foot.js.
  * Pfad: styles/desk-nav-foot.css
  *
  * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-nav-foot)
  * -----------------------------------
- * --foot-btn   -> Größe eines Icon-Knopfs (auch der Stufen-Anzeige)
+ * --foot-btn   -> Größe eines Icon-Knopfs
  * --foot-icon  -> Größe der Icons darin
  * --foot-gap   -> Luft zwischen den Knöpfen links
  * Einzelwerte stehen bei ihrer Regel: Hinweis-Schrift 12px, Abstand 8px,
@@ -17,7 +18,7 @@
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
  * --desk-nav-pad   -> Rand links, rechts und unten
  * --desk-edge      -> Haarlinie über dem Fuß
- * --desk-hover / --desk-panel-strong -> Tönung beim Überfahren, Fläche der Stufe, solange Fortschritt offen ist
+ * --desk-hover -> Tönung beim Überfahren
  * --desk-fast / --desk-ease -> Dauer und Kurve
  * --avatar-btn-bg / --text / --bg -> Icons in Ruhe, unter der Maus, Hinweis (vertauscht)
  */
@@ -43,12 +44,7 @@
     gap: var(--foot-gap);
   }
 
-  .desk-foot-level {
-    display: contents; /* display: der Platz der Stufe ist nur ein Halter, der Knopf selbst steht in der Zeile */
-  }
-
-  .desk-foot-btn,
-  .desk-nav-foot .level-btn {
+  .desk-foot-btn {
     position: relative; /* position: Bezug für den Hinweis darüber */
     display: grid;
     place-items: center;
@@ -62,16 +58,6 @@
   .desk-foot-btn > .icon {
     width: var(--foot-icon);
     height: var(--foot-icon);
-  }
-
-  .desk-nav-foot .level-gauge {
-    width: var(--foot-btn);
-    height: var(--foot-btn);
-  }
-
-  /* Solange Fortschritt als Seite offen ist, ist die Stufe „gewählt“ */
-  .device:has(#progress:not([hidden])) .desk-nav-foot .level-btn {
-    background: var(--desk-panel-strong);
   }
 
   /* Beim Nachsehen dreht sich der Pfeil */
@@ -116,7 +102,6 @@
   }
 
   .desk-foot-btn:focus-visible .desk-foot-hint,
-  .desk-nav-foot .level-btn:focus-visible .desk-foot-hint,
   .desk-foot-btn.is-telling .desk-foot-hint,
   .desk-foot-btn.is-busy .desk-foot-hint {
     opacity: 1;
@@ -124,27 +109,23 @@
   }
 
   @media (hover: hover) {
-    .desk-foot-btn:hover,
-    .desk-nav-foot .level-btn:hover {
+    .desk-foot-btn:hover {
       background: var(--desk-hover);
       color: var(--text);
     }
 
-    .desk-foot-btn:hover .desk-foot-hint,
-    .desk-nav-foot .level-btn:hover .desk-foot-hint {
+    .desk-foot-btn:hover .desk-foot-hint {
       opacity: 1;
       transform: none;
       transition-delay: 400ms; /* transition-delay: erst nach kurzem Verweilen */
     }
   }
 
-  .desk-foot-btn:active,
-  .desk-nav-foot .level-btn:active {
+  .desk-foot-btn:active {
     opacity: 0.6;
   }
 
-  .desk-foot-btn:focus-visible,
-  .desk-nav-foot .level-btn:focus-visible {
+  .desk-foot-btn:focus-visible {
     outline: 2px solid var(--avatar-btn-bg); /* outline: sichtbarer Ring nur bei Bedienung mit der Tastatur */
     outline-offset: 2px;
   }
