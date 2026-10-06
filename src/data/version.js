@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "fab442b13481";
+export const appVersion = "40ec9aa68ef1";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -119,7 +119,8 @@ export const appFiles = [
   "src/features/tasks/tasks.js", "src/main.js", "src/shell/android-bars.js",
   "src/shell/android-fab.js", "src/shell/android-link-btn.js", "src/shell/board-heads.js",
   "src/shell/create-menu.js", "src/shell/demo-load.js", "src/shell/desk-combos.js",
-  "src/shell/desk-foot.js", "src/shell/desk-head.js", "src/shell/desk-keys.js",
+  "src/shell/desk-foot.js", "src/shell/desk-head.js", "src/shell/desk-help.js",
+  "src/shell/desk-keys.js", "src/shell/desk-list-rows.js", "src/shell/desk-list.js",
   "src/shell/desk-nav-parts.js", "src/shell/desk-nav.js", "src/shell/desk-page-head.js",
   "src/shell/desk-pages.js", "src/shell/desk-rail-cards.js", "src/shell/desk-rail-visuals.js",
   "src/shell/desk-rail.js", "src/shell/desk-side-browser.js", "src/shell/desk-side-files.js",
@@ -171,15 +172,16 @@ export const appFiles = [
   "styles/calendar-week.css", "styles/calendar.css", "styles/columns-sheet.css",
   "styles/composer-attachments.css", "styles/composer.css", "styles/dashboard-motion.css",
   "styles/dashboard-shelf.css", "styles/dashboard-stage.css", "styles/dashboard.css",
-  "styles/data-transfer.css", "styles/desk-head.css", "styles/desk-hover.css",
-  "styles/desk-kbd.css", "styles/desk-nav-foot.css", "styles/desk-nav-pages.css",
-  "styles/desk-nav.css", "styles/desk-overlays.css", "styles/desk-progress.css",
-  "styles/desk-rail-tiles.css", "styles/desk-rail-views.css", "styles/desk-rail.css",
-  "styles/desk-settings.css", "styles/desk-side-doc.css", "styles/desk-side-views.css",
-  "styles/desk-side.css", "styles/desk-views.css", "styles/desk.css", "styles/details-sheet.css",
-  "styles/details.css", "styles/drawing-attach.css", "styles/drawing-desk.css",
-  "styles/drawing-items.css", "styles/drawing-pop.css", "styles/drawing.css", "styles/embeds.css",
-  "styles/empty-state.css", "styles/entry-desk.css", "styles/entry-details.css", "styles/entry.css",
+  "styles/data-transfer.css", "styles/desk-head.css", "styles/desk-help.css",
+  "styles/desk-hover.css", "styles/desk-kbd.css", "styles/desk-nav-foot.css",
+  "styles/desk-nav-list.css", "styles/desk-nav-pages.css", "styles/desk-nav.css",
+  "styles/desk-overlays.css", "styles/desk-progress.css", "styles/desk-rail-tiles.css",
+  "styles/desk-rail-views.css", "styles/desk-rail.css", "styles/desk-settings.css",
+  "styles/desk-side-doc.css", "styles/desk-side-views.css", "styles/desk-side.css",
+  "styles/desk-views.css", "styles/desk.css", "styles/details-sheet.css", "styles/details.css",
+  "styles/drawing-attach.css", "styles/drawing-desk.css", "styles/drawing-items.css",
+  "styles/drawing-pop.css", "styles/drawing.css", "styles/embeds.css", "styles/empty-state.css",
+  "styles/entry-desk.css", "styles/entry-details.css", "styles/entry.css",
   "styles/filter-sheet.css", "styles/info-dialog.css", "styles/ios-menu.css",
   "styles/ios-segmented.css", "styles/ios.css", "styles/media-bar.css", "styles/media-desk.css",
   "styles/media.css", "styles/milestones.css", "styles/modal-top.css", "styles/navigation.css",
