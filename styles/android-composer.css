@@ -2,9 +2,10 @@
  * Android-Fassung: das Eingabefeld zum Anlegen als Blatt von unten nach
  * Material 3, wie „Neue Aufgabe“ in Google Tasks. Oben das Textfeld mit dem
  * Platzhalter „Neue Aufgabe“ (je Typ, src/data/config.js sheetPlaceholders),
- * darunter eine Zeile: links der runde Anhang-Knopf (+), daneben der Typ-Chip
- * (nur Icon und Pfeil, öffnet die Typen), dann der Ort-Chip „Eingang ▾“ und
- * rechts der Text-Knopf „Speichern“. Die Reihe runder Typ-Knöpfe, Diktat
+ * rechts daneben in derselben Zeile der Typ-Chip (nur Icon und Pfeil, öffnet
+ * die Typen; das Textfeld dehnt sich bis zu ihm). Darunter eine Zeile: links
+ * der runde Anhang-Knopf (+), daneben der Ort-Chip „Eingang ▾“ und rechts
+ * der Text-Knopf „Speichern“. Die Reihe runder Typ-Knöpfe, Diktat
  * und ✕ entfallen: der Schleier und Zurück schließen das Blatt
  * (src/features/composer/composer-sheet.js). Angehängte Bilder schweben wie
  * bisher über dem Blatt.
@@ -21,6 +22,7 @@
  * --m3-composer-pad          -> Innenabstand links, rechts und oben
  * --m3-composer-attach       -> Größe des runden Anhang-Knopfs
  * --m3-chip-h / --m3-chip-radius -> Höhe und Rundung der beiden Auswahl-Chips
+ * Abstand zwischen Textzeile und Knopfzeile -> `height: 12px` an `.composer::after` unten
  * --m3-surface-container     -> Fläche des Blatts
  * --m3-surface-container-high -> der etwas hellere Grauton des Anhang-Knopfs
  * --m3-outline-variant       -> Rand der Chips, solange dort noch der Vorschlag der Seite steht
@@ -83,6 +85,16 @@
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
+    row-gap: 0; /* row-gap: den Abstand zwischen Text- und Knopfzeile setzt der Umbruch unten */
+  }
+
+  /* Umbruch nach der Textzeile: ein leeres, volles Element zwingt Plus, Ort-Chip
+     und „Speichern“ in die nächste Zeile; die Höhe ist der Abstand dazwischen */
+  [data-mobile-os="android"] .composer::after {
+    content: "";
+    order: 3;
+    flex: 0 0 100%;
+    height: 12px;
   }
 
   [data-mobile-os="android"] :is(.composer-top, .composer-chips, .composer-tools, .composer-end) {
@@ -101,8 +113,9 @@
 
   [data-mobile-os="android"] .composer-input {
     order: 1;
-    flex: 0 0 100%;
-    padding: 0 0 12px;
+    flex: 1 1 0; /* flex: nimmt den Platz links vom Typ-Chip; Basis 0, damit die Zeile nicht umbricht */
+    min-width: 0;
+    padding: 0;
     font-size: 16px;
     color: var(--m3-on-surface);
   }
@@ -114,7 +127,7 @@
   /* Anhang-Knopf: runder Knopf im etwas helleren Grau, auf derselben Linie
      wie Textfeld und Chips (--m3-composer-pad vom Rand) */
   [data-mobile-os="android"] .composer-attach {
-    order: 2;
+    order: 4;
     width: var(--m3-composer-attach);
     height: var(--m3-composer-attach);
     background: var(--m3-surface-container-high);
@@ -126,7 +139,7 @@
     height: 24px;
   }
 
-  /* ---------- Auswahl-Chips: Typ, dann Ablageort ---------- */
+  /* ---------- Auswahl-Chips: Typ rechts im Textfeld, Ablageort unten ---------- */
 
   /* align-self: composer.css hängt die Pillen oben an (flex-start) — in
      dieser Zeile stehen sie mittig zu Plus und „Speichern“ */
@@ -143,10 +156,11 @@
     font-size: 14px;
   }
 
-  /* Typ-Chip nur mit Icon und Pfeil: den Namen sagt schon der Platzhalter
-     („Neue Aufgabe“); den Namen für Vorleser setzt composer-types.js */
+  /* Typ-Chip nur mit Icon und Pfeil, rechts neben dem Textfeld: den Namen sagt
+     schon der Platzhalter („Neue Aufgabe“); den Namen für Vorleser setzt
+     composer-types.js */
   [data-mobile-os="android"] #composer-type-pill {
-    order: 3;
+    order: 2;
     flex-shrink: 0;
   }
 
@@ -158,7 +172,7 @@
      Er wächst bis zu seiner vollen Breite (max-width), ein langer Ortsname
      kürzt sich mit „…“, „Speichern“ bleibt in der Zeile. */
   [data-mobile-os="android"] #composer-link {
-    order: 4;
+    order: 5;
     flex: 1 1 0;
     min-width: 0;
     max-width: max-content;
@@ -186,7 +200,7 @@
 
   /* Text-Knopf rechts außen (Material 3 „Text button“) statt runder Pfeil */
   [data-mobile-os="android"] .composer-send {
-    order: 5;
+    order: 6;
     margin-left: auto; /* margin: schiebt den Knopf an den rechten Rand */
     width: auto;
     height: var(--m3-text-btn-h);
@@ -219,7 +233,7 @@
      Anlegen da ist, gefärbt, sobald Text oder ein Anhang drinsteht. */
   [data-mobile-variant="experiment"] .composer-mic {
     display: grid; /* display: überstimmt das Ausblenden der normalen Android-Fassung oben */
-    order: 4;
+    order: 5;
     margin-left: auto; /* margin: schiebt Mikrofon und Pfeil an den rechten Rand */
     width: var(--m3-composer-attach);
     height: var(--m3-composer-attach);
@@ -233,7 +247,7 @@
   }
 
   [data-mobile-variant="experiment"] .composer-send {
-    order: 5;
+    order: 6;
     margin: 0;
     width: var(--m3-composer-attach);
     height: var(--m3-composer-attach);
