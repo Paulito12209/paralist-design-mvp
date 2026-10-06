@@ -86,6 +86,8 @@ const lazyModules = {
   drawing: () => import("./features/drawing/drawing.js"),
   video: () => import("./ui/video-player.js"),
   files: () => import("./data/files.js"),
+  /* Export und Import unter Einstellungen › Daten (src/data/transfer.js) */
+  transfer: () => import("./data/transfer.js"),
   desk: () => import("./shell/desk.js"),
   deskSide: () => import("./shell/desk-side.js"),
   dashboard: () => import("./features/dashboard/dashboard.js"),

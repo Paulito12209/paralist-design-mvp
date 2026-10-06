@@ -2,7 +2,8 @@
  * Die Abschnitte „Analyse“ (nur Desktop) und „Darstellung“ im Einstellungs-Blatt und die Angabe, welche
  * große Seite hinter welchem Schlüssel liegt — Navigation, Suche, Design und
  * Tabs unter „App“, die Konto-Seiten (Persönliche Daten, Passwort,
- * Synchronisierung), die beiden Löschen-Seiten, die Feedback- und Danksagungs-Seite
+ * Synchronisierung), Daten exportieren und importieren, die beiden
+ * Löschen-Seiten, die Feedback- und Danksagungs-Seite
  * und die Versionen unter „Mehr“, am Desktop auch Nutzungszeit und Serie. Am
  * Handy liegen diese beiden im Fortschritt (src/features/progress/progress.js).
  * Pfad: src/features/profile/settings-cards.js
@@ -21,6 +22,8 @@ import { passwordCard, personalCard, syncCard } from "./account.js";
 import { deleteAccountCard, deleteDataCard } from "./account-delete.js";
 import { designCard, navigationCard, searchCard, tabsCard } from "./app-settings.js";
 import { creditsCard, startCreditsVideo } from "./credits.js";
+import { exportCard } from "./data-export.js";
+import { importCard } from "./data-import.js";
 import { enterFeedback, feedbackCard } from "./feedback.js";
 import { themeListMarkup } from "./theme.js";
 import { versionsCard } from "./versions.js";
@@ -50,6 +53,8 @@ const details = {
   personal: { hash: "persoenliche-daten", title: "Persönliche Daten", card: personalCard },
   password: { hash: "passwort", title: "Passwort ändern", card: passwordCard },
   sync: { hash: "synchronisierung", title: "Synchronisierung", card: syncCard },
+  export: { hash: "daten-exportieren", title: "Daten exportieren", card: exportCard },
+  import: { hash: "daten-importieren", title: "Daten importieren", card: importCard },
   "delete-data": { hash: "daten-loeschen", title: "Alle Daten löschen", card: deleteDataCard },
   "delete-account": { hash: "konto-loeschen", title: "Konto löschen", card: deleteAccountCard },
   versions: { hash: "versionen", title: "Versionen", card: versionsCard },

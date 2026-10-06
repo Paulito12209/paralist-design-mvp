@@ -114,8 +114,8 @@ const listSections = [
   {
     title: "Daten",
     rows: [
-      { icon: "share", label: "Daten exportieren", trail: "chevron" },
-      { icon: "import", label: "Daten importieren", trail: "chevron" },
+      { icon: "share", label: "Daten exportieren", trail: "chevron", detail: "export" },
+      { icon: "import", label: "Daten importieren", trail: "chevron", detail: "import" },
       { icon: "trash", label: "Alle Daten löschen", trail: "chevron", detail: "delete-data", danger: true, when: "local" },
     ],
   },

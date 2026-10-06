@@ -5,7 +5,8 @@
  * - Phase 2 (mit Cloud): „Konto löschen“ — Konto und Cloud-Daten auf allen
  *   Geräten. Google Play verlangt diesen Weg in der App, sobald man darin ein
  *   Konto anlegen kann.
- * Beide bieten vorher „Daten exportieren“ an. Im MVP lösen die Knöpfe nichts aus.
+ * Beide bieten vorher „Daten exportieren“ an (öffnet die Export-Seite,
+ * src/features/profile/data-export.js); der rote Knopf löst im MVP nichts aus.
  * Pfad: src/features/profile/account-delete.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -48,7 +49,7 @@ function deleteMarkup(page) {
       <ul class="account-delete-list">${items}</ul>
     </section>
     <p class="settings-note">${escapeHtml(page.note)}</p>
-    <button class="account-button" type="button">Vorher Daten exportieren</button>
+    <button class="account-button" type="button" data-settings-detail="export">Vorher Daten exportieren</button>
     <button class="account-button is-danger" type="button">${escapeHtml(page.confirm)}</button>`;
 }
 
