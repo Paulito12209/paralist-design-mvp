@@ -1,6 +1,6 @@
 /*
- * Die Desktop-Fassung: hängt Wortmarke und Kopfzeile, die Seitenleiste
- * links (mit Icon-Zeile der Seiten oben und Fuß unten) und die Spalte rechts
+ * Die Desktop-Fassung: hängt Wortmarke (mit der Stufe) und Kopfzeile, die
+ * Seitenleiste links (Icon-Zeile der Seiten, „Liste“, Fuß) und die Spalte rechts
  * ins Gerätefenster und hält alles aktuell. Das Seitenfenster rechts
  * (src/shell/desk-side.js) lädt erst beim ersten Öffnen. Das Modul wird erst
  * geladen, wenn das Fenster breit genug ist (src/main.js) — am Handy kommt
@@ -23,8 +23,8 @@ import { load } from "../core/lazy.js";
 import { readJson, storageKeys } from "../core/storage.js";
 import { hintPlaces, hintsShown } from "../data/shortcut-hints.js";
 import { isDesk, isRailShown, onDeskChange } from "../ui/desk-mode.js";
-import { mountDeskHead, renderDeskHead } from "./desk-head.js";
-import { mountDeskFoot, placeLevelButton, renderDeskFoot } from "./desk-foot.js";
+import { mountDeskHead, placeLevelButton, renderDeskHead } from "./desk-head.js";
+import { mountDeskFoot, renderDeskFoot } from "./desk-foot.js";
 import { initDeskKeys } from "./desk-keys.js";
 import { mountDeskNav, renderDeskNav } from "./desk-nav.js";
 import { returnPageHeads } from "./desk-page-head.js";
@@ -128,7 +128,7 @@ function createColumn(className, label) {
  * Seitenleiste und rechte Spalte einhängen. Darf mehrmals aufgerufen werden —
  * etwa bei jedem Wechsel über die Breitengrenze; eingehängt wird nur einmal,
  * danach hält onDeskChange unten alles aktuell.
- * @param handlers { openProjectViewMenu, railCards, theme } aus den Seiten,
+ * @param handlers { railCards, theme } aus den Seiten,
  *   von src/main.js hereingegeben; `railCards` ordnet einer Ansicht die
  *   Funktion zu, die ihre Karten für die rechte Spalte lädt, `theme` ist
  *   { current, set } für den Schalter Hell/Dunkel im Fuß.
@@ -146,7 +146,7 @@ export function initDesk(handlers = {}) {
   dom.content.after(rail);
 
   mountDeskHead();
-  mountDeskNav(nav, handlers);
+  mountDeskNav(nav);
   mountDeskPages(nav.querySelector('[data-nav-slot="pages"]'));
   mountDeskFoot(nav.querySelector('[data-nav-slot="foot"]'), handlers.theme || null);
   mountDeskRail(rail);

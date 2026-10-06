@@ -1,9 +1,9 @@
 /*
  * Die Ziele der Desktop-Fassung an einer Stelle: die vier Seiten als Icons
- * oben in der Seitenleiste und die Sammlungen darunter, jeweils mit ihrer
- * Taste. Seitenleiste, Tastenkürzel und die Liste unter Profil › Kurzbefehle
- * lesen alle von hier — so können Schild, Kürzel und Liste nie
- * auseinanderlaufen. Liegt in src/ui/, weil Hülle und Profil sie brauchen.
+ * oben in der Seitenleiste und die Listen, die man unter „Liste“ wählen kann,
+ * jeweils mit ihrer Taste. Seitenleiste, Tastenkürzel und die Liste unter
+ * Profil › Kurzbefehle lesen alle von hier — so können Schild, Kürzel und
+ * Liste nie auseinanderlaufen. Liegt in src/ui/, weil Hülle und Profil sie brauchen.
  * Pfad: src/ui/desk-links.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -12,19 +12,22 @@
  *                    `code` ist dieselbe Taste ohne Rücksicht auf die
  *                    Tastaturbelegung), die alte Ziffer `key` und welche Zahl
  *                    die Vorlesehilfe dazu sagt
- * collectionLinks -> die Sammlungen links, von oben nach unten: welche Seite,
- *                    Taste nach „G“ und welche Farbe das Icon trägt (die Farben
- *                    selbst stehen in styles/desk-nav.css); `nav: false` hat
- *                    ein Kürzel, aber keine eigene Zeile (Projekte stehen als
- *                    Gruppe darunter); `num` ist die Ziffer für ⌃ (Strg-Ersatz
- *                    außerhalb des Macs: Alt)
+ * listLinks       -> die Listen unter „Liste“ in der Seitenleiste, in der
+ *                    Reihenfolge des Menüs: `num` ist die Ziffer im Menü und
+ *                    für ⌃ (Strg-Ersatz außerhalb des Macs: Alt), `key` die
+ *                    Taste nach „G“, `tone` die Farbe des Icons (die Farben
+ *                    selbst stehen in styles/desk-nav.css), `create` was ein
+ *                    Klick in die freie Fläche anlegt (fehlt es, legt die Liste
+ *                    nichts an), `add` die Beschriftung der blassen Zeile dafür;
+ *                    `cut: true` zieht vor der Zeile den Strich im Menü
+ * listKey         -> Buchstabe für ⌘, der das Menü „Liste“ öffnet
  * sideLink        -> Buchstabe für ⇧⌘, der das Seitenfenster rechts auf- und zuklappt
- * chordKey        -> die Taste, nach der ein Buchstabe eine Sammlung öffnet
+ * chordKey        -> die Taste, nach der ein Buchstabe eine Liste wählt
  * chordWindow     -> wie lange nach „G“ der Buchstabe noch zählt (Millisekunden)
  */
 
-import { moreCards, projectsPage } from "../data/collections.js";
-import { overviewPages } from "../data/config.js";
+import { bookmarksPage, projectsPage } from "../data/collections.js";
+import { archivePage, inboxPick, overviewPages, resourcePick } from "../data/config.js";
 
 export const chordKey = "G";
 export const chordWindow = 1200;
@@ -60,29 +63,34 @@ export const pageLinks = [
 /* Das Seitenfenster rechts (src/shell/desk-side.js): ⇧⌘O wie „Öffnen“. */
 export const sideLink = { label: "Seitenfenster", letter: "O", code: "KeyO" };
 
-function moreCard(id) {
-  return moreCards.find((card) => card.id === id);
-}
+/* Das Menü „Liste“ öffnet ⌘L; darin wählt die Ziffer. */
+export const listKey = "L";
 
 /*
- * Die Sammlungen. `overview` ist die Nummer aus overviewPages, `target` ein
- * eigener Weg (Lesezeichen, Archiv, Projekte). `tone` wählt die Icon-Farbe.
+ * Die Listen unter „Liste“: oben die vier Ablagen (Projekte, Arbeitsbereiche,
+ * Ressourcen, Archiv), nach dem Strich das Laufende (Eingang, Aufgaben,
+ * Termine, Lesezeichen). `overview` ist die Nummer aus overviewPages,
+ * `target` ein eigener Weg (Seite Projekte, Archiv, Lesezeichen) oder der
+ * Reiter (Aufgaben, Kalender).
  */
-export const collectionLinks = [
-  { id: "1", overview: "1", key: "I", num: "1", tone: "inbox" },
-  { id: "2", overview: "2", key: "F", num: "2", tone: "star" },
-  { id: "3", overview: "3", key: "B", num: "3", tone: "workspace" },
-  { id: "4", overview: "4", key: "R", num: "4", tone: "resource" },
-  { id: "bookmarks", target: "bookmarks", key: "L", num: "5", tone: "bookmark" },
-  { id: "archive", target: "archive", key: "A", num: "6", tone: "archive", quiet: true },
-  { id: "projects", target: "projects", key: "P", num: "7", tone: "project", nav: false },
+export const listLinks = [
+  { id: "projects", num: "1", key: "P", tone: "project", target: "projects", title: projectsPage.title, icon: "rocket", create: "projekt", add: "Projekt hinzufügen" },
+  { id: "workspaces", num: "2", key: "B", tone: "workspace", overview: "3", create: "arbeitsbereich", add: "Arbeitsbereich hinzufügen" },
+  { id: "resources", num: "3", key: "R", tone: "resource", overview: "4", create: resourcePick.id, add: "Dokument hinzufügen" },
+  { id: "archive", num: "4", key: "A", tone: "archive", target: "archive", title: archivePage.title, icon: "archive", quiet: true },
+  { id: "inbox", num: "5", key: "I", tone: "inbox", overview: "1", create: inboxPick, add: "Eintrag hinzufügen", cut: true },
+  { id: "tasks", num: "6", key: "U", tone: "task", target: "tasks", title: "Aufgaben", icon: "task", create: "aufgabe", add: "Aufgabe hinzufügen" },
+  { id: "events", num: "7", key: "T", tone: "event", target: "calendar", title: "Termine", icon: "calendar", create: "termin", add: "Termin hinzufügen" },
+  { id: "bookmarks", num: "8", key: "L", tone: "bookmark", target: "bookmarks", title: bookmarksPage.title, icon: "bookmark", create: "lesezeichen", add: "Lesezeichen hinzufügen" },
 ].map((link) => {
-  const source = link.overview ? overviewPages[link.overview] : link.target === "projects" ? projectsPage : moreCard(link.id);
-  return { ...link, title: source.title, icon: source.icon || "rocket" };
+  const source = link.overview ? overviewPages[link.overview] : link;
+  return { ...link, title: source.title, icon: source.icon };
 });
 
-/* Was noch kommt: dieselben Karten, die am Handy „Demnächst verfügbar“ zeigen. */
-export const soonLinks = moreCards.filter((card) => card.soon);
+/** Eine Liste nach ihrer Kennung; ohne Treffer die erste (Projekte). */
+export function listLink(id) {
+  return listLinks.find((link) => link.id === id) || listLinks[0];
+}
 
 /* Mac-Tastaturen zeigen ⌘, alle anderen „Strg“. */
 export const isMac = /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent);

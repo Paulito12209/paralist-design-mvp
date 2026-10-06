@@ -1,11 +1,13 @@
 /*
- * Der Kopf der Desktop-Fassung: links über der Seitenleiste die Wortmarke mit
- * dem Klapp-Knopf, über der Mitte die Kopfzeile — links Zurück und Vorwärts,
+ * Der Kopf der Desktop-Fassung: links über der Seitenleiste die Wortmarke,
+ * daneben die Stufen-Anzeige (öffnet Fortschritt und Statistiken; derselbe
+ * Knopf wie am Handy, hierher umgesetzt) und der Klapp-Knopf, über der Mitte
+ * die Kopfzeile — links Zurück und Vorwärts,
  * daneben der Pfad der offenen Seite mit ihren Knöpfen (Kategorie, Favorit,
  * Cover, Menü), ganz rechts der Knopf fürs Seitenfenster. Die vier Seiten und
- * die Suche stehen als Icons oben in der Seitenleiste (src/shell/desk-pages.js),
- * die Stufe unten links (src/shell/desk-foot.js). Diese Datei hängt die Teile
- * ein, hält die Pfeile aktuell und merkt sich, ob die Seitenleiste zu ist.
+ * die Suche stehen als Icons oben in der Seitenleiste (src/shell/desk-pages.js).
+ * Diese Datei hängt die Teile ein, hält Pfeile und Stufen-Hinweis aktuell und
+ * merkt sich, ob die Seitenleiste zu ist.
  * Pfad: src/shell/desk-head.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -18,7 +20,9 @@
  */
 
 import { dom } from "../core/dom.js";
+import { formatNumber } from "../core/format.js";
 import { escapeHtml, icon } from "../core/html.js";
+import { levelInfo, totalXp } from "../data/xp.js";
 import { load } from "../core/lazy.js";
 import { readText, storageKeys, writeText } from "../core/storage.js";
 import { closeOverlay, goBack, goForward, showTab } from "../ui/router.js";
@@ -48,8 +52,35 @@ function toggleButton(extraClass = "") {
   return headButton("toggle", "sidebar", "Seitenleiste ein- oder ausklappen", withCommand("\\"), extraClass);
 }
 
+/* Wortmarke, daneben der Platz für die Stufe, rechts der Klapp-Knopf. */
 function brandMarkup() {
-  return `<span class="desk-wordmark">${wordmark}</span>${toggleButton()}`;
+  return `<span class="desk-brand-lead"><span class="desk-wordmark">${wordmark}</span><span class="desk-brand-level" data-brand-slot="level"></span></span>${toggleButton()}`;
+}
+
+/* Der Hinweis an der Stufe: welche Stufe und wie weit noch. */
+function renderLevelHint() {
+  const xp = totalXp();
+  const info = levelInfo(xp);
+  const text = `Stufe ${info.level} · noch ${formatNumber(Math.max(0, info.to - xp))} XP`;
+  if (parts.levelHint.textContent !== text) parts.levelHint.textContent = text;
+}
+
+/**
+ * Die Stufen-Anzeige (#level-btn, gezeichnet von src/shell/level-gauge.js)
+ * steht am Desktop neben „Paralist“, unter 1024px kehrt sie an den Anfang
+ * der Kopfzeile des Handys zurück. Ein Knopf an zwei Orten statt zwei
+ * Knöpfen: Skala, Stufen-Meldung und Klick bleiben eins.
+ */
+export function placeLevelButton(desk) {
+  if (!brand) return;
+  const button = dom.levelBtn;
+  if (desk && button.parentElement !== parts.level) {
+    parts.level.append(button);
+    button.append(parts.levelHint);
+  } else if (!desk && button.parentElement === parts.level) {
+    parts.levelHint.remove();
+    document.querySelector(".top-bar").prepend(button);
+  }
 }
 
 /*
@@ -85,9 +116,10 @@ function setEnabled(button, enabled) {
   button.disabled = !enabled;
 }
 
-/** Pfeile, Knopf des Seitenfensters und den Pfad der offenen Seite auffrischen. */
+/** Pfeile, Stufen-Hinweis, Knopf des Seitenfensters und den Pfad der offenen Seite auffrischen. */
 export function renderDeskHead() {
   if (!strip) return;
+  renderLevelHint();
   const reach = historyReach();
   setEnabled(parts.back, reach.back);
   setEnabled(parts.forward, reach.forward);
@@ -174,7 +206,12 @@ export function mountDeskHead(handlers = {}) {
     stripToggle: strip.querySelector(".desk-tabs-toggle"),
     page: strip.querySelector('[data-head-slot="page"]'),
     side: strip.querySelector('[data-head="side"]'),
+    level: brand.querySelector('[data-brand-slot="level"]'),
+    levelHint: document.createElement("span"),
   };
+  /* Der Hinweis hängt am Knopf selbst, damit er mit ihm wandert; steht im Dunkeln unter ihm */
+  parts.levelHint.className = "desk-foot-hint desk-level-hint";
+  parts.levelHint.setAttribute("aria-hidden", "true");
 
   brand.addEventListener("click", onClick);
   strip.addEventListener("click", onClick);

@@ -1,0 +1,115 @@
+/*
+ * Desktop: der Hilfe-Dialog hinter dem Fragezeichen unten in der Seitenleiste
+ * (src/shell/desk-help.js). Ein Blatt wie Profil und Fortschritt
+ * (styles/overlays.css, styles/desk-overlays.css), nur so hoch wie sein
+ * Text: zwei kurze Absätze und die wichtigsten Kürzel mit ihren Schildern.
+ * Gilt erst ab 1024px — am Handy gibt es den Dialog nicht.
+ * Pfad: styles/desk-help.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-help)
+ * -----------------------------------
+ * --help-width    -> Breite des Dialogs
+ * --help-pad      -> Rand links und rechts im Text
+ * --help-row-gap  -> Luft zwischen den Zeilen der Kürzel
+ * Einzelwerte stehen bei ihrer Regel: Überschrift 13px, Text 14px, Zeilenhöhe 1.5.
+ *
+ * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * --desk-panel / --desk-item-radius -> Fläche und Rundung des Knopfs „Alle Kurzbefehle“
+ * --desk-hover / --desk-fast / --desk-ease -> Tönung beim Überfahren, Dauer und Kurve
+ * --desk-edge -> Haarlinie zwischen den Kürzel-Zeilen
+ * --text / --muted / --avatar-btn-bg -> Schrift, Überschriften, Knopf
+ */
+
+@media (min-width: 1024px) {
+  .device .modal-backdrop .desk-help {
+    --help-width: 480px;
+    --help-pad: 24px;
+    --help-row-gap: 2px;
+
+    width: min(var(--help-width), 100%);
+    height: auto;
+    max-height: 100%;
+  }
+
+  .desk-help .modal-body {
+    gap: 6px;
+    padding: 0 var(--help-pad) var(--help-pad);
+  }
+
+  .desk-help-title {
+    margin-top: 14px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  .desk-help-title:first-child {
+    margin-top: 0;
+  }
+
+  .desk-help-text {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  .desk-help-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--help-row-gap);
+    list-style: none;
+  }
+
+  /* Beschriftung links, das Schild rechts; dazwischen eine Haarlinie zur nächsten Zeile */
+  .desk-help-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 34px;
+    border-bottom: 0.5px solid var(--desk-edge);
+    font-size: 14px;
+    color: var(--text);
+  }
+
+  .desk-help-row:last-child {
+    border-bottom: 0;
+  }
+
+  /* Führt zu Profil › Kurzbefehle, wo alle Tasten stehen */
+  .desk-help-all {
+    align-self: flex-start; /* align-self: der Knopf ist so breit wie sein Text, nicht wie das Blatt */
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 8px 14px;
+    border-radius: var(--desk-item-radius);
+    background: var(--desk-panel);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    transition: background-color var(--desk-fast) var(--desk-ease); /* transition: Tönung gleitet statt zu springen */
+  }
+
+  .desk-help-all .icon {
+    width: 18px;
+    height: 18px;
+    color: var(--avatar-btn-bg);
+  }
+
+  @media (hover: hover) {
+    .desk-help-all:hover {
+      background: var(--desk-hover);
+    }
+  }
+
+  .desk-help-all:active {
+    opacity: 0.6;
+  }
+
+  .desk-help-all:focus-visible {
+    outline: 2px solid var(--avatar-btn-bg); /* outline: sichtbarer Ring nur bei Bedienung mit der Tastatur */
+    outline-offset: 2px;
+  }
+}

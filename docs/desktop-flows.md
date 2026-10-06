@@ -17,33 +17,40 @@ muss alles wie am Handy aussehen.
   „Taste 1“ darunter. Liegen Profil oder Fortschritt über dem gewählten Reiter,
   schließt ein Klick darauf sie. Letztes Segment ist die Lupe (Hinweis
   „Suchen ⌘K“); ein Suchfeld links gibt es am Desktop nicht mehr.
-- Oben rechts die Level-Anzeige wie am Handy: Verweilen zeigt „Stufe 1 · noch
-  … XP“, Klick öffnet Fortschritt als Seite (die Anzeige ist dann hinterlegt),
-  ein zweiter Klick rollt nur nach oben. Unter 1024 px steht sie wieder oben
-  links in der Kopfzeile.
-- Tasten-Schilder („N“, „G I“, „⌘,“, Palette, Profil › Kurzbefehle): kleine
+- Die Stufen-Anzeige steht oben links, 16 px rechts neben „Paralist“:
+  Verweilen zeigt darunter „Stufe 1 · noch … XP“, Klick öffnet Fortschritt als
+  Seite (die Anzeige ist dann hinterlegt), ein zweiter Klick rollt nur nach
+  oben. Unter 1024 px steht sie wieder oben links in der Kopfzeile des Handys.
+- Tasten-Schilder („N“, „⌘L“, „⌘,“, Palette, Profil › Kurzbefehle): kleine
   Schrift mit feiner Haarlinie, ohne Fläche — dezent, aber gut lesbar.
 - ‹ und › oben links, ⌘[ und ⌘] (Strg außerhalb des Macs) und Browser-Zurück
-  führen durch denselben Verlauf.
-- Alle sechs Sammlungen links öffnen, auch per G und Buchstabe (G I, G F, G B
-  für Arbeitsbereiche, G R, G L, G A); die offene ist markiert. G P öffnet die
-  Seite Projekte, Profil › Kurzbefehle listet beide. Nur Personen und Pläne (noch nicht
-  fertig) stehen unter „Mehr anzeigen“ (Pfeil nach unten; aufgeklappt steht
-  ganz unten „Weniger anzeigen“ mit Pfeil nach oben; bleibt nach neu laden).
-- „Projekte ↗“ öffnet die Seite Projekte; das Plus daneben führt dorthin ins
-  Namensfeld einer neuen Ansicht. Darunter je Ansicht eine Gruppe, „Alle“
-  zuerst; eine Zeile zeigt Icon, Titel, Stern bei Favorit und die Zahl der
-  Einträge, das offene Projekt ist markiert. Überfahren eines Kopfs zeigt die
-  Rakete mit Plus: legt ein Projekt in dieser Ansicht an.
+  führen durch denselben Verlauf. Auf Übersicht, Kalender, Aufgaben und Medien
+  bleibt der Pfad oben leer (der Name steht groß auf der Seite); auf Suche,
+  Einstellungen und Fortschritt steht er dort.
+- „Liste ▾ Eingang 18 ⌘L“ unter „Neu“: Klick auf „Liste“ oder ⌘L öffnet das
+  Menü mit 1 Projekte, 2 Arbeitsbereiche, 3 Ressourcen, 4 Archiv, Strich,
+  5 Eingang, 6 Aufgaben, 7 Termine, 8 Lesezeichen (Ziffer, Pfeile, Enter,
+  Escape, Klick daneben); ⌃ und Ziffer wählt ohne Menü. Die Wahl bleibt nach
+  neu laden. Darunter nur die Zeilen dieser Liste (Icon, Titel, Stern bei
+  Favorit, rechts Zahl der Einträge bzw. Tag eines Termins), die offene Zeile
+  ist markiert; Rechtsklick öffnet das Menü des Eintrags. Klick auf den Namen
+  im Kopf öffnet die Seite der Liste (dann hinterlegt); G und Buchstabe
+  (G P B R A I U T L) ebenso.
+- Klick in die freie Fläche unter den Zeilen oder auf die blasse Zeile
+  „… hinzufügen“ öffnet das Eingabefeld mit dem Typ der Liste (Projekt,
+  Arbeitsbereich, Dokument, Eintrag im Eingang, Aufgabe, Termin, Lesezeichen);
+  im Archiv gibt es die Zeile nicht.
+- „Archiviert (n)“ fest über dem Fuß (nicht, wenn die Liste selbst das Archiv
+  ist oder nichts drin liegt): klappt bis zur halben Höhe der Leiste auf,
+  darin rollen Bereiche und Einträge; bleibt nach neu laden offen.
+- Fuß: Einstellungen (⌘,), Fragezeichen (Hilfe-Dialog: was Paralist ist, die
+  wichtigsten Kürzel, Knopf „Alle Kurzbefehle“ → Profil › Kurzbefehle; Escape,
+  Kreuz und Klick daneben schließen), Hell/Dunkel, rechts Update.
 - Rechte Spalte: oben nur die Kachel „Eingang“ über die ganze Breite — die
   Stufe steht oben rechts in der Reiterzeile.
 - Seitenleiste mit dem Knopf und mit ⌘\ zu- und aufklappen, neu laden: der
   Zustand bleibt. Der Klapp-Knopf steht dann links in der Reiterzeile; das
   Eingabefeld und „Ansicht“ rücken mit.
-- Ansicht zuklappen (Zahl der Projekte erscheint), neu laden: bleibt zu.
-  Rechtsklick auf eine Zeile öffnet das Menü des Eintrags, auf einen Kopf das
-  der Ansicht; „Umbenennen“ springt zur Seite Projekte. Archivieren oder
-  Löschen des offenen Projekts geht zurück, woher man kam.
 - Seite Arbeitsbereiche (G B): alle Abläufe wie am Handy; rechts die Karten
   der Übersicht.
 - Fortschritt (über die Level-Anzeige oben rechts) ist eine Seite: Karten

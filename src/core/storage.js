@@ -36,11 +36,10 @@ export const storageKeys = {
   versions: "paralist-versions",
   milestones: "paralist-milestones",
   deskNav: "paralist-desk-nav",
-  /* Zugeklappte Ansichten der Projekte in der Seitenleiste — eigener Schlüssel,
-     damit alte Tab-Nummern nicht zufällig auf Ansichten passen. */
-  deskViewGroups: "paralist-desk-view-groups",
   deskHints: "paralist-desk-hints",
-  deskMore: "paralist-desk-more",
+  /* Seitenleiste am Desktop: welche Liste unter „Liste“ steht und ob „Archiviert“ offen ist */
+  deskList: "paralist-desk-list",
+  deskArchive: "paralist-desk-archive",
   /* Werkzeugleiste der Zeichnung am Desktop: wo sie steht, Strichbreiten, eigene Farben */
   drawPrefs: "paralist-draw-prefs",
   /* Seitenfenster rechts am Desktop: offen, breit, was darin steht, letzte Adresse */

@@ -1,67 +1,63 @@
 /*
- * Desktop: die Seitenleiste links — oben der Knopf „Neu“, darunter rollend die
- * Sammlungen und die Projekte (je Ansicht eine Gruppe zum Auf- und
- * Zuklappen), unten fest der Fuß mit Stufe und Konto (styles/desk-nav-foot.css).
+ * Desktop: die Seitenleiste links — oben die Icon-Zeile der Seiten
+ * (styles/desk-nav-pages.css), der Knopf „Neu“ und der Kopf „Liste“
+ * (styles/desk-nav-list.css), darunter rollend die Zeilen der gewählten
+ * Liste, unten fest „Archiviert“ und der Fuß (styles/desk-nav-foot.css).
  * Gilt erst ab 1024px Fensterbreite. Tasten-Schilder und das Auftauchen der
- * Blöcke stehen in styles/desk-kbd.css, das Markup in src/shell/desk-nav-parts.js.
+ * Blöcke stehen in styles/desk-kbd.css, das Gerüst in src/shell/desk-nav-parts.js.
  * Pfad: styles/desk-nav.css
  *
  * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-nav)
  * -----------------------------------
  * --sidebar-row-pad    -> Innenrand der Zeilen: so weit reicht die Fläche beim Überfahren über Icon und Schild hinaus
  * --sidebar-icon       -> Größe der Icons in den Zeilen
- * --sidebar-indent     -> wie weit die Projekte unter ihrer Ansicht eingerückt stehen
- * --sidebar-head-inset -> Abstand der Überschriften, der Pfeile von „Alle“ und „Mehr anzeigen“ vom
- *                         Leistenrand — bündig mit der Wortmarke „Paralist“ (styles/desk-head.css)
+ * --sidebar-head-inset -> Abstand der Überschrift „Liste“ vom Leistenrand — bündig mit der Wortmarke „Paralist“
  * --sidebar-new-height -> Höhe des Knopfs „Neu“
- * --sidebar-head-height -> Höhe der Überschriften und der Tab-Köpfe
- * --sidebar-tool / --sidebar-tool-icon -> Größe der runden Plus-Knöpfe und ihrer Icons
+ * --sidebar-head-height -> Höhe des Kopfs „Liste“ und der Zeile „Archiviert“
  * --sidebar-fade       -> Höhe der weichen Ausblendung oben und unten im rollenden Teil
- * Einzelne Größen stehen bei ihrer Regel: Pfeil einer Ansicht und von „Mehr anzeigen“ 14px, Stern 14px,
- * Pfeil hinter „Projekte“ 13px.
+ * Einzelne Größen stehen bei ihrer Regel: Stern 14px.
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
- * --desk-nav-pad -> Rand links und rechts (bündig mit dem Suchfeld darüber)
- * --desk-nav-group-gap -> Luft über „Sammlungen“ und „Projekte“
+ * --desk-nav-pad -> Rand links und rechts
+ * --desk-nav-top-gap -> Luft zwischen Wortmarke, Icon-Zeile, „Neu“ und „Liste“
  * --desk-nav-item-height / --desk-nav-item-size / --desk-label-size -> Höhe und Schrift einer Zeile, kleine Schrift
  * --desk-item-radius / --desk-panel-strong -> Rundung der Zeilen / Fläche der gewählten Zeile
  * --desk-hover / --desk-fast / --desk-ease -> Tönung beim Überfahren, Dauer und Kurve
  * --text / --bg / --muted / --avatar-btn-bg -> Schrift, Grund (im Knopf „Neu“ vertauscht), leise Zahlen, Zeilen
  * --star-color / --inbox-icon-color / --workspace-icon-color / --resource-icon-color /
- * --bookmark-color / --archive-color -> farbige Icons der Sammlungen wie auf den Karten am Handy
+ * --bookmark-color / --archive-color / --project-icon-color / --cal-accent / --xp-created
+ *                -> farbige Icons der Listen wie auf den Karten am Handy
  */
 
 @media (min-width: 1024px) {
   .desk-nav {
     --sidebar-row-pad: 10px;
     --sidebar-icon: 18px;
-    --sidebar-indent: 18px;
     --sidebar-head-inset: 6px;
     --sidebar-new-height: 38px;
-    --sidebar-head-height: 28px;
-    --sidebar-tool: 26px;
-    --sidebar-tool-icon: 16px;
+    --sidebar-head-height: 30px;
     --sidebar-fade: 12px;
 
     display: flex;
     flex-direction: column;
     min-height: 0; /* min-height: im Raster darf die Spalte schrumpfen — sonst schöbe eine lange Liste sie über das Fenster */
-    overflow: hidden; /* overflow: nur der mittlere Teil rollt, „Neu“ und der Fuß bleiben stehen */
+    overflow: hidden; /* overflow: nur der mittlere Teil rollt, „Neu“, „Liste“, „Archiviert“ und der Fuß bleiben stehen */
   }
 
   .desk-nav-top {
-    flex: 0 0 auto; /* flex: der Knopf „Neu“ behält seine Höhe */
-    padding: 0 var(--desk-nav-pad);
+    flex: 0 0 auto; /* flex: Icon-Zeile, „Neu“ und „Liste“ behalten ihre Höhe */
+    padding: var(--desk-nav-top-gap) var(--desk-nav-pad) 0;
   }
 
-  /* Der rollende Teil zwischen „Neu“ und dem Fuß */
+  /* Der rollende Teil zwischen „Liste“ und „Archiviert“ */
   .desk-nav-scroll {
-    flex: 1 1 auto; /* flex: nimmt die ganze Höhe zwischen „Neu“ und Fuß */
+    flex: 1 1 auto; /* flex: nimmt die ganze Höhe dazwischen */
     min-height: 0; /* min-height: sonst wächst der Bereich mit der Liste, statt zu rollen */
-    overflow-y: auto; /* overflow-y: viele Arbeitsbereiche rollen hier */
+    overflow-y: auto; /* overflow-y: viele Zeilen rollen hier */
     overflow-x: hidden; /* overflow-x: nichts ragt seitlich heraus und erzeugt einen Querbalken */
     overscroll-behavior: contain; /* overscroll-behavior: am Listenende zieht das Rad nicht die Seite daneben mit */
     padding: 0 var(--desk-nav-pad) var(--sidebar-fade);
+    cursor: default;
     /* mask: Zeilen verlaufen oben und unten weich statt hart abgeschnitten; nur die Deckkraft zählt, nicht der Farbton */
     -webkit-mask-image: linear-gradient(to bottom, transparent, var(--text) var(--sidebar-fade), var(--text) calc(100% - var(--sidebar-fade)), transparent);
     mask-image: linear-gradient(to bottom, transparent, var(--text) var(--sidebar-fade), var(--text) calc(100% - var(--sidebar-fade)), transparent);
@@ -69,9 +65,7 @@
 
   /* Alles, was sich anklicken lässt, reagiert gleich weich */
   .desk-nav-row,
-  .desk-nav-new,
-  .desk-nav-tool,
-  .desk-nav-tabtoggle {
+  .desk-nav-new {
     transition: background-color var(--desk-fast) var(--desk-ease), color var(--desk-fast) var(--desk-ease),
       transform var(--desk-fast) var(--desk-ease), opacity var(--desk-fast) var(--desk-ease); /* transition: Tönung und Drücken gleiten statt zu springen */
   }
@@ -98,20 +92,7 @@
     height: var(--sidebar-icon);
   }
 
-  /* ---------- Überschriften ---------- */
-
-  .desk-nav-group {
-    margin-top: var(--desk-nav-group-gap);
-  }
-
-  .desk-nav-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    min-height: var(--sidebar-head-height);
-    margin-bottom: 2px;
-    padding: 0 4px 0 var(--sidebar-head-inset);
-  }
+  /* ---------- Überschrift ---------- */
 
   .desk-nav-heading {
     font-size: var(--desk-label-size);
@@ -121,8 +102,7 @@
 
   /* ---------- Zeilen ---------- */
 
-  /* Icon | Name (bei Sammlungen samt Zahl direkt dahinter) | Tasten-Schild oder
-     Zahl eines Arbeitsbereichs. Drei feste Spalten: alle Schilder stehen bündig. */
+  /* Icon | Name (samt Stern) | Zahl oder Tag. Drei feste Spalten: alles rechts steht bündig. */
   .desk-nav-row {
     display: grid;
     grid-template-columns: var(--sidebar-icon) minmax(0, 1fr) auto;
@@ -144,16 +124,6 @@
     color: var(--text);
   }
 
-  .desk-nav-row.is-quiet:not(.is-active) {
-    color: var(--muted);
-  }
-
-  /* Was noch kommt: blass und ohne Reaktion */
-  .desk-nav-row.is-soon {
-    opacity: 0.5;
-    cursor: default;
-  }
-
   .desk-nav-icon {
     width: var(--sidebar-icon);
     height: var(--sidebar-icon);
@@ -169,14 +139,16 @@
     color: var(--muted);
   }
 
-  /* Die Sammlungen tragen dieselben Icon-Farben wie ihre Karten am Handy */
+  /* Die Listen tragen dieselben Icon-Farben wie ihre Karten am Handy */
   .desk-nav-icon-inbox { color: var(--inbox-icon-color); }
-  .desk-nav-icon-star,
   .desk-nav-star { color: var(--star-color); }
   .desk-nav-icon-workspace { color: var(--workspace-icon-color); }
   .desk-nav-icon-resource { color: var(--resource-icon-color); }
   .desk-nav-icon-bookmark { color: var(--bookmark-color); }
   .desk-nav-icon-archive { color: var(--archive-color); }
+  .desk-nav-icon-project { color: var(--project-icon-color); }
+  .desk-nav-icon-task { color: var(--xp-created); }
+  .desk-nav-icon-event { color: var(--cal-accent); }
 
   /* min-width: lange Namen dürfen schmaler werden und enden dann mit „…“ */
   .desk-nav-label {
@@ -208,126 +180,15 @@
   }
 
   .desk-nav-empty {
-    padding: 6px var(--sidebar-row-pad) 6px calc(var(--sidebar-row-pad) + var(--sidebar-indent));
+    padding: 6px var(--sidebar-row-pad);
     font-size: var(--desk-label-size);
     color: var(--muted);
-  }
-
-  /* ---------- Gruppen der Ansichten unter „Projekte“ ---------- */
-
-  .desk-nav-tabgroup + .desk-nav-tabgroup {
-    margin-top: 4px;
-  }
-
-  .desk-nav-tabhead {
-    display: flex;
-    align-items: center;
-    gap: 2px;
-  }
-
-  .desk-nav-tabtoggle {
-    flex: 1 1 auto; /* flex: der Kopf nimmt die Breite bis zum Plus */
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    min-width: 0;
-    height: var(--sidebar-head-height);
-    padding: 0 var(--sidebar-row-pad) 0 var(--sidebar-head-inset);
-    border-radius: var(--desk-item-radius);
-    font-size: var(--desk-label-size);
-    font-weight: 600;
-    color: var(--text);
-    text-align: left;
-  }
-
-  .desk-nav-tabgroup.is-closed .desk-nav-tabtoggle {
-    color: var(--avatar-btn-bg);
-  }
-
-  .desk-nav-tabtoggle .desk-nav-count {
-    margin-left: auto; /* margin-left: die Zahl einer zugeklappten Gruppe steht rechts */
-  }
-
-  /* Der Pfeil zeigt nach rechts und dreht sich bei offener Gruppe nach unten */
-  .desk-nav-chevron {
-    flex: 0 0 auto;
-    width: 14px;
-    height: 14px;
-    color: var(--muted);
-    transform: rotate(90deg); /* transform: offene Gruppe, Pfeil nach unten */
-    transition: transform var(--desk-fast) var(--desk-ease); /* transition: der Pfeil dreht sich weich */
-  }
-
-  .desk-nav-tabgroup.is-closed .desk-nav-chevron {
-    transform: none;
-  }
-
-  /* „Mehr anzeigen“: leise, der Pfeil steht an der Stelle des Icons und zeigt
-     nach unten; aufgeklappt steht der Knopf ganz unten als „Weniger anzeigen“
-     mit Pfeil nach oben. */
-  .desk-nav-more-toggle {
-    color: var(--muted);
-  }
-
-  .desk-nav-more-toggle .desk-nav-more-chevron {
-    justify-self: start; /* justify-self: der Pfeil steht links in der Icon-Spalte … */
-    margin-left: calc(var(--sidebar-head-inset) - var(--sidebar-row-pad)); /* … und ragt so weit hinaus, dass er senkrecht unter den Überschriften und über dem Pfeil von „Alle“ steht */
-    width: 14px;
-    height: 14px;
-    color: var(--muted);
-    transform: rotate(90deg); /* transform: der Pfeil des Sprites zeigt nach rechts — gedreht nach unten */
-    transition: transform var(--desk-fast) var(--desk-ease); /* transition: s. o. */
-  }
-
-  .desk-nav-more-toggle[aria-expanded="true"] .desk-nav-more-chevron {
-    transform: rotate(-90deg); /* transform: offen, Pfeil nach oben */
-  }
-
-  /* „Projekte ↗“: die Überschrift ist zugleich der Weg zur Seite Projekte */
-  .desk-nav-heading-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    color: inherit;
-    font: inherit;
-  }
-
-  .desk-nav-heading-link .icon {
-    width: 13px;
-    height: 13px;
-  }
-
-  .desk-nav-tabgroup .desk-nav-space {
-    padding-left: calc(var(--sidebar-row-pad) + var(--sidebar-indent));
-  }
-
-  /* ---------- Runde Plus-Knöpfe ---------- */
-
-  .desk-nav-tool {
-    flex: 0 0 auto;
-    display: grid;
-    place-items: center;
-    width: var(--sidebar-tool);
-    height: var(--sidebar-tool);
-    border-radius: 999px;
-    color: var(--avatar-btn-bg);
-  }
-
-  .desk-nav-tool .icon {
-    width: var(--sidebar-tool-icon);
-    height: var(--sidebar-tool-icon);
   }
 
   /* ---------- Überfahren, Drücken, Tastatur ---------- */
 
   @media (hover: hover) {
-    .desk-nav-heading-link:hover {
-      color: var(--text);
-    }
-
-    .desk-nav-row:not(.is-soon):hover,
-    .desk-nav-tool:hover,
-    .desk-nav-tabtoggle:hover {
+    .desk-nav-row:hover {
       background: var(--desk-hover);
       color: var(--text);
     }
@@ -339,32 +200,15 @@
     .desk-nav-new:hover {
       background: color-mix(in srgb, var(--text) 86%, var(--bg)); /* color-mix: die dunkle Fläche hellt einen Hauch auf, aus den zwei Grundfarben gemischt */
     }
-
-    /* Das Plus einer Ansicht erscheint erst über ihrem Kopf — so bleibt die Liste ruhig */
-    .desk-nav-tabhead .desk-nav-tool {
-      opacity: 0;
-    }
-
-    .desk-nav-tabhead:hover .desk-nav-tool,
-    .desk-nav-tabhead:focus-within .desk-nav-tool {
-      opacity: 1;
-    }
   }
 
-  .desk-nav-row:not(.is-soon):active,
+  .desk-nav-row:active,
   .desk-nav-new:active {
     transform: scale(0.98); /* transform: gibt beim Drücken wie in der App ein wenig nach */
   }
 
-  .desk-nav-tool:active,
-  .desk-nav-tabtoggle:active {
-    opacity: 0.6;
-  }
-
   .desk-nav-row:focus-visible,
-  .desk-nav-new:focus-visible,
-  .desk-nav-tool:focus-visible,
-  .desk-nav-tabtoggle:focus-visible {
+  .desk-nav-new:focus-visible {
     outline: 2px solid var(--avatar-btn-bg); /* outline: sichtbarer Ring nur bei Bedienung mit der Tastatur */
     outline-offset: -2px;
   }

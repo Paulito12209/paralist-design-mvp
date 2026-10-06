@@ -11,11 +11,11 @@
  * -----------------------------------
  * --page-btn      -> Größe eines Icon-Knopfs
  * --page-icon     -> Größe der Icons darin
- * --page-row-gap  -> Luft zwischen der Zeile und „Neu“ darunter
  * Einzelwerte stehen bei ihrer Regel: Hinweis-Schrift 12px, Abstand 6px,
  * Verzögerung 400ms bis er erscheint.
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * --desk-nav-top-gap -> Luft zwischen der Zeile und „Neu“ darunter
  * --desk-panel-strong -> Fläche der gewählten Seite (wie die gewählte Zeile darunter)
  * --desk-hover / --desk-fast / --desk-ease -> Tönung beim Überfahren, Dauer und Kurve
  * --avatar-btn-bg / --text / --bg -> Icons in Ruhe, gewählt, Hinweis (Schrift und Grund vertauscht)
@@ -31,11 +31,10 @@
   .desk-nav-pages {
     --page-btn: 36px;
     --page-icon: 20px;
-    --page-row-gap: 10px;
 
     display: flex;
     justify-content: space-between; /* justify-content: die fünf Icons verteilen sich über die Breite von „Neu“ */
-    margin-bottom: var(--page-row-gap);
+    margin-bottom: var(--desk-nav-top-gap);
   }
 
   .desk-page-btn {
