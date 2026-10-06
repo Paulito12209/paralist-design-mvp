@@ -52,6 +52,7 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/profile.css` | Profil-Blatt: Bild, Nutzungszeit, Serie, Listen; styles/account.css: Konto- und Daten-Seiten; styles/profile-name-edit.css: Name im Profilkopf antippen und bearbeiten |
 | `styles/usage-split.css` | Nutzungszeit: Karte „Wo die Zeit hingeht“ mit Band und Bereichszeilen; styles/streak-legend.css: Serie, Erklärung unter dem Punkte-Raster |
 | `styles/avatar-crop.css` | Ausschnitt fürs Profilbild: Fenster, Zoom-Regler, Auswählen |
+| `styles/data-transfer.css` | Einstellungen › Daten: Textfeld zum Einfügen und Erklärungen der Export-Stufen |
 | `styles/settings.css` | Einstellungs-Blatt: Darstellung und Haken-Zeilen, dazu die Analyse-Kacheln des Fortschritt-Blatts; styles/support.css: Feedback-Formular und Danksagungen |
 | `styles/tasks.css` | Aufgaben-Seite: Pillen der Ansichten, Liste, Haken, Anlegen durch Tippen; styles/tasks-desk.css: Desktop-Werkzeuge und Spalten |
 | `styles/tasks-board.css` | Aufgaben-Seite: die Spalten des Kanban-Boards (auch für das Board der Projekte); styles/projects-board.css: was dort bei Projekten anders ist; styles/tasks-select.css: Auswahlmodus (Kreise, Zählzeile, Leiste, Stapel) |

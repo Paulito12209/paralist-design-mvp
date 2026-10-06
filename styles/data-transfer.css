@@ -1,0 +1,76 @@
+/*
+ * Die Seiten „Daten exportieren“ und „Daten importieren“ im Einstellungs-Blatt:
+ * das Textfeld zum Einfügen und die Erklärungen unter den Stufen. Die
+ * Zeilenkarten selbst (.plist, .plist-row) stehen in styles/profile.css, der
+ * große Knopf (.account-button) in styles/account.css.
+ * Pfad: styles/data-transfer.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens.css und styles/tokens-pages.css)
+ * -----------------------------------
+ * --support-field-radius -> Rundung des Textfelds (wie im Feedback-Formular)
+ * --card / --line        -> Fläche und Rand des Textfelds
+ * --add                  -> Rand des Textfelds beim Tippen
+ * --muted                -> Platzhalter, Erklärtexte und Statuszeile
+ * --danger               -> Statuszeile bei einem Fehler
+ *
+ * Maße einzelner Elemente stehen direkt bei ihrer Regel:
+ * .transfer-paste min-height 150px, 15px -> Höhe und Schrift des Textfelds
+ * .transfer-notes 13px                   -> Schrift der Erklärungen
+ * .transfer-status 13px                  -> Schrift der Statuszeile unter den Zeilen
+ */
+
+.transfer-paste {
+  display: block;
+  box-sizing: border-box; /* box-sizing: Rand und Innenabstand zählen zur Breite */
+  width: auto; /* width: füllt die Breite zwischen den Seitenrändern, die das Blatt jedem Kind gibt — 100 % ragte rechts hinaus */
+  min-height: 150px;
+  padding: 12px 14px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--support-field-radius);
+  font: inherit;
+  font-size: 15px;
+  line-height: 1.4;
+  color: var(--text);
+  resize: vertical;
+}
+
+.transfer-paste::placeholder {
+  color: var(--muted);
+}
+
+.transfer-paste:focus {
+  outline: none;
+  border-color: var(--add);
+}
+
+/* Rückmeldung unter den Zeilen; leer nimmt sie keinen Platz weg */
+.transfer-status {
+  padding: 10px 4px 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.transfer-status:empty {
+  display: none;
+}
+
+.transfer-status.is-danger {
+  color: var(--danger);
+}
+
+/* Zu jeder Stufe ein Satz, unter den Zeilen */
+.transfer-notes {
+  display: grid;
+  gap: 8px;
+  padding: 12px 4px 0;
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--muted);
+}
+
+.transfer-notes b {
+  color: var(--text);
+  font-weight: 600;
+}
