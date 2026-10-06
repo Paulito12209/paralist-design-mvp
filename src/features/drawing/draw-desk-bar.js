@@ -4,8 +4,11 @@
  * Radierer, Farben, Rückgängig); am Desktop füllt diese Datei dasselbe
  * Element neu, in Gruppen:
  *
- *   Griff | Rückgängig Wiederholen | Auswählen Stift Marker Radierer |
- *   fünf Farben + Farbwähler | Formen Text Notiz Anhang
+ *   Griff | Rückgängig Wiederholen | Stift-Knopf | Formen Text Notiz Anhang
+ *
+ * Wie am iPad blendet erst der Stift-Knopf Auswählen, Stift, Marker,
+ * Radierer, die fünf Farben und den Farbwähler ein — vorher lässt sich auf
+ * der Fläche nicht malen, nur auswählen. Ein zweiter Klick blendet sie aus.
  *
  * Ein zweiter Klick auf das gewählte Malwerkzeug öffnet die Strichbreite.
  * Am Griff lässt sich die Leiste unter die Fläche oder links daneben ziehen
@@ -47,6 +50,7 @@ const toolLabels = {
   attach: "Anhang — Bild aus Medien oder eigenen Dateien",
   grip: "Leiste verschieben: nach unten oder links ziehen, Klick wechselt",
   more: "Weitere Werkzeuge",
+  ink: "Zeichnen — Stifte und Farben ein- oder ausblenden",
 };
 
 /* Die schlanke Leiste aus index.html, gemerkt für den Weg zurück unter 1024px */
@@ -71,14 +75,18 @@ function deskMarkup() {
       ${plainButton("data-draw-redo", "redo", icon("undo", "is-mirrored"))}
     </div>
     <span class="draw-split" aria-hidden="true"></span>
-    <div class="draw-group is-tools">
+    <div class="draw-group is-mode">
+      ${plainButton('data-draw-ink aria-pressed="false"', "ink", drawIcon("markup"), " draw-ink-btn")}
+    </div>
+    <span class="draw-split is-ink-part" aria-hidden="true"></span>
+    <div class="draw-group is-tools is-ink-part">
       ${toolButton("select", drawIcon("select"))}
       ${toolButton("pen", icon("pencil"))}
       ${toolButton("marker", icon("marker"))}
       ${toolButton("eraser", icon("eraser"))}
     </div>
-    <span class="draw-split" aria-hidden="true"></span>
-    <div class="draw-group is-colors">
+    <span class="draw-split is-ink-part" aria-hidden="true"></span>
+    <div class="draw-group is-colors is-ink-part">
       <div class="draw-colors" id="draw-colors"></div>
       <button class="draw-picker" type="button" data-draw-pop="color" aria-haspopup="dialog" aria-expanded="false" aria-label="${escapeHtml(toolLabels.picker)}" title="${escapeHtml(toolLabels.picker)}"><span class="draw-picker-dot"></span></button>
     </div>
@@ -112,6 +120,14 @@ function renderDeskBar() {
   const custom = isCustomColor(draw.color, colors);
   picker.classList.toggle("is-custom", custom);
   picker.style.setProperty("--draw-color", draw.color);
+  const ink = bar.querySelector("[data-draw-ink]");
+  ink.classList.toggle("is-active", draw.inkMode);
+  ink.setAttribute("aria-pressed", String(draw.inkMode));
+  /* Stifte und Farben ein- oder ausgeblendet: die Leiste hat eine neue Länge */
+  if (bar.classList.contains("is-ink-open") !== draw.inkMode) {
+    bar.classList.toggle("is-ink-open", draw.inkMode);
+    fitBar();
+  }
   bar.querySelector("[data-draw-undo]").disabled = !canUndo();
   bar.querySelector("[data-draw-redo]").disabled = !canRedo();
   refreshDrawPop("shape", shapeMarkup());
@@ -123,6 +139,11 @@ function renderDeskBar() {
  * Farben) hängt, wenn der Knopf selbst gerade nicht in der Leiste steht.
  */
 export function runBarAction(target, anchor = null) {
+  if (target.closest("[data-draw-ink]")) {
+    closeDrawPop();
+    toggleInkMode();
+    return;
+  }
   const tool = target.closest("[data-draw-tool]");
   if (tool) {
     const name = tool.dataset.drawTool;
@@ -150,6 +171,26 @@ export function runBarAction(target, anchor = null) {
   }
 }
 
+/* Stift-Knopf wie am iPad: an heißt malen mit dem zuletzt benutzten Stift, aus heißt auswählen */
+function toggleInkMode() {
+  if (draw.inkMode) {
+    draw.inkMode = false;
+    setTool("select");
+  } else setTool(draw.lastInk);
+}
+
+/**
+ * Womit eine Zeichnung beim Öffnen startet: am Desktop ohne Stift (erst der
+ * Stift-Knopf erlaubt das Malen), am Handy mit dem gewählten Malwerkzeug.
+ */
+export function startTool() {
+  draw.selected = null;
+  if (isDesk()) {
+    draw.inkMode = false;
+    draw.tool = "select";
+  } else if (!isInkTool()) draw.tool = "pen";
+}
+
 /* Klicks am Desktop: in der Einfangphase, damit die Handy-Logik (drawing.js) sie nicht doppelt sieht */
 function onDeskClick(event) {
   if (!deskShown) return;
@@ -167,6 +208,7 @@ function applyMode() {
   closeDrawPop();
   dom.drawTools.classList.toggle("is-desk", desk);
   dom.drawTools.innerHTML = desk ? deskMarkup() : mobileMarkup;
+  draw.inkMode = isInkTool();
   /* Am Handy gibt es nur die Malwerkzeuge — und damit auch keine Auswahl */
   if (!desk) {
     if (!isInkTool()) draw.tool = "pen";

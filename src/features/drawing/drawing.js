@@ -19,13 +19,14 @@ import { markEdited } from "../../data/mutations.js";
 import { findEntry } from "../../data/queries.js";
 import { scheduleSave } from "../../data/state.js";
 import { saveThumbs, setThumb, thumbOf } from "../../data/thumbs.js";
-import { initDeskBar } from "./draw-desk-bar.js";
+import { initDeskBar, startTool } from "./draw-desk-bar.js";
 import { dropInkSteps, record, redoStep, resetHistory, undoStep } from "./draw-history.js";
 import { initDrawKeys } from "./draw-keys.js";
 import { initLayer, renderLayer } from "./draw-layer.js";
 import { changeItems, chooseColor, setAfterItemsChange } from "./draw-model.js";
 import { initSelect } from "./draw-select.js";
 import { draw, drawChanged, isInkTool, onDrawChange, setTool } from "./draw-state.js";
+import { extendStroke, paintStroke } from "./draw-paint.js";
 import { colorsMarkup, tools } from "./drawing-tools.js";
 
 const maxPixelRatio = 2;
@@ -160,8 +161,7 @@ export function openDrawing(entry) {
   /* Eine noch offene Zeichnung zuerst sichern */
   saveDrawing();
   draw.entryId = entry.id;
-  draw.selected = null;
-  if (!isInkTool()) draw.tool = "pen";
+  startTool();
   stroke = null;
   resetHistory();
   drawChanged();
@@ -197,59 +197,12 @@ function recordInk(before) {
   record({ ink: true, undo: swap, redo: swap });
 }
 
-/* Werkzeug auf den Kontext übertragen; gilt bis zum nächsten ctx.restore(). */
-function applyTool(current) {
-  const settings = tools[current.tool];
-  /* destination-out: der Radierer nimmt Farbe weg, statt Weiß aufzutragen */
-  ctx.globalCompositeOperation = settings.erase ? "destination-out" : "source-over";
-  ctx.globalAlpha = settings.alpha;
-  ctx.strokeStyle = current.color;
-  ctx.lineWidth = current.width;
-}
-
-/*
- * Der ganze Strich wird neu auf das Bild davor gemalt: so bleibt der
- * durchscheinende Marker gleichmäßig, statt an jedem Zwischenpunkt dunkler zu
- * werden. Das kopiert jedes Mal die ganze Fläche — darum nur für den Marker,
- * und höchstens einmal je Bildaufbau (siehe onPointerMove).
- */
-function paintStroke(current) {
-  ctx.putImageData(current.before, 0, 0);
-  ctx.save();
-  applyTool(current);
-  ctx.beginPath();
-  current.points.forEach((point, index) =>
-    index ? ctx.lineTo(point.x, point.y) : ctx.moveTo(point.x, point.y)
-  );
-  /* Tipp ohne Bewegung: ein Punkt */
-  if (current.points.length === 1) ctx.lineTo(current.points[0].x + 0.01, current.points[0].y);
-  ctx.stroke();
-  ctx.restore();
-}
-
-/*
- * Deckende Werkzeuge (Stift, Radierer) malen nur das neue Stück ab dem
- * zuletzt gemalten Punkt weiter. Bei voller Deckkraft sieht man keinen
- * Übergang, und die Fläche muss nicht bei jeder Bewegung kopiert werden.
- */
-function extendStroke(current, from) {
-  const points = current.points;
-  const start = Math.max(0, from - 1);
-  ctx.save();
-  applyTool(current);
-  ctx.beginPath();
-  ctx.moveTo(points[start].x, points[start].y);
-  for (let index = start + 1; index < points.length; index += 1) ctx.lineTo(points[index].x, points[index].y);
-  ctx.stroke();
-  ctx.restore();
-}
-
 /* Beim Marker sammeln sich die Bewegungen bis zum nächsten Bildaufbau. */
 function requestPaint() {
   if (frame) return;
   frame = requestAnimationFrame(() => {
     frame = 0;
-    if (stroke) paintStroke(stroke);
+    if (stroke) paintStroke(ctx, stroke);
   });
 }
 
@@ -258,7 +211,7 @@ function finishStroke() {
   if (frame) {
     cancelAnimationFrame(frame);
     frame = 0;
-    paintStroke(stroke);
+    paintStroke(ctx, stroke);
   }
   recordInk(stroke.before);
   stroke = null;
@@ -296,7 +249,7 @@ function onPointerDown(event) {
   const rect = canvas.getBoundingClientRect();
   const tool = draw.tool;
   stroke = { tool, color: draw.color, width: draw.widths[tool], rect, points: [pointOf(event, rect)], before: snapshot() };
-  paintStroke(stroke);
+  paintStroke(ctx, stroke);
 }
 
 function onPointerMove(event) {
@@ -306,7 +259,7 @@ function onPointerMove(event) {
   const moves = event.getCoalescedEvents ? event.getCoalescedEvents() : [event];
   (moves.length ? moves : [event]).forEach((move) => stroke.points.push(pointOf(move, stroke.rect)));
   if (tools[stroke.tool].alpha < 1) requestPaint();
-  else extendStroke(stroke, from);
+  else extendStroke(ctx, stroke, from);
 }
 
 /* Klicks der Leiste am Handy; die Desktop-Leiste nutzt dieselben Kennzeichen

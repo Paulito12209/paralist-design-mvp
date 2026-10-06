@@ -1,8 +1,10 @@
 /*
  * Die volle Werkzeugleiste einer Zeichnung am Desktop (ab 1024px): unter der
- * Fläche über ihre ganze Breite, links daneben über ihre ganze Höhe (ein-
- * oder zweispaltig wie Apples Stiftpalette); was nicht passt, steht hinter
- * „⋯“. Dazu der Griff, die gezogene Leiste und die zwei Ziele beim Andocken
+ * Fläche, links daneben (ein- oder zweispaltig wie Apples Stiftpalette).
+ * Erst der Stift-Knopf klappt Auswählen, Stifte und Farben auf (is-ink-open).
+ * Die Leiste bleibt kompakt und steht mittig zur Fläche; nur wenn selbst die
+ * kompakte Leiste nicht passt, steht der Rest hinter „⋯“. Dazu der Griff,
+ * die gezogene Leiste und die zwei Ziele beim Andocken
  * (src/features/drawing/draw-desk-bar.js, draw-dock.js, draw-bar-fit.js).
  * Am Handy gilt weiter nur styles/drawing.css.
  * Pfad: styles/drawing-desk.css
@@ -16,15 +18,19 @@
  * --draw-color-size    -> Größe der Farbpunkte und des Farbwähler-Knopfs
  * --draw-tools-gap     -> Abstand der Leiste zur Fläche (unten wie links)
  * --draw-select-color  -> Farbe der Ziele beim Andocken
+ * --draw-active-ring   -> Ring um die gewählte (eigene) Farbe, siehe styles/tokens-entry.css
  * --draw-width-mark    -> Punkt unter dem gewählten Malwerkzeug, setzt draw-desk-bar.js je Strichbreite
  * --draw-color         -> gewählte eigene Farbe im Farbwähler-Knopf, setzt draw-desk-bar.js
  * --draw-cols          -> Spalten der links angedockten Leiste (1 oder 2), wählt draw-bar-fit.js über is-one-col
  */
 
 @media (min-width: 1024px) {
-  /* ---------- Unten: über die ganze Breite der Fläche, die Gruppen verteilt ---------- */
+  /* ---------- Unten: kompakt, mittig unter der Fläche ---------- */
   body.is-drawing .draw-tools.is-desk:not([hidden]) {
-    justify-content: space-between; /* justify-content: die Gruppen verteilen sich über die ganze Breite */
+    width: fit-content; /* width: so breit wie die Knöpfe — sind es wenige, bleibt die Leiste kurz statt Lücken zu bilden */
+    max-width: 100%;
+    margin-inline: auto; /* margin: mittig zur Breite der Fläche */
+    justify-content: center;
     flex-wrap: nowrap;
     gap: var(--draw-desk-gap);
     padding: var(--draw-desk-pad);
@@ -33,7 +39,13 @@
   /* Zum Messen (src/features/drawing/draw-bar-fit.js): nur so lang wie die Knöpfe selbst */
   body.is-drawing .draw-tools.is-desk.is-measuring:not([hidden]) {
     width: max-content; /* width: max-content misst, wie viel Platz alle Knöpfe nebeneinander brauchen */
-    justify-content: flex-start;
+    max-width: none;
+  }
+
+  /* Zeichenmodus aus (src/features/drawing/draw-desk-bar.js): Auswählen, Stifte
+     und Farben sind eingeklappt, nur der Stift-Knopf steht für sie da */
+  .draw-tools.is-desk:not(.is-ink-open) .is-ink-part {
+    display: none;
   }
 
   /* Was nicht passt, steht im Fenster hinter „⋯“ statt in der Leiste */
@@ -131,7 +143,7 @@
   }
 
   .draw-picker.is-custom {
-    box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--draw-color);
+    box-shadow: 0 0 0 2px var(--card), 0 0 0 4px var(--draw-active-ring);
   }
 
   .draw-picker[aria-expanded="true"],
@@ -158,24 +170,19 @@
     grid-row: 1;
   }
 
-  /* Links: so hoch wie die Fläche, die Gruppen verteilt; ein- oder zweispaltig je nach Höhe */
+  /* Links: kompakt, mittig zur Höhe der Fläche; ein- oder zweispaltig je nach Höhe */
   body.is-drawing #entry-panel-notes.is-draw-left > .draw-tools.is-left:not([hidden]) {
     grid-column: 1;
     grid-row: 1;
-    align-self: stretch; /* align-self: die Leiste wird so hoch wie die Fläche neben ihr */
+    align-self: center; /* align-self: die Leiste steht senkrecht mittig neben der Fläche */
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between; /* justify-content: die Gruppen verteilen sich über die ganze Höhe */
+    justify-content: flex-start;
     gap: var(--draw-desk-gap);
     width: auto;
     margin: 0;
     border-radius: var(--draw-desk-radius);
-  }
-
-  body.is-drawing #entry-panel-notes.is-draw-left > .draw-tools.is-left.is-measuring:not([hidden]) {
-    align-self: start;
-    justify-content: flex-start;
   }
 
   /* Je Gruppe ein Raster mit einer oder zwei Spalten */

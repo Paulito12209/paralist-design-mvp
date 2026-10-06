@@ -62,6 +62,7 @@
  * --draw-desk-gap           -> Abstand zwischen den Knöpfen
  * --draw-desk-radius        -> Rundung der links angedockten Leiste (unten bleibt sie eine Pille)
  * --draw-select-color       -> Rahmen, Griff und Ziel-Streifen beim Andocken
+ * --draw-active-ring       -> Ring um die gewählte Farbe in Leiste und Farbwähler (Textfarbe: in Hell und Dunkel gut zu sehen)
  * --draw-handle-size        -> Größe des Griffs zum Größerziehen
  * --draw-pop-radius / --draw-pop-width -> Rundung und Breite der Fenster (Farben, Formen, Strichbreite)
  * --draw-swatch-size        -> Größe der Farbfelder im Farbwähler
@@ -110,6 +111,7 @@
   --draw-desk-gap: 2px;
   --draw-desk-radius: 22px;
   --draw-select-color: #0a84ff;
+  --draw-active-ring: var(--text);
   --draw-handle-size: 12px;
   --draw-pop-radius: 18px;
   --draw-pop-width: 312px;
