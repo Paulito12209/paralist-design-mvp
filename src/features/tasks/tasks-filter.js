@@ -54,7 +54,7 @@ const infos = {
   },
   archived: {
     title: "Archiviert",
-    text: "Ab dem Tag nach dem Erledigen liegt eine Aufgabe im Archiv. Mit Haken siehst du sie hier trotzdem, im Board als Spalte rechts neben „Erledigt“. Ziehst du sie heraus, holst du sie zurück.",
+    text: "Ab dem Tag nach dem Erledigen liegt eine Aufgabe im Archiv. Mit Haken siehst du sie hier trotzdem, im Kanban als Spalte rechts neben „Erledigt“. Ziehst du sie heraus, holst du sie zurück.",
   },
 };
 

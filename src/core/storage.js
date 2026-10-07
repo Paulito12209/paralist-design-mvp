@@ -40,6 +40,8 @@ export const storageKeys = {
   /* Seitenleiste am Desktop: welche Liste dort steht und ob „Archiviert“ offen ist */
   deskList: "paralist-desk-list",
   deskArchive: "paralist-desk-archive",
+  /* Übersicht in „Android (Experiment)“: welche Liste unter den Kacheln steht (Projekte, Eingang …) */
+  homeList: "paralist-home-list",
   /* Werkzeugleiste der Zeichnung am Desktop: wo sie steht, Strichbreiten, eigene Farben */
   drawPrefs: "paralist-draw-prefs",
   /* Seitenfenster rechts am Desktop: offen, breit, was darin steht, letzte Adresse */

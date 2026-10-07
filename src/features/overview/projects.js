@@ -16,6 +16,8 @@
  * „Zum Archiv“ ist dort ausgeblendet (styles/android-archive.css), ins Archiv
  * führen „Archiv (n)“ und die Karte „Archiv“ der Übersicht. Die Karte
  * „Ansicht“ kommt dort als Blatt von unten.
+ * In „Android (Experiment)“ lässt sich über „Projekte ˅“ eine andere Liste
+ * wählen; Kopf und Zeilen kommen dann aus src/features/overview/home-list.js.
  * Am Desktop zeigt die Übersicht keine Projekte — dort stehen sie in der Seitenleiste.
  * Pfad: src/features/overview/projects.js
  *
@@ -45,6 +47,7 @@ import { isViewActive } from "../../ui/views.js";
 import { handleProjectSettingsClick, projectSettingsMarkup } from "./project-settings.js";
 import { handleProjectBoardClick, initProjectBoard, projectBoardMarkup } from "./projects-board.js";
 import { handleProjectCardClick, projectCardHead } from "./project-card.js";
+import { homeList, homeListMarkup, initHomeList, renderHomeHead } from "./home-list.js";
 import { initProjectInline } from "./project-inline.js";
 import { afterProjectViewsRender, initProjectViews, isProjectsPageOpen, projectViewsMarkup } from "./project-views.js";
 
@@ -150,6 +153,13 @@ export function renderProjectSection() {
     dom.projectList.innerHTML = "";
     return;
   }
+  renderHomeHead();
+  /* Android (Experiment): eine andere Liste als Projekte gewählt — dann ohne Reiter, nur ihre Zeilen */
+  if (homeList().id !== "projects") {
+    dom.projectViews.innerHTML = "";
+    dom.projectList.innerHTML = homeListMarkup();
+    return;
+  }
   withPillScroll(dom.projectViews, () => {
     dom.projectViews.innerHTML = projectViewsMarkup();
   });
@@ -182,6 +192,7 @@ export function initProjects() {
   initProjectViews();
   initProjectInline();
   initProjectBoard();
+  initHomeList();
   dom.projectList.addEventListener("click", onCardClick);
   dom.pageBody.addEventListener("click", onPageCardClick);
   panel = createViewPanel({

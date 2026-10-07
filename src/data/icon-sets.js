@@ -64,7 +64,7 @@ export const iconGroups = [
       { id: "mic", label: "Mikrofon" },
       { id: "camera", label: "Kamera" },
       { id: "table", label: "Tabelle" },
-      { id: "board", label: "Board" },
+      { id: "board", label: "Kanban" },
       { id: "roadmap", label: "Roadmap" },
       { id: "trend", label: "Trend" },
       { id: "link", label: "Verknüpfung" },
