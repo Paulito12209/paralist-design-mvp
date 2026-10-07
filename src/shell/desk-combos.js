@@ -1,17 +1,18 @@
 /*
  * Die Tastenkürzel mit zwei Tasten am Desktop: Umschalt und Befehlstaste
- * öffnen die vier Seiten (⇧⌘Ü, ⇧⌘K, ⇧⌘A, ⇧⌘M) und klappen das
- * Seitenfenster auf (⇧⌘O); Ctrl und Ziffer wählen die Liste (⌃1 bis ⌃8).
+ * öffnen die vier Seiten (⇧⌘Ü, ⇧⌘K, ⇧⌘A, ⇧⌘M), klappen das
+ * Seitenfenster auf (⇧⌘O) und öffnen das Menü „Liste wechseln“ (⇧⌘L);
+ * Ctrl und Ziffer wählen die Liste (⌃1 bis ⌃8).
  * Außerhalb des Macs gilt Strg statt ⌘ und Alt statt Ctrl — Strg und Ziffer
  * wechselt dort schon den Browser-Tab. src/shell/desk.js fragt hier zuerst,
  * bevor die übrigen Kürzel greifen.
  * Pfad: src/shell/desk-combos.js
  *
  * Keine anpassbaren visuellen Werte: welche Taste was öffnet, steht in
- * src/ui/desk-links.js (pageLinks, listLinks, sideLink).
+ * src/ui/desk-links.js (pageLinks, listLinks, sideLink, listSwitch).
  */
 
-import { isMac, listLinks, pageLinks, sideLink } from "../ui/desk-links.js";
+import { isMac, listLinks, listSwitch, pageLinks, sideLink } from "../ui/desk-links.js";
 
 /*
  * Passt die gedrückte Taste zum Buchstaben? Zuerst das Zeichen — so stimmt es
@@ -31,7 +32,7 @@ function isPlaceChord(event) {
 
 /**
  * Eine Taste mit Zusatztasten prüfen und ausführen.
- * @param actions { openPage(tab), chooseList(id), toggleSide() } aus src/shell/desk-keys.js
+ * @param actions { openPage(tab), chooseList(id), toggleSide(), toggleListMenu() } aus src/shell/desk-keys.js
  * @returns true, wenn die Taste hier etwas getan hat.
  */
 export function onComboKey(event, actions) {
@@ -40,6 +41,7 @@ export function onComboKey(event, actions) {
     const page = pageLinks.find((link) => matches(event, link));
     if (page) actions.openPage(page.tab);
     else if (matches(event, sideLink)) actions.toggleSide();
+    else if (matches(event, listSwitch)) actions.toggleListMenu();
     else return false;
     return true;
   }

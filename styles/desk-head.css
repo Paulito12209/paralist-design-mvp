@@ -16,7 +16,9 @@
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
  * --desk-top-height -> Höhe von Wortmarke und Reiterzeile
- * --desk-nav-pad / --desk-gutter -> Rand links (Wortmarke) und seitlich der Reiterzeile
+ * --desk-nav-pad / --desk-nav-row-pad / --desk-gutter -> Rand links (Wortmarke, bündig mit den Zeilen
+ *                   der Seitenleiste) und seitlich der Reiterzeile
+ * --desk-nav-item-height -> Breite von Stift und Plus der Liste: der Klapp-Knopf steht mittig darüber
  * --desk-brand-gap -> Abstand der Stufe rechts neben der Wortmarke
  * --desk-hover / --desk-fast / --desk-ease -> Tönung beim Überfahren, Dauer und Kurve
  * --desk-panel-strong -> Fläche des Knopfs fürs Seitenfenster, solange es offen ist, und der Stufe, solange Fortschritt offen ist
@@ -37,7 +39,9 @@
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: var(--safe-top) calc(var(--desk-nav-pad) - 4px) 0 calc(var(--desk-nav-pad) + 6px);
+    /* padding: „Paralist“ beginnt auf derselben Linie wie Lupe, Kopf der Liste und Zeilen darunter;
+       der Klapp-Knopf steht mittig über dem Stift und dem Plus der Liste (beide so breit wie eine Zeile hoch) */
+    padding: var(--safe-top) calc(var(--desk-nav-pad) + (var(--desk-nav-item-height) - var(--head-btn)) / 2) 0 calc(var(--desk-nav-pad) + var(--desk-nav-row-pad));
   }
 
   /* Wortmarke und Stufe nebeneinander */

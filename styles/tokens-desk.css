@@ -3,11 +3,13 @@
  * Reiterzeile und Seite in der Mitte, ab 1280px zusätzlich die Spalte rechts).
  * Pfad: styles/tokens-desk.css
  *
- * Es gibt hier absichtlich KEINE neuen Farbtöne: jede Fläche und jede Tinte
- * wird aus den Grundfarben in styles/tokens.css gemischt (color-mix, rgba aus
- * --nav-glow-color). So bleibt der Desktop in denselben Farben wie das Handy,
- * und der Dunkelmodus stimmt von selbst, weil die Grundfarben dort schon
- * umgestellt sind. Nur wo Hell und Dunkel eine andere Mischung brauchen, steht
+ * Fast jede Fläche und jede Tinte wird aus den Grundfarben in
+ * styles/tokens.css gemischt (color-mix, rgba aus --nav-glow-color). So bleibt
+ * der Desktop in denselben Farben wie das Handy, und der Dunkelmodus stimmt von
+ * selbst, weil die Grundfarben dort schon umgestellt sind. Ausnahme ist die
+ * Seitenleiste: sie trägt die Fläche der Android-Fassung (--m3-surface-container,
+ * styles/tokens-android.css) — mit eigenem Rückfall, damit sie auch in der
+ * iOS-Fassung stimmt. Wo Hell und Dunkel eine andere Mischung brauchen, steht
  * unten ein eigener Block.
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -19,6 +21,8 @@
  *                              neben der Leiste steht)
  * --desk-top-height         -> Höhe der Reiterzeile und der Wortmarke links daneben
  * --desk-nav-pad            -> Rand der Seitenleiste links und rechts
+ * --desk-nav-row-pad        -> Innenrand der Zeilen in der Seitenleiste; Wortmarke, Lupe, Kopf der Liste
+ *                              und Icons der Zeilen beginnen alle bei Rand plus diesem Wert
  * --desk-rail-width         -> Breite der Spalte rechts
  * --desk-side-width         -> Breite des Seitenfensters rechts (src/shell/desk-side.js)
  * --desk-side-wide          -> seine Breite nach „Breiter“
@@ -42,6 +46,24 @@
  * --desk-sheen              -> weicher Lichtfleck oben links auf den großen Karten
  * --desk-backdrop           -> Abdunklung hinter Dialogen
  *
+ * SEITENLEISTE (styles/desk-nav.css)
+ * --desk-nav-bg             -> Fläche der Seitenleiste samt Wortmarke: im Dunkeln heller als die
+ *                              Seite (Android-Fläche #1e1f23), im Hellen ein Hauch dunkler
+ * --desk-nav-tone           -> Farbe der gewählten Liste, je Liste unten bei [data-desk-tone]
+ *                              (Eingang Silberblau, Projekte Rot …; dieselbe Farbe wie ihr Icon)
+ * --desk-nav-tint           -> wie stark diese Farbe die Seitenleiste färbt (0% = gar nicht)
+ * --desk-nav-hover          -> Tönung beim Überfahren in der Seitenleiste (liegt über der Färbung)
+ * --desk-nav-active         -> Fläche der gewählten Zeile und Kachel in der Seitenleiste
+ * --desk-nav-raised         -> deckende Fläche des Menüs „Liste wechseln“ über der Seitenleiste
+ * --desk-nav-line           -> Haarlinien in der Seitenleiste (über dem Fuß, Rand und Strich im
+ *                              Menü „Liste wechseln“) — deutlicher als --desk-edge,
+ *                              weil die Fläche dort heller ist
+ * --desk-nav-tile / --desk-nav-tile-edge -> Fläche und Haarlinie der vier Kacheln oben
+ * --desk-nav-tile-h         -> Höhe der vier Kacheln; zugleich die Zeilenhöhe der Seitentitel
+ *                              („Aufgaben“ …), damit beide mittig auf einer Linie stehen
+ * --desk-nav-head-air       -> Luft über den Kacheln unter der Zeile mit „Paralist“ (errechnet: bis
+ *                              Klapp-Knopf und Stufe, 32px, sind es zusammen --desk-nav-top-gap)
+ *
  * TINTE (für Punkte, Striche und Balken)
  * --desk-ink                -> volle Tinte: Text-Ton als Farbe für Grafiken
  * --desk-level-0 … -4       -> fünf Helligkeiten der Punkte im Aktivitätsband, 0 = nichts, 4 = viel
@@ -64,8 +86,8 @@
  * --desk-label-size         -> kleine Beschriftungen (Kartentitel, Chips)
  * --desk-nav-item-size      -> Schrift der Zeilen in der Seitenleiste
  * --desk-nav-item-height    -> Höhe einer Zeile in der Seitenleiste
- * --desk-nav-top-gap        -> Luft oben in der Seitenleiste: unter der Wortmarke, zwischen Icon-Zeile,
- *                              „Neu“ und „Liste“
+ * --desk-nav-top-gap        -> Luft oben in der Seitenleiste zwischen den Kacheln und „Suchen“
+ *                              (über und unter der Trennlinie: --sidebar-divider-gap in styles/desk-nav.css)
  * --desk-brand-gap          -> Abstand der Stufen-Anzeige rechts neben „Paralist“
  *
  * BEWEGUNG
@@ -74,7 +96,8 @@
  * --desk-enter              -> Dauer des Auftauchens von Karten
  * --desk-enter-rise         -> aus welcher Tiefe Karten beim Auftauchen kommen
  * --desk-enter-step         -> Verzögerung von Karte zu Karte beim Auftauchen
- * --desk-fold               -> Dauer, mit der die Seitenleiste auf- und zuklappt
+ * --desk-fold               -> Dauer, mit der die Seitenleiste auf- und zuklappt und ihre Färbung
+ *                              beim Listenwechsel gleitet
  *
  * Die Grundwerte des Handys, die am Desktop anders sind (Seitenrand, Titel,
  * Platz am Seitenende), werden unten in der @media-Abfrage überschrieben.
@@ -85,6 +108,7 @@
   --desk-nav-width: var(--desk-nav-open);
   --desk-top-height: 60px;
   --desk-nav-pad: 14px;
+  --desk-nav-row-pad: 10px;
   --desk-rail-width: 360px;
   --desk-side-width: clamp(340px, 34vw, 560px);
   --desk-side-wide: clamp(460px, 52vw, 1000px);
@@ -103,6 +127,15 @@
   --desk-edge: rgba(var(--nav-glow-color), 0.08);
   --desk-sheen: color-mix(in srgb, var(--nav-bg) 70%, transparent);
   --desk-backdrop: rgba(var(--nav-glow-color), 0.28);
+
+  --desk-nav-bg: color-mix(in srgb, var(--m3-surface-container, #dde3ee) 55%, var(--bg));
+  --desk-nav-tint: 7%;
+  --desk-nav-hover: rgba(0, 0, 0, 0.045);
+  --desk-nav-active: rgba(0, 0, 0, 0.075);
+  --desk-nav-raised: var(--nav-bg);
+  --desk-nav-line: rgba(0, 0, 0, 0.08);
+  --desk-nav-tile: rgba(255, 255, 255, 0.55);
+  --desk-nav-tile-edge: rgba(0, 0, 0, 0.05);
 
   --desk-ink: rgba(var(--nav-glow-color), 0.92);
   --desk-level-0: rgba(var(--nav-glow-color), 0.08);
@@ -130,6 +163,8 @@
   --desk-nav-item-size: 14px;
   --desk-nav-item-height: 34px;
   --desk-nav-top-gap: 16px;
+  --desk-nav-tile-h: 44px;
+  --desk-nav-head-air: calc(var(--desk-nav-top-gap) - (var(--desk-top-height) - 32px) / 2);
   --desk-brand-gap: 16px;
 
   --desk-ease: cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -154,6 +189,14 @@
     --desk-sheen: rgba(var(--nav-glow-color), 0.14);
     --desk-backdrop: color-mix(in srgb, var(--bg) 60%, transparent);
     --desk-tint-on-dark: linear-gradient(rgba(var(--nav-glow-color), 0.14), rgba(var(--nav-glow-color), 0.14));
+    --desk-nav-bg: var(--m3-surface-container, #1e1f23);
+    --desk-nav-tint: 6%;
+    --desk-nav-hover: rgba(255, 255, 255, 0.05);
+    --desk-nav-active: rgba(255, 255, 255, 0.085);
+    --desk-nav-raised: var(--m3-surface-container-high, #2a2b30);
+    --desk-nav-line: rgba(255, 255, 255, 0.09);
+    --desk-nav-tile: rgba(255, 255, 255, 0.04);
+    --desk-nav-tile-edge: rgba(255, 255, 255, 0.06);
   }
 }
 
@@ -168,6 +211,53 @@
   --desk-sheen: rgba(var(--nav-glow-color), 0.14);
   --desk-backdrop: color-mix(in srgb, var(--bg) 60%, transparent);
   --desk-tint-on-dark: linear-gradient(rgba(var(--nav-glow-color), 0.14), rgba(var(--nav-glow-color), 0.14));
+  --desk-nav-bg: var(--m3-surface-container, #1e1f23);
+  --desk-nav-tint: 6%;
+  --desk-nav-hover: rgba(255, 255, 255, 0.05);
+  --desk-nav-active: rgba(255, 255, 255, 0.085);
+  --desk-nav-raised: var(--m3-surface-container-high, #2a2b30);
+  --desk-nav-line: rgba(255, 255, 255, 0.09);
+  --desk-nav-tile: rgba(255, 255, 255, 0.04);
+  --desk-nav-tile-edge: rgba(255, 255, 255, 0.06);
+}
+
+/* Die Farbe der gewählten Liste färbt die Seitenleiste (styles/desk-nav.css);
+   src/shell/desk-list.js setzt data-desk-tone am Gerätefenster. Ohne Wahl
+   bleibt die Fläche neutral. Die Farben selbst folgen Hell und Dunkel. */
+:root {
+  --desk-nav-tone: var(--desk-nav-bg);
+}
+
+.device[data-desk-tone="inbox"] {
+  --desk-nav-tone: var(--inbox-icon-color);
+}
+
+.device[data-desk-tone="project"] {
+  --desk-nav-tone: var(--project-icon-color);
+}
+
+.device[data-desk-tone="workspace"] {
+  --desk-nav-tone: var(--workspace-icon-color);
+}
+
+.device[data-desk-tone="resource"] {
+  --desk-nav-tone: var(--resource-icon-color);
+}
+
+.device[data-desk-tone="archive"] {
+  --desk-nav-tone: var(--archive-color);
+}
+
+.device[data-desk-tone="task"] {
+  --desk-nav-tone: var(--xp-created);
+}
+
+.device[data-desk-tone="event"] {
+  --desk-nav-tone: var(--cal-accent);
+}
+
+.device[data-desk-tone="bookmark"] {
+  --desk-nav-tone: var(--bookmark-color);
 }
 
 /* Am Desktop mehr Luft: breiterer Seitenrand, größerer Titel, und am

@@ -1,9 +1,10 @@
 /*
- * Die Icon-Zeile oben in der Seitenleiste am Desktop, direkt unter
- * „Paralist“: Übersicht, Kalender, Aufgaben, Medien und die Suche — nur
- * Icons, wie die Leiste in T3 Code. Name und Kürzel (⇧⌘Ü, ⇧⌘K, ⇧⌘A, ⇧⌘M,
- * ⌘K) erscheinen beim Überfahren als kleiner Hinweis darunter. Die gewählte
- * Seite trägt eine Fläche.
+ * Die vier Kacheln oben in der Seitenleiste am Desktop, direkt unter
+ * „Paralist“: Übersicht, Kalender, Aufgaben und Medien — nur Icons, in vier
+ * gleich breiten Kacheln wie die Favoriten oben in Raycast. Name und Kürzel
+ * (⇧⌘Ü, ⇧⌘K, ⇧⌘A, ⇧⌘M) erscheinen beim Überfahren als kleiner Hinweis
+ * darunter. Die gewählte Seite trägt eine kräftigere Fläche. Die Suche steht
+ * darunter als eigene Zeile (src/shell/desk-nav-parts.js).
  * Pfad: src/shell/desk-pages.js
  *
  * Keine anpassbaren visuellen Werte: welche Seite welches Icon und welchen
@@ -13,11 +14,10 @@
 
 import { escapeHtml, icon } from "../core/html.js";
 import { deskStats } from "../data/insights.js";
-import { pageLinks, spokenKeys, withCommand, withShiftCommand } from "../ui/desk-links.js";
+import { pageLinks, spokenKeys, withShiftCommand } from "../ui/desk-links.js";
 import { keyCap } from "../ui/key-caps.js";
 import { currentView } from "../ui/views.js";
 import { openPageTab } from "./desk-head.js";
-import { openPalette } from "./search-palette.js";
 
 let row = null;
 let buttons = [];
@@ -32,8 +32,7 @@ function pageButton(target, iconName, label, shortcut) {
 }
 
 function rowMarkup() {
-  const pages = pageLinks.map((link) => pageButton(link.tab, link.icon, link.label, withShiftCommand(link.letter)));
-  return pages.join("") + pageButton("search", "search", "Suchen", withCommand("K"));
+  return pageLinks.map((link) => pageButton(link.tab, link.icon, link.label, withShiftCommand(link.letter))).join("");
 }
 
 /** Gewählte Seite und die vorgelesenen Zahlen (Termine heute, offene Aufgaben) auffrischen. */
@@ -54,10 +53,7 @@ export function renderDeskPages() {
 
 function onClick(event) {
   const target = event.target.closest("[data-desk-page]")?.dataset.deskPage;
-  if (!target) return;
-  /* Die Palette öffnet in der Mitte; die Seitenleiste bleibt, wie sie ist. */
-  if (target === "search") openPalette();
-  else openPageTab(target);
+  if (target) openPageTab(target);
 }
 
 /**

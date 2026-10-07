@@ -1,7 +1,7 @@
 /*
  * Desktop: die Tasten-Schilder — „1“ bis „4“ und „⌘K“ im Hinweis unter den
- * Reitern (erscheint beim Überfahren, styles/desk-head.css), „N“ im Knopf
- * „Neu“, „G I“ an den Sammlungen, „⌘,“ am Konto, „Enter“ und „Esc“ in der
+ * Reitern (erscheint beim Überfahren, styles/desk-head.css), „⌘K“ in der
+ * Zeile „Suchen“ und „N“ im Hinweis am Stift der Seitenleiste, „G I“ an den Sammlungen, „⌘,“ am Konto, „Enter“ und „Esc“ in der
  * Such-Palette und die Liste unter Profil › Kurzbefehle. Dezent: kleine
  * Schrift mit feiner Haarlinie, ohne Fläche — gut zu erkennen, aber nie so
  * laut wie der Inhalt daneben, und nicht mit einer Zahl wie „4 im Eingang“ zu
@@ -21,7 +21,7 @@
  * --desk-kbd-fg / --desk-kbd-edge -> Schrift und Haarlinie der Schilder (folgen dem
  *                 Silber von Paralist: im Dunkeln hell, im Hellen graphitfarben)
  * --desk-chip-bg / --muted -> graues Schild „Bald“ an Sammlungen, die noch kommen
- * --bg         -> Schrift und Rahmen auf dunklen Flächen (Knopf „Neu“, Hinweis unter den Reitern)
+ * --bg         -> Schrift und Rahmen auf dunklen Flächen (Hinweise unter Kacheln, Stift und Reitern)
  * --desk-enter / --desk-enter-rise / --desk-enter-step / --desk-ease -> Dauer, Tiefe,
  *                 Staffelung und Kurve beim Auftauchen der Blöcke
  * --i          -> Reihenfolge beim Auftauchen; setzt src/shell/desk-nav-parts.js je Block
@@ -54,17 +54,13 @@
   color: var(--desk-kbd-fg);
 }
 
-/* Auf dunklen Flächen (Knopf „Neu“, Hinweis unter den Reitern): helle Schrift und Linie aus der Grundfarbe */
+/* Auf dunklen Flächen (Hinweise unter Kacheln, Stift und Reitern): helle Schrift und Linie aus der Grundfarbe */
 .desk-kbd-inverse {
   border-color: color-mix(in srgb, var(--bg) 35%, transparent); /* color-mix: ein Hauch der hellen Grundfarbe, kein neuer Farbton */
   color: color-mix(in srgb, var(--bg) 80%, transparent);
 }
 
 @media (min-width: 1024px) {
-  .desk-nav-new .desk-kbd-inverse {
-    margin-left: auto; /* margin-left: schiebt das Schild an das rechte Ende der Pille */
-  }
-
   /* „Bald“ an Sammlungen, die noch nicht gehen: ein graues Schild mit Text, keine Taste */
   .desk-soon {
     display: inline-grid;
@@ -81,7 +77,7 @@
   /* Ausgeblendet unter Profil › Kurzbefehle; die Tasten selbst gehen weiter. */
   /* Die Hinweise an den Icons oben und unten schaltet „Hinweise an den Seiten-Icons“
      (styles/desk-nav-pages.css), nicht dieser Schalter. */
-  /* Die Ziffern im Menü „Liste“ bleiben: sie sind dort die Wahl selbst, kein Hinweis */
+  /* Die Ziffern im Menü „Liste wechseln“ bleiben: sie sind dort die Wahl selbst, kein Hinweis */
   .device.hide-nav-kbd .desk-nav :not(.desk-page-hint, .desk-foot-hint, .desk-list-option) > .desk-kbd {
     display: none;
   }

@@ -1,55 +1,83 @@
 /*
- * Desktop: die Seitenleiste links — oben die Icon-Zeile der Seiten
- * (styles/desk-nav-pages.css), der Knopf „Neu“ und der Kopf „Liste“
- * (styles/desk-nav-list.css), darunter rollend die Zeilen der gewählten
- * Liste, unten fest „Archiviert“ und der Fuß (styles/desk-nav-foot.css).
- * Gilt erst ab 1024px Fensterbreite. Tasten-Schilder und das Auftauchen der
- * Blöcke stehen in styles/desk-kbd.css, das Gerüst in src/shell/desk-nav-parts.js.
+ * Desktop: die Seitenleiste links — ihre Fläche samt Wortmarke (heller als
+ * die Seite, gefärbt nach der gewählten Liste), oben die vier Kacheln der
+ * Seiten (styles/desk-nav-pages.css), die Zeile „Suchen“ mit dem Stift für
+ * „Neuer Eintrag“, die Trennlinie darunter, der Kopf der Liste (styles/desk-nav-list.css), darunter rollend die
+ * Zeilen der gewählten Liste, unten fest „Archiviert“ und der Fuß
+ * (styles/desk-nav-foot.css). Gilt erst ab 1024px Fensterbreite.
+ * Tasten-Schilder und das Auftauchen der Blöcke stehen in
+ * styles/desk-kbd.css, das Gerüst in src/shell/desk-nav-parts.js.
  * Pfad: styles/desk-nav.css
  *
  * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-nav)
  * -----------------------------------
- * --sidebar-row-pad    -> Innenrand der Zeilen: so weit reicht die Fläche beim Überfahren über Icon und Schild hinaus
- * --sidebar-icon       -> Größe der Icons in den Zeilen
- * --sidebar-head-inset -> Abstand der Überschrift „Liste“ vom Leistenrand — bündig mit der Wortmarke „Paralist“
- * --sidebar-new-height -> Höhe des Knopfs „Neu“
- * --sidebar-head-height -> Höhe des Kopfs „Liste“ und der Zeile „Archiviert“
+ * --sidebar-row-pad    -> Innenrand der Zeilen (= --desk-nav-row-pad): so weit reicht die Fläche beim
+ *                         Überfahren über Icon und Schild hinaus; zugleich die Linie, an der Suchen,
+ *                         Kopf der Liste und Zeilen beginnen
+ * --sidebar-icon       -> Größe der Icons in den Zeilen, der Lupe und des Stifts
+ * --sidebar-head-height -> Höhe der Zeile „Archiviert“
+ * --sidebar-divider-gap -> Luft über und unter der Trennlinie zwischen „Suchen“ und dem Kopf der Liste
+ * --sidebar-divider-mix -> wie deutlich die Trennlinie die Farbe der Liste trägt (100% = volle Farbe)
  * --sidebar-fade       -> Höhe der weichen Ausblendung oben und unten im rollenden Teil
- * Einzelne Größen stehen bei ihrer Regel: Stern 14px.
+ * Einzelne Größen stehen bei ihrer Regel: Stern 14px,
+ * Abstand des Schilds „⌘K“ hinter „Suchen“ (16px: 10px Fuge plus 6px), Stärke der Trennlinie 1px.
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
+ * --desk-nav-bg / --desk-nav-tone / --desk-nav-tint -> Fläche der Seitenleiste, Farbe der gewählten
+ *                  Liste und wie stark sie die Fläche färbt
+ * --desk-nav-hover / --desk-nav-active / --desk-nav-raised / --desk-nav-line -> Tönung beim Überfahren,
+ *                  gewählte Zeile, deckendes Menü, Haarlinien — ersetzen in der Seitenleiste --desk-hover,
+ *                  --desk-panel-strong, --desk-panel und --desk-edge, damit sie auf der gefärbten Fläche
+ *                  sichtbar bleiben
  * --desk-nav-pad -> Rand links und rechts
- * --desk-nav-top-gap -> Luft zwischen Wortmarke, Icon-Zeile, „Neu“ und „Liste“
+ * --desk-nav-head-air -> Luft über den Kacheln (so steht zwischen Klapp-Knopf und Kacheln --desk-nav-top-gap)
  * --desk-nav-item-height / --desk-nav-item-size / --desk-label-size -> Höhe und Schrift einer Zeile, kleine Schrift
- * --desk-item-radius / --desk-panel-strong -> Rundung der Zeilen / Fläche der gewählten Zeile
- * --desk-hover / --desk-fast / --desk-ease -> Tönung beim Überfahren, Dauer und Kurve
- * --text / --bg / --muted / --avatar-btn-bg -> Schrift, Grund (im Knopf „Neu“ vertauscht), leise Zahlen, Zeilen
+ * --desk-item-radius -> Rundung der Zeilen und der Suche
+ * --desk-fast / --desk-fold / --desk-ease -> Dauer kleiner Übergänge, Dauer der Färbung, Kurve
+ * --text / --muted / --avatar-btn-bg -> Schrift, leise Schrift und Zahlen, Zeilen und Icons
  * --star-color / --inbox-icon-color / --workspace-icon-color / --resource-icon-color /
  * --bookmark-color / --archive-color / --project-icon-color / --cal-accent / --xp-created
  *                -> farbige Icons der Listen wie auf den Karten am Handy
  */
 
 @media (min-width: 1024px) {
+  /* ---------- Fläche und Färbung ---------- */
+
+  /* Wortmarke und Leiste sind zwei Felder im Raster, sehen aber aus wie eine Spalte */
+  .desk-brand,
   .desk-nav {
-    --sidebar-row-pad: 10px;
+    --desk-hover: var(--desk-nav-hover);
+    --desk-panel-strong: var(--desk-nav-active);
+    --desk-panel: var(--desk-nav-raised);
+    --desk-edge: var(--desk-nav-line);
+
+    /* color-mix: ein Hauch der Listenfarbe (--desk-nav-tone, styles/tokens-desk.css) in der Fläche */
+    background-color: color-mix(in srgb, var(--desk-nav-tone) var(--desk-nav-tint), var(--desk-nav-bg));
+    transition: background-color var(--desk-fold) var(--desk-ease), visibility 0s linear 0s; /* transition: beim Listenwechsel gleitet die Färbung; visibility wie in styles/desk.css */
+  }
+
+  .desk-nav {
+    --sidebar-row-pad: var(--desk-nav-row-pad);
     --sidebar-icon: 18px;
-    --sidebar-head-inset: 6px;
-    --sidebar-new-height: 38px;
     --sidebar-head-height: 30px;
+    --sidebar-divider-gap: 8px;
+    --sidebar-divider-mix: 30%;
     --sidebar-fade: 12px;
 
     display: flex;
     flex-direction: column;
     min-height: 0; /* min-height: im Raster darf die Spalte schrumpfen — sonst schöbe eine lange Liste sie über das Fenster */
-    overflow: hidden; /* overflow: nur der mittlere Teil rollt, „Neu“, „Liste“, „Archiviert“ und der Fuß bleiben stehen */
+    overflow: hidden; /* overflow: nur der mittlere Teil rollt; Kacheln, „Suchen“, der Kopf der Liste, „Archiviert“ und der Fuß bleiben stehen */
   }
 
+  /* Rand oben: die Zeile der Wortmarke lässt unter Klapp-Knopf und Stufe schon Luft; dazu kommt nur,
+     was bis --desk-nav-top-gap fehlt — so stehen die Kacheln so weit darunter wie „Suchen“ unter ihnen */
   .desk-nav-top {
-    flex: 0 0 auto; /* flex: Icon-Zeile, „Neu“ und „Liste“ behalten ihre Höhe */
-    padding: var(--desk-nav-top-gap) var(--desk-nav-pad) 0;
+    flex: 0 0 auto; /* flex: Kacheln, „Suchen“ und der Kopf der Liste behalten ihre Höhe */
+    padding: var(--desk-nav-head-air) var(--desk-nav-pad) 0;
   }
 
-  /* Der rollende Teil zwischen „Liste“ und „Archiviert“ */
+  /* Der rollende Teil zwischen dem Kopf der Liste und „Archiviert“ */
   .desk-nav-scroll {
     flex: 1 1 auto; /* flex: nimmt die ganze Höhe dazwischen */
     min-height: 0; /* min-height: sonst wächst der Bereich mit der Liste, statt zu rollen */
@@ -65,39 +93,79 @@
 
   /* Alles, was sich anklicken lässt, reagiert gleich weich */
   .desk-nav-row,
+  .desk-nav-search,
   .desk-nav-new {
     transition: background-color var(--desk-fast) var(--desk-ease), color var(--desk-fast) var(--desk-ease),
       transform var(--desk-fast) var(--desk-ease), opacity var(--desk-fast) var(--desk-ease); /* transition: Tönung und Drücken gleiten statt zu springen */
   }
 
-  /* ---------- Knopf „Neu“ ---------- */
+  /* ---------- „Suchen ⌘K“ und der Stift ---------- */
 
-  /* Die eine gefüllte Fläche der Leiste, Schrift und Grund vertauscht */
-  .desk-nav-new {
+  .desk-nav-search-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Ruhig wie eine Zeile: Fläche erst beim Überfahren (wie in T3 Code); sie reicht bis kurz vor den Stift */
+  .desk-nav-search {
+    flex: 1 1 auto; /* flex: nimmt die Breite bis zum Stift */
     display: flex;
     align-items: center;
     gap: 10px;
-    width: 100%;
-    height: var(--sidebar-new-height);
-    padding: 0 9px 0 var(--sidebar-row-pad);
-    border-radius: 999px;
-    background: var(--text);
-    color: var(--bg);
+    min-width: 0;
+    height: var(--desk-nav-item-height);
+    padding: 0 8px 0 var(--sidebar-row-pad);
+    border-radius: var(--desk-item-radius);
     font-size: var(--desk-nav-item-size);
-    font-weight: 600;
+    font-weight: 500;
+    color: var(--muted);
+    text-align: left;
   }
 
-  .desk-nav-new-icon {
+  .desk-nav-search-icon {
+    flex: 0 0 auto;
+    width: var(--sidebar-icon);
+    height: var(--sidebar-icon);
+    color: var(--avatar-btn-bg);
+  }
+
+  .desk-nav-search-text {
+    flex: 0 1 auto; /* flex: so breit wie das Wort — das Schild folgt dicht dahinter statt am rechten Ende */
+    min-width: 0;
+  }
+
+  /* „⌘K“ 16px hinter „Suchen“: 10px Fuge der Zeile plus dieser Rand */
+  .desk-nav-search .desk-kbd {
+    margin-left: 6px;
+  }
+
+  /* Der Stift: legt neu an, ohne nähere Angabe eine Notiz */
+  .desk-nav-new {
+    position: relative; /* position: Bezug für den Hinweis „Neuer Eintrag N“ darunter */
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: var(--desk-nav-item-height);
+    height: var(--desk-nav-item-height);
+    border-radius: var(--desk-item-radius);
+    color: var(--avatar-btn-bg);
+  }
+
+  .desk-nav-new > .icon {
     width: var(--sidebar-icon);
     height: var(--sidebar-icon);
   }
 
-  /* ---------- Überschrift ---------- */
-
-  .desk-nav-heading {
-    font-size: var(--desk-label-size);
-    font-weight: 600;
-    color: var(--muted);
+  /* Trennlinie unter „Suchen“: so breit wie Kacheln und Zeilen, trennt den oberen Teil von der Liste.
+     1px statt Haarlinie: sie gliedert die ganze Leiste, wie die Linie in Raycast. Sie trägt die
+     Farbe der gewählten Liste und kündigt so den Kopf darunter an */
+  .desk-nav-divider {
+    height: 0;
+    margin: var(--sidebar-divider-gap) 0 0;
+    border: 0;
+    border-top: 1px solid color-mix(in srgb, var(--desk-nav-tone) var(--sidebar-divider-mix), transparent); /* color-mix: die Listenfarbe, etwas durchscheinend */
+    transition: border-color var(--desk-fold) var(--desk-ease); /* transition: beim Listenwechsel gleitet die Farbe mit der Fläche */
   }
 
   /* ---------- Zeilen ---------- */
@@ -179,12 +247,6 @@
     font-variant-numeric: tabular-nums; /* font-variant-numeric: gleich breite Ziffern, Zahlen untereinander springen nicht */
   }
 
-  .desk-nav-empty {
-    padding: 6px var(--sidebar-row-pad);
-    font-size: var(--desk-label-size);
-    color: var(--muted);
-  }
-
   /* ---------- Überfahren, Drücken, Tastatur ---------- */
 
   @media (hover: hover) {
@@ -197,17 +259,21 @@
       background: var(--desk-panel-strong);
     }
 
+    .desk-nav-search:hover,
     .desk-nav-new:hover {
-      background: color-mix(in srgb, var(--text) 86%, var(--bg)); /* color-mix: die dunkle Fläche hellt einen Hauch auf, aus den zwei Grundfarben gemischt */
+      background: var(--desk-hover);
+      color: var(--text);
     }
   }
 
   .desk-nav-row:active,
+  .desk-nav-search:active,
   .desk-nav-new:active {
     transform: scale(0.98); /* transform: gibt beim Drücken wie in der App ein wenig nach */
   }
 
   .desk-nav-row:focus-visible,
+  .desk-nav-search:focus-visible,
   .desk-nav-new:focus-visible {
     outline: 2px solid var(--avatar-btn-bg); /* outline: sichtbarer Ring nur bei Bedienung mit der Tastatur */
     outline-offset: -2px;

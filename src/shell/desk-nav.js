@@ -1,7 +1,8 @@
 /*
- * Die Seitenleiste am Desktop: oben die Icon-Zeile der Seiten
- * (src/shell/desk-pages.js) und „Neu“, darunter „Liste“ mit den Zeilen der
- * gewählten Liste und ganz unten „Archiviert“ (src/shell/desk-list.js),
+ * Die Seitenleiste am Desktop: oben die vier Kacheln der Seiten
+ * (src/shell/desk-pages.js), „Suchen“ und der Stift für „Neuer Eintrag“, darunter der
+ * Kopf der gewählten Liste mit ihren Zeilen und ganz unten „Archiviert“
+ * (src/shell/desk-list.js),
  * unten fest die Icon-Zeile mit Einstellungen, Hilfe, Hell/Dunkel und
  * Update (src/shell/desk-foot.js). Eingehängt und aufgefrischt wird die
  * Leiste von src/shell/desk.js; das Gerüst steht in src/shell/desk-nav-parts.js.
@@ -35,13 +36,14 @@ import {
   addToList,
   chooseList,
   closeListMenu,
-  currentList,
   mountDeskList,
   renderDeskList,
   toggleArchive,
   toggleListMenu,
+  toggleListRow,
 } from "./desk-list.js";
 import { activeTargets, skeletonMarkup } from "./desk-nav-parts.js";
+import { openPalette } from "./search-palette.js";
 
 /* Die Seitenleiste selbst — einmal beim Einhängen gemerkt. */
 let root = null;
@@ -72,8 +74,8 @@ function reselect() {
 }
 
 /**
- * Die Seite einer Liste öffnen — Klick auf ihren Namen im Kopf, „G“ und
- * Buchstabe. Aufgaben und Termine sind die Reiter Aufgaben und Kalender.
+ * Die Seite einer Liste öffnen — „G“ und Buchstabe. Aufgaben und Termine
+ * sind die Reiter Aufgaben und Kalender.
  */
 export function openList(id) {
   const link = listLink(id);
@@ -97,12 +99,14 @@ function openRow(row) {
 
 /* Jeder Knopf der Leiste trägt genau ein data-Merkmal; das erste passende gewinnt. */
 const clickActions = [
+  ["[data-nav-search]", () => openPalette()],
   ["[data-nav-new]", () => emit(events.createRequested)],
   ["[data-list-menu]", toggleListMenu],
   ["[data-list-pick]", (node) => chooseList(node.dataset.listPick)],
-  ["[data-list-open]", () => openList(currentList().id)],
   ["[data-list-add]", addToList],
   ["[data-archive-toggle]", toggleArchive],
+  /* Der Pfeil in einer Zeile klappt sie auf — er sitzt im Knopf der Zeile, darum vor ihr */
+  ["[data-row-expand]", (node) => toggleListRow(node.dataset.rowExpand)],
   ["[data-open-entry], [data-open-workspace]", openRow],
   /* Ein Klick in die freie Fläche unter den Zeilen legt in der Liste an — wie am Handy */
   ["[data-nav-zone='list']", addToList],
@@ -163,7 +167,7 @@ export function mountDeskNav(target) {
 }
 
 /**
- * Kopf „Liste“, Zeilen und „Archiviert“ auffrischen. Billig genug für jeden
+ * Kopf der Liste, Zeilen und „Archiviert“ auffrischen. Billig genug für jeden
  * Seitenwechsel: gesetzt wird nur, was sich geändert hat.
  */
 export function renderDeskNav() {

@@ -87,9 +87,10 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/desk-overlays.css` | Desktop: große Blätter, Auswahl-Blatt, Menü und Update-Fenster als Dialoge in der Mitte, samt Auftauchen |
 | `styles/desk-views.css` | Desktop: wie Übersicht, Kalender, Aufgaben, Medien und Eintrag die Breite nutzen |
 | `styles/desk-hover.css` | Desktop: Überfahren, Drücken und Tastatur-Rahmen für Seite, Kopfzeile und Dialoge |
-| `styles/desk-nav.css` | Desktop: Seitenleiste mit „Neu“ und den Zeilen der gewählten Liste; ihr Fuß (Einstellungen, Hilfe, Hell/Dunkel, Update) in styles/desk-nav-foot.css |
-| `styles/desk-nav-pages.css` | Desktop: Icon-Zeile oben in der Seitenleiste (Übersicht, Kalender, Aufgaben, Medien, Suche) mit Hinweis beim Überfahren |
-| `styles/desk-nav-list.css` | Desktop: Kopf „Liste ▾ Eingang ⌘L“ mit dem Menü der acht Listen, blasse Zeile zum Anlegen und „Archiviert (n)“ unten in der Seitenleiste |
+| `styles/desk-nav.css` | Desktop: Seitenleiste — Fläche (gefärbt nach der gewählten Liste), Zeile „Suchen“ mit dem Stift für „Neuer Eintrag“, Trennlinie in der Listenfarbe und die Zeilen der Liste; ihr Fuß (Einstellungen, Hilfe, Hell/Dunkel, Update) in styles/desk-nav-foot.css |
+| `styles/desk-nav-pages.css` | Desktop: die vier Kacheln oben in der Seitenleiste (Übersicht, Kalender, Aufgaben, Medien) und der Hinweis mit Kürzel beim Überfahren (auch an Stift und „Liste wechseln“) |
+| `styles/desk-nav-list.css` | Desktop: Kopf „Eingang 18 ˅“ (öffnet „Liste wechseln“) mit Plus und dem Menü der acht Listen, aufklappbare Arbeitsbereiche und Projekte, blasse Zeile zum Anlegen und „Archiviert (n)“ unten in der Seitenleiste |
+| `styles/desk-composer.css` | Desktop: Eingabefeld in zwei Zeilen — oben Ablageort und Textfeld; darunter Plus, alle Typen als Icons, Diktat und Anlegen (immer rechts); ohne Typ-Pille und Kreuz |
 | `styles/desk-help.css` | Desktop: Hilfe-Dialog hinter dem Fragezeichen im Fuß der Seitenleiste (was Paralist ist, die wichtigsten Kürzel) |
 | `styles/desk-kbd.css` | Desktop: dezente Tasten-Schilder und das Auftauchen der Blöcke der Seitenleiste |
 | `styles/search-palette.css` | Desktop: Such-Palette in der Fenstermitte (⌘K, „/“, Suchfeld, Such-Knopf) |

@@ -21,25 +21,43 @@ muss alles wie am Handy aussehen.
   Verweilen zeigt darunter „Stufe 1 · noch … XP“, Klick öffnet Fortschritt als
   Seite (die Anzeige ist dann hinterlegt), ein zweiter Klick rollt nur nach
   oben. Unter 1024 px steht sie wieder oben links in der Kopfzeile des Handys.
-- Tasten-Schilder („N“, „⌘L“, „⌘,“, Palette, Profil › Kurzbefehle): kleine
+- Tasten-Schilder („N“, „⌘K“, „⇧⌘L“, „⌘,“, Palette, Profil › Kurzbefehle): kleine
   Schrift mit feiner Haarlinie, ohne Fläche — dezent, aber gut lesbar.
 - ‹ und › oben links, ⌘[ und ⌘] (Strg außerhalb des Macs) und Browser-Zurück
   führen durch denselben Verlauf. Auf Übersicht, Kalender, Aufgaben und Medien
   bleibt der Pfad oben leer (der Name steht groß auf der Seite); auf Suche,
   Einstellungen und Fortschritt steht er dort.
-- „Liste ▾ Eingang 18 ⌘L“ unter „Neu“: Klick auf „Liste“ oder ⌘L öffnet das
-  Menü mit 1 Projekte, 2 Arbeitsbereiche, 3 Ressourcen, 4 Archiv, Strich,
+- Oben in der Seitenleiste: vier Kacheln (Übersicht, Kalender, Aufgaben,
+  Medien; Hinweis mit ⇧⌘-Kürzel beim Verweilen), darunter „Suchen ⌘K“ (Fläche
+  erst beim Überfahren, öffnet die Palette) und der Stift „Neuer Eintrag N“,
+  darunter eine Linie in der Farbe der gewählten Liste. Die Leiste ist im
+  Dunkeln heller als die Seite und leicht in der Listenfarbe getönt (Eingang
+  Silberblau, Projekte Rot …). Die Linie über dem Fuß läuft über die ganze
+  Breite; die Icons darin stehen mittig.
+- Kopf „Icon Eingang 18 ˅“ (Zahl ohne aufgeklappte Unter-Einträge): Klick
+  darauf oder ⇧⌘L (Strg ⇧ L außerhalb des Macs) öffnet das Menü „Liste
+  wechseln“ (Hinweis mit Kürzel beim Verweilen); das Plus rechts gegenüber
+  legt in der Liste an (Hinweis „Neues Projekt“ …, im Archiv kein Plus). Menü: 1 Projekte, 2 Arbeitsbereiche, 3 Ressourcen, 4 Archiv, Strich,
   5 Eingang, 6 Aufgaben, 7 Termine, 8 Lesezeichen (Ziffer, Pfeile, Enter,
   Escape, Klick daneben); ⌃ und Ziffer wählt ohne Menü. Die Wahl bleibt nach
   neu laden. Darunter nur die Zeilen dieser Liste (Icon, Titel, Stern bei
-  Favorit, rechts Zahl der Einträge bzw. Tag eines Termins), die offene Zeile
-  ist markiert; Rechtsklick öffnet das Menü des Eintrags. Klick auf den Namen
-  im Kopf öffnet die Seite der Liste (dann hinterlegt); G und Buchstabe
-  (G P B R A I U T L) ebenso.
+  Favorit, rechts der Tag eines Termins; Arbeitsbereiche alle mit dem
+  Arbeitsbereich-Icon in Grau). Arbeitsbereiche und Projekte mit Inhalt zeigen
+  beim Überfahren rechts einen Pfeil: Klick klappt ihre Einträge eingerückt
+  darunter auf, ohne die Seite zu wechseln (im Archiv nicht). Die offene Zeile
+  ist markiert; Rechtsklick öffnet das Menü des Eintrags. G und Buchstabe
+  (G P B R A I U T L) öffnet die Seite der Liste.
 - Klick in die freie Fläche unter den Zeilen oder auf die blasse Zeile
-  „… hinzufügen“ öffnet das Eingabefeld mit dem Typ der Liste (Projekt,
-  Arbeitsbereich, Dokument, Eintrag im Eingang, Aufgabe, Termin, Lesezeichen);
-  im Archiv gibt es die Zeile nicht.
+  („Neues Projekt“, „Neuer Arbeitsbereich“, „Neue Ressource“, „Neuer
+  Eintrag“, „Neue Aufgabe“, „Neuer Termin“, „Neues Lesezeichen“) öffnet das
+  Eingabefeld mit dem Typ der Liste; im Archiv gibt es die Zeile nicht.
+- Titel von Übersicht, Kalender, Aufgaben und Medien stehen mittig auf der
+  Höhe der vier Kacheln, die Pillen „Alle | Board“ auf der Höhe von „Suchen“.
+- Eingabefeld am Desktop: oben „Eingang ▾“ (langer Ort endet mit „…“) und
+  das Textfeld, darunter Plus und alle Typen als Icons (Hinweis in der
+  Einzahl), rechts Mikrofon und Pfeil — der Pfeil bleibt immer in dieser Zeile;
+  kein ✕ und keine Typ-Pille. Escape schließt; ein Klick daneben schließt nur,
+  solange nichts drinsteht.
 - „Archiviert (n)“ fest über dem Fuß (nicht, wenn die Liste selbst das Archiv
   ist oder nichts drin liegt): klappt bis zur halben Höhe der Leiste auf,
   darin rollen Bereiche und Einträge; bleibt nach neu laden offen.

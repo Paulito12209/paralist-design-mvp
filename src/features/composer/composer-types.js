@@ -27,6 +27,7 @@ import {
   xpItemStyle,
 } from "../../data/config.js";
 import { isEntryRef } from "../../data/refs.js";
+import { isDesk } from "../../ui/desk-mode.js";
 import { isMobileOs } from "../../ui/platform.js";
 import { openSheet } from "../../ui/sheet.js";
 import { startPlaceholderHint, stopPlaceholderHint } from "./composer-hint.js";
@@ -97,8 +98,11 @@ export function renderComposerTypes() {
       const locked = pick.id === "projekt" && !allowProject;
       /* Der gewählte Typ hebt sich nur über die Icon-Farbe ab — je Typ wie in Kalender und Verlauf */
       const style = active ? ` style="--type-color:${xpItemStyle(pick.typeId).color}"` : "";
+      /* Der Hinweis beim Überfahren nennt den einen Eintrag, der entsteht („Projekt“, „Medium“);
+         der Ressourcen-Knopf des Handys und der Arbeitsbereich (kein Eintrags-Typ) behalten ihren Namen */
+      const tip = types.some((type) => type.id === pick.id) ? typeSingular(pick.id) : pick.label;
       return `
-        <button class="composer-type${active ? " is-active" : ""}" type="button" data-type="${pick.id}" aria-label="${pick.label}"${locked ? " disabled" : ""}${style}>
+        <button class="composer-type${active ? " is-active" : ""}" type="button" data-type="${pick.id}" aria-label="${tip}" title="${tip}"${locked ? " disabled" : ""}${style}>
           ${icon(pick.icon)}
         </button>
       `;
@@ -146,7 +150,9 @@ function openTypeSheet(refresh) {
   openOverComposer(() => openSheet("Typ wählen", options));
 }
 
-/* Ein Klick auf einen Typ-Knopf wählt ihn oder wählt ihn wieder ab. */
+/* Ein Klick auf einen Typ-Knopf wählt ihn oder wählt ihn wieder ab. Am
+   Desktop hat jeder Typ einen Knopf: dort bleibt der gewählte stehen, statt
+   still zum Dokument zu springen. */
 function onTypeClick(event, refresh) {
   const button = event.target.closest("[data-type]");
   if (!button) return;
@@ -154,8 +160,8 @@ function onTypeClick(event, refresh) {
   const pick = composerPickButtons().find((item) => item.id === button.dataset.type);
   if (!pick) return;
 
-  if (composer.pick === pick.id) clearComposerPick();
-  else chooseTypeByHand(pick.typeId, pick.id);
+  if (composer.pick !== pick.id) chooseTypeByHand(pick.typeId, pick.id);
+  else if (!isDesk()) clearComposerPick();
   refresh();
 }
 
