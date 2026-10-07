@@ -68,7 +68,7 @@ muss alles wie am Handy aussehen.
   Stufe steht oben rechts in der Reiterzeile.
 - Seitenleiste mit dem Knopf und mit ⌘\ zu- und aufklappen, neu laden: der
   Zustand bleibt. Der Klapp-Knopf steht dann links in der Reiterzeile; das
-  Eingabefeld und „Ansicht“ rücken mit.
+  Eingabefeld rückt mit.
 - Seite Arbeitsbereiche (G B): alle Abläufe wie am Handy; rechts die Karten
   der Übersicht.
 - Fortschritt (über die Level-Anzeige oben rechts) ist eine Seite: Karten
@@ -115,9 +115,16 @@ muss alles wie am Handy aussehen.
   nach neu laden; unter 1024 px wieder der Handy-Kalender.
 - Aufgaben (Taste 3): rechts neben den Pillen Liste | Board und „Alle Orte“
   (bei „Alle“ gesperrt); Spalten Fällig, Dringlichkeit, Ort, lange Titel enden
-  mit „…“. Ab 1280 px „Ansicht“ rechts (alle Schalter), die
-  Karte unten ist weg; Zeile überfahren → „Details“ mit „Öffnen“ und
-  „Erledigen“. Zwischen 1024 und 1279 px bleibt die Karte unten.
+  mit „…“. Ab 1280 px Zeile überfahren → „Details“ rechts mit „Öffnen“
+  und „Erledigen“.
+- „Ansicht umstellen“ (Regler-Icon oben rechts, links neben dem Knopf fürs
+  Seitenfenster) auf Aufgaben, Seite Projekte, Eingang und den übrigen
+  Sammlungen sowie im Kalender (nur „Tag“): öffnet darunter die Karte
+  „Ansicht“ mit denselben Zeilen wie am Handy. Zu über das Icon, Klick
+  daneben, Rollen der Seite oder Escape; ein Blatt daraus (Sortieren,
+  Filtern) schließt Escape zuerst. Unten auf der Seite steht keine Karte;
+  mit offenem Seitenfenster hängt sie vor dem Fenster. Auf Übersicht,
+  Medien, Kalender-Woche/-Monat und Einträgen gibt es das Icon nicht.
 - Medien (Taste 4): Raster | Liste und Regler für die Kachelgröße (bleibt nach
   neu laden); Liste mit Art, Ort, Datum, Größe; Kachel oder Zeile überfahren →
   „Details“ rechts, Klick öffnet die Datei. Pillen und Werkzeuge überlappen

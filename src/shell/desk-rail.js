@@ -152,8 +152,8 @@ function checkTask(button) {
 }
 
 /*
- * Erst darf der sichtbare Bereich selbst (railClick, etwa die Schalter von
- * „Ansicht“), dann seine Knöpfe, dann die gemeinsamen
+ * Erst darf der sichtbare Bereich selbst (railClick, etwa die Zeilen von
+ * „Details“ eines Eintrags), dann seine Knöpfe, dann die gemeinsamen
  * (Eintrag öffnen, abhaken …).
  */
 function onClick(event) {

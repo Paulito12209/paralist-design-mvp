@@ -20,7 +20,7 @@
  * --desk-top-height -> Höhe des Kopfs, gleich hoch wie die Kopfzeile links daneben
  * --desk-panel / --desk-edge / --desk-radius -> Fläche, Haarlinie und Rundung des Fensters
  * --desk-hover / --desk-fast / --desk-ease -> Tönung beim Überfahren, Dauer und Kurve
- * --desk-gutter -> Abstand der Karte „Ansicht“ zum Fenster
+ * --desk-gutter -> Abstand der Karte „Ansicht“ (unter dem Icon oben) zum Fenster
  * --text / --avatar-btn-bg -> Titel und Icons der Knöpfe
  */
 
@@ -46,8 +46,10 @@
     display: none;
   }
 
-  /* Eingabefeld, Knöpfe und die Karte „Ansicht“ unten bleiben über der Mitte,
-     nicht unter dem Fenster (sonst rechnen sie mit der Spalte rechts, styles/tasks-settings.css) */
+  /* Eingabefeld und Knöpfe unten bleiben über der Mitte, nicht unter dem
+     Fenster; die Karte „Ansicht“ steht rechtsbündig unter der Kopfzeile, die
+     vor dem Fenster endet (styles/desk-head.css). Ohne diese Regeln rechneten
+     sie mit der Spalte rechts. */
   .device.is-side-open .bottom-bar {
     right: var(--desk-side-width);
   }
