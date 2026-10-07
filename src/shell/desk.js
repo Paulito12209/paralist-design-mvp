@@ -1,6 +1,6 @@
 /*
  * Die Desktop-Fassung: hängt Wortmarke (mit der Stufe) und Kopfzeile, die
- * Seitenleiste links (Icon-Zeile der Seiten, „Liste“, Fuß) und die Spalte rechts
+ * Seitenleiste links (Kacheln der Seiten, „Suchen“ mit Stift, Kopf der Liste, Fuß) und die Spalte rechts
  * ins Gerätefenster und hält alles aktuell. Das Seitenfenster rechts
  * (src/shell/desk-side.js) lädt erst beim ersten Öffnen. Das Modul wird erst
  * geladen, wenn das Fenster breit genug ist (src/main.js) — am Handy kommt

@@ -33,8 +33,8 @@ const sections = [
   {
     title: "Wie du arbeitest",
     text: [
-      "Mit „Neu“ legst du an, was dir gerade einfällt; sortiert wird später. Die vier Seiten oben links zeigen das Ganze als Übersicht, Kalender, Aufgaben und Medien.",
-      "Unter „Liste“ wählst du, welche Liste die Seitenleiste zeigt — Projekte, Arbeitsbereiche, Ressourcen, Archiv, Eingang, Aufgaben, Termine oder Lesezeichen. Ein Klick in die freie Fläche darunter legt gleich einen Eintrag in dieser Liste an.",
+      "Mit dem Stift neben „Suchen“ legst du an, was dir gerade einfällt; sortiert wird später. Die vier Kacheln oben links zeigen das Ganze als Übersicht, Kalender, Aufgaben und Medien.",
+      "Mit „Liste wechseln“ wählst du, welche Liste die Seitenleiste zeigt — Projekte, Arbeitsbereiche, Ressourcen, Archiv, Eingang, Aufgaben, Termine oder Lesezeichen. Ein Klick in die freie Fläche darunter legt gleich einen Eintrag in dieser Liste an.",
       "Das Seitenfenster rechts öffnet nebenbei einen Browser, deine Medien, eine Datei vom Gerät oder eine zweite Seite zum Nachschlagen.",
     ],
   },
@@ -42,7 +42,7 @@ const sections = [
 
 const basics = [
   { label: "Neu anlegen", keys: "N" },
-  { label: "Menü „Liste“ öffnen, dann Ziffer 1–8", keys: withCommand(listKey) },
+  { label: "Liste wechseln, dann Ziffer 1–8", keys: withShiftCommand(listKey) },
   { label: "Suchen", keys: withCommand("K") },
   { label: "Seitenfenster rechts", keys: withShiftCommand(sideLink.letter) },
   { label: "Zurück und vor", keys: `${withCommand("[")} ${withCommand("]")}` },

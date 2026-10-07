@@ -34,6 +34,9 @@
  * --desk-scroll-thumb    -> Farbe des Rollbalkens unter dem Board
  * --desk-ease / --desk-enter-rise -> Kurve und Tiefe beim Aufblenden einer Seite
  * --content-side / --content-top -> Seitenrand und Luft oben
+ * --desk-nav-head-air / --desk-nav-tile-h / --desk-nav-top-gap -> Lage der vier Kacheln in der
+ *                          Seitenleiste: daran richten sich Titel und Pillen der vier Seiten aus
+ * --tab-space            -> Luft unter Stundenraster und Liste des Kalenders
  */
 
 @media (min-width: 1024px) {
@@ -67,6 +70,22 @@
     width: 100%;
     max-width: var(--desk-read-width);
     margin-inline: auto;
+  }
+
+  /* ---------- Titel auf einer Linie mit der Seitenleiste ---------- */
+  /* Der große Titel der vier Seiten steht mittig auf der Höhe der vier Kacheln
+     links (gleiche Oberkante, Zeilenhöhe = Kachelhöhe), die Pillen darunter auf
+     der Höhe von „Suchen“ — Seite und Leiste lesen sich so als eine Zeile.
+     margin-top: zieht den Titel aus der Luft oben (--content-top) bis an die
+     Oberkante der Kacheln. */
+  :is(#view-home, #view-calendar, #view-tasks, #view-media) .screen-title {
+    margin-top: calc(var(--desk-nav-head-air) - var(--content-top));
+    line-height: var(--desk-nav-tile-h);
+  }
+
+  /* Aufgaben: die Pillen „Alle | Board“ stehen so weit unter dem Titel wie „Suchen“ unter den Kacheln */
+  #view-tasks .screen-title {
+    margin-bottom: var(--desk-nav-top-gap);
   }
 
   /* :has: die Aufgaben-Liste liest sich in Lesebreite besser, nur das Board
@@ -119,9 +138,13 @@
   }
 
   /* Die Fläche reicht bis an den Spaltenrand; ihr Innenabstand folgt dem breiteren
-     Rand, damit Stunden und Liste auf der Fluchtlinie von Titel und Streifen stehen. */
+     Rand, damit Stunden und Liste auf der Fluchtlinie von Titel und Streifen stehen.
+     Unten nur das übliche Seitenende: das Panel „Ansicht“ hängt oben unter dem
+     Icon „Ansicht umstellen“ (styles/desk-head.css), kein Kopf schaut unten hervor
+     (am Handy: styles/calendar.css). */
   #view-calendar .cal-panel {
     padding-inline: var(--content-side);
+    padding-bottom: var(--tab-space);
   }
 
   /* ---------- Aufgaben: Liste und Board ---------- */

@@ -63,10 +63,10 @@ function toggleRow(toggle) {
 /** Die ganze Unterseite: Schalter oben, darunter die drei Gruppen. */
 export function shortcutsMarkup() {
   const pages = pageLinks.map((link) => shortcutRow(link.label, [withShiftCommand(link.letter), link.key]));
-  /* Die Liste: ⌘L öffnet das Menü, die Ziffer darin oder ⌃ und Ziffer wählt; „G“ und Buchstabe öffnet die Seite */
+  /* Die Liste: ⇧⌘L öffnet das Menü, die Ziffer darin oder ⌃ und Ziffer wählt; „G“ und Buchstabe öffnet die Seite */
   const lists = [
-    shortcutRow("Menü „Liste“ öffnen", [withCommand(listKey)]),
-    ...listLinks.map((link) => shortcutRow(link.title, [`${withCommand(listKey)} ${link.num}`, withControl(link.num), `${chordKey} ${link.key}`])),
+    shortcutRow("Liste wechseln", [withShiftCommand(listKey)]),
+    ...listLinks.map((link) => shortcutRow(link.title, [`${withShiftCommand(listKey)} ${link.num}`, withControl(link.num), `${chordKey} ${link.key}`])),
   ];
   const always = everywhere.map((row) => shortcutRow(row.label, row.keys));
   return `

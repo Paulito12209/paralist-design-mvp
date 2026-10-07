@@ -4,7 +4,7 @@
  * Pfad: src/shell/desk-keys.js
  *
  * Keine anpassbaren visuellen Werte. Welche Taste welche Seite und welche
- * Liste öffnet, steht in src/ui/desk-links.js (pageLinks, listLinks, listKey,
+ * Liste öffnet, steht in src/ui/desk-links.js (pageLinks, listLinks, listSwitch,
  * chordWindow) — so können Taste und Schild daneben nie auseinanderlaufen.
  * Die Kürzel mit zwei Zusatztasten prüft src/shell/desk-combos.js.
  *
@@ -14,7 +14,7 @@
  *                     Palette markiert ⌘K das Suchwort, alle anderen Kürzel ruhen
  *   ⇧⌘Ü ⇧⌘K ⇧⌘A ⇧⌘M (oder 1 bis 4) -> Übersicht, Kalender, Aufgaben, Medien
  *   ⇧⌘O           -> Seitenfenster rechts auf- und zuklappen
- *   ⌘L             -> Menü „Liste“ in der Seitenleiste öffnen; darin wählt die Ziffer
+ *   ⇧⌘L           -> Menü „Liste wechseln“ in der Seitenleiste öffnen; darin wählt die Ziffer
  *   ⌃1 bis ⌃8      -> die Liste gleich wählen (Projekte, Arbeitsbereiche, Ressourcen, Archiv,
  *                     Eingang, Aufgaben, Termine, Lesezeichen)
  *   G, dann P B R A I U T L -> die Seite dieser Liste öffnen
@@ -23,7 +23,8 @@
  *   ⌘,             -> Profil und Einstellungen (Punkt „Konto“)
  *   ?              -> Profil › Kurzbefehle
  *   Escape         -> schließt, was obenauf liegt: Palette, Menü, Auswahl-Blatt, Dialog,
- *                     Dateiansicht, zuletzt das Eingabefeld — auch beim Tippen darin
+ *                     Dateiansicht, die Karte „Ansicht“, zuletzt das Eingabefeld — auch
+ *                     beim Tippen darin
  * Statt ⌘ gilt außerhalb des Macs Strg, statt ⌃ Alt.
  */
 
@@ -32,9 +33,10 @@ import { dom, el } from "../core/dom.js";
 import { load } from "../core/lazy.js";
 import { closeCtxMenu } from "../ui/ctx-menu.js";
 import { isDesk } from "../ui/desk-mode.js";
-import { chordKey, chordWindow, listKey, listLinks, pageLinks } from "../ui/desk-links.js";
+import { chordKey, chordWindow, listLinks, pageLinks } from "../ui/desk-links.js";
 import { goBack, goForward } from "../ui/router.js";
 import { closeSheet } from "../ui/sheet.js";
+import { closeViewPanel } from "../ui/view-panel.js";
 import { onComboKey } from "./desk-combos.js";
 import { isNavClosed, openPageTab, setNavClosed, toggleSidePanel } from "./desk-head.js";
 import { chooseList, toggleListMenu } from "./desk-list.js";
@@ -90,6 +92,9 @@ function closeTopLayer() {
     closeButton.click();
     return true;
   }
+  /* Die Karte „Ansicht“ unter dem Icon oben rechts (src/ui/view-panel.js);
+     ein Blatt, das sie geöffnet hat (Sortieren, Filtern), ging oben schon zu */
+  if (closeViewPanel()) return true;
   if (!dom.composer.hidden) {
     el("composer-close").click();
     return true;
@@ -120,10 +125,6 @@ function onCommandKey(event) {
     focusSearch();
     return true;
   }
-  if (key === listKey.toLowerCase()) {
-    toggleListMenu();
-    return true;
-  }
   if (isTyping(event.target)) return false;
   if (key === "\\") setNavClosed(!isNavClosed());
   else if (key === "[") goBack();
@@ -144,6 +145,7 @@ const comboActions = {
     chooseList(id);
   },
   toggleSide: toggleSidePanel,
+  toggleListMenu,
 };
 
 /* Die Profilseite auf einem Punkt ihres Untermenüs öffnen. */

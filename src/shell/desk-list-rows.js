@@ -1,18 +1,25 @@
 /*
- * Markup der Liste in der Seitenleiste am Desktop: das Menü „Liste“ mit den
- * acht Listen und ihren Ziffern, die Zeilen der gewählten Liste (Einträge
+ * Markup der Liste in der Seitenleiste am Desktop: das Menü „Liste wechseln“
+ * mit den acht Listen und ihren Ziffern, die Zeilen der gewählten Liste (Einträge
  * oder Arbeitsbereiche), die blasse Zeile zum Anlegen darunter und die
  * Zeilen des Blocks „Archiviert“ ganz unten. Hier steht nur Markup und was
  * gerade gewählt ist — was ein Klick auslöst, entscheidet
  * src/shell/desk-list.js, den Klick selbst fängt src/shell/desk-nav.js.
  * Pfad: src/shell/desk-list-rows.js
  *
- * Keine anpassbaren visuellen Werte: welche Liste welche Ziffer, Farbe und
- * Zeile zum Anlegen hat, steht in src/ui/desk-links.js (listLinks); Aussehen
- * und Maße stehen in styles/desk-nav-list.css und styles/desk-nav.css.
+ * Arbeitsbereiche und Projekte lassen sich hier aufklappen: ihr Pfeil
+ * erscheint beim Überfahren, darunter stehen dann ihre Einträge eingerückt.
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * maxDepth           -> wie viele Stufen tief sich Ablageorte aufklappen lassen
+ * workspaceDraftIcon -> Icon aller Arbeitsbereiche in der Leiste (dasselbe wie beim Anlegen)
+ * Welche Liste welche Ziffer, Farbe und Zeile zum Anlegen hat, steht in
+ * src/ui/desk-links.js (listLinks); Aussehen und Maße (auch die Einrückung)
+ * stehen in styles/desk-nav-list.css und styles/desk-nav.css.
  */
 
-import { formatNumber, shortDay } from "../core/format.js";
+import { shortDay } from "../core/format.js";
 import { escapeHtml, icon } from "../core/html.js";
 import { sameId } from "../core/ids.js";
 import { typeIcon } from "../data/config.js";
@@ -22,16 +29,19 @@ import {
   entriesOf,
   entryDay,
   inboxEntries,
+  isContainer,
   projectEntries,
   resourceEntries,
   taskEntries,
-  workspaceIcon,
   workspaceLabel,
 } from "../data/queries.js";
 import { entryRef, workspaceRef } from "../data/refs.js";
 import { state } from "../data/state.js";
 import { listLinks } from "../ui/desk-links.js";
 import { keyCap } from "../ui/key-caps.js";
+
+const maxDepth = 3;
+const workspaceDraftIcon = "layers";
 
 /* Einträge eines Typs, ohne archivierte, in der Reihenfolge des Anlegens. */
 function entriesOfType(type) {
@@ -61,43 +71,72 @@ export function listItems(link) {
   return (byList[link.id] || (() => []))().map((entry) => ({ entry }));
 }
 
-/* Rechts in der Zeile: bei Ablageorten die Zahl ihrer Einträge, bei Terminen der Tag. */
-function rowAside(item) {
-  if (item.workspace) {
-    const count = entriesOf(workspaceRef(item.workspace.id)).length;
-    return count ? `<span class="desk-nav-count">${formatNumber(count)}</span>` : "";
-  }
-  const entry = item.entry;
-  if (entry.type === "projekt") {
-    const count = entriesOf(entryRef(entry.id)).length;
-    return count ? `<span class="desk-nav-count">${formatNumber(count)}</span>` : "";
-  }
-  if (entry.type === "termin") return `<span class="desk-nav-count">${escapeHtml(shortDay(entryDay(entry)))}</span>`;
+/* Aufgeklappte Ablageorte („w:3“ Arbeitsbereich, „e:21“ Projekt) — nur für diese Sitzung gemerkt. */
+const expanded = new Set();
+
+/** Einen Ablageort in der Leiste auf- oder zuklappen. */
+export function toggleRowExpand(key) {
+  if (expanded.has(key)) expanded.delete(key);
+  else expanded.add(key);
+}
+
+/* Schlüssel und Inhalt eines Ablageorts: Arbeitsbereiche und Projekte haben
+   Einträge darunter, alles andere nicht (Unteraufgaben gibt es noch nicht). */
+function rowKey(item) {
+  return item.workspace ? `w:${item.workspace.id}` : `e:${item.entry.id}`;
+}
+
+function children(item) {
+  if (item.workspace) return entriesOf(workspaceRef(item.workspace.id)).map((entry) => ({ entry }));
+  if (isContainer(item.entry)) return entriesOf(entryRef(item.entry.id)).map((entry) => ({ entry }));
+  return [];
+}
+
+/*
+ * Rechts in der Zeile: bei Terminen der Tag; bei Ablageorten mit Inhalt der
+ * Pfeil zum Aufklappen — keine Zahl. Er zeigt sich beim Überfahren und
+ * bleibt stehen, solange aufgeklappt ist (wie die Ordner in Raycast).
+ */
+function rowAside(item, canExpand) {
+  if (canExpand) return `<span class="desk-nav-expand" data-row-expand="${rowKey(item)}" aria-hidden="true">${icon("chevron")}</span>`;
+  if (item.entry && item.entry.type === "termin") return `<span class="desk-nav-count">${escapeHtml(shortDay(entryDay(item.entry)))}</span>`;
   return "";
 }
 
 /*
- * Eine Zeile: Icon (eigenes oder das des Typs), Titel, Stern bei Favorit,
- * rechts Zahl oder Tag. Die offene Zeile ist markiert. `title`: lange Namen
- * enden mit „…“ — beim Überfahren steht der ganze Name da.
+ * Eine Zeile: Icon (Arbeitsbereiche alle mit dem Arbeitsbereich-Icon, sonst
+ * das eigene oder das des Typs, in Grau), Titel, Stern bei Favorit, rechts
+ * Tag oder Pfeil. Die offene Zeile ist markiert. `title`: lange Namen enden
+ * mit „…“ — beim Überfahren steht der ganze Name da. Aufgeklappt folgen die
+ * Einträge darunter, eine Stufe eingerückt (--depth).
+ * @param depth wie tief die Zeile steht (0 = oberste Ebene)
+ * @param seen  schon gezeigte Ablageorte — ein Ort in sich selbst kann so keinen Kreis bilden
  */
-function rowMarkup(item, active) {
+function rowMarkup(item, active, depth = 0, seen = new Set()) {
   const workspace = item.workspace;
   const entry = item.entry;
+  const key = rowKey(item);
   const chosen = workspace ? sameId(workspace.id, active.workspace) : sameId(entry.id, active.entry);
   const label = escapeHtml(workspace ? workspaceLabel(workspace) : entry.title || "Ohne Titel");
-  const glyph = workspace ? workspaceIcon(workspace) : entry.icon || typeIcon(entry.type);
+  const glyph = workspace ? workspaceDraftIcon : entry.icon || typeIcon(entry.type);
   const favorite = (workspace || entry).favorite ? icon("star", "desk-nav-star") : "";
   const target = workspace ? `data-open-workspace="${workspace.id}"` : `data-open-entry="${entry.id}"`;
-  return `
-    <button class="desk-nav-row${chosen ? " is-active" : ""}" type="button" ${target} title="${label}"${chosen ? ' aria-current="page"' : ""}>
+  const inner = active.archive || seen.has(key) || depth >= maxDepth ? [] : children(item);
+  const open = inner.length > 0 && expanded.has(key);
+  const classes = `desk-nav-row${chosen ? " is-active" : ""}${open ? " is-expanded" : ""}`;
+  const row = `
+    <button class="${classes}" type="button" ${target} title="${label}" style="--depth: ${depth}"${chosen ? ' aria-current="page"' : ""}>
       ${icon(glyph, "desk-nav-icon desk-nav-icon-space")}
       <span class="desk-nav-label"><span class="desk-nav-text">${label}</span>${favorite}</span>
-      ${rowAside(item)}
+      ${rowAside(item, inner.length > 0)}
     </button>`;
+  if (!open) return row;
+  const inside = new Set(seen).add(key);
+  return row + inner.map((child) => rowMarkup(child, active, depth + 1, inside)).join("");
 }
 
-/* Die blasse Zeile unter der Liste: legt in dieser Liste an — wie ein Klick in die freie Fläche. */
+/* Die blasse Zeile unter dem letzten Eintrag („Neues Projekt“, „Neue Aufgabe“ …, wie „New Tab“ in Arc):
+   legt in dieser Liste an — wie ein Klick in die freie Fläche. */
 function addRowMarkup(link) {
   if (!link.create) return "";
   return `
@@ -108,22 +147,23 @@ function addRowMarkup(link) {
 }
 
 /**
- * Die Zeilen der gewählten Liste samt Zeile zum Anlegen.
+ * Die Zeilen der gewählten Liste samt Zeile zum Anlegen. Eine leere Liste
+ * zeigt nur die Zeile zum Anlegen — kein „Nichts in …“, die Leiste bleibt ruhig.
  * @param link   die gewählte Liste (listLinks)
  * @param active { entry, workspace } — was gerade offen ist (src/shell/desk-nav-parts.js)
  */
 export function listRowsMarkup(link, active) {
-  const items = listItems(link);
-  const rows = items.map((item) => rowMarkup(item, active)).join("");
-  const empty = items.length ? "" : `<p class="desk-nav-empty">Nichts in „${escapeHtml(link.title)}“</p>`;
-  return rows + empty + addRowMarkup(link);
+  const rows = listItems(link).map((item) => rowMarkup(item, active)).join("");
+  return rows + addRowMarkup(link);
 }
 
 /** Die Zeilen im Block „Archiviert“ ganz unten. */
 export function archiveRowsMarkup(active) {
   const link = listLinks.find((item) => item.id === "archive");
+  /* Im Archiv klappt nichts auf: es ist zum Wiederfinden, nicht zum Arbeiten */
+  const quiet = { ...active, archive: true };
   return listItems(link)
-    .map((item) => rowMarkup(item, active))
+    .map((item) => rowMarkup(item, quiet))
     .join("");
 }
 
@@ -133,7 +173,7 @@ export function archiveCount() {
 }
 
 /*
- * Eine Zeile des Menüs „Liste“: Ziffer, Icon in seiner Farbe, Name; die
+ * Eine Zeile des Menüs „Liste wechseln“: Ziffer, Icon in seiner Farbe, Name; die
  * gewählte trägt den Haken. Vor „Eingang“ zieht ein Strich die Ablagen vom
  * Laufenden ab.
  */
@@ -149,7 +189,7 @@ function optionMarkup(link, chosenId) {
     </button>`;
 }
 
-/** Das ganze Menü „Liste“, `chosenId` ist die gerade gezeigte Liste. */
+/** Das ganze Menü „Liste wechseln“, `chosenId` ist die gerade gezeigte Liste. */
 export function listMenuMarkup(chosenId) {
   return listLinks.map((link) => optionMarkup(link, chosenId)).join("");
 }

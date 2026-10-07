@@ -1,22 +1,31 @@
 /*
- * Desktop: „Liste“ in der Seitenleiste — der Kopf „Liste ▾ Eingang ⌘L“ unter
- * „Neu“, das Menü mit den acht Listen (Ziffer, Icon, Name, Haken), die
- * blasse Zeile zum Anlegen unter den Zeilen und der Block „Archiviert (n)“
- * ganz unten, der bis zur halben Höhe der Leiste aufklappt. Gilt erst ab
- * 1024px; das Markup entsteht in src/shell/desk-list.js und
- * src/shell/desk-list-rows.js, die Zeilen selbst stehen in styles/desk-nav.css.
+ * Desktop: die Liste in der Seitenleiste — der Kopf „📥 Eingang 18 ˅“ unter
+ * der Trennlinie (hell mit Icon wie die Gruppen-Köpfe in Raycast; ein Klick
+ * öffnet das Menü „Liste wechseln“) mit dem Plus rechts gegenüber, das Menü
+ * mit den acht Listen (Ziffer, Icon, Name, Haken), die Einrückung und der
+ * Pfeil aufklappbarer Arbeitsbereiche und Projekte, die blasse Zeile zum
+ * Anlegen unter den Zeilen und der Block „Archiviert (n)“ ganz unten, der bis
+ * zur halben Höhe der Leiste aufklappt. Gilt erst ab 1024px; das Markup
+ * entsteht in src/shell/desk-list.js und src/shell/desk-list-rows.js, die
+ * Zeilen selbst stehen in styles/desk-nav.css, die Hinweise an Kopf und Plus
+ * in styles/desk-nav-pages.css.
  * Pfad: styles/desk-nav-list.css
  *
  * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-nav-listhead)
  * -----------------------------------
- * --list-menu-gap     -> Abstand des Menüs unter dem Kopf „Liste“
+ * --list-menu-gap     -> Abstand des Menüs unter dem Kopf
  * --list-menu-pad     -> Innenrand des Menüs
  * --list-option-height -> Höhe einer Zeile im Menü
  * --list-archive-max  -> wie hoch „Archiviert“ aufgeklappt höchstens wird (Anteil der Leiste)
- * Einzelwerte stehen bei ihrer Regel: Pfeil hinter „Liste“ und vor „Archiviert“ 14px, Haken 14px.
+ * Einzelwerte stehen bei ihrer Regel: Pfeil im Kopf, in den Zeilen und vor „Archiviert“ 14px
+ * (Fläche des Zeilen-Pfeils 20px, Rundung 6px), Einrückung je Stufe = Icon plus 10px, Haken 14px,
+ * Name im Kopf fett (in der Schrift der Zeilen), Abstand Icon–Name im Kopf 10px wie in den Zeilen (6px Fuge plus 4px).
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
- * --desk-nav-pad / --desk-nav-top-gap -> Rand und Luft über dem Kopf
+ * --desk-nav-pad -> Rand links und rechts
+ * --sidebar-divider-gap -> Luft zwischen Trennlinie und Kopf (styles/desk-nav.css)
+ * --sidebar-icon / --sidebar-row-pad / --sidebar-head-height -> Icon-Größe, Innenrand der Zeilen,
+ *                   Höhe von „Archiviert“ (styles/desk-nav.css)
  * --desk-nav-item-size / --desk-label-size / --desk-nav-item-height -> Schrift und Höhe der Zeilen
  * --desk-item-radius / --desk-radius-sm -> Rundung der Zeilen / des Menüs
  * --desk-panel / --desk-edge -> Fläche und Haarlinie des Menüs (deckend: die Zeilen darunter sollen nicht durchscheinen)
@@ -33,66 +42,119 @@
     --list-archive-max: 50%;
 
     position: relative; /* position: Bezug für das Menü darunter */
-    margin-top: var(--desk-nav-top-gap);
+    margin-top: var(--sidebar-divider-gap);
   }
 
-  /* ---------- Kopf „Liste ▾ Eingang ⌘L“ ---------- */
+  /* ---------- Kopf „📥 Eingang 18 ˅ … +“ ---------- */
 
   .desk-list-head {
     display: flex;
     align-items: center;
-    gap: 6px;
-    min-height: var(--sidebar-head-height);
-    padding-right: 4px;
+    justify-content: space-between; /* justify-content: das Plus steht rechts gegenüber, unter dem Stift */
+    gap: 4px;
   }
 
-  /* „Liste“ mit Pfeil: öffnet das Menü */
-  .desk-list-menu-btn {
-    flex: 0 0 auto;
-    display: inline-flex;
+  /* Icon, Name, Zahl und Pfeil: öffnet das Menü „Liste wechseln“. So breit wie sein Inhalt —
+     nur darüber erscheint der Hinweis mit dem Kürzel. So hoch wie eine Zeile, Icon auf der Linie der Lupe */
+  .desk-list-pick {
+    position: relative; /* position: Bezug für den Hinweis darunter */
+    flex: 0 1 auto; /* flex: so breit wie der Inhalt, ein langer Name darf schrumpfen */
+    display: flex;
     align-items: center;
-    gap: 2px;
-    height: var(--sidebar-head-height);
-    padding: 0 4px 0 var(--sidebar-head-inset);
+    gap: 6px;
+    min-width: 0;
+    height: var(--desk-nav-item-height);
+    padding: 0 var(--sidebar-row-pad);
     border-radius: var(--desk-item-radius);
     color: var(--muted);
+    text-align: left;
     transition: background-color var(--desk-fast) var(--desk-ease), color var(--desk-fast) var(--desk-ease); /* transition: Tönung gleitet statt zu springen */
   }
 
-  .desk-list-chevron {
-    width: 14px;
-    height: 14px;
-    transform: rotate(90deg); /* transform: der Pfeil des Sprites zeigt nach rechts — gedreht nach unten */
-    transition: transform var(--desk-fast) var(--desk-ease); /* transition: der Pfeil dreht sich weich */
-  }
-
-  .desk-list-menu-btn[aria-expanded="true"] .desk-list-chevron {
-    transform: rotate(-90deg); /* transform: offen, Pfeil nach oben */
-  }
-
-  /* Die gewählte Liste: Icon in ihrer Farbe, Name, Zahl — öffnet ihre Seite */
-  .desk-list-current {
-    flex: 1 1 auto; /* flex: nimmt die Breite bis zum Schild */
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    min-width: 0;
-    height: var(--sidebar-head-height);
-    padding: 0 var(--sidebar-row-pad);
-    border-radius: var(--desk-item-radius);
-    font-size: var(--desk-nav-item-size);
-    font-weight: 600;
-    color: var(--text);
-    text-align: left;
-    transition: background-color var(--desk-fast) var(--desk-ease); /* transition: s. o. */
-  }
-
-  .desk-list-current.is-active {
+  .desk-list-pick[aria-expanded="true"] {
     background: var(--desk-panel-strong);
   }
 
-  .desk-list-current .desk-nav-icon {
+  /* Icon der Liste in ihrer Farbe, auf der Linie der Icons darunter */
+  .desk-list-icon {
     flex: 0 0 auto;
+    display: grid;
+    margin-right: 4px;
+  }
+
+  /* Hell und kräftig wie „Lernen“ in Raycast: die Überschrift über den Zeilen */
+  .desk-list-name {
+    min-width: 0;
+    overflow: hidden; /* overflow/text-overflow/white-space: ein langer Name endet einzeilig mit „…“ */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: var(--desk-nav-item-size);
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  .desk-list-chevron {
+    flex: 0 0 auto;
+    width: 14px;
+    height: 14px;
+    transform: rotate(90deg); /* transform: der Pfeil des Sprites zeigt nach rechts — gedreht nach unten: hier geht ein Menü auf */
+    transition: transform var(--desk-fast) var(--desk-ease); /* transition: der Pfeil dreht sich weich */
+  }
+
+  .desk-list-pick[aria-expanded="true"] .desk-list-chevron {
+    transform: rotate(-90deg); /* transform: offen, Pfeil nach oben */
+  }
+
+  /* Das Plus: quadratisch, so breit wie eine Zeile hoch — steht unter dem Stift */
+  .desk-list-new {
+    position: relative; /* position: Bezug für den Hinweis darunter */
+    flex: 0 0 auto;
+    display: grid;
+    place-items: center;
+    width: var(--desk-nav-item-height);
+    height: var(--desk-nav-item-height);
+    border-radius: var(--desk-item-radius);
+    color: var(--avatar-btn-bg);
+    transition: background-color var(--desk-fast) var(--desk-ease), color var(--desk-fast) var(--desk-ease); /* transition: s. o. */
+  }
+
+  .desk-list-new[hidden] {
+    display: none;
+  }
+
+  .desk-list-new > .icon {
+    width: var(--sidebar-icon);
+    height: var(--sidebar-icon);
+  }
+
+  /* ---------- Aufklappen von Arbeitsbereichen und Projekten ---------- */
+
+  /* Eingerückt um eine Icon-Breite plus Fuge je Stufe — der Name steht dann unter dem Namen darüber */
+  .desk-nav-row {
+    padding-left: calc(var(--sidebar-row-pad) + var(--depth, 0) * (var(--sidebar-icon) + 10px));
+  }
+
+  /* Der Pfeil rechts: unsichtbar, bis man die Zeile überfährt; aufgeklappt bleibt er und zeigt nach unten */
+  .desk-nav-expand {
+    display: grid;
+    place-items: center;
+    width: 20px;
+    height: 20px;
+    margin-right: -4px; /* margin-right: der Pfeil rückt so weit an den Rand wie die Zahlen anderer Zeilen */
+    border-radius: 6px;
+    color: var(--muted);
+    opacity: 0;
+    transition: opacity var(--desk-fast) var(--desk-ease), transform var(--desk-fast) var(--desk-ease); /* transition: erscheint und dreht sich weich */
+  }
+
+  .desk-nav-expand > .icon {
+    width: 14px;
+    height: 14px;
+  }
+
+  .desk-nav-row.is-expanded .desk-nav-expand {
+    opacity: 1;
+    transform: rotate(90deg); /* transform: aufgeklappt zeigt der Pfeil nach unten */
   }
 
   /* ---------- Menü ---------- */
@@ -159,6 +221,11 @@
     color: var(--muted);
   }
 
+  /* Das Plus folgt der Schrift: blass wie „+ New Tab“ in Arc, beim Überfahren mit ihr hell */
+  .desk-list-add .desk-nav-icon {
+    color: inherit;
+  }
+
   /* ---------- „Archiviert (n)“ ---------- */
 
   .desk-nav-archive {
@@ -169,7 +236,6 @@
     min-height: 0; /* min-height: die Liste darin rollt, statt die Leiste zu sprengen */
     margin: 0 var(--desk-nav-pad);
     padding-top: 4px;
-    border-top: 0.5px solid var(--desk-edge);
   }
 
   .desk-nav-archive[hidden] {
@@ -184,7 +250,7 @@
     gap: 6px;
     width: 100%;
     height: var(--sidebar-head-height);
-    padding: 0 var(--sidebar-row-pad) 0 var(--sidebar-head-inset);
+    padding: 0 var(--sidebar-row-pad);
     border-radius: var(--desk-item-radius);
     font-size: var(--desk-label-size);
     font-weight: 600;
@@ -221,8 +287,13 @@
   /* ---------- Überfahren, Drücken, Tastatur ---------- */
 
   @media (hover: hover) {
-    .desk-list-menu-btn:hover,
-    .desk-list-current:not(.is-active):hover,
+    .desk-nav-row:hover .desk-nav-expand {
+      opacity: 1;
+    }
+
+    .desk-list-pick:hover,
+    .desk-list-new:hover,
+    .desk-nav-expand:hover,
     .desk-list-option:hover,
     .desk-nav-archive-toggle:hover {
       background: var(--desk-hover);
@@ -230,15 +301,15 @@
     }
   }
 
-  .desk-list-menu-btn:active,
-  .desk-list-current:active,
+  .desk-list-pick:active,
+  .desk-list-new:active,
   .desk-list-option:active,
   .desk-nav-archive-toggle:active {
     opacity: 0.6;
   }
 
-  .desk-list-menu-btn:focus-visible,
-  .desk-list-current:focus-visible,
+  .desk-list-pick:focus-visible,
+  .desk-list-new:focus-visible,
   .desk-list-option:focus-visible,
   .desk-nav-archive-toggle:focus-visible {
     outline: 2px solid var(--avatar-btn-bg); /* outline: sichtbarer Ring nur bei Bedienung mit der Tastatur */

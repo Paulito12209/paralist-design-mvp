@@ -37,7 +37,7 @@ export const storageKeys = {
   milestones: "paralist-milestones",
   deskNav: "paralist-desk-nav",
   deskHints: "paralist-desk-hints",
-  /* Seitenleiste am Desktop: welche Liste unter „Liste“ steht und ob „Archiviert“ offen ist */
+  /* Seitenleiste am Desktop: welche Liste dort steht und ob „Archiviert“ offen ist */
   deskList: "paralist-desk-list",
   deskArchive: "paralist-desk-archive",
   /* Werkzeugleiste der Zeichnung am Desktop: wo sie steht, Strichbreiten, eigene Farben */

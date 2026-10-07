@@ -26,8 +26,8 @@
  * (styles/android-archive.css hebt die Regeln hier auf).
  *
  * Wo der feste Teil unten anfängt, ergibt sich aus Werten anderer Dateien:
- * --nav-height, --nav-bottom, --safe-bottom (Navigation), --details-head-h und
- * --tasks-panel-gap (Karte „Ansicht“), --desk-gutter (Desktop), --tab-space.
+ * --nav-height, --nav-bottom, --safe-bottom (Navigation), --details-head-h
+ * (Karte „Ansicht“), --tab-space (auch das Seitenende am Desktop).
  */
 
 /* ---------- Wo der Scrollweg endet ---------- */
@@ -52,15 +52,13 @@
   --view-end: calc(var(--nav-height) + var(--nav-bottom) + var(--safe-bottom) + var(--details-head-h));
 }
 
-/* Am Desktop gibt es keine Navigation unten; die Karte sitzt am Fensterrand
-   (styles/tasks-settings.css). Ohne Karte bleibt es beim üblichen Seitenende. */
+/* Am Desktop gibt es keine Navigation unten, und die Karte hängt oben unter
+   dem Icon „Ansicht umstellen“ (styles/desk-head.css): es bleibt überall
+   beim üblichen Seitenende. */
 @media (min-width: 1024px) {
-  .view:has(.archive-link-row) {
-    --view-end: var(--tab-space);
-  }
-
+  .view:has(.archive-link-row),
   :is(body.is-projects, body.is-collection) :is(#view-home, #view-page) {
-    --view-end: calc(var(--desk-gutter) + var(--safe-bottom) + var(--details-head-h) - var(--tasks-panel-gap));
+    --view-end: var(--tab-space);
   }
 }
 

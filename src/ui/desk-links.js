@@ -1,6 +1,6 @@
 /*
- * Die Ziele der Desktop-Fassung an einer Stelle: die vier Seiten als Icons
- * oben in der Seitenleiste und die Listen, die man unter „Liste“ wählen kann,
+ * Die Ziele der Desktop-Fassung an einer Stelle: die vier Seiten als Kacheln
+ * oben in der Seitenleiste und die Listen, die man unter „Liste wechseln“ wählen kann,
  * jeweils mit ihrer Taste. Seitenleiste, Tastenkürzel und die Liste unter
  * Profil › Kurzbefehle lesen alle von hier — so können Schild, Kürzel und
  * Liste nie auseinanderlaufen. Liegt in src/ui/, weil Hülle und Profil sie brauchen.
@@ -12,15 +12,18 @@
  *                    `code` ist dieselbe Taste ohne Rücksicht auf die
  *                    Tastaturbelegung), die alte Ziffer `key` und welche Zahl
  *                    die Vorlesehilfe dazu sagt
- * listLinks       -> die Listen unter „Liste“ in der Seitenleiste, in der
+ * listLinks       -> die Listen unter „Liste wechseln“ in der Seitenleiste, in der
  *                    Reihenfolge des Menüs: `num` ist die Ziffer im Menü und
  *                    für ⌃ (Strg-Ersatz außerhalb des Macs: Alt), `key` die
- *                    Taste nach „G“, `tone` die Farbe des Icons (die Farben
- *                    selbst stehen in styles/desk-nav.css), `create` was ein
+ *                    Taste nach „G“, `tone` die Farbe des Icons und der
+ *                    Färbung der Seitenleiste (die Icon-Farben stehen in
+ *                    styles/desk-nav.css), `create` was ein
  *                    Klick in die freie Fläche anlegt (fehlt es, legt die Liste
- *                    nichts an), `add` die Beschriftung der blassen Zeile dafür;
+ *                    nichts an), `add` die Beschriftung der blassen Zeile dafür
+ *                    unter dem letzten Eintrag („Neues Projekt“, wie „New Tab“ in Arc);
  *                    `cut: true` zieht vor der Zeile den Strich im Menü
- * listKey         -> Buchstabe für ⌘, der das Menü „Liste“ öffnet
+ * listKey         -> Buchstabe für ⇧⌘, der das Menü „Liste wechseln“ öffnet
+ *                    (nur ⌘L übernähme in manchen Browsern die Adresszeile)
  * sideLink        -> Buchstabe für ⇧⌘, der das Seitenfenster rechts auf- und zuklappt
  * chordKey        -> die Taste, nach der ein Buchstabe eine Liste wählt
  * chordWindow     -> wie lange nach „G“ der Buchstabe noch zählt (Millisekunden)
@@ -33,7 +36,7 @@ export const chordKey = "G";
 export const chordWindow = 1200;
 
 /* Die vier Seiten. `count` holt eine Zahl aus deskStats(); sie wird nur
-   vorgelesen, damit die Icon-Zeile ruhig bleibt. ⌘K bleibt die Suche, darum
+   vorgelesen, damit die Kacheln ruhig bleiben. ⌘K bleibt die Suche, darum
    tragen die Seiten ⇧⌘ — ⌘N, ⌘M und ⌘A fängt der Browser selbst ab. */
 export const pageLinks = [
   { tab: "home", label: "Übersicht", icon: "grid", key: "1", letter: "Ü", code: "BracketLeft" },
@@ -63,25 +66,27 @@ export const pageLinks = [
 /* Das Seitenfenster rechts (src/shell/desk-side.js): ⇧⌘O wie „Öffnen“. */
 export const sideLink = { label: "Seitenfenster", letter: "O", code: "KeyO" };
 
-/* Das Menü „Liste“ öffnet ⌘L; darin wählt die Ziffer. */
+/* Das Menü „Liste wechseln“ öffnet ⇧⌘L; darin wählt die Ziffer. */
 export const listKey = "L";
+/* Dieselbe Taste in der Form, die src/shell/desk-combos.js prüft. */
+export const listSwitch = { letter: listKey, code: `Key${listKey}` };
 
 /*
- * Die Listen unter „Liste“: oben die vier Ablagen (Projekte, Arbeitsbereiche,
+ * Die Listen unter „Liste wechseln“: oben die vier Ablagen (Projekte, Arbeitsbereiche,
  * Ressourcen, Archiv), nach dem Strich das Laufende (Eingang, Aufgaben,
  * Termine, Lesezeichen). `overview` ist die Nummer aus overviewPages,
  * `target` ein eigener Weg (Seite Projekte, Archiv, Lesezeichen) oder der
  * Reiter (Aufgaben, Kalender).
  */
 export const listLinks = [
-  { id: "projects", num: "1", key: "P", tone: "project", target: "projects", title: projectsPage.title, icon: "rocket", create: "projekt", add: "Projekt hinzufügen" },
-  { id: "workspaces", num: "2", key: "B", tone: "workspace", overview: "3", create: "arbeitsbereich", add: "Arbeitsbereich hinzufügen" },
-  { id: "resources", num: "3", key: "R", tone: "resource", overview: "4", create: resourcePick.id, add: "Dokument hinzufügen" },
+  { id: "projects", num: "1", key: "P", tone: "project", target: "projects", title: projectsPage.title, icon: "rocket", create: "projekt", add: "Neues Projekt" },
+  { id: "workspaces", num: "2", key: "B", tone: "workspace", overview: "3", create: "arbeitsbereich", add: "Neuer Arbeitsbereich" },
+  { id: "resources", num: "3", key: "R", tone: "resource", overview: "4", create: resourcePick.id, add: "Neue Ressource" },
   { id: "archive", num: "4", key: "A", tone: "archive", target: "archive", title: archivePage.title, icon: "archive", quiet: true },
-  { id: "inbox", num: "5", key: "I", tone: "inbox", overview: "1", create: inboxPick, add: "Eintrag hinzufügen", cut: true },
-  { id: "tasks", num: "6", key: "U", tone: "task", target: "tasks", title: "Aufgaben", icon: "task", create: "aufgabe", add: "Aufgabe hinzufügen" },
-  { id: "events", num: "7", key: "T", tone: "event", target: "calendar", title: "Termine", icon: "calendar", create: "termin", add: "Termin hinzufügen" },
-  { id: "bookmarks", num: "8", key: "L", tone: "bookmark", target: "bookmarks", title: bookmarksPage.title, icon: "bookmark", create: "lesezeichen", add: "Lesezeichen hinzufügen" },
+  { id: "inbox", num: "5", key: "I", tone: "inbox", overview: "1", create: inboxPick, add: "Neuer Eintrag", cut: true },
+  { id: "tasks", num: "6", key: "U", tone: "task", target: "tasks", title: "Aufgaben", icon: "task", create: "aufgabe", add: "Neue Aufgabe" },
+  { id: "events", num: "7", key: "T", tone: "event", target: "calendar", title: "Termine", icon: "calendar", create: "termin", add: "Neuer Termin" },
+  { id: "bookmarks", num: "8", key: "L", tone: "bookmark", target: "bookmarks", title: bookmarksPage.title, icon: "bookmark", create: "lesezeichen", add: "Neues Lesezeichen" },
 ].map((link) => {
   const source = link.overview ? overviewPages[link.overview] : link;
   return { ...link, title: source.title, icon: source.icon };

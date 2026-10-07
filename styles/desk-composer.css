@@ -1,0 +1,104 @@
+/*
+ * Desktop: das Eingabefeld zum Anlegen in zwei ruhigen Zeilen — oben links
+ * der Ablageort („Eingang ▾“) und gleich dahinter das Textfeld, darunter
+ * links Medien-Plus und alle Typen als Icons (Notiz, Aufgabe, Termin,
+ * Projekt, Arbeitsbereich, Dokument, Zeichnung, Medium, Lesezeichen), rechts
+ * Diktat und der Pfeil zum Anlegen. Der Pfeil steht immer rechts unten: ein
+ * langer Ortsname endet oben mit „…“ (styles/composer.css) und nimmt höchstens
+ * einen Teil der Zeile, und werden die Typen zu eng (Seitenfenster offen),
+ * brechen sie in ihrem Fach um — Diktat und Pfeil rutschen nie in eine neue
+ * Zeile. Die Typ-Pille und das Kreuz zum Schließen sind unsichtbar: jeder Typ
+ * hat hier seinen eigenen Knopf (src/features/composer/composer-state.js),
+ * geschlossen wird mit Escape oder, solange nichts drinsteht, mit einem Klick
+ * daneben (src/features/composer/composer-sheet.js). Rein CSS: das Markup in index.html
+ * bleibt das des Handys; die Hüllen (.composer-top, .composer-chips,
+ * .composer-tools, .composer-end) treten mit display: contents zurück, damit
+ * ihre Knöpfe frei in den zwei Zeilen stehen. Gilt erst ab 1024px; Glas und
+ * Breite stehen in styles/desk.css, Grundformen in styles/composer.css.
+ * Pfad: styles/desk-composer.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI (oben bei .composer)
+ * -----------------------------------
+ * --desk-composer-row-gap -> Luft zwischen der Zeile mit Ort und Text und der Knopfzeile
+ * --desk-composer-gap     -> Abstand zwischen Ort und Textfeld sowie zwischen Plus, Typen-Reihe, Diktat
+ *                            und Pfeil (den Abstand der Typ-Icons untereinander regelt styles/composer.css)
+ * --desk-composer-type-wrap -> Luft zwischen zwei Reihen von Typ-Icons, wenn sie umbrechen müssen
+ * --desk-composer-place-max -> wie breit der Ablageort oben höchstens wird (Anteil der Zeile);
+ *                            ein längerer Name endet mit „…“, das Textfeld behält den Rest
+ */
+
+@media (min-width: 1024px) {
+  .composer {
+    --desk-composer-row-gap: 4px;
+    --desk-composer-gap: 6px;
+    --desk-composer-place-max: 45%;
+    --desk-composer-type-wrap: 4px;
+
+    flex-direction: row;
+    flex-wrap: wrap; /* flex-wrap: nach Ort und Text bricht die Knopfzeile um (Umbruch: .composer::after) */
+    align-items: center;
+    column-gap: var(--desk-composer-gap);
+    row-gap: 0; /* row-gap: die Luft zwischen den Zeilen ist die Höhe des Umbruchs darunter, nicht doppelt */
+  }
+
+  /* display: contents — die Hüllen verschwinden aus dem Aufbau, ihre Knöpfe ordnen sich hier neu */
+  .composer-top,
+  .composer-chips,
+  .composer-tools,
+  .composer-end {
+    display: contents;
+  }
+
+  /* order: Reihenfolge unabhängig vom Markup — Ort, Text | Umbruch | Plus, Typen, Diktat, Anlegen */
+
+  /* Der Ablageort steht oben vor dem Text; die Kennung schlägt .composer-link (align-self: flex-start,
+     max-width: 100%) aus styles/composer.css. Das „…“ für lange Namen setzt styles/composer.css */
+  #composer-link {
+    order: 1;
+    align-self: center; /* align-self: mittig zur Textzeile statt oben */
+    max-width: var(--desk-composer-place-max); /* max-width: der Ort nimmt höchstens diesen Anteil, den Rest behält das Textfeld */
+  }
+
+  .composer-input {
+    order: 2;
+    flex: 1 1 0; /* flex: das Textfeld füllt den Rest der Zeile hinter dem Ort; Grundbreite 0, damit es nie umbricht */
+    min-width: 0;
+  }
+
+  /* Ein leeres Element über die ganze Breite: zwingt die Knöpfe in die zweite Zeile, seine Höhe ist die Luft dazwischen */
+  .composer::after {
+    content: "";
+    order: 3;
+    flex: 0 0 100%;
+    height: var(--desk-composer-row-gap);
+  }
+
+  .composer-attach {
+    order: 4;
+  }
+
+  /* flex 1 1 0: die Typen zählen beim Umbrechen der Zeile nicht mit (Grundbreite 0) und nehmen dann den
+     freien Platz — so bleiben Diktat und Pfeil immer in dieser Zeile ganz rechts */
+  .composer-types {
+    order: 5;
+    flex: 1 1 0;
+    flex-wrap: wrap; /* flex-wrap: zu eng (Seitenfenster offen), brechen die Icons in ihrem Fach um — statt unsichtbar seitlich zu rollen, was ein Mausrad nicht kann */
+    overflow: visible; /* overflow: hebt das seitliche Rollen aus styles/composer.css auf, alle Icons bleiben sichtbar */
+    row-gap: var(--desk-composer-type-wrap);
+  }
+
+  .composer-mic {
+    order: 6;
+  }
+
+  .composer-send {
+    order: 7;
+  }
+
+  /* Am Desktop unsichtbar: jeder Typ hat einen eigenen Knopf; das ✕ bleibt im Markup, weil Escape es
+     drückt (src/shell/desk-keys.js) */
+  #composer-type-pill,
+  .composer-close {
+    display: none;
+  }
+}

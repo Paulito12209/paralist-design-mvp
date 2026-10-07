@@ -6,11 +6,9 @@
  * Angehängte Dateien werden Medien, die im neuen Arbeitsbereich liegen.
  * Pfad: src/features/composer/composer-workspace.js
  *
- * ANPASSBARE WERTE IN DIESER DATEI
- * -----------------------------------
- * workspaceDraft.label -> Name in Typ-Chip und Typ-Blatt
- * workspaceDraft.icon  -> Icon in Typ-Chip und Typ-Blatt
- * Die Platzhalter stehen in src/data/config.js (composerPlaceholders, sheetPlaceholders).
+ * Keine anpassbaren visuellen Werte: Name und Icon des Arbeitsbereichs
+ * (workspaceDraft) stehen in src/features/composer/composer-state.js, die
+ * Platzhalter in src/data/config.js (composerPlaceholders, sheetPlaceholders).
  */
 
 import { emit, events } from "../../core/bus.js";
@@ -22,10 +20,11 @@ import { commitXp } from "../../data/xp.js";
 import { openTarget } from "../../ui/router.js";
 import { showToast } from "../../ui/toast.js";
 import { createMediaEntries } from "./attachments.js";
-import { composer } from "./composer-state.js";
+import { composer, workspaceDraft } from "./composer-state.js";
 
-/* Dieselbe Kennung wie im Plus-Menü (src/shell/create-menu.js) und in den XP-Posten */
-export const workspaceDraft = { id: "arbeitsbereich", label: "Arbeitsbereich", icon: "layers" };
+/* Weitergereicht, damit die Typ-Wahl ihn hier importieren kann; er selbst steht in
+   composer-state.js, weil die Knöpfe am Desktop ihn dort brauchen. */
+export { workspaceDraft };
 
 /** Ist im Eingabefeld gerade „Arbeitsbereich“ gewählt? */
 export function isWorkspaceDraft() {

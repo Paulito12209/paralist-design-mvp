@@ -6,10 +6,20 @@
  * ohne sich gegenseitig zu kennen.
  * Pfad: src/features/composer/composer-state.js
  *
- * Keine anpassbaren visuellen Werte.
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * workspaceDraft.label -> Name des Arbeitsbereichs in Typ-Chip, Typ-Blatt und Knopf am Desktop
+ * workspaceDraft.icon  -> sein Icon
  */
 
 import { defaultType, fileDraftTypes, resourcePick, resourceTypes, types } from "../../data/config.js";
+import { isDesk } from "../../ui/desk-mode.js";
+
+/* Der Arbeitsbereich ist kein Eintrag, lässt sich aber wie ein Typ wählen
+   (src/features/composer/composer-workspace.js legt ihn an). Dieselbe
+   Kennung wie im Plus-Menü (src/shell/create-menu.js) und in den XP-Posten.
+   Steht hier, weil auch die Knöpfe am Desktop ihn brauchen. */
+export const workspaceDraft = { id: "arbeitsbereich", label: "Arbeitsbereich", icon: "layers" };
 
 export const composer = {
   /* Typ des Eintrags, der entstehen würde */
@@ -46,14 +56,26 @@ export const composer = {
   slot: null,
 };
 
-/** Die Knöpfe unten im Eingabefeld: die Typen mit `pick` und der Ressourcen-Knopf. */
+/* Ein Typ als Knopf: Kennung, Name, Icon, und welcher Typ entsteht. */
+function typeButton(type) {
+  return { id: type.id, label: type.label, icon: type.icon, typeId: type.id };
+}
+
+/**
+ * Die Knöpfe unten im Eingabefeld. Am Handy die Typen mit `pick` und der
+ * Ressourcen-Knopf (Dokument, Zeichnung, Medium, Lesezeichen wählt das Blatt
+ * der Typ-Pille). Am Desktop ist Platz für alle: jeder Typ und der
+ * Arbeitsbereich (hinter dem Projekt, wie im Typ-Blatt) haben einen eigenen
+ * Knopf — die Typ-Pille entfällt dort (styles/desk-composer.css).
+ */
 export function composerPickButtons() {
-  return [
-    ...types
-      .filter((type) => type.pick)
-      .map((type) => ({ id: type.id, label: type.label, icon: type.icon, typeId: type.id })),
-    resourcePick,
-  ];
+  if (isDesk()) {
+    const buttons = types.map(typeButton);
+    const afterProject = buttons.findIndex((button) => button.id === "projekt") + 1;
+    buttons.splice(afterProject, 0, typeButton(workspaceDraft));
+    return buttons;
+  }
+  return [...types.filter((type) => type.pick).map(typeButton), resourcePick];
 }
 
 /**
@@ -64,10 +86,11 @@ export function composerPickButtons() {
 export function chooseComposerType(typeId, pickId) {
   composer.type = typeId;
 
-  /* Ein Typ mit eigenem Knopf leuchtet selbst; Dokument, Zeichnung und Medium
-     haben keinen und gehören unter den Ressourcen-Knopf. */
-  if (pickId !== undefined) composer.pick = pickId;
-  else if (types.some((type) => type.pick && type.id === typeId)) composer.pick = typeId;
+  /* Ein Typ mit eigenem Knopf leuchtet selbst (am Desktop jeder); am Handy
+     haben Dokument, Zeichnung und Medium keinen und gehören unter den
+     Ressourcen-Knopf. */
+  if (composerPickButtons().some((button) => button.id === typeId)) composer.pick = typeId;
+  else if (pickId !== undefined) composer.pick = pickId;
   else composer.pick = resourceTypes.includes(typeId) ? resourcePick.id : null;
 }
 

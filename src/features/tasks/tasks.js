@@ -25,6 +25,7 @@ import { createViewPanel } from "../../ui/view-panel.js";
 import { isViewActive } from "../../ui/views.js";
 import { openTaskColumnsSheet, taskBoardMarkup } from "./tasks-board.js";
 import { consumeDragClick, initTaskDrag } from "./tasks-drag.js";
+import { handleColumnClick } from "./tasks-col-edit.js";
 import { initTaskInline } from "./tasks-inline.js";
 import { taskListMarkup, toggleTaskSection } from "./tasks-list.js";
 import { isSelecting } from "./tasks-pick.js";
@@ -74,6 +75,8 @@ function onBodyClick(event) {
   }
   /* Im Auswahlmodus (und beim Cmd-Klick) wählt ein Tipp — sonst nichts */
   if (handleSelectClick(event)) return;
+  /* Spalten rechts in der Liste am Desktop: die Angabe bearbeiten */
+  if (handleColumnClick(event)) return;
   /* In der Liste öffnet src/ui/list-clicks.js den Eintrag; im Board hier.
      Der Haken vor dem Titel hakt nur ab (list-clicks.js), der Griff
      zieht und die drei Punkte öffnen das Menü (list-clicks.js) — alle liegen

@@ -1,39 +1,48 @@
 /*
- * Desktop: die Icon-Zeile oben in der Seitenleiste, direkt unter „Paralist“
- * und über „Neu“ — Übersicht, Kalender, Aufgaben, Medien und die Lupe, nur
- * Icons wie die Leiste in T3 Code. Die gewählte Seite trägt eine Fläche.
- * Beim Überfahren (oder mit der Tastatur) erscheint darunter ein Hinweis mit
- * Name und Kürzel. Gilt erst ab 1024px; das Markup entsteht in
- * src/shell/desk-pages.js.
+ * Desktop: die vier Kacheln oben in der Seitenleiste, direkt unter
+ * „Paralist“ und über „Suchen“ — Übersicht, Kalender, Aufgaben und Medien,
+ * vier gleich breite Kacheln wie die Favoriten oben in Raycast. Die gewählte
+ * Seite trägt eine kräftigere Fläche. Beim Überfahren (an den Kacheln auch
+ * mit der Tastatur) erscheint darunter ein Hinweis mit Name und Kürzel;
+ * denselben Hinweis tragen der Stift neben „Suchen“, der Kopf der Liste („Liste wechseln“) und
+ * das Plus daneben beim Überfahren (Klasse .desk-hint-host; am linken bzw.
+ * rechten Rand zusätzlich .desk-hint-start bzw. .desk-hint-end). Gilt erst ab
+ * 1024px; das Markup entsteht in src/shell/desk-pages.js,
+ * src/shell/desk-nav-parts.js und src/shell/desk-list.js.
  * Pfad: styles/desk-nav-pages.css
  *
  * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-nav-pages)
  * -----------------------------------
- * --page-btn      -> Größe eines Icon-Knopfs
+ * --page-tile-gap -> Fuge zwischen den Kacheln
+ * --page-tile-r   -> Rundung der Kacheln
  * --page-icon     -> Größe der Icons darin
  * Einzelwerte stehen bei ihrer Regel: Hinweis-Schrift 12px, Abstand 6px,
  * Verzögerung 400ms bis er erscheint.
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
- * --desk-nav-top-gap -> Luft zwischen der Zeile und „Neu“ darunter
- * --desk-panel-strong -> Fläche der gewählten Seite (wie die gewählte Zeile darunter)
- * --desk-hover / --desk-fast / --desk-ease -> Tönung beim Überfahren, Dauer und Kurve
+ * --desk-nav-top-gap -> Luft zwischen den Kacheln und „Suchen“ darunter
+ * --desk-nav-tile-h -> Höhe einer Kachel (die Breite teilen sich die vier)
+ * --desk-nav-tile / --desk-nav-tile-edge -> Fläche und Haarlinie einer Kachel
+ * --desk-nav-active / --desk-nav-hover -> Fläche der gewählten Seite, Tönung beim Überfahren
+ * --desk-fast / --desk-ease -> Dauer und Kurve
  * --avatar-btn-bg / --text / --bg -> Icons in Ruhe, gewählt, Hinweis (Schrift und Grund vertauscht)
  */
 
 @media (min-width: 1024px) {
-  /* position/z-index: der Hinweis unter den Icons liegt über der rollenden Liste darunter */
+  /* position/z-index: die Hinweise unter Kacheln, Stift und „Liste wechseln“ liegen über der rollenden Liste darunter */
   .desk-nav-top {
     position: relative;
     z-index: 2;
   }
 
   .desk-nav-pages {
-    --page-btn: 36px;
+    --page-tile-gap: 8px;
+    --page-tile-r: 12px;
     --page-icon: 20px;
 
-    display: flex;
-    justify-content: space-between; /* justify-content: die fünf Icons verteilen sich über die Breite von „Neu“ */
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr)); /* grid-template-columns: vier gleich breite Kacheln über die ganze Breite */
+    gap: var(--page-tile-gap);
     margin-bottom: var(--desk-nav-top-gap);
   }
 
@@ -41,9 +50,10 @@
     position: relative; /* position: Bezug für den Hinweis darunter */
     display: grid;
     place-items: center;
-    width: var(--page-btn);
-    height: var(--page-btn);
-    border-radius: 999px;
+    height: var(--desk-nav-tile-h);
+    border-radius: var(--page-tile-r);
+    border: 0.5px solid var(--desk-nav-tile-edge);
+    background: var(--desk-nav-tile);
     color: var(--avatar-btn-bg);
     transition: background-color var(--desk-fast) var(--desk-ease), color var(--desk-fast) var(--desk-ease); /* transition: Tönung gleitet statt zu springen */
   }
@@ -53,8 +63,9 @@
     height: var(--page-icon);
   }
 
+  /* Gewählt und beim Überfahren legt sich die Tönung ÜBER die Kachel (Bild-Ebene), statt ihre Fläche zu ersetzen */
   .desk-page-btn.is-active {
-    background: var(--desk-panel-strong);
+    background: linear-gradient(var(--desk-nav-active), var(--desk-nav-active)), var(--desk-nav-tile);
     color: var(--text);
   }
 
@@ -67,9 +78,11 @@
     outline-offset: 2px;
   }
 
-  /* Hinweis „Kalender ⇧⌘K“: schwebt unter dem Icon, ohne die Zeile zu verschieben */
+  /* ---------- Hinweis „Kalender ⇧⌘K“ (Kacheln, Stift, „Liste wechseln“) ---------- */
+
+  /* Schwebt unter dem Knopf, ohne die Zeile zu verschieben */
   .desk-page-hint {
-    position: absolute; /* position: schwebt unter dem Icon */
+    position: absolute; /* position: schwebt unter dem Knopf */
     top: calc(100% + 6px);
     left: 50%;
     z-index: 16; /* z-index: über der Liste und der Mitte, unter Eingabefeld und Dialogen (20) */
@@ -84,24 +97,29 @@
     font-weight: 500;
     white-space: nowrap; /* white-space: der Hinweis bleibt eine Zeile */
     opacity: 0;
-    transform: translate(-50%, -2px); /* transform: mittig unter dem Icon, beim Erscheinen gleitet er herab */
+    transform: translate(-50%, -2px); /* transform: mittig unter dem Knopf, beim Erscheinen gleitet er herab */
     pointer-events: none; /* pointer-events: der Hinweis fängt keine Klicks ab */
     transition: opacity var(--desk-fast) var(--desk-ease), transform var(--desk-fast) var(--desk-ease); /* transition: sanft ein- und ausblenden */
   }
 
-  /* Das erste und das letzte Icon stehen am Rand: ihr Hinweis beginnt bzw. endet dort,
+  /* Die erste Kachel und Knöpfe am rechten Rand: ihr Hinweis beginnt bzw. endet dort,
      statt aus der Leiste zu ragen (sie schneidet ab, was übersteht) */
-  .desk-page-btn:first-child .desk-page-hint {
+  .desk-page-btn:first-child .desk-page-hint,
+  .desk-hint-start .desk-page-hint {
     left: 0;
     transform: translateY(-2px); /* transform: nur das Herabgleiten */
   }
 
-  .desk-page-btn:last-child .desk-page-hint {
+  .desk-page-btn:last-child .desk-page-hint,
+  .desk-hint-end .desk-page-hint {
     left: auto;
     right: 0;
     transform: translateY(-2px); /* transform: nur das Herabgleiten */
   }
 
+  /* Mit der Tastatur nur an den Kacheln: Stift und „Liste wechseln“ bekommen den Fokus
+     auch zurück, wenn das Menü zugeht — ihr Hinweis bliebe dann stehen. Ihr Kürzel
+     sagen sie Vorlesehilfen über aria-keyshortcuts. */
   .desk-page-btn:focus-visible .desk-page-hint {
     opacity: 1;
     transform: translate(-50%, 0); /* transform: an seinen Platz */
@@ -113,18 +131,23 @@
 
   @media (hover: hover) {
     .desk-page-btn:not(.is-active):hover {
-      background: var(--desk-hover);
+      background: linear-gradient(var(--desk-nav-hover), var(--desk-nav-hover)), var(--desk-nav-tile);
       color: var(--text);
     }
 
-    .desk-page-btn:hover .desk-page-hint {
+    :is(.desk-page-btn, .desk-hint-host):hover .desk-page-hint {
       opacity: 1;
       transform: translate(-50%, 0); /* transform: an seinen Platz */
       transition-delay: 400ms; /* transition-delay: erst nach kurzem Verweilen */
     }
 
-    .desk-page-btn:is(:first-child, :last-child):hover .desk-page-hint {
+    :is(.desk-page-btn:first-child, .desk-page-btn:last-child, .desk-hint-start, .desk-hint-end):hover .desk-page-hint {
       transform: none;
+    }
+
+    /* Solange das Menü „Liste wechseln“ offen ist, verdeckte der Hinweis seine erste Zeile */
+    .desk-hint-host[aria-expanded="true"] .desk-page-hint {
+      opacity: 0;
     }
   }
 

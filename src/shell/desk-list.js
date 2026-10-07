@@ -1,26 +1,31 @@
 /*
- * „Liste“ in der Seitenleiste am Desktop — nach dem Vorbild von T3 Code:
- * oben die Zeile „Liste ▾ Eingang“, darunter nur die Zeilen dieser einen
- * Liste. ⌘L (oder ein Klick auf „Liste“) öffnet das Menü mit den acht
- * Listen; die Ziffer wählt. Ein Klick in die freie Fläche oder auf die blasse
- * Zeile darunter legt in der Liste an. Ganz unten steht „Archiviert (n)“ und
- * klappt bis zur halben Höhe auf. Das Markup kommt aus
- * src/shell/desk-list-rows.js, die Klicks fängt src/shell/desk-nav.js.
+ * Die Liste in der Seitenleiste am Desktop — nach dem Vorbild von T3 Code
+ * und Codex: oben der Kopf „📥 Eingang 18 ˅“ (Icon und Name hell wie die
+ * Gruppen-Köpfe in Raycast). Ein Klick darauf oder ⇧⌘L öffnet das Menü der
+ * acht Listen („Liste wechseln“, der Hinweis erscheint beim Überfahren); die
+ * Ziffer wählt. Rechts gegenüber legt das Plus in der Liste an. Darunter nur
+ * die Zeilen dieser einen Liste; Arbeitsbereiche und Projekte klappen auf. Ein
+ * Klick in die freie Fläche oder auf die blasse Zeile darunter legt in der
+ * Liste an. Die Farbe der Liste färbt die Seitenleiste (data-desk-tone am
+ * Gerätefenster). Ganz unten steht „Archiviert (n)“ und klappt bis zur
+ * halben Höhe auf. Das Markup kommt aus src/shell/desk-list-rows.js, die
+ * Klicks fängt src/shell/desk-nav.js.
  * Pfad: src/shell/desk-list.js
  *
  * Keine anpassbaren visuellen Werte: welche Listen es gibt, steht in
- * src/ui/desk-links.js (listLinks, listKey); Aussehen in
- * styles/desk-nav-list.css. Gemerkt werden die gewählte Liste unter
- * storageKeys.deskList und ob „Archiviert“ offen ist unter storageKeys.deskArchive.
+ * src/ui/desk-links.js (listLinks, listKey); Aussehen und Färbung in
+ * styles/desk-nav-list.css und styles/desk-nav.css. Gemerkt werden die
+ * gewählte Liste unter storageKeys.deskList und ob „Archiviert“ offen ist
+ * unter storageKeys.deskArchive.
  */
 
 import { emit, events, on } from "../core/bus.js";
 import { formatNumber } from "../core/format.js";
 import { escapeHtml, icon } from "../core/html.js";
 import { readText, storageKeys, writeText } from "../core/storage.js";
-import { listKey, listLink, listLinks, spokenKeys, withCommand } from "../ui/desk-links.js";
+import { listKey, listLink, listLinks, spokenKeys, withShiftCommand } from "../ui/desk-links.js";
 import { keyCap } from "../ui/key-caps.js";
-import { archiveCount, archiveRowsMarkup, listMenuMarkup, listRowsMarkup } from "./desk-list-rows.js";
+import { archiveCount, archiveRowsMarkup, listItems, listMenuMarkup, listRowsMarkup, toggleRowExpand } from "./desk-list-rows.js";
 
 let parts = null;
 /* Die gewählte Liste (listLinks). */
@@ -29,16 +34,27 @@ let archiveOpen = false;
 /* Zuletzt geschriebenes Markup je Behälter: Gleiches wird nicht neu gesetzt. */
 const lastMarkup = new Map();
 
+/*
+ * Links „📥 Eingang 18 ˅“: Icon der Liste, Name, Zahl der Zeilen und der
+ * Pfeil — ein Klick öffnet das Menü „Liste wechseln“, beim Überfahren steht
+ * das Kürzel darunter. Rechts gegenüber das Plus: legt in der Liste an
+ * („Neuer Arbeitsbereich“ …, sein Hinweis folgt der Liste).
+ */
 function headMarkup() {
-  const keys = withCommand(listKey);
+  const keys = withShiftCommand(listKey);
   return `
     <div class="desk-list-head">
-      <button class="desk-list-menu-btn" type="button" data-list-menu="1" aria-haspopup="menu" aria-expanded="false" aria-controls="desk-list-menu" aria-keyshortcuts="${escapeHtml(spokenKeys(keys))}">
-        <span class="desk-nav-heading">Liste</span>
+      <button class="desk-list-pick desk-hint-host desk-hint-start" type="button" data-list-menu="1" aria-haspopup="menu" aria-expanded="false" aria-controls="desk-list-menu" aria-keyshortcuts="${escapeHtml(spokenKeys(keys))}">
+        <span class="desk-list-icon" data-list-slot="icon"></span>
+        <span class="desk-list-name" data-list-slot="name"></span>
+        <span class="desk-nav-count" data-list-slot="count"></span>
         ${icon("chevron", "desk-list-chevron")}
+        <span class="desk-page-hint" aria-hidden="true">Liste wechseln ${keyCap(keys, " desk-kbd-inverse")}</span>
       </button>
-      <button class="desk-list-current" type="button" data-list-open="1" data-list-slot="current"></button>
-      ${keyCap(keys)}
+      <button class="desk-list-new desk-hint-host desk-hint-end" type="button" data-list-add="1">
+        ${icon("plus")}
+        <span class="desk-page-hint" aria-hidden="true" data-list-slot="add-hint"></span>
+      </button>
     </div>
     <div class="desk-list-menu" id="desk-list-menu" role="menu" aria-label="Liste wählen" hidden></div>`;
 }
@@ -61,11 +77,7 @@ function swapMarkup(container, html) {
 }
 
 /** Die gerade gezeigte Liste. */
-export function currentList() {
-  return chosen;
-}
-
-/** Ist das Menü „Liste“ offen? */
+/** Ist das Menü „Liste wechseln“ offen? */
 export function isListMenuOpen() {
   return parts ? !parts.menu.hidden : false;
 }
@@ -79,7 +91,7 @@ export function openListMenu() {
   parts.menu.querySelector(".is-active")?.focus({ preventScroll: true });
 }
 
-/** Das Menü schließen; die Auswahl kehrt zu „Liste“ zurück, wenn sie im Menü stand. */
+/** Das Menü schließen; die Auswahl kehrt zu „Liste wechseln“ zurück, wenn sie im Menü stand. */
 export function closeListMenu() {
   if (!parts || !isListMenuOpen()) return;
   const hadFocus = parts.menu.contains(document.activeElement);
@@ -112,6 +124,12 @@ export function addToList() {
   if (chosen.create) emit(events.createRequested, chosen.create);
 }
 
+/** Einen Arbeitsbereich oder ein Projekt in der Leiste auf- oder zuklappen. */
+export function toggleListRow(key) {
+  toggleRowExpand(key);
+  renderDeskList(parts.lastActive);
+}
+
 /** „Archiviert“ auf- oder zuklappen und das merken. */
 export function toggleArchive() {
   archiveOpen = !archiveOpen;
@@ -130,7 +148,7 @@ function moveFocus(step) {
 /*
  * Solange das Menü offen ist, gehören ihm die Tasten — vor allen anderen
  * Kürzeln (src/shell/desk-keys.js prüft defaultPrevented), darum in der
- * Fangphase. ⌘L schließt es wieder; das regelt desk-keys.js selbst.
+ * Fangphase. ⇧⌘L schließt es wieder; das regelt desk-keys.js selbst.
  */
 function onKeyDown(event) {
   if (!isListMenuOpen() || event.metaKey || event.ctrlKey || event.altKey) return;
@@ -145,25 +163,28 @@ function onKeyDown(event) {
   event.stopPropagation();
 }
 
-/* Ein Klick außerhalb von Kopf und Menü schließt das Menü. */
+/* Ein Klick außerhalb von Kopf-Knopf und Menü schließt das Menü (auch einer aufs Plus daneben). */
 function onPointerDown(event) {
   if (!isListMenuOpen()) return;
-  if (event.target.closest(".desk-list-head, .desk-list-menu")) return;
+  if (event.target.closest(".desk-list-pick, .desk-list-menu")) return;
   closeListMenu();
 }
 
-/* Der Kopf zeigt die gewählte Liste: Icon in ihrer Farbe, Name, Zahl der Zeilen. */
+/*
+ * Der Kopf zeigt die gewählte Liste: Icon in ihrer Farbe, Name und Zahl der
+ * Zeilen; das Plus sagt, was es anlegt (im Archiv fehlt es). Die Seitenleiste
+ * nimmt ihre Farbe an.
+ */
 function renderHead(count) {
-  const current = parts.current;
-  const isPage = chosen.id === parts.lastActive?.collection;
-  current.classList.toggle("is-active", isPage);
-  if (isPage) current.setAttribute("aria-current", "page");
-  else current.removeAttribute("aria-current");
-  current.setAttribute("aria-label", `${chosen.title} öffnen${count ? `, ${count === 1 ? "1 Zeile" : `${count} Zeilen`}` : ""}`);
-  swapMarkup(
-    current,
-    `${icon(chosen.icon, `desk-nav-icon desk-nav-tone desk-nav-icon-${chosen.tone}`)}<span class="desk-nav-text">${escapeHtml(chosen.title)}</span>${count ? `<span class="desk-nav-count">${formatNumber(count)}</span>` : ""}`
-  );
+  swapMarkup(parts.icon, icon(chosen.icon, `desk-nav-icon desk-nav-tone desk-nav-icon-${chosen.tone}`));
+  if (parts.name.textContent !== chosen.title) parts.name.textContent = chosen.title;
+  const shown = count ? formatNumber(count) : "";
+  if (parts.count.textContent !== shown) parts.count.textContent = shown;
+  parts.menuButton.setAttribute("aria-label", `${chosen.title}${count ? `, ${count === 1 ? "1 Zeile" : `${count} Zeilen`}` : ""} — Liste wechseln`);
+  parts.add.hidden = !chosen.create;
+  parts.add.setAttribute("aria-label", chosen.add || "");
+  if (parts.addHint.textContent !== (chosen.add || "")) parts.addHint.textContent = chosen.add || "";
+  parts.device.dataset.deskTone = chosen.tone;
   if (isListMenuOpen()) swapMarkup(parts.menu, listMenuMarkup(chosen.id));
 }
 
@@ -189,7 +210,8 @@ export function renderDeskList(active = {}) {
   parts.lastActive = active;
   const rows = listRowsMarkup(chosen, active);
   swapMarkup(parts.list, rows);
-  renderHead(parts.list.querySelectorAll("[data-open-entry], [data-open-workspace]").length);
+  /* Gezählt wird die Liste selbst — aufgeklappte Einträge darunter nicht */
+  renderHead(listItems(chosen).length);
   renderArchive(active);
 }
 
@@ -205,9 +227,14 @@ export function mountDeskList(nav) {
   head.innerHTML = headMarkup();
   archive.innerHTML = archiveMarkup();
   parts = {
+    device: nav.closest(".device") || document.documentElement,
     menuButton: head.querySelector("[data-list-menu]"),
     menu: head.querySelector(".desk-list-menu"),
-    current: head.querySelector('[data-list-slot="current"]'),
+    add: head.querySelector(".desk-list-new"),
+    addHint: head.querySelector('[data-list-slot="add-hint"]'),
+    icon: head.querySelector('[data-list-slot="icon"]'),
+    name: head.querySelector('[data-list-slot="name"]'),
+    count: head.querySelector('[data-list-slot="count"]'),
     list: nav.querySelector('[data-nav-slot="list"]'),
     archive,
     archiveToggle: archive.querySelector("[data-archive-toggle]"),

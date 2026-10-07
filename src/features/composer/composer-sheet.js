@@ -3,7 +3,11 @@
  * von unten erscheint (styles/android-composer.css). Ein Tipp auf den
  * Schleier oder Browser-Zurück schließt das Blatt samt Entwurf — so wie
  * Google Tasks sein Blatt „Neue Aufgabe“ schließt. In den übrigen Fassungen
- * bleibt der Schleier unsichtbar; dort schließt das ✕ im Eingabefeld.
+ * bleibt der Schleier unsichtbar; dort schließt das ✕ im Eingabefeld. Am
+ * Desktop gibt es kein ✕ (styles/desk-composer.css): dort schließt Escape
+ * und ein Klick daneben — dieser aber nur, solange nichts drinsteht, damit
+ * ein Fehlklick keinen getippten Entwurf verwirft. Wechselt das Fenster
+ * zwischen Handy- und Desktop-Breite, schließt das Eingabefeld.
  * Pfad: src/features/composer/composer-sheet.js
  *
  * Keine anpassbaren visuellen Werte: Farbe und Deckkraft des Schleiers stehen
@@ -15,10 +19,28 @@
  */
 
 import { dom } from "../../core/dom.js";
+import { isDesk, onDeskChange } from "../../ui/desk-mode.js";
 import { isMobileOs } from "../../ui/platform.js";
 import { registerOverlay } from "../../ui/router.js";
+import { composer } from "./composer-state.js";
+
+/* Klicks hier drin lassen das Eingabefeld am Desktop offen: es selbst, die
+   Blätter und Menüs, die es öffnet, und Dialoge darüber. */
+const keepOpenAreas = ".nav-shell, .sheet-backdrop, .ctx-backdrop, .modal-backdrop, .palette-backdrop, .viewer-backdrop, .update-backdrop";
 
 let scrim = null;
+
+/*
+ * Desktop: ein Klick neben das leere Eingabefeld schließt es — wie ein
+ * Tipp auf den Schleier am Handy. Steht Text darin oder hängt eine Datei
+ * dran, bleibt es offen (Escape verwirft dann bewusst).
+ */
+function closeWhenClickedBeside(event, close) {
+  if (!isDesk() || dom.composer.hidden) return;
+  if (event.target instanceof Element && event.target.closest(keepOpenAreas)) return;
+  if (dom.composerInput.value.trim() || composer.files.length) return;
+  close();
+}
 
 /** Schleier zeigen, wenn das Eingabefeld als Blatt aufgeht (nur Android). */
 export function showComposerScrim() {
@@ -42,6 +64,16 @@ export function initComposerSheet(close) {
   dom.device.append(scrim);
   /* Browser-Zurück schließt alle angemeldeten Blätter, das Eingabefeld mit */
   registerOverlay("composer", { open: () => {}, hide: close });
+  document.addEventListener("pointerdown", (event) => closeWhenClickedBeside(event, close), true);
+  /* Über die Grenze von 1024px gezogen: Handy und Desktop haben andere Typ-Knöpfe — der offene
+     Entwurf ginge mit den alten Knöpfen nicht mehr richtig, darum schließt er. onDeskChange meldet
+     auch die Grenze der rechten Spalte (1280px); dort bleibt der Entwurf offen. */
+  let wasDesk = isDesk();
+  onDeskChange(() => {
+    if (isDesk() === wasDesk) return;
+    wasDesk = isDesk();
+    close();
+  });
 }
 
 /**
