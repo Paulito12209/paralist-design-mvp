@@ -1,0 +1,144 @@
+/*
+ * Fassung „Android (Experiment)“, Navigationsleiste: wie in Google Chat keine
+ * Leiste von Rand zu Rand mehr, sondern eine schwebende, gerundete Pille. Sie
+ * ist etwas heller als Kacheln und Container und flacher gebaut. Der Knopf
+ * „Neu“ steht nicht mehr darüber, sondern rechts neben der Pille in derselben
+ * Zeile und ist genauso hoch. Beim Scrollen nach unten gleitet die Pille weg,
+ * „Neu“ bleibt als reines Plus stehen (Klassen aus src/shell/android-bars.js).
+ * Gilt auch auf der Eintragsseite (Details). Beim Anlegen (Eingabefeld) bleibt
+ * alles beim Blatt von unten. Auf der Medien-Seite steht „Neu“ ebenfalls; sein
+ * Menü lässt dort „Medium“ weg, das legen die Knöpfe der Medien-Leiste an.
+ * Gilt nur mit data-mobile-variant="experiment" an <html> und unterhalb von 1024px.
+ * Muss nach android-fab.css, android-composer.css und android-calendar.css
+ * geladen werden, damit sie deren Maße überstimmt.
+ * Pfad: styles/android-experiment-nav.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android-dark.css, Abschnitt EXPERIMENT)
+ * -----------------------------------
+ * --m3-xl-nav-surface   -> Fläche der Pille
+ * --m3-xl-nav-height    -> Höhe von Pille und Knopf „Neu“
+ * --m3-xl-nav-side      -> Abstand zum linken und rechten Rand
+ * --m3-xl-nav-bottom    -> Abstand zum unteren Rand
+ * --m3-xl-nav-gap       -> Luft zwischen Pille und „Neu“; ebenso der Abstand der Pille des
+ *                          aktiven Reiters zum Rand der Leiste (oben, unten, seitlich)
+ * --m3-xl-fab-width     -> Breite von „Neu“ mit Wort; ebenso das ✕ des offenen Menüs
+ * --m3-xl-fab-radius    -> Rundung von „Neu“ und des ✕
+ * --m3-seg-thumb       -> Farbe der Pille des aktiven Reiters (dasselbe Grau wie „Inhalt“ in den Reitern)
+ * --m3-seg-thumb-shadow -> Schatten darunter (styles/tokens-android.css)
+ * --m3-content-end      -> Platz am Seitenende über der Zeile (ebenfalls dort)
+ */
+
+@media (max-width: 1023px) {
+  /* Wie weit die Zeile beim Wegscrollen nach unten muss: Pille plus Abstand zum Rand.
+     Der Kalender und die Eintragsseite lassen unten nur noch einen Abstand über der Zeile frei. */
+  :root[data-mobile-variant="experiment"] .device:has(.tab-bar) {
+    --m3-nav-shift: calc(var(--m3-xl-nav-height) + var(--m3-xl-nav-bottom));
+    --m3-cal-end: calc(var(--m3-nav-shift) + var(--safe-bottom) + var(--m3-fab-gap));
+  }
+
+  [data-mobile-variant="experiment"] body:has(:is(#view-entry.is-active, #view-page.is-active .workspace-body)) .content {
+    --content-end: calc(var(--m3-nav-shift) + var(--safe-bottom) + var(--m3-fab-gap));
+    padding-bottom: var(--content-end);
+  }
+
+  /* ---------- Die Pille ---------- */
+
+  /* margin: rechts bleibt Platz für „Neu“ samt Luft dazwischen; unten der Randabstand.
+     :not(is-composing): das Eingabefeld bleibt das Blatt von unten (styles/android-composer.css) */
+  [data-mobile-variant="experiment"] .nav-shell:not(.is-composing) {
+    margin: 0 calc(var(--m3-xl-nav-side) + var(--m3-xl-fab-width) + var(--m3-xl-nav-gap)) calc(var(--m3-xl-nav-bottom) + var(--safe-bottom)) var(--m3-xl-nav-side);
+    padding: 0;
+    border-radius: calc(var(--m3-xl-nav-height) / 2); /* border-radius: halbe Höhe ergibt die Pille */
+    background: var(--m3-xl-nav-surface);
+  }
+
+  /* Der Rand der Leiste ist so breit wie die Luft zu „Neu“; die Pille des aktiven
+     Reiters füllt genau den Rest der Höhe und ihre Zelle in der Breite. */
+  [data-mobile-variant="experiment"] .tab-bar,
+  [data-mobile-variant="experiment"] .tab-bar.show-labels {
+    min-height: var(--m3-xl-nav-height);
+    padding: 0 var(--m3-xl-nav-gap);
+  }
+
+  :root[data-mobile-variant="experiment"] .tab-bar .tab-btn {
+    align-self: center;
+    height: calc(var(--m3-xl-nav-height) - 2 * var(--m3-xl-nav-gap));
+  }
+
+  /* Die Pille ist der Kreis um Icon (und Namen): so groß wie der Reiter, nicht mehr um das Icon gepolstert.
+     Der aktive Reiter bekommt dasselbe Grau wie „Inhalt“ in den Reitern der Eintragsseite. */
+  :root[data-mobile-variant="experiment"] .tab-bar .tab-btn .tab-circle {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    border-radius: 999px;
+    transition: background-color 200ms ease; /* transition: die Pille blendet weich ein */
+  }
+
+  :root[data-mobile-variant="experiment"] .tab-bar .tab-btn.is-active .tab-circle {
+    background: var(--m3-seg-thumb);
+    box-shadow: var(--m3-seg-thumb-shadow);
+  }
+
+  :root[data-mobile-variant="experiment"] .tab-bar .tab-btn .icon {
+    padding: 0;
+    background: none;
+  }
+
+  /* ---------- „Neu“ in der Zeile ---------- */
+
+  /* Der Knopf sitzt auf der Höhe der Pille rechts daneben. right statt left:
+     schrumpft er beim Scrollen zum Plus, bleibt seine rechte Kante stehen. */
+  [data-mobile-variant="experiment"] .m3-fab {
+    bottom: 0;
+    right: calc(-1 * (var(--m3-xl-fab-width) + var(--m3-xl-nav-gap)));
+    width: var(--m3-xl-fab-width);
+    min-width: var(--m3-xl-nav-height);
+    padding: 0;
+    gap: 8px;
+    border-radius: var(--m3-xl-fab-radius);
+    transition: width var(--m3-hide-time) ease, gap var(--m3-hide-time) ease, transform var(--m3-hide-time) ease;
+  }
+
+  /* Beim Scrollen nach unten fährt die ganze Zeile weg; „Neu“ gleicht das mit
+     transform aus und bleibt als Plus unten rechts stehen */
+  [data-mobile-variant="experiment"] .device.is-bars-hidden:not(.is-nav-back) .m3-fab {
+    width: var(--m3-xl-nav-height);
+    transform: translateY(calc(-1 * (var(--m3-nav-shift) + var(--safe-bottom))));
+  }
+
+  /* Das ✕ des offenen Menüs steht genau auf der Fläche von „Neu“: gleich breit und
+     gleich gerundet. Als Kreis wirkte es eingerückt, obwohl der Abstand zum Rand stimmte. */
+  [data-mobile-variant="experiment"] .m3-fab-close {
+    width: var(--m3-xl-fab-width);
+    border-radius: var(--m3-xl-fab-radius);
+    animation-name: m3-menu-in; /* animation: blendet ein wie die Einträge; das Drehen sah beim Rechteck schief aus */
+  }
+
+  /* Ist „Neu“ beim Scrollen zum reinen Plus geschrumpft, ist das ✕ ebenso schmal */
+  [data-mobile-variant="experiment"] .device.is-bars-hidden:not(.is-nav-back) .m3-fab-close {
+    width: var(--m3-xl-nav-height);
+  }
+
+  /* ---------- Medien-Seite ---------- */
+
+  /* „Neu“ steht auch hier (die Android-Fassung ohne Experiment blendet ihn aus,
+     styles/media-bar.css). Im Menü fehlt „Medium“: Dateien, Video, Foto und
+     Audio stehen schon in der Medien-Leiste darüber. */
+  :root[data-mobile-variant="experiment"] body.is-media .nav-shell:not(.is-composing) .m3-fab {
+    display: flex;
+  }
+
+  [data-mobile-variant="experiment"] body.is-media .m3-fab-menu-item[data-fab-create="medien"] {
+    display: none;
+  }
+
+  /* Meldungen stehen über der Zeile, nicht mehr über einem Knopf, der darüber schwebte */
+  [data-mobile-os="android"][data-mobile-variant="experiment"] .toast-host {
+    margin-bottom: var(--m3-fab-gap);
+  }
+}
