@@ -3,23 +3,29 @@
  * daneben die Stufen-Anzeige (öffnet Fortschritt; ihr Hinweis erscheint
  * darunter) und der Klapp-Knopf, über der Mitte die Kopfzeile mit Zurück und Vorwärts,
  * dem Pfad der offenen Seite samt ihren Knöpfen (Kategorie, Favorit, Cover,
- * Menü — die Kopfzeile der Unterseite, hierher geholt) und ganz rechts dem
- * Knopf fürs Seitenfenster. Gilt erst ab 1024px Fensterbreite; das Markup
+ * Menü — die Kopfzeile der Unterseite, hierher geholt), rechts dem Icon
+ * „Ansicht umstellen“ (nur auf Seiten mit einer Karte „Ansicht“) und ganz
+ * rechts dem Knopf fürs Seitenfenster. Unter dem Icon hängt die Karte
+ * „Ansicht“ als Aufklapp-Fenster (Inhalt und Aussehen am Handy:
+ * styles/tasks-settings.css). Gilt erst ab 1024px Fensterbreite; das Markup
  * entsteht in src/shell/desk-head.js, der Platz im Raster in styles/desk.css.
  * Pfad: styles/desk-head.css
  *
  * ANPASSBARE WERTE IN DIESER DATEI (oben bei .desk-brand und .desk-tabs)
  * -----------------------------------
- * --head-btn / --head-icon -> Größe der runden Knöpfe (Klapp-Knopf, Pfeile, Seitenfenster) und ihrer Icons
+ * --head-btn / --head-icon -> Größe der runden Knöpfe (Klapp-Knopf, Pfeile, Ansicht, Seitenfenster) und ihrer Icons
  * --head-level -> Größe der Stufen-Anzeige neben der Wortmarke
  * Einzelwerte stehen bei ihrer Regel: Wortmarke 19px, Abstand des Stufen-Hinweises 6px.
  *
  * WERTE AUS styles/tokens-desk.css UND styles/tokens.css
- * --desk-top-height -> Höhe von Wortmarke und Reiterzeile
- * --desk-nav-pad / --desk-gutter -> Rand links (Wortmarke) und seitlich der Reiterzeile
+ * --desk-top-height -> Höhe von Wortmarke und Reiterzeile; darunter hängt die Karte „Ansicht“
+ * --desk-rail-width -> Breite der Karte „Ansicht“ (so breit wie die rechte Spalte)
+ * --desk-edge / --desk-radius -> Haarlinie und Rundung der Karte „Ansicht“
+ * --frame-dialog-scale -> Startgröße der Karte „Ansicht“ beim Aufgehen (styles/desk-overlays.css)
+ * --desk-nav-pad / --desk-gutter -> Rand links (Wortmarke) und seitlich der Reiterzeile (auch rechts neben der Karte „Ansicht“)
  * --desk-brand-gap -> Abstand der Stufe rechts neben der Wortmarke
- * --desk-hover / --desk-fast / --desk-ease -> Tönung beim Überfahren, Dauer und Kurve
- * --desk-panel-strong -> Fläche des Knopfs fürs Seitenfenster, solange es offen ist, und der Stufe, solange Fortschritt offen ist
+ * --desk-hover / --desk-fast / --desk-ease -> Tönung beim Überfahren, Dauer und Kurve (auch Auf- und Zugehen der Karte)
+ * --desk-panel-strong -> Fläche der Knöpfe für Seitenfenster und Ansicht, solange offen, und der Stufe, solange Fortschritt offen ist
  * --text / --avatar-btn-bg -> Schrift und Icons der Knöpfe
  */
 
@@ -157,6 +163,84 @@
   .desk-head-btn.is-active {
     background: var(--desk-panel-strong);
     color: var(--text);
+  }
+
+  /* „Ansicht umstellen“ nur, wo die offene Seite eine Karte „Ansicht“ hat —
+     dieselben Klassen am body, die sie zeigen (styles/tasks-settings.css,
+     styles/calendar.css): Aufgaben, Seite Projekte, die übrigen Sammlungen
+     und der Kalender in der Tagesansicht. Im Auswahlmodus ruht die Karte
+     (styles/tasks-select.css), das Icon auch. */
+  .desk-view-toggle {
+    display: none;
+  }
+
+  body:is(.is-tasks, .is-projects, .is-collection, .is-calendar):not(.is-selecting) .desk-view-toggle {
+    display: grid;
+  }
+
+  /* Kalender in Woche oder Monat: die Werkzeugzeile hat schon alles. Die
+     Klasse bleibt am Kalender stehen, auch wenn eine andere Seite offen ist —
+     darum gilt die Regel nur auf der Kalenderseite. */
+  body.is-calendar:has(#view-calendar:is(.is-desk-week, .is-desk-month)) .desk-view-toggle {
+    display: none;
+  }
+
+  /* Beim Anlegen ruht die Karte (styles/tasks-settings.css): das Icon steht
+     blass wie ein gesperrter Pfeil daneben, statt ins Leere zu klicken */
+  .device:has(.nav-shell.is-composing) .desk-view-toggle {
+    opacity: 0.3;
+    pointer-events: none; /* pointer-events: nicht anklickbar, solange das Eingabefeld offen ist */
+  }
+
+  /* Karte offen: das Icon trägt dieselbe Fläche wie der Knopf fürs Seitenfenster.
+     .desk-tabs macht die Regel stärker als die Tönung beim Überfahren weiter unten. */
+  .device:has(.view-panel.is-expanded) .desk-tabs .desk-view-toggle {
+    background: var(--desk-panel-strong);
+    color: var(--text);
+  }
+
+  /* ---------- Die Karte „Ansicht“ als Aufklapp-Fenster unter dem Icon ---------- */
+
+  /* Am Desktop schaut unten nichts hervor (am Handy: styles/tasks-settings.css).
+     Die Karte hängt unter dem Icon „Ansicht umstellen“, rechtsbündig mit der
+     Kopfzeile; bei offenem Seitenfenster rückt sie mit ihr nach links
+     (styles/desk-side.css). Zu ist sie unsichtbar, nimmt aber Platz ein:
+     openViewPanel() (src/ui/view-panel.js) erkennt daran die Karte der
+     offenen Seite. So breit wie die rechte Spalte. */
+  .view-panel {
+    top: calc(var(--safe-top) + var(--desk-top-height));
+    right: var(--desk-gutter);
+    bottom: auto;
+    left: auto;
+    width: min(var(--desk-rail-width), calc(100% - 2 * var(--desk-gutter)));
+    /* max-height: im niedrigen Fenster endet sie mit Abstand über dem unteren Rand und rollt in sich */
+    max-height: calc(100% - var(--safe-top) - var(--desk-top-height) - var(--desk-gutter));
+    overflow-y: auto; /* overflow: s. o. — hier gibt es kein Ziehen, das mit dem Rollen streiten könnte */
+    touch-action: auto; /* touch-action: auf Tablets darf der Finger darin rollen */
+    border: 0.5px solid var(--desk-edge);
+    border-radius: var(--desk-radius);
+    opacity: 0;
+    visibility: hidden; /* visibility: zu nicht zu sehen und für die Tab-Taste weg, ohne den Platz aufzugeben */
+    transform: scale(var(--frame-dialog-scale)); /* transform: geht von der Ecke beim Icon aus auf, wie das Kontextmenü */
+    transform-origin: top right; /* transform-origin: die Ecke unter dem Icon */
+    transition:
+      opacity var(--desk-fast) var(--desk-ease),
+      transform var(--desk-fast) var(--desk-ease),
+      visibility 0s linear var(--desk-fast); /* transition: erst unsichtbar, wenn das Ausblenden vorbei ist */
+  }
+
+  .view-panel.is-expanded {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    transition:
+      opacity var(--desk-fast) var(--desk-ease),
+      transform var(--desk-fast) var(--desk-ease);
+  }
+
+  /* Der Pfeil im Kopf klappt am Handy um; hier schließt das Icon oben */
+  .view-panel-toggle {
+    display: none;
   }
 
   /* ---------- Die Kopfzeile einer Unterseite, hierher geholt (src/shell/desk-page-head.js) ---------- */

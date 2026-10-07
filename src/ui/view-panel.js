@@ -35,6 +35,14 @@
  * zählen nicht als „außerhalb“. Der Tipp selbst tut danach, was er immer tut.
  * Die Zeile „Tabs anzeigen“ (src/ui/tabs-visibility.js) steht oben in jeder Karte;
  * ihren Klick fängt der Rumpf ab, bevor die Seite ihn sieht.
+ *
+ * Am Desktop (ab 1024px) schaut unten nichts hervor: die Karte ist ein
+ * Aufklapp-Fenster unter dem Icon „Ansicht umstellen“ oben rechts in der
+ * Kopfzeile (src/shell/desk-head.js). Jeder Knopf mit data-view-panel-toggle
+ * klappt sie auf und wieder zu; ein Tipp auf ihn zählt darum nicht als
+ * „außerhalb“. Gezogen wird dort nicht, und der Kopf der Karte schaltet nicht
+ * um — zu geht sie über das Icon, einen Klick daneben oder Escape
+ * (closeViewPanel, src/shell/desk-keys.js).
  * Pfad: src/ui/view-panel.js
  *
  * ANPASSBARE WERTE IN DIESER DATEI
@@ -49,12 +57,14 @@
  * buttonLabel   -> Vorlesetext und Hinweis des Knopfs, der die Karte heraufholt
  *
  * Aussehen, Lage, Sichtbarkeit je Seite und Geschwindigkeit: styles/tasks-settings.css
- * (--details-head-h, --tasks-panel-gap, --tasks-panel-slide).
+ * (--details-head-h, --tasks-panel-gap, --tasks-panel-slide); das Icon in
+ * der Kopfzeile: styles/desk-head.css.
  */
 
 import { events, on } from "../core/bus.js";
 import { cssNumber } from "../core/css-vars.js";
 import { icon } from "../core/html.js";
+import { isDesk } from "./desk-mode.js";
 import { handleTabsClick } from "./tabs-visibility.js";
 
 const DRAG_START_PX = 6;
@@ -92,10 +102,29 @@ export function openViewPanel() {
   });
 }
 
+/** Eine aufgeklappte Karte einklappen. `true`, wenn eine offen war — dann hat
+    Escape am Desktop etwas zu tun (src/shell/desk-keys.js). */
+export function closeViewPanel() {
+  const open = [...openers.keys()].some((panel) => panel.classList.contains("is-expanded"));
+  if (open) collapseAll();
+  return open;
+}
+
+/* Das Icon „Ansicht umstellen“ am Desktop: auf, wenn zu — und zu, wenn auf. */
+function toggleViewPanel() {
+  if (!closeViewPanel()) openViewPanel();
+}
+
 /* Tippt oder scrollt man hier, wendet man sich der Seite zu? Nicht in einer
-   Karte, nicht in einem Blatt oder Menü darüber. */
+   Karte, nicht in einem Blatt oder Menü darüber und nicht auf dem Icon, das
+   sie umschaltet — dessen Klick entscheidet selbst. */
 function isOutside(target) {
-  return target instanceof Element && target.isConnected && !target.closest(".view-panel") && !target.closest(OVERLAY_SELECTOR);
+  return (
+    target instanceof Element &&
+    target.isConnected &&
+    !target.closest(".view-panel, [data-view-panel-toggle]") &&
+    !target.closest(OVERLAY_SELECTOR)
+  );
 }
 
 /* Einmal für alle Karten anmelden. pointerdown statt click, damit auch der
@@ -121,9 +150,13 @@ function watchOutside() {
   on(events.composerRequested, collapseAll);
   on(events.createRequested, collapseAll);
   /* Der Knopf steht in Zeilen, die beim Zeichnen ersetzt werden — darum ein
-     Empfänger für alle. Der pointerdown davor hat schon alles eingeklappt. */
+     Empfänger für alle. Beim Knopf, der aufklappt, hat der pointerdown davor
+     schon alles eingeklappt; das Icon, das umschaltet, zählt nicht als
+     „außerhalb“ und entscheidet hier selbst. */
   document.addEventListener("click", (event) => {
-    if (event.target instanceof Element && event.target.closest("[data-view-panel-open]")) openViewPanel();
+    if (!(event.target instanceof Element)) return;
+    if (event.target.closest("[data-view-panel-open]")) openViewPanel();
+    else if (event.target.closest("[data-view-panel-toggle]")) toggleViewPanel();
   });
   /* Ein Tipp auf den Schleier klappt schon beim Aufsetzen ein; der Schleier
      lässt danach durch, und der Klick beim Loslassen träfe die Zeile darunter
@@ -187,6 +220,8 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
     expanded = next;
     panel.classList.toggle("is-expanded", next);
     toggle.setAttribute("aria-expanded", String(next));
+    /* Auch das Icon in der Kopfzeile sagt Vorlesehilfen, ob die Karte offen ist */
+    document.querySelectorAll("[data-view-panel-toggle]").forEach((button) => button.setAttribute("aria-expanded", String(next)));
   };
   if (!collapsers.size) watchOutside();
   collapsers.add(() => {
@@ -200,7 +235,8 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
      Karte, auch über der Navigation, und ein Tipp trifft weiter die Zeile.
      (Ein Finger wird ohnehin so festgehalten, die Maus nicht.) */
   panel.addEventListener("pointerdown", (event) => {
-    if (event.button !== 0) return;
+    /* Am Desktop ein Aufklapp-Fenster unter der Kopfzeile: es folgt keinem Ziehen */
+    if (event.button !== 0 || isDesk()) return;
     /* Ein Knopf im Kopf ist kein Griff: sein Klick soll ihn selbst treffen. */
     if (event.target.closest(".view-panel-actions [data-settings]")) return;
     skipClick = false;
@@ -263,7 +299,8 @@ export function createViewPanel({ title, className, onClick, actions = "" }) {
       onClick(event);
       return;
     }
-    setExpanded(!expanded);
+    /* Am Desktop ist der Kopf nur Überschrift — zu geht es über das Icon oben */
+    if (!isDesk()) setExpanded(!expanded);
   });
   /* Der Schalter „Tabs anzeigen“ steht in jeder Karte und wirkt für die offene Seite — sie sieht den Klick nicht */
   body.addEventListener("click", (event) => {

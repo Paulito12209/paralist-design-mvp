@@ -7,7 +7,9 @@
  * (styles/entry-details.css). Anders als dort liegt sie nicht in der Seite,
  * sondern als eigene Ebene über der Liste und unter der Navigation:
  * eingeklappt schaut nur der Kopf hervor, ausgeklappt (Klasse is-expanded)
- * steht die ganze Karte über der Navigation. Dazu kommen die Zutaten, die es
+ * steht die ganze Karte über der Navigation. Am Desktop ist sie ein
+ * Aufklapp-Fenster unter dem Icon „Ansicht umstellen“ oben rechts in der
+ * Kopfzeile (styles/desk-head.css). Dazu kommen die Zutaten, die es
  * bei „Details“ nicht gibt: das Segment Liste | Board bzw. Dringlichkeit |
  * Status, der Schalter (styles/tasks-switch.css) und die gesperrte Filter-Zeile mit dem ⓘ.
  * Pfad: styles/tasks-settings.css
@@ -21,7 +23,7 @@
  * --details-head-h           -> Höhe des Kopfs — so viel schaut eingeklappt hervor
  * --nav-height / --nav-bottom -> Lage der Navigation, auf der die Karte sitzt (styles/tokens.css)
  * --content-side             -> seitlicher Rand der Karte (styles/tokens.css)
- * --desk-gutter / --desk-read-width -> Lage und größte Breite am Desktop (styles/tokens-desk.css)
+ * Lage, Breite und Auftauchen am Desktop: styles/desk-head.css
  * --tab-pill-active-bg       -> Fläche hinter dem Segment und Schalter „aus“ (styles/tokens.css)
  * --bg                       -> Fläche des gewählten Segment-Knopfs (styles/tokens.css)
  * --add                      -> Schalter „an“ (styles/tokens.css)
@@ -134,23 +136,8 @@ body:has(.nav-shell.is-composing) .view-panel {
   padding-bottom: var(--details-head-h);
 }
 
-/* Am Desktop gibt es die Handy-Navigation nicht: die Karte sitzt unten in
-   der Mitte, so breit wie die Aufgaben-Liste. */
-@media (min-width: 1024px) {
-  .view-panel {
-    left: calc(var(--desk-nav-width) + var(--desk-gutter));
-    right: var(--desk-gutter);
-    bottom: calc(var(--desk-gutter) + var(--safe-bottom));
-    max-width: var(--desk-read-width);
-    margin-inline: auto; /* margin-inline: mit left/right und max-width steht die Karte mittig */
-  }
-}
-
-@media (min-width: 1280px) {
-  .view-panel {
-    right: calc(var(--desk-rail-width) + var(--desk-gutter));
-  }
-}
+/* Am Desktop ist die Karte ein Aufklapp-Fenster unter dem Icon „Ansicht
+   umstellen“ in der Kopfzeile: Lage und Auf- und Zugehen in styles/desk-head.css. */
 
 /* Die Zeilen der Karte sind Knöpfe oder Zeilen mit Steuerung rechts —
    beide gleich hoch und mittig ausgerichtet */

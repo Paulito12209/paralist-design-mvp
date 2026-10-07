@@ -4,7 +4,9 @@
  * Knopf wie am Handy, hierher umgesetzt) und der Klapp-Knopf, über der Mitte
  * die Kopfzeile — links Zurück und Vorwärts,
  * daneben der Pfad der offenen Seite mit ihren Knöpfen (Kategorie, Favorit,
- * Cover, Menü), ganz rechts der Knopf fürs Seitenfenster. Die vier Seiten und
+ * Cover, Menü), rechts das Icon „Ansicht umstellen“ (nur auf Seiten mit einer
+ * Karte „Ansicht“, src/ui/view-panel.js) und ganz rechts der Knopf fürs
+ * Seitenfenster. Die vier Seiten und
  * die Suche stehen als Icons oben in der Seitenleiste (src/shell/desk-pages.js).
  * Diese Datei hängt die Teile ein, hält Pfeile und Stufen-Hinweis aktuell und
  * merkt sich, ob die Seitenleiste zu ist.
@@ -14,6 +16,7 @@
  * -----------------------------------
  * wordmark  -> der Name oben links
  * closedTag -> Wert im Browser-Speicher, solange die Seitenleiste zu ist
+ * viewLabel -> Hinweis und Vorlesetext des Icons „Ansicht umstellen“
  *
  * Aussehen und Maße stehen in styles/desk-head.css, das Ein- und Ausklappen
  * des Rasters in styles/desk.css, das Seitenfenster in styles/desk-side.css.
@@ -33,6 +36,7 @@ import { placePageHead } from "./desk-page-head.js";
 
 const wordmark = "Paralist";
 const closedTag = "1";
+const viewLabel = "Ansicht umstellen";
 
 let brand = null;
 let strip = null;
@@ -41,11 +45,12 @@ let closed = false;
 /* Wird gerufen, nachdem die Seitenleiste auf- oder zugeklappt ist. */
 let onToggle = () => {};
 
-/* Ein runder Knopf des Kopfs; `shortcut` landet im Tooltip und für Vorlesehilfen. */
-function headButton(action, iconName, label, shortcut = "", extraClass = "") {
+/* Ein runder Knopf des Kopfs; `shortcut` landet im Tooltip und für Vorlesehilfen,
+   `attrs` sind weitere Attribute (fertiges HTML). */
+function headButton(action, iconName, label, shortcut = "", extraClass = "", attrs = "") {
   const tip = shortcut ? `${label} (${shortcut})` : label;
   const keys = shortcut ? ` aria-keyshortcuts="${escapeHtml(spokenKeys(shortcut))}"` : "";
-  return `<button class="desk-head-btn${extraClass}" type="button" data-head="${action}" aria-label="${label}" title="${escapeHtml(tip)}"${keys}>${icon(iconName)}</button>`;
+  return `<button class="desk-head-btn${extraClass}" type="button" data-head="${action}" aria-label="${label}" title="${escapeHtml(tip)}"${keys}${attrs}>${icon(iconName)}</button>`;
 }
 
 function toggleButton(extraClass = "") {
@@ -86,8 +91,11 @@ export function placeLevelButton(desk) {
 /*
  * Drei Teile: links Klapp-Knopf (nur bei zugeklappter Seitenleiste), Zurück
  * und Vorwärts, in der Mitte der Platz für den Pfad und die Knöpfe der
- * offenen Seite (src/shell/desk-page-head.js holt sie hierher), ganz rechts
- * der Knopf fürs Seitenfenster — wie in T3 Code.
+ * offenen Seite (src/shell/desk-page-head.js holt sie hierher), rechts das
+ * Icon „Ansicht umstellen“ und ganz rechts der Knopf fürs Seitenfenster — wie
+ * in T3 Code. Das Icon klappt die Karte „Ansicht“ der offenen Seite auf und
+ * zu (data-view-panel-toggle, src/ui/view-panel.js); auf welchen Seiten es
+ * steht, sagt styles/desk-head.css.
  */
 function stripMarkup() {
   return `
@@ -98,6 +106,7 @@ function stripMarkup() {
     </div>
     <div class="desk-tabs-page" data-head-slot="page"></div>
     <div class="desk-tabs-end">
+      ${headButton("view", "sliders", viewLabel, "", " desk-view-toggle", ' data-view-panel-toggle aria-expanded="false"')}
       ${headButton("side", "sidebar-right", "Seitenfenster öffnen", withShiftCommand(sideLink.letter), " desk-side-toggle")}
     </div>`;
 }

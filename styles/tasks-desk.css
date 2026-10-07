@@ -3,9 +3,9 @@
  * Ansichten stehen Liste | Board und der Filter nach Ort; die Liste zeigt
  * Fälligkeit, Dringlichkeit und Ablageort als ruhige Spalten statt in der
  * Nebenzeile; die Zeile unter der Maus ist getönt (ihre Details stehen
- * rechts). Ab 1280px wandert die Karte „Ansicht“ in die rechte
- * Spalte (src/features/tasks/tasks-rail.js) — die schwebende Karte unten
- * entfällt dann. Am Handy gilt hier nichts.
+ * rechts). Die Karte „Ansicht“ öffnet am Desktop das Icon oben in der
+ * Kopfzeile (styles/desk-head.css) — unter der Liste braucht es darum keinen
+ * Platz für ihren Kopf. Am Handy gilt hier nichts.
  * Pfad: styles/tasks-desk.css
  *
  * ANPASSBARE WERTE IN DIESER DATEI (oben bei #view-tasks)
@@ -34,6 +34,8 @@
     --task-col-prio: 104px;
     --task-col-place: 150px;
     --tab-pills-tools-width: var(--tasks-desk-tools);
+    /* padding-bottom: kein Kopf der Karte „Ansicht“ unten, den die Liste freihalten müsste (styles/tasks-settings.css) */
+    padding-bottom: 0;
   }
 
   .tasks-desk-tools {
@@ -111,18 +113,5 @@
   /* Die Zeile, deren Details rechts stehen */
   #view-tasks .is-marked {
     background-color: var(--desk-hover);
-  }
-}
-
-/* Ab 1280px steht „Ansicht“ in der rechten Spalte. */
-@media (min-width: 1280px) {
-  body.is-tasks .tasks-panel {
-    display: none;
-  }
-
-  /* Rechts ist die Karte immer offen: die Zeilen sind gleich zu sehen,
-     statt wie in der schwebenden Karte erst beim Ausklappen einzublenden. */
-  .rail-view-card .details-list {
-    opacity: 1;
   }
 }

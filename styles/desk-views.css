@@ -34,6 +34,7 @@
  * --desk-scroll-thumb    -> Farbe des Rollbalkens unter dem Board
  * --desk-ease / --desk-enter-rise -> Kurve und Tiefe beim Aufblenden einer Seite
  * --content-side / --content-top -> Seitenrand und Luft oben
+ * --tab-space            -> Luft unter Stundenraster und Liste des Kalenders
  */
 
 @media (min-width: 1024px) {
@@ -119,9 +120,13 @@
   }
 
   /* Die Fläche reicht bis an den Spaltenrand; ihr Innenabstand folgt dem breiteren
-     Rand, damit Stunden und Liste auf der Fluchtlinie von Titel und Streifen stehen. */
+     Rand, damit Stunden und Liste auf der Fluchtlinie von Titel und Streifen stehen.
+     Unten nur das übliche Seitenende: das Panel „Ansicht“ hängt oben unter dem
+     Icon „Ansicht umstellen“ (styles/desk-head.css), kein Kopf schaut unten hervor
+     (am Handy: styles/calendar.css). */
   #view-calendar .cal-panel {
     padding-inline: var(--content-side);
+    padding-bottom: var(--tab-space);
   }
 
   /* ---------- Aufgaben: Liste und Board ---------- */

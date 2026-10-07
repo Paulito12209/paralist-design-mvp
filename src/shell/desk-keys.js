@@ -23,7 +23,8 @@
  *   ⌘,             -> Profil und Einstellungen (Punkt „Konto“)
  *   ?              -> Profil › Kurzbefehle
  *   Escape         -> schließt, was obenauf liegt: Palette, Menü, Auswahl-Blatt, Dialog,
- *                     Dateiansicht, zuletzt das Eingabefeld — auch beim Tippen darin
+ *                     Dateiansicht, die Karte „Ansicht“, zuletzt das Eingabefeld — auch
+ *                     beim Tippen darin
  * Statt ⌘ gilt außerhalb des Macs Strg, statt ⌃ Alt.
  */
 
@@ -35,6 +36,7 @@ import { isDesk } from "../ui/desk-mode.js";
 import { chordKey, chordWindow, listKey, listLinks, pageLinks } from "../ui/desk-links.js";
 import { goBack, goForward } from "../ui/router.js";
 import { closeSheet } from "../ui/sheet.js";
+import { closeViewPanel } from "../ui/view-panel.js";
 import { onComboKey } from "./desk-combos.js";
 import { isNavClosed, openPageTab, setNavClosed, toggleSidePanel } from "./desk-head.js";
 import { chooseList, toggleListMenu } from "./desk-list.js";
@@ -90,6 +92,9 @@ function closeTopLayer() {
     closeButton.click();
     return true;
   }
+  /* Die Karte „Ansicht“ unter dem Icon oben rechts (src/ui/view-panel.js);
+     ein Blatt, das sie geöffnet hat (Sortieren, Filtern), ging oben schon zu */
+  if (closeViewPanel()) return true;
   if (!dom.composer.hidden) {
     el("composer-close").click();
     return true;
