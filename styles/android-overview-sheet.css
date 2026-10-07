@@ -30,7 +30,9 @@
  * --m3-ov-sheet-gap       -> Abstand der unteren Kacheln zum Container
  * --m3-ov-sheet-radius    -> Rundung oben am Container
  * --m3-ov-sheet-head-h    -> Höhe der Zeile „Projekte“
- * --m3-ov-arrow-size      -> Durchmesser des runden Pfeil-Knopfs
+ * --m3-ov-arrow-size      -> Durchmesser des runden Pfeil-Knopfs, des Reiter-Knopfs und Höhe der Pille „Liste“/„Kanban“
+ * --m3-ov-head-size       -> Schriftgröße von „Projekte ˅“ (src/features/overview/home-list.js)
+ * --m3-ov-tools-gap       -> Abstand zwischen Pille, Reiter-Knopf und Pfeil-Knopf
  * --m3-surface-container  -> Fläche des Containers (wie die Navigationsleiste)
  * --m3-surface-container-high -> Fläche des Pfeil-Knopfs
  * --bg                    -> Fläche der Einträge: dunkel wie der Seitengrund hinter dem Container (styles/tokens.css)
@@ -233,5 +235,85 @@
      der Innenabstand ersetzt den der Hülle */
   [data-mobile-variant="experiment"] #view-home #project-list .workspace-list > :not(.swipe) {
     padding-left: var(--m3-page-edge);
+  }
+
+  /* ---------- Kopf mit Listenwahl, Pille und runden Knöpfen ---------- */
+
+  /* Den Kopf zeichnet src/features/overview/home-list.js neu: links „Projekte ˅“,
+     rechts Pille „Liste“/„Kanban“, Reiter-Knopf und Pfeil — wie „Threads“ und
+     der runde Knopf in Google Chat. */
+  [data-mobile-variant="experiment"] .project-head .home-list-title {
+    flex: 1;
+    min-width: 0; /* min-width: Flex-Kind darf schmaler werden, lange Namen kürzen */
+    font-size: var(--m3-ov-head-size);
+  }
+
+  [data-mobile-variant="experiment"] .home-list-pick {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    max-width: 100%;
+    padding: 0;
+    color: inherit;
+    font: inherit;
+  }
+
+  [data-mobile-variant="experiment"] .home-list-pick > span {
+    overflow: hidden;
+    text-overflow: ellipsis; /* text-overflow: zu lange Namen enden mit „…“ */
+    white-space: nowrap;
+  }
+
+  /* Das Chevron-Symbol zeigt nach rechts: um 90° gedreht zeigt es nach unten */
+  [data-mobile-variant="experiment"] .home-list-chevron {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    color: var(--m3-on-surface-variant);
+    transform: rotate(90deg); /* transform: dasselbe Symbol, nur nach unten gedreht */
+  }
+
+  [data-mobile-variant="experiment"] .home-list-tools {
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--m3-ov-tools-gap);
+  }
+
+  [data-mobile-variant="experiment"] :is(.home-list-layout, .home-list-round) {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    height: var(--m3-ov-arrow-size);
+    border-radius: calc(var(--m3-ov-arrow-size) / 2);
+    background: var(--m3-surface-container-high);
+    color: var(--m3-on-surface-variant);
+  }
+
+  [data-mobile-variant="experiment"] .home-list-layout {
+    gap: 6px;
+    padding: 0 12px 0 10px;
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  [data-mobile-variant="experiment"] .home-list-round {
+    width: var(--m3-ov-arrow-size);
+    padding: 0;
+  }
+
+  [data-mobile-variant="experiment"] :is(.home-list-layout, .home-list-round) .icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Reiter sichtbar: der Knopf in der Schriftfarbe gefüllt, wie ein eingeschalteter Schalter */
+  [data-mobile-variant="experiment"] .home-list-tabs.is-on {
+    background: var(--m3-on-surface-variant);
+    color: var(--m3-surface-container);
+  }
+
+  [data-mobile-variant="experiment"] :is(.home-list-pick, .home-list-layout, .home-list-round):active {
+    opacity: 0.55;
   }
 }

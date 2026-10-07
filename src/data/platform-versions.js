@@ -57,6 +57,7 @@ export const platforms = [
           { area: "Projekte", text: "„Projekte“ samt Reitern, Werkzeugzeile und Einträgen liegt in einem Container über die volle Breite, in der Farbe der Navigationsleiste; die Einträge stehen als Kachelgruppe wie die Einstellungen, rechts neben dem Namen ein runder Pfeil-Knopf." },
           { area: "Farben (hell)", text: "Kacheln, Projekte-Container und Navigationsleiste haben im Hellen dieselbe, deutlich dunklere Fläche als der Seitengrund; unter „Projekte“ steht bei ausgeblendeten Reitern eine leise Trennlinie." },
           { area: "Reiter ausblenden", text: "„Tabs anzeigen“ im Blatt „Ansicht“ gibt es auch in „Android“; im Experiment startet die Übersicht aber ohne Reiter, in „Android“ stehen sie überall." },
+          { area: "Liste der Übersicht", text: "„Projekte ˅“ öffnet ein Blatt mit den acht Listen der Desktop-Seitenleiste (Projekte, Arbeitsbereiche, Ressourcen, Archiv, Eingang, Aufgaben, Termine, Lesezeichen); die gewählte steht dann unter den Kacheln. Bei Projekten stehen rechts eine Pille „Liste“/„Kanban“ für das Layout und ein runder Knopf, der die Reiter ein- und ausblendet." },
         ],
       },
       { id: "ios", label: "iOS", icon: "smartphone" },

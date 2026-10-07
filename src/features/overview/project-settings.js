@@ -68,7 +68,7 @@ const rowLabels = {
 };
 const layouts = [
   { id: "list", label: "Liste", icon: "list" },
-  { id: "board", label: "Board", icon: "board" },
+  { id: "board", label: "Kanban", icon: "board" },
 ];
 const noFilter = "Hinzufügen";
 const noPick = "Auswählen";

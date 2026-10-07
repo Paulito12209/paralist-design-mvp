@@ -37,10 +37,12 @@
     --m3-surface-container-high: var(--m3-xl-surface-high);
   }
 
-  /* Nur bei ausgeblendeten Reitern der Übersicht (data-tabs-home="off"): sonst trennt schon die Reiterzeile.
+  /* Nur bei ausgeblendeten Reitern der Übersicht (data-tabs-home="off") oder einer anderen Liste als
+     Projekte (die hat keine Reiter, src/features/overview/home-list.js): sonst trennt schon die Reiterzeile.
      background-image: eine einfarbige Fläche als Linie — anders als ein Schatten
      lässt sie sich links und rechts einrücken, ohne etwas zu verschieben */
-  [data-mobile-variant="experiment"][data-tabs-home="off"] #view-home .project-head {
+  [data-mobile-variant="experiment"][data-tabs-home="off"] #view-home .project-head,
+  [data-mobile-variant="experiment"] #view-home .project-head[data-home-list]:not([data-home-list="projects"], [data-home-list=""]) {
     background-image: linear-gradient(var(--m3-xl-divider-color), var(--m3-xl-divider-color));
     background-repeat: no-repeat; /* no-repeat: nur eine Linie unten, kein Muster */
     background-position: center bottom;

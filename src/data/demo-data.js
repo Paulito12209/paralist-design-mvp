@@ -51,7 +51,7 @@ const demoEntries = [
   { id: 23, type: "projekt", title: "Marathon-Vorbereitung", status: "offen", priority: "spaeter", in: ["w:3"], days: 30 },
   { id: 24, type: "projekt", title: "Fotobuch Sommerurlaub", status: "offen", priority: "irgendwann", days: 50 },
   { id: 25, type: "projekt", title: "Steuererklärung 2025", status: "erledigt", priority: "jetzt", days: 70 },
-  { id: 26, type: "projekt", title: "Ein Projekt mit einem sehr langen Titel, damit man sieht, wie Karten im Board und Zeilen in der Liste damit umgehen", status: "offen", priority: "next", in: ["w:5"], days: 8 },
+  { id: 26, type: "projekt", title: "Ein Projekt mit einem sehr langen Titel, damit man sieht, wie Karten im Kanban und Zeilen in der Liste damit umgehen", status: "offen", priority: "next", in: ["w:5"], days: 8 },
   { id: 27, type: "projekt", title: "Altes Vereinsfest", status: "erledigt", priority: "spaeter", in: ["w:6"], archived: true, days: 200 },
 
   /* Aufgaben: mit und ohne Fälligkeit, überfällig, erledigt, archiviert */
@@ -132,9 +132,9 @@ export function buildDemoState(now = Date.now()) {
     opens: demoOpens(now),
     recentSearches: ["Umzug", "Startseite"],
     /* Zweite Ansicht je Seite als Board, damit die Spalten sofort zu sehen sind */
-    taskViews: [{ id: 1, name: "Alle", fixed: true }, { id: 2, name: "Board", layout: "board", group: "priority" }],
+    taskViews: [{ id: 1, name: "Alle", fixed: true }, { id: 2, name: "Kanban", layout: "board", group: "priority" }],
     activeTaskViewId: 1,
-    projectViews: [{ id: 1, fixed: true }, { id: 2, name: "Board", layout: "board", group: "status" }],
+    projectViews: [{ id: 1, fixed: true }, { id: 2, name: "Kanban", layout: "board", group: "status" }],
     activeProjectViewId: 1,
     /* Beispielmedien nicht zusätzlich nachlegen — die Demo bringt eigene mit */
     mediaSeeded: true,

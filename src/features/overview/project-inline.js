@@ -52,7 +52,7 @@ let committing = false;
 
 /* Die Projektliste der sichtbaren Stelle — oder null, wenn dort keine steht. */
 function visibleList() {
-  if (isViewActive("home") && !isDesk()) return el("project-list")?.querySelector(".workspace-list") || null;
+  if (isViewActive("home") && !isDesk()) return el("project-list")?.querySelector(".workspace-list:not([data-home-list])") || null;
   if (isProjectsPageOpen()) return el("view-page")?.querySelector(".page-body > .workspace-list") || null;
   return null;
 }
