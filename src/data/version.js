@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "83adcc85820b";
+export const appVersion = "5540eb4a6d56";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -159,21 +159,21 @@ export const appFiles = [
   "styles/android-bottom-sheet.css", "styles/android-calendar-rings.css",
   "styles/android-calendar-tabs.css", "styles/android-calendar.css", "styles/android-card.css",
   "styles/android-composer.css", "styles/android-details.css", "styles/android-entry.css",
-  "styles/android-experiment-surface.css", "styles/android-fab.css",
-  "styles/android-filter-sheet.css", "styles/android-list.css", "styles/android-overview-gaps.css",
-  "styles/android-overview-sheet.css", "styles/android-pages-content.css",
-  "styles/android-pages.css", "styles/android-quiet-tools.css", "styles/android-reorder.css",
-  "styles/android-segmented.css", "styles/android-settings-google.css",
-  "styles/android-settings-groups.css", "styles/android-settings-tiles.css",
-  "styles/android-sheet.css", "styles/android-tab-snap.css", "styles/android-tabs-off.css",
-  "styles/android-tabs.css", "styles/android-view-btn.css", "styles/android.css",
-  "styles/avatar-crop.css", "styles/base.css", "styles/block-bar.css", "styles/blocks.css",
-  "styles/bookmarks.css", "styles/calendar-panel.css", "styles/calendar-rings.css",
-  "styles/calendar-week.css", "styles/calendar.css", "styles/columns-sheet.css",
-  "styles/composer-attachments.css", "styles/composer.css", "styles/dashboard-motion.css",
-  "styles/dashboard-shelf.css", "styles/dashboard-stage.css", "styles/dashboard.css",
-  "styles/data-transfer.css", "styles/desk-composer.css", "styles/desk-head.css",
-  "styles/desk-help.css", "styles/desk-hover.css", "styles/desk-kbd.css",
+  "styles/android-experiment-nav.css", "styles/android-experiment-surface.css",
+  "styles/android-fab.css", "styles/android-filter-sheet.css", "styles/android-list.css",
+  "styles/android-overview-gaps.css", "styles/android-overview-sheet.css",
+  "styles/android-pages-content.css", "styles/android-pages.css", "styles/android-quiet-tools.css",
+  "styles/android-reorder.css", "styles/android-segmented.css",
+  "styles/android-settings-google.css", "styles/android-settings-groups.css",
+  "styles/android-settings-tiles.css", "styles/android-sheet.css", "styles/android-tab-snap.css",
+  "styles/android-tabs-off.css", "styles/android-tabs.css", "styles/android-view-btn.css",
+  "styles/android.css", "styles/avatar-crop.css", "styles/base.css", "styles/block-bar.css",
+  "styles/blocks.css", "styles/bookmarks.css", "styles/calendar-panel.css",
+  "styles/calendar-rings.css", "styles/calendar-week.css", "styles/calendar.css",
+  "styles/columns-sheet.css", "styles/composer-attachments.css", "styles/composer.css",
+  "styles/dashboard-motion.css", "styles/dashboard-shelf.css", "styles/dashboard-stage.css",
+  "styles/dashboard.css", "styles/data-transfer.css", "styles/desk-composer.css",
+  "styles/desk-head.css", "styles/desk-help.css", "styles/desk-hover.css", "styles/desk-kbd.css",
   "styles/desk-nav-foot.css", "styles/desk-nav-list.css", "styles/desk-nav-pages.css",
   "styles/desk-nav.css", "styles/desk-overlays.css", "styles/desk-progress.css",
   "styles/desk-rail-tiles.css", "styles/desk-rail-views.css", "styles/desk-rail.css",
