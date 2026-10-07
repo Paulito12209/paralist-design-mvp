@@ -29,6 +29,13 @@
  * --m3-xl-nav-side           -> Abstand von Leiste und „Neu“ zum linken und rechten Geräterand
  * --m3-xl-nav-bottom         -> Abstand der Leiste zum unteren Geräterand
  * --m3-xl-nav-gap            -> Luft zwischen Leiste und „Neu“ — und ebenso zwischen der Pille des aktiven Reiters und dem Rand der Leiste
+ * --m3-xl-label-icon         -> Experiment, Namen unter den Icons an: Größe der Icons (kleiner als ohne Namen, 24px)
+ * --m3-xl-label-size         -> Schriftgröße der Namen (kleiner als sonst, 12px)
+ * --m3-xl-label-line         -> Zeilenhöhe der Namen
+ * --m3-xl-label-pill-h       -> Höhe der Pille um das Icon
+ * --m3-xl-label-gap          -> Luft zwischen Pille und Name
+ * --m3-xl-label-edge         -> Rand der Leiste zur Pille (oben, seitlich) und vom Namen nach unten; die Leiste
+ *                                 bleibt so hoch wie ohne Namen: 2 × Rand + Pille + Luft + Zeile = --m3-xl-nav-height
  * --m3-xl-fab-width          -> Breite des Knopfs „Neu“ mit Wort; die Leiste nimmt den Rest der Zeile
  * --m3-xl-fab-radius         -> Rundung des Knopfs „Neu“
  */
@@ -111,6 +118,12 @@
   --m3-xl-nav-side: 16px;
   --m3-xl-nav-bottom: 20px;
   --m3-xl-nav-gap: 12px;
+  --m3-xl-label-icon: 18px;
+  --m3-xl-label-size: 10px;
+  --m3-xl-label-line: 12px;
+  --m3-xl-label-pill-h: 30px;
+  --m3-xl-label-gap: 2px;
+  --m3-xl-label-edge: 10px;
   --m3-xl-fab-width: 88px;
   --m3-xl-fab-radius: 20px;
   /* Der Knopf steht jetzt in der Zeile der Leiste: gleich hoch wie sie, und die Seiten
