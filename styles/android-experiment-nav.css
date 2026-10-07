@@ -21,6 +21,8 @@
  * --m3-xl-nav-bottom    -> Abstand zum unteren Rand
  * --m3-xl-nav-gap       -> Luft zwischen Pille und „Neu“; ebenso der Abstand der Pille des
  *                          aktiven Reiters zum Rand der Leiste (oben, unten, seitlich)
+ * --m3-xl-label-icon / -size / -line / -pill-h / -gap / -edge
+ *                       -> mit Namen unter den Icons: Icon-Größe, Schrift, Zeilenhöhe, Pille, Luft, Rand
  * --m3-xl-fab-width     -> Breite von „Neu“ mit Wort; ebenso das ✕ des offenen Menüs
  * --m3-xl-fab-radius    -> Rundung von „Neu“ und des ✕
  * --m3-seg-thumb       -> Farbe der Pille des aktiven Reiters (dasselbe Grau wie „Inhalt“ in den Reitern)
@@ -87,6 +89,68 @@
   :root[data-mobile-variant="experiment"] .tab-bar .tab-btn .icon {
     padding: 0;
     background: none;
+  }
+
+  /* ---------- Mit Namen unter den Icons ---------- */
+
+  /* Die Leiste bleibt 64px hoch. Alles darin schrumpft mit: kleineres Icon, kleinere
+     Schrift, niedrigere Pille und etwas weniger Rand, damit auch auf schmalen Geräten
+     die Namen nebeneinander Platz haben (2 × Rand + Pille + Luft + Zeile = Leistenhöhe). */
+  [data-mobile-variant="experiment"] .tab-bar.show-labels {
+    padding: 0 var(--m3-xl-label-edge);
+  }
+
+  :root[data-mobile-variant="experiment"] .tab-bar.show-labels .tab-btn {
+    height: calc(var(--m3-xl-nav-height) - 2 * var(--m3-xl-label-edge));
+    /* flex: jeder Reiter ist mindestens so breit wie sein Name, der Rest wird gleich verteilt —
+       so überlagern sich die Namen auch auf schmalen Geräten nicht */
+    flex: 1 1 auto;
+  }
+
+  /* Reiter = zwei Zeilen: oben die Pille mit dem Icon, darunter der Name.
+     Die Pille ist ein ::before hinter dem Icon, so breit wie der Reiter. */
+  :root[data-mobile-variant="experiment"] .tab-bar.show-labels .tab-btn .tab-circle {
+    position: relative;
+    display: grid;
+    grid-template-rows: var(--m3-xl-label-pill-h) var(--m3-xl-label-line);
+    row-gap: var(--m3-xl-label-gap);
+    justify-items: center;
+    align-content: start;
+    background: none;
+    box-shadow: none;
+  }
+
+  :root[data-mobile-variant="experiment"] .tab-bar.show-labels .tab-btn .tab-circle::before {
+    content: "";
+    position: absolute; /* position: liegt hinter dem Icon, in der Höhe der ersten Zeile */
+    inset: 0 0 auto 0;
+    height: var(--m3-xl-label-pill-h);
+    border-radius: 999px;
+    transition: background-color 200ms ease; /* transition: die Pille blendet weich ein */
+  }
+
+  :root[data-mobile-variant="experiment"] .tab-bar.show-labels .tab-btn.is-active .tab-circle::before {
+    background: var(--m3-seg-thumb);
+    box-shadow: var(--m3-seg-thumb-shadow);
+  }
+
+  :root[data-mobile-variant="experiment"] .tab-bar.show-labels .tab-btn .icon {
+    position: relative; /* position: über der Pille */
+    width: var(--m3-xl-label-icon);
+    height: var(--m3-xl-label-icon);
+    align-self: center;
+  }
+
+  :root[data-mobile-variant="experiment"] .tab-bar.show-labels .tab-label {
+    font-size: var(--m3-xl-label-size);
+    line-height: var(--m3-xl-label-line);
+    letter-spacing: 0; /* letter-spacing: ohne Zusatzabstand passen die Namen enger nebeneinander */
+    white-space: nowrap;
+  }
+
+  /* Der gewählte Name nur halbfett: fett ist breiter und stieße an den Nachbarn */
+  :root[data-mobile-variant="experiment"] .tab-bar.show-labels .tab-btn.is-active .tab-label {
+    font-weight: 600;
   }
 
   /* ---------- „Neu“ in der Zeile ---------- */
