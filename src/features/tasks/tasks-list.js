@@ -2,6 +2,8 @@
  * Die Listenansicht der Aufgaben-Seite: eine schlichte Liste aller Aufgaben,
  * die der Filter durchlässt — Haken-Knopf links, Titel, stille Nebenzeile,
  * Pfeil; dahinter dieselben Wisch-Knöpfe wie in jeder anderen Liste der App.
+ * Am Desktop steht statt des Pfeils rechts Datum, Dringlichkeit, Verknüpfung;
+ * ein Klick darauf bearbeitet die Angabe (src/features/tasks/tasks-col-edit.js).
  * Wer im Menü gruppiert, bekommt dieselben Gruppen untereinander, die das
  * Board als Spalten zeigt, jede mit dünner Überschrift (Icon in ihrer Farbe,
  * Name, Anzahl, Pfeil); leere Gruppen fehlen dann. Ein Tipp auf die
@@ -63,7 +65,8 @@ const emptyTasks = {
 
 /**
  * Eine Zeile: Haken-Knopf, Titel mit Nebenzeile, Pfeil (Android: drei Punkte) — dahinter dieselben
- * Wisch-Knöpfe wie in jeder anderen Liste (src/ui/rows.js).
+ * Wisch-Knöpfe wie in jeder anderen Liste (src/ui/rows.js). Am Desktop stehen die
+ * Spalten rechts neben dem Zeilen-Knopf, der Pfeil entfällt dort (styles/tasks-desk.css).
  */
 function taskRow(entry, field) {
   const done = isTaskDone(entry);
@@ -81,10 +84,10 @@ function taskRow(entry, field) {
           <span class="task-title${done ? " is-done" : ""}">${taskTitle(entry)}</span>
           ${taskMeta(entry, field)}
         </span>
-        ${taskColumns(entry)}
         ${icon("chevron", "chevron")}
         ${rowMore()}
       </button>
+      ${taskColumns(entry)}
     `
   );
 }

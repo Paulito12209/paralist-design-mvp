@@ -9,6 +9,8 @@
  *   oder Dringlichkeit öffnet von unten das Blatt dazu — ebenso bei Termin
  *   und Projekt (Status und Dringlichkeit wie die Aufgabe) und beim Dokument
  *   (nur Status: Entwurf, Fertig, Geprüft),
+ * - in der Aufgaben-Liste am Desktop: ein Klick auf die Dringlichkeit öffnet
+ *   das kleine Menü daneben (openPriorityMenu),
  * - die kurze Meldung „Erledigt“ mit „Rückgängig“ — ein Tipp auf den
  *   Haken lässt die Zeile oft verschwinden (Filter „Erledigte ausblenden“), und
  *   ein versehentlicher Tipp soll sich ohne Suchen zurücknehmen lassen.
@@ -37,6 +39,7 @@ import {
 } from "../data/config-tasks.js";
 import { setTaskPriority, setTaskStatus, toggleTaskDone } from "../data/mutations-tasks.js";
 import { findEntry } from "../data/queries.js";
+import { openCtxMenu } from "./ctx-menu.js";
 import { openSheet } from "./sheet.js";
 import { showToast } from "./toast.js";
 
@@ -104,6 +107,24 @@ function fieldOptions(entry, field) {
  */
 export function openTaskSheet(entry, field = "status") {
   openSheet(field === "status" ? statusTitle : prioTitle, fieldOptions(entry, field));
+}
+
+/**
+ * Die Dringlichkeit als kleines Menü direkt neben `anchor` statt als Blatt
+ * von unten — für die Spalte „Dringlichkeit“ der Aufgaben-Liste am Desktop.
+ * Dieselben Stufen wie im Blatt, die gewählte trägt den Haken.
+ */
+export function openPriorityMenu(entry, anchor) {
+  const spec = fieldSpec(entry, "priority");
+  openCtxMenu(
+    anchor,
+    spec.list.map((item) => ({
+      label: item.label,
+      icon: item.icon,
+      active: item.id === spec.current,
+      onSelect: () => spec.set(entry, item.id),
+    }))
+  );
 }
 
 /* Meldung nach dem Abhaken; „Rückgängig“ stellt den Status von vorher wieder

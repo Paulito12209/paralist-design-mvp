@@ -2,7 +2,8 @@
  * Desktop: die Aufgaben-Seite in der Breite. Rechts neben den Pillen der
  * Ansichten stehen Liste | Board und der Filter nach Ort; die Liste zeigt
  * Fälligkeit, Dringlichkeit und Ablageort als ruhige Spalten statt in der
- * Nebenzeile; die Zeile unter der Maus ist getönt (ihre Details stehen
+ * Nebenzeile (ohne Pfeil; ein Klick auf eine Angabe bearbeitet sie,
+ * src/features/tasks/tasks-col-edit.js); die Zeile unter der Maus ist getönt (ihre Details stehen
  * rechts). Ab 1280px wandert die Karte „Ansicht“ in die rechte
  * Spalte (src/features/tasks/tasks-rail.js) — die schwebende Karte unten
  * entfällt dann. Am Handy gilt hier nichts.
@@ -12,13 +13,17 @@
  * -----------------------------------
  * --tasks-desk-tools   -> Platz rechts neben den Pillen für Liste | Board, Filter und Plus
  * --task-col-due / --task-col-prio / --task-col-place -> Breite der drei Spalten
+ *                      (Datum, Dringlichkeit, Verknüpfung — in dieser Reihenfolge ganz rechts)
+ * --task-col-gap       -> Luft zwischen den Spalten
+ * --task-col-pad / --task-col-h -> Innenrand und Höhe der Klickfläche einer Angabe
  * Einzelne Größen stehen bei ihrer Regel: Schrift der Spalten 13px, Filter 13px.
  *
  * WERTE AUS styles/tokens.css UND styles/tokens-desk.css
  * -----------------------------------
  * --tab-pills-tools-width -> Platz, den die Pillen rechts frei lassen (styles/overview.css)
  * --tab-pill-active-bg / --muted / --text -> Fläche des Filters, blasse und volle Schrift
- * --desk-hover         -> Tönung der markierten Zeile
+ * --desk-hover         -> Tönung der markierten Zeile und einer Angabe unter der Maus
+ * --desk-item-radius   -> Rundung dieser Tönung
  */
 
 /* Am Handy: keine Werkzeuge rechts, keine Spalten — alles steht in der Nebenzeile. */
@@ -30,9 +35,12 @@
 @media (min-width: 1024px) {
   #view-tasks {
     --tasks-desk-tools: 330px;
-    --task-col-due: 72px;
+    --task-col-due: 60px;
     --task-col-prio: 104px;
-    --task-col-place: 150px;
+    --task-col-place: 140px;
+    --task-col-gap: 2px;
+    --task-col-pad: 6px;
+    --task-col-h: 28px;
     --tab-pills-tools-width: var(--tasks-desk-tools);
   }
 
@@ -74,7 +82,7 @@
     cursor: default;
   }
 
-  /* ---------- Liste: ruhige Spalten ---------- */
+  /* ---------- Liste: ruhige Spalten ganz rechts ---------- */
 
   /* min-width: ein langer Titel darf die Zeile schmaler machen, statt sie über
      den Rand zu schieben — er endet dann mit „…“. */
@@ -82,30 +90,65 @@
     min-width: 0;
   }
 
-  /* Der Pfeil rechts bleibt gleich groß, auch wenn der Titel eng wird. */
-  #view-tasks .task-row .chevron {
-    flex-shrink: 0;
-  }
-
+  /* Kein Pfeil: ein Klick auf den Titel öffnet die Aufgabe ohnehin, rechts
+     stehen die Spalten. */
+  #view-tasks .task-row .chevron,
   #view-tasks .task-row .task-meta {
     display: none;
   }
 
-  #view-tasks .task-row .task-cols {
+  #view-tasks .task-cols {
     display: grid;
-    grid-template-columns: var(--task-col-due) var(--task-col-prio) var(--task-col-place); /* grid-template-columns: Fällig | Dringlichkeit | Ort */
+    grid-template-columns: var(--task-col-due) var(--task-col-prio) var(--task-col-place); /* grid-template-columns: Datum | Dringlichkeit | Verknüpfung */
+    column-gap: var(--task-col-gap);
     align-items: center;
     flex: 0 0 auto;
+    margin-right: calc(-1 * var(--task-col-pad)); /* margin: die Schrift der letzten Spalte steht bündig am Rand, nur ihre Klickfläche reicht darüber */
     font-size: 13px;
     color: var(--muted);
   }
 
-  /* .task-row span (styles/tasks.css) hielte die Zellen schmal — sie sollen ihre Spalte füllen. */
-  #view-tasks .task-row .task-col {
+  /* Jede Angabe ein eigener Knopf: so breit wie ihr Text, getönt beim Überfahren. */
+  #view-tasks .task-col {
+    display: inline-flex;
+    align-items: center;
+    justify-self: start; /* justify-self: der Knopf ist so breit wie sein Text, nicht wie die Spalte */
+    max-width: 100%;
+    min-width: 0;
+    height: var(--task-col-h);
+    padding: 0 var(--task-col-pad);
+    border-radius: var(--desk-item-radius);
+    font: inherit;
+    color: inherit;
+    cursor: pointer;
+  }
+
+  /* Das Datum steht rechts in seiner Spalte, dicht vor der Dringlichkeit */
+  #view-tasks .task-col[data-task-edit="date"] {
+    justify-self: end; /* justify-self: s. o., hier am rechten Rand der Spalte */
+  }
+
+  #view-tasks .task-col > span {
     min-width: 0;
     overflow: hidden;
-    text-overflow: ellipsis; /* text-overflow: s. o. */
+    text-overflow: ellipsis; /* text-overflow: lange Ortsnamen enden mit „…“ */
     white-space: nowrap;
+  }
+
+  #view-tasks .task-col:hover {
+    background: var(--desk-hover);
+  }
+
+  /* Leere Angabe: nur ein blasses Icon, sichtbar erst, wenn die Maus auf der Zeile steht */
+  #view-tasks .task-col-add {
+    width: 15px;
+    height: 15px;
+    opacity: 0;
+  }
+
+  #view-tasks .swipe-body:hover .task-col-add,
+  #view-tasks .task-col:focus-visible .task-col-add {
+    opacity: 0.6;
   }
 
   /* Die Zeile, deren Details rechts stehen */
