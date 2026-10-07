@@ -12,6 +12,7 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * untitledTask -> wie eine Aufgabe ohne Titel heißt
+ * colLabels    -> Vorlese-Text der drei Spalten am Desktop (Datum, Dringlichkeit, Verknüpfung)
  *
  * Aussehen und Größen stehen in styles/tasks.css (--task-meta-size, das Rot
  * eines überfälligen Datums ist --prio-jetzt).
@@ -25,6 +26,7 @@ import { parentName } from "../../data/queries.js";
 import { isEntryRef } from "../../data/refs.js";
 
 const untitledTask = "Ohne Titel";
+const colLabels = { date: "Datum ändern", priority: "Dringlichkeit wählen", place: "Verknüpfung ändern" };
 
 /** Titel einer Aufgabe, abgesichert für die Ausgabe. */
 export function taskTitle(entry) {
@@ -46,13 +48,16 @@ function priorityMarkup(entry) {
   return `<span class="task-prio" style="--chip-color:${priority.color}">${icon("urgency", "task-prio-icon")}${escapeHtml(priority.label)}</span>`;
 }
 
-/* Der eine übergeordnete Ort: das Projekt, sonst der Arbeitsbereich. Liegt die
-   Aufgabe in beiden, gewinnt das Projekt — es ist enger. Im Eingang steht nichts. */
-function placeMarkup(entry) {
+/** Der eine übergeordnete Ort: das Projekt, sonst der Arbeitsbereich. Liegt die
+   Aufgabe in beiden, gewinnt das Projekt — es ist enger. Im Eingang: null. */
+export function mainPlace(entry) {
   const places = entry.places || [];
-  if (!places.length) return "";
-  const main = places.find(isEntryRef) || places[0];
-  return `<span class="task-place">${escapeHtml(parentName(main))}</span>`;
+  return places.find(isEntryRef) || places[0] || null;
+}
+
+function placeMarkup(entry) {
+  const main = mainPlace(entry);
+  return main ? `<span class="task-place">${escapeHtml(parentName(main))}</span>` : "";
 }
 
 /**
@@ -68,17 +73,29 @@ export function taskMeta(entry, field) {
   return `<span class="task-meta">${parts.join('<span class="task-meta-dot" aria-hidden="true">·</span>')}</span>`;
 }
 
+/* Eine Spalte als eigener Knopf: ein Klick bearbeitet genau diese Angabe
+   (src/features/tasks/tasks-col-edit.js). Fehlt die Angabe, steht nur ein
+   blasses Icon da, das erst beim Überfahren der Zeile erscheint. */
+function colButton(entry, field, markup, emptyIcon, label) {
+  return `
+      <button class="task-col${markup ? "" : " is-empty"}" type="button" data-task-edit="${field}" data-task-id="${entry.id}" aria-label="${label}">
+        ${markup || icon(emptyIcon, "task-col-add")}
+      </button>`;
+}
+
 /**
- * Am Desktop stehen Fälligkeit, Dringlichkeit und Ablageort als ruhige
- * Spalten rechts in der Zeile statt in der Nebenzeile (styles/tasks-desk.css
- * blendet je nach Breite das eine oder das andere aus). Leere Zellen bleiben
- * stehen, damit die Spalten untereinander fluchten.
+ * Am Desktop stehen Fälligkeit, Dringlichkeit und Verknüpfung als ruhige,
+ * eng beieinander stehende Spalten ganz rechts in der Zeile statt in der
+ * Nebenzeile (styles/tasks-desk.css blendet je nach Breite das eine oder das
+ * andere aus). Sie liegen neben dem Zeilen-Knopf, nicht in ihm: ein Knopf im
+ * Knopf wäre ungültiges HTML. Leere Zellen bleiben stehen, damit die Spalten
+ * untereinander fluchten.
  */
 export function taskColumns(entry) {
   return `
     <span class="task-cols">
-      <span class="task-col">${dueMarkup(entry)}</span>
-      <span class="task-col">${priorityMarkup(entry)}</span>
-      <span class="task-col">${placeMarkup(entry)}</span>
+      ${colButton(entry, "date", dueMarkup(entry), "calendar", colLabels.date)}
+      ${colButton(entry, "priority", priorityMarkup(entry), "urgency", colLabels.priority)}
+      ${colButton(entry, "place", placeMarkup(entry), "folder-move", colLabels.place)}
     </span>`;
 }
