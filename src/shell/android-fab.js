@@ -11,6 +11,9 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * fabLabel  -> das Wort auf dem Knopf, solange er breit ist
+ *
+ * In „Android (Xool-DB)“ gibt es den breiten Knopf nicht; dort öffnet das Plus
+ * in der Leiste dasselbe Menü (src/shell/android-xool-nav.js).
  */
 
 import { events, on } from "../core/bus.js";
@@ -67,10 +70,12 @@ function onKey(event) {
   if (event.key === "Escape") closeFabMenu();
 }
 
-function openFabMenu() {
+function openFabMenu(anchor) {
   /* Der Schließen-Knopf steht genau dort, wo der Plus-Knopf steht — einmal
-     beim Öffnen gemessen, danach bewegt sich nichts mehr. */
-  const fabBox = fab.getBoundingClientRect();
+     beim Öffnen gemessen, danach bewegt sich nichts mehr. In „Android (Xool-DB)“
+     ist der Anker das Plus in der Leiste. */
+  const fabBox = anchor.getBoundingClientRect();
+  menu.style.setProperty("--m3-menu-left", `${Math.round(fabBox.left + fabBox.width / 2 - dom.device.getBoundingClientRect().left)}px`);
   const deviceBox = dom.device.getBoundingClientRect();
   menu.style.setProperty("--m3-menu-bottom", `${Math.round(deviceBox.bottom - fabBox.bottom)}px`);
   menu.hidden = false;
@@ -82,9 +87,17 @@ function openFabMenu() {
   list.scrollTop = list.scrollHeight;
   dom.device.classList.add("is-fab-open");
   fab.setAttribute("aria-expanded", "true");
+  document.getElementById("tab-add")?.setAttribute("aria-expanded", "true");
   /* Erst im nächsten Bild die Klasse: sonst blendet der Schleier nicht ein, sondern ist sofort da. */
   requestAnimationFrame(() => menu.classList.add("is-open"));
   document.addEventListener("keydown", onKey);
+}
+
+/** Das Menü öffnen oder schließen; `anchor` ist der Knopf, an dessen Stelle das ✕ steht. */
+export function toggleFabMenu(anchor = fab) {
+  if (!isAndroidMobile()) return;
+  if (isMenuOpen()) closeFabMenu();
+  else openFabMenu(anchor);
 }
 
 /** Das Menü ohne Verlaufsschritt schließen. */
@@ -94,6 +107,7 @@ export function closeFabMenu() {
   menu.classList.remove("is-open");
   dom.device.classList.remove("is-fab-open");
   fab.setAttribute("aria-expanded", "false");
+  document.getElementById("tab-add")?.setAttribute("aria-expanded", "false");
   document.removeEventListener("keydown", onKey);
 }
 
@@ -122,11 +136,7 @@ export function initAndroidFab() {
   dom.navShell.append(fab);
   dom.device.append(menu);
 
-  fab.addEventListener("click", () => {
-    if (!isAndroidMobile()) return;
-    if (isMenuOpen()) closeFabMenu();
-    else openFabMenu();
-  });
+  fab.addEventListener("click", () => toggleFabMenu(fab));
   menu.addEventListener("click", onMenuClick);
 
   on(events.viewWillChange, closeFabMenu);

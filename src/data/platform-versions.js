@@ -24,9 +24,11 @@
  *                          in einem Blatt auf (src/features/profile/versions.js)
  * formerIds             -> frühere Namen von Fassungen und was heute an ihrer Stelle steht
  *
- * Es gibt genau eine Android-Fassung, die später die App wird, und genau eine
+ * Es gibt eine Android-Fassung, die später die App wird, und eine
  * experimentelle daneben. Neue Versuche kommen in „Android (Experiment)“ und
- * eine Zeile in deren `differences` — keine weitere Fassung.
+ * eine Zeile in deren `differences`. Ausnahme auf ausdrücklichen Wunsch:
+ * „Android (Xool-DB)“ — die Navigation der Xool-App (Plus in der Mitte, Menü
+ * rechts), sonst wie „Android“.
  */
 
 import { readJson, storageKeys, writeJson } from "../core/storage.js";
@@ -58,6 +60,18 @@ export const platforms = [
           { area: "Farben (hell)", text: "Kacheln, Projekte-Container und Navigationsleiste haben im Hellen dieselbe, deutlich dunklere Fläche als der Seitengrund; unter „Projekte“ steht bei ausgeblendeten Reitern eine leise Trennlinie." },
           { area: "Reiter ausblenden", text: "„Tabs anzeigen“ im Blatt „Ansicht“ gibt es auch in „Android“; im Experiment startet die Übersicht aber ohne Reiter, in „Android“ stehen sie überall." },
           { area: "Liste der Übersicht", text: "„Projekte ˅“ öffnet ein Blatt mit den acht Listen der Desktop-Seitenleiste (Projekte, Arbeitsbereiche, Ressourcen, Archiv, Eingang, Aufgaben, Termine, Lesezeichen); die gewählte steht dann unter den Kacheln. Bei Projekten stehen rechts eine Pille „Liste“/„Kanban“ für das Layout und ein runder Knopf, der die Reiter ein- und ausblendet." },
+        ],
+      },
+      /* Navigation wie in der Xool-App (styles/android-xool-nav.css, src/shell/android-xool-menu.js) */
+      {
+        id: "android-xool",
+        label: "Android (Xool-DB)",
+        icon: "smartphone",
+        os: "android",
+        variant: "xool",
+        differences: [
+          { area: "Navigationsleiste", text: "Übersicht · Kalender · Plus · Aufgaben · Menü, von Rand zu Rand. Das Plus steht als gefüllte Pille in der Mitte der Leiste; der Knopf „Neu“ über der Leiste entfällt. Das Plus öffnet dasselbe Anlege-Menü wie sonst." },
+          { area: "Menü", text: "Der Reiter „Medien“ in der Leiste ist dem Reiter „Menü“ gewichen: ein Blatt von unten mit Medien, Archiv und Einstellungen." },
         ],
       },
       { id: "ios", label: "iOS", icon: "smartphone" },

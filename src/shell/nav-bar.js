@@ -32,6 +32,8 @@ function applyNavGlow(on) {
 /** Die vier Seiten-Knöpfe und den Knopf oben rechts anmelden. */
 export function initNavBar() {
   dom.tabButtons.forEach((button) => {
+    /* Der Reiter „Menü“ hat keine Seite (src/shell/android-xool-nav.js) */
+    if (!button.dataset.tab) return;
     button.addEventListener("click", () => showTab(button.dataset.tab));
   });
 

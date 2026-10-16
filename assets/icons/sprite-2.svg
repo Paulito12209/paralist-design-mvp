@@ -318,4 +318,9 @@
     <rect x="3.5" y="5" width="17" height="14.5" rx="2.5" stroke="currentColor" stroke-width="1.7" />
     <path d="M3.5 9.5h17M11.5 5v4.5" stroke="currentColor" stroke-width="1.7" />
   </symbol>
+  <!-- Menü: zwei gerundete Riegel, in jedem ein Loch an der Spitze — das Zeichen der Xool-App -->
+  <symbol id="icon-menu" viewBox="0 0 32 24" fill="none">
+    <path fill="currentColor" fill-rule="evenodd" d="M6 2h20a4 4 0 0 1 0 8H6a4 4 0 0 1 0-8Zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z" />
+    <path fill="currentColor" fill-rule="evenodd" d="M6 14h20a4 4 0 0 1 0 8H6a4 4 0 0 1 0-8Zm20 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z" />
+  </symbol>
 </svg>

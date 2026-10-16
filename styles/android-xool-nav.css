@@ -1,0 +1,99 @@
+/*
+ * Fassung „Android (Xool-DB)“, Navigationsleiste nach der Xool-App: fünf gleich
+ * breite Felder von Rand zu Rand — Übersicht, Kalender, Plus, Aufgaben, Menü.
+ * Das Plus ist ein Feld der Leiste mit immer gefüllter Pille (statt des Knopfs
+ * „Neu“ über der Leiste) und öffnet das Anlege-Menü, das dann mittig über
+ * der Leiste steht; „Medien“ liegt hinter dem Reiter „Menü“ (Blatt von unten).
+ * Gilt nur mit data-mobile-variant="xool" an <html> und unterhalb von 1024px.
+ * Muss nach android-fab.css und android.css geladen werden, damit sie deren
+ * Regeln überstimmt.
+ * Pfad: styles/android-xool-nav.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-indicator-w / -h   -> Maß der Pille hinter jedem Icon, auch der des Plus
+ * --m3-primary-container  -> Farbe der Plus-Pille
+ * --m3-on-primary-container -> Farbe des Plus-Zeichens darauf
+ * --m3-content-end        -> Platz am Seitenende: hier nur noch Leiste plus ein Abstand,
+ *                            weil es keinen Knopf „Neu“ darüber gibt
+ * --m3-fab-gap            -> Abstand zum Seitenende; Luft über dem ✕ des offenen Menüs
+ * Schrift des Namens unter dem Plus: 12px wie bei den Reitern (android.css).
+ */
+
+/* Der Reiter „Menü“ und der Name unter dem Plus gibt es nur in dieser Fassung */
+.tab-bar .tab-menu,
+.tab-add-label,
+.tab-add-plus {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  :root[data-mobile-variant="xool"] {
+    --m3-content-end: calc(var(--m3-nav-height-labels) + var(--m3-fab-gap));
+  }
+
+  /* Kein breiter Knopf über der Leiste; „Medien“ steht im Menü-Blatt */
+  :root[data-mobile-variant="xool"] .m3-fab,
+  :root[data-mobile-variant="xool"] .tab-bar .tab-btn[data-tab="media"] {
+    display: none;
+  }
+
+  :root[data-mobile-variant="xool"] .tab-bar .tab-menu {
+    display: flex;
+  }
+
+  /* Das Plus: ein Feld wie die Reiter, Pille darin immer gefüllt.
+     Icon mit Innenabstand zur Pille (wie bei den Reitern, android.css) */
+  :root[data-mobile-variant="xool"] .tab-bar .tab-add {
+    display: flex;
+    flex: 1 1 0;
+    width: auto;
+    height: auto;
+    margin: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: none;
+    color: var(--m3-on-surface);
+  }
+
+  /* Das schlichte Plus statt der Striche der iOS-Fassung */
+  :root[data-mobile-variant="xool"] .tab-bar .tab-add .tab-add-ticks {
+    display: none;
+  }
+
+  :root[data-mobile-variant="xool"] .tab-bar .tab-add .tab-add-plus {
+    display: block;
+  }
+
+  :root[data-mobile-variant="xool"] .tab-bar .tab-add .icon {
+    box-sizing: content-box;
+    width: 24px;
+    height: 24px;
+    padding: calc((var(--m3-indicator-h) - 24px) / 2) calc((var(--m3-indicator-w) - 24px) / 2);
+    border-radius: 999px; /* border-radius: aus dem Kästchen wird die Pille */
+    background: var(--m3-primary-container);
+    color: var(--m3-on-primary-container);
+  }
+
+  :root[data-mobile-variant="xool"] .tab-bar.show-labels .tab-add-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 16px;
+  }
+
+  /* Das offene Menü steht mittig über dem Plus (Mitte gemessen in android-fab.js) */
+  :root[data-mobile-variant="xool"] .m3-fab-menu-list {
+    right: auto;
+    left: var(--m3-menu-left);
+    transform: translateX(-50%); /* transform: Mitte der Liste auf die Mitte des Plus */
+    align-items: center;
+  }
+
+  :root[data-mobile-variant="xool"] .m3-fab-close {
+    right: auto;
+    left: calc(var(--m3-menu-left) - var(--m3-fab-size) / 2);
+  }
+}
