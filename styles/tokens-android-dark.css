@@ -103,7 +103,7 @@
 /* Experiment: Flächen der Übersicht (Container, Pfeil-Knopf, Trennlinie).
    Grundwerte = die Töne der Fassung; im Hellen überschreiben die zwei Blöcke darunter
    nur, was es allein im Experiment gibt (Pfeil-Knopf, Linie). */
-:root[data-mobile-variant="experiment"] {
+:root:is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) {
   --m3-xl-surface: var(--m3-surface-container);
   --m3-xl-surface-high: var(--m3-surface-container-high);
   --m3-xl-tile: var(--overview-card-bg);
@@ -132,13 +132,13 @@
   --m3-content-end: calc(var(--m3-xl-nav-height) + var(--m3-xl-nav-bottom) + 2 * var(--m3-fab-gap));
 }
 
-:root[data-mobile-variant="experiment"][data-theme="light"] {
+:root:is([data-mobile-variant="experiment"], [data-mobile-variant="xool"])[data-theme="light"] {
   --m3-xl-surface-high: #cdd5e3;
   --m3-xl-divider-color: rgba(0, 0, 0, 0.1);
 }
 
 @media (prefers-color-scheme: light) {
-  :root[data-mobile-variant="experiment"]:not([data-theme="dark"]) {
+  :root:is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]):not([data-theme="dark"]) {
     --m3-xl-surface-high: #cdd5e3;
     --m3-xl-divider-color: rgba(0, 0, 0, 0.1);
   }

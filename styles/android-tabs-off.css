@@ -73,7 +73,7 @@
   }
 
   /* Im Container der Übersicht folgt sie gleich auf die Überschrift „Projekte“ */
-  [data-mobile-variant="experiment"][data-tabs-home="off"] #view-home #project-list .project-card-head {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"])[data-tabs-home="off"] #view-home #project-list .project-card-head {
     margin-top: 0;
   }
 
@@ -84,7 +84,7 @@
      ::before — ein eigenes Teil nur für die Linie: sie liegt über der Zeile, die
      ohnehin bis an den Geräterand reicht (styles/android-card.css), ohne dass sich der Inhalt verschiebt.
      position: absolute — hängt die Linie an die Zeile (die ist sticky und damit der Bezug). */
-  [data-mobile-os="android"]:not([data-mobile-variant="experiment"])[data-tabs-home="off"] #view-home .project-card-head::before {
+  [data-mobile-os="android"]:not(:is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]))[data-tabs-home="off"] #view-home .project-card-head::before {
     content: "";
     position: absolute;
     top: 0;

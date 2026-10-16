@@ -42,6 +42,9 @@ export const storageKeys = {
   deskArchive: "paralist-desk-archive",
   /* Übersicht in „Android (Experiment)“: welche Liste unter den Kacheln steht (Projekte, Eingang …) */
   homeList: "paralist-home-list",
+  /* Übersicht in „Android (Xool-DB)“: der Reiter (Markiert oder Listen) und die gewählte Liste unter „Markiert“ */
+  homeTab: "paralist-home-tab",
+  homeMarked: "paralist-home-marked",
   /* Werkzeugleiste der Zeichnung am Desktop: wo sie steht, Strichbreiten, eigene Farben */
   drawPrefs: "paralist-draw-prefs",
   /* Seitenfenster rechts am Desktop: offen, breit, was darin steht, letzte Adresse */

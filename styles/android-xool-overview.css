@@ -1,0 +1,126 @@
+/*
+ * Fassung „Android (Xool-DB)“, Übersicht: über dem Container mit Kopf und
+ * Zeilen stehen die zwei Reiter „Markiert · Listen“ wie „Meine Ablage ·
+ * Computer“ in Google Drive: Name, dahinter das Icon der gewählten Liste (der
+ * aktive Reiter einen Pfeil nach unten, der die Listenwahl öffnet) und eine
+ * Linie in der Primärfarbe unter dem aktiven Namen. Der Container selbst
+ * (Fläche, Rundung, Kachelgruppe) kommt aus android-overview-sheet.css, das
+ * auch für diese Fassung gilt; hier stehen nur die Reiter und die Zeile mit
+ * Name und Anzahl. Gebaut werden sie in src/features/overview/home-xool.js.
+ * Gilt nur mit data-mobile-variant="xool" an <html>, auf der Übersicht
+ * (#view-home) und unterhalb von 1024px. Muss nach android-overview-sheet.css
+ * geladen werden.
+ * Pfad: styles/android-xool-overview.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-tab-height / --m3-tab-edge / --m3-tab-indicator -> Höhe, Randabstand und Linie der Reiter
+ * --m3-ov-sheet-head-h    -> Höhe der Zeile mit Name und Anzahl
+ * --m3-ov-sheet-radius    -> Rundung oben am Container
+ * --m3-ov-head-size       -> Schriftgröße des Namens
+ * --m3-primary            -> Farbe der Linie unter dem aktiven Reiter
+ * --m3-on-surface / --m3-on-surface-variant -> aktiver und ruhender Reiter, Anzahl
+ * Schrift der Reiter 14px, Icons darin 16px: stehen direkt bei ihrer Regel.
+ */
+
+@media (max-width: 1023px) {
+  /* Der Kopf ist hier nur noch der Rahmen um Reiter und Zeile; Fläche und Rundung trägt die Zeile */
+  :root[data-mobile-variant="xool"] #view-home .project-head {
+    display: block;
+    padding: 0;
+    background: none;
+    border-radius: 0;
+    min-height: 0;
+  }
+
+  /* ---------- Reiter ---------- */
+
+  :root[data-mobile-variant="xool"] .home-xool-tabs {
+    display: flex;
+    padding-inline: var(--m3-tab-edge);
+  }
+
+  :root[data-mobile-variant="xool"] .home-xool-tab {
+    display: flex;
+    align-items: center;
+    height: var(--m3-tab-height);
+    padding-inline: 4px;
+    margin-right: 20px;
+    color: var(--m3-on-surface-variant);
+    font-size: 14px;
+    font-weight: 500;
+  }
+
+  :root[data-mobile-variant="xool"] .home-xool-tab.is-on {
+    color: var(--m3-on-surface);
+    font-weight: 700;
+  }
+
+  /* Die Linie sitzt am inneren Stück und ist so breit wie Name und Zeichen */
+  :root[data-mobile-variant="xool"] .home-xool-tab-label {
+    position: relative; /* position: die Linie hängt am unteren Rand des Stücks */
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 100%;
+  }
+
+  :root[data-mobile-variant="xool"] .home-xool-tab.is-on .home-xool-tab-label::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: var(--m3-tab-indicator);
+    border-radius: var(--m3-tab-indicator) var(--m3-tab-indicator) 0 0;
+    background: var(--m3-primary);
+  }
+
+  :root[data-mobile-variant="xool"] :is(.home-xool-glyph, .home-xool-chevron) {
+    width: 16px;
+    height: 16px;
+  }
+
+  /* Das Chevron-Symbol zeigt nach rechts: um 90° gedreht nach unten */
+  :root[data-mobile-variant="xool"] .home-xool-chevron {
+    transform: rotate(90deg); /* transform: dasselbe Symbol, nur nach unten gedreht */
+  }
+
+  :root[data-mobile-variant="xool"] .home-xool-tab:active {
+    opacity: 0.55;
+  }
+
+  /* ---------- Zeile mit Name, Anzahl und Knöpfen: der Anfang des Containers ---------- */
+
+  :root[data-mobile-variant="xool"] .home-xool-bar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-height: var(--m3-ov-sheet-head-h);
+    padding: 0 var(--content-side) 0 var(--m3-title-edge);
+    border-radius: var(--m3-ov-sheet-radius) var(--m3-ov-sheet-radius) 0 0;
+    background: var(--m3-surface-container);
+  }
+
+  :root[data-mobile-variant="xool"] .home-xool-name {
+    display: flex;
+    flex: 1;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0; /* min-width: Flex-Kind darf schmaler werden, lange Namen kürzen */
+    font-size: var(--m3-ov-head-size);
+    font-weight: 500;
+  }
+
+  :root[data-mobile-variant="xool"] .home-xool-name > span:first-child {
+    overflow: hidden;
+    text-overflow: ellipsis; /* text-overflow: zu lange Namen enden mit „…“ */
+    white-space: nowrap;
+  }
+
+  :root[data-mobile-variant="xool"] .home-xool-count {
+    font-size: 14px;
+    font-weight: 400;
+    color: var(--m3-on-surface-variant);
+  }
+}

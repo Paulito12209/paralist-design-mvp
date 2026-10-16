@@ -10,7 +10,7 @@
  * -----------------------------------
  * tabsDefaults -> ob die Reiter einer Seite ohne gespeicherte Wahl zu sehen sind
  *                 (true = sichtbar). „Android“: überall an. „Android (Experiment)“:
- *                 nur auf der Übersicht aus, sonst an
+ *                 nur auf der Übersicht aus, sonst an; „Android (Xool-DB)“ wie das Experiment
  */
 
 import { readText, storageKeys, writeText } from "../core/storage.js";
@@ -22,6 +22,7 @@ export const tabsScopes = ["home", "projects", "tasks", "pages"];
 const tabsDefaults = {
   android: { home: true, projects: true, tasks: true, pages: true },
   experiment: { home: false, projects: true, tasks: true, pages: true },
+  xool: { home: false, projects: true, tasks: true, pages: true },
 };
 
 /* Je Seite ein eigener Speicherplatz. */
