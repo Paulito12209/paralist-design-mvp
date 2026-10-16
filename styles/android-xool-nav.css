@@ -19,6 +19,7 @@
  * --m3-xo-ind / --m3-xo-on-ind / --m3-xo-ind-w -> Pille hinter dem aktiven Icon (Farbe, Icon, Breite)
  * --m3-xo-level           -> Farbe des Plus-Zeichens (Silberblau der Stufe)
  * --m3-xo-ind              -> Fläche des runden Plus-Knopfs, solange die Leiste weggeglitten ist
+ * --m3-xo-fab-shadow      -> Schatten des runden Plus (derselbe wie beim Regler)
  * --m3-hide-time           -> wie schnell Leiste und Plus ein- und ausblenden
  * --m3-xo-ink             -> Namen unter den Icons
  * (diese Xool-Werte stehen in styles/tokens-android-dark.css, Abschnitt XOOL-DB)
@@ -161,7 +162,7 @@
     border-radius: 50%;
     background: var(--m3-xo-ind);
     transform: translateY(11px); /* transform: der Kreis sitzt mittig in den 70px der Leiste, nichts ragt darüber hinaus */
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25); /* box-shadow: hebt den Knopf leicht von der Seite ab */
+    box-shadow: var(--m3-xo-fab-shadow); /* box-shadow: hebt den Knopf leicht von der Seite ab, wie den Regler */
   }
 
   :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) .tab-bar.show-labels .tab-add-label {

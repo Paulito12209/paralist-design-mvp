@@ -17,6 +17,7 @@
  * --m3-xo-ind / --m3-xo-on-ind        -> Fläche und Zeichen des Reglers
  * --m3-xo-row-radius / --m3-xo-end-radius / --m3-xo-gap -> Rundungen und Fuge der Karten
  * --m3-xo-nav-height                  -> Höhe der Leiste (der Regler steht darüber)
+ * --m3-xo-fab-shadow                  -> Schatten des Reglers (derselbe wie beim runden Plus)
  * Aus styles/tokens-android.css: --m3-hide-time (Gleiten).
  * Der Regler der Aufgaben ist der Knopf „Ansicht“ in der Werkzeugzeile; „Sortieren“ bleibt dort.
  * Einzelwerte direkt bei der Regel: KW-Spalte 34px, Regler 56px, 16px Rand und Abstand zur Leiste,
@@ -103,7 +104,7 @@
     border-radius: 28px;
     background: var(--m3-xo-ind);
     color: var(--m3-xo-on-ind);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25); /* box-shadow: hebt den Knopf vom Raster ab */
+    box-shadow: var(--m3-xo-fab-shadow); /* box-shadow: derselbe Schatten wie beim runden Plus */
     font-size: 16px;
     font-weight: 500;
     transition: left var(--m3-hide-time) ease, bottom var(--m3-hide-time) ease;

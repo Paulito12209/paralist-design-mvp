@@ -40,6 +40,7 @@
  * --m3-xo-tile-radius        -> Rundung der Kacheln
  * --m3-xo-tab-size           -> Schriftgröße der Reiter
  * --m3-xo-nav-height / -ind-w -> Höhe der Leiste und Breite der Pille hinter dem Icon
+ * --m3-xo-fab-shadow        -> Schatten des runden Plus und des Reglers (beide gleich)
  * --m3-xl-nav-surface        -> Experiment: Fläche der schwebenden Navigationsleiste (heller als Kacheln und Container)
  * --m3-xl-nav-height         -> Höhe der Leiste und des Knopfs „Neu“ daneben (beide gleich hoch)
  * --m3-xl-nav-side           -> Abstand von Leiste und „Neu“ zum linken und rechten Geräterand
@@ -185,6 +186,7 @@
   --m3-xo-tile-radius: 18px;
   --m3-xo-tab-size: 16px;
   --m3-xo-nav-height: 70px;
+  --m3-xo-fab-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
   --m3-xo-ind-w: 64px;
   --bg: var(--m3-xo-page);
 }
