@@ -1,9 +1,9 @@
 /*
  * „Android (Xool-DB)“: das Anlege-Blatt hinter dem Plus (src/shell/android-xool-create.js).
- * Ein Blatt von unten über der Leiste, nach dem Vorbild von „Erstellen“ in Spotify:
+ * Ein schwebendes Blatt über der Leiste, nach dem Vorbild von „Erstellen“ in Spotify:
  * je Abschnitt eine Überschrift und darunter Chips (Pillen mit Icon und Name).
  * Dahinter ein Schleier; ein Tipp darauf schließt das Blatt. Die Chips folgen den
- * Material-3-Filterchips: 40px hoch, voll gerundet, Fläche in der Farbe des aktiven
+ * Material-3-Filterchips: 34px hoch, voll gerundet, Fläche in der Farbe des aktiven
  * Reiters; die noch nicht verfügbaren (Lernen) sind abgeblendet.
  * Gilt nur mit data-mobile-variant="xool" an <html> und unterhalb von 1024px.
  * Pfad: styles/android-xool-create.css
@@ -15,8 +15,8 @@
  * --m3-xo-ink              -> Überschriften der Abschnitte
  * Aus styles/tokens-android.css: --m3-scrim (Schleier), --m3-sheet-radius (Rundung oben),
  * --m3-hide-time (Einblenden).
- * Einzelwerte direkt bei der Regel: Chips 40px hoch, 16px Schrift, 12px Luft zwischen den Chips,
- * 20px zwischen den Abschnitten, Überschrift 14px fett.
+ * Einzelwerte direkt bei der Regel: Chips 34px hoch, 15px Schrift, 8px Luft zwischen den Chips,
+ * 16px zwischen den Abschnitten, Überschrift 14px fett, Blatt 8px vom Rand und 28px gerundet.
  */
 
 .xo-create {
@@ -24,17 +24,18 @@
 }
 
 @media (max-width: 1023px) {
-  /* position/inset: der Schleier deckt das ganze Gerät ab; z-index 30 wie das Menü des
-     Plus in „Android“ — über Kopfzeile und Leiste, unter den Blättern */
+  /* position/inset: der Schleier deckt das Gerät bis zur Leiste ab; die Leiste bleibt frei, damit das
+     Plus als ✕ zu sehen und zu tippen ist. z-index 30 wie das Menü des Plus in „Android“ — über
+     Kopfzeile und Seite, unter den Blättern */
   :root[data-mobile-variant="xool"] .xo-create {
-    cursor: pointer; /* cursor: iOS Safari meldet Tipper auf einer Fläche nur dann als Klick, wenn sie klickbar aussieht — sonst schließt der Schleier nicht */
     position: absolute;
-    inset: 0;
+    inset: 0 0 calc(var(--m3-xo-nav-height) + var(--safe-bottom)) 0;
     z-index: 30;
     display: block;
     background: var(--m3-scrim);
     opacity: 0;
     transition: opacity var(--m3-hide-time) ease; /* transition: der Schleier blendet ein */
+    cursor: pointer; /* cursor: iOS Safari meldet Tipper auf einer Fläche nur dann als Klick, wenn sie klickbar aussieht — sonst schließt der Schleier nicht */
   }
 
   :root[data-mobile-variant="xool"] .xo-create[hidden] {
@@ -45,20 +46,21 @@
     opacity: 1;
   }
 
-  /* Das Blatt sitzt unten, über der Leiste; zu viel Inhalt auf kleinen Geräten scrollt */
+  /* Das Blatt schwebt über der Leiste wie in Spotify: 8px Rand an den Seiten und unten, rundum 28px
+     gerundet; zu viel Inhalt auf kleinen Geräten scrollt */
   :root[data-mobile-variant="xool"] .xo-sheet {
     cursor: default;
     position: absolute;
-    left: 0;
-    right: 0;
-    bottom: calc(var(--m3-nav-height-labels) + var(--safe-bottom));
-    max-height: calc(100% - var(--safe-top) - var(--m3-nav-height-labels) - var(--safe-bottom) - 16px);
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    max-height: calc(100% - var(--safe-top) - 24px);
     overflow-y: auto; /* overflow: nur bei sehr niedrigen Geräten nötig */
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 16px;
     padding: 20px 16px;
-    border-radius: var(--m3-sheet-radius) var(--m3-sheet-radius) 0 0;
+    border-radius: 28px;
     background: var(--m3-xo-card);
     transform: translateY(24px); /* transform: das Blatt gleitet von unten herein */
     transition: transform var(--m3-hide-time) ease;
@@ -78,25 +80,25 @@
   :root[data-mobile-variant="xool"] .xo-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 12px;
+    gap: 8px;
   }
 
   :root[data-mobile-variant="xool"] .xo-chip {
     display: inline-flex;
     align-items: center;
-    gap: 8px;
-    height: 40px;
-    padding: 0 16px 0 12px;
+    gap: 6px;
+    height: 34px;
+    padding: 0 14px 0 10px;
     border-radius: 999px; /* border-radius: Pillenform wie bei Material-3-Chips */
     background: var(--m3-xo-ind);
     color: var(--m3-xo-on-ind);
-    font-size: 16px;
+    font-size: 15px;
     font-weight: 500;
   }
 
   :root[data-mobile-variant="xool"] .xo-chip .icon {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
   }
 
   :root[data-mobile-variant="xool"] .xo-chip:active {

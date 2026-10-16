@@ -185,4 +185,17 @@
     background: var(--m3-xo-level);
     box-shadow: 0 0 0 2px var(--m3-xo-bar); /* box-shadow: trennt den Punkt vom Icon */
   }
+
+  /* Ist das Anlege-Blatt offen, dreht sich das Plus um 45° zum ✕ (src/shell/android-xool-create.js) */
+  :root[data-mobile-variant="xool"] .tab-bar .tab-add .tab-add-plus {
+    transition: transform var(--m3-hide-time) ease;
+  }
+
+  :root[data-mobile-variant="xool"] .device.is-xo-create .tab-bar .tab-add .tab-add-plus {
+    transform: rotate(45deg); /* transform: aus dem Plus wird ein ✕ */
+  }
+
+  :root[data-mobile-variant="xool"] .device.is-xo-create.is-bars-hidden:not(.is-nav-back) .tab-bar .tab-add .icon {
+    transform: translateY(11px) rotate(45deg); /* transform: bei weggeblendeter Leiste bleibt der Kreis mittig und dreht sich */
+  }
 }

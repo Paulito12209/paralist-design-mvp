@@ -138,6 +138,12 @@
     display: none;
   }
 
+  /* Solange das Anlege-Blatt oder das Menü offen ist, steht der Regler nicht im Weg */
+  :root[data-mobile-variant="xool"] .device:is(.is-xo-create, .is-xo-drawer) :is(#view-calendar .cal-date-row .view-panel-btn, #view-tasks [data-card-tool="view"], #view-home .home-xool-bar .view-panel-btn) {
+    opacity: 0;
+    pointer-events: none;
+  }
+
   :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) :is(#view-calendar .cal-date-row .view-panel-btn, #view-tasks [data-card-tool="view"], #view-home .home-xool-bar .view-panel-btn) {
     left: calc(50vw + 40px); /* 40px: halbes Plus (28px) plus 12px Abstand */
     bottom: calc(var(--safe-bottom) + 7px); /* 7px: unterer Rand des runden Plus (Mitte 35px über dem Rand) */

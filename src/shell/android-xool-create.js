@@ -1,9 +1,11 @@
 /*
  * „Android (Xool-DB)“: das Blatt, das das Plus in der Leiste öffnet. Statt der
- * Spalte mit Knöpfen („Neu“ in „Android“) ein Blatt von unten nach dem
- * Vorbild von „Erstellen“ in Spotify: Abschnitte mit einer Überschrift und
+ * Spalte mit Knöpfen („Neu“ in „Android“) ein schwebendes, abgerundetes Blatt über der
+ * Leiste nach dem Vorbild von „Erstellen“ in Spotify; das Plus in der Leiste dreht sich dabei
+ * zum ✕ (styles/android-xool-nav.css): Abschnitte mit einer Überschrift und
  * darunter Chips. Ganz unten, am Daumen, steht „Schnell erfassen“ (Aufgabe,
- * Notiz, Termin), darüber Ressourcen, Medien, PARA und ganz oben Lernen.
+ * Notiz, Termin), darüber Ressourcen (mit „Datei“ für Medien), Organisieren (Projekt,
+ * Arbeitsbereich) und ganz oben Lernen.
  * Ein Chip schließt das Blatt und öffnet das Eingabefeld mit dieser Art
  * (src/shell/create-menu.js, createFromMenu). Lernen (Karteikarte, Kartendeck)
  * gibt es im MVP noch nicht: die Chips stehen da, sind aber abgeblendet.
@@ -31,24 +33,24 @@ const sections = [
   {
     title: "Lernen",
     chips: [
-      { type: "karteikarte", label: "Karteikarte", icon: "note", soon: true },
-      { type: "kartendeck", label: "Kartendeck", icon: "layers", soon: true },
+      { type: "karteikarte", label: "Karteikarte", icon: "mini-card", soon: true },
+      { type: "kartendeck", label: "Kartendeck", icon: "mini-cards", soon: true },
     ],
   },
   {
-    title: "PARA",
+    title: "Organisieren",
     chips: [
       { type: "projekt", label: "Projekt" },
       { type: "arbeitsbereich", label: "Arbeitsbereich", icon: "layers" },
     ],
   },
-  { title: "Medien", chips: [{ type: "medien", label: "Medium" }] },
   {
     title: "Ressourcen",
     chips: [
       { type: "dokument", label: "Dokument" },
       { type: "zeichnung", label: "Zeichnung" },
       { type: "lesezeichen", label: "Lesezeichen" },
+      { type: "medien", label: "Datei" },
     ],
   },
   {
