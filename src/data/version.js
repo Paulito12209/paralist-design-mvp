@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "8acba4289862";
+export const appVersion = "a4e6a3083145";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -82,6 +82,7 @@ export const appFiles = [
   "src/features/media/viewer.js", "src/features/overview/archive-active.js",
   "src/features/overview/archive.js", "src/features/overview/collection-filter.js",
   "src/features/overview/collection-panel.js", "src/features/overview/home-list.js",
+  "src/features/overview/home-xool.js", "src/features/overview/overview-xool.js",
   "src/features/overview/overview.js", "src/features/overview/page-hero.js",
   "src/features/overview/page-inline.js", "src/features/overview/page-list-head.js",
   "src/features/overview/page-select-actions.js", "src/features/overview/page-select.js",
@@ -118,7 +119,8 @@ export const appFiles = [
   "src/features/tasks/tasks-select-bar.js", "src/features/tasks/tasks-select.js",
   "src/features/tasks/tasks-settings.js", "src/features/tasks/tasks-views.js",
   "src/features/tasks/tasks.js", "src/main.js", "src/shell/android-bars.js",
-  "src/shell/android-fab.js", "src/shell/android-link-btn.js", "src/shell/board-heads.js",
+  "src/shell/android-fab.js", "src/shell/android-link-btn.js", "src/shell/android-xool-create.js",
+  "src/shell/android-xool-drawer.js", "src/shell/android-xool-nav.js", "src/shell/board-heads.js",
   "src/shell/create-menu.js", "src/shell/demo-load.js", "src/shell/desk-combos.js",
   "src/shell/desk-foot.js", "src/shell/desk-head.js", "src/shell/desk-help.js",
   "src/shell/desk-keys.js", "src/shell/desk-list-rows.js", "src/shell/desk-list.js",
@@ -168,8 +170,10 @@ export const appFiles = [
   "styles/android-settings-google.css", "styles/android-settings-groups.css",
   "styles/android-settings-tiles.css", "styles/android-sheet.css", "styles/android-tab-snap.css",
   "styles/android-tabs-off.css", "styles/android-tabs.css", "styles/android-view-btn.css",
-  "styles/android.css", "styles/avatar-crop.css", "styles/base.css", "styles/block-bar.css",
-  "styles/blocks.css", "styles/bookmarks.css", "styles/calendar-panel.css",
+  "styles/android-xool-create.css", "styles/android-xool-drawer.css", "styles/android-xool-nav.css",
+  "styles/android-xool-overview.css", "styles/android-xool-pages.css",
+  "styles/android-xool-top.css", "styles/android.css", "styles/avatar-crop.css", "styles/base.css",
+  "styles/block-bar.css", "styles/blocks.css", "styles/bookmarks.css", "styles/calendar-panel.css",
   "styles/calendar-rings.css", "styles/calendar-week.css", "styles/calendar.css",
   "styles/columns-sheet.css", "styles/composer-attachments.css", "styles/composer.css",
   "styles/dashboard-motion.css", "styles/dashboard-shelf.css", "styles/dashboard-stage.css",
