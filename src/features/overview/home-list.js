@@ -47,6 +47,7 @@ import { isMobileOs } from "../../ui/platform.js";
 import { archiveActions, entryRow, workspaceRow } from "../../ui/rows.js";
 import { openSheet } from "../../ui/sheet.js";
 import { applyTabs } from "../../ui/tabs-visibility.js";
+import { viewPanelButton } from "../../ui/view-panel.js";
 import { handleXoolTabClick, isXoolHome, xoolBarMarkup, xoolList, xoolTabsMarkup } from "./home-xool.js";
 
 const menuTitle = "Liste wählen";
@@ -147,12 +148,8 @@ function headMarkup(link) {
         ${icon("tabs")}
       </button>`
     : "";
-  const arrow = `
-      <button class="home-list-round" type="button" ${openTargets[link.id]} aria-label="${escapeHtml(link.title)} öffnen">
-        ${icon("arrow-up-right")}
-      </button>`;
-  /* Xool: zuerst die Reiter, darunter Name und Anzahl statt „Projekte ˅“ */
-  if (isXoolHome()) return xoolTabsMarkup() + xoolBarMarkup(link, countOf(link), tools + arrow);
+  /* Xool: zuerst die Reiter, darunter Name, Anzahl und Regler statt „Projekte ˅“, Pille und Pfeil */
+  if (isXoolHome()) return xoolTabsMarkup() + xoolBarMarkup(link, countOf(link), openTargets[link.id], projects ? viewPanelButton(true) : "");
   return `
     <h2 class="home-list-title">
       <button class="home-list-pick" type="button" data-home-list-menu="1" aria-haspopup="menu" aria-label="${escapeHtml(link.title)} — Liste wechseln">

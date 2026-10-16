@@ -24,6 +24,16 @@
  *                                 Container (höhere Deckkraft = deutlichere Linie); im Hellen schwächer als im Dunkeln
  * --m3-xl-divider-w           -> Dicke dieser Linie
  * --m3-xl-divider-inset       -> Abstand der Linie zum linken und rechten Geräterand (16px, wie der Inhalt)
+ * XOOL-DB (Übersicht wie in der Xool-App, styles/android-xool-overview.css)
+ * --m3-xo-card               -> Fläche von Kacheln, Kopf und Zeilen (Karten auf dem Seitengrund)
+ * --m3-xo-card-pressed       -> dieselbe Karte gedrückt
+ * --m3-xo-row-radius         -> Rundung der Zeilen; der Kopf und das Listenende runden mit --m3-xo-end-radius
+ * --m3-xo-end-radius         -> Rundung oben am Kopf und unten an der letzten Zeile
+ * --m3-xo-seam-radius        -> kleine Rundung, wo Kopf und erste Zeile aneinanderstoßen
+ * --m3-xo-gap                -> Fuge zwischen den Karten
+ * --m3-xo-side               -> Abstand der Karten zum Geräterand
+ * --m3-xo-tile-radius        -> Rundung der Kacheln oben
+ * --m3-xo-tab-size           -> Schriftgröße der Reiter „Markiert · Listen“
  * --m3-xl-nav-surface        -> Experiment: Fläche der schwebenden Navigationsleiste (heller als Kacheln und Container)
  * --m3-xl-nav-height         -> Höhe der Leiste und des Knopfs „Neu“ daneben (beide gleich hoch)
  * --m3-xl-nav-side           -> Abstand von Leiste und „Neu“ zum linken und rechten Geräterand
@@ -141,5 +151,30 @@
   :root:is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]):not([data-theme="dark"]) {
     --m3-xl-surface-high: #cdd5e3;
     --m3-xl-divider-color: rgba(0, 0, 0, 0.1);
+  }
+}
+
+/* Xool-DB: Karten wie in der Xool-App — im Dunkeln eine Stufe über dem Seitengrund, im Hellen fast weiß */
+:root[data-mobile-variant="xool"] {
+  --m3-xo-card: #1b1b1d;
+  --m3-xo-card-pressed: #262629;
+  --m3-xo-row-radius: 12px;
+  --m3-xo-end-radius: 16px;
+  --m3-xo-seam-radius: 4px;
+  --m3-xo-gap: 4px;
+  --m3-xo-side: 8px;
+  --m3-xo-tile-radius: 18px;
+  --m3-xo-tab-size: 16px;
+}
+
+:root[data-mobile-variant="xool"][data-theme="light"] {
+  --m3-xo-card: #fcfcfc;
+  --m3-xo-card-pressed: #f2f2f2;
+}
+
+@media (prefers-color-scheme: light) {
+  :root[data-mobile-variant="xool"]:not([data-theme="dark"]) {
+    --m3-xo-card: #fcfcfc;
+    --m3-xo-card-pressed: #f2f2f2;
   }
 }

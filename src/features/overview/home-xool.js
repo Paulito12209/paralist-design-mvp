@@ -75,13 +75,20 @@ export function xoolTabsMarkup() {
   return `<div class="home-xool-tabs" role="tablist">${tabMarkup("marked")}${tabMarkup("lists")}</div>`;
 }
 
-/** Die Zeile unter den Reitern: Name und Anzahl links, Werkzeuge rechts. */
-export function xoolBarMarkup(link, count, toolsMarkup) {
+/**
+ * Der Kopf der Liste unter den Reitern, eine Karte wie in der Xool-App: links
+ * der Name (ein Tipp öffnet die Seite der Liste, `openAttr` aus home-list.js)
+ * mit der Anzahl, rechts der Regler — bei Projekten das Blatt „Ansicht“ mit
+ * Layout, Sortierung, Filter und „Tabs anzeigen“.
+ */
+export function xoolBarMarkup(link, count, openAttr, toolsMarkup) {
   const number = count ? `<span class="home-xool-count">${count}</span>` : "";
   return `
     <div class="home-xool-bar">
-      <h2 class="home-xool-name"><span>${escapeHtml(link.title)}</span>${number}</h2>
-      <div class="home-list-tools">${toolsMarkup}</div>
+      <h2 class="home-xool-name">
+        <button class="home-xool-open" type="button" ${openAttr} aria-label="${escapeHtml(link.title)} öffnen"><span>${escapeHtml(link.title)}</span></button>${number}
+      </h2>
+      ${toolsMarkup}
     </div>`;
 }
 

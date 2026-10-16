@@ -1,73 +1,92 @@
 /*
- * Fassung „Android (Xool-DB)“, Übersicht: über dem Container mit Kopf und
- * Zeilen stehen die zwei Reiter „Markiert · Listen“ wie „Meine Ablage ·
- * Computer“ in Google Drive: Name, dahinter das Icon der gewählten Liste (der
- * aktive Reiter einen Pfeil nach unten, der die Listenwahl öffnet) und eine
- * Linie in der Primärfarbe unter dem aktiven Namen. Der Container selbst
- * (Fläche, Rundung, Kachelgruppe) kommt aus android-overview-sheet.css, das
- * auch für diese Fassung gilt; hier stehen nur die Reiter und die Zeile mit
- * Name und Anzahl. Gebaut werden sie in src/features/overview/home-xool.js.
+ * Fassung „Android (Xool-DB)“, Übersicht wie in der Xool-App: kein farbiger
+ * Container mehr, sondern Karten auf dem Seitengrund. Über der Liste stehen
+ * die zwei Reiter „Markiert · Listen“ wie „Meine Ablage · Computer“ in Google
+ * Drive (je halbe Breite, Name mittig, das Icon der gewählten Liste bzw. beim
+ * aktiven ein Pfeil daneben, Linie in der Primärfarbe unter dem Namen). Darunter
+ * der Kopf der Liste als Karte — Name, Anzahl, rechts der Regler —, darunter die
+ * Zeilen als Karten mit schmaler Fuge; die erste stößt mit kleiner Rundung an
+ * den Kopf, die letzte schließt unten rund ab. Die Kacheln oben tragen dieselbe
+ * Kartenfläche. Gebaut werden Reiter und Kopf in src/features/overview/home-xool.js.
+ * Die Regeln des Experiments (android-overview-sheet.css) gelten auch hier; diese
+ * Datei überstimmt deren Container und muss deshalb nach ihr geladen werden.
  * Gilt nur mit data-mobile-variant="xool" an <html>, auf der Übersicht
- * (#view-home) und unterhalb von 1024px. Muss nach android-overview-sheet.css
- * geladen werden.
+ * (#view-home) und unterhalb von 1024px.
  * Pfad: styles/android-xool-overview.css
  *
- * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * ANPASSBARE WERTE (in styles/tokens-android-dark.css, Abschnitt XOOL-DB)
  * -----------------------------------
- * --m3-tab-height / --m3-tab-edge / --m3-tab-indicator -> Höhe, Randabstand und Linie der Reiter
- * --m3-ov-sheet-head-h    -> Höhe der Zeile mit Name und Anzahl
- * --m3-ov-sheet-radius    -> Rundung oben am Container
- * --m3-ov-head-size       -> Schriftgröße des Namens
- * --m3-primary            -> Farbe der Linie unter dem aktiven Reiter
- * --m3-on-surface / --m3-on-surface-variant -> aktiver und ruhender Reiter, Anzahl
- * Schrift der Reiter 14px, Icons darin 16px: stehen direkt bei ihrer Regel.
+ * --m3-xo-card / --m3-xo-card-pressed -> Fläche der Karten, ruhend und gedrückt
+ * --m3-xo-row-radius / --m3-xo-end-radius / --m3-xo-seam-radius -> Rundungen der Zeilen,
+ *                         der Enden (Kopf oben, letzte Zeile unten) und der Naht Kopf/Zeile
+ * --m3-xo-gap            -> Fuge zwischen den Karten
+ * --m3-xo-side           -> Abstand der Karten zum Geräterand
+ * --m3-xo-tile-radius    -> Rundung der Kacheln
+ * --m3-xo-tab-size       -> Schriftgröße der Reiter
+ * Aus styles/tokens-android.css: --m3-tab-height, --m3-tab-indicator, --m3-primary
+ * (Reiter und Linie), --m3-ov-head-size (Name im Kopf).
+ * Einzelwerte direkt bei der Regel: Kopf und Zeilen 56px hoch, Anzahl 14px, Regler 40px.
  */
 
 @media (max-width: 1023px) {
-  /* Der Kopf ist hier nur noch der Rahmen um Reiter und Zeile; Fläche und Rundung trägt die Zeile */
-  :root[data-mobile-variant="xool"] #view-home .project-head {
-    display: block;
-    padding: 0;
-    background: none;
-    border-radius: 0;
-    min-height: 0;
+  /* Der Container des Experiments verschwindet im Seitengrund; was beim Festkleben
+     abdeckt (Werkzeugzeile), bleibt so trotzdem deckend */
+  :root[data-mobile-variant="xool"] #view-home {
+    --m3-surface-container: var(--bg);
   }
 
-  /* ---------- Reiter ---------- */
+  :root[data-mobile-variant="xool"] #view-home .overview-card {
+    border-radius: var(--m3-xo-tile-radius);
+    background: var(--m3-xo-card);
+  }
+
+  :root[data-mobile-variant="xool"] #view-home .overview-card:active {
+    background: var(--m3-xo-card-pressed);
+  }
+
+  /* Der Kopf ist nur noch der Rahmen um Reiter und Karte, ohne Fläche und ohne Linie */
+  :root[data-mobile-variant="xool"] #view-home .project-head.project-head[data-home-list] {
+    display: block;
+    padding: 0;
+    min-height: 0;
+    border-radius: 0;
+    background: none;
+  }
+
+  /* ---------- Reiter „Markiert · Listen“ ---------- */
 
   :root[data-mobile-variant="xool"] .home-xool-tabs {
     display: flex;
-    padding-inline: var(--m3-tab-edge);
+    padding-inline: var(--m3-xo-side);
   }
 
   :root[data-mobile-variant="xool"] .home-xool-tab {
+    flex: 1;
+    min-width: 0;
     display: flex;
-    align-items: center;
+    justify-content: center;
     height: var(--m3-tab-height);
-    padding-inline: 4px;
-    margin-right: 20px;
     color: var(--m3-on-surface-variant);
-    font-size: 14px;
+    font-size: var(--m3-xo-tab-size);
     font-weight: 500;
   }
 
   :root[data-mobile-variant="xool"] .home-xool-tab.is-on {
     color: var(--m3-on-surface);
-    font-weight: 700;
   }
 
-  /* Die Linie sitzt am inneren Stück und ist so breit wie Name und Zeichen */
+  /* Das Stück mit dem Namen trägt die Linie; das Zeichen daneben zählt nicht zur
+     Breite, damit der Name mittig in seiner Hälfte steht */
   :root[data-mobile-variant="xool"] .home-xool-tab-label {
-    position: relative; /* position: die Linie hängt am unteren Rand des Stücks */
+    position: relative; /* position: Bezug für Linie und Zeichen */
     display: inline-flex;
     align-items: center;
-    gap: 6px;
     height: 100%;
   }
 
   :root[data-mobile-variant="xool"] .home-xool-tab.is-on .home-xool-tab-label::after {
     content: "";
-    position: absolute;
+    position: absolute; /* position: die Linie liegt am unteren Rand des Namens */
     left: 0;
     right: 0;
     bottom: 0;
@@ -77,29 +96,35 @@
   }
 
   :root[data-mobile-variant="xool"] :is(.home-xool-glyph, .home-xool-chevron) {
+    position: absolute; /* position: hängt rechts neben dem Namen, ohne ihn zu verschieben */
+    top: 50%;
+    left: calc(100% + 8px);
     width: 16px;
     height: 16px;
+    color: var(--m3-on-surface-variant);
+    transform: translateY(-50%); /* transform: senkrecht mittig zum Namen */
   }
 
-  /* Das Chevron-Symbol zeigt nach rechts: um 90° gedreht nach unten */
+  /* Das Chevron-Symbol zeigt nach rechts: zusätzlich um 90° gedreht zeigt es nach unten */
   :root[data-mobile-variant="xool"] .home-xool-chevron {
-    transform: rotate(90deg); /* transform: dasselbe Symbol, nur nach unten gedreht */
+    transform: translateY(-50%) rotate(90deg); /* transform: mittig und nach unten gedreht */
   }
 
   :root[data-mobile-variant="xool"] .home-xool-tab:active {
-    opacity: 0.55;
+    opacity: 0.6;
   }
 
-  /* ---------- Zeile mit Name, Anzahl und Knöpfen: der Anfang des Containers ---------- */
+  /* ---------- Kopf der Liste als Karte ---------- */
 
   :root[data-mobile-variant="xool"] .home-xool-bar {
     display: flex;
     align-items: center;
-    gap: 12px;
-    min-height: var(--m3-ov-sheet-head-h);
-    padding: 0 var(--content-side) 0 var(--m3-title-edge);
-    border-radius: var(--m3-ov-sheet-radius) var(--m3-ov-sheet-radius) 0 0;
-    background: var(--m3-surface-container);
+    gap: 8px;
+    min-height: 56px;
+    margin: 0 var(--m3-xo-side) var(--m3-xo-gap);
+    padding: 0 8px 0 16px;
+    border-radius: var(--m3-xo-end-radius) var(--m3-xo-end-radius) var(--m3-xo-seam-radius) var(--m3-xo-seam-radius);
+    background: var(--m3-xo-card);
   }
 
   :root[data-mobile-variant="xool"] .home-xool-name {
@@ -108,19 +133,83 @@
     align-items: baseline;
     gap: 8px;
     min-width: 0; /* min-width: Flex-Kind darf schmaler werden, lange Namen kürzen */
+    margin: 0;
     font-size: var(--m3-ov-head-size);
     font-weight: 500;
   }
 
-  :root[data-mobile-variant="xool"] .home-xool-name > span:first-child {
+  :root[data-mobile-variant="xool"] .home-xool-open {
+    min-width: 0;
+    padding: 0;
+    color: var(--m3-on-surface);
+    font: inherit;
+  }
+
+  :root[data-mobile-variant="xool"] .home-xool-open > span {
+    display: block;
     overflow: hidden;
     text-overflow: ellipsis; /* text-overflow: zu lange Namen enden mit „…“ */
     white-space: nowrap;
   }
 
+  :root[data-mobile-variant="xool"] .home-xool-open:active {
+    opacity: 0.55;
+  }
+
   :root[data-mobile-variant="xool"] .home-xool-count {
+    flex: none;
     font-size: 14px;
     font-weight: 400;
     color: var(--m3-on-surface-variant);
+  }
+
+  /* Der Regler: runder Knopf ohne Fläche */
+  :root[data-mobile-variant="xool"] .home-xool-bar .view-panel-btn {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: var(--m3-on-surface-variant);
+  }
+
+  /* ---------- Zeilen als Karten ---------- */
+
+  :root[data-mobile-variant="xool"] #view-home #project-list {
+    padding-inline: var(--m3-xo-side);
+  }
+
+  :root[data-mobile-variant="xool"] #view-home #project-list .workspace-list {
+    gap: var(--m3-xo-gap);
+  }
+
+  :root[data-mobile-variant="xool"] #view-home #project-list .workspace-list > *,
+  :root[data-mobile-variant="xool"] #view-home #project-list .swipe-body {
+    min-height: 56px;
+    border-radius: var(--m3-xo-row-radius);
+    background: var(--m3-xo-card);
+  }
+
+  :root[data-mobile-variant="xool"] #view-home #project-list .workspace-list > :first-child {
+    border-top-left-radius: var(--m3-xo-seam-radius);
+    border-top-right-radius: var(--m3-xo-seam-radius);
+  }
+
+  :root[data-mobile-variant="xool"] #view-home #project-list .workspace-list > :last-child {
+    border-bottom-left-radius: var(--m3-xo-end-radius);
+    border-bottom-right-radius: var(--m3-xo-end-radius);
+  }
+
+  :root[data-mobile-variant="xool"] #view-home #project-list .swipe-body:active {
+    background: var(--m3-xo-card-pressed);
+  }
+
+  /* Die Werkzeugzeile der Projekte (Archiv, Anzahl, Sortieren, Ansicht) ist eine
+     Karte zwischen Kopf und Zeilen */
+  :root[data-mobile-variant="xool"] #view-home #project-list .project-card-head {
+    margin: 0 0 var(--m3-xo-gap);
+    border-radius: var(--m3-xo-seam-radius);
+    background: var(--m3-xo-card);
   }
 }
