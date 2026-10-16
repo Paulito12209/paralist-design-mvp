@@ -12,6 +12,7 @@
  * -----------------------------------
  * --m3-xo-card / -card-pressed -> Fläche des Blatts und des runden ✕ (gedrückt)
  * --m3-xo-fab-shadow       -> Schatten des ✕ (wie Plus und Regler)
+ * --m3-xo-level            -> Farbe des ✕ (dasselbe Silberblau wie das Plus)
  * --m3-xo-nav-height       -> Höhe der Leiste: das Blatt endet 16px darüber
  * --m3-xo-ind / --m3-xo-on-ind -> Fläche und Schrift der Chips
  * --m3-xo-ink              -> Überschriften der Abschnitte
@@ -123,10 +124,11 @@
     place-items: center;
     border-radius: 50%;
     background: var(--m3-xo-card);
-    color: var(--m3-xo-ink);
+    color: var(--m3-xo-level); /* color: dasselbe Silberblau wie das Plus in der Leiste */
     box-shadow: var(--m3-xo-fab-shadow);
   }
 
+  /* Das Zeichen hat dieselbe Größe wie das Plus in der Leiste (24px), es wird nur gedreht */
   :root[data-mobile-variant="xool"] .xo-create-close .icon {
     width: 24px;
     height: 24px;
