@@ -20,7 +20,7 @@
  * --m3-xo-fab-shadow                  -> Schatten des Reglers (derselbe wie beim runden Plus)
  * Aus styles/tokens-android.css: --m3-hide-time (Gleiten).
  * Der Regler der Aufgaben ist der Knopf „Ansicht“ in der Werkzeugzeile; „Sortieren“ bleibt dort.
- * Einzelwerte direkt bei der Regel: KW-Spalte 34px, Regler 56px, 16px Rand und Abstand zur Leiste,
+ * Einzelwerte direkt bei der Regel: Titelabstand 14px wie die Übersicht, KW-Spalte 34px, Regler 56px, 16px Rand und Abstand zur Leiste,
  * 12px Abstand zwischen Plus und Pille, Plus-Mitte 35px über dem Rand, Raster-Rundung 8px.
  */
 
@@ -44,22 +44,40 @@
     background: var(--m3-xo-card);
   }
 
-  /* ---------- Kalender: Titel bleibt stehen ---------- */
+  /* ---------- Titel wie in der Übersicht ---------- */
 
-  /* Der Titel „Kalender“ rollt hier nicht mehr weg: er klebt unter der Suchleiste (ohne sie
-     oben am Rand), der Kopf mit Datum und Wochenstreifen rastet darunter ein. Beides rückt
-     mit der Suchleiste nach (--m3-bar-shift, styles/android-tabs.css). */
-  :root[data-mobile-variant="xool"] #view-calendar .screen-title {
-    position: sticky; /* position: der Titel bleibt beim Rollen oben hängen */
-    top: calc(-1 * var(--content-top) - var(--m3-bar-shift, 0px));
-    z-index: 4; /* z-index: über dem Kopf (3) und dem Raster */
-    margin: 0;
-    background: var(--bg);
-    transition: top var(--m3-hide-time) ease; /* transition: rückt mit der Suchleiste nach, statt zu springen */
+  /* Kalender, Aufgaben und Medien beginnen so weit unter der Suchleiste wie die Übersicht (14px);
+     --content-top zieht das Einrasten der Köpfe darunter mit (styles/android-tabs.css) */
+  :root[data-mobile-variant="xool"] body:has(:is(#view-calendar, #view-tasks, #view-media).is-active) .content {
+    --content-top: 14px;
+    padding-top: calc(var(--safe-top) + var(--m3-top-bar-height) + 14px);
   }
 
-  :root[data-mobile-variant="xool"] #view-calendar .cal-head {
-    top: calc(-1 * var(--content-top) - var(--m3-bar-shift, 0px) + 28px); /* 28px: Höhe des Titels */
+  /* ---------- Kalender: „Heute“ neben dem Datum ---------- */
+
+  /* Der Titel rollt wie in „Android“ zuerst weg, dann rastet der Kopf mit Datum und „Heute“
+     unter der Suchleiste ein (styles/android-tabs.css, android-calendar.css). */
+  :root[data-mobile-variant="xool"] .cal-today-chip {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 999px; /* border-radius: Chip als Pille */
+    background: var(--m3-xo-ind);
+    color: var(--m3-xo-on-ind);
+    font-size: 14px;
+    font-weight: 600;
+    margin-left: auto;
+  }
+
+  :root[data-mobile-variant="xool"] .cal-today-chip.is-on {
+    background: var(--m3-xo-level);
+    color: var(--m3-xo-on-level);
+  }
+
+  :root[data-mobile-variant="xool"] .cal-today-chip:active {
+    opacity: 0.7;
   }
 
   /* ---------- Kalender: KW links neben den Wochentagen ---------- */
@@ -71,9 +89,9 @@
   :root[data-mobile-variant="xool"] #view-calendar .cal-kw {
     position: absolute;
     left: 0;
-    top: 68px; /* 68px: Oberkante der Wochentage unter der Datumszeile */
+    top: 93px; /* 93px: Oberkante der Tageszeile (Datumszeile 68px, Wochentage 25px) */
     width: 34px;
-    height: 77px; /* 77px: Wochentage plus Tageszeile, die „KW“ steht mittig dazu */
+    height: 52px; /* 52px: Höhe der Tageszeile — „KW 42“ steht so mittig zu den Zahlen */
     display: flex;
     flex-direction: column;
     align-items: flex-start;

@@ -263,6 +263,8 @@ function init() {
   dom.calMonthBtn.addEventListener("click", () => openDatePicker("date"));
   /* Die KW rechts daneben öffnet dasselbe Blatt mit den Rollen Jahr | KW. */
   dom.calKwBtn.addEventListener("click", () => openDatePicker("week"));
+  /* „Heute“ neben dem Datum (nur in „Android (Xool-DB)“ sichtbar) springt wie der Knopf im Blatt „Ansicht“ zum heutigen Tag. */
+  document.getElementById("cal-today-chip").addEventListener("click", () => goToday());
   dom.calPanel.addEventListener("click", onPanelClick);
   initCalendarInline();
   toolbarElement().addEventListener("click", onToolbarClick);
