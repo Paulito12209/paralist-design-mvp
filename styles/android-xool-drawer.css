@@ -25,6 +25,7 @@
 @media (max-width: 1023px) {
   /* position/inset: Schleier über das ganze Gerät; z-index 31 über dem Anlege-Blatt (30), unter den Blättern */
   :root[data-mobile-variant="xool"] .xo-drawer-layer {
+    cursor: pointer; /* cursor: iOS Safari meldet Tipper auf einer Fläche nur dann als Klick, wenn sie klickbar aussieht — sonst schließt der Schleier nicht */
     position: absolute;
     inset: 0;
     z-index: 31;
@@ -43,6 +44,7 @@
   }
 
   :root[data-mobile-variant="xool"] .xo-drawer {
+    cursor: default;
     position: absolute;
     top: 0;
     right: 0;

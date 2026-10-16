@@ -27,6 +27,7 @@
   /* position/inset: der Schleier deckt das ganze Gerät ab; z-index 30 wie das Menü des
      Plus in „Android“ — über Kopfzeile und Leiste, unter den Blättern */
   :root[data-mobile-variant="xool"] .xo-create {
+    cursor: pointer; /* cursor: iOS Safari meldet Tipper auf einer Fläche nur dann als Klick, wenn sie klickbar aussieht — sonst schließt der Schleier nicht */
     position: absolute;
     inset: 0;
     z-index: 30;
@@ -46,6 +47,7 @@
 
   /* Das Blatt sitzt unten, über der Leiste; zu viel Inhalt auf kleinen Geräten scrollt */
   :root[data-mobile-variant="xool"] .xo-sheet {
+    cursor: default;
     position: absolute;
     left: 0;
     right: 0;

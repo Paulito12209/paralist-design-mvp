@@ -4,7 +4,7 @@
  * (weiß im Hellen, eine Stufe über dem Seitengrund im Dunkeln) statt auf dem
  * Seitengrund, die Aufgaben stehen als Karten mit schmaler Fuge wie die Zeilen
  * der Übersicht. „KW 42“ steht links neben den Wochentagen, in zwei Zeilen.
- * Der Regler (Ansicht) im Kalender ist ein runder Knopf über der Leiste rechts
+ * Der Regler (Ansicht) im Kalender und bei den Aufgaben ist ein runder Knopf über der Leiste rechts
  * unten; gleitet die Leiste weg, wird er zur Pille, die vom runden Plus bis
  * zum rechten Rand reicht (ein Abstand zum Plus, ein Rand wie der Knopf).
  * Gilt nur mit data-mobile-variant="xool" an <html>, auf diesen Seiten und
@@ -18,6 +18,7 @@
  * --m3-xo-row-radius / --m3-xo-end-radius / --m3-xo-gap -> Rundungen und Fuge der Karten
  * --m3-xo-nav-height                  -> Höhe der Leiste (der Regler steht darüber)
  * Aus styles/tokens-android.css: --m3-hide-time (Gleiten).
+ * Der Regler der Aufgaben ist der Knopf „Ansicht“ in der Werkzeugzeile; „Sortieren“ bleibt dort.
  * Einzelwerte direkt bei der Regel: KW-Spalte 34px, Regler 56px, 16px Rand und Abstand zur Leiste,
  * 12px Abstand zwischen Plus und Pille, Plus-Mitte 46px über dem Rand, Raster-Rundung 8px.
  */
@@ -73,7 +74,7 @@
 
   /* ---------- Kalender: Regler als runder Knopf, bei weggeglittener Leiste als Pille ---------- */
 
-  :root[data-mobile-variant="xool"] #view-calendar .cal-date-row .view-panel-btn {
+  :root[data-mobile-variant="xool"] :is(#view-calendar .cal-date-row .view-panel-btn, #view-tasks [data-card-tool="view"]) {
     position: fixed; /* position: der Knopf gehört dem Gerät, nicht dem Rollen der Seite */
     left: calc(100vw - 72px);
     right: 16px;
@@ -94,22 +95,22 @@
     transition: left var(--m3-hide-time) ease, bottom var(--m3-hide-time) ease;
   }
 
-  :root[data-mobile-variant="xool"] #view-calendar .cal-date-row .view-panel-btn .icon {
+  :root[data-mobile-variant="xool"] :is(#view-calendar .cal-date-row .view-panel-btn, #view-tasks [data-card-tool="view"]) .icon {
     width: 24px;
     height: 24px;
   }
 
-  :root[data-mobile-variant="xool"] #view-calendar .cal-date-row .view-panel-btn::after {
+  :root[data-mobile-variant="xool"] :is(#view-calendar .cal-date-row .view-panel-btn, #view-tasks [data-card-tool="view"])::after {
     content: "Ansicht";
     display: none;
   }
 
-  :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) #view-calendar .cal-date-row .view-panel-btn {
+  :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) :is(#view-calendar .cal-date-row .view-panel-btn, #view-tasks [data-card-tool="view"]) {
     left: calc(50vw + 40px); /* 40px: halbes Plus (28px) plus 12px Abstand */
     bottom: calc(var(--safe-bottom) + 18px); /* 18px: unterer Rand des runden Plus (Mitte 46px über dem Rand) */
   }
 
-  :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) #view-calendar .cal-date-row .view-panel-btn::after {
+  :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) :is(#view-calendar .cal-date-row .view-panel-btn, #view-tasks [data-card-tool="view"])::after {
     display: inline;
   }
 
