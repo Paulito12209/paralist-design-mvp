@@ -10,12 +10,14 @@
  *
  * ANPASSBARE WERTE (in styles/tokens-android-dark.css, Abschnitt XOOL-DB)
  * -----------------------------------
- * --m3-xo-card             -> Fläche des Blatts
+ * --m3-xo-card / -card-pressed -> Fläche des Blatts und des runden ✕ (gedrückt)
+ * --m3-xo-fab-shadow       -> Schatten des ✕ (wie Plus und Regler)
+ * --m3-xo-nav-height       -> Höhe der Leiste: das Blatt endet 16px darüber
  * --m3-xo-ind / --m3-xo-on-ind -> Fläche und Schrift der Chips
  * --m3-xo-ink              -> Überschriften der Abschnitte
  * Aus styles/tokens-android.css: --m3-scrim (Schleier), --m3-sheet-radius (Rundung oben),
  * --m3-hide-time (Einblenden).
- * Einzelwerte direkt bei der Regel: Chips 34px hoch, 15px Schrift, 8px Luft zwischen den Chips,
+ * Einzelwerte direkt bei der Regel: ✕ 56px rund, Mitte 46px über dem Rand, Chips 34px hoch, 15px Schrift, 8px Luft zwischen den Chips,
  * 16px zwischen den Abschnitten, Überschrift 14px fett, Blatt 8px vom Rand und 28px gerundet.
  */
 
@@ -24,12 +26,12 @@
 }
 
 @media (max-width: 1023px) {
-  /* position/inset: der Schleier deckt das Gerät bis zur Leiste ab; die Leiste bleibt frei, damit das
-     Plus als ✕ zu sehen und zu tippen ist. z-index 30 wie das Menü des Plus in „Android“ — über
-     Kopfzeile und Seite, unter den Blättern */
+  /* position/inset: der Schleier deckt das ganze Gerät ab, auch die Leiste — wie bei Spotify liegt
+     die App im Hintergrund, sichtbar bleibt nur das ✕ an der Stelle des Plus. z-index 30 wie das Menü
+     des Plus in „Android“ — über Kopfzeile, Seite und Leiste, unter den Blättern */
   :root[data-mobile-variant="xool"] .xo-create {
     position: absolute;
-    inset: 0 0 calc(var(--m3-xo-nav-height) + var(--safe-bottom)) 0;
+    inset: 0;
     z-index: 30;
     display: block;
     background: var(--m3-scrim);
@@ -46,15 +48,15 @@
     opacity: 1;
   }
 
-  /* Das Blatt schwebt über der Leiste wie in Spotify: 8px Rand an den Seiten und unten, rundum 28px
-     gerundet; zu viel Inhalt auf kleinen Geräten scrollt */
+  /* Das Blatt schwebt wie in Spotify: 8px Rand an den Seiten, unten 16px über der Oberkante der
+     Leiste (das ✕ darunter bleibt frei), rundum 28px gerundet; zu viel Inhalt auf kleinen Geräten scrollt */
   :root[data-mobile-variant="xool"] .xo-sheet {
     cursor: default;
     position: absolute;
     left: 8px;
     right: 8px;
-    bottom: 8px;
-    max-height: calc(100% - var(--safe-top) - 24px);
+    bottom: calc(var(--m3-xo-nav-height) + var(--safe-bottom) + 16px);
+    max-height: calc(100% - var(--safe-top) - var(--m3-xo-nav-height) - var(--safe-bottom) - 32px);
     overflow-y: auto; /* overflow: nur bei sehr niedrigen Geräten nötig */
     display: flex;
     flex-direction: column;
@@ -107,5 +109,35 @@
 
   :root[data-mobile-variant="xool"] .xo-chip:disabled {
     opacity: 0.4;
+  }
+
+  /* Das ✕: ein runder, gehobener Knopf genau an der Stelle des Plus (Mitte 46px über dem Rand der
+     Leiste, wie das Plus mit Namen darunter); beim Öffnen dreht sich das Plus-Zeichen zum ✕ */
+  :root[data-mobile-variant="xool"] .xo-create-close {
+    position: absolute;
+    left: calc(50% - 28px);
+    bottom: calc(var(--safe-bottom) + 18px); /* 18px: 46px Mitte minus halber Knopf */
+    width: 56px;
+    height: 56px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: var(--m3-xo-card);
+    color: var(--m3-xo-ink);
+    box-shadow: var(--m3-xo-fab-shadow);
+  }
+
+  :root[data-mobile-variant="xool"] .xo-create-close .icon {
+    width: 24px;
+    height: 24px;
+    transition: transform var(--m3-hide-time) ease;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-create.is-open .xo-create-close .icon {
+    transform: rotate(45deg); /* transform: aus dem Plus wird das ✕ */
+  }
+
+  :root[data-mobile-variant="xool"] .xo-create-close:active {
+    background: var(--m3-xo-card-pressed);
   }
 }

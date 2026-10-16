@@ -1,8 +1,8 @@
 /*
  * „Android (Xool-DB)“: das Blatt, das das Plus in der Leiste öffnet. Statt der
  * Spalte mit Knöpfen („Neu“ in „Android“) ein schwebendes, abgerundetes Blatt über der
- * Leiste nach dem Vorbild von „Erstellen“ in Spotify; das Plus in der Leiste dreht sich dabei
- * zum ✕ (styles/android-xool-nav.css): Abschnitte mit einer Überschrift und
+ * Leiste nach dem Vorbild von „Erstellen“ in Spotify; die ganze App samt Leiste liegt unter dem
+ * Schleier, nur an der Stelle des Plus steht ein runder ✕-Knopf: Abschnitte mit einer Überschrift und
  * darunter Chips. Ganz unten, am Daumen, steht „Schnell erfassen“ (Aufgabe,
  * Notiz, Termin), darüber Ressourcen (mit „Datei“ für Medien), Organisieren (Projekt,
  * Arbeitsbereich) und ganz oben Lernen.
@@ -80,7 +80,10 @@ function build() {
   const el = document.createElement("div");
   el.className = "xo-create";
   el.hidden = true;
-  el.innerHTML = `<div class="xo-sheet" role="dialog" aria-label="Neu anlegen">${sections.map(block).join("")}</div>`;
+  /* Das ✕ liegt über dem Schleier genau dort, wo das Plus in der Leiste steht (Stil: styles/android-xool-create.css);
+     ein Tipp darauf schließt wie der Schleier */
+  el.innerHTML = `<div class="xo-sheet" role="dialog" aria-label="Neu anlegen">${sections.map(block).join("")}</div>
+    <button class="xo-create-close" type="button" aria-label="Schließen">${icon("spark-plus")}</button>`;
   return el;
 }
 
