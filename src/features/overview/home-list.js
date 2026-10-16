@@ -99,6 +99,9 @@ function rowsOf(link) {
       ...archivedEntries().map((entry) => entryRow(entry, "", archiveActions("restore", "delete"))),
     ];
   }
+  if (link.id === "pinned") {
+    return state.entries.filter((entry) => entry.pinned && !entry.archived).map((entry) => entryRow(entry));
+  }
   if (link.id === "favorites") {
     return [
       ...state.workspaces.filter((workspace) => workspace.favorite && !workspace.archived).map((workspace) => workspaceRow(workspace)),

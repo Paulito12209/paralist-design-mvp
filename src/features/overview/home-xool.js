@@ -3,8 +3,9 @@
  * Liste, wie „Meine Ablage · Computer“ in Google Drive. Hinter jedem Reiter
  * steckt eine gewählte Liste: der ruhende Reiter zeigt ihr Icon, der aktive
  * einen Pfeil nach unten — ein Tipp darauf öffnet das Blatt „Liste wählen“
- * mit den Listen dieses Reiters. Markiert sind Favoriten und Lesezeichen,
- * unter Listen stehen die übrigen Listen der Seitenleiste. Darunter folgt der
+ * mit den Listen dieses Reiters: unter „Markiert“ Angepinnt und Favoriten,
+ * unter „Listen“ die Listen der Seitenleiste in den Gruppen der Xool-App, die
+ * gewählte allein ganz oben. Darunter folgt der
  * Kopf der Liste mit Name, Anzahl und den Knöpfen (src/features/overview/home-list.js).
  * Gemerkt werden der Reiter und je Reiter die gewählte Liste.
  * Pfad: src/features/overview/home-xool.js
@@ -13,9 +14,10 @@
  * -----------------------------------
  * menuTitle   -> Überschrift des Blatts mit den Listen
  * tabLabels   -> Namen der beiden Reiter
- * markedLinks -> was unter „Markiert“ zur Wahl steht (die Liste Favoriten und die Lesezeichen)
- * markedIds   -> welche Listen aus der Seitenleiste nach „Markiert“ gewandert sind und
- *                deshalb unter „Listen“ fehlen
+ * markedLinks -> was unter „Markiert“ zur Wahl steht, die erste ist die Vorgabe
+ * listGroups  -> die Gruppen im Blatt unter „Listen“ (zwischen ihnen ein Strich);
+ *                die erste Liste der ersten Gruppe ist die Vorgabe
+ * defaultTab  -> welcher Reiter ohne gespeicherte Wahl offen ist
  */
 
 import { emit, events } from "../../core/bus.js";
@@ -28,23 +30,29 @@ import { openSheet } from "../../ui/sheet.js";
 
 const menuTitle = "Liste wählen";
 const tabLabels = { marked: "Markiert", lists: "Listen" };
-const markedIds = ["bookmarks"];
-
-/* Favoriten sind keine Liste der Seitenleiste, haben aber eine Seite hinter der Kachel „Favoriten“ */
-export const markedLinks = [
-  { id: "favorites", title: overviewPages[2].title, icon: overviewPages[2].icon },
-  ...listLinks.filter((link) => markedIds.includes(link.id)),
+const defaultTab = "marked";
+const listGroups = [
+  ["inbox", "tasks", "events"],
+  ["bookmarks"],
+  ["projects", "workspaces", "resources", "archive"],
 ];
-const listedLinks = listLinks.filter((link) => !markedIds.includes(link.id));
+
+/* Angepinnt und Favoriten sind keine Listen der Seitenleiste; Favoriten haben die Seite hinter der Kachel */
+export const markedLinks = [
+  { id: "pinned", title: "Angepinnt", icon: "pin" },
+  { id: "favorites", title: overviewPages[2].title, icon: overviewPages[2].icon },
+];
+const listedLinks = listGroups.flat().map((id) => listLinks.find((link) => link.id === id));
 
 /** Ist gerade „Android (Xool-DB)“ am Handy zu sehen? */
 export function isXoolHome() {
   return isMobileVariant("xool");
 }
 
-/** Der gewählte Reiter: „marked“ oder „lists“ (Vorgabe). */
+/** Der gewählte Reiter: „marked“ oder „lists“. */
 export function xoolTab() {
-  return readText(storageKeys.homeTab) === "marked" ? "marked" : "lists";
+  const saved = readText(storageKeys.homeTab);
+  return saved === "marked" || saved === "lists" ? saved : defaultTab;
 }
 
 /* Die Liste, die unter dem Reiter gemerkt ist; ohne gültige Wahl die erste. */
@@ -83,34 +91,44 @@ export function xoolTabsMarkup() {
  */
 export function xoolBarMarkup(link, count, openAttr, toolsMarkup) {
   const number = count ? `<span class="home-xool-count">${count}</span>` : "";
+  /* „Angepinnt“ hat keine eigene Seite: dort ist der Name nur Text */
+  const name = openAttr
+    ? `<button class="home-xool-open" type="button" ${openAttr} aria-label="${escapeHtml(link.title)} öffnen"><span>${escapeHtml(link.title)}</span></button>`
+    : `<span class="home-xool-open"><span>${escapeHtml(link.title)}</span></span>`;
   return `
     <div class="home-xool-bar">
-      <h2 class="home-xool-name">
-        <button class="home-xool-open" type="button" ${openAttr} aria-label="${escapeHtml(link.title)} öffnen"><span>${escapeHtml(link.title)}</span></button>${number}
-      </h2>
+      <h2 class="home-xool-name">${name}${number}</h2>
       ${toolsMarkup}
     </div>`;
+}
+
+/* Die Listen im Blatt: unter „Markiert“ beide; unter „Listen“ die gewählte allein
+   oben, darunter die Gruppen ohne sie, vor jedem Block ein Strich (wie in Xool). */
+function chooserBlocks(marked, chosen) {
+  if (marked) return [markedLinks];
+  const find = (id) => listedLinks.find((link) => link.id === id);
+  const groups = listGroups.map((ids) => ids.filter((id) => id !== chosen).map(find));
+  return [[find(chosen)], ...groups].filter((block) => block.length);
 }
 
 /* Das Blatt mit den Listen des offenen Reiters. */
 function openChooser() {
   const marked = xoolTab() === "marked";
-  const links = marked ? markedLinks : listedLinks;
   const key = marked ? storageKeys.homeMarked : storageKeys.homeList;
   const chosen = xoolList().id;
-  openSheet(
-    menuTitle,
-    links.map((link) => ({
+  const options = chooserBlocks(marked, chosen).flatMap((block, blockIndex) =>
+    block.map((link, index) => ({
       label: link.title,
       icon: link.icon,
       active: link.id === chosen,
-      split: Boolean(link.cut),
+      split: blockIndex > 0 && index === 0,
       onSelect: () => {
         writeText(key, link.id);
         emit(events.dataChanged);
       },
     }))
   );
+  openSheet(menuTitle, options);
 }
 
 /** Tipp auf einen Reiter: der aktive öffnet die Listenwahl, der ruhende wird gewählt. Gibt an, ob der Klick galt. */

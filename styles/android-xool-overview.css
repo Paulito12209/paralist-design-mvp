@@ -202,11 +202,29 @@
     border-radius: var(--m3-xo-row-radius);
   }
 
-  /* Unter der letzten Zeile eine leere Karte, die die Liste unten rund abschließt
-     (in Xool die Tippfläche zum Anlegen) */
+  /* Die Übersicht füllt die Höhe bis zur Leiste: die Liste wächst, und unter der
+     letzten Zeile reicht eine leere Karte bis nach unten — wie in Xool, wo darunter
+     kein Seitengrund mehr zu sehen ist. Nur auf der offenen Übersicht, sonst
+     überstimmte display: flex das Verbergen der Seite. */
+  :root[data-mobile-variant="xool"] #view-home.is-active {
+    display: flex;
+    flex-direction: column;
+    min-height: 100%;
+  }
+
+  :root[data-mobile-variant="xool"] #view-home.is-active #project-list {
+    display: flex;
+    flex: 1 0 auto;
+    flex-direction: column;
+  }
+
+  :root[data-mobile-variant="xool"] #view-home.is-active #project-list .workspace-list {
+    flex: 1 0 auto;
+  }
+
   :root[data-mobile-variant="xool"] #view-home #project-list .workspace-list::after {
     content: "";
-    min-height: 56px;
+    flex: 1 0 56px;
     border-radius: var(--m3-xo-row-radius) var(--m3-xo-row-radius) var(--m3-xo-end-radius) var(--m3-xo-end-radius);
     background: var(--m3-xo-card);
   }

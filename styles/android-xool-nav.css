@@ -1,8 +1,8 @@
 /*
  * Fassung „Android (Xool-DB)“, Navigationsleiste nach der Xool-App: fünf gleich
  * breite Felder von Rand zu Rand — Übersicht, Kalender, Plus, Aufgaben, Menü.
- * Das Plus ist ein Feld der Leiste mit immer gefüllter Pille (statt des Knopfs
- * „Neu“ über der Leiste) und öffnet das Anlege-Menü, das dann mittig über
+ * Das Plus ist ein Feld der Leiste mit dem Plus-Zeichen der Xool-App in
+ * Silberblau, ohne Pille (statt des Knopfs „Neu“ über der Leiste), und öffnet das Anlege-Menü, das dann mittig über
  * der Leiste steht; „Medien“ liegt hinter dem Reiter „Menü“ (Blatt von unten).
  * Gilt nur mit data-mobile-variant="xool" an <html> und unterhalb von 1024px.
  * Muss nach android-fab.css und android.css geladen werden, damit sie deren
@@ -12,14 +12,12 @@
  * ANPASSBARE WERTE (alle in styles/tokens-android.css)
  * -----------------------------------
  * --m3-indicator-w / -h   -> Maß der Pille hinter jedem Icon, auch der des Plus
- * --m3-primary-container  -> Farbe der Plus-Pille
- * --m3-on-primary-container -> Farbe des Plus-Zeichens darauf
  * --m3-content-end        -> Platz am Seitenende: hier nur noch Leiste plus ein Abstand,
  *                            weil es keinen Knopf „Neu“ darüber gibt
  * --m3-fab-gap            -> Abstand zum Seitenende; Luft über dem ✕ des offenen Menüs
  * --m3-xo-bar / --m3-xo-nav-height -> Fläche und Höhe der Leiste wie in der Xool-App
  * --m3-xo-ind / --m3-xo-on-ind / --m3-xo-ind-w -> Pille hinter dem aktiven Icon (Farbe, Icon, Breite)
- * --m3-xo-level / --m3-xo-on-level -> Pille und Zeichen des Plus (Silberblau der Stufe)
+ * --m3-xo-level           -> Farbe des Plus-Zeichens (Silberblau der Stufe)
  * --m3-xo-ink             -> Namen unter den Icons
  * (diese Xool-Werte stehen in styles/tokens-android-dark.css, Abschnitt XOOL-DB)
  * Schrift des Namens unter dem Plus: 12px wie bei den Reitern (android.css).
@@ -64,8 +62,8 @@
     display: flex;
   }
 
-  /* Das Plus: ein Feld wie die Reiter, Pille darin immer gefüllt.
-     Icon mit Innenabstand zur Pille (wie bei den Reitern, android.css) */
+  /* Das Plus: ein Feld wie die Reiter, das Zeichen ohne Pille.
+     Es steht so hoch wie die Icons der Reiter (android.css) */
   :root[data-mobile-variant="xool"] .tab-bar .tab-add {
     display: flex;
     flex: 1 1 0;
@@ -89,14 +87,15 @@
     display: block;
   }
 
+  /* Das Plus-Zeichen der Xool-App ohne Pille, in Silberblau (dunkel im Hellen, hell im Dunkeln);
+     der Innenabstand hält es auf der Höhe der übrigen Icons */
   :root[data-mobile-variant="xool"] .tab-bar .tab-add .icon {
     box-sizing: content-box;
     width: 24px;
     height: 24px;
     padding: calc((var(--m3-indicator-h) - 24px) / 2) calc((var(--m3-indicator-w) - 24px) / 2);
-    border-radius: 999px; /* border-radius: aus dem Kästchen wird die Pille */
-    background: var(--m3-xo-level);
-    color: var(--m3-xo-on-level);
+    background: none;
+    color: var(--m3-xo-level);
   }
 
   :root[data-mobile-variant="xool"] .tab-bar.show-labels .tab-add-label {

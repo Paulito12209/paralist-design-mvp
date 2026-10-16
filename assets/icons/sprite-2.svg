@@ -327,4 +327,8 @@
   <symbol id="icon-chart-column" viewBox="0 0 24 24" fill="none">
     <path d="M3 3v16a2 2 0 0 0 2 2h16M18 17V9M13 17V5M8 17v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
   </symbol>
+  <!-- Plus der Xool-App: vier gerundete Arme mit eingezogenen Ecken — das Plus in der Leiste von „Android (Xool-DB)“ -->
+  <symbol id="icon-spark-plus" viewBox="0 0 24 24">
+    <path fill="currentColor" d="M10.2 6.2Q10.2 10.2 6.2 10.2L2.9 10.2Q2.2 10.2 2.2 12Q2.2 13.8 2.9 13.8L6.2 13.8Q10.2 13.8 10.2 17.8L10.2 21.1Q10.2 21.8 12 21.8Q13.8 21.8 13.8 21.1L13.8 17.8Q13.8 13.8 17.8 13.8L21.1 13.8Q21.8 13.8 21.8 12Q21.8 10.2 21.1 10.2L17.8 10.2Q13.8 10.2 13.8 6.2L13.8 2.9Q13.8 2.2 12 2.2Q10.2 2.2 10.2 2.9Z" />
+  </symbol>
 </svg>

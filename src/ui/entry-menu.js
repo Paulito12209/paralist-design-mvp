@@ -13,7 +13,7 @@
 import { emit, events } from "../core/bus.js";
 import { load } from "../core/lazy.js";
 import { isTaskDone } from "../data/config-tasks.js";
-import { deleteEntry, restoreFromArchive, setCover, setEntryIcon, toggleFavorite } from "../data/mutations.js";
+import { deleteEntry, restoreFromArchive, setCover, setEntryIcon, toggleFavorite, togglePinned } from "../data/mutations.js";
 import { findEntry } from "../data/queries.js";
 import { archiveEntry } from "../data/xp.js";
 import { copyOptions } from "./copy-page.js";
@@ -22,6 +22,7 @@ import { openCtxMenu } from "./ctx-menu.js";
 import { openDetailsFor } from "./details-sheet.js";
 import { openLinkSheet } from "./link-sheet.js";
 import { iconPickerAction } from "./pickers.js";
+import { isMobileVariant } from "./platform.js";
 import { toggleTaskFromCheck } from "./task-status.js";
 import { typeChangeAction } from "./type-menu.js";
 
@@ -57,6 +58,14 @@ export function entryMenuOptions(entry, { onPage = false, afterRemove = () => {}
       onSelect: () => openLinkSheet(entry),
     }
   );
+  /* Anpinnen gibt es nur dort, wo eine Liste „Angepinnt“ es zeigt: „Android (Xool-DB)“ */
+  if (isMobileVariant("xool")) {
+    options.splice(options.length - 1, 0, {
+      label: entry.pinned ? "Lösen" : "Anpinnen",
+      icon: "pin",
+      onSelect: () => togglePinned(entry),
+    });
+  }
   /* „Typ ändern“ steht bei den Dingen, die den Eintrag umbauen (Verknüpfen),
      nicht bei den Aktionen, die ihn wegräumen. Fehlt bei Zeichnung und Medium. */
   const typeChange = typeChangeAction({ entry });

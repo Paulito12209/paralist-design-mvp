@@ -17,11 +17,13 @@ import { dom } from "../core/dom.js";
 import { load } from "../core/lazy.js";
 import { navGlowOn } from "../data/design-prefs.js";
 import { navLabelsOn } from "../data/nav-labels.js";
+import { isMobileVariant } from "../ui/platform.js";
 import { showTab } from "../ui/router.js";
 
-/** Die Leiste zeigt (oder verbirgt) die Namen unter den Icons entsprechend `on`. */
+/** Die Leiste zeigt (oder verbirgt) die Namen unter den Icons entsprechend `on`;
+    „Android (Xool-DB)“ zeigt sie immer, wie die Xool-App. */
 function applyNavLabels(on) {
-  dom.tabBar.classList.toggle("show-labels", on);
+  dom.tabBar.classList.toggle("show-labels", on || isMobileVariant("xool"));
 }
 
 /** Den Verlauf hinter der Leiste zeigen (styles/navigation.css, .has-nav-glow) oder nicht. */
