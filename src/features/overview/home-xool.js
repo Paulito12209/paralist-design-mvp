@@ -39,7 +39,7 @@ const listGroups = [
 
 /* Angepinnt und Favoriten sind keine Listen der Seitenleiste; Favoriten haben die Seite hinter der Kachel */
 export const markedLinks = [
-  { id: "pinned", title: "Angepinnt", icon: "pin" },
+  { id: "pinned", title: "Angepinnt", icon: "pinned" },
   { id: "favorites", title: overviewPages[2].title, icon: overviewPages[2].icon },
 ];
 const listedLinks = listGroups.flat().map((id) => listLinks.find((link) => link.id === id));

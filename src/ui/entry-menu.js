@@ -62,7 +62,7 @@ export function entryMenuOptions(entry, { onPage = false, afterRemove = () => {}
   if (isMobileVariant("xool")) {
     options.splice(options.length - 1, 0, {
       label: entry.pinned ? "Lösen" : "Anpinnen",
-      icon: "pin",
+      icon: "pinned",
       onSelect: () => togglePinned(entry),
     });
   }

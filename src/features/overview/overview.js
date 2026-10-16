@@ -31,7 +31,9 @@ import { bookmarkTotal } from "../../data/bookmarks.js";
 import { moreCards, SOON_LABEL } from "../../data/collections.js";
 import { overviewPages } from "../../data/config.js";
 import { archivedEntries, archivedWorkspaces, pageCount } from "../../data/queries.js";
+import { isMobileVariant } from "../../ui/platform.js";
 import { isViewActive } from "../../ui/views.js";
+import { xoolTilesMarkup } from "./overview-xool.js";
 
 /* Android und Android (Experiment): Lesezeichen und Archiv stehen übereinander links,
    die zwei „Demnächst“-Karten rechts daneben — so schauen sie neben Favoriten und
@@ -113,6 +115,11 @@ function moreCardMarkup(card) {
 
 /** Die Karten neu zeichnen. */
 export function renderOverview() {
+  /* „Android (Xool-DB)“: nur die vier Ablagen, keine zweite Seite */
+  if (isMobileVariant("xool")) {
+    dom.overviewGrid.innerHTML = xoolTilesMarkup(icon);
+    return;
+  }
   const first = Object.entries(overviewPages)
     .map(([id, page]) => cardMarkup(id, page))
     .join("");

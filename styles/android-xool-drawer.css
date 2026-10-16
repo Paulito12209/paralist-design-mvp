@@ -1,0 +1,207 @@
+/*
+ * „Android (Xool-DB)“: die Seitenleiste des Reiters „Menü“
+ * (src/shell/android-xool-drawer.js), nach dem Menü-Blatt der Xool-App, aber von
+ * rechts aufgezogen: links bleiben 48px der Seite stehen. Dahinter ein Schleier.
+ * Oben Marke und ✕ (an der Stelle, wo der Menü-Reiter steht), darunter Profilbild
+ * und Name; dann die Bereiche als Zeilen (56px, die offene als Pille in der Farbe
+ * des aktiven Reiters), unten die Fußleiste mit Hell/Dunkel und Einstellungen.
+ * Gilt nur mit data-mobile-variant="xool" an <html> und unterhalb von 1024px.
+ * Pfad: styles/android-xool-drawer.css
+ *
+ * ANPASSBARE WERTE (in styles/tokens-android-dark.css, Abschnitt XOOL-DB)
+ * -----------------------------------
+ * --m3-xo-page / --m3-xo-card -> Fläche der Leiste und der Kopfkarte
+ * --m3-xo-ind / --m3-xo-on-ind -> die offene Zeile
+ * --m3-xo-ink / --m3-xo-icon  -> Schrift und Zeichen
+ * Aus styles/tokens-android.css: --m3-scrim, --m3-hide-time (Gleiten).
+ * Einzelwerte direkt bei der Regel: 48px Rand links, Zeilen 56px, Marke 14px mit Buchstabenabstand,
+ * Name 22px, Profilbild 72px, Tippflächen 48px.
+ */
+
+.xo-drawer-layer {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  /* position/inset: Schleier über das ganze Gerät; z-index 31 über dem Anlege-Blatt (30), unter den Blättern */
+  :root[data-mobile-variant="xool"] .xo-drawer-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 31;
+    display: block;
+    background: var(--m3-scrim);
+    opacity: 0;
+    transition: opacity var(--m3-hide-time) ease; /* transition: der Schleier blendet ein */
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-layer[hidden] {
+    display: none;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-layer.is-open {
+    opacity: 1;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 48px;
+    display: flex;
+    flex-direction: column;
+    background: var(--m3-xo-page);
+    color: var(--m3-xo-ink);
+    border-radius: 28px 0 0 28px;
+    transform: translateX(100%); /* transform: die Leiste gleitet von rechts herein */
+    transition: transform var(--m3-hide-time) ease;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-layer.is-open .xo-drawer {
+    transform: none;
+  }
+
+  /* ---------- Kopf ---------- */
+
+  :root[data-mobile-variant="xool"] .xo-drawer-head {
+    padding: calc(var(--safe-top) + 8px) 16px 16px 24px;
+    background: var(--m3-xo-card);
+    border-radius: 28px 0 0 0;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 48px;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-brand {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.18em; /* letter-spacing: die Marke steht weit gesetzt wie in Xool */
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-close {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    color: var(--m3-xo-ink);
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-close .icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-profile {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 8px 0 0;
+    color: inherit;
+    text-align: left;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-avatar {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    overflow: hidden; /* overflow: das Foto wird rund beschnitten */
+    border-radius: 50%;
+    background: var(--m3-xo-face);
+    color: #fff;
+    font-size: 28px;
+    font-weight: 500;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* object-fit: das Foto füllt den Kreis, ohne zu verzerren */
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-name {
+    font-size: 22px;
+    font-weight: 500;
+  }
+
+  /* ---------- Bereiche ---------- */
+
+  :root[data-mobile-variant="xool"] .xo-drawer-scroll {
+    flex: 1;
+    overflow-y: auto; /* overflow: bei vielen Zeilen scrollt nur die Liste, Kopf und Fuß stehen */
+    padding: 16px 12px;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-heading {
+    margin: 0 0 8px 16px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--m3-xo-count);
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    width: 100%;
+    height: 56px;
+    padding: 0 16px;
+    border-radius: 28px;
+    color: var(--m3-xo-ink);
+    font-size: 16px;
+    font-weight: 500;
+    text-align: left;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-row .icon {
+    width: 24px;
+    height: 24px;
+    color: var(--m3-xo-icon);
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-row.is-active {
+    background: var(--m3-xo-ind);
+    color: var(--m3-xo-on-ind);
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-row.is-active .icon {
+    color: var(--m3-xo-on-ind);
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-row:active {
+    opacity: 0.7;
+  }
+
+  /* ---------- Fußleiste ---------- */
+
+  :root[data-mobile-variant="xool"] .xo-drawer-foot {
+    display: flex;
+    justify-content: flex-end;
+    gap: 4px;
+    padding: 8px 16px calc(var(--safe-bottom) + 8px);
+    border-top: 1px solid var(--m3-outline-variant);
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-tool {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    color: var(--m3-xo-icon);
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-tool .icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-tool:active {
+    background: var(--m3-xo-ind);
+  }
+}

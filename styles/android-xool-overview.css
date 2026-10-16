@@ -246,3 +246,15 @@
     display: none;
   }
 }
+
+@media (max-width: 1023px) {
+  /* Die Rakete der Kachel „Projekte“ in der Projektfarbe; nur vier Kacheln, also keine
+     Seitenlinie darunter */
+  :root[data-mobile-variant="xool"] #view-home .card-icon-project {
+    color: var(--project-icon-color);
+  }
+
+  :root[data-mobile-variant="xool"] #view-home .overview-pager {
+    display: none;
+  }
+}

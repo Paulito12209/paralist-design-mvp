@@ -331,4 +331,8 @@
   <symbol id="icon-spark-plus" viewBox="0 0 24 24">
     <path fill="currentColor" d="M10.2 6.2Q10.2 10.2 6.2 10.2L2.9 10.2Q2.2 10.2 2.2 12Q2.2 13.8 2.9 13.8L6.2 13.8Q10.2 13.8 10.2 17.8L10.2 21.1Q10.2 21.8 12 21.8Q13.8 21.8 13.8 21.1L13.8 17.8Q13.8 13.8 17.8 13.8L21.1 13.8Q21.8 13.8 21.8 12Q21.8 10.2 21.1 10.2L17.8 10.2Q13.8 10.2 13.8 6.2L13.8 2.9Q13.8 2.2 12 2.2Q10.2 2.2 10.2 2.9Z" />
   </symbol>
+  <!-- Reißzwecke (Material „keep“, Umriss): „Angepinnt“ in „Android (Xool-DB)“ — nicht der Kartenmarker icon-pin -->
+  <symbol id="icon-pinned" viewBox="0 -960 960 960">
+    <path fill="currentColor" d="m640-480 80 80v80H520v240l-40 40-40-40v-240H240v-80l80-80v-280h-40v-80h400v80h-40v280Zm-286 80h252l-46-46v-314H400v314l-46 46Zm126 0Z" />
+  </symbol>
 </svg>
