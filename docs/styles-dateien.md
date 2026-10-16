@@ -81,6 +81,7 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/android-experiment-nav.css` | Experiment: schwebende, hellere Navigationsleiste als Pille mit dem Knopf „Neu“ rechts daneben in einer Zeile |
 | `styles/android-xool-nav.css` | „Android (Xool-DB)“: Leiste von Rand zu Rand mit Plus in der Mitte und Reiter „Menü“ statt „Medien“ |
 | `styles/android-xool-overview.css` | „Android (Xool-DB)“: Reiter „Markiert · Listen“ und Zeile mit Name und Anzahl über den Zeilen der Übersicht |
+| `styles/android-xool-top.css` | „Android (Xool-DB)“: Kopfzeile wie in der Xool-App (Statistik-Icon, helle Suche, Profil mit Stufenring) und Schrift DM Sans |
 | `styles/tokens-android.css` | die Werte der Android-Fassung (Material 3), hell |
 | `styles/tokens-android-dark.css` | Android: die Farben im Dunkeln, die Kacheln im Hellen und die Flächen von „Android (Experiment)“ |
 | `styles/tokens-ios.css` | die Werte der iOS-Fassung |

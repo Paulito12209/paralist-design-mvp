@@ -17,15 +17,16 @@
  * ANPASSBARE WERTE (in styles/tokens-android-dark.css, Abschnitt XOOL-DB)
  * -----------------------------------
  * --m3-xo-card / --m3-xo-card-pressed -> Fläche der Karten, ruhend und gedrückt
- * --m3-xo-row-radius / --m3-xo-end-radius / --m3-xo-seam-radius -> Rundungen der Zeilen,
- *                         der Enden (Kopf oben, letzte Zeile unten) und der Naht Kopf/Zeile
+ * --m3-xo-row-radius / --m3-xo-end-radius -> Rundung der Zeilen und der Enden (Kopf oben,
+ *                         leere Abschlusskarte unten)
  * --m3-xo-gap            -> Fuge zwischen den Karten
  * --m3-xo-side           -> Abstand der Karten zum Geräterand
  * --m3-xo-tile-radius    -> Rundung der Kacheln
  * --m3-xo-tab-size       -> Schriftgröße der Reiter
  * Aus styles/tokens-android.css: --m3-tab-height, --m3-tab-indicator, --m3-primary
  * (Reiter und Linie), --m3-ov-head-size (Name im Kopf).
- * Einzelwerte direkt bei der Regel: Kopf und Zeilen 56px hoch, Anzahl 14px, Regler 40px.
+ * --m3-xo-level / --m3-xo-tab-off -> aktiver und ruhender Reiter, Linie; --m3-xo-ink, --m3-xo-count, --m3-xo-icon -> Name, Zahlen, Regler
+ * Einzelwerte direkt bei der Regel: Kopf und Zeilen 56px hoch, Anzahl 17px wie der Name, Regler 40px.
  */
 
 @media (max-width: 1023px) {
@@ -33,6 +34,7 @@
      abdeckt (Werkzeugzeile), bleibt so trotzdem deckend */
   :root[data-mobile-variant="xool"] #view-home {
     --m3-surface-container: var(--bg);
+    --m3-ov-peek: 0px; /* die Kacheln füllen die Breite, wie die eine Kachelseite in Xool */
   }
 
   :root[data-mobile-variant="xool"] #view-home .overview-card {
@@ -66,13 +68,13 @@
     display: flex;
     justify-content: center;
     height: var(--m3-tab-height);
-    color: var(--m3-on-surface-variant);
+    color: var(--m3-xo-tab-off);
     font-size: var(--m3-xo-tab-size);
     font-weight: 500;
   }
 
   :root[data-mobile-variant="xool"] .home-xool-tab.is-on {
-    color: var(--m3-on-surface);
+    color: var(--m3-xo-level);
   }
 
   /* Das Stück mit dem Namen trägt die Linie; das Zeichen daneben zählt nicht zur
@@ -92,7 +94,7 @@
     bottom: 0;
     height: var(--m3-tab-indicator);
     border-radius: var(--m3-tab-indicator) var(--m3-tab-indicator) 0 0;
-    background: var(--m3-primary);
+    background: var(--m3-xo-level);
   }
 
   :root[data-mobile-variant="xool"] :is(.home-xool-glyph, .home-xool-chevron) {
@@ -101,7 +103,7 @@
     left: calc(100% + 8px);
     width: 16px;
     height: 16px;
-    color: var(--m3-on-surface-variant);
+    color: inherit;
     transform: translateY(-50%); /* transform: senkrecht mittig zum Namen */
   }
 
@@ -122,8 +124,8 @@
     gap: 8px;
     min-height: 56px;
     margin: 0 var(--m3-xo-side) var(--m3-xo-gap);
-    padding: 0 8px 0 16px;
-    border-radius: var(--m3-xo-end-radius) var(--m3-xo-end-radius) var(--m3-xo-seam-radius) var(--m3-xo-seam-radius);
+    padding: 0 4px 0 12px;
+    border-radius: var(--m3-xo-end-radius) var(--m3-xo-end-radius) var(--m3-xo-row-radius) var(--m3-xo-row-radius);
     background: var(--m3-xo-card);
   }
 
@@ -141,7 +143,7 @@
   :root[data-mobile-variant="xool"] .home-xool-open {
     min-width: 0;
     padding: 0;
-    color: var(--m3-on-surface);
+    color: var(--m3-xo-ink);
     font: inherit;
   }
 
@@ -158,9 +160,9 @@
 
   :root[data-mobile-variant="xool"] .home-xool-count {
     flex: none;
-    font-size: 14px;
-    font-weight: 400;
-    color: var(--m3-on-surface-variant);
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--m3-xo-count);
   }
 
   /* Der Regler: runder Knopf ohne Fläche */
@@ -171,7 +173,12 @@
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    color: var(--m3-on-surface-variant);
+    color: var(--m3-xo-icon);
+  }
+
+  /* Die Zahl auf den Kacheln in derselben blassen Farbe */
+  :root[data-mobile-variant="xool"] #view-home .card-count {
+    color: var(--m3-xo-count);
   }
 
   /* ---------- Zeilen als Karten ---------- */
@@ -191,14 +198,17 @@
     background: var(--m3-xo-card);
   }
 
-  :root[data-mobile-variant="xool"] #view-home #project-list .workspace-list > :first-child {
-    border-top-left-radius: var(--m3-xo-seam-radius);
-    border-top-right-radius: var(--m3-xo-seam-radius);
+  :root[data-mobile-variant="xool"] #view-home #project-list .workspace-list > :is(:first-child, :last-child) {
+    border-radius: var(--m3-xo-row-radius);
   }
 
-  :root[data-mobile-variant="xool"] #view-home #project-list .workspace-list > :last-child {
-    border-bottom-left-radius: var(--m3-xo-end-radius);
-    border-bottom-right-radius: var(--m3-xo-end-radius);
+  /* Unter der letzten Zeile eine leere Karte, die die Liste unten rund abschließt
+     (in Xool die Tippfläche zum Anlegen) */
+  :root[data-mobile-variant="xool"] #view-home #project-list .workspace-list::after {
+    content: "";
+    min-height: 56px;
+    border-radius: var(--m3-xo-row-radius) var(--m3-xo-row-radius) var(--m3-xo-end-radius) var(--m3-xo-end-radius);
+    background: var(--m3-xo-card);
   }
 
   :root[data-mobile-variant="xool"] #view-home #project-list .swipe-body:active {
@@ -209,7 +219,12 @@
      Karte zwischen Kopf und Zeilen */
   :root[data-mobile-variant="xool"] #view-home #project-list .project-card-head {
     margin: 0 0 var(--m3-xo-gap);
-    border-radius: var(--m3-xo-seam-radius);
+    border-radius: var(--m3-xo-row-radius);
     background: var(--m3-xo-card);
+  }
+
+  /* Der Regler steht im Kopf der Liste, nicht noch einmal in der Werkzeugzeile */
+  :root[data-mobile-variant="xool"] #view-home #project-list .project-card-head .view-panel-btn {
+    display: none;
   }
 }

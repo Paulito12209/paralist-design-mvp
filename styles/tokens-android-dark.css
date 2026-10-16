@@ -24,16 +24,22 @@
  *                                 Container (höhere Deckkraft = deutlichere Linie); im Hellen schwächer als im Dunkeln
  * --m3-xl-divider-w           -> Dicke dieser Linie
  * --m3-xl-divider-inset       -> Abstand der Linie zum linken und rechten Geräterand (16px, wie der Inhalt)
- * XOOL-DB (Übersicht wie in der Xool-App, styles/android-xool-overview.css)
- * --m3-xo-card               -> Fläche von Kacheln, Kopf und Zeilen (Karten auf dem Seitengrund)
- * --m3-xo-card-pressed       -> dieselbe Karte gedrückt
- * --m3-xo-row-radius         -> Rundung der Zeilen; der Kopf und das Listenende runden mit --m3-xo-end-radius
- * --m3-xo-end-radius         -> Rundung oben am Kopf und unten an der letzten Zeile
- * --m3-xo-seam-radius        -> kleine Rundung, wo Kopf und erste Zeile aneinanderstoßen
- * --m3-xo-gap                -> Fuge zwischen den Karten
- * --m3-xo-side               -> Abstand der Karten zum Geräterand
- * --m3-xo-tile-radius        -> Rundung der Kacheln oben
- * --m3-xo-tab-size           -> Schriftgröße der Reiter „Markiert · Listen“
+ * XOOL-DB (wie die Xool-App: styles/android-xool-top.css, -nav.css, -overview.css)
+ * --m3-xo-page               -> Seitengrund (wird in dieser Fassung zu --bg)
+ * --m3-xo-card / -card-pressed -> Fläche von Kacheln, Kopf und Zeilen, ruhend und gedrückt
+ * --m3-xo-bar                -> Fläche der Navigationsleiste
+ * --m3-xo-search / -search-ink -> Suchleiste oben und ihre Schrift
+ * --m3-xo-level / -on-level  -> Silberblau der Stufe: Ring und Zahl am Profilknopf, Plus, aktiver Reiter
+ * --m3-xo-ring / -face       -> Spur des Rings und runde Fläche im Profilknopf
+ * --m3-xo-ind / -on-ind      -> Pille hinter dem aktiven Icon der Leiste und das Icon darauf
+ * --m3-xo-ink                -> Schrift (Namen, Leiste)
+ * --m3-xo-tab-off            -> ruhender Reiter „Markiert · Listen“
+ * --m3-xo-count / -icon      -> Zahlen neben Namen; Statistik-Icon und Regler
+ * --m3-xo-row-radius / -end-radius -> Rundung der Zeilen und der Enden (Kopf oben, Liste unten)
+ * --m3-xo-gap / -side        -> Fuge zwischen den Karten, Abstand zum Geräterand
+ * --m3-xo-tile-radius        -> Rundung der Kacheln
+ * --m3-xo-tab-size           -> Schriftgröße der Reiter
+ * --m3-xo-nav-height / -ind-w -> Höhe der Leiste und Breite der Pille hinter dem Icon
  * --m3-xl-nav-surface        -> Experiment: Fläche der schwebenden Navigationsleiste (heller als Kacheln und Container)
  * --m3-xl-nav-height         -> Höhe der Leiste und des Knopfs „Neu“ daneben (beide gleich hoch)
  * --m3-xl-nav-side           -> Abstand von Leiste und „Neu“ zum linken und rechten Geräterand
@@ -154,27 +160,69 @@
   }
 }
 
-/* Xool-DB: Karten wie in der Xool-App — im Dunkeln eine Stufe über dem Seitengrund, im Hellen fast weiß */
+/* Xool-DB: Farben und Maße der Xool-App (am laufenden Xool gemessen) — dunkel, darunter hell */
 :root[data-mobile-variant="xool"] {
-  --m3-xo-card: #1b1b1d;
-  --m3-xo-card-pressed: #262629;
-  --m3-xo-row-radius: 12px;
+  --m3-xo-page: #151515;
+  --m3-xo-card: #202022;
+  --m3-xo-card-pressed: #2a2a2d;
+  --m3-xo-bar: #0e0e0e;
+  --m3-xo-search: #212226;
+  --m3-xo-search-ink: #e3e3e3;
+  --m3-xo-level: #a9c9ff;
+  --m3-xo-on-level: #101418;
+  --m3-xo-ring: rgba(255, 255, 255, 0.14);
+  --m3-xo-face: #727483;
+  --m3-xo-ind: #44464f;
+  --m3-xo-on-ind: #e3e3e8;
+  --m3-xo-ink: #e3e3e3;
+  --m3-xo-tab-off: #7c8089;
+  --m3-xo-count: #7c8089;
+  --m3-xo-icon: #8e939a;
+  --m3-xo-row-radius: 4px;
   --m3-xo-end-radius: 16px;
-  --m3-xo-seam-radius: 4px;
-  --m3-xo-gap: 4px;
+  --m3-xo-gap: 2px;
   --m3-xo-side: 8px;
   --m3-xo-tile-radius: 18px;
   --m3-xo-tab-size: 16px;
+  --m3-xo-nav-height: 70px;
+  --m3-xo-ind-w: 64px;
+  --bg: var(--m3-xo-page);
 }
 
 :root[data-mobile-variant="xool"][data-theme="light"] {
+  --m3-xo-page: #f6f4f5;
   --m3-xo-card: #fcfcfc;
   --m3-xo-card-pressed: #f2f2f2;
+  --m3-xo-bar: #efecee;
+  --m3-xo-search: #fcfdff;
+  --m3-xo-search-ink: #1a1a24;
+  --m3-xo-level: #4d72ad;
+  --m3-xo-on-level: #ffffff;
+  --m3-xo-ring: rgba(26, 26, 36, 0.12);
+  --m3-xo-ind: #d5d9ea;
+  --m3-xo-on-ind: #1c1b22;
+  --m3-xo-ink: #0f0f10;
+  --m3-xo-tab-off: #4f4a4c;
+  --m3-xo-count: #b0b4bb;
+  --m3-xo-icon: #5f6368;
 }
 
 @media (prefers-color-scheme: light) {
   :root[data-mobile-variant="xool"]:not([data-theme="dark"]) {
+    --m3-xo-page: #f6f4f5;
     --m3-xo-card: #fcfcfc;
     --m3-xo-card-pressed: #f2f2f2;
+    --m3-xo-bar: #efecee;
+    --m3-xo-search: #fcfdff;
+    --m3-xo-search-ink: #1a1a24;
+    --m3-xo-level: #4d72ad;
+    --m3-xo-on-level: #ffffff;
+    --m3-xo-ring: rgba(26, 26, 36, 0.12);
+    --m3-xo-ind: #d5d9ea;
+    --m3-xo-on-ind: #1c1b22;
+    --m3-xo-ink: #0f0f10;
+    --m3-xo-tab-off: #4f4a4c;
+    --m3-xo-count: #b0b4bb;
+    --m3-xo-icon: #5f6368;
   }
 }

@@ -17,6 +17,11 @@
  * --m3-content-end        -> Platz am Seitenende: hier nur noch Leiste plus ein Abstand,
  *                            weil es keinen Knopf „Neu“ darüber gibt
  * --m3-fab-gap            -> Abstand zum Seitenende; Luft über dem ✕ des offenen Menüs
+ * --m3-xo-bar / --m3-xo-nav-height -> Fläche und Höhe der Leiste wie in der Xool-App
+ * --m3-xo-ind / --m3-xo-on-ind / --m3-xo-ind-w -> Pille hinter dem aktiven Icon (Farbe, Icon, Breite)
+ * --m3-xo-level / --m3-xo-on-level -> Pille und Zeichen des Plus (Silberblau der Stufe)
+ * --m3-xo-ink             -> Namen unter den Icons
+ * (diese Xool-Werte stehen in styles/tokens-android-dark.css, Abschnitt XOOL-DB)
  * Schrift des Namens unter dem Plus: 12px wie bei den Reitern (android.css).
  */
 
@@ -29,7 +34,24 @@
 
 @media (max-width: 1023px) {
   :root[data-mobile-variant="xool"] {
+    --m3-nav-height: var(--m3-xo-nav-height);
+    --m3-nav-height-labels: var(--m3-xo-nav-height);
+    --m3-indicator-w: var(--m3-xo-ind-w);
     --m3-content-end: calc(var(--m3-nav-height-labels) + var(--m3-fab-gap));
+  }
+
+  /* Leiste in ihrer eigenen, tieferen Fläche (wie in Xool), nicht in der des Containers */
+  :root[data-mobile-variant="xool"] .nav-shell:not(.is-composing) {
+    background: var(--m3-xo-bar);
+  }
+
+  :root[data-mobile-variant="xool"] .tab-btn {
+    color: var(--m3-xo-ink);
+  }
+
+  :root[data-mobile-variant="xool"] .tab-btn.is-active .icon {
+    background: var(--m3-xo-ind);
+    color: var(--m3-xo-on-ind);
   }
 
   /* Kein breiter Knopf über der Leiste; „Medien“ steht im Menü-Blatt */
@@ -73,8 +95,8 @@
     height: 24px;
     padding: calc((var(--m3-indicator-h) - 24px) / 2) calc((var(--m3-indicator-w) - 24px) / 2);
     border-radius: 999px; /* border-radius: aus dem Kästchen wird die Pille */
-    background: var(--m3-primary-container);
-    color: var(--m3-on-primary-container);
+    background: var(--m3-xo-level);
+    color: var(--m3-xo-on-level);
   }
 
   :root[data-mobile-variant="xool"] .tab-bar.show-labels .tab-add-label {

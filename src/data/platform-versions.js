@@ -72,6 +72,7 @@ export const platforms = [
         differences: [
           { area: "Navigationsleiste", text: "Übersicht · Kalender · Plus · Aufgaben · Menü, von Rand zu Rand. Das Plus steht als gefüllte Pille in der Mitte der Leiste; der Knopf „Neu“ über der Leiste entfällt. Das Plus öffnet dasselbe Anlege-Menü wie sonst." },
           { area: "Übersicht", text: "Wie „Android (Experiment)“ mit Container unter den Kacheln, aber mit zwei Reitern „Markiert · Listen“ darüber (wie „Meine Ablage · Computer“ in Google Drive): hinter jedem Reiter steckt eine gewählte Liste, ein Tipp auf den aktiven öffnet die Listenwahl. Markiert: Favoriten, Lesezeichen; Listen: Projekte, Arbeitsbereiche, Ressourcen, Archiv, Eingang, Aufgaben, Termine. Darunter wie in der Xool-App Karten auf dem Seitengrund statt eines farbigen Containers: der Kopf mit Name (öffnet die Seite), Anzahl und Regler, die Zeilen mit schmaler Fuge." },
+          { area: "Kopfzeile und Farben", text: "Wie in der Xool-App: links das Statistik-Icon (öffnet „Fortschritt“), in der Mitte die helle Suche „Suche in Paralist“, rechts das Profil mit Stufenring und Stufenzahl; Seitengrund, Karten, Leiste und Schrift (DM Sans) in den Farben und Maßen von Xool." },
           { area: "Menü", text: "Der Reiter „Medien“ in der Leiste ist dem Reiter „Menü“ gewichen: ein Blatt von unten mit Medien, Archiv und Einstellungen." },
         ],
       },

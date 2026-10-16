@@ -323,4 +323,8 @@
     <path fill="currentColor" fill-rule="evenodd" d="M6 2h20a4 4 0 0 1 0 8H6a4 4 0 0 1 0-8Zm0 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z" />
     <path fill="currentColor" fill-rule="evenodd" d="M6 14h20a4 4 0 0 1 0 8H6a4 4 0 0 1 0-8Zm20 2a2 2 0 1 0 0 4 2 2 0 0 0 0-4Z" />
   </symbol>
+  <!-- Statistik: Säulen auf einer Achse (Lucide „chart-column“) — oben links in „Android (Xool-DB)“ -->
+  <symbol id="icon-chart-column" viewBox="0 0 24 24" fill="none">
+    <path d="M3 3v16a2 2 0 0 0 2 2h16M18 17V9M13 17V5M8 17v-3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+  </symbol>
 </svg>
