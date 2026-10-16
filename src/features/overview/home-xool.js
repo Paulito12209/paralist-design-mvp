@@ -1,12 +1,13 @@
 /*
  * „Android (Xool-DB)“, Übersicht: die zwei Reiter „Markiert · Listen“ über der
  * Liste, wie „Meine Ablage · Computer“ in Google Drive. Hinter jedem Reiter
- * steckt eine gewählte Liste: der ruhende Reiter zeigt ihr Icon, der aktive
- * einen Pfeil nach unten — ein Tipp darauf öffnet das Blatt „Liste wählen“
- * mit den Listen dieses Reiters: unter „Markiert“ Angepinnt und Favoriten,
- * unter „Listen“ die Listen der Seitenleiste in den Gruppen der Xool-App, die
- * gewählte allein ganz oben. Darunter folgt der
- * Kopf der Liste mit Name, Anzahl und den Knöpfen (src/features/overview/home-list.js).
+ * steckt eine gewählte Liste: der ruhende Reiter zeigt ihr Icon, der aktive nur
+ * seinen Namen. Die Listenwahl öffnet der Name im Kopf der Liste darunter
+ * („Eingang ˅“) als Blatt „Liste wählen“ mit den Listen dieses Reiters: unter
+ * „Markiert“ Angepinnt und Favoriten, unter „Listen“ die Listen der Seitenleiste
+ * in den Gruppen der Xool-App, die gewählte allein ganz oben. Rechts im Kopf steht
+ * der runde Pfeil zur Seite der Liste; der Regler (nur Projekte) ist ein Knopf über
+ * der Leiste (src/features/overview/home-list.js, styles/android-xool-pages.css).
  * Gemerkt werden der Reiter und je Reiter die gewählte Liste.
  * Pfad: src/features/overview/home-xool.js
  *
@@ -66,14 +67,14 @@ export function xoolList() {
   return xoolTab() === "marked" ? chosenIn(markedLinks, storageKeys.homeMarked) : chosenIn(listedLinks, storageKeys.homeList);
 }
 
-/* Das Zeichen im Reiter: der aktive trägt den Pfeil, der ruhende das Icon seiner Liste. */
+/* Das Zeichen im Reiter: der ruhende trägt das Icon seiner gewählten Liste, der aktive nur seinen
+   Namen — die Listenwahl steht im Kopf der Liste darunter (xoolBarMarkup). */
 function tabMarkup(tab) {
   const on = xoolTab() === tab;
   const link = tab === "marked" ? chosenIn(markedLinks, storageKeys.homeMarked) : chosenIn(listedLinks, storageKeys.homeList);
-  const glyph = on ? icon("chevron", "home-xool-chevron") : icon(link.icon, "home-xool-glyph");
-  const label = on ? `${tabLabels[tab]} — Liste wechseln` : tabLabels[tab];
+  const glyph = on ? "" : icon(link.icon, "home-xool-glyph");
   return `
-    <button class="home-xool-tab${on ? " is-on" : ""}" type="button" role="tab" aria-selected="${on}" data-home-xool-tab="${tab}" aria-label="${escapeHtml(label)}"${on ? ' aria-haspopup="dialog"' : ""}>
+    <button class="home-xool-tab${on ? " is-on" : ""}" type="button" role="tab" aria-selected="${on}" data-home-xool-tab="${tab}">
       <span class="home-xool-tab-label"><span>${tabLabels[tab]}</span>${glyph}</span>
     </button>`;
 }
@@ -84,20 +85,23 @@ export function xoolTabsMarkup() {
 }
 
 /**
- * Der Kopf der Liste unter den Reitern, eine Karte wie in der Xool-App: links
- * der Name (ein Tipp öffnet die Seite der Liste, `openAttr` aus home-list.js)
- * mit der Anzahl, rechts der Regler — bei Projekten das Blatt „Ansicht“ mit
- * Layout, Sortierung, Filter und „Tabs anzeigen“.
+ * Der Kopf der Liste unter den Reitern, eine Karte wie in der Xool-App: links der Name der
+ * Liste mit einem Pfeil nach unten (ein Tipp öffnet die Listenwahl) und der Anzahl, rechts
+ * der runde Pfeil zur Seite der Liste (`openAttr` aus home-list.js; „Angepinnt“ hat keine
+ * Seite). Der Regler (`toolsMarkup`, nur bei Projekten) steht nicht in der Karte, sondern
+ * als Knopf über der Leiste (styles/android-xool-pages.css).
  */
 export function xoolBarMarkup(link, count, openAttr, toolsMarkup) {
   const number = count ? `<span class="home-xool-count">${count}</span>` : "";
-  /* „Angepinnt“ hat keine eigene Seite: dort ist der Name nur Text */
-  const name = openAttr
-    ? `<button class="home-xool-open" type="button" ${openAttr} aria-label="${escapeHtml(link.title)} öffnen"><span>${escapeHtml(link.title)}</span></button>`
-    : `<span class="home-xool-open"><span>${escapeHtml(link.title)}</span></span>`;
+  const open = openAttr
+    ? `<button class="home-xool-open" type="button" ${openAttr} aria-label="${escapeHtml(link.title)} öffnen">${icon("arrow-up-right")}</button>`
+    : "";
   return `
     <div class="home-xool-bar">
-      <h2 class="home-xool-name">${name}${number}</h2>
+      <h2 class="home-xool-name">
+        <button class="home-xool-pick" type="button" data-home-xool-pick aria-haspopup="dialog" aria-label="${escapeHtml(link.title)} — Liste wechseln"><span>${escapeHtml(link.title)}</span>${icon("chevron", "home-xool-chevron")}</button>${number}
+      </h2>
+      ${open}
       ${toolsMarkup}
     </div>`;
 }
@@ -131,12 +135,15 @@ function openChooser() {
   openSheet(menuTitle, options);
 }
 
-/** Tipp auf einen Reiter: der aktive öffnet die Listenwahl, der ruhende wird gewählt. Gibt an, ob der Klick galt. */
+/** Tipp auf einen Reiter (der ruhende wird gewählt) oder auf den Namen im Kopf (Listenwahl). Gibt an, ob der Klick galt. */
 export function handleXoolTabClick(event) {
+  if (event.target.closest("[data-home-xool-pick]")) {
+    openChooser();
+    return true;
+  }
   const button = event.target.closest("[data-home-xool-tab]");
   if (!button) return false;
-  if (button.dataset.homeXoolTab === xoolTab()) openChooser();
-  else {
+  if (button.dataset.homeXoolTab !== xoolTab()) {
     writeText(storageKeys.homeTab, button.dataset.homeXoolTab);
     emit(events.dataChanged);
   }

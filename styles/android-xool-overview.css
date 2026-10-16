@@ -97,7 +97,7 @@
     background: var(--m3-xo-level);
   }
 
-  :root[data-mobile-variant="xool"] :is(.home-xool-glyph, .home-xool-chevron) {
+  :root[data-mobile-variant="xool"] .home-xool-glyph {
     position: absolute; /* position: hängt rechts neben dem Namen, ohne ihn zu verschieben */
     top: 50%;
     left: calc(100% + 8px);
@@ -105,11 +105,6 @@
     height: 16px;
     color: inherit;
     transform: translateY(-50%); /* transform: senkrecht mittig zum Namen */
-  }
-
-  /* Das Chevron-Symbol zeigt nach rechts: zusätzlich um 90° gedreht zeigt es nach unten */
-  :root[data-mobile-variant="xool"] .home-xool-chevron {
-    transform: translateY(-50%) rotate(90deg); /* transform: mittig und nach unten gedreht */
   }
 
   :root[data-mobile-variant="xool"] .home-xool-tab:active {
@@ -140,33 +135,39 @@
     font-weight: 500;
   }
 
-  :root[data-mobile-variant="xool"] .home-xool-open {
+  /* Der Name mit dem Pfeil nach unten öffnet die Listenwahl */
+  :root[data-mobile-variant="xool"] .home-xool-pick {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
     min-width: 0;
     padding: 0;
     color: var(--m3-xo-ink);
     font: inherit;
   }
 
-  :root[data-mobile-variant="xool"] .home-xool-open > span {
+  :root[data-mobile-variant="xool"] .home-xool-pick > span {
     display: block;
     overflow: hidden;
     text-overflow: ellipsis; /* text-overflow: zu lange Namen enden mit „…“ */
     white-space: nowrap;
   }
 
-  :root[data-mobile-variant="xool"] .home-xool-open:active {
+  /* Das Chevron-Symbol zeigt nach rechts: um 90° gedreht zeigt es nach unten */
+  :root[data-mobile-variant="xool"] .home-xool-chevron {
+    flex: none;
+    width: 18px;
+    height: 18px;
+    color: var(--m3-xo-icon);
+    transform: rotate(90deg); /* transform: dasselbe Symbol, nur nach unten gedreht */
+  }
+
+  :root[data-mobile-variant="xool"] .home-xool-pick:active {
     opacity: 0.55;
   }
 
-  :root[data-mobile-variant="xool"] .home-xool-count {
-    flex: none;
-    font-size: 17px;
-    font-weight: 500;
-    color: var(--m3-xo-count);
-  }
-
-  /* Der Regler: runder Knopf ohne Fläche */
-  :root[data-mobile-variant="xool"] .home-xool-bar .view-panel-btn {
+  /* Der runde Pfeil zur Seite der Liste */
+  :root[data-mobile-variant="xool"] .home-xool-open {
     flex: none;
     display: grid;
     place-items: center;
@@ -174,6 +175,22 @@
     height: 40px;
     border-radius: 50%;
     color: var(--m3-xo-icon);
+  }
+
+  :root[data-mobile-variant="xool"] .home-xool-open .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  :root[data-mobile-variant="xool"] .home-xool-open:active {
+    background: var(--m3-xo-ind);
+  }
+
+  :root[data-mobile-variant="xool"] .home-xool-count {
+    flex: none;
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--m3-xo-count);
   }
 
   /* Die Zahl auf den Kacheln in derselben blassen Farbe */
@@ -241,8 +258,9 @@
     background: var(--m3-xo-card);
   }
 
-  /* Der Regler steht im Kopf der Liste, nicht noch einmal in der Werkzeugzeile */
-  :root[data-mobile-variant="xool"] #view-home #project-list .project-card-head .view-panel-btn {
+  /* Der Regler ist ein Knopf über der Leiste (styles/android-xool-pages.css), nicht noch einmal
+     in der Werkzeugzeile; „Sortieren“ bleibt dort */
+  :root[data-mobile-variant="xool"] #view-home #project-list .project-card-head :is(.view-panel-btn, [data-card-tool="view"]) {
     display: none;
   }
 }
