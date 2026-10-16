@@ -263,6 +263,11 @@ body.is-calendar .cal-panel {
   opacity: 0.55;
 }
 
+/* „Heute“ neben dem Datum gibt es nur in „Android (Xool-DB)“ (styles/android-xool-pages.css) */
+.cal-today-chip {
+  display: none;
+}
+
 /* Graue Fläche: läuft bis zum unteren Rand, hinter die Navigation */
 
 /* ---------- Blatt „Datum“ bzw. „Woche“ mit den Rollen ---------- */

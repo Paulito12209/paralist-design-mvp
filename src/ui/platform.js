@@ -14,3 +14,8 @@ import { isDesk } from "./desk-mode.js";
 export function isMobileOs(os) {
   return document.documentElement.dataset.mobileOs === os && !isDesk();
 }
+
+/** Ist die Android-Spielart `variant` ("experiment", "xool") am Handy oder Tablet zu sehen? */
+export function isMobileVariant(variant) {
+  return isMobileOs("android") && document.documentElement.dataset.mobileVariant === variant;
+}

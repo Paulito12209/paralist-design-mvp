@@ -1,6 +1,6 @@
 /*
  * Übersicht, beide Android-Fassungen: oben die Kartenreihe mit hervorschauender
- * zweiter Seite. Nur in „Android (Experiment)“ liegt darunter „Projekte“ samt
+ * zweiter Seite. Nur in „Android (Experiment)“ und „Android (Xool-DB)“ liegt darunter „Projekte“ samt
  * Reitern, Werkzeugzeile und Einträgen in einem Container.
  *
  * Kartenreihe (beide Fassungen): jede Seite ist um --m3-ov-peek schmaler als der
@@ -20,7 +20,7 @@
  * außen stark, zwischen den Zeilen kaum gerundet, mit schmaler Fuge.
  * Die Hinweiszeile „Projekt hinzufügen“ ist keine Kachel: sie steht ohne eigene Fläche auf dem Container.
  * Gilt mit data-mobile-os="android" an <html> (der Container nur mit
- * data-mobile-variant="experiment"), auf der Übersicht (#view-home) und unterhalb von 1024px.
+ * data-mobile-variant="experiment" oder "xool"), auf der Übersicht (#view-home) und unterhalb von 1024px.
  * Pfad: styles/android-overview-sheet.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens-android.css)
@@ -47,7 +47,7 @@
   /* ---------- Kartenreihe mit Peek ---------- */
 
   /* Das Experiment lässt etwas mehr hervorschauen als „Android“ */
-  [data-mobile-variant="experiment"] #view-home {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home {
     --m3-ov-peek: var(--m3-ov-peek-experiment);
   }
 
@@ -96,17 +96,17 @@
   /* display: flex — die Seite wird mindestens so hoch wie der Bildschirm (100cqh,
      Maß des Scrollbereichs, styles/android-tabs.css); die Liste füllt den Rest
      und bringt so den Container bis an die Leiste, auch bei wenigen Einträgen */
-  [data-mobile-variant="experiment"] #view-home.is-active {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home.is-active {
     display: flex;
     flex-direction: column;
     min-height: 100cqh;
   }
 
-  [data-mobile-variant="experiment"] #view-home > * {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home > * {
     flex: 0 0 auto; /* flex: alles andere behält seine Höhe, nichts wird gequetscht */
   }
 
-  [data-mobile-variant="experiment"] #view-home > #project-list {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home > #project-list {
     flex: 1 0 auto;
   }
 
@@ -114,11 +114,11 @@
 
   /* Von Rand zu Rand, oben abgerundet. Der Abstand nach oben ersetzt den
      Abstand der Seitenlinie (styles/android-overview-gaps.css). */
-  [data-mobile-variant="experiment"] #view-home .overview-pager + .section-head {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home .overview-pager + .section-head {
     margin-top: var(--m3-ov-sheet-gap);
   }
 
-  [data-mobile-variant="experiment"] #view-home .project-head {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home .project-head {
     margin-inline: calc(-1 * var(--content-side));
     margin-bottom: 0;
     padding: 0 var(--content-side) 0 var(--m3-title-edge);
@@ -127,20 +127,20 @@
     background: var(--m3-surface-container);
   }
 
-  [data-mobile-variant="experiment"] .project-head h2 {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) .project-head h2 {
     flex: 1;
     min-width: 0; /* min-width: Flex-Kind darf schmaler werden */
   }
 
   /* Der Name links, der Pfeil gegenüber rechts; die ganze Zeile ist antippbar */
-  [data-mobile-variant="experiment"] .project-head .section-link {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) .project-head .section-link {
     width: 100%;
     justify-content: space-between;
   }
 
   /* Der Pfeil steht in einem kleinen runden Knopf (blendet die Regel in
      styles/android-sheet.css für „Android“ wieder ein) */
-  [data-mobile-variant="experiment"] .project-head .section-link .icon {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) .project-head .section-link .icon {
     display: block;
     box-sizing: border-box; /* box-sizing: das Polster liegt innerhalb des Durchmessers */
     width: var(--m3-ov-arrow-size);
@@ -157,19 +157,19 @@
      Seiten: der Platzhalter „Projekt hinzufügen“ ist weg, nichts liegt mehr
      hinter dem Plus-Knopf. Container (unten) und Seitenende müssen gleich bleiben,
      sonst ließe der Container unter sich einen Streifen Seitengrund frei. */
-  [data-mobile-variant="experiment"] body:has(#view-home.is-active) .content {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) body:has(#view-home.is-active) .content {
     --content-end: var(--m3-ov-content-end); /* --content-end: die Seite reicht genau bis zur Leiste (styles/android-archive.css) */
     padding-bottom: var(--content-end);
   }
 
   /* Die Reiterzeile klebt oben weiter fest, trägt aber die Fläche des
      Containers; ihr Abstand nach unten würde die Seitenfarbe durchscheinen lassen */
-  [data-mobile-variant="experiment"] #view-home #project-views {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home #project-views {
     margin-bottom: 0;
     background: var(--m3-surface-container);
   }
 
-  [data-mobile-variant="experiment"] #view-home #project-list {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home #project-list {
     margin-inline: calc(-1 * var(--content-side));
     padding: 0 var(--content-side) var(--m3-ov-content-end);
     margin-bottom: calc(-1 * var(--m3-ov-content-end)); /* margin-bottom: der Container reicht über das Seitenende bis zur Leiste, ohne die Seite länger zu machen */
@@ -178,62 +178,62 @@
 
   /* Die Werkzeugzeile liegt direkt unter den Reitern (kein Abstand mehr dazwischen)
      und deckt beim Festkleben mit der Fläche des Containers ab */
-  [data-mobile-variant="experiment"] #view-home #project-list .project-card-head {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home #project-list .project-card-head {
     margin-top: 0;
     background: var(--m3-surface-container);
   }
 
   /* ---------- Einträge als Kachelgruppe ---------- */
 
-  [data-mobile-variant="experiment"] #view-home #project-list .workspace-list {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home #project-list .workspace-list {
     gap: var(--m3-group-gap);
   }
 
-  [data-mobile-variant="experiment"] #view-home #project-list .workspace-list > * {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home #project-list .workspace-list > * {
     margin-inline: 0; /* margin-inline: die Zeile reicht nicht mehr bis zum Geräterand, die Kachel steht im Container */
     background: var(--bg);
     border-radius: var(--m3-group-inner-radius);
   }
 
-  [data-mobile-variant="experiment"] #view-home #project-list .workspace-list > :first-child {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home #project-list .workspace-list > :first-child {
     border-top-left-radius: var(--m3-group-radius);
     border-top-right-radius: var(--m3-group-radius);
   }
 
-  [data-mobile-variant="experiment"] #view-home #project-list .workspace-list > :last-child {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home #project-list .workspace-list > :last-child {
     border-bottom-left-radius: var(--m3-group-radius);
     border-bottom-right-radius: var(--m3-group-radius);
   }
 
   /* Zwischen Kacheln steht die Fuge, keine Trennlinie */
-  [data-mobile-variant="experiment"] #view-home #project-list .swipe::after {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home #project-list .swipe::after {
     display: none;
   }
 
-  [data-mobile-variant="experiment"] #view-home #project-list .swipe-body {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home #project-list .swipe-body {
     padding-left: var(--m3-page-edge);
     background: var(--bg);
   }
 
   /* Gedrückt: Tönung über der Kachelfläche, nicht über dem Seitengrund */
-  [data-mobile-variant="experiment"] #view-home #project-list .swipe-body:active {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home #project-list .swipe-body:active {
     background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), var(--bg));
   }
 
   /* „Projekt hinzufügen“ ist nur ein Hinweis, kein Eintrag: keine eigene Kachel, sondern
      die Fläche des Containers dahinter, damit sie leiser wirkt als echte Projekte.
      Gedrückt tönt sie sich wie sonst durchscheinend (styles/android-list.css). */
-  [data-mobile-variant="experiment"] #view-home #project-list .workspace-list > .workspace-add {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home #project-list .workspace-list > .workspace-add {
     background: transparent;
   }
 
-  [data-mobile-variant="experiment"] #view-home #project-list .workspace-list > .workspace-add:active {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home #project-list .workspace-list > .workspace-add:active {
     background: color-mix(in srgb, var(--m3-on-surface) var(--m3-state-pressed), transparent);
   }
 
   /* „Projekt hinzufügen“ und die Eingabezeile neuer Projekte sind Kacheln ohne Wisch-Hülle:
      der Innenabstand ersetzt den der Hülle */
-  [data-mobile-variant="experiment"] #view-home #project-list .workspace-list > :not(.swipe) {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home #project-list .workspace-list > :not(.swipe) {
     padding-left: var(--m3-page-edge);
   }
 
@@ -242,13 +242,13 @@
   /* Den Kopf zeichnet src/features/overview/home-list.js neu: links „Projekte ˅“,
      rechts Pille „Liste“/„Kanban“, Reiter-Knopf und Pfeil — wie „Threads“ und
      der runde Knopf in Google Chat. */
-  [data-mobile-variant="experiment"] .project-head .home-list-title {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) .project-head .home-list-title {
     flex: 1;
     min-width: 0; /* min-width: Flex-Kind darf schmaler werden, lange Namen kürzen */
     font-size: var(--m3-ov-head-size);
   }
 
-  [data-mobile-variant="experiment"] .home-list-pick {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) .home-list-pick {
     display: inline-flex;
     align-items: center;
     gap: 4px;
@@ -258,14 +258,14 @@
     font: inherit;
   }
 
-  [data-mobile-variant="experiment"] .home-list-pick > span {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) .home-list-pick > span {
     overflow: hidden;
     text-overflow: ellipsis; /* text-overflow: zu lange Namen enden mit „…“ */
     white-space: nowrap;
   }
 
   /* Das Chevron-Symbol zeigt nach rechts: um 90° gedreht zeigt es nach unten */
-  [data-mobile-variant="experiment"] .home-list-chevron {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) .home-list-chevron {
     flex: none;
     width: 18px;
     height: 18px;
@@ -273,14 +273,14 @@
     transform: rotate(90deg); /* transform: dasselbe Symbol, nur nach unten gedreht */
   }
 
-  [data-mobile-variant="experiment"] .home-list-tools {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) .home-list-tools {
     display: flex;
     flex: none;
     align-items: center;
     gap: var(--m3-ov-tools-gap);
   }
 
-  [data-mobile-variant="experiment"] :is(.home-list-layout, .home-list-round) {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) :is(.home-list-layout, .home-list-round) {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -290,30 +290,30 @@
     color: var(--m3-on-surface-variant);
   }
 
-  [data-mobile-variant="experiment"] .home-list-layout {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) .home-list-layout {
     gap: 6px;
     padding: 0 12px 0 10px;
     font-size: 14px;
     font-weight: 500;
   }
 
-  [data-mobile-variant="experiment"] .home-list-round {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) .home-list-round {
     width: var(--m3-ov-arrow-size);
     padding: 0;
   }
 
-  [data-mobile-variant="experiment"] :is(.home-list-layout, .home-list-round) .icon {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) :is(.home-list-layout, .home-list-round) .icon {
     width: 16px;
     height: 16px;
   }
 
   /* Reiter sichtbar: der Knopf in der Schriftfarbe gefüllt, wie ein eingeschalteter Schalter */
-  [data-mobile-variant="experiment"] .home-list-tabs.is-on {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) .home-list-tabs.is-on {
     background: var(--m3-on-surface-variant);
     color: var(--m3-surface-container);
   }
 
-  [data-mobile-variant="experiment"] :is(.home-list-pick, .home-list-layout, .home-list-round):active {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) :is(.home-list-pick, .home-list-layout, .home-list-round):active {
     opacity: 0.55;
   }
 }

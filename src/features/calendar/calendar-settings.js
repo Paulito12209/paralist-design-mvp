@@ -95,4 +95,5 @@ export function renderCalendarSettings() {
  */
 export function setTodayActive(active) {
   panel?.actions.querySelector(".cal-today")?.classList.toggle("is-on", active);
+  document.getElementById("cal-today-chip")?.classList.toggle("is-on", active);
 }

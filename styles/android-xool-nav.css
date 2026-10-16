@@ -1,0 +1,188 @@
+/*
+ * Fassung „Android (Xool-DB)“, Navigationsleiste nach der Xool-App: fünf gleich
+ * breite Felder von Rand zu Rand — Übersicht, Kalender, Plus, Aufgaben, Menü.
+ * Das Plus ist ein Feld der Leiste mit dem Plus-Zeichen der Xool-App in
+ * Silberblau, ohne Pille (statt des Knopfs „Neu“ über der Leiste), und öffnet das Anlege-Menü, das dann mittig über
+ * der Leiste steht; „Medien“ liegt hinter dem Reiter „Menü“ (Blatt von unten).
+ * Gilt nur mit data-mobile-variant="xool" an <html> und unterhalb von 1024px.
+ * Muss nach android-fab.css und android.css geladen werden, damit sie deren
+ * Regeln überstimmt.
+ * Pfad: styles/android-xool-nav.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-android.css)
+ * -----------------------------------
+ * --m3-indicator-w / -h   -> Maß der Pille hinter jedem Icon, auch der des Plus
+ * --m3-content-end        -> Platz am Seitenende: hier nur noch Leiste plus ein Abstand,
+ *                            weil es keinen Knopf „Neu“ darüber gibt
+ * --m3-fab-gap            -> Abstand zum Seitenende; Luft über dem ✕ des offenen Menüs
+ * --m3-xo-bar / --m3-xo-nav-height -> Fläche und Höhe der Leiste wie in der Xool-App
+ * --m3-xo-ind / --m3-xo-on-ind / --m3-xo-ind-w -> Pille hinter dem aktiven Icon (Farbe, Icon, Breite)
+ * --m3-xo-level           -> Farbe des Plus-Zeichens (Silberblau der Stufe)
+ * --m3-xo-ind              -> Fläche des runden Plus-Knopfs, solange die Leiste weggeglitten ist
+ * --m3-xo-fab-shadow      -> Schatten des runden Plus (derselbe wie beim Regler)
+ * --m3-hide-time           -> wie schnell Leiste und Plus ein- und ausblenden
+ * --m3-xo-ink             -> Namen unter den Icons
+ * (diese Xool-Werte stehen in styles/tokens-android-dark.css, Abschnitt XOOL-DB)
+ * Schrift des Namens unter dem Plus: 12px wie bei den Reitern (android.css).
+ */
+
+/* Der Reiter „Menü“ und der Name unter dem Plus gibt es nur in dieser Fassung */
+.tab-bar .tab-menu,
+.tab-add-label,
+.tab-add-plus {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  :root[data-mobile-variant="xool"] {
+    --m3-nav-height: var(--m3-xo-nav-height);
+    --m3-nav-height-labels: var(--m3-xo-nav-height);
+    --m3-indicator-w: var(--m3-xo-ind-w);
+    --m3-content-end: calc(var(--m3-nav-height-labels) + var(--m3-fab-gap));
+  }
+
+  /* Leiste in ihrer eigenen, tieferen Fläche (wie in Xool), nicht in der des Containers */
+  :root[data-mobile-variant="xool"] .nav-shell:not(.is-composing) {
+    background: var(--m3-xo-bar);
+  }
+
+  :root[data-mobile-variant="xool"] .tab-btn {
+    color: var(--m3-xo-ink);
+  }
+
+  :root[data-mobile-variant="xool"] .tab-btn.is-active .icon {
+    background: var(--m3-xo-ind);
+    color: var(--m3-xo-on-ind);
+  }
+
+  /* Kein breiter Knopf über der Leiste; „Medien“ steht im Menü-Blatt */
+  :root[data-mobile-variant="xool"] .m3-fab,
+  :root[data-mobile-variant="xool"] .tab-bar .tab-btn[data-tab="media"] {
+    display: none;
+  }
+
+  :root[data-mobile-variant="xool"] .tab-bar .tab-menu {
+    display: flex;
+  }
+
+  /* Das Plus: ein Feld wie die Reiter, das Zeichen ohne Pille.
+     Es steht so hoch wie die Icons der Reiter (android.css) */
+  :root[data-mobile-variant="xool"] .tab-bar .tab-add {
+    display: flex;
+    flex: 1 1 0;
+    width: auto;
+    height: auto;
+    margin: 0;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    background: none;
+    color: var(--m3-on-surface);
+  }
+
+  /* Das schlichte Plus statt der Striche der iOS-Fassung */
+  :root[data-mobile-variant="xool"] .tab-bar .tab-add .tab-add-ticks {
+    display: none;
+  }
+
+  :root[data-mobile-variant="xool"] .tab-bar .tab-add .tab-add-plus {
+    display: block;
+  }
+
+  /* Das Plus-Zeichen der Xool-App ohne Pille, in Silberblau (dunkel im Hellen, hell im Dunkeln);
+     der Innenabstand hält es auf der Höhe der übrigen Icons */
+  :root[data-mobile-variant="xool"] .tab-bar .tab-add .icon {
+    box-sizing: content-box;
+    width: 24px;
+    height: 24px;
+    padding: calc((var(--m3-indicator-h) - 24px) / 2) calc((var(--m3-indicator-w) - 24px) / 2);
+    background: none;
+    color: var(--m3-xo-level);
+  }
+
+  :root[data-mobile-variant="xool"] .tab-bar.show-labels .tab-add-label {
+    display: block;
+    font-size: 12px;
+    font-weight: 700;
+    line-height: 16px;
+  }
+
+  /* Das offene Menü steht mittig über dem Plus (Mitte gemessen in android-fab.js) */
+  :root[data-mobile-variant="xool"] .m3-fab-menu-list {
+    right: auto;
+    left: var(--m3-menu-left);
+    transform: translateX(-50%); /* transform: Mitte der Liste auf die Mitte des Plus */
+    align-items: center;
+  }
+
+  :root[data-mobile-variant="xool"] .m3-fab-close {
+    right: auto;
+    left: calc(var(--m3-menu-left) - var(--m3-fab-size) / 2);
+  }
+
+  /* Beim Lesen nach unten verschwindet die Leiste, das Plus bleibt stehen — als runder Knopf
+     in der Fläche des aktiven Reiters (Silbergrau wie in Xool). Die Leiste selbst rutscht
+     dabei nicht weg: sonst läge das Plus in einem Teil, den die Seite überdeckt oder der
+     Browser beschneidet (iOS Safari schnitt den Knopf oben ab). Stattdessen blenden Fläche
+     und die übrigen Reiter aus, nur das Plus bleibt klickbar. Am Seitenende (is-nav-back)
+     kommt alles zurück. */
+  :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) .bottom-bar {
+    transform: none; /* transform: hebt das Wegrutschen aus styles/android.css auf */
+    pointer-events: none; /* pointer-events: die leere Leiste fängt keine Tipper ab */
+  }
+
+  :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) .nav-shell:not(.is-composing) {
+    background: transparent;
+  }
+
+  :root[data-mobile-variant="xool"] .tab-bar .tab-btn {
+    transition: opacity var(--m3-hide-time) ease, transform var(--m3-hide-time) ease;
+  }
+
+  :root[data-mobile-variant="xool"] .nav-shell:not(.is-composing) {
+    transition: background-color var(--m3-hide-time) ease;
+  }
+
+  :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) .tab-bar .tab-btn {
+    opacity: 0;
+    transform: translateY(24px); /* transform: die Reiter sinken beim Ausblenden ab */
+  }
+
+  :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) .tab-bar .tab-add {
+    pointer-events: auto;
+  }
+
+  :root[data-mobile-variant="xool"] .tab-bar .tab-add .icon {
+    transition: padding var(--m3-hide-time) ease, background-color var(--m3-hide-time) ease, box-shadow var(--m3-hide-time) ease, transform var(--m3-hide-time) ease;
+  }
+
+  :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) .tab-bar .tab-add .icon {
+    padding: 16px; /* padding: aus Zeichen (24px) und 16px rundum wird ein echter Kreis von 56px — ohne Schatten-Ring, der über die Leiste hinausragte */
+    border-radius: 50%;
+    background: var(--m3-xo-ind);
+    transform: translateY(11px); /* transform: der Kreis sitzt mittig in den 70px der Leiste, nichts ragt darüber hinaus */
+    box-shadow: var(--m3-xo-fab-shadow); /* box-shadow: hebt den Knopf leicht von der Seite ab, wie den Regler */
+  }
+
+  :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) .tab-bar.show-labels .tab-add-label {
+    opacity: 0;
+  }
+
+  /* Der blaue Punkt am Menü-Zeichen, solange eine neuere Fassung bereitliegt (src/shell/android-xool-drawer.js) */
+  :root[data-mobile-variant="xool"] .tab-menu .tab-circle {
+    position: relative;
+  }
+
+  :root[data-mobile-variant="xool"] .tab-menu.has-update .tab-circle::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    right: calc(50% - 22px);
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--m3-xo-level);
+    box-shadow: 0 0 0 2px var(--m3-xo-bar); /* box-shadow: trennt den Punkt vom Icon */
+  }
+}

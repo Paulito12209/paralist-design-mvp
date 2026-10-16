@@ -56,6 +56,11 @@ export function renderLevel() {
     <text class="level-num" x="24" y="27.5" text-anchor="middle">${info.level}</text>
     <text class="level-label" x="24" y="42.5" text-anchor="middle">Lv.</text>`;
 
+  /* Stufe und Fortschritt auch am Profilknopf: „Android (Xool-DB)“ zeigt sie dort als
+     Ring mit Zahl wie die Xool-App (styles/android-xool-top.css), sonst unsichtbar */
+  dom.profileBtn.dataset.level = String(info.level);
+  dom.profileBtn.style.setProperty("--level-progress", info.progress.toFixed(3));
+
   dom.levelBtn.setAttribute(
     "aria-label",
     `Stufe ${info.level}, ${formatNumber(xp)} XP. Fortschritt öffnen`

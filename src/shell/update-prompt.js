@@ -22,7 +22,7 @@
  * Aussehen und Maße stehen in styles/update.css (--update-radius, --update-width …).
  */
 
-import { events, on } from "../core/bus.js";
+import { emit, events, on } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { icon } from "../core/html.js";
 import { flushSave } from "../data/state.js";
@@ -75,7 +75,13 @@ export async function checkForUpdate() {
   }
   if (!server || server.version === appVersion || server.version === dismissed) return;
   pending = server;
+  emit(events.updateFound);
   showPrompt();
+}
+
+/** Liegt eine neuere Fassung bereit, die noch nicht übernommen wurde? */
+export function hasPendingUpdate() {
+  return Boolean(pending);
 }
 
 /* Das Fenster entsteht beim ersten Mal und bleibt danach im Gerät stehen. */

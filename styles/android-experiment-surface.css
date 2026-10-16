@@ -22,17 +22,17 @@
  */
 
 @media (max-width: 1023px) {
-  [data-mobile-variant="experiment"] .nav-shell {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) .nav-shell {
     background: var(--m3-xl-surface);
   }
 
-  [data-mobile-variant="experiment"] #view-home .overview-card {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home .overview-card {
     background: var(--m3-xl-tile);
   }
 
   /* Die Regeln in android-overview-sheet.css lesen --m3-surface-container(-high):
      hier gelten dafür die Werte des Experiments, nur innerhalb der Übersicht */
-  [data-mobile-variant="experiment"] #view-home {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home {
     --m3-surface-container: var(--m3-xl-surface);
     --m3-surface-container-high: var(--m3-xl-surface-high);
   }
@@ -41,8 +41,8 @@
      Projekte (die hat keine Reiter, src/features/overview/home-list.js): sonst trennt schon die Reiterzeile.
      background-image: eine einfarbige Fläche als Linie — anders als ein Schatten
      lässt sie sich links und rechts einrücken, ohne etwas zu verschieben */
-  [data-mobile-variant="experiment"][data-tabs-home="off"] #view-home .project-head,
-  [data-mobile-variant="experiment"] #view-home .project-head[data-home-list]:not([data-home-list="projects"], [data-home-list=""]) {
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"])[data-tabs-home="off"] #view-home .project-head,
+  :is([data-mobile-variant="experiment"], [data-mobile-variant="xool"]) #view-home .project-head[data-home-list]:not([data-home-list="projects"], [data-home-list=""]) {
     background-image: linear-gradient(var(--m3-xl-divider-color), var(--m3-xl-divider-color));
     background-repeat: no-repeat; /* no-repeat: nur eine Linie unten, kein Muster */
     background-position: center bottom;

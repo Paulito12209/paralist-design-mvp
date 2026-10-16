@@ -24,9 +24,11 @@
  *                          in einem Blatt auf (src/features/profile/versions.js)
  * formerIds             -> frühere Namen von Fassungen und was heute an ihrer Stelle steht
  *
- * Es gibt genau eine Android-Fassung, die später die App wird, und genau eine
+ * Es gibt eine Android-Fassung, die später die App wird, und eine
  * experimentelle daneben. Neue Versuche kommen in „Android (Experiment)“ und
- * eine Zeile in deren `differences` — keine weitere Fassung.
+ * eine Zeile in deren `differences`. Ausnahme auf ausdrücklichen Wunsch:
+ * „Android (Xool-DB)“ — die Navigation der Xool-App (Plus in der Mitte, Menü
+ * rechts), sonst wie „Android“.
  */
 
 import { readJson, storageKeys, writeJson } from "../core/storage.js";
@@ -52,12 +54,27 @@ export const platforms = [
           { area: "Reiter", text: "Die Reiter (Projekte, Aufgaben, Medien, Arbeitsbereiche, Kalender …) liegen wie in der iOS-Fassung in einer grauen Kapsel, der gewählte hell darauf — statt reinem Text mit Linie darunter." },
           { area: "Neu anlegen", text: "Im Eingabe-Blatt steht statt „Speichern“ ein Mikrofon neben einem runden Pfeil-Knopf: grau, solange nichts getippt oder angehängt ist, danach gefärbt." },
           { area: "Einstellungen", text: "Die Einstellungsseite folgt den Google-Einstellungen: runder Zurück-Knopf, der Seitenname groß darunter, Bild und Name als schlichte Zeile, die Zeilen ohne Icons und Pfeile in Gruppen mit stark gerundeten Außenecken." },
-          { area: "Übersicht", text: "Sichtbare Abstände: Suchleiste → Überschrift 32, Überschrift → Kacheln 24, Kacheln → „Projekte“ 32, „Projekte“ → Reiter 16 Pixel." },
+          { area: "Übersicht", text: "Wie in der Xool-App: vier Kacheln (Projekte, Arbeitsbereiche, Ressourcen, Archiv), darunter zwei Reiter „Markiert · Listen“ (wie „Meine Ablage · Computer“ in Google Drive); hinter jedem steckt eine gewählte Liste; der Name der Liste im Kopf („Eingang ˅“) öffnet die Listenwahl, der Regler bei Projekten ist ein Knopf über der Leiste. Markiert: Angepinnt, Favoriten; Listen: Eingang, Aufgaben, Termine · Lesezeichen · Projekte, Arbeitsbereiche, Ressourcen, Archiv. Karten auf dem Seitengrund, die letzte reicht bis zur Leiste. Einträge lassen sich über ihr Menü anpinnen." },
           { area: "Kacheln", text: "Von der zweiten Kartenseite schauen rechts 24 statt 20 Pixel hervor." },
           { area: "Projekte", text: "„Projekte“ samt Reitern, Werkzeugzeile und Einträgen liegt in einem Container über die volle Breite, in der Farbe der Navigationsleiste; die Einträge stehen als Kachelgruppe wie die Einstellungen, rechts neben dem Namen ein runder Pfeil-Knopf." },
           { area: "Farben (hell)", text: "Kacheln, Projekte-Container und Navigationsleiste haben im Hellen dieselbe, deutlich dunklere Fläche als der Seitengrund; unter „Projekte“ steht bei ausgeblendeten Reitern eine leise Trennlinie." },
           { area: "Reiter ausblenden", text: "„Tabs anzeigen“ im Blatt „Ansicht“ gibt es auch in „Android“; im Experiment startet die Übersicht aber ohne Reiter, in „Android“ stehen sie überall." },
           { area: "Liste der Übersicht", text: "„Projekte ˅“ öffnet ein Blatt mit den acht Listen der Desktop-Seitenleiste (Projekte, Arbeitsbereiche, Ressourcen, Archiv, Eingang, Aufgaben, Termine, Lesezeichen); die gewählte steht dann unter den Kacheln. Bei Projekten stehen rechts eine Pille „Liste“/„Kanban“ für das Layout und ein runder Knopf, der die Reiter ein- und ausblendet." },
+        ],
+      },
+      /* Navigation wie in der Xool-App (styles/android-xool-nav.css, src/shell/android-xool-menu.js) */
+      {
+        id: "android-xool",
+        label: "Android (Xool-DB)",
+        icon: "smartphone",
+        os: "android",
+        variant: "xool",
+        differences: [
+          { area: "Navigationsleiste", text: "Übersicht · Kalender · Plus · Aufgaben · Menü, von Rand zu Rand, immer mit Namen. Das Plus ist das Zeichen der Xool-App in Silberblau, ohne Pille, in der Mitte der Leiste und bleibt beim Wegscrollen der Leiste als runder grauer Knopf stehen; der Knopf „Neu“ über der Leiste entfällt. Das Plus öffnet ein Blatt von unten nach dem Vorbild von „Erstellen“ in Spotify: ein schwebendes, abgerundetes Blatt über der Leiste mit Abschnitten und Chips — Lernen, Organisieren, Ressourcen (mit „Datei“) und unten „Schnell erfassen“ (Aufgabe, Notiz, Termin); die ganze App samt Leiste liegt unter einem Schleier, an der Stelle des Plus steht ein runder ✕-Knopf." },
+          { area: "Übersicht", text: "Wie in der Xool-App: vier Kacheln (Projekte, Arbeitsbereiche, Ressourcen, Archiv), darunter zwei Reiter „Markiert · Listen“ (wie „Meine Ablage · Computer“ in Google Drive); hinter jedem steckt eine gewählte Liste; der Name der Liste im Kopf („Eingang ˅“) öffnet die Listenwahl, der Regler bei Projekten ist ein Knopf über der Leiste. Markiert: Angepinnt, Favoriten; Listen: Eingang, Aufgaben, Termine · Lesezeichen · Projekte, Arbeitsbereiche, Ressourcen, Archiv. Karten auf dem Seitengrund, die letzte reicht bis zur Leiste. Einträge lassen sich über ihr Menü anpinnen." },
+          { area: "Kopfzeile und Farben", text: "Wie in der Xool-App: links das Statistik-Icon (öffnet „Fortschritt“), in der Mitte die helle Suche „Suche in Paralist“, rechts das Profil mit Stufenring und Stufenzahl; Seitengrund, Karten, Leiste und Schrift (DM Sans) in den Farben und Maßen von Xool." },
+          { area: "Kalender und Aufgaben", text: "Äußerlich wie in der Xool-App, die Funktionen bleiben: das Stundenraster liegt auf einer Karte (weiß im Hellen), „KW“ steht links neben den Wochentagen (mittig zu den Tageszahlen), neben dem Datum steht ein Chip „Heute“, der Titel rollt wie in „Android“ zuerst weg und der Kopf rastet unter der Suchleiste ein, der Regler (Ansicht, auch bei den Aufgaben) ist ein runder Knopf über der Leiste und wird bei weggeglittener Leiste zur Pille neben dem Plus; die Aufgaben stehen als Karten mit schmaler Fuge." },
+          { area: "Menü", text: "Der Reiter „Medien“ in der Leiste ist dem Reiter „Menü“ gewichen: die Seitenleiste der Xool-App, von rechts aufgezogen: Marke, Profil und „Dabei seit“ mittig, das Menü-Zeichen wird zum ✕ mit roten Punkten, die Bereiche (Übersicht, Kalender, Aufgaben, Medien, Archiv), unten links die Sprache, rechts Update (blauer Punkt bei neuer Fassung), Hell/Dunkel und Einstellungen." },
         ],
       },
       { id: "ios", label: "iOS", icon: "smartphone" },

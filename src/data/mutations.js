@@ -231,6 +231,12 @@ export function toggleFavorite(item) {
   commit();
 }
 
+/** Einen Eintrag anpinnen oder lösen — die Liste „Angepinnt“ in „Android (Xool-DB)“ zeigt ihn dann. */
+export function togglePinned(item) {
+  item.pinned = !item.pinned;
+  commit();
+}
+
 /** Alle Favoriten-Markierungen entfernen. */
 export function clearFavorites() {
   state.workspaces.forEach((workspace) => {

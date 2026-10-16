@@ -1,0 +1,150 @@
+/*
+ * Fassung „Android (Xool-DB)“, Kopfzeile und Schrift wie in der Xool-App:
+ * links das Statistik-Icon (öffnet wie bisher „Fortschritt“) statt der
+ * Strich-Skala, in der Mitte die helle Suchleiste „Suche in Paralist“, rechts
+ * der Profilknopf als runde Fläche mit einem Ring, der den Fortschritt bis zur
+ * nächsten Stufe zeigt, und der Stufenzahl unten auf dem Ring. Stufe und
+ * Fortschritt setzt src/shell/level-gauge.js an den Knopf (data-level,
+ * --level-progress), Schrift und Platzhalter src/shell/android-xool-nav.js.
+ * Der Titel „Übersicht“ steht wie dort in 22px.
+ * Gilt nur mit data-mobile-variant="xool" an <html> und unterhalb von 1024px;
+ * das Statistik-Icon ist in allen anderen Fassungen verborgen.
+ * Pfad: styles/android-xool-top.css
+ *
+ * ANPASSBARE WERTE (in styles/tokens-android-dark.css, Abschnitt XOOL-DB)
+ * -----------------------------------
+ * --m3-xo-search / --m3-xo-search-ink -> Fläche und Schrift der Suchleiste
+ * --m3-xo-icon             -> Farbe des Statistik-Icons
+ * --m3-xo-level / --m3-xo-on-level -> Ring-Fortschritt und Stufenzahl
+ * --m3-xo-ring / --m3-xo-face -> Spur des Rings und Fläche im Kreis
+ * --m3-xo-page             -> Rand um die Stufenzahl (Seitengrund)
+ * Einzelwerte direkt bei der Regel: Knöpfe 48px, Profilkreis 46px mit 36px Fläche und
+ * 3px Ring, Stufenzahl 10px fett, Titel 22px (14px unter der Kopfzeile, 12px über den Kacheln),
+ * Inhalt der Übersicht 12px vom Rand, Schrift „DM Sans“.
+ */
+
+.level-stats {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  :root[data-mobile-variant="xool"] body {
+    font-family: "DM Sans", system-ui, sans-serif;
+  }
+
+  :root[data-mobile-variant="xool"] .top-bar {
+    gap: 12px;
+    padding-left: 8px;
+    padding-right: 12px;
+  }
+
+  /* ---------- Links: Statistik ---------- */
+
+  :root[data-mobile-variant="xool"] .level-btn {
+    width: 48px;
+    height: 48px;
+  }
+
+  :root[data-mobile-variant="xool"] .level-btn .level-gauge {
+    display: none;
+  }
+
+  :root[data-mobile-variant="xool"] .level-btn .level-stats {
+    display: block;
+    width: 24px;
+    height: 24px;
+    color: var(--m3-xo-icon);
+  }
+
+  /* ---------- Mitte: Suche ---------- */
+
+  :root[data-mobile-variant="xool"] .top-bar .search {
+    background: var(--m3-xo-search);
+  }
+
+  :root[data-mobile-variant="xool"] .top-bar .search input,
+  :root[data-mobile-variant="xool"] .top-bar .search input::placeholder {
+    color: var(--m3-xo-search-ink);
+  }
+
+  /* ---------- Rechts: Profil mit Stufenring ---------- */
+
+  :root[data-mobile-variant="xool"] .top-bar .avatar {
+    position: relative; /* position: Bezug für Ring und Stufenzahl */
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    /* Fläche im Kreis: 36px, der Rest bleibt für den Ring frei */
+    background: radial-gradient(circle, var(--m3-xo-face) 18px, transparent 18.5px);
+  }
+
+  :root[data-mobile-variant="xool"] .top-bar .avatar .icon {
+    display: none;
+  }
+
+  :root[data-mobile-variant="xool"] .top-bar .avatar .avatar-photo {
+    width: 36px;
+    height: 36px;
+  }
+
+  /* Der Ring: Fortschritt in Silberblau, der Rest als blasse Spur. mask schneidet die
+     Mitte heraus, damit nur ein 3px breiter Reif bleibt */
+  :root[data-mobile-variant="xool"] .top-bar .avatar::before {
+    content: "";
+    position: absolute;
+    inset: 1px;
+    border-radius: 50%;
+    background: conic-gradient(var(--m3-xo-level) calc(var(--level-progress, 0) * 360deg), var(--m3-xo-ring) 0);
+    mask: radial-gradient(farthest-side, transparent calc(100% - 3px), #000 calc(100% - 3px)); /* mask: nur der Reif bleibt sichtbar */
+  }
+
+  /* Die Stufenzahl unten auf dem Ring, mit einem Rand in der Seitenfarbe */
+  :root[data-mobile-variant="xool"] .top-bar .avatar::after {
+    content: attr(data-level);
+    position: absolute;
+    left: 50%;
+    bottom: -5px;
+    min-width: 18px;
+    height: 16px;
+    padding: 0 4px;
+    box-sizing: border-box;
+    border-radius: 8px;
+    background: var(--m3-xo-level);
+    color: var(--m3-xo-on-level);
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 16px;
+    text-align: center;
+    box-shadow: 0 0 0 2px var(--m3-xo-page); /* box-shadow: trennt die Zahl vom Ring */
+    transform: translateX(-50%); /* transform: mittig unter dem Kreis */
+  }
+
+  /* ---------- Titel ---------- */
+
+  /* Übersicht: der Titel 14px unter der Kopfzeile, der Inhalt 12px vom Rand wie in Xool */
+  :root[data-mobile-variant="xool"] body:has(#view-home.is-active) .content {
+    --content-side: 12px;
+    padding-top: calc(var(--safe-top) + var(--m3-top-bar-height) + 14px);
+    padding-inline: 12px;
+  }
+
+  /* Alle Seitentitel (Übersicht, Kalender, Aufgaben, Medien) in derselben Schrift wie in Xool:
+     DM Sans 22px, Gewicht 500; Felder und Knöpfe erben die Schrift der Seite */
+  :root[data-mobile-variant="xool"] .screen-title {
+    padding-left: 4px;
+    font-family: "DM Sans", system-ui, sans-serif;
+    font-size: 22px;
+    font-weight: 500;
+    line-height: 28px;
+    letter-spacing: 0;
+    color: var(--m3-xo-ink);
+  }
+
+  :root[data-mobile-variant="xool"] #view-home .screen-title {
+    margin: 0 0 12px;
+  }
+
+  :root[data-mobile-variant="xool"] :is(button, input, textarea, select) {
+    font-family: inherit;
+  }
+}

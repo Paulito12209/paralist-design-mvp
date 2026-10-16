@@ -47,6 +47,8 @@ import { isMobileOs } from "../../ui/platform.js";
 import { archiveActions, entryRow, workspaceRow } from "../../ui/rows.js";
 import { openSheet } from "../../ui/sheet.js";
 import { applyTabs } from "../../ui/tabs-visibility.js";
+import { viewPanelButton } from "../../ui/view-panel.js";
+import { handleXoolTabClick, isXoolHome, xoolBarMarkup, xoolList, xoolTabsMarkup } from "./home-xool.js";
 
 const menuTitle = "Liste wählen";
 const layoutLabels = {
@@ -60,6 +62,7 @@ const openTargets = {
   resources: 'data-open-overview="4"',
   archive: 'data-open-archive="all"',
   inbox: 'data-open-overview="1"',
+  favorites: 'data-open-overview="2"',
   tasks: 'data-home-list-tab="tasks"',
   events: 'data-home-list-tab="calendar"',
   bookmarks: 'data-open-bookmarks="1"',
@@ -68,14 +71,15 @@ const openTargets = {
 /* Der Kopf, wie er in index.html steht — für alle Fassungen außer dem Experiment. */
 let plainHead = "";
 
-/** Ist gerade „Android (Experiment)“ am Handy zu sehen? Nur dort gibt es die Listenwahl. */
+/** Ist gerade „Android (Experiment)“ oder „Android (Xool-DB)“ am Handy zu sehen? Nur dort gibt es die Listenwahl. */
 export function isHomeListOn() {
-  return isMobileOs("android") && document.documentElement.dataset.mobileVariant === "experiment";
+  return isMobileOs("android") && ["experiment", "xool"].includes(document.documentElement.dataset.mobileVariant);
 }
 
-/** Die Liste, die unter den Kacheln steht; außerhalb des Experiments immer Projekte. */
+/** Die Liste, die unter den Kacheln steht; außerhalb dieser Fassungen immer Projekte. */
 export function homeList() {
-  return isHomeListOn() ? listLink(readText(storageKeys.homeList)) : listLinks[0];
+  if (!isHomeListOn()) return listLinks[0];
+  return isXoolHome() ? xoolList() : listLink(readText(storageKeys.homeList));
 }
 
 /* Einträge eines Typs, ohne archivierte — Termine nach ihrem Tag, der nächste zuerst. */
@@ -93,6 +97,15 @@ function rowsOf(link) {
     return [
       ...archivedWorkspaces().map((workspace) => workspaceRow(workspace, false, archiveActions("restore-workspace", "delete-workspace"))),
       ...archivedEntries().map((entry) => entryRow(entry, "", archiveActions("restore", "delete"))),
+    ];
+  }
+  if (link.id === "pinned") {
+    return state.entries.filter((entry) => entry.pinned && !entry.archived).map((entry) => entryRow(entry));
+  }
+  if (link.id === "favorites") {
+    return [
+      ...state.workspaces.filter((workspace) => workspace.favorite && !workspace.archived).map((workspace) => workspaceRow(workspace)),
+      ...state.entries.filter((entry) => entry.favorite && !entry.archived).map((entry) => entryRow(entry)),
     ];
   }
   const byList = {
@@ -119,6 +132,11 @@ export function homeListMarkup() {
   return `<div class="workspace-list" data-home-list="${link.id}">${rows}${add}</div>`;
 }
 
+/* Anzahl der Zeilen einer Liste; Projekte zählen ihre Einträge, nicht die Zeilen der Werkzeugzeile. */
+function countOf(link) {
+  return link.id === "projects" ? projectEntries().length : rowsOf(link).length;
+}
+
 /* Links „Projekte ˅“, rechts Pille, Reiter-Knopf und Pfeil. */
 function headMarkup(link) {
   const projects = link.id === "projects";
@@ -133,6 +151,8 @@ function headMarkup(link) {
         ${icon("tabs")}
       </button>`
     : "";
+  /* Xool: zuerst die Reiter, darunter Name, Anzahl und Regler statt „Projekte ˅“, Pille und Pfeil */
+  if (isXoolHome()) return xoolTabsMarkup() + xoolBarMarkup(link, countOf(link), openTargets[link.id], projects ? viewPanelButton(true) : "");
   return `
     <h2 class="home-list-title">
       <button class="home-list-pick" type="button" data-home-list-menu="1" aria-haspopup="menu" aria-label="${escapeHtml(link.title)} — Liste wechseln">
@@ -191,6 +211,7 @@ function toggleTabs() {
 /* Klicks im Kopf; die Pfeile mit data-open-… erledigt src/ui/list-clicks.js. */
 function onHeadClick(event) {
   if (!isHomeListOn()) return;
+  if (handleXoolTabClick(event)) return;
   if (event.target.closest("[data-home-list-menu]")) openListMenu();
   else if (event.target.closest("[data-home-tabs]")) toggleTabs();
   else {

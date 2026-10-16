@@ -44,6 +44,7 @@ import { initAndroidBars } from "./shell/android-bars.js";
 import { initBoardHeads } from "./shell/board-heads.js";
 import { takeDemoRequest } from "./shell/demo-load.js";
 import { initAndroidFab } from "./shell/android-fab.js";
+import { initAndroidXoolNav } from "./shell/android-xool-nav.js";
 import { initAndroidLinkBtn } from "./shell/android-link-btn.js";
 import { initIosAdd } from "./shell/ios-add.js";
 import { initIosBars } from "./shell/ios-bars.js";
@@ -160,6 +161,7 @@ function initShell() {
   initAndroidBars();
   initBoardHeads();
   initAndroidFab();
+  initAndroidXoolNav();
   initAndroidLinkBtn();
   initIosBars();
   initIosAdd();
