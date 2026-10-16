@@ -135,39 +135,30 @@
     font-weight: 500;
   }
 
-  /* Der Name mit dem Pfeil nach unten öffnet die Listenwahl */
+  /* Name und Anzahl öffnen die Listenwahl, ebenso der Pfeil rechts */
   :root[data-mobile-variant="xool"] .home-xool-pick {
     display: inline-flex;
-    align-items: center;
-    gap: 4px;
+    align-items: baseline;
+    gap: 8px;
     min-width: 0;
     padding: 0;
     color: var(--m3-xo-ink);
     font: inherit;
   }
 
-  :root[data-mobile-variant="xool"] .home-xool-pick > span {
+  :root[data-mobile-variant="xool"] .home-xool-pick > span:first-child {
     display: block;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis; /* text-overflow: zu lange Namen enden mit „…“ */
     white-space: nowrap;
-  }
-
-  /* Das Chevron-Symbol zeigt nach rechts: um 90° gedreht zeigt es nach unten */
-  :root[data-mobile-variant="xool"] .home-xool-chevron {
-    flex: none;
-    width: 18px;
-    height: 18px;
-    color: var(--m3-xo-icon);
-    transform: rotate(90deg); /* transform: dasselbe Symbol, nur nach unten gedreht */
   }
 
   :root[data-mobile-variant="xool"] .home-xool-pick:active {
     opacity: 0.55;
   }
 
-  /* Der runde Pfeil zur Seite der Liste */
-  :root[data-mobile-variant="xool"] .home-xool-open {
+  :root[data-mobile-variant="xool"] .home-xool-chevron-btn {
     flex: none;
     display: grid;
     place-items: center;
@@ -177,13 +168,15 @@
     color: var(--m3-xo-icon);
   }
 
-  :root[data-mobile-variant="xool"] .home-xool-open .icon {
-    width: 20px;
-    height: 20px;
+  :root[data-mobile-variant="xool"] .home-xool-chevron-btn:active {
+    background: var(--m3-xo-ind);
   }
 
-  :root[data-mobile-variant="xool"] .home-xool-open:active {
-    background: var(--m3-xo-ind);
+  /* Das Chevron-Symbol zeigt nach rechts: um 90° gedreht zeigt es nach unten */
+  :root[data-mobile-variant="xool"] .home-xool-chevron {
+    width: 20px;
+    height: 20px;
+    transform: rotate(90deg); /* transform: dasselbe Symbol, nur nach unten gedreht */
   }
 
   :root[data-mobile-variant="xool"] .home-xool-count {
@@ -258,9 +251,10 @@
     background: var(--m3-xo-card);
   }
 
-  /* Der Regler ist ein Knopf über der Leiste (styles/android-xool-pages.css), nicht noch einmal
-     in der Werkzeugzeile; „Sortieren“ bleibt dort */
-  :root[data-mobile-variant="xool"] #view-home #project-list .project-card-head :is(.view-panel-btn, [data-card-tool="view"]) {
+  /* Die Werkzeugzeile der Projekte (Archiv, Anzahl, Sortieren, Ansicht) gibt es in der Xool-App
+     nicht: hier ausgeblendet, nicht gelöscht. Archiv und Sortieren bleiben auf der Seite Projekte
+     und im Blatt hinter dem Regler erreichbar. */
+  :root[data-mobile-variant="xool"] #view-home #project-list .project-card-head {
     display: none;
   }
 }

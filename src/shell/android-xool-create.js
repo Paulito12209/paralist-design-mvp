@@ -3,7 +3,7 @@
  * Spalte mit Knöpfen („Neu“ in „Android“) ein schwebendes, abgerundetes Blatt über der
  * Leiste nach dem Vorbild von „Erstellen“ in Spotify; die ganze App samt Leiste liegt unter dem
  * Schleier, nur an der Stelle des Plus steht ein runder ✕-Knopf: Abschnitte mit einer Überschrift und
- * darunter Chips. Ganz unten, am Daumen, steht „Schnell erfassen“ (Aufgabe,
+ * darunter Chips in einer Zeile (zu viele scrollen waagerecht, mittig ausgerichtet). Ganz unten, am Daumen, steht „Schnell erfassen“ (Aufgabe,
  * Notiz, Termin), darüber Ressourcen (mit „Datei“ für Medien), Organisieren (Projekt,
  * Arbeitsbereich) und ganz oben Lernen.
  * Ein Chip schließt das Blatt und öffnet das Eingabefeld mit dieser Art
@@ -13,6 +13,7 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
+ * title    -> Überschrift des Blatts (darunter eine durchgehende Linie)
  * sections -> die Abschnitte von oben nach unten: Überschrift und Chips
  *             (type = Art aus src/data/config.js, label = Name auf dem Chip,
  *             soon = noch nicht verfügbar)
@@ -28,6 +29,8 @@ import { isMobileVariant } from "../ui/platform.js";
 import { events, on } from "../core/bus.js";
 import { showBars } from "./android-bars.js";
 import { createFromMenu } from "./create-menu.js";
+
+const title = "Erstellen";
 
 const sections = [
   {
@@ -49,8 +52,8 @@ const sections = [
     chips: [
       { type: "dokument", label: "Dokument" },
       { type: "zeichnung", label: "Zeichnung" },
-      { type: "lesezeichen", label: "Lesezeichen" },
       { type: "medien", label: "Datei" },
+      { type: "lesezeichen", label: "Lesezeichen" },
     ],
   },
   {
@@ -82,7 +85,7 @@ function build() {
   el.hidden = true;
   /* Das ✕ liegt über dem Schleier genau dort, wo das Plus in der Leiste steht (Stil: styles/android-xool-create.css);
      ein Tipp darauf schließt wie der Schleier */
-  el.innerHTML = `<div class="xo-sheet" role="dialog" aria-label="Neu anlegen">${sections.map(block).join("")}</div>
+  el.innerHTML = `<div class="xo-sheet" role="dialog" aria-label="${title}"><h2 class="xo-sheet-title">${title}</h2>${sections.map(block).join("")}</div>
     <button class="xo-create-close" type="button" aria-label="Schließen">${icon("spark-plus")}</button>`;
   return el;
 }
@@ -111,6 +114,10 @@ export function toggleXoolCreate() {
   layer.hidden = false;
   dom.device.classList.add("is-xo-create");
   document.getElementById("tab-add")?.setAttribute("aria-expanded", "true");
+  /* Zeilen, die breiter sind als das Blatt, stehen mittig: links und rechts schaut gleich viel hervor */
+  layer.querySelectorAll(".xo-chips").forEach((row) => {
+    row.scrollLeft = (row.scrollWidth - row.clientWidth) / 2;
+  });
   /* Erst im nächsten Bild die Klasse: sonst blendet der Schleier nicht ein */
   requestAnimationFrame(() => layer.classList.add("is-open"));
 }

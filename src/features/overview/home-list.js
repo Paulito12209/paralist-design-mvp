@@ -151,8 +151,8 @@ function headMarkup(link) {
         ${icon("tabs")}
       </button>`
     : "";
-  /* Xool: zuerst die Reiter, darunter Name, Anzahl und Regler statt „Projekte ˅“, Pille und Pfeil */
-  if (isXoolHome()) return xoolTabsMarkup() + xoolBarMarkup(link, countOf(link), openTargets[link.id], projects ? viewPanelButton(true) : "");
+  /* Xool: zuerst die Reiter, darunter Name, Anzahl, Listenwahl und Regler statt „Projekte ˅“, Pille und Pfeil */
+  if (isXoolHome()) return xoolTabsMarkup() + xoolBarMarkup(link, countOf(link), projects ? viewPanelButton(true) : "");
   return `
     <h2 class="home-list-title">
       <button class="home-list-pick" type="button" data-home-list-menu="1" aria-haspopup="menu" aria-label="${escapeHtml(link.title)} — Liste wechseln">

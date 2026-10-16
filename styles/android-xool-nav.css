@@ -185,4 +185,11 @@
     background: var(--m3-xo-level);
     box-shadow: 0 0 0 2px var(--m3-xo-bar); /* box-shadow: trennt den Punkt vom Icon */
   }
+
+  /* Das Plus bewegt sich beim Tippen nicht: die Rutsch-Bewegung der ersten Fassung
+     (styles/navigation.css, .tab-add:active) und das Abblenden entfallen hier */
+  :root[data-mobile-variant="xool"] .tab-bar .tab-add:active {
+    opacity: 1;
+    transform: none;
+  }
 }

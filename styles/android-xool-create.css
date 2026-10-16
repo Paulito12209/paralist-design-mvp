@@ -18,7 +18,8 @@
  * --m3-xo-ink              -> Überschriften der Abschnitte
  * Aus styles/tokens-android.css: --m3-scrim (Schleier), --m3-sheet-radius (Rundung oben),
  * --m3-hide-time (Einblenden).
- * Einzelwerte direkt bei der Regel: ✕ 56px rund, Mitte 46px über dem Rand, Chips 34px hoch, 15px Schrift, 8px Luft zwischen den Chips,
+ * --m3-outline-variant      -> Linie unter „Erstellen“ und neben den Abschnittsnamen
+ * Einzelwerte direkt bei der Regel: Überschrift 18px, Abschnittsnamen 14px mit 12px Luft zu den Chips, ✕ 56px rund, Mitte 46px über dem Rand, Chips 34px hoch, 15px Schrift, 8px Luft zwischen den Chips,
  * 16px zwischen den Abschnitten, Überschrift 14px fett, Blatt 8px vom Rand und 28px gerundet.
  */
 
@@ -62,7 +63,7 @@
     display: flex;
     flex-direction: column;
     gap: 16px;
-    padding: 20px 16px;
+    padding: 0 16px 20px;
     border-radius: 28px;
     background: var(--m3-xo-card);
     transform: translateY(24px); /* transform: das Blatt gleitet von unten herein */
@@ -73,20 +74,62 @@
     transform: none;
   }
 
+  /* Überschrift „Erstellen“ mittig, darunter eine Linie über die ganze Breite des Blatts */
+  :root[data-mobile-variant="xool"] .xo-sheet-title {
+    margin: 0 -16px;
+    padding: 18px 16px 14px;
+    border-bottom: 1px solid var(--m3-outline-variant);
+    font-size: 18px;
+    font-weight: 600;
+    text-align: center;
+    color: var(--m3-xo-ink);
+  }
+
+  /* Abschnittsname mittig, links und rechts davon eine Linie bis zum Rand */
   :root[data-mobile-variant="xool"] .xo-title {
-    margin: 0 0 8px 4px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 12px;
     font-size: 14px;
     font-weight: 700;
     color: var(--m3-xo-ink);
   }
 
+  :root[data-mobile-variant="xool"] .xo-title::before,
+  :root[data-mobile-variant="xool"] .xo-title::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: var(--m3-outline-variant);
+  }
+
+  /* Die Chips eines Abschnitts stehen in einer Zeile, mittig; passen sie nicht, rollt die Zeile
+     waagerecht bis an den Rand des Blatts (beim Öffnen mittig gestellt, android-xool-create.js) */
   :root[data-mobile-variant="xool"] .xo-chips {
     display: flex;
-    flex-wrap: wrap;
     gap: 8px;
+    margin: 0 -16px;
+    padding: 0 16px;
+    overflow-x: auto; /* overflow: zu viele Chips rollen waagerecht statt umzubrechen */
+    scrollbar-width: none; /* scrollbar-width: keine Leiste unter den Chips */
+  }
+
+  :root[data-mobile-variant="xool"] .xo-chips::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* auto-Ränder: passen die Chips, stehen sie mittig; sind es zu viele, beginnt die Zeile links */
+  :root[data-mobile-variant="xool"] .xo-chips > :first-child {
+    margin-left: auto;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-chips > :last-child {
+    margin-right: auto;
   }
 
   :root[data-mobile-variant="xool"] .xo-chip {
+    flex: none;
     display: inline-flex;
     align-items: center;
     gap: 6px;
@@ -113,7 +156,8 @@
   }
 
   /* Das ✕: ein runder, gehobener Knopf genau an der Stelle des Plus (Mitte 46px über dem Rand der
-     Leiste, wie das Plus mit Namen darunter); beim Öffnen dreht sich das Plus-Zeichen zum ✕ */
+     Leiste, wie das Plus mit Namen darunter; bei weggeblendeter Leiste 35px wie der runde Plus-Knopf);
+     beim Öffnen dreht sich das Plus-Zeichen zum ✕ */
   :root[data-mobile-variant="xool"] .xo-create-close {
     position: absolute;
     left: calc(50% - 28px);
@@ -141,5 +185,9 @@
 
   :root[data-mobile-variant="xool"] .xo-create-close:active {
     background: var(--m3-xo-card-pressed);
+  }
+
+  :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) .xo-create-close {
+    bottom: calc(var(--safe-bottom) + 7px); /* 7px: der runde Plus-Knopf sitzt dann mittig in der Leiste (35px) */
   }
 }

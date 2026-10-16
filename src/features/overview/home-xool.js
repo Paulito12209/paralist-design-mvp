@@ -2,12 +2,12 @@
  * „Android (Xool-DB)“, Übersicht: die zwei Reiter „Markiert · Listen“ über der
  * Liste, wie „Meine Ablage · Computer“ in Google Drive. Hinter jedem Reiter
  * steckt eine gewählte Liste: der ruhende Reiter zeigt ihr Icon, der aktive nur
- * seinen Namen. Die Listenwahl öffnet der Name im Kopf der Liste darunter
- * („Eingang ˅“) als Blatt „Liste wählen“ mit den Listen dieses Reiters: unter
- * „Markiert“ Angepinnt und Favoriten, unter „Listen“ die Listen der Seitenleiste
- * in den Gruppen der Xool-App, die gewählte allein ganz oben. Rechts im Kopf steht
- * der runde Pfeil zur Seite der Liste; der Regler (nur Projekte) ist ein Knopf über
- * der Leiste (src/features/overview/home-list.js, styles/android-xool-pages.css).
+ * seinen Namen. Die Listenwahl öffnen der Name im Kopf der Liste darunter
+ * und der Pfeil rechts daneben als Blatt „Liste wählen“ mit den Listen dieses
+ * Reiters: unter „Markiert“ Angepinnt und Favoriten, unter „Listen“ die Listen der
+ * Seitenleiste in den Gruppen der Xool-App, die gewählte allein ganz oben. Der
+ * Regler (nur Projekte) ist ein Knopf über der Leiste
+ * (src/features/overview/home-list.js, styles/android-xool-pages.css).
  * Gemerkt werden der Reiter und je Reiter die gewählte Liste.
  * Pfad: src/features/overview/home-xool.js
  *
@@ -85,23 +85,19 @@ export function xoolTabsMarkup() {
 }
 
 /**
- * Der Kopf der Liste unter den Reitern, eine Karte wie in der Xool-App: links der Name der
- * Liste mit einem Pfeil nach unten (ein Tipp öffnet die Listenwahl) und der Anzahl, rechts
- * der runde Pfeil zur Seite der Liste (`openAttr` aus home-list.js; „Angepinnt“ hat keine
- * Seite). Der Regler (`toolsMarkup`, nur bei Projekten) steht nicht in der Karte, sondern
- * als Knopf über der Leiste (styles/android-xool-pages.css).
+ * Der Kopf der Liste unter den Reitern, eine Karte wie in der Xool-App: links Name und Anzahl,
+ * rechts der Pfeil nach unten — ein Tipp auf Name oder Pfeil öffnet die Listenwahl. Die Seite der
+ * Liste öffnen die Kacheln oben bzw. die Listen im Menü; der Regler (`toolsMarkup`, nur bei
+ * Projekten) steht als Knopf über der Leiste (styles/android-xool-pages.css).
  */
-export function xoolBarMarkup(link, count, openAttr, toolsMarkup) {
+export function xoolBarMarkup(link, count, toolsMarkup) {
   const number = count ? `<span class="home-xool-count">${count}</span>` : "";
-  const open = openAttr
-    ? `<button class="home-xool-open" type="button" ${openAttr} aria-label="${escapeHtml(link.title)} öffnen">${icon("arrow-up-right")}</button>`
-    : "";
   return `
     <div class="home-xool-bar">
       <h2 class="home-xool-name">
-        <button class="home-xool-pick" type="button" data-home-xool-pick aria-haspopup="dialog" aria-label="${escapeHtml(link.title)} — Liste wechseln"><span>${escapeHtml(link.title)}</span>${icon("chevron", "home-xool-chevron")}</button>${number}
+        <button class="home-xool-pick" type="button" data-home-xool-pick aria-haspopup="dialog" aria-label="${escapeHtml(link.title)} — Liste wechseln"><span>${escapeHtml(link.title)}</span>${number}</button>
       </h2>
-      ${open}
+      <button class="home-xool-chevron-btn" type="button" data-home-xool-pick aria-haspopup="dialog" aria-label="Liste wechseln">${icon("chevron", "home-xool-chevron")}</button>
       ${toolsMarkup}
     </div>`;
 }
