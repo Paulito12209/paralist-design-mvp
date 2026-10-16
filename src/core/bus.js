@@ -44,6 +44,9 @@ export const events = {
   /* „Nach Updates suchen“ in den Einstellungen: die Hülle sieht sofort nach und
      lädt eine neuere Fassung gleich. `report(status)` meldet zurück, was war. */
   updateRequested: "update:requested",
+  /* Auf dem Server liegt eine neuere Fassung bereit (src/shell/update-prompt.js):
+     „Android (Xool-DB)“ zeigt dann einen blauen Punkt am Menü. */
+  updateFound: "update:found",
   /* Der schon offene Reiter wurde unten noch einmal angetippt, während die
      Seite schon ganz oben steht: der Bereich stellt seinen Ausgangszustand
      her (Übersicht: erste Kartenseite, Kalender: wie „Heute“). */

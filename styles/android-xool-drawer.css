@@ -2,9 +2,9 @@
  * „Android (Xool-DB)“: die Seitenleiste des Reiters „Menü“
  * (src/shell/android-xool-drawer.js), nach dem Menü-Blatt der Xool-App, aber von
  * rechts aufgezogen: links bleiben 48px der Seite stehen. Dahinter ein Schleier.
- * Oben Marke und ✕ (an der Stelle, wo der Menü-Reiter steht), darunter Profilbild
- * und Name; dann die Bereiche als Zeilen (56px, die offene als Pille in der Farbe
- * des aktiven Reiters), unten die Fußleiste mit Hell/Dunkel und Einstellungen.
+ * Oben mittig Marke, rechts das Menü-Zeichen (im offenen Menü ein ✕ mit vier roten Punkten),
+ * darunter mittig Profilbild, Name und „Dabei seit“; dann die Bereiche als Zeilen (56px, die offene als Pille in der Farbe
+ * des aktiven Reiters), unten die Fußleiste: links die Sprache, rechts Update, Hell/Dunkel, Einstellungen.
  * Gilt nur mit data-mobile-variant="xool" an <html> und unterhalb von 1024px.
  * Pfad: styles/android-xool-drawer.css
  *
@@ -14,8 +14,8 @@
  * --m3-xo-ind / --m3-xo-on-ind -> die offene Zeile
  * --m3-xo-ink / --m3-xo-icon  -> Schrift und Zeichen
  * Aus styles/tokens-android.css: --m3-scrim, --m3-hide-time (Gleiten).
- * Einzelwerte direkt bei der Regel: 48px Rand links, Zeilen 56px, Marke 14px mit Buchstabenabstand,
- * Name 22px, Profilbild 72px, Tippflächen 48px.
+ * Einzelwerte direkt bei der Regel: 48px Rand links, Zeilen 56px, Marke 20px mit Buchstabenabstand,
+ * Name 26px, Profilbild 104px, Tippflächen 48px, Punkte 10px, ✕-Punkte rot (#e5383b wie in Xool).
  */
 
 .xo-drawer-layer {
@@ -63,28 +63,41 @@
     transform: none;
   }
 
-  /* ---------- Kopf ---------- */
+  /* ---------- Kopf: Marke, Profilbild und Name mittig ---------- */
 
   :root[data-mobile-variant="xool"] .xo-drawer-head {
-    padding: calc(var(--safe-top) + 8px) 16px 16px 24px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: calc(var(--safe-top) + 8px) 24px 20px;
     background: var(--m3-xo-card);
     border-radius: 28px 0 0 0;
   }
 
+  /* Die Marke liegt absolut, damit das Zeichen rechts sie nicht aus der Mitte schiebt */
   :root[data-mobile-variant="xool"] .xo-drawer-bar {
+    position: relative;
+    align-self: stretch;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    height: 48px;
+    justify-content: flex-end;
+    height: 56px;
+    margin: 0 -12px 12px;
   }
 
   :root[data-mobile-variant="xool"] .xo-drawer-brand {
-    font-size: 14px;
-    font-weight: 700;
-    letter-spacing: 0.18em; /* letter-spacing: die Marke steht weit gesetzt wie in Xool */
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    pointer-events: none;
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
   }
 
   :root[data-mobile-variant="xool"] .xo-drawer-close {
+    position: relative;
     display: grid;
     place-items: center;
     width: 48px;
@@ -92,32 +105,63 @@
     color: var(--m3-xo-ink);
   }
 
-  :root[data-mobile-variant="xool"] .xo-drawer-close .icon {
-    width: 24px;
-    height: 24px;
+  /* Das Zeichen: zwei Riegel, im offenen Menü zum ✕ gedreht; dazu vier rote Punkte an den Enden */
+  :root[data-mobile-variant="xool"] .xo-x {
+    overflow: visible;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-x rect {
+    fill: currentColor;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-x circle {
+    fill: #e5383b;
+    opacity: 0;
+    transition: opacity 160ms ease;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-x-bar {
+    transform-box: view-box;
+    transform-origin: 16px 12px;
+    transition: transform var(--m3-hide-time) ease;
+  }
+
+  /* Erst in die Mitte schieben, dann drehen (rechte Funktion zuerst): so treffen sich beide Riegel im Zentrum */
+  :root[data-mobile-variant="xool"] .xo-drawer-layer.is-open .xo-x-top {
+    transform: rotate(45deg) translateY(6px); /* transform: Riegel zur einen Diagonale des ✕ */
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-layer.is-open .xo-x-bottom {
+    transform: rotate(-45deg) translateY(-6px); /* transform: Riegel zur anderen Diagonale */
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-layer.is-open .xo-x circle {
+    opacity: 1;
   }
 
   :root[data-mobile-variant="xool"] .xo-drawer-profile {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-    padding: 8px 0 0;
+    align-items: center;
+    gap: 4px;
+    padding: 0;
     color: inherit;
-    text-align: left;
+    text-align: center;
   }
 
   :root[data-mobile-variant="xool"] .xo-drawer-avatar {
     display: grid;
     place-items: center;
-    width: 72px;
-    height: 72px;
+    width: 104px;
+    height: 104px;
+    margin-bottom: 12px;
     overflow: hidden; /* overflow: das Foto wird rund beschnitten */
     border-radius: 50%;
     background: var(--m3-xo-face);
     color: #fff;
-    font-size: 28px;
+    font-size: 40px;
     font-weight: 500;
+    box-shadow: 0 0 0 3px color-mix(in srgb, currentColor 18%, transparent), 0 8px 24px rgba(0, 0, 0, 0.25);
   }
 
   :root[data-mobile-variant="xool"] .xo-drawer-avatar img {
@@ -127,8 +171,26 @@
   }
 
   :root[data-mobile-variant="xool"] .xo-drawer-name {
-    font-size: 22px;
-    font-weight: 500;
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 32px;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-since {
+    font-size: 14px;
+    color: var(--m3-xo-count);
+  }
+
+  /* Der blaue Punkt: eine neuere Fassung liegt bereit (am Menü-Zeichen, am Aktualisieren-Knopf, am Reiter) */
+  .xo-dot {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--m3-xo-level);
+    box-shadow: 0 0 0 2px var(--m3-xo-card);
   }
 
   /* ---------- Bereiche ---------- */
@@ -179,17 +241,39 @@
     opacity: 0.7;
   }
 
-  /* ---------- Fußleiste ---------- */
+  /* ---------- Fußleiste: links die Sprache, rechts die Werkzeuge ---------- */
 
   :root[data-mobile-variant="xool"] .xo-drawer-foot {
     display: flex;
-    justify-content: flex-end;
-    gap: 4px;
-    padding: 8px 16px calc(var(--safe-bottom) + 8px);
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 16px calc(var(--safe-bottom) + 8px) 24px;
     border-top: 1px solid var(--m3-outline-variant);
   }
 
+  :root[data-mobile-variant="xool"] .xo-drawer-lang {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 48px;
+    color: var(--m3-xo-ink);
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-chevron {
+    width: 18px;
+    height: 18px;
+    transform: rotate(90deg); /* transform: das Chevron-Symbol zeigt nach rechts, gedreht nach unten */
+  }
+
+  :root[data-mobile-variant="xool"] .xo-drawer-tools {
+    display: flex;
+    gap: 4px;
+  }
+
   :root[data-mobile-variant="xool"] .xo-drawer-tool {
+    position: relative;
     display: grid;
     place-items: center;
     width: 48px;
@@ -205,5 +289,16 @@
 
   :root[data-mobile-variant="xool"] .xo-drawer-tool:active {
     background: var(--m3-xo-ind);
+  }
+
+  /* Während es sucht, dreht sich der Pfeil */
+  :root[data-mobile-variant="xool"] .xo-drawer-update.is-busy .icon {
+    animation: xo-spin 900ms linear infinite; /* animation: zeigt, dass gesucht wird */
+  }
+
+  @keyframes xo-spin {
+    to {
+      transform: rotate(360deg);
+    }
   }
 }
