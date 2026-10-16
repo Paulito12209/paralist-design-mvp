@@ -18,6 +18,8 @@
  * --m3-xo-bar / --m3-xo-nav-height -> Fläche und Höhe der Leiste wie in der Xool-App
  * --m3-xo-ind / --m3-xo-on-ind / --m3-xo-ind-w -> Pille hinter dem aktiven Icon (Farbe, Icon, Breite)
  * --m3-xo-level           -> Farbe des Plus-Zeichens (Silberblau der Stufe)
+ * --m3-xo-ind              -> Fläche des runden Plus-Knopfs, solange die Leiste weggeglitten ist
+ * --m3-hide-time           -> wie schnell Leiste und Knopf gleiten
  * --m3-xo-ink             -> Namen unter den Icons
  * (diese Xool-Werte stehen in styles/tokens-android-dark.css, Abschnitt XOOL-DB)
  * Schrift des Namens unter dem Plus: 12px wie bei den Reitern (android.css).
@@ -116,5 +118,33 @@
   :root[data-mobile-variant="xool"] .m3-fab-close {
     right: auto;
     left: calc(var(--m3-menu-left) - var(--m3-fab-size) / 2);
+  }
+
+  /* Beim Lesen nach unten gleitet die Leiste weg, das Plus bleibt stehen — als runder
+     Knopf in der Fläche des aktiven Reiters (Silbergrau wie in Xool). Es liegt in der
+     weggleitenden Leiste und gleitet deshalb um genau deren Weg zurück; der Innenabstand
+     macht das Icon quadratisch, der Schatten darum den Kreis (56px). Am Seitenende
+     (is-nav-back) kommt die Leiste samt Plus zurück. */
+  :root[data-mobile-variant="xool"] .tab-bar .tab-add {
+    transition: transform var(--m3-hide-time) ease;
+  }
+
+  :root[data-mobile-variant="xool"] .tab-bar .tab-add .icon {
+    transition: padding var(--m3-hide-time) ease, background-color var(--m3-hide-time) ease, box-shadow var(--m3-hide-time) ease;
+  }
+
+  :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) .tab-bar .tab-add {
+    transform: translateY(calc(-1 * (var(--m3-nav-shift) + var(--safe-bottom)))); /* transform: gegen das Wegrutschen der Leiste */
+  }
+
+  :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) .tab-bar .tab-add .icon {
+    padding: 4px;
+    border-radius: 50%;
+    background: var(--m3-xo-ind);
+    box-shadow: 0 0 0 12px var(--m3-xo-ind), 0 4px 12px 12px rgba(0, 0, 0, 0.18); /* box-shadow: der Ring macht den Knopf rund, der Schein hebt ihn ab */
+  }
+
+  :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) .tab-bar.show-labels .tab-add-label {
+    opacity: 0;
   }
 }

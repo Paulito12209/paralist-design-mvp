@@ -1,8 +1,8 @@
 /*
  * Fassung „Android (Xool-DB)“, Navigationsleiste: das Plus in der Mitte der
- * Leiste öffnet das Anlege-Menü (dasselbe wie der Knopf „Neu“ in „Android“,
- * src/shell/android-fab.js), und der Reiter „Menü“ ganz rechts öffnet ein
- * Blatt von unten mit den Zielen, die in der Leiste keinen Platz mehr haben.
+ * Leiste öffnet das Anlege-Blatt (src/shell/android-xool-create.js), und der
+ * Reiter „Menü“ ganz rechts öffnet ein Blatt von unten mit den Zielen, die in
+ * der Leiste keinen Platz mehr haben.
  * In allen anderen Fassungen tut dieser Bereich nichts.
  * Pfad: src/shell/android-xool-nav.js
  *
@@ -18,7 +18,7 @@ import { load } from "../core/lazy.js";
 import { openSheet } from "../ui/sheet.js";
 import { isMobileVariant } from "../ui/platform.js";
 import { openArchive, showTab } from "../ui/router.js";
-import { toggleFabMenu } from "./android-fab.js";
+import { initXoolCreate, toggleXoolCreate } from "./android-xool-create.js";
 
 const fontHref = "https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap";
 const searchLabel = "Suche in Paralist";
@@ -45,8 +45,7 @@ function applyXoolLook() {
 /** Plus und Menü in der Leiste anmelden, Schrift und Suche der Xool-App setzen. */
 export function initAndroidXoolNav() {
   applyXoolLook();
-  const plus = document.getElementById("tab-add");
-
+  initXoolCreate();
   /* Capture am Elternteil: Das Eingabefeld der iOS-Fassung hängt am selben Knopf
      und soll hier nicht aufgehen. */
   dom.tabBar.addEventListener(
@@ -54,7 +53,7 @@ export function initAndroidXoolNav() {
     (event) => {
       if (!isMobileVariant("xool") || !event.target.closest(".tab-add")) return;
       event.stopPropagation();
-      toggleFabMenu(plus);
+      toggleXoolCreate();
     },
     true
   );

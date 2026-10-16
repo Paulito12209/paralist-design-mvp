@@ -1,0 +1,107 @@
+/*
+ * „Android (Xool-DB)“: das Anlege-Blatt hinter dem Plus (src/shell/android-xool-create.js).
+ * Ein Blatt von unten über der Leiste, nach dem Vorbild von „Erstellen“ in Spotify:
+ * je Abschnitt eine Überschrift und darunter Chips (Pillen mit Icon und Name).
+ * Dahinter ein Schleier; ein Tipp darauf schließt das Blatt. Die Chips folgen den
+ * Material-3-Filterchips: 40px hoch, voll gerundet, Fläche in der Farbe des aktiven
+ * Reiters; die noch nicht verfügbaren (Lernen) sind abgeblendet.
+ * Gilt nur mit data-mobile-variant="xool" an <html> und unterhalb von 1024px.
+ * Pfad: styles/android-xool-create.css
+ *
+ * ANPASSBARE WERTE (in styles/tokens-android-dark.css, Abschnitt XOOL-DB)
+ * -----------------------------------
+ * --m3-xo-card             -> Fläche des Blatts
+ * --m3-xo-ind / --m3-xo-on-ind -> Fläche und Schrift der Chips
+ * --m3-xo-ink              -> Überschriften der Abschnitte
+ * Aus styles/tokens-android.css: --m3-scrim (Schleier), --m3-sheet-radius (Rundung oben),
+ * --m3-hide-time (Einblenden).
+ * Einzelwerte direkt bei der Regel: Chips 40px hoch, 16px Schrift, 12px Luft zwischen den Chips,
+ * 20px zwischen den Abschnitten, Überschrift 14px fett.
+ */
+
+.xo-create {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  /* position/inset: der Schleier deckt das ganze Gerät ab; z-index 30 wie das Menü des
+     Plus in „Android“ — über Kopfzeile und Leiste, unter den Blättern */
+  :root[data-mobile-variant="xool"] .xo-create {
+    position: absolute;
+    inset: 0;
+    z-index: 30;
+    display: block;
+    background: var(--m3-scrim);
+    opacity: 0;
+    transition: opacity var(--m3-hide-time) ease; /* transition: der Schleier blendet ein */
+  }
+
+  :root[data-mobile-variant="xool"] .xo-create[hidden] {
+    display: none;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-create.is-open {
+    opacity: 1;
+  }
+
+  /* Das Blatt sitzt unten, über der Leiste; zu viel Inhalt auf kleinen Geräten scrollt */
+  :root[data-mobile-variant="xool"] .xo-sheet {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(var(--m3-nav-height-labels) + var(--safe-bottom));
+    max-height: calc(100% - var(--safe-top) - var(--m3-nav-height-labels) - var(--safe-bottom) - 16px);
+    overflow-y: auto; /* overflow: nur bei sehr niedrigen Geräten nötig */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 20px 16px;
+    border-radius: var(--m3-sheet-radius) var(--m3-sheet-radius) 0 0;
+    background: var(--m3-xo-card);
+    transform: translateY(24px); /* transform: das Blatt gleitet von unten herein */
+    transition: transform var(--m3-hide-time) ease;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-create.is-open .xo-sheet {
+    transform: none;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-title {
+    margin: 0 0 8px 4px;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--m3-xo-ink);
+  }
+
+  :root[data-mobile-variant="xool"] .xo-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 40px;
+    padding: 0 16px 0 12px;
+    border-radius: 999px; /* border-radius: Pillenform wie bei Material-3-Chips */
+    background: var(--m3-xo-ind);
+    color: var(--m3-xo-on-ind);
+    font-size: 16px;
+    font-weight: 500;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-chip .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-chip:active {
+    opacity: 0.7;
+  }
+
+  :root[data-mobile-variant="xool"] .xo-chip:disabled {
+    opacity: 0.4;
+  }
+}
