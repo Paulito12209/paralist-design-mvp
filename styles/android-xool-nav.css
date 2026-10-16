@@ -153,14 +153,15 @@
   }
 
   :root[data-mobile-variant="xool"] .tab-bar .tab-add .icon {
-    transition: padding var(--m3-hide-time) ease, background-color var(--m3-hide-time) ease, box-shadow var(--m3-hide-time) ease;
+    transition: padding var(--m3-hide-time) ease, background-color var(--m3-hide-time) ease, box-shadow var(--m3-hide-time) ease, transform var(--m3-hide-time) ease;
   }
 
   :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) .tab-bar .tab-add .icon {
-    padding: 4px;
+    padding: 16px; /* padding: aus Zeichen (24px) und 16px rundum wird ein echter Kreis von 56px — ohne Schatten-Ring, der über die Leiste hinausragte */
     border-radius: 50%;
     background: var(--m3-xo-ind);
-    box-shadow: 0 0 0 12px var(--m3-xo-ind), 0 4px 12px 12px rgba(0, 0, 0, 0.18); /* box-shadow: der Ring macht den Knopf rund, der Schein hebt ihn ab */
+    transform: translateY(11px); /* transform: der Kreis sitzt mittig in den 70px der Leiste, nichts ragt darüber hinaus */
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25); /* box-shadow: hebt den Knopf leicht von der Seite ab */
   }
 
   :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) .tab-bar.show-labels .tab-add-label {

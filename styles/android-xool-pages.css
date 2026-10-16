@@ -20,7 +20,7 @@
  * Aus styles/tokens-android.css: --m3-hide-time (Gleiten).
  * Der Regler der Aufgaben ist der Knopf „Ansicht“ in der Werkzeugzeile; „Sortieren“ bleibt dort.
  * Einzelwerte direkt bei der Regel: KW-Spalte 34px, Regler 56px, 16px Rand und Abstand zur Leiste,
- * 12px Abstand zwischen Plus und Pille, Plus-Mitte 46px über dem Rand, Raster-Rundung 8px.
+ * 12px Abstand zwischen Plus und Pille, Plus-Mitte 35px über dem Rand, Raster-Rundung 8px.
  */
 
 @media (max-width: 1023px) {
@@ -43,11 +43,25 @@
     background: var(--m3-xo-card);
   }
 
-  /* ---------- Kalender: KW links neben den Wochentagen ---------- */
+  /* ---------- Kalender: Titel bleibt stehen ---------- */
+
+  /* Der Titel „Kalender“ rollt hier nicht mehr weg: er klebt unter der Suchleiste (ohne sie
+     oben am Rand), der Kopf mit Datum und Wochenstreifen rastet darunter ein. Beides rückt
+     mit der Suchleiste nach (--m3-bar-shift, styles/android-tabs.css). */
+  :root[data-mobile-variant="xool"] #view-calendar .screen-title {
+    position: sticky; /* position: der Titel bleibt beim Rollen oben hängen */
+    top: calc(-1 * var(--content-top) - var(--m3-bar-shift, 0px));
+    z-index: 4; /* z-index: über dem Kopf (3) und dem Raster */
+    margin: 0;
+    background: var(--bg);
+    transition: top var(--m3-hide-time) ease; /* transition: rückt mit der Suchleiste nach, statt zu springen */
+  }
 
   :root[data-mobile-variant="xool"] #view-calendar .cal-head {
-    position: relative; /* position: Bezug für „KW“ */
+    top: calc(-1 * var(--content-top) - var(--m3-bar-shift, 0px) + 28px); /* 28px: Höhe des Titels */
   }
+
+  /* ---------- Kalender: KW links neben den Wochentagen ---------- */
 
   :root[data-mobile-variant="xool"] #view-calendar .cal-strip {
     padding-left: 34px;
@@ -107,7 +121,7 @@
 
   :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) :is(#view-calendar .cal-date-row .view-panel-btn, #view-tasks [data-card-tool="view"]) {
     left: calc(50vw + 40px); /* 40px: halbes Plus (28px) plus 12px Abstand */
-    bottom: calc(var(--safe-bottom) + 18px); /* 18px: unterer Rand des runden Plus (Mitte 46px über dem Rand) */
+    bottom: calc(var(--safe-bottom) + 7px); /* 7px: unterer Rand des runden Plus (Mitte 35px über dem Rand) */
   }
 
   :root[data-mobile-variant="xool"] .device.is-bars-hidden:not(.is-nav-back) :is(#view-calendar .cal-date-row .view-panel-btn, #view-tasks [data-card-tool="view"])::after {

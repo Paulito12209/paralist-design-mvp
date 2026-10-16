@@ -128,12 +128,23 @@
     padding-inline: 12px;
   }
 
-  :root[data-mobile-variant="xool"] #view-home .screen-title {
-    margin: 0 0 12px;
+  /* Alle Seitentitel (Übersicht, Kalender, Aufgaben, Medien) in derselben Schrift wie in Xool:
+     DM Sans 22px, Gewicht 500; Felder und Knöpfe erben die Schrift der Seite */
+  :root[data-mobile-variant="xool"] .screen-title {
     padding-left: 4px;
+    font-family: "DM Sans", system-ui, sans-serif;
     font-size: 22px;
     font-weight: 500;
     line-height: 28px;
+    letter-spacing: 0;
     color: var(--m3-xo-ink);
+  }
+
+  :root[data-mobile-variant="xool"] #view-home .screen-title {
+    margin: 0 0 12px;
+  }
+
+  :root[data-mobile-variant="xool"] :is(button, input, textarea, select) {
+    font-family: inherit;
   }
 }
