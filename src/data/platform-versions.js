@@ -24,6 +24,9 @@
  *                          in einem Blatt auf (src/features/profile/versions.js)
  * formerIds             -> frühere Namen von Fassungen und was heute an ihrer Stelle steht
  *
+ * „OG Version“ ist eine Spielart von iOS (os "ios", variant "og"): der
+ * Nachbau der App Organi7er, Stile in styles/tokens-og.css und styles/og*.css.
+ *
  * Es gibt eine Android-Fassung, die später die App wird, und eine
  * experimentelle daneben. Neue Versuche kommen in „Android (Experiment)“ und
  * eine Zeile in deren `differences`. Ausnahme auf ausdrücklichen Wunsch:
@@ -78,6 +81,18 @@ export const platforms = [
         ],
       },
       { id: "ios", label: "iOS", icon: "smartphone" },
+      /* Die App Organi7er (Swift) in Web nachgebaut: Aussehen und Funktionen, eigener Speicher (styles/tokens-og.css, styles/og.css) */
+      {
+        id: "ios-og",
+        label: "OG Version",
+        icon: "smartphone",
+        os: "ios",
+        variant: "og",
+        differences: [
+          { area: "Vorbild", text: "Die App „Organi7er“ (Swift): Aussehen, Abläufe und Funktionsumfang, nachgebaut in HTML, CSS und JavaScript. Sie baut auf der Fassung „iOS“ auf und überschreibt, was dort anders ist." },
+          { area: "Farben", text: "Kategoriefarben, Fläche (hell #F8FAFC, dunkel #050816) und Rundungen (12 / 20 / 28 / 36) wie in Organi7er." },
+        ],
+      },
     ],
   },
   {

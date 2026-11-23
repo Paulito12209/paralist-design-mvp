@@ -23,7 +23,7 @@ import { chosenLabel, chosenLook, chosenVersion, platforms, setVersion, versionO
 import { applyTabs } from "../../ui/tabs-visibility.js";
 import { openSheet } from "../../ui/sheet.js";
 
-const diffHeading = "Anders als „Android“";
+const diffHeading = "Anders als die Grundfassung";
 const note = "Die gewählte Fassung bleibt, bis du sie hier änderst. Am Handy und Tablet gilt „Mobil“, am Computer „Desktop“.";
 
 /** Die Wahl an <html> schreiben, damit die Stile der Fassung sofort greifen. */

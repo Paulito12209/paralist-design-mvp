@@ -1,0 +1,20 @@
+/*
+ * Regeln der „OG Version“ (Nachbau der App Organi7er). Greifen nur, wenn an
+ * <html> data-mobile-os="ios" und data-mobile-variant="og" stehen und die
+ * Breite unter der Desktop-Grenze liegt. Sie überschreiben die Fassung „iOS“,
+ * deshalb wird die Datei nach styles/ios*.css geladen.
+ * Pfad: styles/og.css
+ *
+ * ANPASSBARE WERTE
+ * -----------------------------------
+ * Alle Farben, Rundungen und Abstände stehen in styles/tokens-og.css.
+ * Hier steht nur, welche Fläche sie bekommt: die Seitenfläche setzt die
+ * Variable --bg auf --og-canvas.
+ */
+
+@media (max-width: 1023px) {
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] {
+    /* Fläche der Hauptseiten wie Tokens.Palette.canvas in Organi7er */
+    --bg: var(--og-canvas);
+  }
+}
