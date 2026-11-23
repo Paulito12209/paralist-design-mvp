@@ -1,0 +1,87 @@
+/*
+ * Die Werte der „OG Version“ (Einstellungen › Mehr › Versionen › OG Version):
+ * der Nachbau der App Organi7er. Sie gelten nur, solange an <html>
+ * data-mobile-os="ios" UND data-mobile-variant="og" stehen; die Regeln dazu
+ * stehen in styles/og.css. Die Werte folgen Tokens.swift aus Organi7er
+ * (Systemfarben, Rundungen, Fläche).
+ * Pfad: styles/tokens-og.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * KATEGORIEFARBEN (je hell und dunkel, wie die Systemfarben von iOS)
+ * --og-area      -> Arbeitsbereich (Orange)
+ * --og-project   -> Projekt (Rot)
+ * --og-resource  -> Ressource (Grün)
+ * --og-task      -> Aufgabe (Blau)
+ * --og-note      -> Notiz (Gelb)
+ * --og-event     -> Termin (Cyan)
+ * --og-bookmark  -> Lesezeichen (Violett)
+ * --og-tag       -> Tag (Grau)
+ * --og-person    -> Person (Mint)
+ * --og-deck      -> Karteistapel (Braun)
+ * --og-favorite  -> Favoritenstern (goldener Ton, hell wie dunkel gleich)
+ * --og-silver    -> kühler Silberton im Fuß der Karten; wird immer mit der Kategoriefarbe gemischt
+ * FLÄCHE
+ * --og-canvas    -> Grund der Hauptseiten und geöffneten Seiten (hell #F8FAFC, dunkel #050816)
+ * RUNDUNGEN
+ * --og-radius-small / -medium / -card / -sheet -> 12 / 20 / 28 / 36 px; card ist die Glasfläche
+ * ABSTÄNDE (8-Pixel-Raster)
+ * --og-space-xs / -sm / -md / -lg / -xl -> 4 / 8 / 16 / 24 / 32 px
+ */
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] {
+  --og-area: #ff9500;
+  --og-project: #ff3b30;
+  --og-resource: #34c759;
+  --og-task: #007aff;
+  --og-note: #ffcc00;
+  --og-event: #32ade6;
+  --og-bookmark: #af52de;
+  --og-tag: #8e8e93;
+  --og-person: #00c7be;
+  --og-deck: #a2845e;
+  --og-favorite: #c69214;
+  --og-silver: #aeb6d8;
+  --og-canvas: #f8fafc;
+
+  --og-radius-small: 12px;
+  --og-radius-medium: 20px;
+  --og-radius-card: 28px;
+  --og-radius-sheet: 36px;
+
+  --og-space-xs: 4px;
+  --og-space-sm: 8px;
+  --og-space-md: 16px;
+  --og-space-lg: 24px;
+  --og-space-xl: 32px;
+}
+
+/* Dunkel: die helleren Systemfarben und die dunkle Fläche */
+@media (prefers-color-scheme: dark) {
+  :root[data-mobile-os="ios"][data-mobile-variant="og"]:not([data-theme="light"]) {
+    --og-area: #ff9f0a;
+    --og-project: #ff453a;
+    --og-resource: #30d158;
+    --og-task: #0a84ff;
+    --og-note: #ffd60a;
+    --og-event: #64d2ff;
+    --og-bookmark: #bf5af2;
+    --og-person: #63e6e2;
+    --og-deck: #ac8e68;
+    --og-canvas: #050816;
+  }
+}
+
+/* Dunkelmodus fest in den Einstellungen gewählt: dieselben Werte wie oben */
+:root[data-mobile-os="ios"][data-mobile-variant="og"][data-theme="dark"] {
+  --og-area: #ff9f0a;
+  --og-project: #ff453a;
+  --og-resource: #30d158;
+  --og-task: #0a84ff;
+  --og-note: #ffd60a;
+  --og-event: #64d2ff;
+  --og-bookmark: #bf5af2;
+  --og-person: #63e6e2;
+  --og-deck: #ac8e68;
+  --og-canvas: #050816;
+}

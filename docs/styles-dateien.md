@@ -12,7 +12,7 @@ Ladereihenfolge der Werte-Dateien (`index.html`): `tokens.css` →
 `tokens-nav.css` → `tokens-pages.css` → `tokens-entry.css` → `tokens-dark.css`,
 danach die Bereichs-Stile; die Fassungen laden ihre Werte vor ihren Regeln
 (`tokens-android.css` → `tokens-android-dark.css` → `android*.css`,
-`tokens-ios.css` → `ios*.css`, `tokens-desk.css` → `desk*.css`).
+`tokens-ios.css` → `ios*.css` → `tokens-og.css` → `og*.css`, `tokens-desk.css` → `desk*.css`).
 Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 
 | Datei | Was sie macht |
@@ -89,6 +89,8 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/tokens-android.css` | die Werte der Android-Fassung (Material 3), hell |
 | `styles/tokens-android-dark.css` | Android: die Farben im Dunkeln, die Kacheln im Hellen und die Flächen von „Android (Experiment)“ |
 | `styles/tokens-ios.css` | die Werte der iOS-Fassung |
+| `styles/tokens-og.css` | die Werte der „OG Version“ (Nachbau der App Organi7er): Kategoriefarben, Fläche, Rundungen, Abstände |
+| `styles/og.css` | die Regeln der „OG Version“; baut auf der iOS-Fassung auf und steht deshalb nach `ios*.css` |
 | `styles/tokens-desk.css` | die Werte der Desktop-Fassung (Spalten, Flächen, große Zahlen) |
 | `styles/desk.css` | Desktop: Raster aus Seitenleiste, Reiterzeile, Seite und rechter Spalte; Zuklappen, Suchfeld, Eingabefeld unten |
 | `styles/desk-head.css` | Desktop: Wortmarke mit Stufen-Anzeige und Klapp-Knopf; Kopfzeile mit Zurück, Vorwärts, Pfad samt Knöpfen der Seite und Knopf fürs Seitenfenster |
