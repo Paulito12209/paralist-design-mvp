@@ -1,7 +1,8 @@
 /*
  * Das Eingabefeld unten: öffnet sich über der Navigation, nimmt Titel, Typ,
  * Ablageort und Anhänge und legt daraus einen Eintrag an. Die Typ-Wahl steht
- * in composer-types.js, die Anhänge in attachments.js, der Schleier des
+ * in composer-types.js, die Ablageort-Pille in composer-place.js, die
+ * Werkzeuge von „Android (Xool-DB)“ in composer-extras.js, die Anhänge in attachments.js, der Schleier des
  * Blatts der Android-Fassung in composer-sheet.js.
  * Pfad: src/features/composer/composer.js
  *
@@ -13,15 +14,14 @@
 import { emit, events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { dayKey, timeKey } from "../../core/dates.js";
-import { overviewPages, typeIcon, typePlurals, typeSingular, xpKinds } from "../../data/config.js";
+import { typePlurals, typeSingular, xpKinds } from "../../data/config.js";
 import { connectEntries } from "../../data/links.js";
 import { applyEntryDefaults } from "../../data/mutations-tasks.js";
-import { findEntry, mainPlace, parentName } from "../../data/queries.js";
+import { findEntry } from "../../data/queries.js";
 import { entryRef } from "../../data/refs.js";
 import { state, ui } from "../../data/state.js";
 import { awardXp, commitXp } from "../../data/xp.js";
 import { closeCtxMenu } from "../../ui/ctx-menu.js";
-import { openPlacePicker } from "../../ui/pickers.js";
 import { openEntry, openEntryOrFile } from "../../ui/router.js";
 import { hideToast, showToast } from "../../ui/toast.js";
 import { isViewActive } from "../../ui/views.js";
@@ -37,14 +37,15 @@ import {
   chooseComposerType,
   composer,
   followFileDraft,
-  isComposerPreset,
   rememberComposerPreset,
   resetComposerDraft,
 } from "./composer-state.js";
 import { stopPlaceholderHint } from "./composer-hint.js";
-import { hideComposerScrim, initComposerSheet, openOverComposer, showComposerScrim } from "./composer-sheet.js";
+import { applyComposerExtras, initComposerExtras, renderComposerExtras, resetComposerExtras } from "./composer-extras.js";
+import { initComposerPlace, renderComposerLink } from "./composer-place.js";
+import { hideComposerScrim, initComposerSheet, showComposerScrim } from "./composer-sheet.js";
 import { initComposerTypes, renderComposerTypes } from "./composer-types.js";
-import { createWorkspaceFromDraft, isWorkspaceDraft, renderWorkspaceDraft } from "./composer-workspace.js";
+import { createWorkspaceFromDraft, isWorkspaceDraft } from "./composer-workspace.js";
 import { stopDictation } from "./dictation.js";
 
 /** Anlegen-Knopf: erst aktiv, wenn Text da ist oder ein Anhang den Titel liefern kann. */
@@ -62,57 +63,6 @@ export function updateComposerSend() {
     return;
   }
   dom.composerSend.disabled = !dom.composerInput.value.trim() && !composer.files.length;
-}
-
-/* Titel eines Eintrags für Pille und Blatt; ohne Titel sein Typ. */
-function entryLabel(entry) {
-  return entry.title || typeSingular(entry.type);
-}
-
-/*
- * Name in der Ablageort-Pille. Kommt man von der Seite eines Eintrags, steht
- * dort dieser Eintrag: das Neue — etwa ein Foto — gehört zu ihm und erscheint
- * unter seinen „Verknüpften Einträgen“. Ein Medium ohne gewählten Ort landet
- * sonst nicht im Eingang, sondern bei den Ressourcen — `inboxEntries` in
- * src/data/queries.js siebt Medien aus. Die Pille sagt dann auch das, statt
- * einen Ort zu versprechen, an dem der Eintrag nie auftaucht.
- */
-function composerPlaceName() {
-  const linked = composer.link ? findEntry(composer.link) : null;
-  if (linked) return entryLabel(linked);
-  if (!composer.place && composer.type === "medien") return overviewPages[4].title;
-  return parentName(composer.place);
-}
-
-/*
- * Die Option ganz oben im Blatt „Ablegen in“: der Eintrag, von dessen Seite
- * aus das Eingabefeld aufging. Ihn wählen heißt: verknüpfen und an seinen Ort
- * legen — so wie beim Öffnen vorgeschlagen. Einen anderen Ort wählen hebt die
- * Verknüpfung auf; das Neue liegt dann nur dort.
- */
-function originOption(refresh) {
-  const origin = composer.origin ? findEntry(composer.origin) : null;
-  if (!origin) return null;
-  return {
-    label: entryLabel(origin),
-    icon: typeIcon(origin.type),
-    active: composer.link === origin.id,
-    onSelect: () => {
-      composer.link = origin.id;
-      composer.place = mainPlace(origin);
-      refresh();
-    },
-  };
-}
-
-/** Die Pille mit dem Ablageort auffrischen. */
-function renderComposerLink() {
-  dom.composerLinkLabel.textContent = composerPlaceName();
-  /* Angedeutet, solange dort noch der Vorschlag der Seite steht — gefüllt,
-     sobald man selbst einen anderen Ort gewählt hat. */
-  dom.composerLink.classList.toggle("is-preset", isComposerPreset("place"));
-  /* Ein Arbeitsbereich hat keinen Ablageort: der Ort-Chip weicht */
-  renderWorkspaceDraft();
 }
 
 /**
@@ -141,6 +91,7 @@ export function openComposer(overrides = {}) {
   renderComposerLink();
   renderComposerAttachments(updateComposerSend);
   updateComposerSend();
+  renderComposerExtras();
   dom.composerInput.focus();
 }
 
@@ -156,6 +107,7 @@ export function closeComposer() {
   stopPlaceholderHint();
   dom.composerInput.value = "";
   resetComposerDraft();
+  resetComposerExtras();
   /* Die Spalte, um die der Knopf am Board-Ende gebeten hat, gilt nur für den
      Entwurf, der gerade offen war. Ohne diese Zeile erbt die nächste Aufgabe
      — auch die von der Startseite — still deren Priorität. */
@@ -208,6 +160,8 @@ function createPlainEntry(title, places, source) {
   applyCalendarDate(entry);
   /* Status, Priorität und Sortiernummer einer Aufgabe kommen aus der Datenschicht. */
   applyEntryDefaults(entry);
+  /* Details, Datum, Favorit und Anpinnen aus dem Blatt von „Android (Xool-DB)“ */
+  applyComposerExtras(entry);
 
   state.entries.push(entry);
   const attached = attachFilesTo(entry);
@@ -293,6 +247,7 @@ function renderTypeDependents() {
   renderComposerTypes();
   renderComposerLink();
   updateComposerSend();
+  renderComposerExtras();
 }
 
 /* Hängt eine Datei dran, folgt der Typ Anhängen und Text (followFileDraft in
@@ -309,7 +264,10 @@ function onFilesChanged() {
  */
 export function onComposerText() {
   if (!isWorkspaceDraft() && followFileDraft(Boolean(dom.composerInput.value.trim()))) renderTypeDependents();
-  else updateComposerSend();
+  else {
+    updateComposerSend();
+    renderComposerExtras();
+  }
 }
 
 /** Alle Knöpfe und Felder des Eingabefelds anmelden. */
@@ -327,30 +285,9 @@ export function initComposer() {
     dom.composerInput.focus();
   });
   initComposerAttachments(onFilesChanged);
+  initComposerExtras(closeComposer);
 
-  dom.composerLink.addEventListener("click", () => {
-    const refresh = () => {
-      /* Der neue Ort kann den Projekt-Knopf sperren, darum beide neu zeichnen. */
-      renderComposerTypes();
-      renderComposerLink();
-      dom.composerInput.focus();
-    };
-    /* Der Typ des Entwurfs kommt mit: ein Projekt bekommt nur Arbeitsbereiche
-       angeboten, nie ein anderes Projekt. */
-    openOverComposer(() =>
-      openPlacePicker(
-        "Ablegen in",
-        composer.place,
-        (place) => {
-          composer.place = place;
-          composer.link = null;
-          refresh();
-        },
-        composer.type,
-        originOption(refresh)
-      )
-    );
-  });
+  initComposerPlace(renderComposerExtras);
 
   dom.composerInput.addEventListener("input", onComposerText);
   dom.composerInput.addEventListener("keydown", (event) => {

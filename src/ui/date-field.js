@@ -19,6 +19,9 @@
  *                   mindestens so viele Minuten entfernt ist
  * reminderIcon   -> Icon der Erinnerung in Meldung, Blatt und Karte „Details“
  *
+ * Für den Entwurf im Eingabefeld gibt es openWhenPicker: dieselbe Auswahl,
+ * das Ergebnis geht an den Aufrufer.
+ *
  * Für mehrere gewählte Aufgaben gibt es openDayPicker: nur der Tag, ohne
  * Uhrzeit, und das Ergebnis geht an den Aufrufer statt an einen Eintrag.
  *
@@ -133,6 +136,18 @@ export function openDateField(entry, anchor) {
   const field = ensureInput();
   current = { entry, apply: applyWhen };
   field.value = `${entry.date || dayKey(new Date())}T${entry.time || defaultTime}`;
+  showOver(field, anchor);
+}
+
+/**
+ * Datum und Uhrzeit für einen Entwurf wählen, der noch kein Eintrag ist — das
+ * Eingabefeld in „Android (Xool-DB)“. `onPick` bekommt „JJJJ-MM-TT“ und
+ * „HH:MM“; Leeren in der Auswahl gibt zweimal "".
+ */
+export function openWhenPicker(anchor, date, time, onPick) {
+  const field = ensureInput();
+  current = { entry: null, apply: (_, value) => onPick(...(value ? value.split("T") : ["", ""])) };
+  field.value = `${date || dayKey(new Date())}T${time || defaultTime}`;
   showOver(field, anchor);
 }
 
