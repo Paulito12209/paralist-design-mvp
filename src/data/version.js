@@ -9,7 +9,7 @@
  * tools/version.py (SERVED).
  */
 
-export const appVersion = "a4e6a3083145";
+export const appVersion = "13c7c5f99738";
 
 /* Alle Dateien, die beim Aktualisieren am Zwischenspeicher vorbei neu geholt werden. */
 export const appFiles = [
@@ -52,7 +52,8 @@ export const appFiles = [
   "src/features/calendar/calendar-settings.js", "src/features/calendar/calendar-state.js",
   "src/features/calendar/calendar-strip.js", "src/features/calendar/calendar-week.js",
   "src/features/calendar/calendar.js", "src/features/composer/attachments.js",
-  "src/features/composer/composer-defaults.js", "src/features/composer/composer-hint.js",
+  "src/features/composer/composer-defaults.js", "src/features/composer/composer-extras.js",
+  "src/features/composer/composer-hint.js", "src/features/composer/composer-place.js",
   "src/features/composer/composer-sheet.js", "src/features/composer/composer-state.js",
   "src/features/composer/composer-types.js", "src/features/composer/composer-workspace.js",
   "src/features/composer/composer.js", "src/features/composer/dictation.js",
@@ -170,7 +171,8 @@ export const appFiles = [
   "styles/android-settings-google.css", "styles/android-settings-groups.css",
   "styles/android-settings-tiles.css", "styles/android-sheet.css", "styles/android-tab-snap.css",
   "styles/android-tabs-off.css", "styles/android-tabs.css", "styles/android-view-btn.css",
-  "styles/android-xool-create.css", "styles/android-xool-drawer.css", "styles/android-xool-nav.css",
+  "styles/android-xool-composer.css", "styles/android-xool-create.css",
+  "styles/android-xool-drawer.css", "styles/android-xool-nav.css",
   "styles/android-xool-overview.css", "styles/android-xool-pages.css",
   "styles/android-xool-top.css", "styles/android.css", "styles/avatar-crop.css", "styles/base.css",
   "styles/block-bar.css", "styles/blocks.css", "styles/bookmarks.css", "styles/calendar-panel.css",
