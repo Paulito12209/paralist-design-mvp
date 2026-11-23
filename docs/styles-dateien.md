@@ -85,6 +85,7 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/android-xool-create.css` | „Android (Xool-DB)“: Anlege-Blatt hinter dem Plus mit Abschnitten und Chips (Vorbild Spotify „Erstellen“) |
 | `styles/android-xool-drawer.css` | „Android (Xool-DB)“: Seitenleiste des Reiters „Menü“, von rechts aufgezogen |
 | `styles/android-xool-pages.css` | „Android (Xool-DB)“: Kalender (Raster als Karte, KW links, Regler als Knopf/Pille) und Aufgaben als Karten |
+| `styles/android-xool-composer.css` | „Android (Xool-DB)“: Eingabe-Blatt wie in der Xool-App — „Eingang ▾“ über dem Feld, Details, Datums-Chip und Werkzeuge (+ · Details · Uhr · Favorit · Anpinnen) |
 | `styles/tokens-android.css` | die Werte der Android-Fassung (Material 3), hell |
 | `styles/tokens-android-dark.css` | Android: die Farben im Dunkeln, die Kacheln im Hellen und die Flächen von „Android (Experiment)“ |
 | `styles/tokens-ios.css` | die Werte der iOS-Fassung |
