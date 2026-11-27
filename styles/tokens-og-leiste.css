@@ -1,0 +1,105 @@
+/*
+ * Werte für Leiste und Übersicht der „OG Version“: das Zubehör über der
+ * Kapsel, die Lupe daneben und die kleinen Listen-Karten. Sie gelten nur mit
+ * data-mobile-os="ios" und data-mobile-variant="og". Maße nach
+ * Tokens.Layout (DesignTokens.swift), BottomComposerBar.swift und
+ * HomeListPreviewCard in HomeView.swift (Organi7er).
+ * Pfad: styles/tokens-og-leiste.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * ZUBEHÖR ÜBER DER KAPSEL
+ * --og-accessory-height -> Höhe der Glasfläche mit Kachel, Plus und Welle (52 pt)
+ * --og-accessory-gap    -> Luft zwischen Zubehör und Kapsel darunter
+ * --og-kind-tile        -> Seite der Kachel links (30 pt)
+ * --og-kind-radius      -> Rundung der Kachel (8 pt)
+ * --og-accessory-btn    -> Tippfläche von Plus und Welle (44 pt, Tokens.Layout.bottomAccessoryButtonSize)
+ * --og-kind-tile-veil   -> Schleier auf der Kachel, damit sie sich von der Fläche abhebt
+ *                          (hell: ein Hauch Schwarz, dunkel: ein Hauch Weiß)
+ * LUPE
+ * --og-search-size      -> Durchmesser des runden Lupen-Knopfes rechts neben der Kapsel
+ * KLEINE LISTEN-KARTEN (Übersicht)
+ * --og-list-w / --og-list-h -> Breite und Höhe einer Karte (80 × 116 pt)
+ * --og-list-gap         -> Abstand zwischen den Karten (8 pt)
+ * --og-list-foot        -> Höhe des getönten Fußes mit dem Namen (2/7 der Höhe)
+ * --og-list-icon        -> Größe des Symbols oben auf der Karte
+ * --og-surface-0 … -3   -> wie stark die Kategoriefarbe zum Rand hin aufgehellt wird (Prozent Weiß),
+ *                          Mitte bis Rand; hell wie dunkel nach DashboardCardArtwork
+ * --og-core / --og-core-tint / --og-core-scale -> Säule in der Kartenmitte: Grundton (hell fast weiß, dunkel fast
+ *                          schwarz), wie viel Kategoriefarbe darin steckt und wie deckend sie ist
+ * --og-shade / --og-surface-shade -> dunkler Ton und sein Anteil im Grund der Karte (nur dunkel 16 %)
+ * --og-silver-own / -fade / -fade-color -> Silberschein am Fuß: Anteil Kategoriefarbe, dann zu Weiß (hell)
+ *                          oder Schwarz (dunkel) gekippt
+ * --og-silver-glow      -> Stärke des Silberscheins am Fuß der Karte
+ * --og-list-rim-top / -bottom -> Lichtkante der Karte, oben links hell, unten rechts dunkel
+ */
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] {
+  --og-accessory-height: 52px;
+  --og-accessory-gap: 8px;
+  --og-kind-tile: 30px;
+  --og-kind-radius: 8px;
+  --og-accessory-btn: 44px;
+  --og-kind-tile-veil: rgba(0, 0, 0, 0.06);
+  --og-search-size: 62px;
+
+  --og-list-w: 80px;
+  --og-list-h: 116px;
+  --og-list-gap: 8px;
+  --og-list-foot: calc(var(--og-list-h) * 2 / 7);
+  --og-list-icon: 24px;
+  --og-surface-0: 44%;
+  --og-surface-1: 47.5%;
+  --og-surface-2: 60.8%;
+  --og-surface-3: 76.2%;
+  --og-core: #fafbff;
+  --og-core-tint: 0%;
+  --og-core-scale: 0.68;
+  --og-shade: #0a0c16;
+  --og-surface-shade: 0%;
+  --og-silver-own: 0%;
+  --og-silver-fade: 52%;
+  --og-silver-fade-color: #ffffff;
+  --og-silver-glow: 0.58;
+  --og-list-rim-top: rgba(255, 255, 255, 0.78);
+  --og-list-rim-bottom: rgba(0, 0, 0, 0.16);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-mobile-os="ios"][data-mobile-variant="og"]:not([data-theme="light"]) {
+    --og-kind-tile-veil: rgba(255, 255, 255, 0.16);
+    --og-surface-0: 0%;
+    --og-surface-1: 5%;
+    --og-surface-2: 24%;
+    --og-surface-3: 46%;
+    --og-core: #05060c;
+    --og-core-tint: 8%;
+    --og-core-scale: 1;
+    --og-surface-shade: 16%;
+    --og-silver-own: 34%;
+    --og-silver-fade: 10%;
+    --og-silver-fade-color: #000000;
+    --og-silver-glow: 0.48;
+    --og-list-rim-top: rgba(255, 255, 255, 0.55);
+    --og-list-rim-bottom: rgba(0, 0, 0, 0.18);
+  }
+}
+
+/* Dunkelmodus fest in den Einstellungen gewählt: dieselben Werte wie oben */
+:root[data-mobile-os="ios"][data-mobile-variant="og"][data-theme="dark"] {
+  --og-kind-tile-veil: rgba(255, 255, 255, 0.16);
+  --og-surface-0: 0%;
+  --og-surface-1: 5%;
+  --og-surface-2: 24%;
+  --og-surface-3: 46%;
+  --og-core: #05060c;
+  --og-core-tint: 8%;
+  --og-core-scale: 1;
+  --og-surface-shade: 16%;
+  --og-silver-own: 34%;
+  --og-silver-fade: 10%;
+  --og-silver-fade-color: #000000;
+  --og-silver-glow: 0.48;
+  --og-list-rim-top: rgba(255, 255, 255, 0.55);
+  --og-list-rim-bottom: rgba(0, 0, 0, 0.18);
+}

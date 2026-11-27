@@ -1,0 +1,161 @@
+/*
+ * „OG Version“: das Anlege-Zubehör über der Reiterkapsel und die Lupe rechts
+ * neben ihr, nach BottomComposerBar.swift und ContentView.swift (Organi7er).
+ * Links Kachel, Name und Pfeil, rechts Plus (ohne eigenen Körper) und
+ * Wellen-Knopf; die Lupe ist ein eigener runder Glasknopf. Gebaut in
+ * src/shell/og-bar.js, die Typwahl ist das Menü aus styles/ios-menu.css.
+ * Pfad: styles/og-accessory.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-og-leiste.css)
+ * -----------------------------------
+ * --og-accessory-height / -gap -> Höhe des Zubehörs und Luft zur Kapsel
+ * --og-kind-tile / --og-kind-radius / --og-kind-tile-veil -> Kachel links
+ * --og-accessory-btn  -> Tippfläche von Plus und Welle
+ * --og-search-size    -> Durchmesser der Lupe
+ * --og-card-top / -bottom / -border (styles/tokens-og.css) -> Glasfläche
+ * Am Seitenende wächst der Platz unter dem Inhalt um Zubehör plus Luft (padding-bottom von .content).
+ *
+ * Schrift: Name der Art 15 pt mittel (subheadline), Pfeil 10 pt.
+ */
+
+.og-accessory,
+.og-search {
+  display: none;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-accessory {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: var(--og-accessory-height);
+  /* margin-right: dieselbe Breite wie die Kapsel darunter, die Lupe steht rechts daneben */
+  margin: 0 calc(var(--og-search-size) + 10px) var(--og-accessory-gap) 0;
+  padding: 0 var(--og-space-sm) 0 var(--og-space-md);
+  border-radius: calc(var(--og-accessory-height) / 2);
+  background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+  border: 0.75px solid var(--og-card-border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); /* box-shadow: schwebt wie die Kapsel */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-kind {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  height: var(--og-accessory-btn);
+  color: var(--text);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-kind-tile {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: var(--og-kind-tile);
+  height: var(--og-kind-tile);
+  border-radius: var(--og-kind-radius);
+  background: var(--og-kind-tile-veil);
+  backdrop-filter: blur(10px); /* backdrop-filter: Glas nimmt an, was dahinter liegt */
+  -webkit-backdrop-filter: blur(10px);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-kind-tile .icon {
+  width: 16px;
+  height: 16px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-kind-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis; /* text-overflow: nur der Name darf kürzen */
+  white-space: nowrap;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-kind-caret {
+  flex: 0 0 auto;
+  color: var(--muted);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-kind-caret .icon {
+  width: 10px;
+  height: 10px;
+  transform: rotate(90deg); /* transform: das rechte Pfeil-Symbol zeigt so nach unten */
+}
+
+/* Plus und Welle: kein eigener Körper, nur das Zeichen; die vollen 44 pt bleiben Tippfläche */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-add,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-dictate {
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  width: var(--og-accessory-btn);
+  height: var(--og-accessory-btn);
+  color: var(--text);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-add {
+  margin-left: auto; /* margin-left: Plus und Welle rücken an den rechten Rand */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-add .icon {
+  width: 24px;
+  height: 24px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-dictate .icon {
+  width: 22px;
+  height: 22px;
+}
+
+/* Farbe der Kachel je Art */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tint-task { color: var(--og-task); }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tint-event { color: var(--og-event); }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tint-note { color: var(--og-note); }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tint-project { color: var(--og-project); }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tint-area { color: var(--og-area); }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tint-resource { color: var(--og-resource); }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tint-bookmark { color: var(--og-bookmark); }
+
+/* ---------- Lupe ---------- */
+
+/* position: rechts neben der Kapsel, auf derselben Grundlinie wie sie */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-search {
+  display: grid;
+  place-items: center;
+  position: absolute;
+  right: var(--nav-side);
+  bottom: calc(var(--nav-bottom) + var(--safe-bottom));
+  width: var(--og-search-size);
+  height: var(--og-search-size);
+  border-radius: 50%; /* border-radius: runder Knopf */
+  background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+  border: 0.75px solid var(--og-card-border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  color: var(--text);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-search .icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Beim Suchen und Anlegen haben beide nichts zu tun */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-search .og-accessory,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-search .og-search,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .bottom-bar:has(.nav-shell.is-composing) .og-accessory,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .bottom-bar:has(.nav-shell.is-composing) .og-search {
+  display: none;
+}
+
+/* Die Typwahl geht links über der Kachel auf, nicht rechts über dem alten Plus */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .ios-menu.is-left .ios-menu-card {
+  right: auto;
+  left: var(--nav-side);
+  transform-origin: bottom left; /* transform-origin: wächst aus der Kachel heraus */
+}
+
+/* Das Zubehör schwebt über dem Inhalt: am Ende der Seite bleibt Platz dafür, damit nichts darunter verschwindet */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .content {
+  padding-bottom: calc(var(--tab-space) + var(--og-accessory-height) + var(--og-accessory-gap));
+}

@@ -9,8 +9,10 @@
  * --og-tab-height -> Höhe der Kapsel (62 pt, wie in Tokens.Layout)
  * --og-tab-icon   -> Größe der Symbole in der Kapsel
  * --og-tint       -> Farbe des gewählten Reiters
+ * Die Namen unter den Symbolen stehen immer (10 pt halbfett, wie in der Systemleiste).
  * --og-card-top/-bottom, --og-card-border -> Glasfläche der Kapsel
  *
+ * Zubehör über der Kapsel und Lupe daneben: styles/og-accessory.css.
  * Hier steht nur die Kapsel selbst (Höhe, Rundung, Glas, Schatten). Der Abstand
  * zum Bildschirmrand liegt in den Regeln der Navigation (styles/ios.css).
  */
@@ -48,22 +50,12 @@
   font-weight: 600;
 }
 
-/*
- * Der runde Plusknopf neben der Kapsel: wie der Knopf im Zubehör der Vorlage
- * ein Glasknopf mit dem Zeichen in Textfarbe, statt eines blauen Kreises.
- * Maß 44 pt wie Tokens.Layout.bottomAccessoryButtonSize.
- */
-:root[data-mobile-os="ios"][data-mobile-variant="og"] .ios-add {
-  width: var(--og-add-size);
-  height: var(--og-add-size);
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
-  border: 0.75px solid var(--og-card-border);
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  color: var(--text);
+/* Namen unter den Symbolen immer, wie die Systemleiste: die Wahl „Namen anzeigen“ gilt hier nicht */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .tab-label {
+  display: block;
 }
 
-:root[data-mobile-os="ios"][data-mobile-variant="og"] .ios-add .icon {
-  width: 22px;
-  height: 22px;
+/* Der runde Plusknopf neben der Kapsel entfällt: Plus und Welle stehen im Zubehör darüber, daneben die Lupe */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .ios-add {
+  display: none;
 }

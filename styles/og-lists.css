@@ -1,0 +1,172 @@
+/*
+ * Übersicht der „OG Version“, Abschnitt „Listen“ nach HomeView.listsSection
+ * und HomeListPreviewCard (Organi7er): der Kopf „Listen ›“ und darunter eine
+ * waagerechte Reihe kleiner Karten statt des 2×2-Rasters. Das Symbol steht in
+ * der Kategoriefarbe oben, der Name unten im getönten Glasfuß. Fläche, Säule
+ * und Silberschein folgen DashboardCardArtwork (DetailHeroArtwork.swift).
+ * Pfad: styles/og-lists.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-og-leiste.css, Rundung und Abstände in styles/tokens-og.css)
+ * -----------------------------------
+ * --og-list-w / -h / -gap / -foot / -icon -> Maße der Karten und ihres Fußes
+ * --og-surface-0 … -3, --og-core*, --og-silver* -> Flächenverlauf der Karte
+ * --og-list-rim-top / -bottom -> Lichtkante
+ * --og-radius-medium  -> Rundung der Karte (20 pt)
+ * --og-space-lg / -sm -> Abstand über und unter dem Kopf „Listen“
+ * Kategoriefarbe je Karte: unten bei „--og-c“ (Eingang Blau, Favoriten Gold,
+ * Arbeitsbereiche Orange, Ressourcen Grün, Lesezeichen Violett, Archiv Grau).
+ *
+ * Schrift: Kopf 20 pt halbfett (title3), Name auf der Karte 12 pt halbfett (caption).
+ */
+
+/* Der Kopf gehört nur zur OG Version */
+.og-lists-head {
+  display: none;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-lists-head {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: var(--og-space-lg) 0 var(--og-space-sm);
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+/* Der Pfeil steht wie in der Vorlage halb blass direkt hinter dem Wort */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-lists-head .icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.45;
+}
+
+/* Eine Reihe zum Schieben statt zweier Seiten: keine Rastung, keine Seitenlinie */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-grid {
+  gap: var(--og-list-gap);
+  scroll-snap-type: none;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-page,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-page-narrow {
+  display: contents; /* display: contents: die Karten beider Seiten reihen sich in einer Zeile */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-pager {
+  display: none;
+}
+
+/* ---------- eine Karte ---------- */
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card {
+  --og-c: var(--og-tag);
+  --og-base: color-mix(in srgb, var(--og-shade) var(--og-surface-shade), var(--og-c));
+  --og-core-c: color-mix(in srgb, var(--og-c) var(--og-core-tint), var(--og-core));
+  position: relative; /* position: Bezug für Säule, Schein und Fuß */
+  flex: 0 0 var(--og-list-w);
+  width: var(--og-list-w);
+  height: var(--og-list-h);
+  min-height: 0;
+  padding: 0;
+  overflow: hidden; /* overflow: Säule und Schein enden an der Rundung */
+  align-items: stretch;
+  justify-content: flex-start;
+  gap: 0;
+  border: 0;
+  border-radius: var(--og-radius-medium);
+  background: radial-gradient(
+    ellipse 76% 76% at 50% 46%,
+    color-mix(in srgb, white var(--og-surface-0), var(--og-base)) 0,
+    color-mix(in srgb, white var(--og-surface-1), var(--og-base)) 52%,
+    color-mix(in srgb, white var(--og-surface-2), var(--og-base)) 82%,
+    color-mix(in srgb, white var(--og-surface-3), var(--og-base)) 100%
+  );
+  /* box-shadow: die Lichtkante, oben links hell und unten rechts dunkel */
+  box-shadow: inset 1px 1px 0 var(--og-list-rim-top), inset -1px -1px 0 var(--og-list-rim-bottom);
+}
+
+/* Die Säule in der Mitte: waagerecht ein Verlauf, oben und unten ausgeblendet (mask-image) */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card::before,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none; /* pointer-events: Tipps gehen an die Karte */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0,
+    color-mix(in srgb, var(--og-core-c) calc(var(--og-core-scale) * 18%), transparent) 16%,
+    color-mix(in srgb, var(--og-core-c) calc(var(--og-core-scale) * 72%), transparent) 30%,
+    color-mix(in srgb, var(--og-core-c) calc(var(--og-core-scale) * 94%), transparent) 44%,
+    color-mix(in srgb, var(--og-core-c) calc(var(--og-core-scale) * 94%), transparent) 58%,
+    color-mix(in srgb, var(--og-core-c) calc(var(--og-core-scale) * 68%), transparent) 72%,
+    color-mix(in srgb, var(--og-core-c) calc(var(--og-core-scale) * 14%), transparent) 86%,
+    transparent 100%
+  );
+  -webkit-mask-image: linear-gradient(180deg, transparent 0, rgba(0, 0, 0, 0.35) 14%, rgba(0, 0, 0, 0.92) 30%, #000 52%, rgba(0, 0, 0, 0.86) 78%, rgba(0, 0, 0, 0.55) 100%);
+  mask-image: linear-gradient(180deg, transparent 0, rgba(0, 0, 0, 0.35) 14%, rgba(0, 0, 0, 0.92) 30%, #000 52%, rgba(0, 0, 0, 0.86) 78%, rgba(0, 0, 0, 0.55) 100%);
+}
+
+/* Der Silberschein am Fuß, über der Säule */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card::after {
+  background: radial-gradient(
+    ellipse 68% 68% at 50% 104%,
+    color-mix(in srgb, var(--og-silver-c) calc(var(--og-silver-glow) * 100%), transparent) 0,
+    color-mix(in srgb, var(--og-silver-c) calc(var(--og-silver-glow) * 45%), transparent) 50%,
+    transparent 100%
+  );
+  --og-silver-c: color-mix(in srgb, var(--og-silver-fade-color) var(--og-silver-fade), color-mix(in srgb, var(--og-c) var(--og-silver-own), var(--og-silver)));
+}
+
+/* Symbol: mittig in den oberen fünf Siebteln */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card .card-icon {
+  position: relative;
+  z-index: 1;
+  flex: 0 0 auto;
+  align-self: center;
+  width: var(--og-list-icon);
+  height: var(--og-list-icon);
+  margin-top: calc((var(--og-list-h) - var(--og-list-foot) - var(--og-list-icon)) / 2);
+  color: var(--og-c);
+}
+
+/* Fuß: Name links, auf getöntem Glas */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card .card-label {
+  position: absolute;
+  z-index: 1;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: var(--og-list-foot);
+  padding: 0 10px;
+  display: flex;
+  align-items: center;
+  background: color-mix(in srgb, var(--og-c) 10%, transparent);
+  backdrop-filter: blur(8px); /* backdrop-filter: Glas verwischt den Schein darunter */
+  -webkit-backdrop-filter: blur(8px);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card .card-title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis; /* text-overflow: „Arbeitsbere…“ kürzt am Ende wie in der Vorlage */
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0;
+}
+
+/* Die Vorlage zählt auf den Karten nicht */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card .card-count {
+  display: none;
+}
+
+/* Kategoriefarben nach den Listen der Vorlage */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card:has(.card-icon-inbox) { --og-c: var(--og-task); }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card:has(.card-icon-star) { --og-c: var(--og-favorite); }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card:has(.card-icon-layers) { --og-c: var(--og-area); }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card:has(.card-icon-cube) { --og-c: var(--og-resource); }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card:has(.card-icon-bookmark) { --og-c: var(--og-bookmark); }
