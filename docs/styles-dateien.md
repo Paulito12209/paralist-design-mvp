@@ -12,7 +12,7 @@ Ladereihenfolge der Werte-Dateien (`index.html`): `tokens.css` →
 `tokens-nav.css` → `tokens-pages.css` → `tokens-entry.css` → `tokens-dark.css`,
 danach die Bereichs-Stile; die Fassungen laden ihre Werte vor ihren Regeln
 (`tokens-android.css` → `tokens-android-dark.css` → `android*.css`,
-`tokens-ios.css` → `ios*.css` → `tokens-og.css` → `og*.css`, `tokens-desk.css` → `desk*.css`).
+`tokens-ios.css` → `ios*.css` → `tokens-og.css` → `tokens-og-detail.css` → `og*.css`, `tokens-desk.css` → `desk*.css`).
 Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 
 | Datei | Was sie macht |
@@ -96,6 +96,21 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/og-accessory.css` | „OG Version“: Anlege-Zubehör (Kachel, Plus, Welle) über der Kapsel und runde Lupe daneben |
 | `styles/og-lists.css` | „OG Version“: Übersicht mit „Listen ›“ und waagerechter Reihe kleiner Karten (80 × 116 pt) |
 | `styles/og-nav.css` | „OG Version“: Reiterkapsel als schwebende Glaskarte mit Symbol und Name |
+| `styles/tokens-og-detail.css` | „OG Version“: Werte der geöffneten Seite (Kopfhöhe, Kiste, Anlege-Knopf, Fläche, Zeilen, Detail-Leiste) |
+| `styles/og-detail.css` | „OG Version“: Kopf der geöffneten Seite als farbige Karte mit Wasserzeichen, Verknüpfungen, Titel und Kiste |
+| `styles/og-detail-body.css` | „OG Version“: Fläche mit Reitern und Einträge als Glaskarten-Zeilen mit Kachel und runder Checkbox |
+| `styles/og-detail-nav.css` | „OG Version“: kleine Detail-Leiste unten statt der Hauptleiste |
+| `styles/tokens-og-settings.css` | „OG Version“: Werte für Suche und Einstellungen (Gruppenfläche, Linien, Zeilenhöhe, Profilbild) |
+| `styles/og-search.css` | „OG Version“: Suche mit Treffern als Glaskarten, Glas-Reitern und Glas-Kapseln unten |
+| `styles/og-settings.css` | „OG Version“: Einstellungen mit matten Gruppen und Profilkarte, Fortschritt als Glaskarten |
+| `styles/tokens-og-media.css` | die Werte der Reiter Medien und Karteikarten der „OG Version“: Filter-Pillen, Kacheln, Aufnahmeknöpfe, Stapelkarten, Lernansicht |
+| `styles/og-media.css` | „OG Version“: Medien-Seite mit großem Titel, Filter-Pillen in Kategoriefarbe und Raster mit 14-pt-Kacheln |
+| `styles/og-media-bar.css` | „OG Version“: Aufnahmezeile der Medien-Seite als vier runde Glasknöpfe |
+| `styles/og-cards.css` | „OG Version“: Reiter Karteikarten — Stapel als braune Glaskarten, Leerzustand, Import-Formular, Reiter statt „Aufgaben“ in der Leiste |
+| `styles/og-study.css` | „OG Version“: Lernansicht der Karteikarten — Fortschritt, umdrehbare Glaskarte, Knöpfe Vergessen und Gewusst, Zusammenfassung |
+| `styles/tokens-og-calendar.css` | „OG Version“: Werte des Kalenders (Zellen, Ring, Knöpfe, Fläche, Raster) |
+| `styles/og-calendar.css` | „OG Version“: Kalender oben — Titel, Monatsknopf, Wochenraster mit KW, drei Knöpfe, Reiter, Fläche |
+| `styles/og-calendar-grid.css` | „OG Version“: Kalender unten — Stundenraster, Einträge, Ganztägig, „Kalender anpassen“ |
 | `styles/tokens-desk.css` | die Werte der Desktop-Fassung (Spalten, Flächen, große Zahlen) |
 | `styles/desk.css` | Desktop: Raster aus Seitenleiste, Reiterzeile, Seite und rechter Spalte; Zuklappen, Suchfeld, Eingabefeld unten |
 | `styles/desk-head.css` | Desktop: Wortmarke mit Stufen-Anzeige und Klapp-Knopf; Kopfzeile mit Zurück, Vorwärts, Pfad samt Knöpfen der Seite und Knopf fürs Seitenfenster |

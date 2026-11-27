@@ -5,7 +5,8 @@
  * Pfad: src/features/search/search-rows.js
  *
  * Keine anpassbaren visuellen Werte: Maße und Schrift der Zeilen stehen in
- * styles/search.css (.search-row, --search-meta-size).
+ * styles/search.css (.search-row, --search-meta-size). `data-kind` (Eintragsart
+ * bzw. Arbeitsbereich/Übersicht) gibt der OG Version die Symbolfarbe (styles/og-search.css).
  */
 
 import { escapeHtml, icon } from "../../core/html.js";
@@ -29,7 +30,7 @@ export function resultRow(item, meta, query = "") {
         ? `data-open-workspace="${item.id}"`
         : `data-open-overview="${item.id}"`;
   return `
-    <button class="search-row" type="button" ${attr}>
+    <button class="search-row" type="button" data-kind="${item.type || item.kind}" ${attr}>
       ${icon(item.icon)}
       <div class="search-copy">
         <p class="search-title">${markHit(item.title, query)}</p>

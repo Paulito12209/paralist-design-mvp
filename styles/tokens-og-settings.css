@@ -1,0 +1,62 @@
+/*
+ * Werte für Suche und Einstellungen der „OG Version“ (Nachbau von Organi7er:
+ * GlobalSearchOverlay.swift, SettingsGlassSection.swift, SettingsView.swift,
+ * ExperienceStatsView.swift). Gelten nur mit data-mobile-os="ios" und
+ * data-mobile-variant="og". Die gemeinsamen Farben und Rundungen stehen in
+ * styles/tokens-og.css.
+ * Pfad: styles/tokens-og-settings.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * SUCHE
+ * --og-search-row-gap      -> Abstand zwischen zwei Treffer-Karten (8 px, Space.sm)
+ * --og-search-icon         -> Breite des Symbols links in der Treffer-Karte (28 px)
+ * --og-search-pill-height  -> Höhe von Suchfeld und Knöpfen unten (48 px, bottomAccessoryButtonSize + 4)
+ * EINSTELLUNGEN (matte Gruppen wie SettingsSection)
+ * --og-group-bg            -> Grund hinter den Gruppen (systemGroupedBackground: hell #f2f2f7, dunkel #000)
+ * --og-group-card          -> Fläche der Gruppen (secondarySystemGroupedBackground: hell weiß, dunkel #1c1c1e)
+ * --og-group-line          -> Trennlinie zwischen zwei Zeilen
+ * --og-label-secondary     -> graue Schrift (Abschnittstitel, Zusatzwerte)
+ * --og-label-tertiary      -> hellgraue Schrift (Pfeile am Zeilenende)
+ * --og-settings-row        -> Mindesthöhe einer Zeile (56 px)
+ * --og-settings-icon       -> Breite des Symbols links in der Zeile (28 px)
+ * --og-avatar-size         -> Durchmesser des Profilbilds in der Profilkarte (68 px)
+ * --og-danger              -> Farbe von „Abmelden“ und „Konto löschen“ (rotes Systemrot)
+ */
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] {
+  --og-search-row-gap: 8px;
+  --og-search-icon: 28px;
+  --og-search-pill-height: 48px;
+
+  --og-group-bg: #f2f2f7;
+  --og-group-card: #ffffff;
+  --og-group-line: rgba(60, 60, 67, 0.29);
+  --og-label-secondary: rgba(60, 60, 67, 0.6);
+  --og-label-tertiary: rgba(60, 60, 67, 0.3);
+  --og-settings-row: 56px;
+  --og-settings-icon: 28px;
+  --og-avatar-size: 68px;
+  --og-danger: #ff3b30;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-mobile-os="ios"][data-mobile-variant="og"]:not([data-theme="light"]) {
+    --og-group-bg: #000000;
+    --og-group-card: #1c1c1e;
+    --og-group-line: rgba(84, 84, 88, 0.6);
+    --og-label-secondary: rgba(235, 235, 245, 0.6);
+    --og-label-tertiary: rgba(235, 235, 245, 0.3);
+    --og-danger: #ff453a;
+  }
+}
+
+/* Dunkelmodus fest gewählt: dieselben Werte wie oben */
+:root[data-mobile-os="ios"][data-mobile-variant="og"][data-theme="dark"] {
+  --og-group-bg: #000000;
+  --og-group-card: #1c1c1e;
+  --og-group-line: rgba(84, 84, 88, 0.6);
+  --og-label-secondary: rgba(235, 235, 245, 0.6);
+  --og-label-tertiary: rgba(235, 235, 245, 0.3);
+  --og-danger: #ff453a;
+}

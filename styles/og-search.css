@@ -1,0 +1,118 @@
+/*
+ * Suche der „OG Version“ nach GlobalSearchOverlay und SearchResultRow
+ * (Organi7er): Treffer als Glaskarten mit farbigem Symbol, Tagesmarken in
+ * Fußnoten-Größe, Suchfeld und Knöpfe unten als Glaskapseln. Greift nur mit
+ * data-mobile-os="ios" und data-mobile-variant="og" unter 1024 px.
+ * Pfad: styles/og-search.css
+ *
+ * ANPASSBARE WERTE (Verweise auf styles/tokens-og.css und styles/tokens-og-settings.css)
+ * -----------------------------------
+ * --og-card-top/-bottom/-border -> Glasfläche der Treffer, der Kapseln und der Reiter
+ * --og-radius-medium            -> Rundung der Treffer-Karten (20 px)
+ * --og-search-row-gap           -> Abstand zwischen Treffern
+ * --og-search-icon              -> Breite des Treffer-Symbols
+ * --og-search-pill-height       -> Höhe von Mikrofon/Suchen-Kapsel unten
+ * --og-tint                     -> gewählter Reiter
+ * --og-task, --og-note, …       -> Symbolfarbe je Eintragsart (Regeln „data-kind“ unten)
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel: Titel 17 px
+ * (body), Zeile darunter 12 px (caption), Tagesmarke 13 px (footnote).
+ */
+
+@media (max-width: 1023px) {
+  /* Treffer: eine Glaskarte je Eintrag statt Zeile mit Trennlinie */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-row {
+    gap: var(--og-space-md);
+    min-height: 0;
+    margin-bottom: var(--og-search-row-gap);
+    padding: var(--og-space-md);
+    border: 0.75px solid var(--og-card-border);
+    border-radius: var(--og-radius-medium);
+    background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-row .icon:not(.chevron) {
+    flex: 0 0 var(--og-search-icon);
+    width: var(--og-search-icon);
+    height: 22px;
+    color: var(--og-task);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-title {
+    font-size: 17px;
+    color: var(--text);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-meta {
+    font-size: 12px;
+    color: var(--og-label-secondary);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-row .chevron {
+    width: 12px;
+    height: 12px;
+    color: var(--og-label-tertiary);
+  }
+
+  /* Symbolfarbe je Eintragsart wie PageKind.color in der Vorlage */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-row[data-kind="notiz"] .icon:not(.chevron) { color: var(--og-note); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-row[data-kind="aufgabe"] .icon:not(.chevron) { color: var(--og-task); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-row[data-kind="termin"] .icon:not(.chevron) { color: var(--og-event); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-row[data-kind="projekt"] .icon:not(.chevron) { color: var(--og-project); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-row[data-kind="dokument"] .icon:not(.chevron),
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-row[data-kind="zeichnung"] .icon:not(.chevron),
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-row[data-kind="medien"] .icon:not(.chevron) { color: var(--og-resource); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-row[data-kind="lesezeichen"] .icon:not(.chevron) { color: var(--og-bookmark); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-row[data-kind="workspace"] .icon:not(.chevron) { color: var(--og-area); }
+
+  /* Tagesmarken Heute / Gestern / Früher: footnote, halbfett, grau */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-search .date-label {
+    margin: var(--og-space-xs) 0 var(--og-space-sm);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--og-label-secondary);
+  }
+
+  /* Reiter und Anzahl: Kapsel aus Glas, gewählter Reiter in der Akzentfarbe */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-head .tab-pills {
+    border: 0.75px solid var(--og-card-border);
+    border-radius: 999px; /* border-radius: volle Kapsel wie die Reiterleiste */
+    background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-head .tab-pill.is-active {
+    background: color-mix(in srgb, var(--og-tint) 16%, transparent);
+    color: var(--og-tint);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-count {
+    color: var(--og-label-secondary);
+  }
+
+  /* Suchfeld oben: Glaskapsel mit Lupe */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-search .top-bar .search {
+    border: 0.75px solid var(--og-card-border);
+    border-radius: 999px; /* border-radius: Kapselform wie searchFieldPill */
+    background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+  }
+
+  /* Knöpfe unten: Mikrofon + Suchen als Glaskapsel, Abbrechen in Akzentfarbe */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-combo {
+    height: var(--og-search-pill-height);
+    border: 0.75px solid var(--og-card-border);
+    background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+    box-shadow: none;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-combo-btn.is-active {
+    background: color-mix(in srgb, var(--og-tint) 16%, transparent);
+    color: var(--og-tint);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-cancel {
+    height: var(--og-search-pill-height);
+    line-height: var(--og-search-pill-height);
+    color: var(--og-tint);
+  }
+}

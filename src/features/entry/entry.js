@@ -60,6 +60,7 @@ import { initEntryCover, renderEntryCover } from "./entry-cover.js";
 import { initEntryDetails, renderEntryDetails } from "./entry-details.js";
 import { initEntryHead, renderEntryHead } from "./entry-head.js";
 import { initEntryInline } from "./entry-inline.js";
+import { initEntryOgHero, renderEntryOgHero } from "./entry-og-hero.js";
 import { entrySteps, mountPath, renderPath } from "../../ui/page-path.js";
 import { expandEntryFold, initEntryFold, layoutEntryFold, resetEntryFold } from "./entry-fold.js";
 import { dropLift } from "./entry-lift.js";
@@ -174,6 +175,7 @@ function renderEntry() {
   if (isDrawing) load("drawing").then((module) => module.openDrawing(entry));
   renderLinks(entry);
   renderEntryPills(entry);
+  renderEntryOgHero(entry);
   /* Ein Lesezeichen mit YouTube-Link ohne Titel: Titel holen — die Änderung
      kommt über dataChanged zurück auf die Seite */
   fillVideoTitle(entry);
@@ -209,6 +211,8 @@ export function initEntry() {
   initEntryDetails();
   initEntryHead();
   initEntryInline();
+  /* Nur in der OG Version: Kopf-Karte, Fläche und Detail-Leiste (entry-og-hero.js) */
+  initEntryOgHero();
   /* Umbenennen im Pfad oben (Desktop) läuft über dasselbe Titelfeld wie am Handy */
   path = mountPath(el("entry-head"), (text) => {
     dom.entryTitle.textContent = text;
@@ -310,6 +314,7 @@ export function initEntry() {
     syncHeadSub(entry);
     renderLinks(entry);
     renderEntryPills(entry);
+    renderEntryOgHero(entry);
     /* Text von außen geändert (neuer Link, nachgeholter Titel): Editor und Titel nachziehen */
     if ((entry.body || "") !== shownBody) {
       shownBody = entry.body || "";

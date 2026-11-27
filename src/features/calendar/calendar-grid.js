@@ -8,6 +8,7 @@
  * --cal-hour-h (styles/tokens.css) -> Höhe einer Stunde
  * overlapShift -> um wie viele Pixel gleichzeitige Termine versetzt werden
  * nowTopGap    -> Abstand der Jetzt-Linie zum oberen Rand des Rasters beim Öffnen
+ * ogHourLead  -> „OG Version“: so weit unter dem oberen Rand steht die Stundenlinie nach dem Rollen (Platz für ihre Uhrzeit)
  * minGridHeight -> Mindesthöhe des Rasters (und der Liste), falls der Kopf einmal sehr hoch wird
  * --cal-head-stuck -> wird hier an die Fläche geschrieben: sichtbare Höhe des
  *                    eingerasteten Kopfes; darunter rastet die Reiterzeile der
@@ -23,10 +24,13 @@ import { entriesOfDay, entryColor, entryTime } from "../../data/queries.js";
 import { cssNumber } from "../../core/css-vars.js";
 import { isMobileOs } from "../../ui/platform.js";
 import { cal, gridTopOffset, hourHeight, nowOffset } from "./calendar-state.js";
+import { isOg } from "./calendar-og.js";
+import { ogAllDayMarkup, ogEventsMarkup, ogGridEntries } from "./calendar-og-grid.js";
 
 const overlapShift = 12;
 const nowTopGap = 40;
 const minGridHeight = 240;
+const ogHourLead = 12;
 
 /* Ganztägige Termine stehen als Chips über dem Raster. */
 function allDayMarkup(entries) {
@@ -82,12 +86,16 @@ function nowMarkup(height) {
 
 /** Das Raster des gewählten Tages als HTML. */
 export function renderGrid() {
-  const items = entriesOfDay(ui.calendarDay).filter((entry) => entry.type === "termin");
+  const og = isOg();
+  /* „OG Version“: Einträge aller Kategorien, wie in der Vorlage; sonst nur Termine */
+  const items = og ? ogGridEntries(entriesOfDay(ui.calendarDay)) : entriesOfDay(ui.calendarDay).filter((entry) => entry.type === "termin");
   const timed = items.filter((entry) => entryTime(entry));
   const allDay = items.filter((entry) => !entryTime(entry));
   const height = hourHeight();
+  const top = og ? ogAllDayMarkup(allDay) : allDayMarkup(allDay);
+  const blocks = og ? ogEventsMarkup(timed, height) : eventsMarkup(timed, height);
 
-  return `${allDayMarkup(allDay)}<div class="cal-hours">${hoursMarkup()}${eventsMarkup(timed, height)}${nowMarkup(height)}</div>`;
+  return `${top}<div class="cal-hours">${hoursMarkup()}${blocks}${nowMarkup(height)}</div>`;
 }
 
 /*
@@ -100,6 +108,11 @@ export function renderGrid() {
  */
 export function sizeGrid() {
   dom.calPanel.style.minHeight = "";
+  /* „OG Version“: das Raster liegt in voller Länge im Inhalt der Seite, ohne eigenes Fenster */
+  if (isOg()) {
+    dom.calPanel.style.height = "";
+    return;
+  }
   dom.calPanel.style.height = `${stuckPanelHeight()}px`;
 }
 
@@ -157,10 +170,30 @@ export function unsizePanel() {
  * also sichtbar, und die Linie steht trotzdem weit oben.
  */
 export function scrollToNow() {
+  if (isOg()) {
+    scrollPageToHour();
+    return;
+  }
   const target = el("cal-now") || dom.calPanel.querySelector('[data-hour="8"]');
   if (!target) return;
   const panelTop = dom.calPanel.getBoundingClientRect().top;
   dom.calPanel.scrollTop += target.getBoundingClientRect().top - panelTop - nowTopGap;
+}
+
+/*
+ * „OG Version“: die Seite selbst rollt zur Stunde — heute zur laufenden, sonst
+ * zum ersten Eintrag, ohne Eintrag zum Vormittag. Die Linie dieser Stunde
+ * steht danach knapp unter dem oberen Rand, mit ihrer Uhrzeit darüber.
+ */
+function scrollPageToHour() {
+  const height = hourHeight();
+  let hour = ui.calendarDay === dayKey(new Date()) ? new Date().getHours() : 8;
+  const first = ui.calendarDay === dayKey(new Date()) ? null : dom.calPanel.querySelector(".cal-event");
+  if (first) hour = Math.floor((parseFloat(first.style.top) - gridTopOffset) / height);
+  const line = dom.calPanel.querySelector(`[data-hour="${hour}"]`);
+  if (!line) return;
+  const page = dom.content;
+  page.scrollTop += line.getBoundingClientRect().top - page.getBoundingClientRect().top - ogHourLead;
 }
 
 /** Die Jetzt-Linie mit der Uhr weiterwandern lassen. */

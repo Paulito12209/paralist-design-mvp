@@ -1,0 +1,147 @@
+/*
+ * Geöffnete Seite der „OG Version“, Teil 2: die Fläche unter dem Kopf mit den
+ * Reitern „Inhalt“ und „Verknüpfungen“ (PageDetailView.detailCanvas und
+ * PillTabLabel) und die Einträge darin als Zeilen (PageRow): Glaskarte mit
+ * Radius 20, Kachel mit farbigem Symbol links, bei Aufgaben rechts die runde
+ * Checkbox. Greift nur mit data-mobile-os="ios", data-mobile-variant="og"
+ * und unter der Desktop-Grenze.
+ * Pfad: styles/og-detail-body.css
+ *
+ * ANPASSBARE WERTE (tokens-og-detail.css und tokens-og.css)
+ * -----------------------------------
+ * --og-canvas-radius / -mix / -alpha / -base -> Rundung und Tönung der Fläche
+ * --og-row-icon-tile -> Kachel links in der Zeile (28 pt)
+ * --og-row-check     -> runde Checkbox (24 pt)
+ * --og-radius-medium, --og-card-top/-bottom, --og-card-border -> Glaskarte der Zeile (tokens-og.css)
+ *
+ * Direkt bei den Regeln: Schrift der Reiter 17 pt halbfett, Höhe der Reiter
+ * 40 pt, Rundung der Kachel 8 pt, Schrift des Zeilentitels 17 pt.
+ */
+
+@media (max-width: 1023px) {
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-canvas {
+    display: block;
+    position: relative; /* position: liegt über dem Kopf, dessen Fläche 28 pt unter die Kante reicht */
+    z-index: 1; /* z-index: über Fläche und Schein des Kopfes */
+    box-sizing: border-box;
+    margin: 0 calc(-1 * var(--content-side)) -104px; /* unten über den Scrollraum hinaus, damit keine Kante unter der Fläche steht */
+    padding: var(--og-box-inset) var(--og-space-sm) calc(104px + var(--og-nav-expanded));
+    min-height: calc(100dvh - var(--og-hero-height));
+    border-radius: var(--og-canvas-radius) var(--og-canvas-radius) 0 0;
+    background: color-mix(
+      in srgb,
+      color-mix(in srgb, var(--og-canvas-base) var(--og-canvas-mix), var(--og-kind)) calc(var(--og-canvas-alpha) * 100%),
+      var(--bg)
+    );
+  }
+
+  /* ---------- Reiter: Wort in Textfarbe (aktiv) oder grau, aktiver auf feiner Pille ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .page-pills-row { margin-bottom: var(--og-box-inset); }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .page-pills {
+    background: none;
+    box-shadow: none;
+    padding: 0;
+    gap: 4px;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .tab-pill {
+    min-height: 40px;
+    padding: 0 10px;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--muted);
+    background: none;
+    box-shadow: none;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .tab-pill::before { display: none; }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .tab-pill.is-active {
+    color: var(--text);
+    background: color-mix(in srgb, var(--text) 7%, transparent);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .tab-pill .media-count {
+    font-size: 17px;
+    font-weight: 600;
+    color: color-mix(in srgb, var(--text) 40%, transparent);
+    background: none;
+  }
+
+  /* ---------- Gruppenköpfe der Verknüpfungen ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group-label {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  /* ---------- Zeilen: Glaskarte mit Kachel ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .swipe { --og-row-kind: var(--og-note); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .swipe[data-og-type="projekt"] { --og-row-kind: var(--og-project); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .swipe[data-og-type="aufgabe"] { --og-row-kind: var(--og-task); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .swipe[data-og-type="termin"] { --og-row-kind: var(--og-event); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .swipe[data-og-type="lesezeichen"] { --og-row-kind: var(--og-bookmark); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .swipe:is([data-og-type="dokument"], [data-og-type="medien"]) { --og-row-kind: var(--og-resource); }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .swipe { margin: 0 0 var(--og-space-sm); }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .swipe-body {
+    border-radius: var(--og-radius-medium);
+    /* deckend: unter der Karte liegen die Wisch-Knöpfe und dürfen nicht durchscheinen */
+    background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom)), var(--bg);
+    border: 0.75px solid var(--og-card-border);
+    overflow: hidden; /* overflow: die Zeile folgt der Rundung der Karte */
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .entry-row {
+    gap: 12px;
+    padding: var(--og-space-sm) var(--og-box-inset);
+    background: none;
+    border: 0;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .entry-row .row-title {
+    font-size: 17px;
+    font-weight: 500;
+  }
+
+  /* Kachel: das Symbol in der Kategoriefarbe auf einer feinen Tönung derselben Farbe */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .entry-row .row-glyph {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: var(--og-row-icon-tile);
+    height: var(--og-row-icon-tile);
+    border-radius: 8px;
+    color: var(--og-row-kind);
+    background: color-mix(in srgb, var(--og-row-kind) 14%, transparent);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .entry-row .entry-type {
+    color: var(--og-row-kind);
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Runde Checkbox rechts bei Aufgaben (Ersatz für den Pfeil) */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .entry-row .chevron { display: none; }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-row-check {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: var(--og-row-check);
+    height: var(--og-row-check);
+    border-radius: 50%;
+    border: 1.5px solid color-mix(in srgb, var(--text) 35%, transparent);
+    color: transparent;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-row-check .icon { width: 14px; height: 14px; }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .is-task-done .og-row-check {
+    background: var(--og-row-kind);
+    border-color: var(--og-row-kind);
+    color: #ffffff;
+  }
+}

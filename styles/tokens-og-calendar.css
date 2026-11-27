@@ -1,0 +1,97 @@
+/*
+ * Werte des Kalenders der „OG Version“ (Nachbau der App Organi7er). Sie
+ * gelten nur mit data-mobile-os="ios" UND data-mobile-variant="og" an <html>.
+ * Die Regeln dazu: styles/og-calendar.css und styles/og-calendar-grid.css.
+ * Quellen: CalendarSpanPicker.swift, CalendarGrid.swift,
+ * CalendarDayTimeline.swift, PillTabLabel.swift, TabCustomizationButton.swift.
+ * Pfad: styles/tokens-og-calendar.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * ÜBERSTIMMT WERTE DES KALENDERS (styles/tokens-pages.css)
+ * --cal-row-h    -> Höhe einer Wochenzeile: Tageszelle 38 + 2 Abstand
+ * --cal-hour-h   -> Höhe einer Stunde im Raster (56)
+ * --cal-ring-w   -> Breite des Rings um Tage mit Einträgen; 6.9 bei 44er Zeichenfläche = 5 pt bei 32 pt Durchmesser
+ * --cal-ring-mix -> Deckkraft des Rings (19 %)
+ * RASTER OBEN
+ * --og-cal-day         -> Durchmesser der Tageszelle (38)
+ * --og-cal-ring        -> Durchmesser des Rings darin (32)
+ * --og-cal-week-col    -> Breite der Spalte „KW“ links (26)
+ * --og-cal-head-h      -> Höhe des Monatsknopfs und der Knopfzeile (44)
+ * --og-cal-weekday-h   -> Höhe der Wochentage MO DI … (20)
+ * --og-cal-gap         -> Luft zwischen Wochentagen, Raster und Knopfzeile (16)
+ * KNÖPFE
+ * --og-cal-button-fill   -> Fläche der drei Knöpfe (secondarySystemBackground)
+ * --og-cal-button-stroke -> feiner Rand darum (12 % der Textfarbe)
+ * --og-cal-tab-h         -> Höhe der drei Reiter (40)
+ * --og-cal-tab-active    -> Pille hinter dem gewählten Reiter
+ * --og-cal-tab-count     -> Farbe der Zahl neben dem Reiternamen
+ * FLÄCHE UNTEN
+ * --og-cal-surface       -> die abgerundete Materialfläche unter dem Picker
+ * --og-cal-line          -> Haarlinie der Stunden und unter „Ganztägig“
+ * --og-cal-foot          -> Abstand von „Kalender anpassen“ zur Leiste (32)
+ * RASTER UNTEN
+ * --og-cal-hour-col      -> Breite der Spalte mit den Uhrzeiten (52)
+ * --og-cal-block-mix     -> Deckkraft der Kategoriefarbe auf Blöcken und Chips (16 %)
+ * --og-cal-block-radius  -> Rundung eines Blocks (7 = 12 × 0,6)
+ * --og-cal-now-text      -> Schrift in der Jetzt-Marke (weiß)
+ * KALENDER ANPASSEN
+ * --og-cal-customize-w   -> Breite relativ zur Zeile (80 %)
+ * --og-cal-customize-fill -> Fläche des Knopfs (thinMaterial)
+ */
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] {
+  --cal-row-h: 40px;
+  --cal-hour-h: 56px;
+  --cal-ring-w: 6.9px;
+  --cal-ring-mix: 19%;
+
+  --og-cal-day: 38px;
+  --og-cal-ring: 32px;
+  --og-cal-week-col: 26px;
+  --og-cal-head-h: 44px;
+  --og-cal-weekday-h: 20px;
+  --og-cal-gap: 16px;
+
+  --og-cal-button-fill: #f2f2f7;
+  --og-cal-button-stroke: rgba(0, 0, 0, 0.12);
+  --og-cal-tab-h: 40px;
+  --og-cal-tab-active: rgba(0, 0, 0, 0.07);
+  --og-cal-tab-count: rgba(0, 0, 0, 0.4);
+
+  --og-cal-surface: rgba(116, 124, 140, 0.1);
+  --og-cal-line: rgba(0, 0, 0, 0.08);
+  --og-cal-foot: 32px;
+
+  --og-cal-hour-col: 52px;
+  --og-cal-block-mix: 16%;
+  --og-cal-block-radius: 7px;
+  --og-cal-now-text: #fff;
+
+  --og-cal-customize-w: 80%;
+  --og-cal-customize-fill: rgba(236, 238, 243, 0.9);
+}
+
+/* Dunkel: Flächen, Linien und Schrift ziehen nach */
+@media (prefers-color-scheme: dark) {
+  :root[data-mobile-os="ios"][data-mobile-variant="og"]:not([data-theme="light"]) {
+    --og-cal-button-fill: #1c1c1e;
+    --og-cal-button-stroke: rgba(255, 255, 255, 0.12);
+    --og-cal-tab-active: rgba(255, 255, 255, 0.1);
+    --og-cal-tab-count: rgba(255, 255, 255, 0.45);
+    --og-cal-surface: rgba(255, 255, 255, 0.06);
+    --og-cal-line: rgba(255, 255, 255, 0.08);
+    --og-cal-customize-fill: rgba(60, 62, 70, 0.7);
+  }
+}
+
+/* Dunkelmodus fest in den Einstellungen gewählt: dieselben Werte wie oben */
+:root[data-mobile-os="ios"][data-mobile-variant="og"][data-theme="dark"] {
+  --og-cal-button-fill: #1c1c1e;
+  --og-cal-button-stroke: rgba(255, 255, 255, 0.12);
+  --og-cal-tab-active: rgba(255, 255, 255, 0.1);
+  --og-cal-tab-count: rgba(255, 255, 255, 0.45);
+  --og-cal-surface: rgba(255, 255, 255, 0.06);
+  --og-cal-line: rgba(255, 255, 255, 0.08);
+  --og-cal-customize-fill: rgba(60, 62, 70, 0.7);
+}
