@@ -38,8 +38,14 @@
     font-weight: 700;
     letter-spacing: 0.37px;
     color: var(--text);
-    margin-bottom: var(--og-space-md);
+    margin: 0 0 var(--og-space-md);
+    line-height: 44px; /* eine Zeile mit Stufenring und Profilbild, wie auf der Übersicht */
     padding-inline: 0; /* bündig mit Monatsknopf und Raster */
+  }
+
+  /* Der Titel sitzt in einer Zeile mit Ring und Profilbild (wie auf der Übersicht, styles/og-home.css) */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] body:not(.is-subpage) .content:has(#view-calendar.is-active) {
+    padding-top: calc(var(--safe-top) + 10px);
   }
 
   /* ---------- Kopf: scrollt mit, ohne Fläche und Linie ---------- */
@@ -95,6 +101,11 @@
     height: var(--og-cal-weekday-h);
     font-size: 11px;
     letter-spacing: 0;
+  }
+
+  /* „MO. DI. …“ mit Punkt wie die Kurzform der App; der Punkt kommt aus CSS, das Markup bleibt gleich */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-week-head span::after {
+    content: ".";
   }
 
   /* „KW“ vor MO — ein Pseudo-Element, damit das Markup in index.html gleich bleibt */

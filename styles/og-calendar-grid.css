@@ -149,7 +149,7 @@
 
   /* ---------- Leerer Tag: „Nichts geplant“ + Datum ---------- */
   :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-empty {
-    padding: var(--og-space-xl) var(--og-space-md);
+    padding: calc(var(--og-space-xl) - 10px) var(--og-space-md) var(--og-space-xl); /* Symbol 10 pt höher als sonst: Abstand der Vorlage */
   }
 
   :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-empty .icon {
@@ -165,7 +165,7 @@
   }
 
   :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-empty p {
-    font-size: 15px;
+    font-size: 20px; /* das Datum ist so groß wie der Titel darüber (ContentUnavailableView) */
   }
 
   /* ---------- Kalender anpassen ---------- */
