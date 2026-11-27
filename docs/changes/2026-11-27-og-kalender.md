@@ -57,3 +57,8 @@ KW MO DI MI DO FR SA SO
   Stundenlinie 10 statt 8 pt unter dem Rand.
 - Nicht umgesetzt: Glühhintergrund (`paraBackdrop`); Listenzeilen unverändert.
 - Geprüft bei 375 px hell und dunkel, leer und mit `?demo=1`-Daten, Konsole leer.
+
+## Nachtrag beim Zusammenführen
+`index.html`: Konflikt in der OG-Zeile mit PR „og-leiste“ (`tokens-og-leiste.css`,
+`og-accessory.css`, `og-lists.css`). Beide Listen sind übernommen, die drei Kalender-Dateien
+stehen dahinter.
