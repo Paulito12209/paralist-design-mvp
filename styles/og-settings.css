@@ -1,0 +1,197 @@
+/*
+ * Einstellungen und Fortschritt der „OG Version“ nach SettingsView,
+ * SettingsGlassSection und ExperienceStatsView (Organi7er): matte Gruppen auf
+ * dem gruppierten Grund, Profilkarte mit Bild links und Name daneben, Zeilen
+ * mit 28-px-Symbol und Pfeil; im Fortschritt Glaskarten. Greift nur mit
+ * data-mobile-os="ios" und data-mobile-variant="og" unter 1024 px.
+ * Pfad: styles/og-settings.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-og-settings.css, Glasfläche in styles/tokens-og.css)
+ * -----------------------------------
+ * --og-group-bg / --og-group-card -> Grund des Blatts und Fläche der Gruppen
+ * --og-group-line                 -> Trennlinie zwischen Zeilen
+ * --og-label-secondary / -tertiary -> Abschnittstitel, Zusatzwerte, Pfeile
+ * --og-settings-row / -icon       -> Zeilenhöhe und Symbolbreite
+ * --og-avatar-size                -> Profilbild in der Profilkarte
+ * --og-radius-card                -> Rundung der Gruppen (28 px)
+ * --og-card-top/-bottom/-border   -> Glaskarten im Fortschritt
+ * --og-danger                     -> Rot von „Abmelden“ und „Konto löschen“
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel: Titel des
+ * Blatts 17 px, Gruppentitel 15 px, Zeilen 17 px, Name 20 px, Zusatzwerte 15 px.
+ */
+
+@media (max-width: 1023px) {
+  /* Grund des Blatts: systemGroupedBackground */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .modal {
+    background: var(--og-group-bg);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .modal-head h2,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #progress .modal-head h2 {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  /* Gruppen: matte Fläche, 28 px Rundung, kein Schatten */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .plist,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .settings-group,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .profile-id {
+    border-radius: var(--og-radius-card);
+    background: var(--og-group-card);
+    box-shadow: none;
+  }
+
+  /* Abschnittstitel: subheadline, halbfett, grau, mit Abstand zur Gruppe */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .psection,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #progress .psection {
+    padding: var(--og-space-md) var(--og-space-md) 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--og-label-secondary);
+  }
+
+  /* Zeilen: 56 px hoch, Symbol 28 px breit in der Textfarbe, Linie ab dem Text */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .plist-row,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .settings-row {
+    position: relative; /* position: trägt die eingerückte Trennlinie */
+    gap: var(--og-space-sm);
+    min-height: var(--og-settings-row);
+    padding: var(--og-space-md);
+    border-bottom: 0;
+    font-size: 17px;
+    color: var(--text);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .plist-row:not(:last-child)::after,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .settings-row:not(:last-child)::after {
+    content: ""; /* content: die Trennlinie ist ein leeres Pseudo-Element */
+    position: absolute;
+    left: calc(var(--og-space-md) + var(--og-settings-icon) + var(--og-space-sm));
+    right: var(--og-space-md);
+    bottom: 0;
+    height: 0.5px;
+    background: var(--og-group-line);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .plist-row .icon:not(.plist-trail),
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .settings-row .icon:not(.settings-check) {
+    flex: 0 0 var(--og-settings-icon);
+    width: var(--og-settings-icon);
+    height: 22px;
+    color: var(--text);
+  }
+
+  /* Pfeil am Zeilenende: klein, hellgrau (chevron.right, caption halbfett) */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .plist-row .plist-trail {
+    width: 12px;
+    height: 12px;
+    color: var(--og-label-tertiary);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .plist-row .plist-value {
+    font-size: 15px;
+    color: var(--og-label-secondary);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .plist-row.is-danger,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .plist-row.is-danger .icon {
+    color: var(--og-danger);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .profile-signout {
+    color: var(--og-danger);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .profile-meta,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .profile-version {
+    color: var(--og-label-secondary);
+  }
+
+  /* Profilkarte: Bild links, Name daneben, wie ein Visitenkarten-Kopf */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .profile-id {
+    display: grid;
+    grid-template-columns: var(--og-avatar-size) minmax(0, 1fr);
+    justify-items: start;
+    align-items: center;
+    align-content: center; /* align-content: Name und Zeile darunter rücken zusammen neben das Bild */
+    column-gap: var(--og-space-md);
+    row-gap: 2px;
+    padding: var(--og-space-md);
+    border-bottom: 0;
+    margin-bottom: 0;
+    text-align: left;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .profile-avatar-wrap {
+    grid-row: 1 / span 3; /* grid-row: das Bild steht links neben allen Textzeilen */
+    width: var(--og-avatar-size);
+    height: var(--og-avatar-size);
+    margin-bottom: 0;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .profile-avatar {
+    font-size: 24px;
+  }
+
+  /* Stift auf dem Bild: kleiner Glaskreis wie in der Vorlage (26 px) */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .profile-avatar-edit {
+    right: -3px;
+    bottom: -3px;
+    width: 26px;
+    height: 26px;
+    border: 0.5px solid var(--og-group-line);
+    background: var(--og-group-card);
+    color: var(--text);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .profile-avatar-edit .icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .profile-name {
+    font-size: 20px;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .profile-meta {
+    font-size: 13px;
+  }
+
+  /* Die Mailzeile ist ohne Konto leer und soll keine Lücke lassen */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .profile-mail:empty {
+    display: none;
+  }
+
+  /* Fortschritt: Karten als Glas (GlassCard), Kennzahlen in 20 px halbfett */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #progress .pcard,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #progress .mini-card {
+    border: 0.75px solid var(--og-card-border);
+    border-radius: var(--og-radius-card);
+    background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+    box-shadow: none;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #progress .mini-card {
+    border-radius: var(--og-radius-medium);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #progress .pcard-head {
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 0;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #progress .mini-value {
+    font-size: 20px;
+    letter-spacing: 0;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #progress .mini-label {
+    font-size: 12px;
+    color: var(--og-label-secondary);
+  }
+}
