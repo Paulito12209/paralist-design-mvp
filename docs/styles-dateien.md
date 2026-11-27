@@ -92,6 +92,9 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/tokens-og.css` | die Werte der „OG Version“ (Nachbau der App Organi7er): Kategoriefarben, Fläche, Rundungen, Abstände |
 | `styles/og.css` | die Regeln der „OG Version“; baut auf der iOS-Fassung auf und steht deshalb nach `ios*.css` |
 | `styles/og-home.css` | „OG Version“: Übersicht mit großem Titel, Kacheln als Glaskarten in Systemfarbe, Abschnittsüberschriften |
+| `styles/tokens-og-leiste.css` | „OG Version“: Werte für Zubehör über der Kapsel, Lupe und kleine Listen-Karten (hell und dunkel) |
+| `styles/og-accessory.css` | „OG Version“: Anlege-Zubehör (Kachel, Plus, Welle) über der Kapsel und runde Lupe daneben |
+| `styles/og-lists.css` | „OG Version“: Übersicht mit „Listen ›“ und waagerechter Reihe kleiner Karten (80 × 116 pt) |
 | `styles/og-nav.css` | „OG Version“: Reiterkapsel als schwebende Glaskarte mit Symbol und Name |
 | `styles/tokens-og-detail.css` | „OG Version“: Werte der geöffneten Seite (Kopfhöhe, Kiste, Anlege-Knopf, Fläche, Zeilen, Detail-Leiste) |
 | `styles/og-detail.css` | „OG Version“: Kopf der geöffneten Seite als farbige Karte mit Wasserzeichen, Verknüpfungen, Titel und Kiste |
