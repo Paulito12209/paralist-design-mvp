@@ -48,6 +48,7 @@ import { initAndroidXoolNav } from "./shell/android-xool-nav.js";
 import { initAndroidLinkBtn } from "./shell/android-link-btn.js";
 import { initIosAdd } from "./shell/ios-add.js";
 import { initIosBars } from "./shell/ios-bars.js";
+import { initOgBar } from "./shell/og-bar.js";
 import { checkReminders, initReminderBanner } from "./shell/reminder-banner.js";
 import { initSearchBar } from "./shell/search-bar.js";
 import { checkForUpdate, initUpdatePrompt } from "./shell/update-prompt.js";
@@ -165,6 +166,7 @@ function initShell() {
   initAndroidLinkBtn();
   initIosBars();
   initIosAdd();
+  initOgBar();
   initKeyboardInset();
   initWriting();
   initWeekFill();
