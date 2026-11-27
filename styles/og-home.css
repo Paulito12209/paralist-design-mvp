@@ -1,0 +1,49 @@
+/*
+ * Übersicht der „OG Version“ nach MainPageHeader und HomeView (Organi7er):
+ * großer Titel, Kacheln als Glaskarten mit Systemfarbe, Abschnittsüberschriften
+ * in Titel-3-Größe. Greift nur mit data-mobile-os="ios" und data-mobile-variant="og".
+ * Pfad: styles/og-home.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-og.css)
+ * -----------------------------------
+ * --og-title-size      -> Größe von „Übersicht“ oben
+ * --og-card-top/-bottom -> Verlauf der Kacheln (hell wie dunkel)
+ * --og-card-border     -> feiner Rand um die Kacheln
+ * --og-radius-medium   -> Rundung der Kacheln (20 pt)
+ * --og-task, --og-area … -> Farbe des Symbols je Kachel (Icon-Klasse unten)
+ *
+ * Hier stehen nur die Größen der Schrift: 17 pt für Kachelnamen und 20 pt für
+ * Abschnittsüberschriften, wie headline und title3 in der Vorlage.
+ */
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .screen-title {
+  font-size: var(--og-title-size);
+  font-weight: 700;
+  letter-spacing: 0.37px;
+  color: var(--text);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card {
+  background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+  border: 0.75px solid var(--og-card-border);
+  border-radius: var(--og-radius-medium);
+  box-shadow: none;
+  color: var(--text);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card .card-title {
+  font-size: 17px;
+  font-weight: 600;
+}
+
+/* Symbolfarben nach den Listen der Vorlage: Eingang blau, Favoriten Gold, Arbeitsbereiche Orange, Ressourcen Grün */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .card-icon-inbox { color: var(--og-task); }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .card-icon-star { color: var(--og-favorite); }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .card-icon-layers { color: var(--og-area); }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .card-icon-cube { color: var(--og-resource); }
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .section-head {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+}

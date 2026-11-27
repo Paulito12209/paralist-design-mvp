@@ -27,6 +27,15 @@
  * --og-radius-small / -medium / -card / -sheet -> 12 / 20 / 28 / 36 px; card ist die Glasfläche
  * ABSTÄNDE (8-Pixel-Raster)
  * --og-space-xs / -sm / -md / -lg / -xl -> 4 / 8 / 16 / 24 / 32 px
+ * KARTEN (Glasfläche wie GlassCard in GlassBackdrop.swift)
+ * --og-card-top / --og-card-bottom -> Verlauf der Karte von oben links nach unten rechts
+ * --og-card-border -> feiner Rand der Karte
+ * --og-tint        -> Akzent der Reiter und des gewählten Reiters (iceBlue aus ExperienceLevelBadge.swift)
+ * LEISTE UND TITEL
+ * --og-title-size  -> Größe des Seitentitels „Übersicht“ (34 pt wie largeTitle)
+ * --og-tab-height  -> Höhe der schwebenden Reiterkapsel (62 pt, Tokens.Layout)
+ * --og-tab-icon    -> Größe der Reitersymbole in der Kapsel
+ * --og-add-size    -> Durchmesser des runden Plusknopfes neben der Kapsel (44 pt)
  */
 
 :root[data-mobile-os="ios"][data-mobile-variant="og"] {
@@ -54,6 +63,15 @@
   --og-space-md: 16px;
   --og-space-lg: 24px;
   --og-space-xl: 32px;
+
+  --og-card-top: rgba(255, 255, 255, 0.97);
+  --og-card-bottom: rgba(233, 235, 239, 0.93);
+  --og-card-border: rgba(255, 255, 255, 0.86);
+  --og-tint: #1f5794;
+  --og-title-size: 34px;
+  --og-tab-height: 62px;
+  --og-tab-icon: 24px;
+  --og-add-size: 44px;
 }
 
 /* Dunkel: die helleren Systemfarben und die dunkle Fläche */
@@ -69,6 +87,10 @@
     --og-person: #63e6e2;
     --og-deck: #ac8e68;
     --og-canvas: #050816;
+    --og-card-top: rgba(41, 43, 48, 0.96);
+    --og-card-bottom: rgba(30, 32, 37, 0.94);
+    --og-card-border: rgba(255, 255, 255, 0.09);
+    --og-tint: #9cc9ff;
   }
 }
 
@@ -84,4 +106,8 @@
   --og-person: #63e6e2;
   --og-deck: #ac8e68;
   --og-canvas: #050816;
+  --og-card-top: rgba(41, 43, 48, 0.96);
+  --og-card-bottom: rgba(30, 32, 37, 0.94);
+  --og-card-border: rgba(255, 255, 255, 0.09);
+  --og-tint: #9cc9ff;
 }

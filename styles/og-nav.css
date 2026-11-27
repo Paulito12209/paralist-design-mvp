@@ -1,0 +1,69 @@
+/*
+ * Reiterkapsel der „OG Version“ nach ContentView.swift (TabView mit
+ * tabBarMinimize): eine schwebende Glaskapsel mit Symbol und Name, der
+ * gewählte Reiter liegt auf einer hellen Pille in der Akzentfarbe.
+ * Pfad: styles/og-nav.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-og.css)
+ * -----------------------------------
+ * --og-tab-height -> Höhe der Kapsel (62 pt, wie in Tokens.Layout)
+ * --og-tab-icon   -> Größe der Symbole in der Kapsel
+ * --og-tint       -> Farbe des gewählten Reiters
+ * --og-card-top/-bottom, --og-card-border -> Glasfläche der Kapsel
+ *
+ * Hier steht nur die Kapsel selbst (Höhe, Rundung, Glas, Schatten). Der Abstand
+ * zum Bildschirmrand liegt in den Regeln der Navigation (styles/ios.css).
+ */
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .tab-bar {
+  height: var(--og-tab-height);
+  border-radius: calc(var(--og-tab-height) / 2);
+  padding: 2px;
+  background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+  border: 0.75px solid var(--og-card-border);
+  /* box-shadow: weicher Schatten unter der Kapsel, damit sie über den Karten schwebt */
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .tab-btn .tab-circle,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .tab-bar.show-labels .tab-btn .tab-circle {
+  height: calc(var(--og-tab-height) - 4px);
+  border-radius: 999px;
+  color: var(--text);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .tab-btn.is-active .tab-circle {
+  background: rgba(31, 87, 148, 0.14);
+  color: var(--og-tint);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .tab-btn .icon,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .tab-bar.show-labels .tab-btn .icon {
+  width: var(--og-tab-icon);
+  height: var(--og-tab-icon);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .tab-label {
+  font-size: 10px;
+  font-weight: 600;
+}
+
+/*
+ * Der runde Plusknopf neben der Kapsel: wie der Knopf im Zubehör der Vorlage
+ * ein Glasknopf mit dem Zeichen in Textfarbe, statt eines blauen Kreises.
+ * Maß 44 pt wie Tokens.Layout.bottomAccessoryButtonSize.
+ */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .ios-add {
+  width: var(--og-add-size);
+  height: var(--og-add-size);
+  border-radius: 999px;
+  background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+  border: 0.75px solid var(--og-card-border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  color: var(--text);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .ios-add .icon {
+  width: 22px;
+  height: 22px;
+}

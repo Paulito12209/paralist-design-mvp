@@ -91,6 +91,8 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/tokens-ios.css` | die Werte der iOS-Fassung |
 | `styles/tokens-og.css` | die Werte der „OG Version“ (Nachbau der App Organi7er): Kategoriefarben, Fläche, Rundungen, Abstände |
 | `styles/og.css` | die Regeln der „OG Version“; baut auf der iOS-Fassung auf und steht deshalb nach `ios*.css` |
+| `styles/og-home.css` | „OG Version“: Übersicht mit großem Titel, Kacheln als Glaskarten in Systemfarbe, Abschnittsüberschriften |
+| `styles/og-nav.css` | „OG Version“: Reiterkapsel als schwebende Glaskarte mit Symbol und Name |
 | `styles/tokens-desk.css` | die Werte der Desktop-Fassung (Spalten, Flächen, große Zahlen) |
 | `styles/desk.css` | Desktop: Raster aus Seitenleiste, Reiterzeile, Seite und rechter Spalte; Zuklappen, Suchfeld, Eingabefeld unten |
 | `styles/desk-head.css` | Desktop: Wortmarke mit Stufen-Anzeige und Klapp-Knopf; Kopfzeile mit Zurück, Vorwärts, Pfad samt Knöpfen der Seite und Knopf fürs Seitenfenster |
