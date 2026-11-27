@@ -100,6 +100,9 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/og-detail.css` | „OG Version“: Kopf der geöffneten Seite als farbige Karte mit Wasserzeichen, Verknüpfungen, Titel und Kiste |
 | `styles/og-detail-body.css` | „OG Version“: Fläche mit Reitern und Einträge als Glaskarten-Zeilen mit Kachel und runder Checkbox |
 | `styles/og-detail-nav.css` | „OG Version“: kleine Detail-Leiste unten statt der Hauptleiste |
+| `styles/tokens-og-settings.css` | „OG Version“: Werte für Suche und Einstellungen (Gruppenfläche, Linien, Zeilenhöhe, Profilbild) |
+| `styles/og-search.css` | „OG Version“: Suche mit Treffern als Glaskarten, Glas-Reitern und Glas-Kapseln unten |
+| `styles/og-settings.css` | „OG Version“: Einstellungen mit matten Gruppen und Profilkarte, Fortschritt als Glaskarten |
 | `styles/tokens-desk.css` | die Werte der Desktop-Fassung (Spalten, Flächen, große Zahlen) |
 | `styles/desk.css` | Desktop: Raster aus Seitenleiste, Reiterzeile, Seite und rechter Spalte; Zuklappen, Suchfeld, Eingabefeld unten |
 | `styles/desk-head.css` | Desktop: Wortmarke mit Stufen-Anzeige und Klapp-Knopf; Kopfzeile mit Zurück, Vorwärts, Pfad samt Knöpfen der Seite und Knopf fürs Seitenfenster |
