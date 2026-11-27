@@ -24,6 +24,8 @@ import { saveState, state } from "../../data/state.js";
 import { collectionEmptyState } from "../../ui/empty-state.js";
 import { mediaCell } from "../../ui/media-cell.js";
 import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
+import { icon } from "../../core/html.js";
+import { isMobileOs } from "../../ui/platform.js";
 import { tabGlyph } from "../../ui/tab-glyph.js";
 import { onDeskChange } from "../../ui/desk-mode.js";
 import { isViewActive } from "../../ui/views.js";
@@ -74,6 +76,12 @@ function filtered(filter) {
   return all.filter((entry) => mediaKindOf(entry) === filter);
 }
 
+/* Die „OG Version“ zeigt vor jeder Pille immer ihr Symbol (wie MediaHubView), die übrigen Fassungen nur, wenn es unter Einstellungen › Tabs an ist. */
+function filterGlyph(filter) {
+  const og = isMobileOs("ios") && document.documentElement.dataset.mobileVariant === "og";
+  return og ? icon(filter.icon, "tab-pill-icon") : tabGlyph("media", filter.icon);
+}
+
 /* Die Pillen oben, jede mit der Anzahl dahinter. */
 function renderFilters() {
   dom.mediaFilters.innerHTML = mediaFilters
@@ -82,7 +90,7 @@ function renderFilters() {
       const active = filter.id === state.prefs.media.filter ? " is-active" : "";
       return `
         <button class="tab-pill media-filter${active}" type="button" data-media-filter="${filter.id}">
-          ${tabGlyph("media", filter.icon)}${filter.label}${count ? `<span class="media-count">${count}</span>` : ""}
+          ${filterGlyph(filter)}${filter.label}${count ? `<span class="media-count">${count}</span>` : ""}
         </button>`;
     })
     .join("");

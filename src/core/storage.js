@@ -49,6 +49,8 @@ export const storageKeys = {
   drawPrefs: "paralist-draw-prefs",
   /* Seitenfenster rechts am Desktop: offen, breit, was darin steht, letzte Adresse */
   deskSide: "paralist-desk-side",
+  /* Karteikarten-Stapel der „OG Version“ (src/data/decks.js) */
+  decks: "paralist-decks",
 };
 
 /** Liest gespeichertes JSON. Fehlt es oder ist es kaputt, kommt `fallback` zurück. */

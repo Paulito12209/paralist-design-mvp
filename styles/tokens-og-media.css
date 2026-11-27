@@ -1,0 +1,70 @@
+/*
+ * Werte der Reiter „Medien“ und „Karteikarten“ in der „OG Version“, nach
+ * MediaHubView.swift und DeckListView.swift aus Organi7er. Sie gelten nur,
+ * solange an <html> data-mobile-os="ios" UND data-mobile-variant="og" stehen;
+ * die Regeln dazu stehen in styles/og-media.css, og-media-bar.css, og-cards.css
+ * und og-study.css. Farben kommen aus styles/tokens-og.css (hell und dunkel);
+ * Linien und Flächen werden mit der Textfarbe gemischt und passen sich so von
+ * selbst an Hell und Dunkel an.
+ * Pfad: styles/tokens-og-media.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * MEDIEN – FILTERBAND
+ * --og-pill-height      -> Höhe der Filter-Pillen (36 pt wie MediaFilter.pillHeight)
+ * --og-pill-side        -> Innenabstand links und rechts in der Pille (14 pt)
+ * --og-pill-fill        -> Fläche einer nicht gewählten Pille (5,5 % Textfarbe)
+ * --og-pill-line        -> Rand einer nicht gewählten Pille (5 % Textfarbe)
+ * --og-pill-on-fill     -> Anteil der Kategoriefarbe in der gewählten Pille (16 %)
+ * --og-pill-on-line     -> Anteil der Kategoriefarbe im Rand der gewählten Pille (35 %)
+ * MEDIEN – RASTER
+ * --og-media-gap        -> Fuge zwischen den Kacheln (6 pt wie MediaTile.spacing)
+ * --og-media-radius     -> Rundung einer Kachel (14 pt wie MediaTile.cornerRadius)
+ * --og-media-line       -> feiner Rand um eine Kachel (7 % Textfarbe, 0,75 px)
+ * --og-media-month-size -> Schrift der Monatsüberschrift (15 pt, subheadline)
+ * --og-media-name-size  -> Schrift des Namens auf Audio- und Dokumentkacheln (11 pt)
+ * --og-media-icon-size  -> Größe des Symbols auf Audio- und Dokumentkacheln (26 pt)
+ * --og-media-tint-top / -bottom -> Anteil der Kategoriefarbe oben links / unten rechts (26 % / 8 %)
+ * MEDIEN – AUFNAHMEZEILE
+ * --og-capture-size     -> Durchmesser der vier runden Glasknöpfe (44 pt wie bottomAccessoryButtonSize)
+ * --og-capture-gap      -> Abstand zwischen den Knöpfen (4 pt, Space.xs)
+ * --og-capture-icon     -> Größe der Symbole in den Knöpfen (17 pt)
+ * KARTEIKARTEN – STAPEL
+ * --og-deck-height      -> Mindesthöhe einer Stapelkarte (156 pt wie DeckCard.height)
+ * --og-deck-title-size  -> Schrift des Stapelnamens (22 pt, title2)
+ * --og-deck-meta-size   -> Schrift der Zeile mit Kartenanzahl (12 pt, caption)
+ * --og-deck-tint        -> Anteil Braun im Verlauf der Stapelkarte (35 %)
+ * KARTEIKARTEN – LERNANSICHT
+ * --og-study-card-size  -> Schrift der Frage auf der Karte (22 pt, title2)
+ * --og-study-sum-size   -> Schrift der großen Zahl am Ende (64 pt)
+ */
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] {
+  --og-pill-height: 36px;
+  --og-pill-side: 14px;
+  --og-pill-fill: color-mix(in srgb, var(--text) 5.5%, transparent);
+  --og-pill-line: color-mix(in srgb, var(--text) 5%, transparent);
+  --og-pill-on-fill: 16%;
+  --og-pill-on-line: 35%;
+
+  --og-media-gap: 6px;
+  --og-media-radius: 14px;
+  --og-media-line: color-mix(in srgb, var(--text) 7%, transparent);
+  --og-media-month-size: 15px;
+  --og-media-name-size: 11px;
+  --og-media-icon-size: 26px;
+  --og-media-tint-top: 26%;
+  --og-media-tint-bottom: 8%;
+
+  --og-capture-size: 44px;
+  --og-capture-gap: 4px;
+  --og-capture-icon: 17px;
+
+  --og-deck-height: 156px;
+  --og-deck-title-size: 22px;
+  --og-deck-meta-size: 12px;
+  --og-deck-tint: 35%;
+
+  --og-study-card-size: 22px;
+  --og-study-sum-size: 64px;
+}

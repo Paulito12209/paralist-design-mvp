@@ -1,0 +1,213 @@
+/*
+ * Lernansicht der Karteikarten in der „OG Version“ nach FlashcardStudyView.swift:
+ * Fläche mit braunem Schein über der App, „n von m“ mit Fortschrittsbalken,
+ * große Glaskarte, die beim Tippen umdreht, darunter „Vergessen“ (rot) und
+ * „Gewusst“ (grün); am Ende die große Zahl.
+ * Pfad: styles/og-study.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-og-media.css, Farben in tokens-og.css)
+ * -----------------------------------
+ * --og-study-card-size -> Schrift der Frage auf der Karte
+ * --og-study-sum-size  -> Schrift der Zahl am Ende
+ * --og-deck            -> Braun des Scheins und des Balkens
+ * --og-resource / --og-project -> Grün der Antwort und von „Gewusst“ / Rot von „Vergessen“
+ * --og-radius-sheet    -> Rundung der Karte (36 px)
+ *
+ * Dauer der Drehung: 0,32 s direkt bei .og-study-card (wie cardFlipAnimation).
+ */
+
+.og-study {
+  display: none; /* display: none: ohne Lernrunde liegt nichts über der App */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study:not([hidden]) {
+  position: absolute; /* position: legt sich über das ganze Gerät, wie ein Blatt über die App */
+  inset: 0;
+  z-index: 60; /* z-index: über Leiste und Inhalt */
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-lg);
+  padding: var(--safe-top, 0px) var(--og-space-md) var(--og-space-md);
+  background:
+    radial-gradient(120% 60% at 50% 0%, color-mix(in srgb, var(--og-deck) 28%, transparent), transparent 70%),
+    var(--og-canvas);
+  color: var(--text);
+  box-sizing: border-box;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-head h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-close {
+  display: grid;
+  place-items: center;
+  width: var(--og-capture-size);
+  height: var(--og-capture-size);
+  border-radius: 999px;
+  border: 0.75px solid var(--og-card-border);
+  background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+  color: var(--text);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-close .icon {
+  width: 18px;
+  height: 18px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-progress {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--og-space-sm);
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-progress progress {
+  width: 100%;
+  height: 4px;
+  accent-color: var(--og-deck); /* accent-color: färbt den Balken braun, ohne ihn nachzubauen */
+}
+
+/* Karte: füllt den Raum zwischen Fortschritt und Knöpfen; beide Seiten liegen übereinander */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-card {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  padding: 0;
+  border-radius: var(--og-radius-sheet);
+  border: 0.75px solid var(--og-card-border);
+  background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+  color: var(--text);
+  transform-style: preserve-3d; /* transform-style: beide Seiten drehen mit der Karte mit */
+  transition: transform 0.32s ease-in-out;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-card.is-revealed {
+  transform: rotateY(180deg); /* rotateY: die Karte dreht sich um ihre Mittelachse */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-face {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--og-space-md);
+  padding: var(--og-space-xl);
+  text-align: center;
+  backface-visibility: hidden; /* backface-visibility: die abgewandte Seite bleibt unsichtbar */
+  -webkit-backface-visibility: hidden;
+  border-radius: inherit;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-back {
+  transform: rotateY(180deg); /* rotateY: die Rückseite steht schon verdreht, damit ihr Text nach dem Umdrehen nicht gespiegelt ist */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-tags {
+  position: absolute;
+  top: var(--og-space-md);
+  right: var(--og-space-lg);
+  font-size: 12px;
+  color: var(--muted);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-text {
+  font-size: var(--og-study-card-size);
+  font-weight: 500;
+  white-space: pre-wrap; /* pre-wrap: Zeilenumbrüche der Karte bleiben erhalten */
+  overflow-wrap: anywhere;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-text.is-answer {
+  font-weight: 600;
+  color: var(--og-resource);
+}
+
+/* Auf der Rückseite bleibt die Frage klein als Orientierung stehen */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-ask {
+  padding-bottom: var(--og-space-md);
+  border-bottom: 0.75px solid var(--og-card-border);
+  width: 100%;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-hint {
+  margin: 0;
+  padding-bottom: var(--og-space-md);
+  text-align: center;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-verdict {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--og-space-md);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--og-space-sm);
+  height: 52px;
+  border-radius: 999px;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-btn .icon {
+  width: 18px;
+  height: 18px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-btn.is-wrong {
+  color: var(--og-project);
+  border: 0.75px solid var(--og-card-border);
+  background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-btn.is-right {
+  color: var(--og-canvas);
+  background: var(--og-resource);
+}
+
+/* Ende: große Zahl, darunter „richtig beantwortet“ */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-sum {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--og-space-sm);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-sum p {
+  margin: 0;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-sum-num {
+  font-size: var(--og-study-sum-size);
+  font-weight: 300;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-study-sum-text {
+  color: var(--muted);
+  margin-bottom: var(--og-space-md);
+}

@@ -21,7 +21,7 @@ import { ui } from "../data/state.js";
 import { isViewActive, setActiveTab, showView } from "./views.js";
 
 /* Die Ansichten, die unten in der Navigationsleiste einen Knopf haben. */
-export const navViews = ["home", "calendar", "tasks", "media"];
+export const navViews = ["home", "calendar", "tasks", "media", "cards"];
 
 function hashOfTab(tab) {
   return tab === "home" ? "#/" : `#/${tab}`;

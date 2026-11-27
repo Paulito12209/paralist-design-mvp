@@ -1,0 +1,172 @@
+/*
+ * Medien-Seite der „OG Version“ nach MediaHubView.swift: großer Titel, Filter-
+ * Pillen mit Symbol, Anzahl und Kategoriefarbe, Raster mit 14-pt-Kacheln nach
+ * Monaten. Die Aufnahmezeile unten steht in styles/og-media-bar.css.
+ * Pfad: styles/og-media.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-og-media.css, Farben in tokens-og.css)
+ * -----------------------------------
+ * --og-pill-height, --og-pill-side, --og-pill-fill, --og-pill-line,
+ * --og-pill-on-fill, --og-pill-on-line -> Filter-Pillen
+ * --og-media-gap, --og-media-radius, --og-media-line -> Fugen, Rundung und Rand der Kacheln
+ * --og-media-month-size    -> Schrift der Monatsüberschrift
+ * --og-media-name-size     -> Schrift des Namens auf Audio- und Dokumentkacheln
+ * --og-media-icon-size     -> Größe des Symbols dort
+ * --og-media-tint-top / -bottom -> Farbverlauf dieser Kacheln
+ * --og-title-size          -> Titelgröße (tokens-og.css)
+ * --title-side             -> Seitenrand von Titel, Pillen, Monaten und Raster (styles/tokens.css)
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel: Pillentext
+ * 15 px, Anzahl 11 px, Pillensymbol 12 px (subheadline, caption2, caption).
+ */
+
+/* Titel wie MainPageHeader: groß, fett, links; „Ressourcen“ gibt es im Original nicht */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-media .screen-title {
+  font-size: var(--og-title-size);
+  font-weight: 700;
+  letter-spacing: 0.37px;
+  color: var(--text);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-media .title-switch {
+  display: none;
+}
+
+/* Filterband: ein durchscrollbares Band ohne die Kapsel der iOS-Fassung, rechts am Rand endend */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-filters {
+  gap: var(--og-space-sm);
+  width: auto;
+  padding: 0 var(--title-side);
+  border-radius: 0;
+  background: none;
+  margin-bottom: var(--og-space-md);
+}
+
+/* Die Trennstriche zwischen den Segmenten der iOS-Fassung entfallen: jede Pille hat ihren eigenen Rand */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-filter::before,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-filter::after {
+  display: none;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-filter {
+  --og-pill-color: var(--og-resource);
+  height: var(--og-pill-height);
+  padding: 0 var(--og-pill-side);
+  gap: 6px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--muted);
+  background: var(--og-pill-fill);
+  border: 0.75px solid var(--og-pill-line);
+}
+
+/* Kategoriefarbe je Sorte: Bild grün, Video rot, Audio orange, Dokument blau */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-filter[data-media-filter="video"] { --og-pill-color: var(--og-project); }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-filter[data-media-filter="audio"] { --og-pill-color: var(--og-area); }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-filter[data-media-filter="doc"] { --og-pill-color: var(--og-task); }
+
+/* Gewählt: Kategoriefarbe trägt Fläche und Rand, der Name wird kräftig */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-filter.is-active {
+  color: var(--text);
+  background: color-mix(in srgb, var(--og-pill-color) var(--og-pill-on-fill), transparent);
+  border-color: color-mix(in srgb, var(--og-pill-color) var(--og-pill-on-line), transparent);
+  box-shadow: none; /* box-shadow: der Schatten des gewählten Segments der iOS-Fassung entfällt */
+}
+
+/* Das Symbol trägt allein die Farbe, solange die Pille gewählt ist */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-filter .tab-pill-icon {
+  width: 12px;
+  height: 12px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-filter.is-active .tab-pill-icon {
+  color: var(--og-pill-color);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-filter .media-count {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted);
+  font-variant-numeric: tabular-nums; /* tabular-nums: gleich breite Ziffern, damit die Pille beim Zählen nicht wackelt */
+}
+
+/* Monatsüberschrift: subheadline, halbfett, gedämpft */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-month {
+  font-size: var(--og-media-month-size);
+  font-weight: 600;
+  letter-spacing: 0;
+  color: var(--muted);
+  margin: 0 0 var(--og-space-sm);
+  padding: 0 var(--title-side);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-grid + .media-month {
+  margin-top: var(--og-space-lg);
+}
+
+/* Raster: drei Spalten, Seitenrand wie der Titel, 6 pt Fuge */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-grid {
+  gap: var(--og-media-gap);
+  padding: 0 var(--title-side);
+}
+
+/* Kachel: abgerundet, feiner Rand in Textfarbe, Bild beschnitten */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-cell {
+  --og-cell-color: var(--og-task);
+  border-radius: var(--og-media-radius);
+  box-shadow: inset 0 0 0 0.75px var(--og-media-line); /* box-shadow: Rand liegt über dem Bild, border würde die Kachel verkleinern */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-cell[data-kind="image"] { --og-cell-color: var(--og-resource); }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-cell[data-kind="video"] { --og-cell-color: var(--og-project); }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-cell[data-kind="audio"] { --og-cell-color: var(--og-area); }
+
+/* Audio und Dokument: Farbverlauf in der Kategoriefarbe, Symbol und Name darauf */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-cell:has(.media-doc) {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--og-cell-color) var(--og-media-tint-top), transparent),
+    color-mix(in srgb, var(--og-cell-color) var(--og-media-tint-bottom), transparent)
+  );
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-doc {
+  gap: var(--og-space-sm);
+  padding: var(--og-space-sm);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-doc-icon {
+  width: var(--og-media-icon-size);
+  height: var(--og-media-icon-size);
+  color: var(--og-cell-color);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-doc-name {
+  font-size: var(--og-media-name-size);
+  font-weight: 500;
+  color: var(--text);
+}
+
+/* Bild und Video: Farbton der Kategorie, solange die Vorschau lädt */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-cell:not(:has(.media-doc)) {
+  background: color-mix(in srgb, var(--og-cell-color) 12%, transparent);
+}
+
+/* Video: heller Kreis mit farbigem Dreieck unten links statt Dauer-Schild */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-cell[data-kind="video"] .media-badge {
+  left: var(--og-space-xs);
+  right: auto;
+  bottom: var(--og-space-xs);
+  min-width: 22px;
+  height: 22px;
+  justify-content: center;
+  padding: 0 5px;
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--og-project);
+  font-size: 10px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-cell[data-kind="video"] .media-badge .icon {
+  width: 10px;
+  height: 10px;
+}

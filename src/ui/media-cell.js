@@ -4,7 +4,8 @@
  * Pfad: src/ui/media-cell.js
  *
  * Keine anpassbaren visuellen Werte: Größe, Fugen und Farben stehen in
- * styles/media.css (Klassen .media-cell, .media-grid, .media-badge).
+ * styles/media.css (Klassen .media-cell, .media-grid, .media-badge). Das Merkmal
+ * data-kind (image, video, audio, doc) nutzt die „OG Version“ für die Farbe der Kachel.
  */
 
 import { formatClock } from "../core/format.js";
@@ -47,7 +48,7 @@ export function mediaCell(entry, showName = true) {
     inner += `<span class="media-badge">${formatClock(media.duration)}</span>`;
   }
 
-  return `<button class="media-cell" type="button" data-open-entry="${entry.id}" aria-label="${title}">${inner}</button>`;
+  return `<button class="media-cell" type="button" data-kind="${kind}" data-open-entry="${entry.id}" aria-label="${title}">${inner}</button>`;
 }
 
 /** Kachel eines noch nicht angelegten Anhangs im Eingabefeld. */
