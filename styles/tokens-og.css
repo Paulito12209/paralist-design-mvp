@@ -35,7 +35,7 @@
  * --og-title-size  -> Größe des Seitentitels „Übersicht“ (34 pt wie largeTitle)
  * --og-tab-height  -> Höhe der schwebenden Reiterkapsel (62 pt, Tokens.Layout)
  * --og-tab-icon    -> Größe der Reitersymbole in der Kapsel
- * --og-add-size    -> Durchmesser des runden Plusknopfes neben der Kapsel (44 pt)
+ * Zubehör, Lupe und Listen-Karten: styles/tokens-og-leiste.css
  */
 
 :root[data-mobile-os="ios"][data-mobile-variant="og"] {
@@ -71,7 +71,6 @@
   --og-title-size: 34px;
   --og-tab-height: 62px;
   --og-tab-icon: 24px;
-  --og-add-size: 44px;
 }
 
 /* Dunkel: die helleren Systemfarben und die dunkle Fläche */

@@ -23,6 +23,8 @@ const menuGap = 10;
 
 let button = null;
 let menu = null;
+/* Wer das Menü gerade als Typwahl benutzt (OG Version): bekommt die Art statt des Anlegens */
+let pickHandler = null;
 
 function buildButton() {
   const add = document.createElement("button");
@@ -62,9 +64,9 @@ function onKey(event) {
   if (event.key === "Escape") closeIosMenu();
 }
 
-function openMenu() {
-  /* Einmal beim Öffnen gemessen: die Karte beginnt knapp über dem Knopf */
-  const addBox = button.getBoundingClientRect();
+function openMenu(anchor = button) {
+  /* Einmal beim Öffnen gemessen: die Karte beginnt knapp über dem Anker */
+  const addBox = anchor.getBoundingClientRect();
   const deviceBox = dom.device.getBoundingClientRect();
   menu.style.setProperty("--ios-menu-bottom", `${Math.round(deviceBox.bottom - addBox.top + menuGap)}px`);
   menu.hidden = false;
@@ -78,17 +80,34 @@ function openMenu() {
 export function closeIosMenu() {
   if (!isMenuOpen()) return;
   menu.hidden = true;
-  menu.classList.remove("is-open");
+  menu.classList.remove("is-open", "is-left");
+  pickHandler = null;
   button.setAttribute("aria-expanded", "false");
   document.removeEventListener("keydown", onKey);
 }
 
 function onMenuClick(event) {
   const row = event.target.closest("[data-ios-create]");
+  const pick = pickHandler;
   closeIosMenu();
   if (!row) return;
+  if (pick) {
+    pick(row.dataset.iosCreate);
+    return;
+  }
   expandTabBar();
   createFromMenu(row.dataset.iosCreate);
+}
+
+/**
+ * Dasselbe Menü als Typwahl öffnen (OG Version, Kategorie-Pille im Zubehör):
+ * es geht links über `anchor` auf, ein Eintrag ruft `onPick(art)` statt etwas anzulegen.
+ */
+export function openTypePicker(anchor, onPick) {
+  if (isMenuOpen()) closeIosMenu();
+  pickHandler = onPick;
+  menu.classList.add("is-left");
+  openMenu(anchor);
 }
 
 /** Knopf und Menü einhängen und anmelden. */

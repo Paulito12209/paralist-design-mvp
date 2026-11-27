@@ -47,3 +47,33 @@
   font-weight: 600;
   color: var(--text);
 }
+
+/*
+ * Kopfzeile wie MainPageHeader: Titel links, Stufenabzeichen und Profilbild
+ * (44 pt) rechts auf einer Zeile. Die Lupe oben entfällt, sie steht jetzt
+ * neben der Reiterkapsel (styles/og-accessory.css). Der kleine Titel, der beim
+ * Scrollen in die Mitte rückt, gibt es hier nicht: der Titel steht in der Zeile.
+ * Die Zeile selbst liegt 10 px unter dem sicheren Rand (padding-top der Seite).
+ */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .ios-search-btn,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .ios-inline-title {
+  display: none;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .top-bar .level-btn {
+  order: 1; /* order: das Abzeichen steht rechts vor dem Profilbild */
+  margin-left: auto;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .top-bar .avatar {
+  order: 2;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] body:not(.is-subpage) .content:has(#view-home.is-active) {
+  padding-top: calc(var(--safe-top) + 10px);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .screen-title {
+  margin: 0;
+  line-height: 44px;
+}
