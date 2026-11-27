@@ -1,0 +1,212 @@
+/*
+ * Karteikarten in der „OG Version“ nach DeckListView.swift: der Reiter „Karteikarten“
+ * ersetzt in der Leiste „Aufgaben“, die Seite zeigt großen Titel und jeden Stapel
+ * als braune Glaskarte (Symbol oben links, Name, Anzahl, neue und offene Karten).
+ * Pfad: styles/og-cards.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-og-media.css, Farben in tokens-og.css)
+ * -----------------------------------
+ * --og-deck-height     -> Mindesthöhe einer Stapelkarte
+ * --og-deck-title-size -> Schrift des Stapelnamens
+ * --og-deck-meta-size  -> Schrift der Zeile mit Kartenanzahl
+ * --og-deck            -> Braun der Stapel (tokens-og.css)
+ * --og-deck-tint       -> Anteil Braun im Verlauf der Karte
+ * --og-radius-card     -> Rundung der Karten (tokens-og.css)
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel: Überschrift des
+ * Leerzustands 20 px, Text 15 px, Knopfschrift 17 px (title3, subheadline, body).
+ */
+
+/* Der Reiter „Karteikarten“ existiert in allen Fassungen im Markup, ist aber nur
+   in der OG Version sichtbar (unten); Aufgaben fehlt dort im Gegenzug. */
+.tab-btn.tab-cards {
+  display: none; /* display: none: nur die „OG Version“ zeigt diesen Reiter */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .tab-btn.tab-cards {
+  display: flex;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .tab-btn[data-tab="tasks"] {
+  display: none; /* display: none: „Karteikarten“ steht an der Stelle von „Aufgaben“ */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-cards .screen-title {
+  font-size: var(--og-title-size);
+  font-weight: 700;
+  letter-spacing: 0.37px;
+  color: var(--text);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .cards-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-md);
+  padding: var(--og-space-xs) var(--og-space-md) var(--og-space-md);
+}
+
+/* Stapelkarte: Braun im Verlauf über der Glasfläche, feiner Rand */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-deck {
+  position: relative; /* position: der Löschknopf sitzt oben rechts in der Karte */
+  min-height: var(--og-deck-height);
+  border-radius: var(--og-radius-card);
+  border: 0.75px solid var(--og-card-border);
+  background:
+    linear-gradient(135deg, color-mix(in srgb, var(--og-deck) var(--og-deck-tint), transparent), transparent 70%),
+    linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+  color: var(--text);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-deck-open {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--og-space-sm);
+  width: 100%;
+  min-height: var(--og-deck-height);
+  padding: var(--og-space-md);
+  text-align: left;
+  color: inherit;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-deck-icon {
+  width: 28px;
+  height: 28px;
+  color: var(--og-deck);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-deck-title {
+  margin-top: auto; /* margin-top: auto schiebt Name und Zahlen an den unteren Rand, das Symbol bleibt oben */
+  font-size: var(--og-deck-title-size);
+  font-weight: 500;
+  display: -webkit-box; /* -webkit-box + line-clamp: lange Namen enden nach zwei Zeilen mit „…“ */
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-deck-meta {
+  display: flex;
+  gap: var(--og-space-md);
+  font-size: var(--og-deck-meta-size);
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-deck-flag {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-deck-flag .icon {
+  width: 12px;
+  height: 12px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-deck-delete {
+  position: absolute;
+  top: var(--og-space-sm);
+  right: var(--og-space-sm);
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  color: var(--muted);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-deck-delete .icon {
+  width: 18px;
+  height: 18px;
+}
+
+/* Leerzustand wie ContentUnavailableView */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cards-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--og-space-sm);
+  padding: var(--og-space-xl) var(--og-space-md) var(--og-space-md);
+  text-align: center;
+  color: var(--muted);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cards-empty-icon {
+  width: 44px;
+  height: 44px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cards-empty h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cards-empty p {
+  margin: 0;
+  font-size: 15px;
+}
+
+/* Glasknöpfe und Formular */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cards-add {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--og-space-sm);
+  height: var(--og-capture-size);
+  padding: 0 var(--og-space-md);
+  border-radius: 999px;
+  border: 0.75px solid var(--og-card-border);
+  background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+  color: var(--text);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cards-add .icon {
+  width: 18px;
+  height: 18px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cards-add.is-primary {
+  background: var(--og-tint);
+  border-color: transparent;
+  color: var(--og-canvas);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cards-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--og-space-sm);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cards-input,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cards-text {
+  width: 100%;
+  padding: var(--og-space-sm) var(--og-space-md);
+  border-radius: var(--og-radius-medium);
+  border: 0.75px solid var(--og-card-border);
+  background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+  color: var(--text);
+  font-size: 16px; /* 16 px: kleiner zoomt Safari beim Fokussieren in das Feld hinein */
+  font-family: inherit;
+  box-sizing: border-box;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cards-text {
+  resize: none; /* resize: die Fläche passt sich dem Gerät an, der Ziehgriff stört auf dem Handy */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cards-error {
+  margin: 0;
+  font-size: 13px;
+  color: var(--og-project);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cards-form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--og-space-sm);
+}

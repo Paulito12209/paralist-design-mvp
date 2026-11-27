@@ -1,0 +1,62 @@
+/*
+ * Aufnahmezeile der Medien-Seite in der „OG Version“ (captureRow in
+ * MediaHubView.swift): vier runde Glasknöpfe über der Leiste. Der Import
+ * sitzt auf der Mittelsenkrechten des Bildschirms, rechts davon folgen
+ * Aufnahme, Video und Foto — dafür steht links ein unsichtbares Gegengewicht
+ * aus drei Knopfbreiten und zwei Abständen.
+ * Pfad: styles/og-media-bar.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-og-media.css, Glas in tokens-og.css)
+ * -----------------------------------
+ * --og-capture-size  -> Durchmesser der Knöpfe
+ * --og-capture-gap   -> Abstand zwischen den Knöpfen
+ * --og-capture-icon  -> Größe der Symbole
+ * --og-card-top / --og-card-bottom / --og-card-border -> Glasfläche der Knöpfe
+ */
+
+/* Reihe: mittig, ohne die Dreispalten-Aufteilung der Grundfassung */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-media:not(.is-search) .media-actions:not([hidden]) {
+  display: flex;
+  justify-content: center;
+  gap: var(--og-capture-gap);
+  margin-bottom: var(--og-space-sm);
+}
+
+/* Gegengewicht links: so breit wie alles rechts vom Import */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-actions::before {
+  content: ""; /* content: ein leeres Pseudoelement ist die einzige Möglichkeit, ohne zusätzliches Markup Platz zu halten */
+  order: 0;
+  width: calc(3 * var(--og-capture-size) + 2 * var(--og-capture-gap));
+  height: 1px;
+}
+
+/* Das Gehäuse um Video und Foto fällt weg; seine Knöpfe reihen sich selbst ein */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-combo {
+  display: contents; /* display: contents: das Gehäuse erzeugt keine eigene Box mehr, Video und Foto stehen direkt in der Reihe */
+}
+
+/* Reihenfolge wie in der Vorlage: Import, Aufnahme, Video, Foto */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-side:first-child { order: 1; }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-side:last-child { order: 2; }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-combo-btn:not(.is-active) { order: 3; }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-combo-btn.is-active { order: 4; }
+
+/* Jeder Knopf trägt Glas: unter der Reihe laufen Fotos durch */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] :is(.media-side, .media-combo-btn, .media-combo-btn.is-active) {
+  display: grid;
+  place-items: center;
+  width: var(--og-capture-size);
+  height: var(--og-capture-size);
+  aspect-ratio: 1;
+  padding: 0;
+  border-radius: 999px;
+  color: var(--text);
+  background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+  border: 0.75px solid var(--og-card-border);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); /* box-shadow: der Knopf schwebt über dem Raster */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-actions .icon {
+  width: var(--og-capture-icon);
+  height: var(--og-capture-icon);
+}

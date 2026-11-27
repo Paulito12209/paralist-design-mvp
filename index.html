@@ -73,7 +73,7 @@
     <!-- iOS-Fassung: ebenso nach den Seiten -->
     <link rel="stylesheet" href="styles/tokens-ios.css" /><link rel="stylesheet" href="styles/ios.css" /><link rel="stylesheet" href="styles/ios-segmented.css" /><link rel="stylesheet" href="styles/ios-menu.css" />
     <!-- OG Version (Nachbau der App Organi7er): auf der iOS-Fassung aufgebaut, deshalb danach -->
-    <link rel="stylesheet" href="styles/tokens-og.css" /><link rel="stylesheet" href="styles/og.css" /><link rel="stylesheet" href="styles/og-home.css" /><link rel="stylesheet" href="styles/og-nav.css" />
+    <link rel="stylesheet" href="styles/tokens-og.css" /><link rel="stylesheet" href="styles/og.css" /><link rel="stylesheet" href="styles/og-home.css" /><link rel="stylesheet" href="styles/og-nav.css" /><link rel="stylesheet" href="styles/tokens-og-media.css" /><link rel="stylesheet" href="styles/og-media.css" /><link rel="stylesheet" href="styles/og-media-bar.css" /><link rel="stylesheet" href="styles/og-cards.css" /><link rel="stylesheet" href="styles/og-study.css" />
     <!-- Desktop-Fassung ab 1024px (Reiterzeile, Seitenleiste, rechte Spalte, Kopf der Übersicht): zuletzt, damit sie das Handy-Layout überschreibt -->
     <link rel="stylesheet" href="styles/tokens-desk.css" /><link rel="stylesheet" href="styles/desk.css" /><link rel="stylesheet" href="styles/desk-overlays.css" /><link rel="stylesheet" href="styles/desk-views.css" /><link rel="stylesheet" href="styles/desk-hover.css" /><link rel="stylesheet" href="styles/desk-head.css" /><link rel="stylesheet" href="styles/desk-nav.css" /><link rel="stylesheet" href="styles/desk-nav-foot.css" /><link rel="stylesheet" href="styles/desk-nav-pages.css" /><link rel="stylesheet" href="styles/desk-nav-list.css" /><link rel="stylesheet" href="styles/desk-composer.css" /><link rel="stylesheet" href="styles/desk-help.css" /><link rel="stylesheet" href="styles/desk-kbd.css" /><link rel="stylesheet" href="styles/desk-settings.css" /><link rel="stylesheet" href="styles/shortcuts.css" /><link rel="stylesheet" href="styles/search-palette.css" /><link rel="stylesheet" href="styles/desk-rail.css" /><link rel="stylesheet" href="styles/desk-rail-tiles.css" /><link rel="stylesheet" href="styles/desk-rail-views.css" /><link rel="stylesheet" href="styles/desk-side.css" /><link rel="stylesheet" href="styles/desk-side-views.css" /><link rel="stylesheet" href="styles/desk-side-doc.css" /><link rel="stylesheet" href="styles/dashboard.css" /><link rel="stylesheet" href="styles/dashboard-motion.css" /><link rel="stylesheet" href="styles/dashboard-stage.css" /><link rel="stylesheet" href="styles/dashboard-shelf.css" /><link rel="stylesheet" href="styles/desk-progress.css" />
   </head>
@@ -221,6 +221,7 @@
             <div class="tab-pills media-filters" id="media-filters"></div>
             <div class="media-body" id="media-body"></div>
           </section>
+          <!-- Karteikarten: nur in der „OG Version“ erreichbar; Stapelliste und Lernansicht aus src/features/cards/ --><section class="view" id="view-cards" data-view="cards" hidden><h1 class="screen-title">Karteikarten</h1><div class="cards-body" id="cards-body"></div></section>
         </main>
 
         <footer class="bottom-bar">
@@ -257,7 +258,7 @@
             </button>
             <button class="tab-btn" type="button" data-tab="media">
               <span class="tab-circle"><svg class="icon"><use href="#icon-photos"></use></svg><span class="tab-label">Medien</span></span>
-            </button>
+            </button><!-- Karteikarten: nur in der „OG Version“ zu sehen, ersetzt dort „Aufgaben“ --><button class="tab-btn tab-cards" type="button" data-tab="cards"><span class="tab-circle"><svg class="icon"><use href="#icon-cards"></use></svg><span class="tab-label">Karteikarten</span></span></button>
             <!-- Menü: nur in „Android (Xool-DB)“ zu sehen, ersetzt dort „Medien“; öffnet ein Blatt statt einer Seite -->
             <button class="tab-btn tab-menu" type="button" id="tab-menu" aria-haspopup="dialog">
               <span class="tab-circle"><svg class="icon"><use href="#icon-menu"></use></svg><span class="tab-label">Menü</span></span>

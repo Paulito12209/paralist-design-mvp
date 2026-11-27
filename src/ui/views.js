@@ -1,5 +1,5 @@
 /*
- * Welche der sieben Ansichten sichtbar ist. Alle Ansichten stehen fest in
+ * Welche der acht Ansichten sichtbar ist. Alle Ansichten stehen fest in
  * index.html; hier wird nur umgeschaltet und gemeldet, dass sich etwas
  * ändert — die Bereiche zeichnen sich dann selbst.
  * Pfad: src/ui/views.js
@@ -15,7 +15,7 @@ import { ui } from "../data/state.js";
 import { isDesk } from "./desk-mode.js";
 
 /** Die Namen der Ansichten und ihre Abschnitte in index.html. */
-export const viewNames = ["home", "page", "entry", "search", "calendar", "tasks", "media"];
+export const viewNames = ["home", "page", "entry", "search", "calendar", "tasks", "media", "cards"];
 
 let activeView = "home";
 /* Die Seite unter der Suche: von dort wurde sie geöffnet, sie bleibt darunter stehen. */

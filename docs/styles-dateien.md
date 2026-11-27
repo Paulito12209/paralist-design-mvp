@@ -93,6 +93,11 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/og.css` | die Regeln der „OG Version“; baut auf der iOS-Fassung auf und steht deshalb nach `ios*.css` |
 | `styles/og-home.css` | „OG Version“: Übersicht mit großem Titel, Kacheln als Glaskarten in Systemfarbe, Abschnittsüberschriften |
 | `styles/og-nav.css` | „OG Version“: Reiterkapsel als schwebende Glaskarte mit Symbol und Name |
+| `styles/tokens-og-media.css` | die Werte der Reiter Medien und Karteikarten der „OG Version“: Filter-Pillen, Kacheln, Aufnahmeknöpfe, Stapelkarten, Lernansicht |
+| `styles/og-media.css` | „OG Version“: Medien-Seite mit großem Titel, Filter-Pillen in Kategoriefarbe und Raster mit 14-pt-Kacheln |
+| `styles/og-media-bar.css` | „OG Version“: Aufnahmezeile der Medien-Seite als vier runde Glasknöpfe |
+| `styles/og-cards.css` | „OG Version“: Reiter Karteikarten — Stapel als braune Glaskarten, Leerzustand, Import-Formular, Reiter statt „Aufgaben“ in der Leiste |
+| `styles/og-study.css` | „OG Version“: Lernansicht der Karteikarten — Fortschritt, umdrehbare Glaskarte, Knöpfe Vergessen und Gewusst, Zusammenfassung |
 | `styles/tokens-desk.css` | die Werte der Desktop-Fassung (Spalten, Flächen, große Zahlen) |
 | `styles/desk.css` | Desktop: Raster aus Seitenleiste, Reiterzeile, Seite und rechter Spalte; Zuklappen, Suchfeld, Eingabefeld unten |
 | `styles/desk-head.css` | Desktop: Wortmarke mit Stufen-Anzeige und Klapp-Knopf; Kopfzeile mit Zurück, Vorwärts, Pfad samt Knöpfen der Seite und Knopf fürs Seitenfenster |

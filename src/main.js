@@ -77,6 +77,8 @@ const lazyModules = {
   calendar: () => import("./features/calendar/calendar.js"),
   tasks: () => import("./features/tasks/tasks.js"),
   media: () => import("./features/media/media.js"),
+  /* Karteikarten: Reiter nur in der „OG Version“ */
+  cards: () => import("./features/cards/cards.js"),
   viewer: () => import("./features/media/viewer.js"),
   recorder: () => import("./features/media/recorder.js"),
   search: () => import("./features/search/search.js"),
@@ -111,7 +113,7 @@ const railCards = {
 };
 
 /* Von den nachladbaren Bereichen sind das die, die eine eigene Ansicht haben. */
-const lazyViews = ["calendar", "tasks", "media", "search"];
+const lazyViews = ["calendar", "tasks", "media", "cards", "search"];
 
 /* Reihenfolge des Vorladens: was man am ehesten als Nächstes braucht, zuerst. */
 const prefetchOrder = ["search", "tasks", "calendar", "media", "viewer", "progress", "profile", "resources", "bookmarks", "files", "drawing", "video"];
