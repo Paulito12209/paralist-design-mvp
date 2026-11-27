@@ -24,12 +24,16 @@ import { calendarSegments } from "../../data/config-calendar.js";
 import { entriesOfDay, entryTime } from "../../data/queries.js";
 import { state, ui } from "../../data/state.js";
 import { entryRow } from "../../ui/rows.js";
+import { longDate } from "../../core/format.js";
+import { isOg } from "./calendar-og.js";
 import { cal } from "./calendar-state.js";
 
 /** Ordnet der Spalte den Eintragstyp zu, den sie zeigt. */
 const segTypes = { aufgaben: "aufgabe", termine: "termin", projekte: "projekt" };
 
 const viewLabel = "Ansicht";
+/* „OG Version“: leerer Tag wie ContentUnavailableView der Vorlage — Titel plus ausgeschriebenes Datum */
+const ogEmptyTitle = "Nichts geplant";
 
 /* Dasselbe Regler-Symbol wie in der Werkzeugzeile über den Listen (src/ui/list-head.js) */
 const viewButton = `<button class="view-panel-btn cal-seg-view" type="button" data-view-panel-open aria-label="${viewLabel}" title="${viewLabel}">${icon("tune")}</button>`;
@@ -68,13 +72,22 @@ export function renderList() {
     )
     .join("");
 
+  const ogEmpty = `
+      <div class="cal-empty">
+        ${icon(seg.icon)}
+        <b>${ogEmptyTitle}</b>
+        <p>${longDate(ui.calendarDay)}</p>
+      </div>`;
+
   const body = list.length
     ? `<div class="workspace-list">${list
         .map((entry) =>
           entryRow(entry, entryTime(entry) ? `<span class="cal-time">${entryTime(entry)}</span>` : "")
         )
         .join("")}</div>`
-    : `
+    : isOg()
+      ? ogEmpty
+      : `
       <div class="cal-empty">
         ${icon(seg.icon)}
         <b>${seg.empty}</b>

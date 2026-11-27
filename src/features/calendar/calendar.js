@@ -35,6 +35,7 @@ import {
 } from "./calendar-grid.js";
 import { initCalendarInline } from "./calendar-inline.js";
 import { renderList } from "./calendar-list.js";
+import { isOg, markOgSegment, ogCustomizeMarkup, renderOgActions } from "./calendar-og.js";
 import {
   goToDay,
   goToday,
@@ -68,7 +69,9 @@ let shownDay = null;
 function panelMarkup(wide, grid) {
   if (wide === "week") return renderWeek();
   if (wide === "month") return renderMonth();
-  return grid ? renderGrid() : renderList();
+  const body = grid ? renderGrid() : renderList();
+  /* „OG Version“: „Kalender anpassen“ am Ende der Fläche */
+  return isOg() ? body + ogCustomizeMarkup() : body;
 }
 
 /**
@@ -82,6 +85,11 @@ export function renderCalendar(jumpToNow = false) {
   const keepScroll = dom.calPanel.scrollTop;
   renderStrip();
   renderCalendarSettings();
+  /* „OG Version“: die drei Knöpfe unter dem Streifen und die Farbe der Spalte */
+  if (isOg()) {
+    renderOgActions();
+    markOgSegment();
+  }
   renderToolbar();
   const wide = deskView();
   /* Die Woche ist ein Stundenraster wie der Tag; der Monat rollt mit der Seite. */

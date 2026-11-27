@@ -1,0 +1,300 @@
+/*
+ * Kalender der „OG Version“, oberer Teil (CalendarView.swift,
+ * CalendarSpanPicker.swift, CalendarGrid.swift): großer Titel, Monatsknopf,
+ * Wochenraster mit KW-Spalte, die drei Knöpfe darunter, die Reiter und die
+ * abgerundete Fläche, auf der Liste oder Stundenraster stehen. Die ganze Seite
+ * rollt mit — nichts rastet mehr unter der Suchleiste ein.
+ * Greift nur mit data-mobile-os="ios", data-mobile-variant="og" und unter 1024px.
+ * Pfad: styles/og-calendar.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-og-calendar.css und styles/tokens-og.css)
+ * -----------------------------------
+ * --og-title-size        -> Größe von „Kalender“ (34 pt, wie auf der Übersicht)
+ * --og-cal-day, --og-cal-ring -> Tageszelle 38 und Ring 32
+ * --og-cal-week-col      -> Breite der Spalte „KW“
+ * --og-cal-head-h        -> Höhe von Monatsknopf und Knopfzeile
+ * --og-cal-gap           -> Luft zwischen Wochentagen, Raster und Knopfzeile
+ * --og-cal-button-fill / -stroke -> die drei Knöpfe
+ * --og-cal-tab-h, --og-cal-tab-active, --og-cal-tab-count -> Höhe, Pille und Zahl der drei Reiter
+ * --og-cal-surface       -> Fläche unter dem Picker; --og-radius-sheet ihre Rundung
+ * --og-event, --og-task  -> Verlauf der gewählten Tageszahl
+ *
+ * Direkt in dieser Datei: Schriftgrößen (Monat 17, Wochentage und KW 11,
+ * Zahl 16, Knöpfe 15, Reiter 15 px) und die 7 Sekunden des Farbverlaufs.
+ * Stundenraster, Blöcke und „Kalender anpassen“: styles/og-calendar-grid.css.
+ */
+
+/* Nur für die OG Version angelegt (src/features/calendar/calendar-og.js und
+   calendar-strip.js): in allen anderen Fassungen und am Desktop unsichtbar */
+.cal-wk-num,
+.og-cal-actions {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  /* ---------- Titel ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-calendar .screen-title {
+    font-size: var(--og-title-size);
+    font-weight: 700;
+    letter-spacing: 0.37px;
+    color: var(--text);
+    margin-bottom: var(--og-space-md);
+    padding-inline: 0; /* bündig mit Monatsknopf und Raster */
+  }
+
+  /* ---------- Kopf: scrollt mit, ohne Fläche und Linie ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-calendar .cal-head {
+    position: static;
+    margin: 0;
+    padding: 0;
+    background: none;
+    border-bottom: 0;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-date-row {
+    height: var(--og-cal-head-h);
+    margin: 0;
+    padding: 0;
+    justify-content: flex-start;
+  }
+
+  /* „November 2026 ›“ in Body-Schrift, Textfarbe */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-month {
+    height: var(--og-cal-head-h);
+    gap: var(--og-space-xs);
+    font-size: 17px;
+    font-weight: 600;
+    letter-spacing: 0;
+    color: var(--text);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-month .icon {
+    width: 12px;
+    height: 12px;
+    color: var(--text);
+  }
+
+  /* Die KW steht jetzt als Spalte vor den Wochen; „Heute“ und „Ansicht“ in der Knopfzeile darunter */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-date-row .cal-kw,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-date-row .view-panel-btn,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-date-row .cal-today-chip {
+    display: none;
+  }
+
+  /* ---------- Wochenraster ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-strip {
+    padding-bottom: var(--og-cal-gap);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-week-head,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-week {
+    grid-template-columns: var(--og-cal-week-col) repeat(7, minmax(0, 1fr));
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-week-head {
+    height: var(--og-cal-weekday-h);
+    font-size: 11px;
+    letter-spacing: 0;
+  }
+
+  /* „KW“ vor MO — ein Pseudo-Element, damit das Markup in index.html gleich bleibt */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-week-head::before {
+    content: "KW";
+    opacity: 0.6;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-weeks {
+    margin-top: var(--og-cal-gap);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-wk-num {
+    display: block;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+    opacity: 0.6;
+  }
+
+  /* Vor- und Nachwoche schimmern nur noch ganz schwach durch (Maske der Vorlage: 4–7 %) */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-week.is-peek {
+    opacity: 0.06;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-day {
+    height: var(--cal-row-h);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-day-num {
+    width: var(--og-cal-day);
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-day.is-today .cal-day-num {
+    font-weight: 600;
+  }
+
+  /* Der Ring ist 32 pt groß und sitzt mittig in der 38-pt-Zelle */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-ring {
+    inset: auto;
+    left: 50%;
+    top: 50%;
+    width: var(--og-cal-ring);
+    height: var(--og-cal-ring);
+    transform: translate(-50%, -50%);
+  }
+
+  /* Tage der Nachbarmonate bleiben im fortlaufenden Raster der Vorlage unverblasst */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-day.is-other .cal-day-num {
+    color: var(--text);
+    opacity: 1;
+  }
+
+  /* Gewählt: keine Füllung, die Ziffer läuft in einem Verlauf von Termin- nach Aufgabenfarbe
+     (CalendarSelectedNumber); 7 Sekunden je Durchlauf, nahtlos, weil das Muster sich wiederholt */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-day.is-selected .cal-day-num {
+    font-weight: 600;
+    color: transparent;
+    background: linear-gradient(90deg, var(--og-event), var(--og-task), var(--og-event), var(--og-task), var(--og-event)) 0 0 / 200% 100%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    animation: og-cal-flow 7s linear infinite;
+  }
+
+  @keyframes og-cal-flow {
+    to {
+      background-position: 100% 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-day.is-selected .cal-day-num {
+      animation: none;
+    }
+  }
+
+  /* ---------- Die drei Knöpfe: Umschalter, Heute, Zeitspanne ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cal-actions {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    height: var(--og-cal-head-h);
+    margin-bottom: var(--og-cal-gap);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cal-circle,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cal-pill {
+    height: var(--og-cal-head-h);
+    background: var(--og-cal-button-fill);
+    border: 0.5px solid var(--og-cal-button-stroke);
+    color: var(--text);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cal-circle {
+    justify-self: start;
+    width: var(--og-cal-head-h);
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cal-circle .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cal-pill {
+    padding: 0 var(--og-space-md);
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cal-span {
+    justify-self: end;
+  }
+
+  /* „Heute“ wird nur blau, solange der heutige Tag gewählt ist — die Fläche bleibt */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cal-today.is-on {
+    color: var(--og-task);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-calendar[data-og-seg="termine"] .og-cal-today.is-on {
+    color: var(--og-event);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-calendar[data-og-seg="projekte"] .og-cal-today.is-on {
+    color: var(--og-project);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cal-circle:active,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cal-pill:active {
+    opacity: 0.55;
+  }
+
+  /* ---------- Fläche unter dem Picker ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-calendar .cal-panel {
+    margin: 0 calc(-1 * var(--content-side)) calc(-1 * var(--tab-space));
+    padding: var(--og-space-md) var(--og-space-md) calc(var(--tab-space) + var(--og-cal-foot));
+    background: var(--og-cal-surface);
+    border-radius: var(--og-radius-sheet) var(--og-radius-sheet) 0 0;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-calendar #view-calendar .cal-panel {
+    padding-bottom: calc(var(--tab-space) + var(--og-cal-foot));
+  }
+
+  /* Das Blatt „Ansicht“ schaut nicht mehr unten hervor: „Kalender anpassen“ holt es herauf */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-view-panel {
+    --view-panel-peek: 0px;
+    visibility: hidden;
+    transition:
+      transform var(--tasks-panel-slide) cubic-bezier(0.2, 0.8, 0.2, 1),
+      visibility 0s linear var(--tasks-panel-slide);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-view-panel.is-expanded,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-view-panel.is-dragging {
+    visibility: visible;
+    transition: transform var(--tasks-panel-slide) cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  /* ---------- Die drei Reiter (PillTabLabel) ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-seg {
+    position: static;
+    margin-bottom: var(--og-space-md);
+    background: none;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-seg-btn {
+    height: var(--og-cal-tab-h);
+    gap: 6px;
+    padding: 0 10px;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-seg-btn.is-active {
+    background: var(--og-cal-tab-active);
+    color: var(--text);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-seg-btn .card-count {
+    background: none;
+    padding: 0;
+    min-width: 0;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--og-cal-tab-count);
+  }
+
+  /* Das Regler-Symbol rechts in der Reiterzeile gibt es hier nicht: „Kalender anpassen“ übernimmt */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-seg-view {
+    display: none;
+  }
+}

@@ -93,6 +93,9 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/og.css` | die Regeln der „OG Version“; baut auf der iOS-Fassung auf und steht deshalb nach `ios*.css` |
 | `styles/og-home.css` | „OG Version“: Übersicht mit großem Titel, Kacheln als Glaskarten in Systemfarbe, Abschnittsüberschriften |
 | `styles/og-nav.css` | „OG Version“: Reiterkapsel als schwebende Glaskarte mit Symbol und Name |
+| `styles/tokens-og-calendar.css` | „OG Version“: Werte des Kalenders (Zellen, Ring, Knöpfe, Fläche, Raster) |
+| `styles/og-calendar.css` | „OG Version“: Kalender oben — Titel, Monatsknopf, Wochenraster mit KW, drei Knöpfe, Reiter, Fläche |
+| `styles/og-calendar-grid.css` | „OG Version“: Kalender unten — Stundenraster, Einträge, Ganztägig, „Kalender anpassen“ |
 | `styles/tokens-desk.css` | die Werte der Desktop-Fassung (Spalten, Flächen, große Zahlen) |
 | `styles/desk.css` | Desktop: Raster aus Seitenleiste, Reiterzeile, Seite und rechter Spalte; Zuklappen, Suchfeld, Eingabefeld unten |
 | `styles/desk-head.css` | Desktop: Wortmarke mit Stufen-Anzeige und Klapp-Knopf; Kopfzeile mit Zurück, Vorwärts, Pfad samt Knöpfen der Seite und Knopf fürs Seitenfenster |

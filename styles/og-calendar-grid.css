@@ -1,0 +1,196 @@
+/*
+ * Kalender der „OG Version“, untere Fläche (CalendarDayTimeline.swift,
+ * TabCustomizationButton.swift, ContentUnavailableView): Stundenraster in
+ * voller Länge im Inhalt der Seite, Einträge in Kategoriefarbe, Band
+ * „Ganztägig“, leerer Tag und der Knopf „Kalender anpassen“.
+ * Greift nur mit data-mobile-os="ios", data-mobile-variant="og" und unter 1024px.
+ * Pfad: styles/og-calendar-grid.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-og-calendar.css und styles/tokens-og.css)
+ * -----------------------------------
+ * --og-cal-hour-col      -> Breite der Spalte mit den Uhrzeiten (52)
+ * --og-cal-line          -> Haarlinien der Stunden
+ * --og-cal-block-mix     -> Deckkraft der Kategoriefarbe auf Block und Chip (16 %)
+ * --og-cal-block-radius  -> Rundung der Blöcke
+ * --og-cal-now-text      -> Schrift in der Jetzt-Marke
+ * --og-cal-customize-w / -fill -> Breite und Fläche von „Kalender anpassen“
+ * --og-cal-foot          -> Abstand von „Kalender anpassen“ nach oben (32); nach unten
+ *                           liegt derselbe Abstand zur Leiste (styles/og-calendar.css)
+ * --og-task, --og-event, --og-project -> Kategoriefarben (styles/tokens-og.css)
+ *
+ * Direkt in dieser Datei: Schriftgrößen (Uhrzeit 11, Titel im Block 12 fett,
+ * Chips 12, „Kalender anpassen“ 17 fett) und der Balken links im Block (3 px).
+ */
+
+@media (max-width: 1023px) {
+  /* Die Farbe einer Kategorie für Block, Chip und Jetzt-Marke */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] [data-kind="aufgabe"] { --event-color: var(--og-task); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] [data-kind="termin"] { --event-color: var(--og-event); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] [data-kind="projekt"] { --event-color: var(--og-project); }
+
+  /* Das Raster hat kein eigenes Fenster: es liegt in voller Länge in der Seite */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-calendar .cal-panel.is-grid {
+    overflow: visible;
+  }
+
+  /* ---------- Stundenraster ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-hours {
+    --cal-label-w: var(--og-cal-hour-col);
+    padding: 10px 0 0;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-hour-label {
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: var(--muted);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-hour-line {
+    height: 0.5px;
+    background: var(--og-cal-line);
+  }
+
+  /* ---------- Einträge ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-block {
+    --lane: calc(100% - var(--og-cal-hour-col));
+    left: calc(var(--og-cal-hour-col) + var(--lane) / var(--cols) * var(--col));
+    right: auto;
+    width: calc(var(--lane) / var(--cols) - var(--og-space-xs));
+    min-height: 22px;
+    padding: 3px 5px;
+    border-radius: var(--og-cal-block-radius);
+    background: color-mix(in srgb, var(--event-color) var(--og-cal-block-mix), transparent);
+    border-left: 0;
+    box-shadow: inset 3px 0 0 var(--event-color);
+    padding-left: 11px;
+    font-size: 12px;
+    line-height: 1.25;
+    overflow: hidden;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-block-title {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* Jetzt-Marke: Uhrzeit auf Kapsel in der Farbe der gewählten Spalte */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-now {
+    --cal-now: var(--og-task);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-calendar[data-og-seg="termine"] .cal-now {
+    --cal-now: var(--og-event);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-calendar[data-og-seg="projekte"] .cal-now {
+    --cal-now: var(--og-project);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-now-time span {
+    padding: 1px 5px;
+    font-size: 11px;
+    font-variant-numeric: tabular-nums;
+    color: var(--og-cal-now-text);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-now-line {
+    height: 1.5px;
+  }
+
+  /* ---------- Band „Ganztägig“ ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-allday {
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: flex-start;
+    gap: var(--og-space-sm);
+    margin: 0;
+    padding: 0 0 var(--og-space-sm);
+    border-bottom: 0.5px solid var(--og-cal-line);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-allday-label {
+    flex: 0 0 calc(var(--og-cal-hour-col) - var(--og-space-sm));
+    padding-top: 5px;
+    font-size: 11px;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-allday-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--og-space-xs);
+    flex: 1;
+    min-width: 0;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-chip {
+    gap: 5px;
+    padding: 5px var(--og-space-sm);
+    background: color-mix(in srgb, var(--event-color) var(--og-cal-block-mix), transparent);
+    color: var(--event-color);
+    font-size: 12px;
+    font-weight: 400;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-chip .icon {
+    width: 11px;
+    height: 11px;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-chip span {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  /* ---------- Leerer Tag: „Nichts geplant“ + Datum ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-empty {
+    padding: var(--og-space-xl) var(--og-space-md);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-empty .icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: var(--og-space-md);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-empty b {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: var(--og-space-xs);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .cal-empty p {
+    font-size: 15px;
+  }
+
+  /* ---------- Kalender anpassen ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cal-customize {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--og-space-sm);
+    width: var(--og-cal-customize-w);
+    margin: var(--og-cal-foot) auto 0;
+    padding: var(--og-space-md);
+    border: 0.5px solid var(--og-cal-line);
+    border-radius: 999px;
+    background: var(--og-cal-customize-fill);
+    color: var(--text);
+    font-size: 17px;
+    font-weight: 600;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cal-customize .icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cal-customize:active {
+    opacity: 0.55;
+  }
+}
