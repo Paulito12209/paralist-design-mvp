@@ -108,6 +108,9 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/og-media-bar.css` | „OG Version“: Aufnahmezeile der Medien-Seite als vier runde Glasknöpfe |
 | `styles/og-cards.css` | „OG Version“: Reiter Karteikarten — Stapel als braune Glaskarten, Leerzustand, Import-Formular, Reiter statt „Aufgaben“ in der Leiste |
 | `styles/og-study.css` | „OG Version“: Lernansicht der Karteikarten — Fortschritt, umdrehbare Glaskarte, Knöpfe Vergessen und Gewusst, Zusammenfassung |
+| `styles/tokens-og-calendar.css` | „OG Version“: Werte des Kalenders (Zellen, Ring, Knöpfe, Fläche, Raster) |
+| `styles/og-calendar.css` | „OG Version“: Kalender oben — Titel, Monatsknopf, Wochenraster mit KW, drei Knöpfe, Reiter, Fläche |
+| `styles/og-calendar-grid.css` | „OG Version“: Kalender unten — Stundenraster, Einträge, Ganztägig, „Kalender anpassen“ |
 | `styles/tokens-desk.css` | die Werte der Desktop-Fassung (Spalten, Flächen, große Zahlen) |
 | `styles/desk.css` | Desktop: Raster aus Seitenleiste, Reiterzeile, Seite und rechter Spalte; Zuklappen, Suchfeld, Eingabefeld unten |
 | `styles/desk-head.css` | Desktop: Wortmarke mit Stufen-Anzeige und Klapp-Knopf; Kopfzeile mit Zurück, Vorwärts, Pfad samt Knöpfen der Seite und Knopf fürs Seitenfenster |

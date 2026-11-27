@@ -14,6 +14,7 @@ import { addDays, dayKey, isoWeek, parseDay, startOfWeek } from "../../core/date
 import { dom } from "../../core/dom.js";
 import { calendarDayHeading, longDate } from "../../core/format.js";
 import { state, ui } from "../../data/state.js";
+import { isOg, ogMonthTitle } from "./calendar-og.js";
 import { dayRing } from "./calendar-rings.js";
 
 /** Die Montage der sichtbaren Wochen: eine, zwei oder alle Wochen des Monats. */
@@ -36,7 +37,8 @@ export function visibleWeeks() {
 function weekMarkup(monday, extra = "") {
   const todayKey = dayKey(new Date());
   const month = parseDay(ui.calendarDay).getMonth();
-  let html = `<div class="cal-week${extra ? ` ${extra}` : ""}">`;
+  /* Kalenderwoche links vor Montag: nur die „OG Version“ zeigt sie (styles/og-calendar.css) */
+  let html = `<div class="cal-week${extra ? ` ${extra}` : ""}"><span class="cal-wk-num" aria-hidden="true">${isoWeek(monday)}</span>`;
 
   for (let offset = 0; offset < 7; offset += 1) {
     const day = addDays(monday, offset);
@@ -61,7 +63,8 @@ function weekMarkup(monday, extra = "") {
 export function renderStrip() {
   const weeks = visibleWeeks();
 
-  dom.calMonthLabel.textContent = calendarDayHeading(ui.calendarDay);
+  /* „OG Version“: Monat und Jahr der sichtbaren Wochen statt des gewählten Tages */
+  dom.calMonthLabel.textContent = isOg() ? ogMonthTitle(weeks) : calendarDayHeading(ui.calendarDay);
   dom.calKwBtn.textContent = `KW ${isoWeek(parseDay(ui.calendarDay))}`;
   dom.calWeeks.innerHTML =
     weekMarkup(addDays(weeks[0], -7), "is-peek is-before") +
