@@ -12,7 +12,7 @@ Ladereihenfolge der Werte-Dateien (`index.html`): `tokens.css` →
 `tokens-nav.css` → `tokens-pages.css` → `tokens-entry.css` → `tokens-dark.css`,
 danach die Bereichs-Stile; die Fassungen laden ihre Werte vor ihren Regeln
 (`tokens-android.css` → `tokens-android-dark.css` → `android*.css`,
-`tokens-ios.css` → `ios*.css` → `tokens-og.css` → `og*.css`, `tokens-desk.css` → `desk*.css`).
+`tokens-ios.css` → `ios*.css` → `tokens-og.css` → `tokens-og-detail.css` → `og*.css`, `tokens-desk.css` → `desk*.css`).
 Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 
 | Datei | Was sie macht |
@@ -93,6 +93,10 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/og.css` | die Regeln der „OG Version“; baut auf der iOS-Fassung auf und steht deshalb nach `ios*.css` |
 | `styles/og-home.css` | „OG Version“: Übersicht mit großem Titel, Kacheln als Glaskarten in Systemfarbe, Abschnittsüberschriften |
 | `styles/og-nav.css` | „OG Version“: Reiterkapsel als schwebende Glaskarte mit Symbol und Name |
+| `styles/tokens-og-detail.css` | „OG Version“: Werte der geöffneten Seite (Kopfhöhe, Kiste, Anlege-Knopf, Fläche, Zeilen, Detail-Leiste) |
+| `styles/og-detail.css` | „OG Version“: Kopf der geöffneten Seite als farbige Karte mit Wasserzeichen, Verknüpfungen, Titel und Kiste |
+| `styles/og-detail-body.css` | „OG Version“: Fläche mit Reitern und Einträge als Glaskarten-Zeilen mit Kachel und runder Checkbox |
+| `styles/og-detail-nav.css` | „OG Version“: kleine Detail-Leiste unten statt der Hauptleiste |
 | `styles/tokens-desk.css` | die Werte der Desktop-Fassung (Spalten, Flächen, große Zahlen) |
 | `styles/desk.css` | Desktop: Raster aus Seitenleiste, Reiterzeile, Seite und rechter Spalte; Zuklappen, Suchfeld, Eingabefeld unten |
 | `styles/desk-head.css` | Desktop: Wortmarke mit Stufen-Anzeige und Klapp-Knopf; Kopfzeile mit Zurück, Vorwärts, Pfad samt Knöpfen der Seite und Knopf fürs Seitenfenster |

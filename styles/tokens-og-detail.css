@@ -1,0 +1,140 @@
+/*
+ * Werte der geöffneten Seite in der „OG Version“ (Nachbau von PageDetailView
+ * und Tokens.Layout.detail* aus Organi7er). Gelten nur mit data-mobile-os="ios"
+ * UND data-mobile-variant="og"; die Regeln dazu stehen in styles/og-detail*.css.
+ * Pfad: styles/tokens-og-detail.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * --og-kind / --og-row-kind -> Vorgabe der Kategoriefarbe (Gelb wie Notiz); die Regeln setzen sie je Eintragstyp neu
+ * KOPF (die farbige Karte oben)
+ * --og-hero-height      -> Höhe des Kopfes samt Statusleiste; 480 pt auf dem kleinsten Gerät, je 100 pt mehr Bildschirmhöhe 24 pt mehr (Stufen unten)
+ * --og-detail-title-size -> Größe des Seitentitels im Kopf (30 pt, halbfett)
+ * --og-title-to-box     -> Abstand zwischen Titel und Kiste darunter (24 pt)
+ * --og-watermark-size   -> Größe des großen Symbols im Kopf (132 pt)
+ * --og-watermark-alpha  -> wie kräftig das Symbol steht (hell .16, dunkel .22)
+ * VERKNÜPFUNGEN OBEN RECHTS
+ * --og-link-pill-height -> Höhe einer Pille (28 pt)
+ * --og-link-top         -> Abstand zur Zeile mit dem Chevron (24 pt)
+ * --og-link-trailing    -> Abstand zum rechten Rand (40 pt)
+ * KISTE UND ANLEGE-KNOPF
+ * --og-box-height / --og-box-radius / --og-box-inset -> Glaskiste am Fuß des Kopfes (88 / 26 / 16 pt)
+ * --og-add-diameter     -> runder Anlege-Knopf in der Kiste (60 pt)
+ * --og-add-fill         -> Fläche des Knopfes (weiß, nicht ganz deckend)
+ * --og-add-ring         -> Stärke des farbigen Randes am Knopf (3 pt)
+ * FLÄCHE DES KOPFES (hell / dunkel, nach DashboardCardArtwork)
+ * --og-hero-dark       -> wie viel fast Schwarz in die Kategoriefarbe gemischt wird (hell 0 %, dunkel 16 %)
+ * --og-surf-1 … -4      -> wie viel Weiß die Fläche von der Mitte (1) zum Rand (4) bekommt
+ * --og-core-base / --og-core-kind / --og-core-k -> Kern der Säule: Grundfarbe, Anteil der Kategoriefarbe darin, Stärke (hell Weiß .68, dunkel Schwarz 1)
+ * --og-foot-silver / -kind / -black / --og-foot-a1 / -a2 -> silberner Schein am Fuß: Anteil Silber, Kategoriefarbe und Schwarz, Deckkraft innen und in der Mitte
+ * --og-box-glass        -> Weißanteil des Glases der Kiste (hell 26 %, dunkel 10 %)
+ * FLÄCHE UNTER DEM KOPF
+ * --og-canvas-radius    -> Rundung der Oberkante der dunklen Fläche (28 pt)
+ * --og-canvas-mix / --og-canvas-alpha -> wie weit die Kategoriefarbe in der Fläche steht und wie deckend sie ist
+ * --og-canvas-base      -> womit die Kategoriefarbe gemischt wird (hell Weiß, dunkel fast Schwarz)
+ * ZEILEN (PageRow)
+ * --og-row-icon-tile    -> Kachel mit dem farbigen Symbol links in der Zeile (28 pt)
+ * --og-row-check        -> Durchmesser der runden Checkbox (24 pt)
+ * DETAIL-LEISTE UNTEN
+ * --og-nav-compact / --og-nav-expanded -> Höhe der Leiste mit einem bzw. mehreren Knöpfen (36 / 40 pt)
+ * --og-nav-bottom       -> Luft unter der Leiste (16 pt)
+ * --og-nav-slot / --og-nav-inset -> Fuge zwischen den Knöpfen und Luft zum Rand (2 / 3 pt)
+ */
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] {
+  /* Vorgabe der Kategoriefarbe; styles/og-detail.css setzt sie je Eintragstyp und je Zeile neu */
+  --og-kind: var(--og-note);
+  --og-row-kind: var(--og-note);
+  --og-hero-height: 528px;
+  --og-detail-title-size: 30px;
+  --og-title-to-box: 24px;
+  --og-watermark-size: 132px;
+  --og-watermark-alpha: 0.16;
+  --og-link-pill-height: 28px;
+  --og-link-top: 24px;
+  --og-link-trailing: 40px;
+  --og-box-height: 88px;
+  --og-box-radius: 26px;
+  --og-box-inset: 16px;
+  --og-add-diameter: 60px;
+  --og-add-fill: rgba(255, 255, 255, 0.9);
+  --og-add-ring: 3px;
+  --og-hero-dark: 0%;
+  --og-surf-1: 44%;
+  --og-surf-2: 47.5%;
+  --og-surf-3: 61%;
+  --og-surf-4: 76%;
+  --og-core-base: #fafbff;
+  --og-core-kind: 0%;
+  --og-core-k: 0.68;
+  --og-foot-silver: 48%;
+  --og-foot-kind: 0%;
+  --og-foot-black: 0%;
+  --og-foot-a1: 0.58;
+  --og-foot-a2: 0.26;
+  --og-box-glass: 26%;
+  --og-canvas-radius: 28px;
+  --og-canvas-mix: 92%;
+  --og-canvas-alpha: 0.88;
+  --og-canvas-base: #ffffff;
+  --og-row-icon-tile: 28px;
+  --og-row-check: 24px;
+  --og-nav-compact: 36px;
+  --og-nav-expanded: 40px;
+  --og-nav-bottom: 16px;
+  --og-nav-slot: 2px;
+  --og-nav-inset: 3px;
+}
+
+/* Kopfhöhe in Stufen nach Bildschirmhöhe (detailHeroHeight): 480 + 24 je angefangene 100 pt über 667 */
+@media (min-height: 668px) { :root[data-mobile-os="ios"][data-mobile-variant="og"] { --og-hero-height: 504px; } }
+@media (min-height: 768px) { :root[data-mobile-os="ios"][data-mobile-variant="og"] { --og-hero-height: 528px; } }
+@media (min-height: 868px) { :root[data-mobile-os="ios"][data-mobile-variant="og"] { --og-hero-height: 552px; } }
+@media (max-height: 667px) { :root[data-mobile-os="ios"][data-mobile-variant="og"] { --og-hero-height: 480px; } }
+
+/* Dunkel: kräftigeres Wasserzeichen, etwas durchsichtigerer Knopf, Fläche mit fast schwarzem Kern */
+@media (prefers-color-scheme: dark) {
+  :root[data-mobile-os="ios"][data-mobile-variant="og"]:not([data-theme="light"]) {
+    --og-watermark-alpha: 0.22;
+    --og-add-fill: rgba(255, 255, 255, 0.82);
+    --og-canvas-mix: 88%;
+    --og-canvas-alpha: 0.82;
+    --og-canvas-base: #05060c;
+    --og-hero-dark: 16%;
+    --og-surf-1: 0%;
+    --og-surf-2: 5%;
+    --og-surf-3: 24%;
+    --og-surf-4: 46%;
+    --og-core-base: #05060c;
+    --og-core-kind: 8%;
+    --og-core-k: 1;
+    --og-foot-silver: 100%;
+    --og-foot-kind: 34%;
+    --og-foot-black: 10%;
+    --og-foot-a1: 0.48;
+    --og-foot-a2: 0.2;
+    --og-box-glass: 10%;
+  }
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"][data-theme="dark"] {
+  --og-watermark-alpha: 0.22;
+  --og-add-fill: rgba(255, 255, 255, 0.82);
+  --og-canvas-mix: 88%;
+  --og-canvas-alpha: 0.82;
+  --og-canvas-base: #05060c;
+  --og-hero-dark: 16%;
+  --og-surf-1: 0%;
+  --og-surf-2: 5%;
+  --og-surf-3: 24%;
+  --og-surf-4: 46%;
+  --og-core-base: #05060c;
+  --og-core-kind: 8%;
+  --og-core-k: 1;
+  --og-foot-silver: 100%;
+  --og-foot-kind: 34%;
+  --og-foot-black: 10%;
+  --og-foot-a1: 0.48;
+  --og-foot-a2: 0.2;
+  --og-box-glass: 10%;
+}

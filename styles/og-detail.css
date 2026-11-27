@@ -1,0 +1,290 @@
+/*
+ * Geöffnete Seite der „OG Version“, Teil 1: der Kopf als farbige Karte nach
+ * PageDetailView.heroHeader und DashboardCardArtwork (Organi7er) — Fläche aus
+ * der Kategoriefarbe, die zu den Rändern aufhellt, darüber ein dunkler
+ * (hell: weißer) Kern als senkrechte Säule, unten ein silbriger Schein,
+ * dazu das große Wasserzeichen-Symbol, oben die Zeile mit Chevron, Seitenart
+ * und Stern, rechts die Verknüpfungs-Pillen und am Fuß Titel und Kiste mit
+ * dem runden Anlege-Knopf. Der Aufbau (Wrapper .og-hero, .og-canvas) kommt aus
+ * src/features/entry/entry-og-hero.js und ist in allen anderen Fassungen
+ * unsichtbar (display: contents). Greift nur mit data-mobile-os="ios",
+ * data-mobile-variant="og" und unter der Desktop-Grenze.
+ * Pfad: styles/og-detail.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-og-detail.css und tokens-og.css)
+ * -----------------------------------
+ * --og-hero-height, --og-detail-title-size, --og-title-to-box,
+ * --og-watermark-size, --og-watermark-alpha, --og-link-pill-height, --og-link-top,
+ * --og-link-trailing, --og-box-height, --og-box-radius, --og-box-inset,
+ * --og-add-diameter, --og-add-fill, --og-add-ring, --og-silver (Silberton,
+ * tokens-og.css), --og-task … --og-note (Kategoriefarben, tokens-og.css)
+ *
+ * Direkt bei den Regeln: Schriftgröße der Seitenart 15 pt, der Pillen 13 pt,
+ * von „Verknüpfungen“ 15 pt; Knotengröße der Kette 26 pt.
+ */
+
+.og-hero,
+.og-canvas {
+  display: contents; /* display: contents: ohne OG-Regeln bleiben Titel und Pillen im normalen Fluss */
+}
+
+.og-art-foot,
+.og-watermark,
+.og-link-pills,
+.og-kiste,
+.og-detail-nav {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  /* ---------- Kategoriefarbe: Seite, Pille und Knoten ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] :is([data-entry-type], [data-og-type]) { --og-kind: var(--og-note); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] :is([data-entry-type="projekt"], [data-og-type="projekt"]) { --og-kind: var(--og-project); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] :is([data-entry-type="aufgabe"], [data-og-type="aufgabe"]) { --og-kind: var(--og-task); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] :is([data-entry-type="termin"], [data-og-type="termin"]) { --og-kind: var(--og-event); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] :is([data-entry-type="lesezeichen"], [data-og-type="lesezeichen"]) { --og-kind: var(--og-bookmark); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] :is([data-entry-type="dokument"], [data-og-type="dokument"], [data-entry-type="medien"], [data-og-type="medien"]) { --og-kind: var(--og-resource); }
+
+  /* ---------- Kopfzeile: durchsichtig auf dem Kopf, mit Fläche erst beim kleinen Titel ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-head {
+    --og-head-block: calc(var(--safe-top) + var(--page-head-top) + var(--search-bar-height));
+    background: transparent;
+    margin-bottom: 0;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-head.is-title-shown {
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: blur(20px) saturate(1.6); /* backdrop-filter: Glas wie .regularMaterial der Vorlage, sobald Text darunter läuft */
+    -webkit-backdrop-filter: blur(20px) saturate(1.6);
+  }
+
+  /* Chevron und Menü ohne Glasknopf; der Pfeil zeigt nach unten wie in der Vorlage */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-head :is(.back-btn, .head-btn) {
+    background: none;
+    box-shadow: none;
+    border-radius: 0;
+    width: 40px;
+    height: 44px;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-back .icon {
+    transform: rotate(-90deg); /* transform: der Zurück-Pfeil wird zum Chevron nach unten */
+  }
+
+  /* Stern rechts neben der Seitenart, das Cover-Werkzeug bleibt im Menü */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-head .entry-head-fav {
+    display: grid;
+    margin-left: 0;
+    color: var(--text);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-head .entry-head-fav.is-on { color: var(--og-favorite); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-head .entry-head-cover { display: none; }
+
+  /* Seitenart: Symbol und Name in Textfarbe, ohne Pille */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-crumb {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-crumb .type-crumb {
+    background: none;
+    box-shadow: none;
+    color: var(--text);
+  }
+
+  /* ---------- Der Kopf ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-hero {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    position: relative; /* position: Anker für Fläche, Wasserzeichen und Verknüpfungen */
+    isolation: isolate; /* isolation: z-index: -1 der Fläche bleibt im Kopf und fällt nicht hinter die Seite */
+    box-sizing: border-box;
+    /* Der Kopf reicht hinter die Kopfzeile und 28 pt unter seine Kante, wo die Fläche mit runden Ecken beginnt */
+    margin: calc(-1 * var(--og-head-block, 56px)) calc(-1 * var(--content-side)) calc(-1 * var(--og-canvas-radius));
+    height: calc(var(--og-hero-height) + var(--og-canvas-radius));
+    padding: 0 var(--og-box-inset) calc(8px + var(--og-canvas-radius));
+    /* Fläche: in der Mitte satt, zu den Rändern hin heller (EllipticalGradient der Vorlage) */
+    --og-hero-base: color-mix(in srgb, #0a0c16 var(--og-hero-dark), var(--og-kind));
+    background: radial-gradient(
+      ellipse 76% 76% at 50% 46%,
+      color-mix(in srgb, #ffffff var(--og-surf-1), var(--og-hero-base)) 0%,
+      color-mix(in srgb, #ffffff var(--og-surf-2), var(--og-hero-base)) 52%,
+      color-mix(in srgb, #ffffff var(--og-surf-3), var(--og-hero-base)) 82%,
+      color-mix(in srgb, #ffffff var(--og-surf-4), var(--og-hero-base)) 100%
+    );
+    overflow: hidden; /* overflow: Fläche und Schein enden an den Kanten des Kopfes */
+  }
+
+  /* Kern: waagerechter Verlauf, den eine senkrechte Maske oben und unten ausblendet */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    --og-core: color-mix(in srgb, var(--og-kind) var(--og-core-kind), var(--og-core-base));
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      color-mix(in srgb, var(--og-core) calc(var(--og-core-k) * 18%), transparent) 16%,
+      color-mix(in srgb, var(--og-core) calc(var(--og-core-k) * 72%), transparent) 30%,
+      color-mix(in srgb, var(--og-core) calc(var(--og-core-k) * 94%), transparent) 44%,
+      color-mix(in srgb, var(--og-core) calc(var(--og-core-k) * 94%), transparent) 58%,
+      color-mix(in srgb, var(--og-core) calc(var(--og-core-k) * 68%), transparent) 72%,
+      color-mix(in srgb, var(--og-core) calc(var(--og-core-k) * 14%), transparent) 86%,
+      transparent 100%
+    );
+    /* mask-image: oben läuft die Säule weich aus, unten bleibt ein ruhiger Rest für Titel und Kiste */
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / 0.35) 14%, rgb(0 0 0 / 0.92) 30%, #000 52%, rgb(0 0 0 / 0.86) 78%, rgb(0 0 0 / 0.55) 100%);
+    mask-image: linear-gradient(to bottom, transparent 0%, rgb(0 0 0 / 0.35) 14%, rgb(0 0 0 / 0.92) 30%, #000 52%, rgb(0 0 0 / 0.86) 78%, rgb(0 0 0 / 0.55) 100%);
+  }
+
+  /* Silberner Schein von unten, über dem Kern */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-art-foot {
+    display: block;
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    --og-foot: color-mix(in srgb, #000000 var(--og-foot-black), color-mix(in srgb, var(--og-kind) var(--og-foot-kind), color-mix(in srgb, var(--og-silver) var(--og-foot-silver), #ffffff)));
+    background: radial-gradient(
+      ellipse 68% 68% at 50% 104%,
+      color-mix(in srgb, var(--og-foot) calc(var(--og-foot-a1) * 100%), transparent) 0%,
+      color-mix(in srgb, var(--og-foot) calc(var(--og-foot-a2) * 100%), transparent) 50%,
+      transparent 100%
+    );
+  }
+
+  /* Wasserzeichen: groß, in Kategoriefarbe, etwas über der Mitte */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-watermark {
+    display: block;
+    position: absolute;
+    left: 50%;
+    top: calc((var(--safe-top) + var(--og-hero-height)) / 2 - 52px - var(--og-watermark-size) / 2);
+    transform: translateX(-50%); /* transform: mittig, ohne die Breite zu kennen */
+    z-index: -1;
+    pointer-events: none;
+    color: var(--og-kind);
+    opacity: var(--og-watermark-alpha);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-watermark .icon {
+    width: var(--og-watermark-size);
+    height: var(--og-watermark-size);
+  }
+
+  /* Verknüpfungen oben rechts: unter der Zeile mit Chevron, Seitenart und Stern */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-link-pills {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+    position: absolute;
+    top: calc(var(--og-head-block, 56px) + var(--og-link-top));
+    right: var(--og-link-trailing);
+    left: var(--og-box-inset);
+    pointer-events: none; /* pointer-events: die freie Fläche links daneben bleibt Kopf, nur die Pillen sind Knöpfe */
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-link-pill {
+    pointer-events: auto;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    max-width: 100%;
+    height: var(--og-link-pill-height);
+    color: color-mix(in srgb, var(--text) 90%, transparent);
+    font-size: 13px;
+    font-weight: 500;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-link-pill span {
+    min-width: 0;
+    overflow: hidden; /* overflow: langer Titel endet mit „…“ */
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-link-pill b {
+    margin-left: 7px;
+    font-weight: 600;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-link-pill .icon {
+    width: 14px;
+    height: 14px;
+    flex: 0 0 auto;
+  }
+
+  /* Titel: 30 pt halbfett, wächst von der Pillen-Zeile nach oben; das eigene Icon ersetzt das Wasserzeichen */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-hero .entry-icon { display: none; }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-hero .entry-title {
+    font-size: var(--og-detail-title-size);
+    font-weight: 600;
+    letter-spacing: 0;
+    margin-bottom: var(--og-title-to-box);
+  }
+
+  /* ---------- Kiste mit Verknüpfungen und Anlege-Knopf ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-kiste {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    box-sizing: border-box;
+    height: var(--og-box-height);
+    padding: 0 var(--og-box-inset);
+    border-radius: var(--og-box-radius);
+    /* Glas: der Kopf scheint durch, statt von einer Fläche überdeckt zu werden */
+    background: color-mix(in srgb, #ffffff var(--og-box-glass), transparent);
+    border: 0.75px solid color-mix(in srgb, #ffffff 55%, transparent);
+    backdrop-filter: blur(18px) saturate(1.5);
+    -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-kiste-text {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    flex: 1;
+    min-width: 0;
+    color: color-mix(in srgb, var(--text) 75%, transparent);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-kiste-label {
+    font-size: 15px;
+    font-weight: 600;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-chain { display: flex; gap: 8px; }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-chain-node {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--og-kind);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-chain-node .icon { width: 16px; height: 16px; }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-chain-node b { color: var(--text); font-weight: 600; }
+
+  /* Der Knopf: weiße Scheibe mit schwarzem Kreuz und Rand in der Kategoriefarbe, wie heroAddButton */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-add {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: var(--og-add-diameter);
+    height: var(--og-add-diameter);
+    border-radius: 50%;
+    background: var(--og-add-fill);
+    color: #000000;
+    box-shadow: inset 0 0 0 var(--og-add-ring) color-mix(in srgb, var(--og-kind) 55%, transparent);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-add .icon { width: 26px; height: 26px; }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-add:active { opacity: 0.7; }
+}
