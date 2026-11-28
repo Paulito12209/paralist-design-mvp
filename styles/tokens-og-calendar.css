@@ -79,7 +79,7 @@
     --og-cal-button-stroke: rgba(255, 255, 255, 0.12);
     --og-cal-tab-active: rgba(255, 255, 255, 0.1);
     --og-cal-tab-count: rgba(255, 255, 255, 0.45);
-    --og-cal-surface: rgba(255, 255, 255, 0.06);
+    --og-cal-surface: #21232a;
     --og-cal-line: rgba(255, 255, 255, 0.08);
     --og-cal-customize-fill: rgba(60, 62, 70, 0.7);
   }
@@ -91,7 +91,7 @@
   --og-cal-button-stroke: rgba(255, 255, 255, 0.12);
   --og-cal-tab-active: rgba(255, 255, 255, 0.1);
   --og-cal-tab-count: rgba(255, 255, 255, 0.45);
-  --og-cal-surface: rgba(255, 255, 255, 0.06);
+  --og-cal-surface: #21232a;
   --og-cal-line: rgba(255, 255, 255, 0.08);
   --og-cal-customize-fill: rgba(60, 62, 70, 0.7);
 }
