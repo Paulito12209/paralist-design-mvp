@@ -8,7 +8,7 @@
  *
  * ANPASSBARE WERTE (alle in styles/tokens-og-settings.css, Glasfläche in styles/tokens-og.css)
  * -----------------------------------
- * --og-group-bg / --og-group-card -> Grund des Blatts und Fläche der Gruppen
+ * --og-sheet-bg / --og-sheet-card -> Grund des Blatts und Fläche der Gruppen (Kopf und Profilkarte: styles/og-settings-sheet.css)
  * --og-group-line                 -> Trennlinie zwischen Zeilen
  * --og-label-secondary / -tertiary -> Abschnittstitel, Zusatzwerte, Pfeile
  * --og-settings-row / -icon       -> Zeilenhöhe und Symbolbreite
@@ -24,7 +24,7 @@
 @media (max-width: 1023px) {
   /* Grund des Blatts: systemGroupedBackground */
   :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .modal {
-    background: var(--og-group-bg);
+    background: var(--og-sheet-bg);
   }
 
   :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .modal-head h2,
@@ -39,7 +39,7 @@
   :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .settings-group,
   :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .profile-id {
     border-radius: var(--og-radius-card);
-    background: var(--og-group-card);
+    background: var(--og-sheet-card);
     box-shadow: none;
   }
 
@@ -142,7 +142,7 @@
     width: 26px;
     height: 26px;
     border: 0.5px solid var(--og-group-line);
-    background: var(--og-group-card);
+    background: var(--og-sheet-card);
     color: var(--text);
   }
 

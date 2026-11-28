@@ -110,6 +110,7 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/og-search-start.css` | „OG Version“: Seite „Suchen“ mit Glas-Gruppe, „Zuletzt geöffnet“ und Unterseiten |
 | `styles/og-search-field.css` | „OG Version“: aktives Suchfeld als Glas-Pille mit ✕ über der Tastatur |
 | `styles/og-settings.css` | „OG Version“: Einstellungen mit matten Gruppen und Profilkarte, Fortschritt als Glaskarten |
+| `styles/og-settings-sheet.css` | „OG Version“: Einstellungs-Blatt mit Kopf (Griff, Titel, runder Schließen-Knopf, weiche Unterkante), Profilkarte mit „Mehr Infos“ |
 | `styles/tokens-og-media.css` | die Werte der Reiter Medien und Karteikarten der „OG Version“: Filter-Pillen, Kacheln, Aufnahmeknöpfe, Stapelkarten, Lernansicht |
 | `styles/og-media.css` | „OG Version“: Medien-Seite mit großem Titel, Filter-Pillen in Kategoriefarbe und Raster mit 14-pt-Kacheln |
 | `styles/og-media-bar.css` | „OG Version“: Aufnahmezeile der Medien-Seite als vier runde Glasknöpfe |

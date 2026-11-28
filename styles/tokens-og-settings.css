@@ -25,6 +25,12 @@
  * --og-settings-icon       -> Breite des Symbols links in der Zeile (28 px)
  * --og-avatar-size         -> Durchmesser des Profilbilds in der Profilkarte (68 px)
  * --og-danger              -> Farbe von „Abmelden“ und „Konto löschen“ (rotes Systemrot)
+ * BLATT „EINSTELLUNGEN“ (SettingsView als Blatt: Gruppen eine Stufe heller als der Grund)
+ * --og-sheet-bg            -> Grund des Blatts (hell #f2f2f7, dunkel #1c1c1e)
+ * --og-sheet-card          -> Fläche der Gruppen im Blatt (hell weiß, dunkel #2c2c2e)
+ * --og-sheet-fill          -> graue Fläche hinter der Figur im Profilbild (hell #e5e5ea, dunkel #3a3a3c)
+ * --og-sheet-head          -> Höhe des Kopfes mit Griff, Titel und Schließen-Knopf (80 px); so weit rückt der Inhalt nach unten
+ * --og-sheet-close         -> Durchmesser des runden Schließen-Knopfes (48 px)
  */
 
 :root[data-mobile-os="ios"][data-mobile-variant="og"] {
@@ -44,6 +50,12 @@
   --og-settings-icon: 28px;
   --og-avatar-size: 68px;
   --og-danger: #ff3b30;
+
+  --og-sheet-bg: #f2f2f7;
+  --og-sheet-card: #ffffff;
+  --og-sheet-fill: #e5e5ea;
+  --og-sheet-head: 80px;
+  --og-sheet-close: 48px;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -55,6 +67,9 @@
     --og-label-tertiary: rgba(235, 235, 245, 0.3);
     --og-danger: #ff453a;
     --og-search-tile-fill: #292b30;
+    --og-sheet-bg: #1c1c1e;
+    --og-sheet-card: #2c2c2e;
+    --og-sheet-fill: #3a3a3c;
   }
 }
 
@@ -67,4 +82,7 @@
   --og-label-tertiary: rgba(235, 235, 245, 0.3);
   --og-danger: #ff453a;
   --og-search-tile-fill: #292b30;
+  --og-sheet-bg: #1c1c1e;
+  --og-sheet-card: #2c2c2e;
+  --og-sheet-fill: #3a3a3c;
 }
