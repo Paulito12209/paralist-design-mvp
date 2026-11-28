@@ -12,6 +12,7 @@
  * offen, kommt sie zurück, sobald das Blatt zu ist.
  * Die Zeilen lassen sich auch bei offener Tastatur direkt antippen — ob
  * getippt oder gescrollt wurde, entscheidet src/features/search/search-tap.js.
+ * In der „OG Version“ zeichnet ohne Eingabe search-og.js (Gruppe, Liste, Unterseiten).
  * Wird erst beim ersten Öffnen nachgeladen.
  * Pfad: src/features/search/search.js
  *
@@ -29,12 +30,14 @@ import { emit, events, on } from "../../core/bus.js";
 import { dom, el } from "../../core/dom.js";
 import { escapeHtml } from "../../core/html.js";
 import { noteSearch } from "../../data/opens.js";
-import { ui } from "../../data/state.js";
+import { saveState, state, ui } from "../../data/state.js";
 import { emptyState } from "../../ui/empty-state.js";
 import { initPillSwipe, revealActive } from "../../ui/pill-swipe.js";
+import { showSearch } from "../../ui/router.js";
 import { isViewActive } from "../../ui/views.js";
 import { browseMarkup, browseRefine, browseSortsOf, searchTabs } from "./search-browse.js";
 import { defaultRefine, hasLimits, refinedHits } from "./search-refine.js";
+import { isOgSearch, ogStartMarkup, ogSubMarkup } from "./search-og.js";
 import { resultRow } from "./search-rows.js";
 import {
   chipsMarkup,
@@ -141,6 +144,11 @@ function drawSearch() {
     renderHits();
     return;
   }
+  /* „OG Version“: Gruppe und Liste wie in der App statt der drei Reiter */
+  if (isOgSearch()) {
+    dom.searchResults.innerHTML = ui.searchList ? ogSubMarkup(ui.searchList) : ogStartMarkup();
+    return;
+  }
   /* Ältere Verlaufseinträge (#/suchen/gesucht, #/suchen/haeufig) zeigen
      heute einfach den passenden Reiter. */
   if (ui.searchList) {
@@ -229,9 +237,31 @@ function onRefineClick(event) {
   return false;
 }
 
+/* Die Zeilen und Knöpfe der Unterseiten der „OG Version“. true: erledigt. */
+function onOgClick(event) {
+  const sub = event.target.closest("[data-og-search-sub]");
+  if (sub) {
+    showSearch(false, sub.dataset.ogSearchSub);
+    return true;
+  }
+  if (event.target.closest("[data-og-search-back]")) {
+    /* Kam die Unterseite über ihre Adresse, gibt es kein Davor: dann zur Startseite der Suche */
+    if (history.state?.list) history.back();
+    else showSearch(true);
+    return true;
+  }
+  if (event.target.closest("[data-og-search-clear]")) {
+    state.recentSearches = [];
+    saveState();
+    renderSearch();
+    return true;
+  }
+  return false;
+}
+
 /* Klicks auf der Suchseite, die nicht schon list-clicks.js erledigt. */
 function onViewClick(event) {
-  if (onRefineClick(event)) return;
+  if (onOgClick(event) || onRefineClick(event)) return;
   const tab = event.target.closest("[data-search-tab]");
   if (tab) {
     selectTab(tab.dataset.searchTab);
@@ -242,6 +272,8 @@ function onViewClick(event) {
   if (query) {
     dom.searchInput.value = query.dataset.searchQuery;
     ui.searchQuery = dom.searchInput.value;
+    /* Aus der Unterseite „Zuletzt gesucht“ zurück zu den Treffern */
+    if (ui.searchList) showSearch(true);
     renderSearch();
     return;
   }
@@ -265,7 +297,7 @@ function init() {
     order: () => (ui.searchQuery ? kindOrder() : searchTabs.map((tab) => tab.id)),
     current: () => (ui.searchQuery ? ui.searchRefine.type : ui.searchTab),
     select: (id) => (ui.searchQuery ? selectKind(id) : selectTab(id)),
-    enabled: () => !ui.searchList,
+    enabled: () => !ui.searchList && !(isOgSearch() && !ui.searchQuery),
   });
 
   on(events.viewOpened, (name) => {

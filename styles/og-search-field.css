@@ -1,0 +1,89 @@
+/*
+ * Aktives Suchfeld der „OG Version“ nach GlobalSearchOverlay (Organi7er):
+ * Glas-Pille „Nach etwas suchen …“ mit Lupe und Mikrofon über der Tastatur,
+ * daneben ein runder ✕-Knopf. Navigation und Zubehör treten zurück, solange die
+ * Pille steht (Klasse is-search-field, src/shell/og-search-field.js). Greift nur
+ * mit data-mobile-os="ios" und data-mobile-variant="og" unter 1024 px.
+ * Pfad: styles/og-search-field.css
+ *
+ * ANPASSBARE WERTE (styles/tokens-og-settings.css und styles/tokens-og.css)
+ * -----------------------------------
+ * --og-search-pill-height -> Höhe von Pille und ✕-Knopf (48 px)
+ * --og-card-top/-bottom/-border -> Glasfläche
+ * Schrift im Feld: 17 px, direkt bei der Regel.
+ */
+
+/* Die Zeile gibt es nur in der OG Version; sonst bleibt sie leer und unsichtbar */
+.og-field-row,
+.og-field-mic {
+  display: none;
+}
+
+@media (max-width: 1023px) {
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-search.is-search-field .og-field-row {
+    display: flex;
+    align-items: center;
+    gap: var(--og-space-sm);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-search.is-search-field .nav-shell,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-search.is-search-field .og-accessory,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-search.is-search-field .og-search {
+    display: none;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-field-row .search {
+    flex: 1;
+    height: var(--og-search-pill-height);
+    padding: 0 var(--og-space-md);
+    border: 0.75px solid var(--og-card-border);
+    border-radius: 999px; /* border-radius: Kapselform wie searchFieldPill */
+    background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+    backdrop-filter: blur(var(--ios-glass-blur, 20px)); /* backdrop-filter: Glas verwischt die Liste dahinter */
+    -webkit-backdrop-filter: blur(var(--ios-glass-blur, 20px));
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-field-row .search input {
+    font-size: 17px;
+    color: var(--text);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-field-row .search-icon {
+    color: var(--og-label-secondary);
+  }
+
+  /* Mikrofon, solange nichts im Feld steht; danach das × im Kreis */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-field-row .og-field-mic {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    color: var(--og-label-secondary);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-field-row .search:has(input:not(:placeholder-shown)) .og-field-mic {
+    display: none;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-field-mic.is-listening {
+    color: var(--og-task);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-field-close {
+    display: grid;
+    place-items: center;
+    flex: 0 0 var(--og-search-pill-height);
+    width: var(--og-search-pill-height);
+    height: var(--og-search-pill-height);
+    border: 0.75px solid var(--og-card-border);
+    border-radius: 50%; /* border-radius: runder Knopf */
+    background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+    color: var(--text);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-field-close .icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
