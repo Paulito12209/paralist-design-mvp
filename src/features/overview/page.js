@@ -52,6 +52,7 @@ import { initArchive, renderArchive } from "./archive.js";
 import { initCollectionPanel } from "./collection-panel.js";
 import { initPageInline } from "./page-inline.js";
 import { initPageListHead } from "./page-list-head.js";
+import { initPageOgList } from "./page-og-list.js";
 import { initPageSelect } from "./page-select.js";
 import { pageHeroOptions, renderPageHero } from "./page-hero.js";
 import { renderProjectsPage } from "./projects.js";
@@ -314,6 +315,8 @@ export function initPage() {
   initCollectionPanel();
   initPageListHead();
   initPageInline();
+  /* Nur in der OG Version: Zeilen als Glaskarten mit Art darunter (page-og-list.js) */
+  initPageOgList();
   /* Erst die Suchseite zeigen: dort ist die allgemeine Kopfzeile mit dem
      echten Suchfeld wieder da, und ein verstecktes Feld nimmt keinen Fokus an. */
   dom.pageSearchBtn.addEventListener("click", () => {

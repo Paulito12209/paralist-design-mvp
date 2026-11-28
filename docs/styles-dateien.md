@@ -101,7 +101,9 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/og-nav.css` | „OG Version“: Reiterkapsel mit fünf Reitern (inkl. Suchen), zieht sich beim Scrollen zusammen |
 | `styles/tokens-og-detail.css` | „OG Version“: Werte der geöffneten Seite (Kopfhöhe, Kiste, Anlege-Knopf, Fläche, Zeilen, Detail-Leiste) |
 | `styles/og-detail.css` | „OG Version“: Kopf der geöffneten Seite als farbige Karte mit Wasserzeichen, Verknüpfungen, Titel und Kiste |
-| `styles/og-detail-body.css` | „OG Version“: Fläche mit Reitern und Einträge als Glaskarten-Zeilen mit Kachel und runder Checkbox |
+| `styles/og-detail-body.css` | „OG Version“: Fläche mit den Reitern „Schreibblock“ und „Inhalte“ und dem „•••“-Knopf |
+| `styles/og-list-page.css` | „OG Version“: Listenseiten (Projekte u. a.) mit schlichtem Titel, Segment der Ansichten und Einträgen als Glaskarten |
+| `styles/og-detail-sections.css` | „OG Version“: „Inhalte“ als getönte Abschnittskarten mit ↗-Knopf, Zeilen, Checkbox und gestricheltem Anlege-Knopf |
 | `styles/og-detail-nav.css` | „OG Version“: kleine Detail-Leiste unten statt der Hauptleiste |
 | `styles/tokens-og-settings.css` | „OG Version“: Werte für Suche und Einstellungen (Gruppenfläche, Linien, Zeilenhöhe, Profilbild) |
 | `styles/og-search.css` | „OG Version“: Suche mit Treffern als Glaskarten, Glas-Reitern und Glas-Kapseln unten |

@@ -4,8 +4,8 @@
  * der Kategoriefarbe, die zu den Rändern aufhellt, darüber ein dunkler
  * (hell: weißer) Kern als senkrechte Säule, unten ein silbriger Schein,
  * dazu das große Wasserzeichen-Symbol, oben die Zeile mit Chevron, Seitenart
- * und Stern, rechts die Verknüpfungs-Pillen und am Fuß Titel und Kiste mit
- * dem runden Anlege-Knopf. Der Aufbau (Wrapper .og-hero, .og-canvas) kommt aus
+ * und Stern, am Fuß Ablageort, Titel, Pillen (Datum, Dringlichkeit, Status)
+ * und die Kiste mit der Punktkette und dem runden Anlege-Knopf. Der Aufbau (Wrapper .og-hero, .og-canvas) kommt aus
  * src/features/entry/entry-og-hero.js und ist in allen anderen Fassungen
  * unsichtbar (display: contents). Greift nur mit data-mobile-os="ios",
  * data-mobile-variant="og" und unter der Desktop-Grenze.
@@ -13,14 +13,14 @@
  *
  * ANPASSBARE WERTE (alle in styles/tokens-og-detail.css und tokens-og.css)
  * -----------------------------------
- * --og-hero-height, --og-detail-title-size, --og-title-to-box,
- * --og-watermark-size, --og-watermark-alpha, --og-link-pill-height, --og-link-top,
- * --og-link-trailing, --og-box-height, --og-box-radius, --og-box-inset,
+ * --og-hero-height, --og-detail-title-size, --og-title-to-meta,
+ * --og-watermark-size, --og-watermark-alpha, --og-place-size, --og-meta-height,
+ * --og-meta-gap, --og-chain-node, --og-box-height, --og-box-radius, --og-box-inset,
  * --og-add-diameter, --og-add-fill, --og-add-ring, --og-silver (Silberton,
  * tokens-og.css), --og-task … --og-note (Kategoriefarben, tokens-og.css)
  *
- * Direkt bei den Regeln: Schriftgröße der Seitenart 15 pt, der Pillen 13 pt,
- * von „Verknüpfungen“ 15 pt; Knotengröße der Kette 26 pt.
+ * Direkt bei den Regeln: Schriftgröße der Seitenart 17 pt, der Pillen 15 pt,
+ * von „Verknüpfungen“ 15 pt, der Zahlen in der Kette 12 pt.
  */
 
 .og-hero,
@@ -30,7 +30,6 @@
 
 .og-art-foot,
 .og-watermark,
-.og-link-pills,
 .og-kiste,
 .og-detail-nav {
   display: none;
@@ -49,11 +48,15 @@
   :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-head {
     --og-head-block: calc(var(--safe-top) + var(--page-head-top) + var(--search-bar-height));
     background: transparent;
-    margin-bottom: 0;
+    margin: 0 calc(-1 * var(--content-side)) 0; /* margin: die Glasfläche beim kleinen Titel reicht bis an beide Ränder */
+    padding-left: var(--content-side);
+    padding-right: var(--content-side);
   }
 
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-head.is-title-shown {
-    background: color-mix(in srgb, var(--bg) 82%, transparent);
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-head.is-title-shown #entry-crumb { display: none; }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-head:is(.is-title-shown, .is-scrolled) {
+    background: color-mix(in srgb, var(--bg) 94%, transparent);
     backdrop-filter: blur(20px) saturate(1.6); /* backdrop-filter: Glas wie .regularMaterial der Vorlage, sobald Text darunter läuft */
     -webkit-backdrop-filter: blur(20px) saturate(1.6);
   }
@@ -81,17 +84,47 @@
   :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-head .entry-head-fav.is-on { color: var(--og-favorite); }
   :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-head .entry-head-cover { display: none; }
 
-  /* Seitenart: Symbol und Name in Textfarbe, ohne Pille */
+  /* Seitenart: Symbol der Art und Name in Textfarbe, ohne Pille und ohne Auswahlpfeil (Typ ändern bleibt per Tipp) */
   :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-crumb {
-    font-size: 15px;
+    flex: 1; /* flex: die Seitenart steht mittig zwischen Chevron und Stern */
+    display: flex;
+    justify-content: center;
+    font-size: 17px;
     font-weight: 600;
   }
 
   :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-crumb .type-crumb {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     background: none;
     box-shadow: none;
     color: var(--text);
+    font-size: 17px;
+    font-weight: 600;
   }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-crumb .type-crumb-chevron { display: none; }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-crumb .og-crumb-icon { width: 22px; height: 22px; }
+
+  /* „•••“ steht erst beim kleinen Titel oben; davor sitzt es neben den Reitern (visibility: der Platz bleibt, der Stern rutscht nicht) */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-head:not(.is-title-shown) #entry-menu { visibility: hidden; }
+
+  /* Weggescrollt: Symbol und Titel links, wie die feste Kopfzeile der Vorlage; der Chevron steht dann in der Leiste unten */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-head.is-title-shown #entry-back { display: none; }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-head.is-title-shown .head-title:not([hidden]) {
+    flex: 1;
+    min-width: 0;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    padding-left: 6px;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-head .head-title-sub { display: none; }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #entry-head .og-head-icon { width: 22px; height: 22px; flex: 0 0 auto; color: var(--text); }
 
   /* ---------- Der Kopf ---------- */
   :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-hero {
@@ -175,58 +208,56 @@
     height: var(--og-watermark-size);
   }
 
-  /* Verknüpfungen oben rechts: unter der Zeile mit Chevron, Seitenart und Stern */
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-link-pills {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 8px;
-    position: absolute;
-    top: calc(var(--og-head-block, 56px) + var(--og-link-top));
-    right: var(--og-link-trailing);
-    left: var(--og-box-inset);
-    pointer-events: none; /* pointer-events: die freie Fläche links daneben bleibt Kopf, nur die Pillen sind Knöpfe */
-  }
-
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-link-pill {
-    pointer-events: auto;
+  /* Ablageort: Symbol und Name in gedämpfter Schrift über dem Titel */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-place {
     display: flex;
     align-items: center;
-    gap: 5px;
-    max-width: 100%;
-    height: var(--og-link-pill-height);
-    color: color-mix(in srgb, var(--text) 90%, transparent);
-    font-size: 13px;
-    font-weight: 500;
-  }
-
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-link-pill span {
-    min-width: 0;
-    overflow: hidden; /* overflow: langer Titel endet mit „…“ */
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-link-pill b {
-    margin-left: 7px;
+    gap: 10px;
+    margin-bottom: 4px;
+    font-size: var(--og-place-size);
     font-weight: 600;
+    color: color-mix(in srgb, var(--text) 62%, transparent);
   }
 
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-link-pill .icon {
-    width: 14px;
-    height: 14px;
-    flex: 0 0 auto;
-  }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-place[hidden] { display: none; }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-place .icon { width: 20px; height: 20px; flex: 0 0 auto; }
 
-  /* Titel: 30 pt halbfett, wächst von der Pillen-Zeile nach oben; das eigene Icon ersetzt das Wasserzeichen */
+  /* Titel: 30 pt halbfett; das eigene Icon ersetzt das Wasserzeichen */
   :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-hero .entry-icon { display: none; }
 
   :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-hero .entry-title {
     font-size: var(--og-detail-title-size);
     font-weight: 600;
     letter-spacing: 0;
-    margin-bottom: var(--og-title-to-box);
+    margin-bottom: var(--og-title-to-meta);
   }
+
+  /* Pillen unter dem Titel: Datum, Dringlichkeit, Status — dunkles Glas mit feinem Rand in der Kategoriefarbe */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-meta {
+    display: flex;
+    gap: var(--og-meta-gap);
+    margin-bottom: var(--og-meta-to-box);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-meta[hidden] { display: none; }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-meta-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+    height: var(--og-meta-height);
+    padding: 0 14px;
+    border-radius: 999px;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--og-meta-text);
+    background: var(--og-meta-fill);
+    border: 0.75px solid color-mix(in srgb, var(--og-kind) 55%, transparent);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-meta-pill .icon { width: 17px; height: 17px; flex: 0 0 auto; }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-meta-pill span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; } /* overflow: langer Text endet mit „…“ */
 
   /* ---------- Kiste mit Verknüpfungen und Anlege-Knopf ---------- */
   :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-kiste {
@@ -258,7 +289,8 @@
     font-weight: 600;
   }
 
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-chain { display: flex; gap: 8px; }
+  /* Punktkette: je Art ein gepunkteter Ring mit Symbol, dahinter die Anzahl, dazwischen eine gepunktete Linie */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-chain { display: flex; align-items: center; gap: 4px; }
 
   :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-chain-node {
     display: inline-flex;
@@ -266,11 +298,26 @@
     gap: 4px;
     font-size: 12px;
     font-weight: 600;
-    color: var(--og-kind);
+    color: color-mix(in srgb, var(--text) 78%, transparent);
   }
 
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-chain-node .icon { width: 16px; height: 16px; }
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-chain-node b { color: var(--text); font-weight: 600; }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-chain-ring {
+    display: grid;
+    place-items: center;
+    box-sizing: border-box;
+    width: var(--og-chain-node);
+    height: var(--og-chain-node);
+    border-radius: 50%;
+    border: 2px dotted color-mix(in srgb, var(--text) 70%, transparent); /* border dotted: Punktmatrix wie in der Vorlage */
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-chain-node .icon { width: 14px; height: 14px; }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-chain-node b { font-weight: 600; font-variant-numeric: tabular-nums; }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-chain-link {
+    width: 14px;
+    border-top: 2px dotted color-mix(in srgb, var(--text) 45%, transparent);
+  }
 
   /* Der Knopf: weiße Scheibe mit schwarzem Kreuz und Rand in der Kategoriefarbe, wie heroAddButton */
   :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-add {
