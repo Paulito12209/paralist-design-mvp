@@ -1,21 +1,18 @@
 /*
  * Geöffnete Seite der „OG Version“, Teil 2: die Fläche unter dem Kopf mit den
- * Reitern „Inhalt“ und „Verknüpfungen“ (PageDetailView.detailCanvas und
- * PillTabLabel) und die Einträge darin als Zeilen (PageRow): Glaskarte mit
- * Radius 20, Kachel mit farbigem Symbol links, bei Aufgaben rechts die runde
- * Checkbox. Greift nur mit data-mobile-os="ios", data-mobile-variant="og"
+ * Reitern „Schreibblock“ und „Inhalte“ (PageDetailView.detailCanvas und
+ * PillTabLabel) und dem „•••“-Knopf rechts daneben. Die Abschnitte und Zeilen
+ * darunter stehen in styles/og-detail-sections.css. Greift nur mit data-mobile-os="ios", data-mobile-variant="og"
  * und unter der Desktop-Grenze.
  * Pfad: styles/og-detail-body.css
  *
  * ANPASSBARE WERTE (tokens-og-detail.css und tokens-og.css)
  * -----------------------------------
  * --og-canvas-radius / -mix / -alpha / -base -> Rundung und Tönung der Fläche
- * --og-row-icon-tile -> Kachel links in der Zeile (28 pt)
- * --og-row-check     -> runde Checkbox (24 pt)
- * --og-radius-medium, --og-card-top/-bottom, --og-card-border -> Glaskarte der Zeile (tokens-og.css)
+ * --og-canvas-tail  -> so weit reicht die Fläche über den Scrollraum unten hinaus (so groß wie dessen Freiraum, 160 pt)
  *
  * Direkt bei den Regeln: Schrift der Reiter 17 pt halbfett, Höhe der Reiter
- * 40 pt, Rundung der Kachel 8 pt, Schrift des Zeilentitels 17 pt.
+ * 40 pt, Größe des „•••“-Knopfes 44 × 40 pt.
  */
 
 @media (max-width: 1023px) {
@@ -24,8 +21,8 @@
     position: relative; /* position: liegt über dem Kopf, dessen Fläche 28 pt unter die Kante reicht */
     z-index: 1; /* z-index: über Fläche und Schein des Kopfes */
     box-sizing: border-box;
-    margin: 0 calc(-1 * var(--content-side)) -104px; /* unten über den Scrollraum hinaus, damit keine Kante unter der Fläche steht */
-    padding: var(--og-box-inset) var(--og-space-sm) calc(104px + var(--og-nav-expanded));
+    margin: 0 calc(-1 * var(--content-side)) calc(-1 * var(--og-canvas-tail)); /* unten über den Scrollraum hinaus, damit keine Kante unter der Fläche steht */
+    padding: var(--og-box-inset) var(--og-space-sm) calc(var(--og-canvas-tail) + var(--og-nav-expanded));
     min-height: calc(100dvh - var(--og-hero-height));
     border-radius: var(--og-canvas-radius) var(--og-canvas-radius) 0 0;
     background: color-mix(
@@ -69,79 +66,43 @@
     background: none;
   }
 
-  /* ---------- Gruppenköpfe der Verknüpfungen ---------- */
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group-label {
-    font-size: 15px;
-    font-weight: 600;
+  /* ---------- „•••“ rechts neben den Reitern; die alten Werkzeuge (Kopieren, Info, Filter, Plus) stehen dort nicht mehr ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .page-pills-row { display: flex; align-items: center; }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .page-pills { flex: 1; min-width: 0; }
+
+  /* Unsichtbar, aber vorhanden: das Plus der Kiste löst den Anlege-Knopf von dort aus (position: absolute nimmt ihn aus der Zeile) */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry #entry-tools {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+    opacity: 0;
+    pointer-events: none;
   }
 
-  /* ---------- Zeilen: Glaskarte mit Kachel ---------- */
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .swipe { --og-row-kind: var(--og-note); }
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .swipe[data-og-type="projekt"] { --og-row-kind: var(--og-project); }
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .swipe[data-og-type="aufgabe"] { --og-row-kind: var(--og-task); }
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .swipe[data-og-type="termin"] { --og-row-kind: var(--og-event); }
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .swipe[data-og-type="lesezeichen"] { --og-row-kind: var(--og-bookmark); }
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .swipe:is([data-og-type="dokument"], [data-og-type="medien"]) { --og-row-kind: var(--og-resource); }
-
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .swipe { margin: 0 0 var(--og-space-sm); }
-
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .swipe-body {
-    border-radius: var(--og-radius-medium);
-    /* deckend: unter der Karte liegen die Wisch-Knöpfe und dürfen nicht durchscheinen */
-    background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom)), var(--bg);
-    border: 0.75px solid var(--og-card-border);
-    overflow: hidden; /* overflow: die Zeile folgt der Rundung der Karte */
-  }
-
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .entry-row {
-    gap: 12px;
-    padding: var(--og-space-sm) var(--og-box-inset);
-    background: none;
-    border: 0;
-  }
-
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .entry-row .row-title {
-    font-size: 17px;
-    font-weight: 500;
-  }
-
-  /* Kachel: das Symbol in der Kategoriefarbe auf einer feinen Tönung derselben Farbe */
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .entry-row .row-glyph {
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-more {
     display: grid;
     place-items: center;
     flex: 0 0 auto;
-    width: var(--og-row-icon-tile);
-    height: var(--og-row-icon-tile);
-    border-radius: 8px;
-    color: var(--og-row-kind);
-    background: color-mix(in srgb, var(--og-row-kind) 14%, transparent);
+    width: 44px;
+    height: 40px;
+    color: var(--text);
   }
 
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .entry-row .entry-type {
-    color: var(--og-row-kind);
-    width: 18px;
-    height: 18px;
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-more .icon {
+    width: 24px;
+    height: 24px;
+    transform: rotate(90deg); /* transform: das Symbol steht senkrecht, in der Vorlage liegen die drei Punkte */
   }
 
-  /* Runde Checkbox rechts bei Aufgaben (Ersatz für den Pfeil) */
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .entry-row .chevron { display: none; }
-
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-row-check {
-    display: grid;
-    place-items: center;
-    flex: 0 0 auto;
-    width: var(--og-row-check);
-    height: var(--og-row-check);
-    border-radius: 50%;
-    border: 1.5px solid color-mix(in srgb, var(--text) 35%, transparent);
-    color: transparent;
-  }
-
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-row-check .icon { width: 14px; height: 14px; }
-
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .is-task-done .og-row-check {
-    background: var(--og-row-kind);
-    border-color: var(--og-row-kind);
-    color: #ffffff;
+  /* Schreibfläche: abgesetztes Feld mit feinem Rand wie in der Vorlage. Es sitzt am Rahmen .entry-fold, nicht am Text:
+     wäre der Text selbst so hoch, kürzte die Seite ihn mit „Mehr anzeigen“ (src/features/entry/entry-fold.js) */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .entry-fold {
+    box-sizing: border-box;
+    min-height: var(--og-write-min) !important; /* !important: entry-fold.js setzt die Mindesthöhe selbst als style-Attribut */
+    padding: 16px;
+    border-radius: var(--og-write-radius);
+    background: color-mix(in srgb, var(--text) 7%, var(--bg));
+    border: 0.75px solid color-mix(in srgb, var(--text) 10%, transparent);
   }
 }
