@@ -1,17 +1,19 @@
 /*
- * „OG Version“: das Anlege-Zubehör über der Reiterkapsel und die Lupe rechts
- * neben ihr, nach BottomComposerBar.swift und ContentView.swift (Organi7er).
- * Links Kachel, Name und Pfeil, rechts Plus (ohne eigenen Körper) und
- * Wellen-Knopf; die Lupe ist ein eigener runder Glasknopf. Gebaut in
- * src/shell/og-bar.js, die Typwahl ist das Menü aus styles/ios-menu.css.
+ * „OG Version“: das Anlege-Zubehör über der Reiterkapsel, nach
+ * BottomComposerBar.swift und ContentView.swift (Organi7er). Links Kachel,
+ * Name und Pfeil, rechts Plus (ohne eigenen Körper) und Wellen-Knopf; gleich
+ * breit wie die Kapsel. Beim Herunterscrollen steht es als Pille zwischen dem
+ * runden Knopf des aktiven Reiters und der runden Lupe (nur dann sichtbar).
+ * Gebaut in src/shell/og-bar.js, die Typwahl ist das Menü aus styles/ios-menu.css.
  * Pfad: styles/og-accessory.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens-og-leiste.css)
  * -----------------------------------
  * --og-accessory-height / -gap -> Höhe des Zubehörs und Luft zur Kapsel
+ * --og-accessory-pad / -space  -> Innenrand links und rechts, Abstand Plus–Welle
  * --og-kind-tile / --og-kind-radius / --og-kind-tile-veil -> Kachel links
  * --og-accessory-btn  -> Tippfläche von Plus und Welle
- * --og-search-size    -> Durchmesser der Lupe
+ * --og-min-size       -> Durchmesser der Lupe im zusammengezogenen Zustand
  * --og-card-top / -bottom / -border (styles/tokens-og.css) -> Glasfläche
  * Am Seitenende wächst der Platz unter dem Inhalt um Zubehör plus Luft (padding-bottom von .content).
  *
@@ -28,9 +30,9 @@
   align-items: center;
   justify-content: space-between;
   height: var(--og-accessory-height);
-  /* margin-right: dieselbe Breite wie die Kapsel darunter, die Lupe steht rechts daneben */
-  margin: 0 calc(var(--og-search-size) + 10px) var(--og-accessory-gap) 0;
-  padding: 0 var(--og-space-sm) 0 var(--og-space-md);
+  margin: 0 0 var(--og-accessory-gap); /* gleich breit wie die Kapsel darunter */
+  padding: 0 calc(var(--og-accessory-pad) + 1px) 0 var(--og-accessory-pad);
+  gap: var(--og-accessory-space);
   border-radius: calc(var(--og-accessory-height) / 2);
   background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
   border: 0.75px solid var(--og-card-border);
@@ -117,17 +119,19 @@
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tint-resource { color: var(--og-resource); }
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tint-bookmark { color: var(--og-bookmark); }
 
-/* ---------- Lupe ---------- */
+/* ---------- Lupe (nur zusammengezogen) ---------- */
 
-/* position: rechts neben der Kapsel, auf derselben Grundlinie wie sie */
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-search {
+  display: none; /* display: aufgeklappt ist die Lupe der fünfte Reiter der Kapsel */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .device.is-tabbar-min .og-search {
   display: grid;
   place-items: center;
-  position: absolute;
-  right: var(--nav-side);
-  bottom: calc(var(--nav-bottom) + var(--safe-bottom));
-  width: var(--og-search-size);
-  height: var(--og-search-size);
+  order: 3;
+  flex: 0 0 var(--og-min-size);
+  width: var(--og-min-size);
+  height: var(--og-min-size);
   border-radius: 50%; /* border-radius: runder Knopf */
   background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
   border: 0.75px solid var(--og-card-border);
@@ -140,9 +144,22 @@
   height: 24px;
 }
 
-/* Beim Suchen und Anlegen haben beide nichts zu tun */
-:root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-search .og-accessory,
-:root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-search .og-search,
+/* Zusammengezogen: das Zubehör füllt die Mitte, die Welle entfällt */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .device.is-tabbar-min .og-accessory {
+  order: 2;
+  flex: 1 1 0;
+  min-width: 0;
+  margin: 0;
+  padding-right: 7px; /* padding-right: ohne Welle sitzt das Plus näher am Rand */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .device.is-tabbar-min .og-dictate {
+  display: none;
+}
+
+/* Beim Schreiben im Suchfeld und beim Anlegen haben beide nichts zu tun */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-search:has(#search-input:focus) .og-accessory,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-search:has(#search-input:focus) .og-search,
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .bottom-bar:has(.nav-shell.is-composing) .og-accessory,
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .bottom-bar:has(.nav-shell.is-composing) .og-search {
   display: none;
