@@ -17,6 +17,12 @@
   <symbol id="icon-check" viewBox="0 0 24 24" fill="none">
     <path d="m5.5 12.5 4.3 4.3L18.5 7.5" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" />
   </symbol>
+  <!-- Ziel: Projekte in der OG Version (Zielscheibe wie in Organi7er) -->
+  <symbol id="icon-target" viewBox="0 0 24 24" fill="none">
+    <circle cx="12" cy="12" r="9" stroke="currentColor" stroke-width="1.6" />
+    <circle cx="12" cy="12" r="5.4" stroke="currentColor" stroke-width="1.6" />
+    <circle cx="12" cy="12" r="1.8" fill="currentColor" />
+  </symbol>
   <symbol id="icon-dots" viewBox="0 0 24 24" fill="none">
     <circle cx="12" cy="5.2" r="1.7" fill="currentColor" />
     <circle cx="12" cy="12" r="1.7" fill="currentColor" />

@@ -33,6 +33,7 @@ import { overviewPages } from "../../data/config.js";
 import { archivedEntries, archivedWorkspaces, pageCount } from "../../data/queries.js";
 import { isMobileVariant } from "../../ui/platform.js";
 import { isViewActive } from "../../ui/views.js";
+import { initHomeOg, isOgHome, renderOgDash } from "./home-og.js";
 import { xoolTilesMarkup } from "./overview-xool.js";
 
 /* Android und Android (Experiment): Lesezeichen und Archiv stehen übereinander links,
@@ -113,8 +114,31 @@ function moreCardMarkup(card) {
   `;
 }
 
+/* „OG Version“: die Listen in der Reihenfolge der App (HomeListPreview.all) — Favoriten, Projekte,
+   Arbeitsbereiche, Ressourcen, dann die übrigen. „projects“ ist die Karte, die die Seite Projekte öffnet. */
+const ogListOrder = ["2", "projects", "3", "4", "1", "bookmarks", "archive"];
+
+function ogListsMarkup() {
+  return ogListOrder
+    .map((id) => {
+      if (id === "projects") {
+        return `<button class="overview-card" type="button" data-open-projects="1" aria-label="Projekte">${icon("target", "card-icon card-icon-target")}<span class="card-label"><span class="card-title">Projekte</span></span></button>`;
+      }
+      if (overviewPages[id]) return cardMarkup(id, overviewPages[id]);
+      return moreCardMarkup(moreCards.find((card) => card.id === id));
+    })
+    .join("");
+}
+
 /** Die Karten neu zeichnen. */
 export function renderOverview() {
+  renderOgDash();
+  if (isOgHome()) {
+    const scrolledOg = dom.overviewGrid.scrollLeft;
+    dom.overviewGrid.innerHTML = ogListsMarkup();
+    dom.overviewGrid.scrollLeft = scrolledOg;
+    return;
+  }
   /* „Android (Xool-DB)“: nur die vier Ablagen, keine zweite Seite */
   if (isMobileVariant("xool")) {
     dom.overviewGrid.innerHTML = xoolTilesMarkup(icon);
@@ -154,6 +178,7 @@ function syncPager() {
 
 /** Die Karten anmelden: sie frischen sich auf, wenn sich Daten ändern. */
 export function initOverview() {
+  initHomeOg();
   dom.overviewGrid.addEventListener("scroll", syncPager, { passive: true });
   on(events.dataChanged, () => {
     if (isViewActive("home")) renderOverview();

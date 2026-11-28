@@ -1,0 +1,296 @@
+/*
+ * Karten des Dashboards der „OG Version“: die große Karte (Im Blick) und die
+ * mittlere Kachel (Zuletzt …) mit Kategorie-Pille, Titel, Zeitpille, Stern,
+ * Zähler-Kette und getöntem Glasfuß. Die Fläche (Säule, Schein) kommt über
+ * die Klasse .og-art aus styles/og-lists.css.
+ * Pfad: styles/og-dash-card.css
+ *
+ * ANPASSBARE WERTE (Maße in styles/tokens-og-home.css, Flächenwerte in styles/tokens-og-leiste.css)
+ * -----------------------------------
+ * --og-big-w, --og-big-h, --og-big-radius -> Größe und Rundung der großen Karte
+ * --og-tile-gap, --og-tile-count, --og-tile-ratio -> Breite und Form der Kachel
+ * --og-c (je Karte per style gesetzt) -> Kategoriefarbe der Karte
+ * Schrift hier direkt: Kategorie 12 pt (Kachel 10 pt), Titel 20 pt (Kachel 17 pt),
+ * Zeitpille 12 pt, Elternzeile 11 pt, Stern 15 pt.
+ */
+
+/* ---------- eine Karte (groß und Kachel) ---------- */
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-card {
+  --og-base: color-mix(in srgb, var(--og-shade) var(--og-surface-shade), var(--og-c));
+  --og-core-c: color-mix(in srgb, var(--og-c) var(--og-core-tint), var(--og-core));
+  position: relative; /* position: Bezug für Säule, Schein und Fuß */
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  overflow: hidden; /* overflow: Säule und Schein enden an der Rundung */
+  color: var(--text);
+  scroll-snap-align: start;
+  cursor: pointer;
+  background: radial-gradient(
+    ellipse 76% 76% at 50% 46%,
+    color-mix(in srgb, white var(--og-surface-0), var(--og-base)) 0,
+    color-mix(in srgb, white var(--og-surface-1), var(--og-base)) 52%,
+    color-mix(in srgb, white var(--og-surface-2), var(--og-base)) 82%,
+    color-mix(in srgb, white var(--og-surface-3), var(--og-base)) 100%
+  );
+  box-shadow: inset 1px 1px 0 var(--og-list-rim-top), inset -1px -1px 0 var(--og-list-rim-bottom);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-card-lg {
+  width: var(--og-big-w);
+  height: var(--og-big-h);
+  padding: 16px;
+  border-radius: var(--og-big-radius);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tile {
+  width: calc((100cqw - var(--og-tile-gap) * 3) / var(--og-tile-count));
+  aspect-ratio: 1 / var(--og-tile-ratio);
+  padding: 10px;
+  border-radius: var(--og-radius-medium);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-top,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-bottom {
+  position: relative;
+  z-index: 1; /* z-index: über Säule und Schein */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-width: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--text) 88%, transparent);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tile .og-pill {
+  font-size: 10px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-pill .icon {
+  flex: 0 0 auto;
+  width: 14px;
+  height: 14px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tile .og-pill .icon {
+  width: 11px;
+  height: 11px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-pill span {
+  overflow: hidden;
+  text-overflow: ellipsis; /* text-overflow: lange Namen enden mit „…“ */
+  white-space: nowrap;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-title {
+  display: -webkit-box; /* -webkit-box: Titel auf feste Zeilenzahl kürzen */
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.2;
+  hyphens: auto;
+  overflow-wrap: anywhere;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tile .og-title {
+  -webkit-line-clamp: 2;
+  font-size: 17px;
+  line-height: 1.18;
+  margin-bottom: 8px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-parent {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-parent .icon {
+  width: 12px;
+  height: 12px;
+}
+
+/* Fuß: Zeitpille links, Stern und Punkte rechts */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-foot {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 44px;
+  margin-top: 8px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-foot-small {
+  height: auto;
+  margin-top: 0;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: var(--muted);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 10%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--text) 14%, transparent);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-time .icon {
+  width: 12px;
+  height: 12px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-stamp {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  flex: 1 1 0; /* flex: der Zeitstempel gibt nach und kürzt, statt den Stern zu überdecken */
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-dm {
+  flex: 0 0 auto;
+  display: block;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-actions {
+  display: flex;
+  align-items: flex-end;
+  gap: 4px;
+  margin-left: auto;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-star,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-dots {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--text);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tile .og-star {
+  width: 16px;
+  height: 16px;
+  color: var(--muted);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-star .icon {
+  width: 15px;
+  height: 15px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tile .og-star .icon {
+  width: 14px;
+  height: 14px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-star.is-favorite {
+  color: var(--og-favorite);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-dots .icon {
+  width: 20px;
+  height: 20px;
+  transform: rotate(90deg); /* rotate: die drei Punkte liegen waagerecht wie in der App */
+}
+
+/* Zähler-Kette oben rechts */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-counts {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  color: color-mix(in srgb, var(--text) 62%, transparent);
+  pointer-events: none; /* pointer-events: Tipps gehen an die Karte */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-count {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-count:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  left: 12px;
+  top: 24px;
+  width: 1px;
+  height: 10px;
+  background: currentColor;
+  opacity: 0.55;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-count-node {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-count-node svg {
+  position: absolute;
+  inset: 0;
+  fill: currentColor;
+  width: 24px;
+  height: 24px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-count-node .icon {
+  position: relative;
+  width: 12px;
+  height: 12px;
+}
+
+/* Getönter Glasfuß unten auf der Karte */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-card .og-bottom::before {
+  content: "";
+  position: absolute;
+  z-index: -1;
+  left: -16px;
+  right: -16px;
+  bottom: -16px;
+  height: calc(100% + 16px);
+  background: color-mix(in srgb, var(--og-c) 10%, transparent);
+  backdrop-filter: blur(8px); /* backdrop-filter: Glas verwischt den Schein darunter */
+  -webkit-backdrop-filter: blur(8px);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tile .og-bottom::before {
+  left: -10px;
+  right: -10px;
+  bottom: -10px;
+  height: calc(100% + 10px);
+}

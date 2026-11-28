@@ -95,6 +95,9 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/tokens-og-leiste.css` | „OG Version“: Werte für Kapsel, Zubehör, zusammengezogene Leiste und kleine Listen-Karten (hell und dunkel) |
 | `styles/og-accessory.css` | „OG Version“: Anlege-Zubehör (Kachel, Plus, Welle) über der Kapsel; zusammengezogen mit runder Lupe |
 | `styles/og-lists.css` | „OG Version“: Übersicht mit „Listen ›“ und waagerechter Reihe kleiner Karten (80 × 116 pt) |
+| `styles/tokens-og-home.css` | „OG Version“: Maße der großen Karten und Kacheln im Dashboard der Übersicht |
+| `styles/og-dash.css` | „OG Version“: Dashboard der Übersicht — Im Blick mit Filter-Pillen, große Karten, Reihen „Zuletzt …“, Knopf „Dashboard anpassen“ |
+| `styles/og-dash-card.css` | „OG Version“: die großen Karten und mittleren Kacheln des Dashboards samt Zähler-Kette und Glasfuß |
 | `styles/og-nav.css` | „OG Version“: Reiterkapsel mit fünf Reitern (inkl. Suchen), zieht sich beim Scrollen zusammen |
 | `styles/tokens-og-detail.css` | „OG Version“: Werte der geöffneten Seite (Kopfhöhe, Kiste, Anlege-Knopf, Fläche, Zeilen, Detail-Leiste) |
 | `styles/og-detail.css` | „OG Version“: Kopf der geöffneten Seite als farbige Karte mit Wasserzeichen, Verknüpfungen, Titel und Kiste |
