@@ -18,7 +18,7 @@ import { emit, events } from "../../core/bus.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { noHistoryForm } from "../../core/no-history.js";
 import { account } from "../../data/account.js";
-import { defaultName, setProfileField, shownName } from "../../data/profile.js";
+import { defaultName, profileFields, setProfileField, shownName } from "../../data/profile.js";
 
 /* Die Knöpfe rechts neben dem Feld: Verwerfen links, Speichern ganz rechts, wie bei Material-Textfeldern. */
 function actionsMarkup() {
@@ -30,9 +30,12 @@ function actionsMarkup() {
 /* Den Namen wieder als Text zeigen und die Initialen im runden Bild nachziehen (sofern dort kein Foto steht). */
 function showText(head) {
   head.classList.remove("is-editing");
-  head.innerHTML = escapeHtml(shownName());
+  /* data-unset-text: die OG Version zeigt ohne Namen „Name hinzufügen“ statt des Platzhalters */
+  const unset = head.dataset.unsetText && !profileFields().name;
+  head.classList.toggle("is-unset", Boolean(unset));
+  head.innerHTML = unset ? escapeHtml(head.dataset.unsetText) : escapeHtml(shownName());
   document.querySelectorAll(".profile-avatar").forEach((avatar) => {
-    if (!avatar.querySelector("img")) avatar.textContent = account.initials;
+    if (!avatar.querySelector("img, .icon")) avatar.textContent = account.initials;
   });
 }
 
@@ -51,10 +54,11 @@ function finish(head, input, save) {
 }
 
 function startEdit(head) {
+  const unset = head.dataset.unsetText && !profileFields().name;
   head.classList.add("is-editing");
   head.innerHTML = `
     <input class="profile-name-input" type="text" inputmode="text" form="${noHistoryForm}" enterkeyhint="done"
-      value="${escapeHtml(shownName())}" placeholder="${escapeHtml(defaultName)}" aria-label="Name" />
+      value="${unset ? "" : escapeHtml(shownName())}" placeholder="${escapeHtml(unset ? head.dataset.unsetText : defaultName)}" aria-label="Name" />
     ${actionsMarkup()}`;
   const input = head.querySelector(".profile-name-input");
   /* pressing: ein Tipp auf die Knöpfe nimmt dem Feld zuerst den Fokus — das darf nicht schon speichern */

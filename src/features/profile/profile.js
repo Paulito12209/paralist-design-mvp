@@ -43,6 +43,8 @@ import {
   setDraft,
 } from "./avatar.js";
 import { onAccountClick } from "./account.js";
+import { isOgSettings, ogListMarkup, onOgClick } from "./og-settings.js";
+import { checkForUpdateNow } from "./update-check.js";
 import { onAppSettingsClick } from "./app-settings.js";
 import { noteFeedbackInput, onFeedbackClick } from "./feedback.js";
 import { initProfilePage, renderPageChrome, selectPane } from "./profile-page.js";
@@ -73,9 +75,8 @@ export function renderProfile() {
   shownDetail = ui.settingsDetail;
   shownPane = ui.settingsPane;
   /* Am Handy die ganze Liste, am Desktop nur der Punkt aus dem Untermenü. */
-  const list = isDesk()
-    ? paneMarkup(ui.settingsPane)
-    : identityCard() + appearanceSection() + listsMarkup();
+  const phoneList = isOgSettings() ? ogListMarkup() : identityCard() + appearanceSection() + listsMarkup();
+  const list = isDesk() ? paneMarkup(ui.settingsPane) : phoneList;
   /* is-list: nur die Liste bekommt in der Android-Fassung Kachelgruppen ohne Titel */
   dom.profileBody.classList.toggle("is-list", !shownDetail);
   dom.profileBody.innerHTML = shownDetail ? detailMarkup(shownDetail) : list;
@@ -285,30 +286,10 @@ function openAvatarPicker() {
   openSheet("Profilbild", options);
 }
 
-/* Was „Nach Updates suchen“ rechts in der Zeile anzeigt. */
-const updateStatus = {
-  checking: "Wird gesucht …",
-  loading: "Wird geladen …",
-  current: "Aktuell",
-  offline: "Kein Netz",
-};
-
-/* Die Hülle (src/shell/update-prompt.js) sieht nach und lädt eine neuere
-   Fassung sofort; hier steht nur, was sie zurückmeldet. */
-function checkForUpdateNow(row) {
-  if (row.dataset.busy === "1") return;
-  const status = row.querySelector(".plist-status");
-  const show = (key) => {
-    status.textContent = updateStatus[key] || "";
-    row.dataset.busy = key === "checking" || key === "loading" ? "1" : "";
-  };
-  show("checking");
-  emit(events.updateRequested, { report: show });
-}
-
 /* Klicks im Blatt: Feedback-Seite, Bild, Unterseiten, Darstellung, Kurzbefehle, Versionen, Zeitraum (Desktop). */
 function onBodyClick(event) {
   if (onAccountClick(event)) return;
+  if (onOgClick(event, rerenderKeepingScroll)) return;
   if (onFeedbackClick(event)) {
     rerenderKeepingScroll();
     return;

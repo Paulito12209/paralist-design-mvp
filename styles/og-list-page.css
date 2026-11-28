@@ -1,0 +1,133 @@
+/*
+ * Listenseiten der „OG Version“ (Projekte, Eingang, Favoriten, Ressourcen,
+ * Arbeitsbereiche — ScopedPageList und PageRow in Organi7er): ein einfacher
+ * großer Titel ohne Symbol und Beschreibung, die Ansichten als Segment mit
+ * rot getöntem Gewählten und rundem Filter-Knopf, die Einträge als Glaskarten
+ * mit Symbol in Kategoriefarbe, Titel, der Art darunter und „•••“. Die
+ * Auszeichnung der Zeilen (data-og-type, Klassen) kommt aus src/ui/og-rows.js,
+ * angemeldet in src/features/overview/page-og-list.js. Greift nur mit
+ * data-mobile-os="ios", data-mobile-variant="og" und unter der Desktop-Grenze.
+ * Pfad: styles/og-list-page.css
+ *
+ * ANPASSBARE WERTE (tokens-og-detail.css, Kartenfarben in tokens-og.css)
+ * -----------------------------------
+ * --og-listcard-radius / -pad / -gap -> Rundung, Innenabstand und Abstand der Karten
+ * --og-listhead-gap                -> Luft zwischen den runden Knöpfen oben und dem Titel
+ * --og-seg-height / --og-seg-fill    -> Höhe und Fläche des Segments (Ansichten)
+ * --og-card-top / -bottom / -border  -> Glasfläche der Karten
+ *
+ * Direkt bei den Regeln: Titel 17 pt, Art darunter 15 pt, Schrift des
+ * Segments 17 pt halbfett, Durchmesser des Filter-Knopfes 54 pt.
+ */
+
+@media (max-width: 1023px) {
+  /* ---------- Kopf: nur der große Titel ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page :is(.page-hero-icon, .page-intro) { display: none; }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .page-title { margin-top: var(--og-listhead-gap); }
+
+  /* ---------- Ansichten als Segment ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .project-views .tab-pills {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    min-height: var(--og-seg-height);
+    padding: 6px;
+    box-sizing: border-box;
+    border-radius: 999px;
+    background: var(--og-seg-fill);
+    border: 0.75px solid color-mix(in srgb, var(--text) 8%, transparent);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .project-views .tab-pill {
+    flex: 1;
+    justify-content: center;
+    min-height: 100%;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+    background: none;
+    box-shadow: none;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .project-views .tab-pill.is-active {
+    background: color-mix(in srgb, var(--og-project) 26%, transparent);
+    box-shadow: inset 0 0 0 0.75px color-mix(in srgb, var(--og-project) 55%, transparent);
+  }
+
+  /* „Neue Ansicht“ bleibt als kleines Plus erreichbar; der Text daneben würde bei 375 pt abgeschnitten */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .project-views :is(.tab-pill-add-text, .tab-pill-add-edge) { display: none; }
+
+  /* Rechts ein runder Filter-Knopf; „Projekt hinzufügen“ übernimmt das Eingabefeld unten */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .project-views .add-btn,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .project-views .tab-pills-split { display: none; }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .project-views .view-panel-btn {
+    display: grid;
+    place-items: center;
+    width: var(--og-seg-height);
+    height: var(--og-seg-height);
+    border-radius: 50%;
+    background: var(--og-seg-fill);
+    border: 0.75px solid color-mix(in srgb, var(--text) 8%, transparent);
+    color: var(--text);
+  }
+
+  /* ---------- Einträge als Glaskarten ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .swipe[data-entry] { margin: 0 0 var(--og-listcard-gap); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .swipe[data-entry]::after { display: none; } /* display: die Trennlinie ersetzt der Abstand zwischen den Karten */
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .swipe[data-entry] .swipe-body {
+    padding: 0;
+    border-radius: var(--og-listcard-radius);
+    /* deckend: unter der Karte liegen die Wisch-Knöpfe und dürfen nicht durchscheinen */
+    background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom)), var(--bg);
+    border: 0.75px solid var(--og-card-border);
+    overflow: hidden; /* overflow: die Zeile folgt der Rundung der Karte */
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .swipe[data-entry] .entry-row {
+    gap: 14px;
+    padding: var(--og-listcard-pad);
+    border: 0;
+    background: none;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .swipe[data-entry] .row-glyph {
+    margin: 0; /* margin und padding: die vergrößerte Tippfläche des Symbols (styles/rows.css) würde sonst den Abstand verschieben */
+    padding: 0;
+    flex: 0 0 auto;
+    color: var(--og-kind);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .swipe[data-entry] .entry-type { width: 26px; height: 26px; color: var(--og-kind); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .swipe[data-entry] .chevron { display: none; }
+  /* „•••“ rechts: öffnet das Menü der Zeile (src/ui/list-clicks.js); sonst nur in der Android-Fassung sichtbar */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .swipe[data-entry] .row-more {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: 36px;
+    height: 36px;
+    margin: -6px -8px -6px 0;
+    color: var(--muted);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .swipe[data-entry] .row-more .icon-drag { display: none; }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .swipe[data-entry] .row-more .icon-dots {
+    width: 22px;
+    height: 22px;
+    transform: rotate(90deg); /* transform: das Symbol steht senkrecht, in der Vorlage liegen die drei Punkte */
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .og-row-text {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .swipe[data-entry] .row-title { font-size: 17px; font-weight: 400; color: var(--text); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-page .og-row-sub { flex: none; font-size: 15px; color: var(--muted); }
+}

@@ -2,17 +2,17 @@
  * Geöffnete Seite der „OG Version“, Teil 3: die kleine Detail-Leiste unten
  * statt der Hauptleiste (PageDetailNavigation und Tokens.Layout.detailNavigation*
  * in Organi7er). Sie ist unsichtbar, solange der Chevron oben im Kopf zu sehen
- * ist; danach fährt sie von unten herein. Mit weggescrolltem Anlege-Knopf kommt
- * das Plus dazu, mit weggescrolltem Kopf der Pfeil nach oben. Den Aufbau und
- * das Umschalten der Klassen (is-shown, has-add, has-top) macht
+ * ist; danach fährt sie von unten herein: Chevron nach unten (schließt), Pfeil
+ * nach oben auf heller Scheibe (zum Seitenanfang) und das bunte Plus (legt an).
+ * Den Aufbau und das Umschalten der Klasse (is-shown) macht
  * src/features/entry/entry-og-hero.js. Greift nur mit data-mobile-os="ios",
  * data-mobile-variant="og" und unter der Desktop-Grenze.
  * Pfad: styles/og-detail-nav.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens-og-detail.css)
  * -----------------------------------
- * --og-nav-compact  -> Höhe mit einem Knopf (36 pt)
- * --og-nav-expanded -> Höhe mit mehreren Knöpfen (40 pt)
+ * --og-nav-lit-size -> Höhe der Knöpfe, der helle Pfeil ist so groß wie die Leiste (40 pt)
+ * --og-nav-lit / --og-nav-lit-text -> helle Scheibe des Pfeils und sein Symbol
  * --og-nav-bottom   -> Luft zwischen Leiste und unterem Rand (16 pt)
  * --og-nav-slot / --og-nav-inset -> Fuge zwischen den Knöpfen und Luft zum Rand (2 / 3 pt)
  * --og-card-top/-bottom, --og-card-border (tokens-og.css) -> Glasfläche der Leiste
@@ -20,7 +20,7 @@
 
 @media (max-width: 1023px) {
   /* Auf der Eintragsseite weicht die Hauptleiste der Detail-Leiste */
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] body:has(#view-entry:not([hidden])) :is(.bottom-bar .tab-bar, .bottom-bar .nav-shell, .bottom-bar .ios-add) {
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] body:has(#view-entry:not([hidden])) :is(.bottom-bar .tab-bar, .bottom-bar .nav-shell, .bottom-bar .ios-add, .bottom-bar .og-accessory, .bottom-bar .og-search) {
     display: none;
   }
 
@@ -51,24 +51,24 @@
   :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-nav-btn {
     display: grid;
     place-items: center;
-    height: var(--og-nav-compact);
-    min-width: var(--og-nav-compact);
+    height: var(--og-nav-lit-size);
+    min-width: 54px;
     padding: 0 10px;
     border-radius: 999px;
     color: var(--text);
   }
 
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-detail-nav.has-add .og-nav-btn {
-    height: var(--og-nav-expanded);
-    min-width: var(--og-nav-expanded);
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-nav-btn .icon { width: 20px; height: 20px; }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-nav-close .icon { transform: rotate(90deg); } /* transform: Chevron nach unten */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-nav-top .icon { width: 22px; height: 22px; }
+
+  /* Der Pfeil nach oben sitzt auf einer hellen Scheibe wie die gewählte Stelle der Hauptleiste */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-nav-top {
+    background: var(--og-nav-lit);
+    color: var(--og-nav-lit-text);
+    min-width: var(--og-nav-lit-size);
+    height: var(--og-nav-lit-size);
   }
 
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-nav-btn .icon { width: 18px; height: 18px; }
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-nav-close .icon { transform: rotate(90deg); } /* transform: Chevron nach unten */
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-nav-top .icon { transform: rotate(-90deg); } /* transform: Pfeil nach oben */
-
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-nav-add,
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-nav-top { display: none; }
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-detail-nav.has-add .og-nav-add,
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-detail-nav.has-top .og-nav-top { display: grid; }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-color-plus { width: 26px; height: 26px; }
 }

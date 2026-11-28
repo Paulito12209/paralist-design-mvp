@@ -101,13 +101,16 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/og-nav.css` | „OG Version“: Reiterkapsel mit fünf Reitern (inkl. Suchen), zieht sich beim Scrollen zusammen |
 | `styles/tokens-og-detail.css` | „OG Version“: Werte der geöffneten Seite (Kopfhöhe, Kiste, Anlege-Knopf, Fläche, Zeilen, Detail-Leiste) |
 | `styles/og-detail.css` | „OG Version“: Kopf der geöffneten Seite als farbige Karte mit Wasserzeichen, Verknüpfungen, Titel und Kiste |
-| `styles/og-detail-body.css` | „OG Version“: Fläche mit Reitern und Einträge als Glaskarten-Zeilen mit Kachel und runder Checkbox |
+| `styles/og-detail-body.css` | „OG Version“: Fläche mit den Reitern „Schreibblock“ und „Inhalte“ und dem „•••“-Knopf |
+| `styles/og-list-page.css` | „OG Version“: Listenseiten (Projekte u. a.) mit schlichtem Titel, Segment der Ansichten und Einträgen als Glaskarten |
+| `styles/og-detail-sections.css` | „OG Version“: „Inhalte“ als getönte Abschnittskarten mit ↗-Knopf, Zeilen, Checkbox und gestricheltem Anlege-Knopf |
 | `styles/og-detail-nav.css` | „OG Version“: kleine Detail-Leiste unten statt der Hauptleiste |
 | `styles/tokens-og-settings.css` | „OG Version“: Werte für Suche und Einstellungen (Gruppenfläche, Linien, Zeilenhöhe, Profilbild) |
 | `styles/og-search.css` | „OG Version“: Suche mit Treffern als Glaskarten, Glas-Reitern und Glas-Kapseln unten |
 | `styles/og-search-start.css` | „OG Version“: Seite „Suchen“ mit Glas-Gruppe, „Zuletzt geöffnet“ und Unterseiten |
 | `styles/og-search-field.css` | „OG Version“: aktives Suchfeld als Glas-Pille mit ✕ über der Tastatur |
 | `styles/og-settings.css` | „OG Version“: Einstellungen mit matten Gruppen und Profilkarte, Fortschritt als Glaskarten |
+| `styles/og-settings-sheet.css` | „OG Version“: Einstellungs-Blatt mit Kopf (Griff, Titel, runder Schließen-Knopf, weiche Unterkante), Profilkarte mit „Mehr Infos“ |
 | `styles/tokens-og-media.css` | die Werte der Reiter Medien und Karteikarten der „OG Version“: Filter-Pillen, Kacheln, Aufnahmeknöpfe, Stapelkarten, Lernansicht |
 | `styles/og-media.css` | „OG Version“: Medien-Seite mit großem Titel, Filter-Pillen in Kategoriefarbe und Raster mit 14-pt-Kacheln |
 | `styles/og-media-bar.css` | „OG Version“: Aufnahmezeile der Medien-Seite als vier runde Glasknöpfe |

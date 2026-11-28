@@ -142,7 +142,7 @@ function rowMarkup(row) {
   const text = typeof row.value === "function" ? row.value() : row.value;
   const value = text ? `<span class="plist-value">${escapeHtml(text)}</span>` : "";
   /* plist-status: dort meldet „Nach Updates suchen“ den Stand, ohne neu zu zeichnen */
-  const status = row.action ? `<span class="plist-value plist-status"></span>` : "";
+  const status = row.action === "update" ? `<span class="plist-value plist-status"></span>` : "";
   const inner = `
           ${icon(row.icon)}
           <span>${escapeHtml(row.label)}</span>
@@ -192,6 +192,12 @@ export function listsMarkup() {
 export function listSection(title) {
   const section = listSections.find((item) => item.title === title);
   return section ? sectionOf(section) : "";
+}
+
+/** Die Zeilen eines Abschnitts („Mehr“, „App“, „Support“) — die OG Version ordnet sie in eigene Gruppen. */
+export function rowsOf(title) {
+  const section = listSections.find((item) => item.title === title);
+  return section ? section.rows.filter(fits) : [];
 }
 
 /** „Konto“, „Daten“ und „Konto löschen“ — der Punkt „Konto“ der Profilseite am Desktop. */

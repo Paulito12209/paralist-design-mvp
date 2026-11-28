@@ -1,0 +1,187 @@
+/*
+ * Geöffnete Seite der „OG Version“, Teil 4: der Reiter „Inhalte“ als
+ * Abschnittskarten nach PageKindDetailSections und PageLinkRow (Organi7er).
+ * Je Art eine getönte Karte mit Titel, rundem ↗-Knopf in der Kategoriefarbe
+ * und gestricheltem „+ … hinzufügen“ am Fuß; darin Zeilen ohne eigene Karte:
+ * Aufgaben mit runder Checkbox und Pillen für Dringlichkeit und Status,
+ * alles andere mit Symbol in Kategoriefarbe und der Art darunter. Die Klassen
+ * und data-Attribute setzt src/features/entry/entry-og-sections.js. Greift
+ * nur mit data-mobile-os="ios", data-mobile-variant="og" und unter der
+ * Desktop-Grenze.
+ * Pfad: styles/og-detail-sections.css
+ *
+ * ANPASSBARE WERTE (tokens-og-detail.css, Kategoriefarben in tokens-og.css)
+ * -----------------------------------
+ * --og-sect-radius / -pad / -gap -> Rundung, Innenabstand und Abstand zwischen den Karten
+ * --og-sect-mix / --og-sect-base -> wie stark die Kategoriefarbe in der Karte steht und worauf sie gemischt wird
+ * --og-sect-border               -> Anteil der Kategoriefarbe im feinen Rand
+ * --og-row-icon, --og-row-check  -> Symbol und runde Checkbox einer Zeile (26 / 26 pt)
+ *
+ * Direkt bei den Regeln: Schrift von Abschnittstitel und Zeilentitel 17 pt,
+ * der Zeilen-Pillen 13 pt, der Art unter dem Titel 15 pt, Größe des ↗-Knopfes 32 pt.
+ */
+
+@media (max-width: 1023px) {
+  /* ---------- Abschnittskarte ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group {
+    position: relative; /* position: Anker für den ↗-Knopf rechts neben der Überschrift */
+    margin: 0 0 var(--og-sect-gap);
+    padding: 0 var(--og-sect-pad) var(--og-sect-pad);
+    border-radius: var(--og-sect-radius);
+    background: color-mix(in srgb, var(--og-kind) var(--og-sect-mix), var(--og-sect-base));
+    border: 0.75px solid color-mix(in srgb, var(--og-kind) var(--og-sect-border), transparent);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group-head {
+    padding: 18px 44px 6px 0;
+    min-height: 44px;
+    box-sizing: border-box;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group-label {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group-count,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group-chevron { display: none; }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-group-open {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    color: var(--og-kind);
+    background: color-mix(in srgb, var(--og-kind) 22%, transparent);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-group-open .icon { width: 16px; height: 16px; }
+
+  /* ---------- Gestrichelter Anlege-Knopf ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-group-add {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    width: 100%;
+    height: 44px;
+    margin-top: 8px;
+    border-radius: 18px;
+    border: 1px dashed color-mix(in srgb, var(--text) 38%, transparent);
+    font-size: 17px;
+    color: var(--muted);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-group-add .icon { width: 18px; height: 18px; }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group.is-collapsed .og-group-add { display: none; }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group.is-collapsed .group-head { padding-bottom: 18px; }
+
+  /* ---------- Zeilen ohne Karte ---------- */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group .swipe { margin: 0; }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group .swipe-body {
+    /* deckend in der Farbe der Karte: darunter liegen die Wisch-Knöpfe und dürfen nicht durchscheinen */
+    background: color-mix(in srgb, var(--og-kind) var(--og-sect-mix), var(--og-sect-base));
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+  }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group .swipe::after { display: none; } /* display: die Trennlinie der Zeilen fehlt in der Vorlage */
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group .entry-row {
+    gap: 14px;
+    align-items: center;
+    padding: 12px 0;
+    background: none;
+    border: 0;
+    box-shadow: none;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group .row-glyph {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    width: var(--og-row-icon);
+    margin: 0; /* margin und padding: das Symbol hat sonst eine vergrößerte Tippfläche (styles/rows.css), die es hier verschluckt */
+    padding: 0;
+    background: none;
+    color: var(--og-kind);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group .entry-type { width: 22px; height: 22px; color: var(--og-kind); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group :is(.chevron, .row-more) { display: none; }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-row-text {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
+    text-align: left;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group .row-title {
+    font-size: 17px;
+    font-weight: 400;
+    color: var(--text);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-row-sub {
+    font-size: 15px;
+    color: var(--muted);
+  }
+
+  /* Aufgaben: die Checkbox ersetzt das Symbol */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group .swipe[data-og-type="aufgabe"] .row-glyph { display: none; }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-row-check {
+    display: grid;
+    place-items: center;
+    flex: 0 0 auto;
+    box-sizing: border-box;
+    width: var(--og-row-check);
+    height: var(--og-row-check);
+    border-radius: 50%;
+    border: 2px solid var(--og-kind);
+    color: var(--og-kind);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-row-check .icon { width: 14px; height: 14px; color: inherit; }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-row-check.is-on { background: var(--og-kind); color: #ffffff; }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .is-task-done .row-title { text-decoration: line-through; color: var(--muted); } /* text-decoration: erledigt bleibt am durchgestrichenen Titel erkennbar */
+
+  /* Pillen: Dringlichkeit in ihrer Farbe, Status grau */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-row-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-row-pill {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 5px;
+    height: 28px;
+    padding: 0 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--og-pill);
+    background: color-mix(in srgb, var(--og-pill) 16%, transparent);
+    border: 0.75px solid color-mix(in srgb, var(--og-pill) 40%, transparent);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-row-pill.is-status {
+    color: var(--muted);
+    background: color-mix(in srgb, var(--text) 8%, transparent);
+    border-color: color-mix(in srgb, var(--text) 18%, transparent);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-row-pill .icon { width: 14px; height: 14px; color: inherit; }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .og-row-pill span { flex: none; } /* flex: styles/rows.css streckt jedes span einer Zeile, die Pille soll nur so breit sein wie ihr Text */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry :is(.og-row-pills, .og-row-sub) { flex: none; }
+
+  /* Medien-Streifen füllen die Karte, die Kacheln behalten ihr Aussehen */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-entry .group .media-kinds { padding-top: 4px; }
+}

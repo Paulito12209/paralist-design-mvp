@@ -60,7 +60,7 @@ import { initEntryCover, renderEntryCover } from "./entry-cover.js";
 import { initEntryDetails, renderEntryDetails } from "./entry-details.js";
 import { initEntryHead, renderEntryHead } from "./entry-head.js";
 import { initEntryInline } from "./entry-inline.js";
-import { initEntryOgHero, renderEntryOgHero } from "./entry-og-hero.js";
+import { initEntryOgHero, ogEmptyHint, renderEntryOgHero } from "./entry-og-hero.js";
 import { entrySteps, mountPath, renderPath } from "../../ui/page-path.js";
 import { expandEntryFold, initEntryFold, layoutEntryFold, resetEntryFold } from "./entry-fold.js";
 import { dropLift } from "./entry-lift.js";
@@ -221,6 +221,7 @@ export function initEntry() {
   initEntryTitle();
   bodyEditor = createBlockEditor(dom.entryBody, {
     onChange: saveBody,
+    emptyHint: ogEmptyHint(),
     /* YouTube-Karte: Player an ihrer Stelle statt neuer Tab (src/ui/video-player.js,
        nachgeladen). Der Text klappt aus, damit der Player nicht unterm Auslaufen liegt. */
     onVideo: (block, card) =>
