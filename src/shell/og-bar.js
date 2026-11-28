@@ -11,10 +11,13 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * startKind  -> welche Art das Plus anlegt, bevor man eine andere gewählt hat
+ * viewKinds  -> welche Art ein Reiter von sich aus vorschlägt (Kalender: Termin, Karteikarten:
+ *               Karteistapel); alle übrigen Reiter zeigen die zuletzt gewählte Art
  * kindTints  -> Farbe der Kachel je Art (Name der Farbe in styles/tokens-og.css);
  *               Dokument, Zeichnung und Medium zählen wie in der App zu den Ressourcen
  */
 
+import { events, on } from "../core/bus.js";
 import { dom } from "../core/dom.js";
 import { escapeHtml, icon } from "../core/html.js";
 import { typeIcon, typeLabel } from "../data/config.js";
@@ -36,19 +39,37 @@ const kindTints = {
   zeichnung: "resource",
   lesezeichen: "bookmark",
   medien: "resource",
+  karteistapel: "deck",
 };
+
+/* Reiter mit eigener Vorgabe, wie calendarPreferredKind und cardsPreferredKind in ContentView.swift */
+const viewKinds = { calendar: "termin", cards: "karteistapel" };
+
+/* Der Karteistapel ist keine Eintragsart: er hat weder Typ noch Eingabefeld und legt sich über den Import-Knopf der Karteikarten-Seite an */
+const deckKind = "karteistapel";
+const deckImportButton = '[data-cards-import="open"]';
 
 /* Der Arbeitsbereich hat keinen Typ in der Konfiguration und bringt sein Icon selbst mit */
 const workspaceKind = "arbeitsbereich";
 
-let kind = startKind;
+/* chosen: die zuletzt gewählte Art; picked: Wahl auf einem Reiter mit eigener Vorgabe, gilt bis zum Wechsel;
+   view: der Reiter, auf dem man gerade ist */
+let chosen = startKind;
+const picked = {};
+let view = "home";
 let pill = null;
 
+function currentKind() {
+  return picked[view] || viewKinds[view] || chosen;
+}
+
 function kindIcon(type) {
+  if (type === deckKind) return "cards";
   return type === workspaceKind ? "layers" : typeIcon(type);
 }
 
 function kindLabel(type) {
+  if (type === deckKind) return "Karteistapel";
   return type === workspaceKind ? "Arbeitsbereich" : typeLabel(type);
 }
 
@@ -64,6 +85,7 @@ function buildAccessory() {
 
 /* Die Kachel, der Name und der Pfeil der Pille nach der gewählten Art neu setzen */
 function renderKind() {
+  const kind = currentKind();
   pill.innerHTML = `
     <span class="og-kind-tile og-tint-${kindTints[kind] || "task"}">${icon(kindIcon(kind))}</span>
     <span class="og-kind-name">${escapeHtml(kindLabel(kind))}</span>
@@ -72,7 +94,11 @@ function renderKind() {
 
 function create(withDictation) {
   expandTabBar();
-  createFromMenu(kind);
+  if (currentKind() === deckKind) {
+    document.querySelector(deckImportButton)?.click();
+    return;
+  }
+  createFromMenu(currentKind());
   /* Das Eingabefeld hat sein eigenes Mikrofon; es ist erst im nächsten Bild bedienbar */
   if (withDictation) requestAnimationFrame(() => document.getElementById("composer-mic")?.click());
 }
@@ -98,10 +124,16 @@ export function initOgBar() {
 
   pill.addEventListener("click", () => {
     if (!isMobileOs("ios")) return;
-    openTypePicker(pill, (picked) => {
-      kind = picked;
+    openTypePicker(pill, (type) => {
+      if (viewKinds[view]) picked[view] = type;
+      else chosen = type;
       renderKind();
     });
+  });
+  on(events.viewOpened, (name) => {
+    if (name !== view) delete picked[name];
+    view = name;
+    renderKind();
   });
   accessory.querySelector(".og-add").addEventListener("click", () => create(false));
   accessory.querySelector(".og-dictate").addEventListener("click", () => create(true));

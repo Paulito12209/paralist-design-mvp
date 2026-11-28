@@ -4,6 +4,7 @@
  * waagerechte Reihe kleiner Karten statt des 2×2-Rasters. Das Symbol steht in
  * der Kategoriefarbe oben, der Name unten im getönten Glasfuß. Fläche, Säule
  * und Silberschein folgen DashboardCardArtwork (DetailHeroArtwork.swift).
+ * Die Säule und der Silberschein (::before/::after) gelten auch für die Karten des Dashboards (Klasse .og-art, styles/og-dash.css).
  * Pfad: styles/og-lists.css
  *
  * ANPASSBARE WERTE (alle in styles/tokens-og-leiste.css, Rundung und Abstände in styles/tokens-og.css)
@@ -87,14 +88,17 @@
 
 /* Die Säule in der Mitte: waagerecht ein Verlauf, oben und unten ausgeblendet (mask-image) */
 :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card::before,
-:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card::after {
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card::after,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .og-art::before,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .og-art::after {
   content: "";
   position: absolute;
   inset: 0;
   pointer-events: none; /* pointer-events: Tipps gehen an die Karte */
 }
 
-:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card::before {
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card::before,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .og-art::before {
   background: linear-gradient(
     90deg,
     transparent 0,
@@ -111,7 +115,8 @@
 }
 
 /* Der Silberschein am Fuß, über der Säule */
-:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card::after {
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card::after,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .og-art::after {
   background: radial-gradient(
     ellipse 68% 68% at 50% 104%,
     color-mix(in srgb, var(--og-silver-c) calc(var(--og-silver-glow) * 100%), transparent) 0,
@@ -170,3 +175,4 @@
 :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card:has(.card-icon-layers) { --og-c: var(--og-area); }
 :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card:has(.card-icon-cube) { --og-c: var(--og-resource); }
 :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card:has(.card-icon-bookmark) { --og-c: var(--og-bookmark); }
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .overview-card:has(.card-icon-target) { --og-c: var(--og-project); }

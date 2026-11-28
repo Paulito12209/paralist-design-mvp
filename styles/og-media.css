@@ -14,18 +14,26 @@
  * --og-media-icon-size     -> Größe des Symbols dort
  * --og-media-tint-top / -bottom -> Farbverlauf dieser Kacheln
  * --og-title-size          -> Titelgröße (tokens-og.css)
- * --title-side             -> Seitenrand von Titel, Pillen, Monaten und Raster (styles/tokens.css)
+ * --og-page-side, --og-media-head-gap, --og-pill-font -> Seitenrand, Abstand unter dem Titel, Pillenschrift
  *
- * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel: Pillentext
- * 15 px, Anzahl 11 px, Pillensymbol 12 px (subheadline, caption2, caption).
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel: Anzahl
+ * 13 px, Pillensymbol 14 px.
  */
 
 /* Titel wie MainPageHeader: groß, fett, links; „Ressourcen“ gibt es im Original nicht */
 :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-media .screen-title {
+  margin: 0 0 var(--og-media-head-gap);
+  padding: 0 var(--og-page-side);
   font-size: var(--og-title-size);
   font-weight: 700;
+  line-height: 44px; /* 44 px: die Titelzeile ist so hoch wie Stufenring und Profilbild und teilt sich die Zeile mit ihnen */
   letter-spacing: 0.37px;
   color: var(--text);
+}
+
+/* Die Seite beginnt wie die Übersicht gleich unter dem sicheren Rand, der Titel steht neben Stufenring und Profilbild */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] body:not(.is-subpage) .content:has(#view-media.is-active) {
+  padding-top: calc(var(--safe-top) + 10px);
 }
 
 :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-media .title-switch {
@@ -36,10 +44,10 @@
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .media-filters {
   gap: var(--og-space-sm);
   width: auto;
-  padding: 0 var(--title-side);
+  padding: 0 var(--og-page-side);
   border-radius: 0;
   background: none;
-  margin-bottom: var(--og-space-md);
+  margin-bottom: var(--og-space-lg);
 }
 
 /* Die Trennstriche zwischen den Segmenten der iOS-Fassung entfallen: jede Pille hat ihren eigenen Rand */
@@ -53,7 +61,7 @@
   height: var(--og-pill-height);
   padding: 0 var(--og-pill-side);
   gap: 6px;
-  font-size: 15px;
+  font-size: var(--og-pill-font);
   font-weight: 600;
   color: var(--muted);
   background: var(--og-pill-fill);
@@ -75,8 +83,8 @@
 
 /* Das Symbol trägt allein die Farbe, solange die Pille gewählt ist */
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .media-filter .tab-pill-icon {
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
 }
 
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .media-filter.is-active .tab-pill-icon {
@@ -84,7 +92,7 @@
 }
 
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .media-filter .media-count {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--muted);
   font-variant-numeric: tabular-nums; /* tabular-nums: gleich breite Ziffern, damit die Pille beim Zählen nicht wackelt */
@@ -97,7 +105,7 @@
   letter-spacing: 0;
   color: var(--muted);
   margin: 0 0 var(--og-space-sm);
-  padding: 0 var(--title-side);
+  padding: 0 var(--og-page-side);
 }
 
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .media-grid + .media-month {
@@ -107,7 +115,7 @@
 /* Raster: drei Spalten, Seitenrand wie der Titel, 6 pt Fuge */
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .media-grid {
   gap: var(--og-media-gap);
-  padding: 0 var(--title-side);
+  padding: 0 var(--og-page-side);
 }
 
 /* Kachel: abgerundet, feiner Rand in Textfarbe, Bild beschnitten */
@@ -124,7 +132,7 @@
 /* Audio und Dokument: Farbverlauf in der Kategoriefarbe, Symbol und Name darauf */
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .media-cell:has(.media-doc) {
   background: linear-gradient(
-    135deg,
+    180deg, /* 180deg: von oben nach unten heller zu dunkler, wie im Screenshot */
     color-mix(in srgb, var(--og-cell-color) var(--og-media-tint-top), transparent),
     color-mix(in srgb, var(--og-cell-color) var(--og-media-tint-bottom), transparent)
   );

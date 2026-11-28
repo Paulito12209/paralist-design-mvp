@@ -176,13 +176,15 @@ function build() {
 
 /**
  * Das Blatt öffnen.
+ * @param title    eigene Überschrift, z.B. „Dashboard anpassen“ — ohne gilt „Spalten“
  * @param subtitle wonach das Board gerade Spalten bildet, z.B. „Status“
  * @param columns  alle Spalten, die es geben kann: [{ id, label, icon, color }]
  * @param layout   { order, hidden } — Reihenfolge aller Ids und die ausgeblendeten
  * @param onChange (layout) — speichert den neuen Stand
  */
-export function openColumnsSheet({ subtitle, columns, layout, onChange }) {
+export function openColumnsSheet({ title: heading = title, subtitle, columns, layout, onChange }) {
   if (!root) build();
+  root.querySelector("#columns-modal-title").textContent = heading;
   open = { columns, layout, onChange };
   root.querySelector(".columns-hint").textContent = `${subtitle} · ${words.hint}`;
   render();

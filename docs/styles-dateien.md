@@ -92,16 +92,21 @@ Die Dunkel-Werte stehen immer **nach** den hellen, damit sie gewinnen.
 | `styles/tokens-og.css` | die Werte der „OG Version“ (Nachbau der App Organi7er): Kategoriefarben, Fläche, Rundungen, Abstände |
 | `styles/og.css` | die Regeln der „OG Version“; baut auf der iOS-Fassung auf und steht deshalb nach `ios*.css` |
 | `styles/og-home.css` | „OG Version“: Übersicht mit großem Titel, Kacheln als Glaskarten in Systemfarbe, Abschnittsüberschriften |
-| `styles/tokens-og-leiste.css` | „OG Version“: Werte für Zubehör über der Kapsel, Lupe und kleine Listen-Karten (hell und dunkel) |
-| `styles/og-accessory.css` | „OG Version“: Anlege-Zubehör (Kachel, Plus, Welle) über der Kapsel und runde Lupe daneben |
+| `styles/tokens-og-leiste.css` | „OG Version“: Werte für Kapsel, Zubehör, zusammengezogene Leiste und kleine Listen-Karten (hell und dunkel) |
+| `styles/og-accessory.css` | „OG Version“: Anlege-Zubehör (Kachel, Plus, Welle) über der Kapsel; zusammengezogen mit runder Lupe |
 | `styles/og-lists.css` | „OG Version“: Übersicht mit „Listen ›“ und waagerechter Reihe kleiner Karten (80 × 116 pt) |
-| `styles/og-nav.css` | „OG Version“: Reiterkapsel als schwebende Glaskarte mit Symbol und Name |
+| `styles/tokens-og-home.css` | „OG Version“: Maße der großen Karten und Kacheln im Dashboard der Übersicht |
+| `styles/og-dash.css` | „OG Version“: Dashboard der Übersicht — Im Blick mit Filter-Pillen, große Karten, Reihen „Zuletzt …“, Knopf „Dashboard anpassen“ |
+| `styles/og-dash-card.css` | „OG Version“: die großen Karten und mittleren Kacheln des Dashboards samt Zähler-Kette und Glasfuß |
+| `styles/og-nav.css` | „OG Version“: Reiterkapsel mit fünf Reitern (inkl. Suchen), zieht sich beim Scrollen zusammen |
 | `styles/tokens-og-detail.css` | „OG Version“: Werte der geöffneten Seite (Kopfhöhe, Kiste, Anlege-Knopf, Fläche, Zeilen, Detail-Leiste) |
 | `styles/og-detail.css` | „OG Version“: Kopf der geöffneten Seite als farbige Karte mit Wasserzeichen, Verknüpfungen, Titel und Kiste |
 | `styles/og-detail-body.css` | „OG Version“: Fläche mit Reitern und Einträge als Glaskarten-Zeilen mit Kachel und runder Checkbox |
 | `styles/og-detail-nav.css` | „OG Version“: kleine Detail-Leiste unten statt der Hauptleiste |
 | `styles/tokens-og-settings.css` | „OG Version“: Werte für Suche und Einstellungen (Gruppenfläche, Linien, Zeilenhöhe, Profilbild) |
 | `styles/og-search.css` | „OG Version“: Suche mit Treffern als Glaskarten, Glas-Reitern und Glas-Kapseln unten |
+| `styles/og-search-start.css` | „OG Version“: Seite „Suchen“ mit Glas-Gruppe, „Zuletzt geöffnet“ und Unterseiten |
+| `styles/og-search-field.css` | „OG Version“: aktives Suchfeld als Glas-Pille mit ✕ über der Tastatur |
 | `styles/og-settings.css` | „OG Version“: Einstellungen mit matten Gruppen und Profilkarte, Fortschritt als Glaskarten |
 | `styles/tokens-og-media.css` | die Werte der Reiter Medien und Karteikarten der „OG Version“: Filter-Pillen, Kacheln, Aufnahmeknöpfe, Stapelkarten, Lernansicht |
 | `styles/og-media.css` | „OG Version“: Medien-Seite mit großem Titel, Filter-Pillen in Kategoriefarbe und Raster mit 14-pt-Kacheln |

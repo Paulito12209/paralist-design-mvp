@@ -8,16 +8,23 @@
  *
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
+ * KAPSEL UND ZUBEHÖR GEMEINSAM
+ * --nav-side            -> Seitenrand von Kapsel und Zubehör (21 pt, aus dem Screenshot gemessen; überstimmt hier den Wert der Navigation)
+ * --og-tab-selected     -> dunkle Pille hinter dem gewählten Reiter (hell: ein Hauch Schwarz, dunkel kräftiger)
+ * --og-tab-grow         -> um wie viel breiter der gewählte Reiter ist als die anderen (1 = gleich breit)
  * ZUBEHÖR ÜBER DER KAPSEL
- * --og-accessory-height -> Höhe der Glasfläche mit Kachel, Plus und Welle (52 pt)
- * --og-accessory-gap    -> Luft zwischen Zubehör und Kapsel darunter
+ * --og-accessory-height -> Höhe der Glasfläche mit Kachel, Plus und Welle (46 pt)
+ * --og-accessory-gap    -> Luft zwischen Zubehör und Kapsel darunter (10 pt)
+ * --og-accessory-pad    -> Innenrand links (Kachel) und rechts (Welle) des Zubehörs
+ * --og-accessory-space  -> Abstand zwischen Plus und Welle
  * --og-kind-tile        -> Seite der Kachel links (30 pt)
  * --og-kind-radius      -> Rundung der Kachel (8 pt)
  * --og-accessory-btn    -> Tippfläche von Plus und Welle (44 pt, Tokens.Layout.bottomAccessoryButtonSize)
  * --og-kind-tile-veil   -> Schleier auf der Kachel, damit sie sich von der Fläche abhebt
  *                          (hell: ein Hauch Schwarz, dunkel: ein Hauch Weiß)
- * LUPE
- * --og-search-size      -> Durchmesser des runden Lupen-Knopfes rechts neben der Kapsel
+ * ZUSAMMENGEZOGEN (beim Herunterscrollen)
+ * --og-min-size         -> Durchmesser der beiden runden Knöpfe links (aktiver Reiter) und rechts (Lupe)
+ * --og-min-gap          -> Abstand zwischen Knopf, Zubehör und Lupe
  * KLEINE LISTEN-KARTEN (Übersicht)
  * --og-list-w / --og-list-h -> Breite und Höhe einer Karte (80 × 116 pt)
  * --og-list-gap         -> Abstand zwischen den Karten (8 pt)
@@ -35,13 +42,19 @@
  */
 
 :root[data-mobile-os="ios"][data-mobile-variant="og"] {
-  --og-accessory-height: 52px;
-  --og-accessory-gap: 8px;
+  --nav-side: 21px;
+  --og-tab-selected: rgba(0, 0, 0, 0.07);
+  --og-tab-grow: 1.2;
+  --og-accessory-height: 46px;
+  --og-accessory-gap: 10px;
+  --og-accessory-pad: 16px;
+  --og-accessory-space: 7px;
   --og-kind-tile: 30px;
   --og-kind-radius: 8px;
   --og-accessory-btn: 44px;
   --og-kind-tile-veil: rgba(0, 0, 0, 0.06);
-  --og-search-size: 62px;
+  --og-min-size: 48px;
+  --og-min-gap: 8px;
 
   --og-list-w: 80px;
   --og-list-h: 116px;
@@ -68,6 +81,7 @@
 @media (prefers-color-scheme: dark) {
   :root[data-mobile-os="ios"][data-mobile-variant="og"]:not([data-theme="light"]) {
     --og-kind-tile-veil: rgba(255, 255, 255, 0.16);
+    --og-tab-selected: rgba(0, 0, 0, 0.4);
     --og-surface-0: 0%;
     --og-surface-1: 5%;
     --og-surface-2: 24%;
@@ -88,6 +102,7 @@
 /* Dunkelmodus fest in den Einstellungen gewählt: dieselben Werte wie oben */
 :root[data-mobile-os="ios"][data-mobile-variant="og"][data-theme="dark"] {
   --og-kind-tile-veil: rgba(255, 255, 255, 0.16);
+  --og-tab-selected: rgba(0, 0, 0, 0.4);
   --og-surface-0: 0%;
   --og-surface-1: 5%;
   --og-surface-2: 24%;

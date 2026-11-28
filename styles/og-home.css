@@ -77,3 +77,6 @@
   margin: 0;
   line-height: 44px;
 }
+
+/* Die Zielscheibe der Projekte-Karte */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .card-icon-target { color: var(--og-project); }

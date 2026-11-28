@@ -1,0 +1,202 @@
+/*
+ * Dashboard der „OG Version“ unter den Listen: „Im Blick“ mit Filter-Pillen und
+ * einem Band großer Karten, darunter die Reihen „Zuletzt …“ mit mittleren Kacheln
+ * (HomeView in Organi7er). Die Karten selbst stehen in styles/og-dash-card.css.
+ * Pfad: styles/og-dash.css
+ *
+ * ANPASSBARE WERTE (Maße in styles/tokens-og-home.css, Flächenwerte in styles/tokens-og-leiste.css)
+ * -----------------------------------
+ * --og-big-gap, --og-tile-gap -> Abstand der Karten im Band und in den Reihen
+ * --og-section-gap, --og-pill-h -> Abstand der Abschnitte, Höhe der Filter-Pillen
+ * Schrift hier direkt: Abschnittstitel 20 pt, Pille 13 pt, Hinweise 15 pt (Titel 17 pt), Knopf 16 pt.
+ */
+
+.og-dash,
+.og-customize {
+  display: none; /* nur die OG Version zeigt das Dashboard */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-dash {
+  display: block;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-dash .og-customize {
+  display: flex;
+}
+
+/* Projekte und die Karte „Ansicht“ gibt es auf der OG-Übersicht nicht */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .project-head,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .project-views,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] #view-home .project-list,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] body:has(#view-home.is-active) .project-panel {
+  display: none;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-section {
+  margin-top: var(--og-section-gap);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-h {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0 0 12px;
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-h .icon {
+  width: 18px;
+  height: 18px;
+  opacity: 0.45;
+}
+
+/* ---------- Im Blick: Titel und Pillen auf einer Zeile ---------- */
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-relevance-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-h-plain {
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+/* Die Pillen laufen bis zum Rand und lassen sich schieben */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-filters {
+  display: flex;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+  margin-right: -16px;
+  padding-right: 16px;
+  overflow-x: auto; /* overflow-x: Pillen lassen sich seitlich schieben */
+  scrollbar-width: none;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-filters::-webkit-scrollbar {
+  display: none;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex: 0 0 auto;
+  height: var(--og-pill-h);
+  padding: 0 14px;
+  border: 1px solid color-mix(in srgb, var(--text) 5%, transparent);
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 5.5%, transparent);
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-filter.is-active {
+  border-color: color-mix(in srgb, var(--text) 12%, transparent);
+  background: color-mix(in srgb, var(--text) 13%, transparent);
+  color: var(--text);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-filter .icon {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---------- Band großer Karten ---------- */
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-band,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-strip {
+  display: flex;
+  margin-right: -16px;
+  padding-right: 16px;
+  overflow-x: auto; /* overflow-x: waagerecht schieben */
+  scrollbar-width: none;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-band::-webkit-scrollbar,
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-strip::-webkit-scrollbar {
+  display: none;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-band {
+  gap: var(--og-big-gap);
+  scroll-snap-type: x mandatory; /* scroll-snap: Karte rastet am linken Rand ein */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-strip {
+  gap: var(--og-tile-gap);
+  container-type: inline-size; /* container-type: die Kachelbreite folgt der Reihenbreite (cqw) */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-dots-row {
+  display: flex;
+  justify-content: center;
+  gap: 6px;
+  height: 6px;
+  margin-top: 8px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-dot {
+  width: 6px;
+  border-radius: 3px;
+  background: color-mix(in srgb, var(--text) 30%, transparent);
+  transition: width 0.2s, background 0.2s; /* transition: der aktive Punkt wächst sanft */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-dot.is-active {
+  width: 16px;
+  background: color-mix(in srgb, var(--text) 90%, transparent);
+}
+
+/* ---------- leere Zustände ---------- */
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-height: 160px;
+  justify-content: center;
+  text-align: center;
+  color: var(--muted);
+  font-size: 15px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-empty .icon {
+  width: 32px;
+  height: 32px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-empty strong {
+  color: var(--text);
+  font-size: 17px;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-empty-line {
+  margin: 0;
+  font-size: 15px;
+  color: var(--muted);
+}
+
+/* ---------- Dashboard anpassen ---------- */
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-customize {
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  height: 44px;
+  margin: 24px auto 0;
+  padding: 0 20px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--text) 8%, transparent);
+  color: var(--text);
+  font-size: 16px;
+  font-weight: 600;
+}
