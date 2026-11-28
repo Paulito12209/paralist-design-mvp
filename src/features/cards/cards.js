@@ -1,8 +1,9 @@
 /*
  * Die Karteikarten-Seite der „OG Version“ nach DeckListView.swift: Titel, darunter
- * jeder Stapel als braune Glaskarte mit Namen und Kartenanzahl; ein Tipp startet
- * die Lernansicht (study.js). Neue Stapel entstehen aus Text im Kartenformat
- * (src/data/decks.js). Wird erst beim ersten Öffnen nachgeladen.
+ * jeder Stapel als große braune Karte mit Namen und Zählern; ein Tipp startet
+ * die Lernansicht (study.js). Am Ende steht „Karteikarten anpassen“: das Blatt
+ * dahinter importiert Karten als Text (src/data/decks.js) und löscht Stapel.
+ * Wird erst beim ersten Öffnen nachgeladen.
  * Pfad: src/features/cards/cards.js
  *
  * Keine anpassbaren visuellen Werte in dieser Datei: Maße und Farben stehen in
@@ -13,6 +14,8 @@ import { events, on } from "../../core/bus.js";
 import { el } from "../../core/dom.js";
 import { escapeHtml, icon } from "../../core/html.js";
 import { addDeck, allDecks, deckCounts, findDeck, parseCards, removeDeck } from "../../data/decks.js";
+import { openConfirmSheet } from "../../ui/confirm-sheet.js";
+import { openSheet } from "../../ui/sheet.js";
 import { isViewActive } from "../../ui/views.js";
 import { openStudy } from "./study.js";
 
@@ -20,11 +23,11 @@ import { openStudy } from "./study.js";
 let importOpen = false;
 let importError = "";
 
-/* Eine Stapelkarte: Symbol, Name, darunter Anzahl, neue und offene Karten. */
+/* Eine Stapelkarte: Symbol oben links, darunter Name und Zähler (Karten, neu, offen). */
 function deckCard(deck) {
   const { total, fresh, wrong } = deckCounts(deck);
   const extra = [
-    fresh ? `<span class="og-deck-flag">${icon("star-outline")}${fresh} neu</span>` : "",
+    fresh ? `<span class="og-deck-flag">${icon("sparkle")}${fresh} neu</span>` : "",
     wrong ? `<span class="og-deck-flag">${icon("refresh")}${wrong} offen</span>` : "",
   ].join("");
   return `
@@ -34,7 +37,6 @@ function deckCard(deck) {
         <span class="og-deck-title">${escapeHtml(deck.title)}</span>
         <span class="og-deck-meta"><span>${total} ${total === 1 ? "Karte" : "Karten"}</span>${extra}</span>
       </button>
-      <button class="og-deck-delete" type="button" data-deck-delete="${deck.id}" aria-label="Stapel löschen">${icon("trash")}</button>
     </div>`;
 }
 
@@ -51,7 +53,7 @@ function emptyMarkup() {
 /* Formular: Name und Karten im Textformat. */
 function importMarkup() {
   if (!importOpen) {
-    return `<button class="og-cards-add" type="button" data-cards-import="open">${icon("plus")}Karten importieren</button>`;
+    return `<button class="og-cards-add" type="button" data-cards-adjust>${icon("sliders")}Karteikarten anpassen</button>`;
   }
   return `
     <div class="og-cards-form" id="cards-form">
@@ -71,6 +73,32 @@ export function renderCards() {
   el("cards-body").innerHTML = `${decks.length ? decks.map(deckCard).join("") : emptyMarkup()}${importMarkup()}`;
 }
 
+/* „Karteikarten anpassen“: Karten importieren, dazu je Stapel „löschen“ mit Rückfrage. */
+function openAdjustSheet() {
+  const remove = (deck) =>
+    openConfirmSheet({
+      title: `„${deck.title}“ löschen?`,
+      text: `${deck.cards.length} Karten gehen dabei verloren.`,
+      confirmLabel: "Löschen",
+      onConfirm: () => {
+        removeDeck(deck.id);
+        renderCards();
+      },
+    });
+  const options = [
+    {
+      label: "Karten importieren",
+      icon: "plus",
+      onSelect: () => {
+        importOpen = true;
+        renderCards();
+      },
+    },
+    ...allDecks().map((deck) => ({ label: `Stapel löschen: ${deck.title}`, icon: "trash", danger: true, onSelect: () => remove(deck) })),
+  ];
+  openSheet("Karteikarten anpassen", options);
+}
+
 function onClick(event) {
   const open = event.target.closest("[data-deck-open]");
   if (open) {
@@ -78,10 +106,8 @@ function onClick(event) {
     if (deck?.cards.length) openStudy(deck, renderCards);
     return;
   }
-  const del = event.target.closest("[data-deck-delete]");
-  if (del) {
-    removeDeck(Number(del.dataset.deckDelete));
-    renderCards();
+  if (event.target.closest("[data-cards-adjust]")) {
+    openAdjustSheet();
     return;
   }
   const toggle = event.target.closest("[data-cards-import]");

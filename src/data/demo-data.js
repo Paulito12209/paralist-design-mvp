@@ -151,3 +151,6 @@ export function buildDemoState(now = Date.now()) {
 export function demoSummary() {
   return `${demoEntries.length} Einträge, ${demoWorkspaces.length} Arbeitsbereiche`;
 }
+
+/* Demo-Stapel der Karteikarten-Seite (OG Version): wird zusammen mit dem Zustand geschrieben, siehe src/shell/demo-load.js */
+export { buildDemoDecks } from "./demo-decks.js";

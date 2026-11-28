@@ -11,7 +11,7 @@
  * --og-capture-size  -> Durchmesser der Knöpfe
  * --og-capture-gap   -> Abstand zwischen den Knöpfen
  * --og-capture-icon  -> Größe der Symbole
- * --og-card-top / --og-card-bottom / --og-card-border -> Glasfläche der Knöpfe
+ * --og-capture-glass -> Weißanteil der Glasfläche; --og-card-border -> Rand der Knöpfe
  */
 
 /* Reihe: mittig, ohne die Dreispalten-Aufteilung der Grundfassung */
@@ -51,9 +51,24 @@
   padding: 0;
   border-radius: 999px;
   color: var(--text);
-  background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
+  background: color-mix(in srgb, var(--text) var(--og-capture-glass), transparent);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  backdrop-filter: blur(20px) saturate(160%); /* blur: das Raster darunter scheint verwischt durch, wie bei Glas */
   border: 0.75px solid var(--og-card-border);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12); /* box-shadow: der Knopf schwebt über dem Raster */
+}
+
+/* Import: in dieser Fassung das Ablagefach mit Pfeil statt des Ordners */
+.media-actions .og-import-icon {
+  display: none;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-side:first-child .icon:not(.og-import-icon) {
+  display: none;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .media-side .og-import-icon {
+  display: block;
 }
 
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .media-actions .icon {

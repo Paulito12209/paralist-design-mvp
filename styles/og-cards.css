@@ -9,8 +9,8 @@
  * --og-deck-height     -> Mindesthöhe einer Stapelkarte
  * --og-deck-title-size -> Schrift des Stapelnamens
  * --og-deck-meta-size  -> Schrift der Zeile mit Kartenanzahl
- * --og-deck            -> Braun der Stapel (tokens-og.css)
- * --og-deck-tint       -> Anteil Braun im Verlauf der Karte
+ * --og-deck-left / -right / -shade -> Farbverlauf und Abdunkelung der Karte
+ * --og-deck-gap, --og-deck-head-gap, --og-page-side -> Abstände der Seite
  * --og-radius-card     -> Rundung der Karten (tokens-og.css)
  *
  * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel: Überschrift des
@@ -32,17 +32,25 @@
 }
 
 :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-cards .screen-title {
+  margin: 0 0 var(--og-deck-head-gap);
+  padding: 0 var(--og-page-side);
   font-size: var(--og-title-size);
   font-weight: 700;
+  line-height: 44px; /* 44 px: die Titelzeile ist so hoch wie Stufenring und Profilbild und teilt sich die Zeile mit ihnen */
   letter-spacing: 0.37px;
   color: var(--text);
+}
+
+/* Die Seite beginnt wie die Übersicht gleich unter dem sicheren Rand, der Titel steht neben Stufenring und Profilbild */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] body:not(.is-subpage) .content:has(#view-cards.is-active) {
+  padding-top: calc(var(--safe-top) + 10px);
 }
 
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .cards-body {
   display: flex;
   flex-direction: column;
-  gap: var(--og-space-md);
-  padding: var(--og-space-xs) var(--og-space-md) var(--og-space-md);
+  gap: var(--og-deck-gap);
+  padding: 0 var(--og-page-side);
 }
 
 /* Stapelkarte: Braun im Verlauf über der Glasfläche, feiner Rand */
@@ -51,10 +59,11 @@
   min-height: var(--og-deck-height);
   border-radius: var(--og-radius-card);
   border: 0.75px solid var(--og-card-border);
+  overflow: hidden; /* overflow: der Verlauf endet an der Rundung */
   background:
-    linear-gradient(135deg, color-mix(in srgb, var(--og-deck) var(--og-deck-tint), transparent), transparent 70%),
-    linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
-  color: var(--text);
+    linear-gradient(180deg, transparent 55%, rgba(0, 0, 0, var(--og-deck-shade))), /* untere Hälfte dunkler, wie im Screenshot */
+    linear-gradient(100deg, var(--og-deck-left), var(--og-deck-right));
+  color: #fff; /* #fff: die Karte bleibt auch hell dunkel genug für weiße Schrift */
 }
 
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-deck-open {
@@ -70,15 +79,15 @@
 }
 
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-deck-icon {
-  width: 28px;
-  height: 28px;
-  color: var(--og-deck);
+  width: 32px;
+  height: 32px;
+  color: #fff;
 }
 
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-deck-title {
   margin-top: auto; /* margin-top: auto schiebt Name und Zahlen an den unteren Rand, das Symbol bleibt oben */
   font-size: var(--og-deck-title-size);
-  font-weight: 500;
+  font-weight: 400;
   display: -webkit-box; /* -webkit-box + line-clamp: lange Namen enden nach zwei Zeilen mit „…“ */
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 2;
@@ -89,7 +98,7 @@
   display: flex;
   gap: var(--og-space-md);
   font-size: var(--og-deck-meta-size);
-  color: var(--muted);
+  color: rgba(255, 255, 255, 0.6); /* 60 % Weiß: gedämpft auf dem Braun und im Hellen */
   white-space: nowrap;
 }
 
@@ -100,25 +109,8 @@
 }
 
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-deck-flag .icon {
-  width: 12px;
-  height: 12px;
-}
-
-:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-deck-delete {
-  position: absolute;
-  top: var(--og-space-sm);
-  right: var(--og-space-sm);
-  display: grid;
-  place-items: center;
-  width: 36px;
-  height: 36px;
-  border-radius: 999px;
-  color: var(--muted);
-}
-
-:root[data-mobile-os="ios"][data-mobile-variant="og"] .og-deck-delete .icon {
-  width: 18px;
-  height: 18px;
+  width: 14px;
+  height: 14px;
 }
 
 /* Leerzustand wie ContentUnavailableView */
@@ -151,6 +143,7 @@
 
 /* Glasknöpfe und Formular */
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-cards-add {
+  align-self: center; /* align-self: der Knopf steht mittig unter den Karten statt über die ganze Breite */
   display: flex;
   align-items: center;
   justify-content: center;
