@@ -116,7 +116,7 @@ function renderGrid() {
     .map(
       (group) =>
         `<h2 class="media-month">${group.heading}</h2>${
-          list ? mediaListMarkup(group.items) : `<div class="media-grid">${group.items.map(mediaCell).join("")}</div>`
+          list ? mediaListMarkup(group.items) : `<div class="media-grid">${group.items.map((item) => mediaCell(item)).join("")}</div>`
         }`
     )
     .join("");

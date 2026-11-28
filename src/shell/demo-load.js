@@ -46,6 +46,7 @@ function loadDemo() {
   load("demo")
     .then((module) => {
       writeJson(storageKeys.state, module.buildDemoState());
+      writeJson(storageKeys.decks, module.buildDemoDecks()); /* Stapel der Karteikarten-Seite (OG Version) */
       location.reload();
     })
     .catch(() => window.alert("Demo-Daten konnten nicht geladen werden."));
