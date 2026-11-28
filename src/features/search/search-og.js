@@ -61,7 +61,7 @@ function compactRow({ item, open }) {
     item.kind === "entry" ? `data-open-entry="${item.id}"` : `data-open-workspace="${item.id}"`;
   return `
     <button class="og-sgroup-row og-sgroup-page" type="button" data-kind="${item.type || item.kind}" ${attr}>
-      <span class="og-tile">${icon(item.icon)}</span>
+      <span class="og-search-tile">${icon(item.icon)}</span>
       <span class="search-copy">
         <span class="search-title">${escapeHtml(item.title)}</span>
         <span class="search-meta">${escapeHtml(openedMeta({ item, open }))}</span>

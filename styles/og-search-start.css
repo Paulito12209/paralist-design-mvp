@@ -161,7 +161,7 @@
     color: var(--og-label-secondary);
   }
 
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tile {
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-search-tile {
     display: grid;
     place-items: center;
     flex: 0 0 var(--og-search-tile);
@@ -172,19 +172,19 @@
     color: var(--og-task);
   }
 
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tile .icon {
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-search-tile .icon {
     width: 15px;
     height: 15px;
   }
 
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="notiz"] .og-tile { color: var(--og-note); }
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="termin"] .og-tile { color: var(--og-event); }
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="projekt"] .og-tile { color: var(--og-project); }
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="dokument"] .og-tile,
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="zeichnung"] .og-tile,
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="medien"] .og-tile { color: var(--og-resource); }
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="lesezeichen"] .og-tile { color: var(--og-bookmark); }
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="workspace"] .og-tile { color: var(--og-area); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="notiz"] .og-search-tile { color: var(--og-note); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="termin"] .og-search-tile { color: var(--og-event); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="projekt"] .og-search-tile { color: var(--og-project); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="dokument"] .og-search-tile,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="zeichnung"] .og-search-tile,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="medien"] .og-search-tile { color: var(--og-resource); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="lesezeichen"] .og-search-tile { color: var(--og-bookmark); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="workspace"] .og-search-tile { color: var(--og-area); }
 
   /* Suchbegriffe der Unterseite: graue Lupe */
   :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-term {
