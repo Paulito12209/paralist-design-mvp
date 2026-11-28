@@ -10,19 +10,22 @@
  * ANPASSBARE WERTE IN DIESER DATEI
  * -----------------------------------
  * emptyTexts   -> die Sätze, wenn eine Reihe oder ein Filter nichts zeigt
- * customizeLabel -> Beschriftung des Knopfes am Ende der Seite
+ * customizeLabel -> Beschriftung des Knopfes am Ende der Seite und Überschrift des Blatts
+ * sheetHint    -> Wort vor dem Hinweis unter der Überschrift des Blatts
  * Karten, Abstände und Schrift: styles/og-dash.css, Werte in styles/tokens-og-home.css.
  */
 
 import { on, events } from "../../core/bus.js";
 import { el } from "../../core/dom.js";
 import { icon } from "../../core/html.js";
-import { datedPages, pinnedPages, relevanceFilters, stripPages, stripSections } from "../../data/home-dash.js";
+import { dashSections, datedPages, homeLayout, pinnedPages, relevanceFilters, setHomeLayout, stripPages, stripSections } from "../../data/home-dash.js";
+import { openColumnsSheet } from "../../ui/columns-sheet.js";
 import { isDesk } from "../../ui/desk-mode.js";
 import { isViewActive } from "../../ui/views.js";
 import { largeCardMarkup, tileMarkup } from "./home-og-cards.js";
 
 const customizeLabel = "Dashboard anpassen";
+const sheetHint = "Übersicht";
 const emptyTexts = {
   pinned: { title: "Nichts angepinnt", text: "Wähle bei einem Eintrag „Anpinnen“, dann steht er hier." },
   today: { title: "Heute nichts geplant", text: "Termine, Aufgaben und Projekte mit heutigem Datum erscheinen hier." },
@@ -91,15 +94,21 @@ export function renderOgDash() {
   }
   /* Die Schiebestellung der Reihen halten, damit ein Speichern nicht zurückspringen lässt */
   const scrolls = [...root.querySelectorAll(".og-strip")].map((strip) => strip.scrollLeft);
-  root.innerHTML = `
+  const parts = {
+    relevance: `
     <section class="og-section og-relevance">
       <div class="og-relevance-head">
         <h2 class="og-h og-h-plain">Im Blick</h2>
         <div class="og-filters" role="group" aria-label="Im Blick">${filtersMarkup()}</div>
       </div>
       ${relevanceMarkup()}
-    </section>
-    ${stripSections.map(stripMarkup).join("")}
+    </section>`,
+    ...Object.fromEntries(stripSections.map((section) => [section.id, stripMarkup(section)])),
+  };
+  const layout = homeLayout();
+  const shown = layout.order.filter((id) => !layout.hidden.includes(id));
+  root.innerHTML = `
+    ${shown.map((id) => parts[id]).join("")}
     <button class="og-customize" type="button" data-og-customize>${icon("tune")}<span>${customizeLabel}</span></button>`;
   root.querySelectorAll(".og-strip").forEach((strip, index) => {
     strip.scrollLeft = scrolls[index] || 0;
@@ -116,7 +125,25 @@ function syncDots(band) {
   dots.forEach((dot, at) => dot.classList.toggle("is-active", at === index));
 }
 
+/* Das Blatt „Dashboard anpassen“: Reihenfolge ziehen, Auge blendet aus; jede Änderung gilt sofort */
+function openCustomize() {
+  openColumnsSheet({
+    title: customizeLabel,
+    subtitle: sheetHint,
+    columns: dashSections,
+    layout: homeLayout(),
+    onChange: (layout) => {
+      setHomeLayout(layout);
+      renderOgDash();
+    },
+  });
+}
+
 function onClick(event) {
+  if (event.target.closest("[data-og-customize]")) {
+    openCustomize();
+    return;
+  }
   const pill = event.target.closest("[data-og-filter]");
   if (!pill) return;
   filterId = pill.dataset.ogFilter;

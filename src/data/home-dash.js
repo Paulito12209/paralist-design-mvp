@@ -12,6 +12,8 @@
  * kinds       -> Name, Symbol und Kategoriefarbe je Art; die Farben stehen in styles/tokens-og.css
  * relevanceFilters -> die Pillen neben „Im Blick“ (Name, Symbol, Abstand in Tagen)
  * stripSections    -> die drei Reihen unten: Titel, Art des Zeitstempels, Symbol davor
+ * dashSections      -> die Abschnitte, die sich im Blatt „Dashboard anpassen“ ordnen und ausblenden
+ *                      lassen (Vorgabe-Reihenfolge = Reihenfolge in dieser Liste)
  */
 
 import { dayKey, timeKey } from "../core/dates.js";
@@ -19,7 +21,7 @@ import { typeOrder } from "./config.js";
 import { openStats } from "./opens.js";
 import { entriesOf, entryDay, entryTime, groupByType, parentIcon, parentName, workspaceLabel } from "./queries.js";
 import { entryRef, workspaceRef } from "./refs.js";
-import { state } from "./state.js";
+import { saveState, state } from "./state.js";
 
 const stripLimit = 12;
 const countLimit = 3;
@@ -144,3 +146,28 @@ export function stampLabel(ms, now = Date.now()) {
   return new Date(ms).toLocaleDateString("de-DE", { day: "numeric", month: "short" });
 }
 
+
+/* Die Abschnitte des Dashboards für das Blatt „Dashboard anpassen“ (Form wie die Spalten eines Boards) */
+export const dashSections = [
+  { id: "relevance", label: "Im Blick", icon: "pin", color: "var(--og-task)" },
+  ...stripSections.map((section) => ({
+    id: section.id,
+    label: section.title,
+    icon: section.symbol === "eye" ? "eye" : "pencil",
+    color: "var(--og-task)",
+  })),
+];
+
+/** Reihenfolge und ausgeblendete Abschnitte: unbekannte Ids fallen weg, fehlende kommen hinten dazu. */
+export function homeLayout() {
+  const ids = dashSections.map((section) => section.id);
+  const saved = state.prefs.homeDash;
+  const order = [...saved.order.filter((id) => ids.includes(id)), ...ids.filter((id) => !saved.order.includes(id))];
+  return { order, hidden: saved.hidden.filter((id) => ids.includes(id)) };
+}
+
+/** Die Wahl aus dem Blatt merken. */
+export function setHomeLayout(layout) {
+  state.prefs.homeDash = { order: [...layout.order], hidden: [...layout.hidden] };
+  saveState();
+}

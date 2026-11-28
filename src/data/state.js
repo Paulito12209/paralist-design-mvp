@@ -74,6 +74,8 @@ export const state = {
     collectionFilters: {},
     /* Eigene Reihenfolge je Liste, z.B. { inbox: ["e:12", "w:3"] } — src/data/manual-order.js */
     manualOrders: {},
+    /* Dashboard der OG Version: Reihenfolge und ausgeblendete Abschnitte — geprüft in src/data/home-dash.js */
+    homeDash: { order: [], hidden: [] },
   },
 };
 
@@ -164,6 +166,7 @@ function snapshot() {
     collectionSorts: state.prefs.collectionSorts,
     collectionFilters: state.prefs.collectionFilters,
     manualOrders: state.prefs.manualOrders,
+    homeDash: state.prefs.homeDash,
     mediaSeeded,
     /* Marke: die Ansichten kennen die Regel „heute Erledigtes bleibt sichtbar“ (siehe adoptPrefs) */
     taskDoneShown: true,
@@ -230,6 +233,9 @@ function adoptPrefs(saved) {
     state.prefs.manualOrders = Object.fromEntries(
       Object.entries(saved.manualOrders).filter(([, keys]) => Array.isArray(keys))
     );
+  }
+  if (saved.homeDash && Array.isArray(saved.homeDash.order) && Array.isArray(saved.homeDash.hidden)) {
+    state.prefs.homeDash = { order: saved.homeDash.order.map(String), hidden: saved.homeDash.hidden.map(String) };
   }
   const calendar = state.prefs.calendar;
   calendar.span = pickValid(Number(calendar.span), calendarSpans.map((span) => span.id), 1);
