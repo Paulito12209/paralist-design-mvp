@@ -122,6 +122,12 @@ function demoOpens(now) {
  */
 export function buildDemoState(now = Date.now()) {
   const entries = demoEntries.map((item) => toEntry(item, now));
+  /* Für das Dashboard der OG Version: ein paar angepinnte und zuletzt bearbeitete Einträge */
+  entries.forEach((entry) => {
+    if ([20, 21, 40].includes(entry.id)) entry.pinned = true;
+    const editedIndex = [20, 21, 22, 1, 2, 3, 40].indexOf(entry.id);
+    if (editedIndex >= 0) entry.editedAt = now - (editedIndex + 1) * 5400000;
+  });
   const workspaces = demoWorkspaces.map((item) => ({ favorite: false, icon: "", body: "", awarded: true, archived: false, ...item }));
   return {
     tabs: demoTabs,

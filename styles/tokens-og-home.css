@@ -1,0 +1,34 @@
+/*
+ * Werte für das Dashboard der „OG Version“ (Im Blick, Zuletzt …): Maße der
+ * großen Karten und mittleren Kacheln nach DashboardCardMetrics und
+ * HomeDashboardSpacing in HomeView.swift (Organi7er). Gelten nur mit
+ * data-mobile-os="ios" und data-mobile-variant="og".
+ * Pfad: styles/tokens-og-home.css
+ *
+ * ANPASSBARE WERTE IN DIESER DATEI
+ * -----------------------------------
+ * --og-big-w / --og-big-h   -> Breite und Höhe einer großen Karte (234 × 344 pt)
+ * --og-big-gap              -> Abstand der großen Karten (16 pt)
+ * --og-big-radius           -> Rundung der großen Karten (28 pt)
+ * --og-tile-gap             -> Abstand der Kacheln in den Reihen (12 pt)
+ * --og-tile-peek            -> wie viel von der nächsten Kachel hervorschaut (0.32 = knapp ein Drittel)
+ * --og-tile-count           -> volle Kacheln je Reihe bei 375 px (3 + Peek)
+ * --og-tile-ratio           -> Höhe zu Breite der Kacheln (1.5 = hochkant)
+ * --og-tile-foot            -> Anteil der Kachel für den getönten Fuß (2/7)
+ * --og-section-gap          -> Abstand zwischen den Abschnitten (40 pt)
+ * --og-pill-h               -> Höhe der Filter-Pillen (28 pt)
+ */
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] {
+  --og-big-w: 234px;
+  --og-big-h: 344px;
+  --og-big-gap: 16px;
+  --og-big-radius: 28px;
+  --og-tile-gap: 12px;
+  --og-tile-peek: 0.32;
+  --og-tile-count: 3.32;
+  --og-tile-ratio: 1.5;
+  --og-tile-foot: calc(2 / 7 * 100%);
+  --og-section-gap: 40px;
+  --og-pill-h: 28px;
+}

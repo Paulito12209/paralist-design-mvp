@@ -22,7 +22,10 @@ import { openCtxMenu } from "./ctx-menu.js";
 import { openDetailsFor } from "./details-sheet.js";
 import { openLinkSheet } from "./link-sheet.js";
 import { iconPickerAction } from "./pickers.js";
-import { isMobileVariant } from "./platform.js";
+import { isMobileOs, isMobileVariant } from "./platform.js";
+
+/* „OG Version“: iOS mit der Spielart „og“ */
+const isOgVersion = () => isMobileOs("ios") && document.documentElement.dataset.mobileVariant === "og";
 import { toggleTaskFromCheck } from "./task-status.js";
 import { typeChangeAction } from "./type-menu.js";
 
@@ -58,8 +61,8 @@ export function entryMenuOptions(entry, { onPage = false, afterRemove = () => {}
       onSelect: () => openLinkSheet(entry),
     }
   );
-  /* Anpinnen gibt es nur dort, wo eine Liste „Angepinnt“ es zeigt: „Android (Xool-DB)“ */
-  if (isMobileVariant("xool")) {
+  /* Anpinnen gibt es nur dort, wo „Angepinnt“ es zeigt: „Android (Xool-DB)“ und im Dashboard der OG Version */
+  if (isMobileVariant("xool") || isOgVersion()) {
     options.splice(options.length - 1, 0, {
       label: entry.pinned ? "Lösen" : "Anpinnen",
       icon: "pinned",
