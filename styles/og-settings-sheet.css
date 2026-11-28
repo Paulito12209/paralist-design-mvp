@@ -1,0 +1,225 @@
+/*
+ * Blatt „Einstellungen“ der „OG Version“ nach 08/09 der Referenz-Screenshots:
+ * Kopf mit Griff, mittigem Titel und rundem Schließen-Knopf, unter dem der
+ * Inhalt weich verschwindet; Profilkarte mit großem Bild, Name und „Mehr
+ * Infos“; höhere Zeilen und größere Abstände zwischen den Gruppen. Greift nur
+ * mit data-mobile-os="ios" und data-mobile-variant="og" unter 1024 px.
+ * Pfad: styles/og-settings-sheet.css
+ *
+ * ANPASSBARE WERTE (alle in styles/tokens-og-settings.css)
+ * -----------------------------------
+ * --og-sheet-bg / -card / -fill -> Grund, Gruppenfläche, Fläche hinter der Figur im Bild
+ * --og-sheet-head               -> Höhe des Kopfes; so weit rückt der Inhalt nach unten
+ * --og-sheet-close              -> Durchmesser des Schließen-Knopfes
+ * --og-avatar-size              -> Profilbild (68 px)
+ * --og-settings-row             -> Zeilenhöhe der Gruppen (hier 60 px)
+ * --og-label-secondary / -tertiary -> graue Schrift, blasser Platzhalter „Name hinzufügen“
+ * --og-radius-sheet / -card     -> Rundung des Blatts (36 px) und der Gruppen (28 px)
+ *
+ * Schriftgrößen einzelner Elemente stehen direkt bei ihrer Regel: Titel 17 px,
+ * Name 22 px, „Mehr Infos“ 15 px, Gruppentitel 15 px, Zeilenwert 16 px.
+ */
+
+@media (max-width: 1023px) {
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .modal {
+    border-radius: var(--og-radius-sheet) var(--og-radius-sheet) 0 0;
+  }
+
+  /* Kopf: liegt über dem Inhalt (position: absolute), damit dieser darunter durchläuft */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .modal-head {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2; /* z-index: über dem scrollenden Inhalt */
+    height: var(--og-sheet-head);
+    padding: 0;
+    pointer-events: none; /* pointer-events: die leere Fläche lässt Tipps zum Inhalt durch */
+  }
+
+  /* Weiche Unterkante: Unschärfe plus Grundfarbe, die nach unten ausläuft */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .modal-head::before {
+    content: ""; /* content: das Pseudo-Element trägt nur die Unschärfe */
+    position: absolute;
+    inset: 0 0 -6px;
+    background: linear-gradient(var(--og-sheet-bg) 55%, transparent);
+    backdrop-filter: blur(10px); /* backdrop-filter: was darunter durchläuft, wird unscharf */
+    -webkit-backdrop-filter: blur(10px);
+    mask-image: linear-gradient(#000 70%, transparent); /* mask-image: die Unschärfe blendet nach unten aus */
+    -webkit-mask-image: linear-gradient(#000 70%, transparent);
+  }
+
+  /* Knöpfe im Kopf nehmen Tipps an, obwohl der Kopf selbst sie durchlässt */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .modal-head > * {
+    pointer-events: auto;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .modal-grip {
+    top: 8px;
+    background: var(--og-label-tertiary);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .modal-head h2 {
+    position: absolute; /* position: der Titel steht mittig, auch wenn links ein Pfeil sitzt */
+    left: 0;
+    right: 0;
+    top: 28px;
+    text-align: center;
+    pointer-events: none;
+  }
+
+  /* Auf einer Unterseite: Pfeil links, Titel bleibt mittig */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .modal-head.is-back {
+    justify-content: center;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .modal-back {
+    position: absolute;
+    left: 12px;
+    top: 18px;
+    margin: 0;
+    width: var(--og-sheet-close);
+    height: var(--og-sheet-close);
+    border: 0.75px solid var(--og-group-line);
+    background: var(--og-sheet-card);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .modal-close {
+    right: 16px;
+    top: 14px;
+    width: var(--og-sheet-close);
+    height: var(--og-sheet-close);
+    border: 0.75px solid var(--og-group-line);
+    background: var(--og-sheet-card);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .modal-close .icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  /* Inhalt: beginnt unter dem Kopf; die Karten stehen 16 px vom Rand */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .modal-body {
+    padding: calc(var(--og-sheet-head) + 6px) var(--og-space-md) calc(var(--og-space-xl) + var(--safe-bottom));
+  }
+
+  /* Gruppentitel: großer Abstand nach oben, kleiner zur Karte */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .psection {
+    padding: 30px var(--og-space-md) var(--og-space-sm);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .plist-row,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .settings-row {
+    min-height: 60px;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .plist-row .plist-value {
+    font-size: 16px;
+    margin-left: auto; /* margin-left: Wert und Pfeil rücken an den rechten Rand */
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .plist-row .plist-value + .plist-trail,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .plist-row > span:first-of-type + .plist-trail {
+    margin-left: 0;
+  }
+
+  /* Profilkarte: Bild links, Name daneben, darunter Linie und „Mehr Infos“ */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .og-settings-id {
+    grid-template-columns: var(--og-avatar-size) minmax(0, 1fr);
+    column-gap: var(--og-space-md);
+    row-gap: 0;
+    padding: var(--og-space-md) var(--og-space-md) 0;
+    flex: 0 0 auto; /* flex: der Inhalt des Blatts darf die Karte nicht zusammendrücken, sonst schneidet overflow sie ab */
+    overflow: hidden; /* overflow: die Zeile „Mehr Infos“ endet an der Rundung der Karte */
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .og-settings-id .profile-avatar-wrap {
+    grid-row: 1;
+    margin-bottom: 0;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .og-settings-id .profile-avatar {
+    background: var(--og-sheet-fill);
+    color: var(--og-label-secondary);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .og-settings-id .profile-avatar .icon {
+    width: 32px;
+    height: 32px;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .og-settings-id .profile-avatar-edit {
+    right: -6px;
+    bottom: -4px;
+    background: var(--og-sheet-bg);
+    border: 0.75px solid var(--og-group-line);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .og-settings-id .profile-name {
+    grid-row: 1;
+    grid-column: 2;
+    align-self: center;
+    font-size: 22px;
+    font-weight: 500;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .og-settings-id .profile-name.is-unset {
+    color: var(--og-label-tertiary);
+  }
+
+  /* „Mehr Infos“: Linie oben, Text grau links, Pfeil rechts, der beim Aufklappen kippt */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .og-settings-more-btn {
+    grid-column: 1 / -1;
+    justify-self: stretch; /* justify-self: die Zeile füllt die Karte, obwohl die Karte sonst links ausrichtet */
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: var(--og-space-md);
+    padding: 12px 0 14px;
+    border-top: 0.5px solid var(--og-group-line);
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--og-label-secondary);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .og-settings-more-btn .icon {
+    width: 14px;
+    height: 14px;
+    transform: rotate(90deg); /* transform: der Pfeil zeigt nach unten */
+    transition: transform 0.28s ease; /* transition: er kippt weich, wenn die Karte aufgeht */
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .og-settings-more-btn.is-open .icon {
+    transform: rotate(-90deg);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .og-settings-more {
+    grid-column: 1 / -1;
+    justify-self: stretch;
+    margin: 0 calc(-1 * var(--og-space-md)); /* margin: die Zeilen laufen bis zum Kartenrand wie die Gruppen */
+    padding: 0 var(--og-space-md) var(--og-space-sm);
+    text-align: left;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .og-settings-info {
+    padding: var(--og-space-sm) 0 0;
+    font-size: 15px;
+    color: var(--og-label-secondary);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .og-settings-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 12px 0 6px;
+    font-size: 17px;
+    color: var(--text);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #profile .og-settings-link .plist-trail {
+    width: 12px;
+    height: 12px;
+    color: var(--og-label-tertiary);
+  }
+}
