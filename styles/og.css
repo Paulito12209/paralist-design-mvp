@@ -9,12 +9,25 @@
  * -----------------------------------
  * Alle Farben, Rundungen und Abstände stehen in styles/tokens-og.css.
  * Hier steht nur, welche Fläche sie bekommt: die Seitenfläche setzt die
- * Variable --bg auf --og-canvas.
+ * Variable --bg auf --og-canvas. Dazu: die eingeklappte Karte „Ansicht“
+ * (src/ui/view-panel.js) ist in der OG Version unsichtbar.
  */
 
 @media (max-width: 1023px) {
   :root[data-mobile-os="ios"][data-mobile-variant="og"] {
     /* Fläche der Hauptseiten wie Tokens.Palette.canvas in Organi7er */
     --bg: var(--og-canvas);
+  }
+
+  /*
+   * Die Karte „Ansicht“ gehört zur iOS-Fassung: eingeklappt schaut ihr Kopf
+   * als dunkler Kasten hinter Zubehör und Reiterleiste hervor (Projekte,
+   * Aufgaben, Sammlungen, Kalender). Organi7er hat dort nichts. Aufgeklappt
+   * (is-expanded, z. B. über „Kalender anpassen“) bleibt sie sichtbar.
+   * visibility statt display: die Karte behält ihre Lage, damit das
+   * Aufklappen ohne Sprung aus derselben Stelle kommt.
+   */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .view-panel:not(.is-expanded) {
+    visibility: hidden;
   }
 }
