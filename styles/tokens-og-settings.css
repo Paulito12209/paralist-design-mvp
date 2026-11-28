@@ -12,6 +12,9 @@
  * --og-search-row-gap      -> Abstand zwischen zwei Treffer-Karten (8 px, Space.sm)
  * --og-search-icon         -> Breite des Symbols links in der Treffer-Karte (28 px)
  * --og-search-pill-height  -> Höhe von Suchfeld und Knöpfen unten (48 px, bottomAccessoryButtonSize + 4)
+ * --og-search-tile        -> Kachel der Seiten in der Gruppe (28 px, PageKindTile)
+ * --og-search-tile-fill   -> Fläche der Kachel (hell #e9ebef, dunkel #292b30)
+ * --og-sgroup-inset       -> Einzug der Trennlinie in der Gruppe (nach dem Symbol, 56 px)
  * EINSTELLUNGEN (matte Gruppen wie SettingsSection)
  * --og-group-bg            -> Grund hinter den Gruppen (systemGroupedBackground: hell #f2f2f7, dunkel #000)
  * --og-group-card          -> Fläche der Gruppen (secondarySystemGroupedBackground: hell weiß, dunkel #1c1c1e)
@@ -28,6 +31,9 @@
   --og-search-row-gap: 8px;
   --og-search-icon: 28px;
   --og-search-pill-height: 48px;
+  --og-search-tile: 28px;
+  --og-search-tile-fill: #e9ebef;
+  --og-sgroup-inset: 56px;
 
   --og-group-bg: #f2f2f7;
   --og-group-card: #ffffff;
@@ -48,6 +54,7 @@
     --og-label-secondary: rgba(235, 235, 245, 0.6);
     --og-label-tertiary: rgba(235, 235, 245, 0.3);
     --og-danger: #ff453a;
+    --og-search-tile-fill: #292b30;
   }
 }
 
@@ -59,4 +66,5 @@
   --og-label-secondary: rgba(235, 235, 245, 0.6);
   --og-label-tertiary: rgba(235, 235, 245, 0.3);
   --og-danger: #ff453a;
+  --og-search-tile-fill: #292b30;
 }

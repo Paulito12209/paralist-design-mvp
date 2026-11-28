@@ -1,7 +1,7 @@
 /*
  * Suche der „OG Version“ nach GlobalSearchOverlay und SearchResultRow
  * (Organi7er): Treffer als Glaskarten mit farbigem Symbol, Tagesmarken in
- * Fußnoten-Größe, Suchfeld und Knöpfe unten als Glaskapseln. Greift nur mit
+ * Fußnoten-Größe. Gruppe und Suchfeld: og-search-start.css, og-search-field.css. Greift nur mit
  * data-mobile-os="ios" und data-mobile-variant="og" unter 1024 px.
  * Pfad: styles/og-search.css
  *
@@ -11,7 +11,6 @@
  * --og-radius-medium            -> Rundung der Treffer-Karten (20 px)
  * --og-search-row-gap           -> Abstand zwischen Treffern
  * --og-search-icon              -> Breite des Treffer-Symbols
- * --og-search-pill-height       -> Höhe von Mikrofon/Suchen-Kapsel unten
  * --og-tint                     -> gewählter Reiter
  * --og-task, --og-note, …       -> Symbolfarbe je Eintragsart (Regeln „data-kind“ unten)
  *
@@ -88,31 +87,5 @@
 
   :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-count {
     color: var(--og-label-secondary);
-  }
-
-  /* Suchfeld oben: Glaskapsel mit Lupe */
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-search .top-bar .search {
-    border: 0.75px solid var(--og-card-border);
-    border-radius: 999px; /* border-radius: Kapselform wie searchFieldPill */
-    background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
-  }
-
-  /* Knöpfe unten: Mikrofon + Suchen als Glaskapsel, Abbrechen in Akzentfarbe */
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-combo {
-    height: var(--og-search-pill-height);
-    border: 0.75px solid var(--og-card-border);
-    background: linear-gradient(135deg, var(--og-card-top), var(--og-card-bottom));
-    box-shadow: none;
-  }
-
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-combo-btn.is-active {
-    background: color-mix(in srgb, var(--og-tint) 16%, transparent);
-    color: var(--og-tint);
-  }
-
-  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-cancel {
-    height: var(--og-search-pill-height);
-    line-height: var(--og-search-pill-height);
-    color: var(--og-tint);
   }
 }

@@ -16,6 +16,7 @@
  * dem Scrollbereich statt darin — so rollt sie für sich und die Seite darunter
  * bleibt, wo sie war. Der Zurück-Pfeil links im Feld schließt sie wie
  * „Abbrechen“.
+ * In der „OG Version“ wohnt das Feld als Glas-Pille unten (src/shell/og-search-field.js).
  * Am Desktop öffnet das Feld stattdessen die Such-Palette
  * (src/shell/search-palette.js, angemeldet über setSearchTakeover).
  * Ob beim Öffnen gleich die Tastatur aufgeht, wählt man unter
@@ -44,6 +45,7 @@ import { ui } from "../data/state.js";
 import { isDesk, onDeskChange } from "../ui/desk-mode.js";
 import { closeSearch, showSearch } from "../ui/router.js";
 import { isViewActive } from "../ui/views.js";
+import { initOgSearchField, releaseSearchField, syncSearchField } from "./og-search-field.js";
 import { initSearchVoice } from "./search-voice.js";
 
 /*
@@ -119,6 +121,12 @@ function clearQuery() {
   if (isViewActive("search")) redrawSearch();
 }
 
+/* ✕ der „OG Version“: Feld leeren, Tastatur weg, die Seite „Suchen“ zeigt sich wieder ohne Treffer */
+function clearAndBlur() {
+  dom.searchInput.blur();
+  clearQuery();
+}
+
 /* Am Handy steht der Abschnitt der Suche neben dem Scrollbereich, damit er als
    Overlay für sich rollt; am Desktop wieder darin, als Seite in der Spalte. */
 function placeSearchView() {
@@ -157,6 +165,7 @@ function onFocus(event) {
   }
   ui.searchTyping = true;
   document.body.classList.add("is-search-typing");
+  syncSearchField();
   showSearch();
 }
 
@@ -164,6 +173,7 @@ function onFocus(event) {
 function onBlur() {
   ui.searchTyping = false;
   document.body.classList.remove("is-search-typing");
+  releaseSearchField();
 }
 
 /** Suchfeld und Lupe anmelden. */
@@ -206,6 +216,8 @@ export function initSearchBar() {
   onDeskChange(placeSearchView);
 
   initSearchVoice(el("search-voice"));
+  /* „OG Version“: Mikrofon und ✕ im Feld; das ✕ leert es und lässt die Suche stehen */
+  initOgSearchField({ close: clearAndBlur });
 
   /* Wurde die Tastatur weggewischt statt mit einem Tipp geschlossen, blinkt
      der Cursor sonst weiter im Suchfeld, ohne dass die Tastatur noch da ist. */
@@ -216,6 +228,7 @@ export function initSearchBar() {
   dom.searchInput.addEventListener("input", () => {
     ui.searchQuery = dom.searchInput.value.trim();
     syncPill();
+    syncSearchField();
     /* Beim Tippen verlässt man eine Unterliste und landet in den Treffern. */
     if (ui.searchQuery) ui.searchList = null;
     if (!isViewActive("search")) showSearch();

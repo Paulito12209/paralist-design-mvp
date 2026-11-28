@@ -1,0 +1,260 @@
+/*
+ * Seite „Suchen“ der „OG Version“ nach GlobalSearchOverlay (Organi7er): ganze
+ * Seite scrollt, Überschrift mit Stufenring und Profilbild in der Kopfzeile,
+ * Glas-Gruppe mit zwei Zeilen und drei Seiten, „Zuletzt geöffnet“ darunter,
+ * Unterseiten mit Zurück. Greift nur mit data-mobile-os="ios" und
+ * data-mobile-variant="og" unter 1024 px.
+ * Pfad: styles/og-search-start.css
+ *
+ * ANPASSBARE WERTE (styles/tokens-og-settings.css und styles/tokens-og.css)
+ * -----------------------------------
+ * --og-group-card / --og-group-line -> Fläche und Trennlinie der Gruppe
+ * --og-radius-card                  -> Rundung der Gruppe (28 px)
+ * --og-settings-row                 -> Höhe der zwei Zeilen mit Pfeil (56 px)
+ * --og-search-tile / -fill          -> Kachel der Seiten in der Gruppe
+ * --og-sgroup-inset                 -> Einzug der Trennlinie
+ * --og-title-size                   -> Größe von „Suchen“
+ * Schriftgrößen einzelner Elemente stehen bei ihrer Regel: Zeilen 17 px,
+ * Seiten 15 px, Zusatz 12 px, „Zuletzt geöffnet“ 15 px.
+ */
+
+@media (max-width: 1023px) {
+  /* top: die Seite beginnt ganz oben, die Kopfzeile liegt durchsichtig darüber */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-search {
+    top: 0;
+  }
+
+  /* overflow-y: Überschrift, Gruppe und Liste rollen zusammen */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #search-results {
+    overflow-y: auto;
+    overscroll-behavior: contain; /* overscroll-behavior: nichts zieht an der Seite darunter */
+    scrollbar-width: none;
+    padding: calc(var(--safe-top) + 10px) var(--og-space-md) calc(var(--tab-space) + var(--og-accessory-height) + var(--og-accessory-gap));
+  }
+
+  /* flex-shrink: die Seite ist eine Spalte; ohne das drückte sie die Gruppe auf die Höhe einer Zeile */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #search-results > * {
+    flex-shrink: 0;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #search-results::-webkit-scrollbar {
+    display: none;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] #view-search .screen-title {
+    display: block;
+    margin: 0 0 var(--og-space-md);
+    font-size: var(--og-title-size);
+    font-weight: 700;
+    line-height: 44px;
+    color: var(--text);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-list {
+    flex: none;
+    overflow: visible;
+    padding: 0;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-tabs,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-count-row {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  /* Navigation und Zubehör bleiben beim Ansehen stehen; die Knopfreihe der anderen Fassungen entfällt */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-search:not(.is-search-field) .nav-shell {
+    display: block;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-search:not(.is-search-field) .og-accessory {
+    display: flex;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-search .search-actions:not([hidden]),
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-search .device::after {
+    display: none;
+  }
+
+  /* Unterseiten haben ihren eigenen Kopf mit Zurück */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] body:has(#view-search .og-sub) .top-bar {
+    display: none;
+  }
+
+  /* ---------- Gruppe ---------- */
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup {
+    overflow: hidden; /* overflow: die Ecken schneiden die Zeilen rund ab */
+    border-radius: var(--og-radius-card);
+    background: var(--og-group-card);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-row {
+    position: relative; /* position: Bezug für die Trennlinie */
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    min-height: 50px;
+    padding: 0 var(--og-space-md);
+    text-align: left;
+    color: var(--text);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-row + .og-sgroup-row::before {
+    content: ""; /* content: die Trennlinie ist ein eigenes Stück ohne Markup */
+    position: absolute;
+    top: 0;
+    left: var(--og-sgroup-inset);
+    right: 0;
+    height: 0.5px;
+    background: var(--og-group-line);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-link {
+    min-height: var(--og-settings-row);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-row > .icon:not(.chevron) {
+    flex: 0 0 var(--og-settings-icon);
+    width: var(--og-settings-icon);
+    height: 24px;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-row .search-title {
+    font-size: 17px;
+    color: var(--text);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-link .chevron {
+    width: 12px;
+    height: 12px;
+    margin-left: auto;
+    color: var(--og-label-tertiary);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-link .search-title {
+    flex: 1;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page .search-copy {
+    min-width: 0;
+    flex: 1;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page .search-title {
+    display: block;
+    font-size: 15px;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis; /* text-overflow: lange Titel enden mit „…“ */
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page .search-meta {
+    display: block;
+    font-size: 12px;
+    color: var(--og-label-secondary);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tile {
+    display: grid;
+    place-items: center;
+    flex: 0 0 var(--og-search-tile);
+    width: var(--og-search-tile);
+    height: var(--og-search-tile);
+    border-radius: 7px;
+    background: var(--og-search-tile-fill);
+    color: var(--og-task);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-tile .icon {
+    width: 15px;
+    height: 15px;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="notiz"] .og-tile { color: var(--og-note); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="termin"] .og-tile { color: var(--og-event); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="projekt"] .og-tile { color: var(--og-project); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="dokument"] .og-tile,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="zeichnung"] .og-tile,
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="medien"] .og-tile { color: var(--og-resource); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="lesezeichen"] .og-tile { color: var(--og-bookmark); }
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-page[data-kind="workspace"] .og-tile { color: var(--og-area); }
+
+  /* Suchbegriffe der Unterseite: graue Lupe */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-term {
+    min-height: var(--og-settings-row);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sgroup-term > .icon {
+    color: var(--og-label-secondary);
+  }
+
+  /* ---------- Zuletzt geöffnet ---------- */
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-search-recent {
+    margin: var(--og-space-md) 0 var(--og-space-xs);
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--og-label-secondary);
+  }
+
+  /* Titel bis zu zwei Zeilen, die Einordnung darunter eine Zeile */
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-row .search-title {
+    display: -webkit-box; /* display -webkit-box + line-clamp: kürzt nach Zeilen statt nach Höhe */
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+    text-align: left;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .search-row .search-meta {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    text-align: left;
+  }
+
+  /* ---------- Unterseite ---------- */
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sub-head {
+    display: grid;
+    grid-template-columns: 44px 1fr 64px; /* grid: Zurück, Titel mittig, rechts „Löschen“ */
+    align-items: center;
+    margin-bottom: var(--og-space-md);
+    min-height: 44px;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sub-title {
+    text-align: center;
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--text);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sub-back {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    color: var(--og-tint);
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sub-back .icon {
+    width: 22px;
+    height: 22px;
+  }
+
+  :root[data-mobile-os="ios"][data-mobile-variant="og"] .og-sub-clear {
+    justify-self: end;
+    font-size: 17px;
+    color: var(--og-danger);
+  }
+}
