@@ -1,21 +1,34 @@
 /*
  * Reiterkapsel der „OG Version“ nach ContentView.swift (TabView mit
- * tabBarMinimize): eine schwebende Glaskapsel mit Symbol und Name, der
- * gewählte Reiter liegt auf einer hellen Pille in der Akzentfarbe.
+ * tabBarMinimize): eine schwebende Glaskapsel mit fünf Reitern (Übersicht,
+ * Kalender, Medien, Karteikarten, Suchen), je Symbol und Name. Der gewählte
+ * Reiter liegt auf einer dunklen Pille, Symbol und Name in der Akzentfarbe.
+ * Beim Herunterscrollen zieht sich die Kapsel zum runden Knopf des gewählten
+ * Reiters zusammen (Klasse is-tabbar-min, gesetzt in src/shell/ios-bars.js);
+ * Zubehör und Lupe daneben stehen in styles/og-accessory.css.
  * Pfad: styles/og-nav.css
  *
- * ANPASSBARE WERTE (alle in styles/tokens-og.css)
+ * ANPASSBARE WERTE
  * -----------------------------------
+ * styles/tokens-og.css:
  * --og-tab-height -> Höhe der Kapsel (62 pt, wie in Tokens.Layout)
  * --og-tab-icon   -> Größe der Symbole in der Kapsel
  * --og-tint       -> Farbe des gewählten Reiters
- * Die Namen unter den Symbolen stehen immer (10 pt halbfett, wie in der Systemleiste).
  * --og-card-top/-bottom, --og-card-border -> Glasfläche der Kapsel
- *
- * Zubehör über der Kapsel und Lupe daneben: styles/og-accessory.css.
- * Hier steht nur die Kapsel selbst (Höhe, Rundung, Glas, Schatten). Der Abstand
- * zum Bildschirmrand liegt in den Regeln der Navigation (styles/ios.css).
+ * styles/tokens-og-leiste.css:
+ * --og-tab-selected -> dunkle Pille hinter dem gewählten Reiter
+ * --og-tab-grow     -> wie viel breiter der gewählte Reiter ist
+ * --og-min-size     -> Durchmesser des runden Knopfes, wenn die Kapsel zusammengezogen ist
+ * Schrift: Name unter dem Symbol 10 px halbfett (wie in der Systemleiste), steht immer.
+ * Der Seitenrand (--nav-side) kommt aus tokens-og-leiste.css.
  */
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .nav-shell {
+  margin-right: 0; /* margin-right: die Lupe sitzt in der Kapsel, daneben bleibt kein Platz frei */
+  /* Glas, Rand und Schatten hat die Kapsel selbst; der Container der Systemfassung legte sonst einen zweiten Ring darum */
+  background: none;
+  box-shadow: none;
+}
 
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .tab-bar {
   height: var(--og-tab-height);
@@ -27,6 +40,15 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
+/* Der Reiter „Suchen“ gehört nur zur OG Version */
+.tab-btn.tab-search {
+  display: none; /* display: none: alle anderen Fassungen haben die Lupe oben im Kopf */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .tab-btn.tab-search {
+  display: flex;
+}
+
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .tab-btn .tab-circle,
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .tab-bar.show-labels .tab-btn .tab-circle {
   height: calc(var(--og-tab-height) - 4px);
@@ -34,8 +56,13 @@
   color: var(--text);
 }
 
+/* Der gewählte Reiter ist etwas breiter; flex-grow lässt ihn beim Zusammenziehen weich einlaufen */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .tab-btn.is-active {
+  flex-grow: var(--og-tab-grow);
+}
+
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .tab-btn.is-active .tab-circle {
-  background: rgba(31, 87, 148, 0.14);
+  background: var(--og-tab-selected);
   color: var(--og-tint);
 }
 
@@ -46,16 +73,56 @@
 }
 
 :root[data-mobile-os="ios"][data-mobile-variant="og"] .tab-label {
+  display: block; /* display: Namen unter den Symbolen immer, die Wahl „Namen anzeigen“ gilt hier nicht */
   font-size: 10px;
   font-weight: 600;
 }
 
-/* Namen unter den Symbolen immer, wie die Systemleiste: die Wahl „Namen anzeigen“ gilt hier nicht */
-:root[data-mobile-os="ios"][data-mobile-variant="og"] .tab-label {
+/* Der runde Plusknopf neben der Kapsel entfällt: Plus und Welle stehen im Zubehör darüber */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .ios-add {
+  display: none;
+}
+
+/* ---------- Zusammengezogen: Knopf · Zubehör · Lupe in einer Reihe ---------- */
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .device.is-tabbar-min .bottom-bar:not(:has(.nav-shell.is-composing)) {
+  display: flex; /* display: flex: die drei Teile stehen nebeneinander statt untereinander */
+  align-items: center;
+  gap: var(--og-min-gap);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .device.is-tabbar-min .nav-shell:not(.is-composing) {
+  order: 1;
+  flex: 0 0 var(--og-min-size);
+  max-width: var(--og-min-size);
+  height: var(--og-min-size);
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .device.is-tabbar-min .nav-shell:not(.is-composing) .tab-bar {
+  width: 100%;
+  height: var(--og-min-size);
+  padding: 0;
+  border-radius: 50%;
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .device.is-tabbar-min .nav-shell:not(.is-composing) {
+  padding: 0; /* padding: der Knopf nimmt die ganze Fläche, kein Innenrand der Systemfassung */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .device.is-tabbar-min .tab-btn.is-active .tab-circle {
+  height: calc(var(--og-min-size) - 4px);
+  background: transparent; /* background: im runden Knopf braucht der Reiter keine eigene Pille */
+}
+
+:root[data-mobile-os="ios"][data-mobile-variant="og"] .device.is-tabbar-min .tab-label {
+  display: none; /* display: im Knopf steht nur das Symbol */
+}
+
+/* Auf der Suchseite bleibt die Kapsel stehen (der Reiter „Suchen“ ist dort gewählt); erst das Tippen im Feld räumt sie weg */
+:root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-search .nav-shell {
   display: block;
 }
 
-/* Der runde Plusknopf neben der Kapsel entfällt: Plus und Welle stehen im Zubehör darüber, daneben die Lupe */
-:root[data-mobile-os="ios"][data-mobile-variant="og"] .ios-add {
+:root[data-mobile-os="ios"][data-mobile-variant="og"] body.is-search:has(#search-input:focus) .nav-shell {
   display: none;
 }

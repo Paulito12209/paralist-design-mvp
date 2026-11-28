@@ -77,7 +77,8 @@ export function showSearch(replace = false, list = null) {
   ui.searchList = list;
   ui.searchQuery = dom.searchInput.value.trim();
   showView("search");
-  setActiveTab("");
+  /* „search“: in der OG Version ist die Lupe ein Reiter der Kapsel; sonst gibt es keinen Reiter dieses Namens */
+  setActiveTab("search");
   ui.sourceView = "search";
   const url = list === "searches" ? "#/suchen/gesucht" : list === "most" ? "#/suchen/haeufig" : "#/suchen";
   const keep = replace || location.hash === url;

@@ -18,7 +18,7 @@ import { load } from "../core/lazy.js";
 import { navGlowOn } from "../data/design-prefs.js";
 import { navLabelsOn } from "../data/nav-labels.js";
 import { isMobileVariant } from "../ui/platform.js";
-import { showTab } from "../ui/router.js";
+import { showSearch, showTab } from "../ui/router.js";
 
 /** Die Leiste zeigt (oder verbirgt) die Namen unter den Icons entsprechend `on`;
     „Android (Xool-DB)“ zeigt sie immer, wie die Xool-App. */
@@ -36,7 +36,8 @@ export function initNavBar() {
   dom.tabButtons.forEach((button) => {
     /* Der Reiter „Menü“ hat keine Seite (src/shell/android-xool-nav.js) */
     if (!button.dataset.tab) return;
-    button.addEventListener("click", () => showTab(button.dataset.tab));
+    /* „Suchen“ (nur OG Version) ist eine Seite für sich, keine Ansicht der Reiter */
+    button.addEventListener("click", () => (button.dataset.tab === "search" ? showSearch() : showTab(button.dataset.tab)));
   });
 
   dom.profileBtn.addEventListener("click", () => {
